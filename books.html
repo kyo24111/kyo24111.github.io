@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>本棚 — Wanderlust CEO</title>
+  <style>
+    :root {
+      --bg:     #ffffff;
+      --line:   #e8e8e8;
+      --text:   #111111;
+      --muted:  #888888;
+      --light:  #cccccc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Segoe UI', 'Hiragino Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .page { max-width: 760px; margin: 0 auto; padding: 48px 24px 100px; }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--text);
+    }
+    .header h1 { font-size: 22px; font-weight: 800; letter-spacing: -.3px; }
+    .header p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .back-link {
+      font-size: 12px; color: var(--muted); text-decoration: none;
+    }
+    .back-link:hover { color: var(--text); }
+
+    /* ── TIPS ── */
+    .tips {
+      font-size: 13px; color: var(--muted);
+      margin-bottom: 40px;
+    }
+    .tips b { color: var(--text); }
+
+    /* ── SECTION LABEL ── */
+    .sec {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: var(--muted);
+      margin: 48px 0 0;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .sec::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+    /* ── TOP 3 ── */
+    .top3 { margin-top: 16px; }
+    .top3-item {
+      display: grid;
+      grid-template-columns: 32px 1fr auto;
+      gap: 0 20px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
+    }
+    .top3-item:first-child { border-top: 1px solid var(--line); }
+    .top3-num {
+      font-size: 11px; font-weight: 700; color: var(--light);
+      padding-top: 3px; letter-spacing: .5px;
+    }
+    .top3-title { font-size: 16px; font-weight: 700; line-height: 1.4; }
+    .top3-meta  { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .top3-amz {
+      font-size: 12px; color: var(--muted); text-decoration: none;
+      padding-top: 3px; white-space: nowrap;
+    }
+    .top3-amz:hover { color: var(--text); }
+
+    /* ── BOOK LIST ── */
+    .book-list { margin-top: 16px; }
+    .book-item {
+      display: flex; justify-content: space-between; align-items: start;
+      gap: 24px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .book-item:first-child { border-top: 1px solid var(--line); }
+    .book-title { font-size: 14px; font-weight: 600; line-height: 1.45; }
+    .book-meta  { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .book-tag   { font-size: 11px; color: var(--muted); margin-top: 2px; font-style: italic; }
+    .book-amz {
+      font-size: 12px; color: var(--muted); text-decoration: none;
+      flex-shrink: 0; padding-top: 2px; white-space: nowrap;
+    }
+    .book-amz:hover { color: var(--text); }
+
+    @media (max-width: 500px) {
+      .top3-item { grid-template-columns: 24px 1fr; }
+      .top3-amz  { grid-column: 2; margin-top: -4px; }
+    }
+
+    /* ── SITE NAV ── */
+    .site-nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: #ffffff; border-bottom: 1px solid #d4d4d4;
+      z-index: 999; height: 52px;
+    }
+    .site-nav .nav-inner {
+      max-width: 960px; margin: 0 auto; padding: 0 32px;
+      height: 100%; display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    .site-nav .nav-brand {
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      font-size: 13px; font-weight: 700; color: #111111;
+      letter-spacing: 0.08em; text-decoration: none;
+    }
+    .site-nav .nav-links { display: flex; align-items: center; gap: 4px; }
+    .site-nav .nav-link {
+      font-family: 'Poppins', 'Segoe UI', sans-serif;
+      font-size: 12px; font-weight: 500; color: #999999;
+      text-decoration: none; letter-spacing: 0.06em;
+      padding: 6px 12px; transition: color 0.15s, background 0.15s;
+    }
+    .site-nav .nav-link:hover { color: #111111; background: #f0f0ee; }
+    .site-nav .nav-link.active { color: #111111; font-weight: 700; }
+    body { padding-top: 52px; }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="site-nav">
+  <div class="nav-inner">
+    <span class="nav-brand">Kyo</span>
+    <div class="nav-links">
+      <a href="profile.html" class="nav-link">Profile</a>
+      <a href="260401_detail_profile_24111.html" class="nav-link">Detail</a>
+      <a href="books.html" class="nav-link active">Books</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="header">
+    <div>
+      <h1>本棚</h1>
+      <p>Kyo のおすすめ・読了本コレクション</p>
+    </div>
+    <a class="back-link" href="profile.html">← Profile</a>
+  </div>
+
+  <p class="tips"><b>Tips:</b> 要約を読んでから読む</p>
+
+  <!-- TOP 5 -->
+  <div class="sec">Top 5 おすすめ</div>
+  <div class="top3">
+
+    <div class="top3-item">
+      <div class="top3-num">01</div>
+      <div>
+        <div class="top3-title">ゼロ・トゥ・ワン</div>
+        <div class="top3-meta">ピーター・ティール、ブレイク・マスターズ &nbsp;·&nbsp; Zero to One</div>
+      </div>
+      <a class="top3-amz" href="https://www.amazon.co.jp/dp/4140816589" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="top3-item">
+      <div class="top3-num">02</div>
+      <div>
+        <div class="top3-title">パワーか、フォースか</div>
+        <div class="top3-meta">デヴィッド・R・ホーキンズ &nbsp;·&nbsp; Power vs. Force</div>
+      </div>
+      <a class="top3-amz" href="https://www.amazon.co.jp/%E3%83%91%E3%83%AF%E3%83%BC%E3%81%8B%E3%80%81%E3%83%95%E3%82%A9%E3%83%BC%E3%82%B9%E3%81%8B-%E6%94%B9%E8%A8%82%E7%89%88-%E3%83%87%E3%83%B4%E3%82%A3%E3%83%83%E3%83%89%E3%83%BBR%E3%83%BB%E3%83%9B%E3%83%BC%E3%82%AD%E3%83%B3%E3%82%BA-ebook/dp/B07X1TVMJJ/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="top3-item">
+      <div class="top3-num">03</div>
+      <div>
+        <div class="top3-title">イシューから始めよ</div>
+        <div class="top3-meta">安宅和人 &nbsp;·&nbsp; Issue Driven</div>
+      </div>
+      <a class="top3-amz" href="https://www.amazon.co.jp/dp/B00MTL340G/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="top3-item">
+      <div class="top3-num">04</div>
+      <div>
+        <div class="top3-title">インテグラル理論</div>
+        <div class="top3-meta">ケン・ウィルバー &nbsp;·&nbsp; Integral Theory</div>
+      </div>
+      <a class="top3-amz" href="#" style="opacity:0.4; pointer-events:none;">Amazon →</a>
+    </div>
+
+    <div class="top3-item">
+      <div class="top3-num">05</div>
+      <div>
+        <div class="top3-title">孫子</div>
+        <div class="top3-meta">孫武 &nbsp;·&nbsp; The Art of War</div>
+      </div>
+      <a class="top3-amz" href="https://www.amazon.co.jp/dp/4532169259" target="_blank">Amazon →</a>
+    </div>
+
+  </div>
+
+  <!-- 起業・スタートアップ -->
+  <div class="sec">起業・スタートアップ</div>
+  <div class="book-list">
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">ゼロ・トゥ・ワン</div>
+        <div class="book-meta">ピーター・ティール、ブレイク・マスターズ &nbsp;·&nbsp; Zero to One</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4140816589" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">Yコンビネーター</div>
+        <div class="book-meta">ランダル・ストロス &nbsp;·&nbsp; The Launch Pad</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/Y%E3%82%B3%E3%83%B3%E3%83%93%E3%83%8D%E3%83%BC%E3%82%BF%E3%83%BC-%E3%83%A9%E3%83%B3%E3%83%80%E3%83%AB-%E3%82%B9%E3%83%88%E3%83%AD%E3%82%B9-ebook/dp/B00EQ25B3O/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">起業の天才！ 江副浩正</div>
+        <div class="book-meta">大西康之</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4492062165" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">Learn or Die 死ぬ気で学べ</div>
+        <div class="book-meta">西川徹、岡野原大輔</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/B085SZLB2Q/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">ブロックバスター戦略</div>
+        <div class="book-meta">アニータ・エルバース &nbsp;·&nbsp; Blockbusters</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4492533710" target="_blank">Amazon →</a>
+    </div>
+
+  </div>
+
+  <!-- 人物・伝記 -->
+  <div class="sec">人物・伝記</div>
+  <div class="book-list">
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">孫正義 ３００年王国への野望</div>
+        <div class="book-meta">杉本貴司</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/%E5%AD%AB%E6%AD%A3%E7%BE%A9-%EF%BC%93%EF%BC%90%EF%BC%90%E5%B9%B4%E7%8E%8B%E5%9B%BD%E3%81%B8%E3%81%AE%E9%87%8E%E6%9C%9B-%E6%9D%89%E6%9C%AC%E8%B2%B4%E5%8F%B8-ebook/dp/B071XFVNZ7/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">シリコンバレー最重要思想家 ナヴァル・ラヴィカント</div>
+        <div class="book-meta">エリック・ジョーゲンソン &nbsp;·&nbsp; The Almanack of Naval Ravikant</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/%E3%82%B7%E3%83%AA%E3%82%B3%E3%83%B3%E3%83%90%E3%83%AC%E3%83%BC%E6%9C%80%E9%87%8D%E8%A6%81%E6%80%9D%E6%83%B3%E5%AE%B6%E3%83%8A%E3%83%B4%E3%82%A1%E3%83%AB%E3%83%BB%E3%83%A9%E3%83%B4%E3%82%A3%E3%82%AB%E3%83%B3%E3%83%88-%E3%82%A8%E3%83%AA%E3%83%83%E3%82%AF%E3%83%BB%E3%82%B8%E3%83%A7%E3%83%BC%E3%82%B2%E3%83%B3%E3%82%BD%E3%83%B3-ebook/dp/B0BB6G7H8D/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">テクノリバタリアン</div>
+        <div class="book-meta">橘玲</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4478119619" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">ユニクロ</div>
+        <div class="book-meta">杉本貴司</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4296001868" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">代表的日本人</div>
+        <div class="book-meta">内村鑑三 &nbsp;·&nbsp; Representative Men of Japan</div>
+        <div class="book-tag">Shudai の紹介</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4003311930" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">日本の戦後を知るための12人</div>
+        <div class="book-meta">池上彰</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4163910611" target="_blank">Amazon →</a>
+    </div>
+
+  </div>
+
+  <!-- 戦略・思考法 -->
+  <div class="sec">戦略・思考法</div>
+  <div class="book-list">
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">孫子</div>
+        <div class="book-meta">孫武 &nbsp;·&nbsp; The Art of War</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4532169259" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">イシューから始めよ</div>
+        <div class="book-meta">安宅和人 &nbsp;·&nbsp; Issue Driven</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/B00MTL340G/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">良い戦略、悪い戦略</div>
+        <div class="book-meta">リチャード・ルメルト &nbsp;·&nbsp; Good Strategy Bad Strategy</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/gp/product/B087X4WJLR/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">確率思考</div>
+        <div class="book-meta">アニー・デューク &nbsp;·&nbsp; Thinking in Bets</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4478108382" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">アナロジー思考</div>
+        <div class="book-meta">細谷功</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4492556974" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">瞬考</div>
+        <div class="book-meta">山川隆義</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/B0C783GL72/" target="_blank">Amazon →</a>
+    </div>
+
+  </div>
+
+  <!-- 権力・古典 -->
+  <div class="sec">権力・古典</div>
+  <div class="book-list">
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">君主論</div>
+        <div class="book-meta">ニッコロ・マキャヴェリ &nbsp;·&nbsp; The Prince</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/%E5%90%9B%E4%B8%BB%E8%AB%96-%E6%96%B0%E7%89%88-%E4%B8%AD%E5%85%AC%E6%96%87%E5%BA%AB-%E3%83%9E%E3%82%AD%E3%82%A2%E3%83%B4%E3%82%A7%E3%83%AA-ebook/dp/B07BRRBDDP/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">貞観政要</div>
+        <div class="book-meta">呉兢 著 / 出口治明 解説</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/%E5%BA%A7%E5%8F%B3%E3%81%AE%E6%9B%B8%E3%80%8E%E8%B2%9E%E8%A6%B3%E6%94%BF%E8%A6%81%E3%80%8F-%E4%B8%AD%E5%9B%BD%E5%8F%A4%E5%85%B8%E3%81%AB%E5%AD%A6%E3%81%B6%E3%80%8C%E4%B8%96%E7%95%8C%E6%9C%80%E9%AB%98%E3%81%AE%E3%83%AA%E3%83%BC%E3%83%80%E3%83%BC%E8%AB%96%E3%80%8D-%E8%A7%92%E5%B7%9D%E6%96%B0%E6%9B%B8-%E5%87%BA%E5%8F%A3-%E6%B2%BB%E6%98%8E-ebook/dp/B0828DX9MM/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">人を動かす</div>
+        <div class="book-meta">デール・カーネギー &nbsp;·&nbsp; How to Win Friends and Influence People</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/442210134X" target="_blank">Amazon →</a>
+    </div>
+
+  </div>
+
+  <!-- 哲学・世界観 -->
+  <div class="sec">哲学・世界観</div>
+  <div class="book-list">
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">パワーか、フォースか</div>
+        <div class="book-meta">デヴィッド・R・ホーキンズ &nbsp;·&nbsp; Power vs. Force</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/%E3%83%91%E3%83%AF%E3%83%BC%E3%81%8B%E3%80%81%E3%83%95%E3%82%A9%E3%83%BC%E3%82%B9%E3%81%8B-%E6%94%B9%E8%A8%82%E7%89%88-%E3%83%87%E3%83%B4%E3%82%A3%E3%83%83%E3%83%89%E3%83%BBR%E3%83%BB%E3%83%9B%E3%83%BC%E3%82%AD%E3%83%B3%E3%82%BA-ebook/dp/B07X1TVMJJ/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">インテグラル理論</div>
+        <div class="book-meta">ケン・ウィルバー &nbsp;·&nbsp; Integral Theory</div>
+      </div>
+      <a class="book-amz" href="#" style="opacity:0.4; pointer-events:none;">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">無限の始まり</div>
+        <div class="book-meta">デイヴィッド・ドイッチュ &nbsp;·&nbsp; The Beginning of Infinity</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4772695370" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">サピエンス全史</div>
+        <div class="book-meta">ユヴァル・ノア・ハラリ &nbsp;·&nbsp; Sapiens</div>
+        <div class="book-tag">教養知の結合、人類発展に対する客観的な指摘</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/430922671X" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">ホモ・デウス</div>
+        <div class="book-meta">ユヴァル・ノア・ハラリ &nbsp;·&nbsp; Homo Deus</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4309227368" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">FACTFULNESS</div>
+        <div class="book-meta">ハンス・ロスリング &nbsp;·&nbsp; Factfulness</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4822289605" target="_blank">Amazon →</a>
+    </div>
+
+  </div>
+
+  <!-- 組織・マネジメント -->
+  <div class="sec">組織・マネジメント</div>
+  <div class="book-list">
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">NO RULES（ノー・ルールズ）</div>
+        <div class="book-meta">リード・ヘイスティングス、エリン・メイヤー &nbsp;·&nbsp; No Rules Rules</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/NO-RULES-%E3%83%8E%E3%83%BC%E3%83%BB%E3%83%AB%E3%83%BC%E3%83%AB%E3%82%BA-%E4%B8%96%E7%95%8C%E4%B8%80%E3%80%8C%E8%87%AA%E7%94%B1%E3%80%8D%E3%81%AA%E4%BC%9A%E7%A4%BE%E3%80%81NETFLIX-%E3%83%AA%E3%83%BC%E3%83%89%E3%83%BB%E3%83%98%E3%82%A4%E3%82%B9%E3%83%86%E3%82%A3%E3%83%B3%E3%82%B0%E3%82%B9/dp/4532323673" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">人月の神話</div>
+        <div class="book-meta">フレデリック・P・ブルックス Jr. &nbsp;·&nbsp; The Mythical Man-Month</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4621066080" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">GitLabに学ぶ 世界最先端のリモート組織のつくりかた</div>
+        <div class="book-meta">千田和央、伊藤俊廷、佐々木直晴</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4798179426" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">天才たちの日課</div>
+        <div class="book-meta">メイソン・カリー &nbsp;·&nbsp; Daily Rituals</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4845914336" target="_blank">Amazon →</a>
+    </div>
+
+  </div>
+
+  <!-- テクノロジー・産業 -->
+  <div class="sec">テクノロジー・産業</div>
+  <div class="book-list">
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">半導体戦争</div>
+        <div class="book-meta">クリス・ミラー &nbsp;·&nbsp; Chip War</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/447811546X/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">ネット興亡記</div>
+        <div class="book-meta">杉本貴司</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4296116134/" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">日の丸コンテナ会社ONEはなぜ成功したのか？</div>
+        <div class="book-meta">幡野武彦、松田琢磨</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/B0BT4JYN9Q" target="_blank">Amazon →</a>
+    </div>
+
+  </div>
+
+  <!-- 心身・健康 -->
+  <div class="sec">心身・健康</div>
+  <div class="book-list">
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">ドーパミン中毒</div>
+        <div class="book-meta">アンナ・レンブケ &nbsp;·&nbsp; Dopamine Nation</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/B0BF9PDN9N" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">スマホ脳</div>
+        <div class="book-meta">アンデシュ・ハンセン</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4106108828" target="_blank">Amazon →</a>
+    </div>
+
+    <div class="book-item">
+      <div>
+        <div class="book-title">究極の身体</div>
+        <div class="book-meta">高岡英夫</div>
+      </div>
+      <a class="book-amz" href="https://www.amazon.co.jp/dp/4062813025" target="_blank">Amazon →</a>
+    </div>
+
+  </div>
+
+</div>
+</body>
+</html>
