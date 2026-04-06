@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demis Hassabis — 人物リサーチ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #ffffff;
+      --surface: #f5f5f5;
+      --surface2: #ebebeb;
+      --accent:  #111111;
+      --accent2: #555555;
+      --text:    #111111;
+      --muted:   #888888;
+      --border:  #e0e0e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    /* HERO */
+    .hero {
+      background: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 40px 48px;
+    }
+    .hero-inner { max-width: 860px; margin: 0 auto; }
+    .hero-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.15);
+    }
+    .hero-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hero-meta-item .label { font-size: 11px; color: rgba(255,255,255,.45); letter-spacing: 0.1em; text-transform: uppercase; }
+    .hero-meta-item .value { font-size: 14px; font-weight: 600; color: #fff; }
+
+    /* LAYOUT */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 40px 80px; }
+
+    /* SUMMARY BOX */
+    .summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin: 40px 0;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .summary strong { color: var(--accent); font-weight: 700; }
+
+    /* SECTIONS */
+    section { margin-top: 48px; }
+    .section-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px; top: 8px; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -24px; top: 8px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .tl-year {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .tl-item p { font-size: 14px; line-height: 1.8; }
+
+    /* CARDS */
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 22px;
+    }
+    .card h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .card p, .card ul { font-size: 14px; line-height: 1.8; }
+    .card ul { padding-left: 18px; }
+    .card ul li { margin-bottom: 4px; }
+
+    /* FACT LIST */
+    .fact-list { list-style: none; }
+    .fact-list li {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      align-items: flex-start;
+    }
+    .fact-list li:last-child { border-bottom: none; }
+    .fact-list .key {
+      min-width: 130px;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 13px;
+      padding-top: 1px;
+    }
+    .fact-list .val { flex: 1; }
+
+    /* QUOTE */
+    .quote {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-style: italic;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .quote cite {
+      display: block;
+      margin-top: 8px;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* EPISODE */
+    .episode {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .episode h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .episode p { font-size: 14px; line-height: 1.8; }
+
+    /* TAG */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .tag {
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.7;
+    }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 600; width: 160px; }
+
+    /* NOBEL BADGE */
+    .nobel-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 16px;
+      border-radius: 4px;
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ACHIEVEMENT BOX */
+    .achievement {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent2);
+      border-radius: 0 8px 8px 0;
+      padding: 18px 22px;
+      margin-bottom: 14px;
+    }
+    .achievement h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+    .achievement p { font-size: 14px; line-height: 1.8; }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 20px 32px; }
+      .container { padding: 0 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">人物リサーチ</div>
+    <h1>Demis <span>Hassabis</span></h1>
+    <p style="color:rgba(255,255,255,.6); font-size:14px; max-width:600px; margin-top:4px;">
+      チェス神童からゲーム開発者、そして神経科学者へ。DeepMindを創業しAlphaGo・AlphaFoldで
+      科学の限界を塗り替えた。2024年、ノーベル化学賞受賞。AGIに最も近いと言われる研究者。
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">生年月日</span>
+        <span class="value">1976年7月27日（49歳）</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">出身</span>
+        <span class="value">イングランド・ロンドン</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">純資産（推定）</span>
+        <span class="value">$1.5B〜$2B（2025年推定）</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">肩書き</span>
+        <span class="value">Google DeepMind CEO・共同創業者</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">受賞</span>
+        <span class="value">ノーベル化学賞 2024</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <strong>一言で言うと？</strong><br>
+    13歳で世界2位のチェスプレイヤー、17歳でゲーム開発、ケンブリッジで計算機科学、UCLで神経科学PhD——
+    あらゆるフィールドで頂点を目指したのち、<strong>DeepMind</strong>を創業しGoogleに売却。
+    その後<strong>AlphaGo</strong>で囲碁世界王者を破り、<strong>AlphaFold</strong>で50年来の生物学難問を解決し、
+    <strong>2024年ノーベル化学賞</strong>を受賞した。静謐で方法論的、しかし内側にAGI実現への強烈な使命感を持つ。
+    「知性は宇宙で最も強力な力だ」という確信の人。
+  </div>
+
+  <!-- 子供時代・チェス天才 -->
+  <section>
+    <div class="section-label">Prodigy</div>
+    <h2>子供時代・チェス神童</h2>
+    <ul class="fact-list">
+      <li>
+        <span class="key">家族背景</span>
+        <span class="val">父はキプロス系ギリシャ人の音楽家・美術家、母は中国系シンガポール人。ロンドン北部のクロイドン区で育つ。文化的に多様な家庭環境が知的好奇心を育てた。</span>
+      </li>
+      <li>
+        <span class="key">チェスとの出会い（4歳）</span>
+        <span class="val">4歳でチェスを覚え、すぐに熱中。小学生のうちに地域大会で大人を破り始めた。「チェスは知的問題を解くための最高の訓練だった」と後に語る。</span>
+      </li>
+      <li>
+        <span class="key">世界2位（13歳）</span>
+        <span class="val">13歳で14歳以下のチェス世界ランキング2位を達成。イングランド代表としてU-18世界選手権にも出場。チェスグランドマスターへの道も開かれていたが、「チェスより面白いことがある」と悟り離れた。</span>
+      </li>
+      <li>
+        <span class="key">知的探求の原点</span>
+        <span class="val">チェスで「どうすれば複雑な問題を体系的に解けるか」を体得。この思考パターンが後のAI研究の方法論的基盤になったと本人が述べている。</span>
+      </li>
+      <li>
+        <span class="key">ゲームとの出会い</span>
+        <span class="val">Commodore 64を手に入れたことでプログラミングに目覚める。「ゲームは動くシミュレーション——知性を試す最高の舞台だ」という認識を持った。</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- ゲーム開発者時代 -->
+  <section>
+    <div class="section-label">Game Developer</div>
+    <h2>ゲーム開発者時代</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">1994年（17歳）— Theme Park</div>
+        <p>Bullfrog Productionsにて「Theme Park」を主要開発者として手がける。遊園地シミュレーションゲームで世界的大ヒット。AIの振る舞いを持つ来場者キャラクターの設計が高く評価された。ゴールデンジョイスティック賞など複数の賞を受賞。17歳にして業界で名を知られる存在に。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1998年 — Lionhead Studios参加</div>
+        <p>ゲームデザイナーの鬼才ピーター・モリニューと組み、Lionhead Studiosの設立に関わる。「Black & White」（2001年）の開発に貢献。プレイヤーの行動から学習し進化するAIキャラクター（神の手）を実装したことで業界に衝撃を与えた。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2004年 — Evil Genius / Elixir Studios</div>
+        <p>自身が設立したElixir Studiosで「Republic: The Revolution」「Evil Genius」を開発。いずれも複雑なAIシステムを実装した意欲作。しかし商業的には苦戦し、Elixirは2005年に閉鎖。この「失敗」の経験がHassabisを次のフェーズへと押し出した。</p>
+      </div>
+    </div>
+
+    <div class="quote">
+      「ゲームは私にとってAI研究の実験場だった。どうすれば機械が人間らしく振る舞えるかを、数百万人のプレイヤーを相手に試せる最高の環境だ。」
+      <cite>— Demis Hassabis</cite>
+    </div>
+  </section>
+
+  <!-- DeepMind創業・売却 -->
+  <section>
+    <div class="section-label">DeepMind</div>
+    <h2>DeepMind創業・Google売却</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">2005〜2009年 — 神経科学PhD</div>
+        <p>ゲーム会社の失敗後、UCL（ユニバーシティ・カレッジ・ロンドン）で神経科学の博士号を取得。脳のエピソード記憶と想像力のメカニズムを研究し、「記憶と空間認識を司る海馬が未来の想像にも使われる」という論文をNature誌に発表。神経科学×AIという独自の視点を確立した。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2010年 — DeepMind創業</div>
+        <p>Shane Legg（機械学習研究者）とMustafa Suleyman（社会活動家）とともにDeepMindを創業。「科学的手法でAGI（汎用人工知能）を開発する」という壮大なミッションを掲げた。シリコンバレーの主流とは一線を画す、ロンドン発のAI研究機関として出発。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2012〜2013年 — Atariの衝撃</div>
+        <p>強化学習でAtariの古典ゲームを人間以上のスコアで攻略するDeep Q-Network（DQN）を開発。「ルールを教えずにゲーム画面だけを入力として自律学習する」という手法が学術界に衝撃を与えた。この論文がGoogleの目に留まる。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2014年1月 — Googleに約500Mドルで売却</div>
+        <p>GoogleがDeepMindを推定5億ドルで買収。当時Googleによる買収としては最大規模のAI企業買収。Hassabisは「Googleのリソースなしにはできないことがある」としながらも、「DeepMindの独立性と研究文化を守る」ことを条件とした。倫理委員会の設置も買収条件のひとつだったと言われる。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- AlphaGoの衝撃 -->
+  <section>
+    <div class="section-label">Breakthrough</div>
+    <h2>AlphaGoの衝撃（2016年）</h2>
+
+    <div class="summary" style="margin-top:0;">
+      囲碁は「AIが人間を超えるには10年以上かかる」とされていたゲームだ。盤面の状態数は宇宙の原子の数より多く、「次の一手」を計算で求めることは原理的に不可能と考えられていた。
+    </div>
+
+    <div class="episode">
+      <h3>なぜ囲碁が難しいのか</h3>
+      <p>チェスの局面数が10の120乗に対し、囲碁は10の170乗超。総当たりでは絶対に解けない。Hassabisのチームは深層学習（CNN）と強化学習を組み合わせた「ポリシーネットワーク」と「バリューネットワーク」を組み合わせ、人間の棋士の棋譜から学習させつつ、自分自身と対局して強化するという手法を開発した。</p>
+    </div>
+
+    <div class="episode">
+      <h3>2016年3月 — 李世乭との歴史的対局</h3>
+      <p>韓国の囲碁世界チャンピオン・李世乭（イ・セドル）と5番勝負で対局。AlphaGoが4勝1敗で圧勝。世界中で生放送された第4局で李世乭が1勝を返した瞬間はAI史の伝説として語られる。Hassabisは「正直、ここまで勝てるとは思っていなかった」とコメント。</p>
+    </div>
+
+    <div class="episode">
+      <h3>第2手37——人間には指せない一手</h3>
+      <p>第2局でAlphaGoが放った「第37手」は、人間のプロ棋士が「ありえない」と笑ったほど型破りな一手だった。しかし結果的にはそれが勝負を決定づけた。「AIが人間の常識を超えた瞬間」として記憶されている。</p>
+    </div>
+
+    <div class="episode">
+      <h3>AlphaGo Zeroへの進化</h3>
+      <p>2017年、人間の棋譜を一切使わず自己対局だけで学習する「AlphaGo Zero」を発表。わずか40日でAlphaGoを凌駕し、人間が3,000年かけて積み上げた囲碁の知識を独自に再発見・超越した。科学的インパクトはAlphaGo以上と評される。</p>
+    </div>
+  </section>
+
+  <!-- AlphaFoldとノーベル賞 -->
+  <section>
+    <div class="section-label">Nobel Prize</div>
+    <h2>AlphaFoldと2024年ノーベル化学賞</h2>
+
+    <div class="nobel-badge">Nobel Prize in Chemistry 2024</div>
+
+    <div class="episode">
+      <h3>タンパク質折り畳み問題とは</h3>
+      <p>生命の設計図はDNAに書かれているが、生命の機能を実際に担うのはタンパク質だ。タンパク質はアミノ酸の鎖が複雑に折り畳まれた三次元構造をとり、その形が機能を決定する。しかしアミノ酸の配列から三次元構造を予測することは、1972年から続く50年来の未解決問題（「タンパク質折り畳み問題」）だった。実験的解析には1タンパク質あたり数年と数億円を要する。</p>
+    </div>
+
+    <div class="episode">
+      <h3>AlphaFold2（2020年）が問題を解決</h3>
+      <p>2020年のCASP（タンパク質構造予測コンテスト）で、AlphaFold2が全参加チームを大幅に引き離すスコアを記録。実験解析と比較可能な精度でタンパク質構造を予測することに成功した。審査委員が「計算で解析と同等の精度が出るとは思っていなかった」と述べたほどの衝撃だった。</p>
+    </div>
+
+    <div class="episode">
+      <h3>2億種の構造を公開</h3>
+      <p>2022年、DeepMindはAlphaFoldが予測した2億種以上のタンパク質構造をすべて無償公開した。既知のほぼすべてのタンパク質を網羅するこのデータベースは、世界中の研究者が薬剤開発・疾病研究・生命科学の基礎研究に活用している。「科学史上最大の贈り物のひとつ」と称される。</p>
+    </div>
+
+    <div class="episode">
+      <h3>ノーベル化学賞受賞（2024年）</h3>
+      <p>スウェーデン王立科学アカデミーがHassabisとDeepMindのJohn Jumperに対し、AlphaFoldの業績でノーベル化学賞を授与（タンパク質設計のDavid Bakerとの共同受賞）。「AIが自然科学の難問を解いた」ことへの授賞はノーベル賞史上初の試みとして注目された。</p>
+    </div>
+
+    <div class="quote">
+      「AlphaFoldを作ったとき、これが人類に最も貢献できる仕事だと確信していた。ノーベル賞より、世界中の研究者が毎日使っていることの方が私にとっては報酬だ。」
+      <cite>— Demis Hassabis、ノーベル賞受賞にて</cite>
+    </div>
+  </section>
+
+  <!-- Google DeepMindの現在 -->
+  <section>
+    <div class="section-label">Present</div>
+    <h2>Google DeepMindの現在</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>DeepMind + Google Brain統合（2023年）</h3>
+        <p>2023年4月、GoogleはDeepMindとGoogle Brain（社内AI研究部門）を統合し「Google DeepMind」として再編。Hassabisが統合組織のCEOに就任。世界最大規模のAI研究機関のひとつとなった。</p>
+      </div>
+      <div class="card">
+        <h3>Geminiモデル</h3>
+        <p>Google DeepMindが中心となって開発した大規模言語モデル「Gemini」シリーズ（Ultra / Pro / Flash）。GPT-4に対抗するGoogleの主力AIモデルとして、全製品に統合されている。</p>
+      </div>
+      <div class="card">
+        <h3>AlphaCode / AlphaStar</h3>
+        <p>AlphaCodeはプログラミングコンテストで人間上位レベルのコードを生成。AlphaStarはリアルタイム戦略ゲーム「StarCraft II」でグランドマスターレベルに到達。科学だけでなく多様な知的タスクへの応用を実証。</p>
+      </div>
+      <div class="card">
+        <h3>Mustafa Suleyman離脱</h3>
+        <p>共同創業者のMustafa SuleywanはDeepMindを離れた後、自身のAIスタートアップ「Inflection AI」を設立（後にMicrosoftへ実質移籍）。Hassabisとは異なる方向性（製品化重視）を追求。2024年現在、MicrosoftのAI部門を率いている。</p>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
+      <table>
+        <thead>
+          <tr>
+            <th>プロジェクト</th>
+            <th>年</th>
+            <th>概要・インパクト</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>AlphaGo</td>
+            <td>2016年</td>
+            <td>囲碁世界王者・李世乭を4-1で破る。AIが「解けない」と思われていた問題を解決した歴史的事件。</td>
+          </tr>
+          <tr>
+            <td>AlphaGo Zero</td>
+            <td>2017年</td>
+            <td>人間の棋譜なしで自己学習し40日でAlphaGoを超越。「知識なきゼロからの学習」が実証された。</td>
+          </tr>
+          <tr>
+            <td>AlphaStar</td>
+            <td>2019年</td>
+            <td>リアルタイム戦略ゲームStarCraft IIでグランドマスターレベルに。不完全情報・長期計画を要するゲームでの突破。</td>
+          </tr>
+          <tr>
+            <td>AlphaFold2</td>
+            <td>2020年</td>
+            <td>50年来の生物学難問「タンパク質折り畳み問題」を実質解決。2024年ノーベル化学賞に。</td>
+          </tr>
+          <tr>
+            <td>AlphaCode</td>
+            <td>2022年</td>
+            <td>競技プログラミングで人間上位50%のパフォーマンスを達成。</td>
+          </tr>
+          <tr>
+            <td>Gemini</td>
+            <td>2023〜</td>
+            <td>GoogleのメインLLMシリーズ。マルチモーダル対応の次世代基盤モデル。</td>
+          </tr>
+          <tr>
+            <td>AlphaFold3</td>
+            <td>2024年</td>
+            <td>DNAやRNAを含むあらゆる生体分子の構造を予測可能に拡張。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 哲学・AGIへの信念 -->
+  <section>
+    <div class="section-label">Philosophy</div>
+    <h2>哲学・AGIへの信念</h2>
+
+    <div class="achievement">
+      <h3>「AGIは人類最大のプロジェクト」</h3>
+      <p>Hassabisは汎用人工知能（AGI）の開発を「人類が取り組んできた中で最も重要で変革的なプロジェクト」と位置づけている。AGIが実現すれば科学研究を加速し、気候変動・疾病・貧困などあらゆる人類課題を解決する「究極の科学者」になれると信じる。</p>
+    </div>
+
+    <div class="achievement">
+      <h3>神経科学からインスパイアされたAI</h3>
+      <p>Hassabisの独自性は「脳の仕組みからAIを設計する」アプローチにある。記憶の再生・想像力・計画など、神経科学が解明した脳の機能をアルゴリズムで再現しようとする。AlphaGoの強化学習も、ヒトの学習メカニズムへの洞察から生まれた。</p>
+    </div>
+
+    <div class="achievement">
+      <h3>安全性への真剣さ</h3>
+      <p>能力主義的なAI開発と同時に、AIの安全性（Alignment）を深刻に受け止めている。「強力なAIを作るなら、それが安全であることも保証しなければならない」という立場で、DeepMind内にAI安全研究チームを維持。マスクやオルトマンとは異なるアプローチで安全性と能力向上を並行させている。</p>
+    </div>
+
+    <div class="achievement">
+      <h3>科学的方法論の徹底</h3>
+      <p>「直感だけに頼らず、すべてを実験で検証する」という科学者の姿勢がHassabisのリーダーシップの核心だ。AlphaGoの設計も、Atariゲームの実験から仮説を検証するプロセスを経た。「作ってみる」前に「理解する」を徹底する。</p>
+    </div>
+
+    <div class="quote">
+      「知性は宇宙で最も強力な力だ。そしてAIは人類がこれまでに作り出した中で最も変革的なツールになるだろう。」
+      <cite>— Demis Hassabis</cite>
+    </div>
+
+    <div class="quote">
+      「私たちはAGIを作ろうとしている。しかしそれは世界最大のプロジェクトだ——正しくやらなければならない。」
+      <cite>— Demis Hassabis</cite>
+    </div>
+  </section>
+
+  <!-- 名言 -->
+  <section>
+    <div class="section-label">Quotes</div>
+    <h2>名言</h2>
+
+    <div class="quote">
+      「ゲームは現実世界の縮図だ。戦略、学習、意思決定——すべてがゲームに詰まっている。だから私はゲームをAI研究の試験場として使い続ける。」
+      <cite>— Demis Hassabis</cite>
+    </div>
+
+    <div class="quote">
+      「私の夢は、AIを使って科学の速度を100倍にすることだ。私たちが一生かけてできることを、AIは1年でやってのけるかもしれない。」
+      <cite>— Demis Hassabis</cite>
+    </div>
+
+    <div class="quote">
+      「チェスは私に、どんな複雑な問題も体系的に分解できることを教えてくれた。その教訓は今も毎日使っている。」
+      <cite>— Demis Hassabis</cite>
+    </div>
+
+    <div class="quote">
+      「科学者はデータを集め、仮説を立て、実験で検証する。AIも同じことをすべきだ——そしてそれができたとき、AGIは誕生する。」
+      <cite>— Demis Hassabis</cite>
+    </div>
+  </section>
+
+  <!-- なぜLegendか -->
+  <section>
+    <div class="section-label">Legacy</div>
+    <h2>なぜLegendか</h2>
+
+    <div class="episode">
+      <h3>マルチドメインの天才という希有さ</h3>
+      <p>チェスで世界レベル、ゲームクリエイターとして業界賞を受賞、神経科学でPhD、AI研究でノーベル賞——これほど多様なフィールドで本物の実績を残した人物は歴史的にも稀だ。それぞれの経験が有機的に連なり、AIへの独自アプローチを生み出している。</p>
+    </div>
+
+    <div class="episode">
+      <h3>科学の課題を「ゲーム」に変えた発想</h3>
+      <p>「囲碁を解けば、複雑な問題解決の手法が生まれる」「タンパク質構造予測もパターン認識の問題だ」——Hassabisは科学の難問をAIの問題設定に翻訳する天才だ。この「問題の再定義」こそが最大の知的貢献だといえる。</p>
+    </div>
+
+    <div class="episode">
+      <h3>2億種のタンパク質構造を無償公開</h3>
+      <p>AlphaFoldの結果を全世界に無償公開したことは、科学に対する純粋な貢献だ。商業的に独占することなく、人類全体の知識として開放する姿勢は、Hassabisが「金持ちになりたい」ではなく「科学を進歩させたい」という動機で動いていることを端的に示している。</p>
+    </div>
+
+    <div class="episode">
+      <h3>Googleの中で独立性を守り続ける</h3>
+      <p>2014年にGoogleに売却されて以来、研究の独立性と長期的視点を維持し続けている。短期的な製品化よりも根本的な研究を優先するDeepMindの文化は、Hassabisの意志なしには生まれなかった。組織のCEOとしても研究者としても超一流という稀有な人物だ。</p>
+    </div>
+
+    <div class="tags">
+      <span class="tag">チェス神童</span>
+      <span class="tag">ゲーム開発者</span>
+      <span class="tag">神経科学PhD</span>
+      <span class="tag">DeepMind創業</span>
+      <span class="tag">AlphaGo</span>
+      <span class="tag">AlphaFold</span>
+      <span class="tag">ノーベル賞</span>
+      <span class="tag">AGI研究</span>
+      <span class="tag">オープンサイエンス</span>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div style="margin-top:64px; padding-top:24px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; text-align:center;">
+    Research conducted via Claude — 2026年4月6日
+  </div>
+
+</div>
+</body>
+</html>
