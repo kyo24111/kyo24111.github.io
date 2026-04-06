@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Paul Graham — 人物リサーチ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #ffffff;
+      --surface: #f5f5f5;
+      --surface2: #ebebeb;
+      --accent:  #111111;
+      --accent2: #555555;
+      --text:    #111111;
+      --muted:   #888888;
+      --border:  #e0e0e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    /* HERO */
+    .hero {
+      background: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 40px 48px;
+    }
+    .hero-inner { max-width: 860px; margin: 0 auto; }
+    .hero-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.15);
+    }
+    .hero-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hero-meta-item .label { font-size: 11px; color: rgba(255,255,255,.45); letter-spacing: 0.1em; text-transform: uppercase; }
+    .hero-meta-item .value { font-size: 14px; font-weight: 600; color: #fff; }
+
+    /* KPI STATS */
+    .kpi-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255,255,255,.15);
+    }
+    .kpi-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .kpi-item .kpi-label {
+      font-size: 10px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.4);
+    }
+    .kpi-item .kpi-val {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .kpi-item .kpi-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,.5);
+    }
+
+    /* LAYOUT */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 40px 80px; }
+
+    /* SUMMARY BOX */
+    .summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin: 40px 0;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .summary strong { color: var(--accent); font-weight: 700; }
+
+    /* SECTIONS */
+    section { margin-top: 48px; }
+    .section-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px; top: 8px; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -24px; top: 8px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .tl-year {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .tl-item p { font-size: 14px; line-height: 1.8; }
+
+    /* CARDS */
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 22px;
+    }
+    .card h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .card p, .card ul { font-size: 14px; line-height: 1.8; }
+    .card ul { padding-left: 18px; }
+    .card ul li { margin-bottom: 4px; }
+
+    /* FACT LIST */
+    .fact-list { list-style: none; }
+    .fact-list li {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      align-items: flex-start;
+    }
+    .fact-list li:last-child { border-bottom: none; }
+    .fact-list .key {
+      min-width: 130px;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 13px;
+      padding-top: 1px;
+    }
+    .fact-list .val { flex: 1; }
+
+    /* QUOTE */
+    .quote {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-style: italic;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .quote cite {
+      display: block;
+      margin-top: 8px;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* EPISODE */
+    .episode {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .episode h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .episode p { font-size: 14px; line-height: 1.8; }
+
+    /* TAG */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .tag {
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.7;
+    }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 600; width: 180px; }
+
+    /* LEGEND BADGE */
+    .legend-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-right: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    /* NET WORTH */
+    .networth {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      padding: 6px 20px;
+      border-radius: 8px;
+      margin-top: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    /* ESSAY CARD */
+    .essay-card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin-bottom: 14px;
+    }
+    .essay-card h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .essay-card p { font-size: 14px; line-height: 1.8; color: var(--accent2); }
+    .essay-card .essay-year {
+      font-size: 11px;
+      font-family: 'Poppins', sans-serif;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+      letter-spacing: 0.08em;
+    }
+
+    /* PORTFOLIO TABLE */
+    .portfolio-company {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 20px 32px; }
+      .container { padding: 0 20px 60px; }
+      .kpi-row { gap: 16px; }
+      .kpi-item .kpi-val { font-size: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">人物リサーチ — Tech Legend</div>
+    <h1>Paul Graham</h1>
+    <p style="color:rgba(255,255,255,.65); font-size:14px; max-width:580px; line-height:1.8;">
+      画家にして哲学者、Lispハッカーにしてスタートアップの神。Viaweb売却からY Combinatorまで、
+      シリコンバレーの"知の巨人"が残したものは企業群だけではない——数百万人が読むエッセイという知的遺産。
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">生年</span>
+        <span class="value">1964年</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">出身</span>
+        <span class="value">イングランド・ドーセット州ウェイマス</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">純資産（推定）</span>
+        <span class="value">$1〜2B（2026年）</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">主な肩書き</span>
+        <span class="value">YC共同創業者 / エッセイスト / Lisp実装者</span>
+      </div>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi-item">
+        <span class="kpi-label">YC設立</span>
+        <span class="kpi-val">2005年</span>
+        <span class="kpi-sub">世界最強のアクセラレーター</span>
+      </div>
+      <div class="kpi-item">
+        <span class="kpi-label">Viaweb 売却額</span>
+        <span class="kpi-val">$49M</span>
+        <span class="kpi-sub">Yahoo! へ 1998年</span>
+      </div>
+      <div class="kpi-item">
+        <span class="kpi-label">YCポートフォリオ累計評価額</span>
+        <span class="kpi-val">$1T+</span>
+        <span class="kpi-sub">4,000社超（2026年）</span>
+      </div>
+      <div class="kpi-item">
+        <span class="kpi-label">YCバッチ数（歴代）</span>
+        <span class="kpi-val">50+</span>
+        <span class="kpi-sub">年2回×10年以上</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <strong>一言で言うと？</strong><br>
+    イギリス生まれ、アメリカ育ちの"多面体人間"。コンピュータサイエンス博士号を取りながら、
+    フィレンツェで絵画を学び、Lispという最も難解な言語を愛し、
+    <strong>Y Combinator</strong>で<strong>Airbnb・Stripe・Dropbox・OpenAI</strong>といった時代を変えたスタートアップを生み出した。
+    しかしそれ以上に、彼の数百本に及ぶ<strong>エッセイ</strong>は世界中の起業家・エンジニア・思想家のバイブルとなっている。
+    「<strong>Make something people want.</strong>」——この一文が、現代のスタートアップ文化を定義した。
+  </div>
+
+  <!-- 生い立ち・学歴 -->
+  <section>
+    <div class="section-label">Origin</div>
+    <h2>生い立ち・学歴</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">1964年</div>
+        <p>イングランド・ドーセット州ウェイマスに生まれる。幼少期にアメリカへ移住し、ペンシルベニア州ピッツバーグ近郊で育つ。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1980年代前半 — Cornell University</div>
+        <p>ニューヨーク州イサカのコーネル大学に進学し、哲学を副専攻としながらコンピュータサイエンスを専攻。この頃にLispと運命的な出会いをする。「Lispは、それを理解した瞬間に、他のすべての言語が劣って見える」という感覚を覚えたと後に語る。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1988〜1990年 — Harvard PhD</div>
+        <p>ハーバード大学大学院でコンピュータサイエンスの博士号を取得。研究テーマはオブジェクト指向言語の実装。指導教官はAIの大家・Gerald Jay Sussman。並行して、突然「絵を学びたい」という衝動に駆られる。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1990〜1993年 — RISD / フィレンツェ</div>
+        <p>ロードアイランド・スクール・オブ・デザイン（RISD）に入学し、絵画を学ぶ。さらにイタリア・フィレンツェのアカデミア美術館付属のスクールにも留学。ルネサンス絵画を実地で学んだ。この「絵を学んだ経験」が後のエッセイ哲学——<strong>趣味・センス・クラフトマンシップ</strong>への強いこだわり——に深く刻まれることになる。</p>
+      </div>
+    </div>
+
+    <div class="quote">
+      「I did end up learning to paint. And in the process, I learned to understand things about programming that I hadn't before.」
+      <cite>— Paul Graham, "Hackers and Painters" (2003)</cite>
+    </div>
+  </section>
+
+  <!-- Viaweb -->
+  <section>
+    <div class="section-label">First Venture</div>
+    <h2>Viaweb創業・売却ストーリー</h2>
+
+    <div class="episode">
+      <h3>世界初のウェブアプリ（1995年）</h3>
+      <p>
+        フィレンツェから帰国後、PGはRobert Morris（通称rtm、コーネル時代の盟友）と共に
+        <strong>Viaweb</strong>を1995年に設立。ウェブブラウザ上で動くEコマース構築ツールで、
+        今でいう「SaaS」の走りだった。当時はほとんどのソフトウェアがCD-ROMで配布される時代。
+        「サーバーサイドでアプリが動く」というコンセプト自体が革命的だった。
+      </p>
+    </div>
+
+    <div class="episode">
+      <h3>Lispという秘密兵器</h3>
+      <p>
+        Viawebのバックエンドはほぼ全てLispで書かれていた。競合他社はC++やPerlを使う中、
+        Lispのマクロシステムにより開発速度が段違いに速かった。PGはこれを後のエッセイ
+        「<strong>Beating the Averages</strong>」で詳述。「競合より早く動けたのはLispのおかげ」と断言した。
+        この経験が「プログラミング言語の選択は競争優位になりうる」という持論の原点となった。
+      </p>
+    </div>
+
+    <div class="episode">
+      <h3>Yahoo!への売却（1998年）</h3>
+      <p>
+        1998年、Yahoo!がViawebを<strong>$49M相当の株式</strong>で買収。
+        ViawebはYahoo! Storeとして再ブランディングされ、数年にわたりYahoo!の重要な収益源となった。
+        PGはこの売却で初めて財政的自由を得る。売却後も一時期Yahoo!に在籍したが、
+        大企業の官僚主義的文化に強い違和感を覚え、数年で退社した。
+      </p>
+    </div>
+
+    <ul class="fact-list">
+      <li><span class="key">設立年</span><span class="val">1995年</span></li>
+      <li><span class="key">共同創業者</span><span class="val">Robert Morris（rtm）、Trevor Blackwell</span></li>
+      <li><span class="key">プロダクト</span><span class="val">ウェブベースのEコマースストア構築ツール（世界初級）</span></li>
+      <li><span class="key">技術スタック</span><span class="val">Lisp（Common Lisp）中心</span></li>
+      <li><span class="key">売却先・金額</span><span class="val">Yahoo! へ $49M（株式）、1998年</span></li>
+      <li><span class="key">売却後</span><span class="val">Yahoo! Store として継続。PGはYahoo!に短期在籍後退社</span></li>
+    </ul>
+  </section>
+
+  <!-- Y Combinator -->
+  <section>
+    <div class="section-label">The Revolution</div>
+    <h2>Y Combinator設立と革命</h2>
+
+    <p style="font-size:14px; line-height:1.9; margin-bottom:24px;">
+      2005年、PGはYahoo!を離れた後、妻のJessica Livingston、Robert Morris、Trevor Blackwellと共に
+      <strong>Y Combinator（YC）</strong>を設立した。当時の常識では「スタートアップ支援＝VCから数百万ドルの大型調達」が当たり前だったが、
+      YCはまったく異なるモデルを提案した——<strong>少額（数万ドル）を多数のチームに一括提供し、3ヶ月で急速に鍛える</strong>というバッチ制度だ。
+    </p>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>バッチ制度</h3>
+        <p>
+          年2回（夏・冬）、数十〜百超のスタートアップを一括採択。
+          シードマネー（当初は$6,000〜、現在は$500,000）と引き換えに7%の株式を取得。
+          週次のオフィスアワーと著名ゲストの講演で短期集中育成。
+        </p>
+      </div>
+      <div class="card">
+        <h3>Demo Day</h3>
+        <p>
+          バッチ終了時に開催される投資家向けピッチイベント。
+          シリコンバレー中のVCが集まり、数分のプレゼンで数億円の投資が決まることも。
+          Demo Dayは今やスタートアップ界最大の登竜門のひとつ。
+        </p>
+      </div>
+      <div class="card">
+        <h3>YC効果（YC Halo）</h3>
+        <p>
+          YCに採択された時点で「優秀なチームのお墨付き」とみなされ、
+          後続ラウンドの資金調達が格段に容易になる。
+          卒業生同士のネットワークも強力な競争優位となる。
+        </p>
+      </div>
+      <div class="card">
+        <h3>Hacker News</h3>
+        <p>
+          YCが運営するテック・スタートアップ向けニュースアグリゲーター。
+          PGが設計・開発。「フォーカスを失った話題はHNに合わない」という厳格な文化が特徴。
+          月間数百万PVを誇り、エンジニア・創業者の情報収集源として定番。
+        </p>
+      </div>
+    </div>
+
+    <div class="quote">
+      「The best thing we can do for founders is tell them the truth.」
+      <cite>— Paul Graham</cite>
+    </div>
+  </section>
+
+  <!-- YCポートフォリオ -->
+  <section>
+    <div class="section-label">Portfolio</div>
+    <h2>YC代表的ポートフォリオ</h2>
+
+    <p style="font-size:14px; line-height:1.9; margin-bottom:20px;">
+      YCが投資した企業は4,000社超。合計評価額は<strong>$1T（1兆ドル）以上</strong>とも言われ、
+      単一のアクセラレーターとして史上最大のリターンを誇る。以下はその象徴的企業群。
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>企業名</th>
+          <th>バッチ</th>
+          <th>概要・インパクト</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="portfolio-company">Airbnb</span></td>
+          <td>W2009</td>
+          <td>民泊プラットフォーム。YC採択時はシリアルボックスで資金を繋いでいた伝説的チーム。評価額$75B超。</td>
+        </tr>
+        <tr>
+          <td><span class="portfolio-company">Stripe</span></td>
+          <td>S2010</td>
+          <td>Patrick・John Collison兄弟が創業したオンライン決済インフラ。評価額$65B。世界の決済を変えた。</td>
+        </tr>
+        <tr>
+          <td><span class="portfolio-company">Dropbox</span></td>
+          <td>S2007</td>
+          <td>クラウドストレージの先駆け。Drew Houstonが創業。ナスダック上場。</td>
+        </tr>
+        <tr>
+          <td><span class="portfolio-company">Coinbase</span></td>
+          <td>S2012</td>
+          <td>米最大手の暗号資産取引所。ナスダック上場。評価額は最大$85B超に達した。</td>
+        </tr>
+        <tr>
+          <td><span class="portfolio-company">Reddit</span></td>
+          <td>S2005</td>
+          <td>YC第1期バッチ。ソーシャルニュースの巨人。NYSE上場。</td>
+        </tr>
+        <tr>
+          <td><span class="portfolio-company">DoorDash</span></td>
+          <td>S2013</td>
+          <td>フードデリバリー最大手（米）。NYSE上場。評価額$20B超。</td>
+        </tr>
+        <tr>
+          <td><span class="portfolio-company">Instacart</span></td>
+          <td>S2012</td>
+          <td>食料品デリバリー。ナスダック上場。</td>
+        </tr>
+        <tr>
+          <td><span class="portfolio-company">OpenAI</span></td>
+          <td>（関連）</td>
+          <td>Sam AltmanがYC President時代にOpenAI設立を支援。PGとAltmanの関係が人類最大のAI企業誕生に繋がった。</td>
+        </tr>
+        <tr>
+          <td><span class="portfolio-company">Brex</span></td>
+          <td>W2017</td>
+          <td>スタートアップ向け法人カード。評価額$12B超。</td>
+        </tr>
+        <tr>
+          <td><span class="portfolio-company">Twitch</span></td>
+          <td>S2007</td>
+          <td>ゲーム配信プラットフォーム。Amazonが$970Mで買収。</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- エッセイ -->
+  <section>
+    <div class="section-label">Written Legacy</div>
+    <h2>エッセイという遺産</h2>
+
+    <p style="font-size:14px; line-height:1.9; margin-bottom:24px;">
+      Paul Grahamのエッセイは、プログラミング・スタートアップ・哲学・社会批評にまたがる500本以上の文章群だ。
+      一般的な「起業家ブログ」とは次元が違う——文体は明晰、論理は鋭利、洞察は普遍的。
+      世界中のCEOやエンジニアが「人生が変わった」と語る文章が複数存在する。
+    </p>
+
+    <div class="essay-card">
+      <div class="essay-year">2013</div>
+      <h3>Do Things that Don't Scale</h3>
+      <p>
+        スタートアップ初期にスケールを考えるな——という逆説的助言。
+        Airbnbが初期に創業者自ら顧客の写真を撮りに行ったエピソードを例に、
+        「手作業でも何でもして、まず最初のユーザーを熱狂させよ」と説く。
+        現在もYCの公式必読リストの筆頭。
+      </p>
+    </div>
+
+    <div class="essay-card">
+      <div class="essay-year">2005</div>
+      <h3>How to Get Startup Ideas</h3>
+      <p>
+        「アイデアを探すな。自分が持っている問題を解け」というシンプルだが深い主張。
+        最良のスタートアップアイデアは、創業者自身が切実に感じていた問題から生まれるという洞察は、
+        今でも起業家コミュニティで繰り返し引用される。
+      </p>
+    </div>
+
+    <div class="essay-card">
+      <div class="essay-year">2003</div>
+      <h3>Beating the Averages</h3>
+      <p>
+        Viaweb時代のLispの優位性を語る名エッセイ。
+        「プログラミング言語の選択が競争優位になりうる」という主張で、技術の選択を戦略的に考えるエンジニアに衝撃を与えた。
+        「Blub paradox（自分が知らない上位言語の価値は理解できない）」という概念を生んだ。
+      </p>
+    </div>
+
+    <div class="essay-card">
+      <div class="essay-year">2004</div>
+      <h3>What You Can't Say</h3>
+      <p>
+        社会的タブーや「今は言えないこと」を論じた哲学的エッセイ。
+        「ある時代の常識が次の世代には偏見とみなされる」という歴史的反省から、
+        現在の通説を疑う知的習慣を説く。単なる起業論を超えた普遍的な思考法の教科書。
+      </p>
+    </div>
+
+    <div class="essay-card">
+      <div class="essay-year">2004</div>
+      <h3>Hackers and Painters</h3>
+      <p>
+        プログラマーと画家を同じ「作るひと（maker）」として論じたエッセイ、後に同名の書籍に。
+        「プログラミングは科学ではなく芸術だ」という視点がシリコンバレーのカルチャーに深く刻まれた。
+        PGの哲学的世界観の集大成。
+      </p>
+    </div>
+
+    <div class="essay-card">
+      <div class="essay-year">2016</div>
+      <h3>Life is Short</h3>
+      <p>
+        子供が生まれたことをきっかけに書いた人生論。
+        「人生は短い。だからこそ、くだらないことに時間を使うな。何をくだらないと感じるかを意識しろ」という直接的なメッセージ。
+        技術や起業から離れた、人間としてのPGの側面が垣間見える。
+      </p>
+    </div>
+
+    <div class="tags">
+      <span class="tag">スタートアップ論</span>
+      <span class="tag">プログラミング哲学</span>
+      <span class="tag">社会批評</span>
+      <span class="tag">知性論</span>
+      <span class="tag">人生論</span>
+      <span class="tag">都市と野心</span>
+    </div>
+  </section>
+
+  <!-- Hacker News -->
+  <section>
+    <div class="section-label">Community</div>
+    <h2>Hacker News</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>概要</h3>
+        <p>
+          2007年にYCが運営を開始したテック・スタートアップ向けニュースアグリゲーター兼掲示板。
+          PGが設計・開発し、Arcで書かれた。
+          Redditに似た投票システムを持つが、テックとスタートアップに特化した厳格なモデレーション文化が特徴。
+        </p>
+      </div>
+      <div class="card">
+        <h3>文化・ルール</h3>
+        <p>
+          「知的好奇心を満たすコンテンツのみ歓迎」という思想の下、
+          センセーショナルな見出し・政治的対立・品位を欠くコメントは排除される。
+          創業初期のスタートアップが製品を「Show HN」として公開する伝統があり、
+          ここで話題になることが最初のユーザー獲得に繋がるケースも多い。
+        </p>
+      </div>
+      <div class="card">
+        <h3>影響力</h3>
+        <p>
+          月間数百万PV。Googleで働くシニアエンジニアから学生起業家まで幅広い層が利用。
+          HNのトップページに載ることは「テックコミュニティのお墨付き」を意味し、
+          サービスやエッセイの拡散に大きく貢献する。
+        </p>
+      </div>
+      <div class="card">
+        <h3>技術的特徴</h3>
+        <p>
+          PGが設計したArc言語（Common Lispの方言）で実装されている。
+          「シンプルさ」を最優先したデザインは2007年当時からほとんど変わっておらず、
+          過剰なUIを嫌うエンジニア文化を体現している。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- プログラミング哲学 / Lisp愛 -->
+  <section>
+    <div class="section-label">Philosophy &amp; Tech</div>
+    <h2>プログラミング哲学 — Lisp愛とArc</h2>
+
+    <p style="font-size:14px; line-height:1.9; margin-bottom:24px;">
+      PGはプログラミング言語の中でも特にLispへの愛着が強い。コーネル時代に出会ったLispが、
+      その後の思考様式を根底から変えたと語っている。
+    </p>
+
+    <div class="episode">
+      <h3>On Lisp（1993年）</h3>
+      <p>
+        PGがYahoo!在籍中に書き上げたLispの教科書。マクロプログラミングの極意を解説した専門書で、
+        今でもLispコミュニティの必読書として扱われる。Web上で無料公開されており、
+        毎年新しい世代のハッカーが発見し続けている。
+      </p>
+    </div>
+
+    <div class="episode">
+      <h3>ANSI Common Lisp（1995年）</h3>
+      <p>
+        Common Lispの入門書として書かれた著書。Viaweb設立直前に刊行。
+        「なぜLispを学ぶべきか」という問いに、
+        「それはあなたのプログラマーとしての能力の天井を引き上げるから」と答えている。
+      </p>
+    </div>
+
+    <div class="episode">
+      <h3>Arc言語</h3>
+      <p>
+        Common Lispを簡潔にしたPGの自作プログラミング言語。
+        Hacker NewsのバックエンドはArcで書かれている。
+        「言語の本質はそのコアの簡潔さにある」という信念を体現した実験的プロジェクト。
+        広く普及はしなかったが、「プログラミング言語デザインとは何か」を問い続けた知的格闘の記録として評価される。
+      </p>
+    </div>
+
+    <div class="quote">
+      「A language that doesn't affect the way you think about programming is not worth knowing.」
+      <cite>— Alan Perlis（PGが最も愛用する引用のひとつ）</cite>
+    </div>
+
+    <ul class="fact-list">
+      <li><span class="key">愛用言語</span><span class="val">Common Lisp / Arc</span></li>
+      <li><span class="key">著書①</span><span class="val">On Lisp（1993）— マクロプログラミングの決定版</span></li>
+      <li><span class="key">著書②</span><span class="val">ANSI Common Lisp（1995）— 入門から上級まで</span></li>
+      <li><span class="key">著書③</span><span class="val">Hackers and Painters（2004）— エッセイ集。ベストセラー</span></li>
+      <li><span class="key">設計言語</span><span class="val">Arc — Common Lispの方言。HNの実装に使用</span></li>
+    </ul>
+  </section>
+
+  <!-- 家族 -->
+  <section>
+    <div class="section-label">Family</div>
+    <h2>家族 — Jessica Livingston</h2>
+
+    <div class="summary">
+      <strong>Jessica Livingston</strong>——YCの共同創業者にして、PGのパートナー。
+      彼女なくしてY Combinatorは存在しなかった、という評価が業界内では一般的だ。
+    </div>
+
+    <div class="episode">
+      <h3>出会いとYC共同創業</h3>
+      <p>
+        JessicaはマーケティングのバックグラウンドでIDG（テック系メディア）に在籍していた。
+        PGと出会い、2005年にYCを共同設立。PGが技術・思想面を担う一方、
+        Jessicaは初期の運営・創業者との関係構築・YCカルチャーの醸成を担った。
+        「YCが創業者に対して人間的に接することができるのはJessicaのおかげ」という声は多い。
+      </p>
+    </div>
+
+    <div class="episode">
+      <h3>Founders at Work（2007年）</h3>
+      <p>
+        Jessicaがインタビューした著書。Maxとの出会いとApple、Hotmailなど
+        著名スタートアップ創業者たちの「創業初期の苦悩と決断」を記録した一冊。
+        Y Combinator誕生前夜のシリコンバレーの空気を伝える歴史的資料でもある。
+      </p>
+    </div>
+
+    <ul class="fact-list">
+      <li><span class="key">配偶者</span><span class="val">Jessica Livingston（YC共同創業者）</span></li>
+      <li><span class="key">Jessicaの著書</span><span class="val">Founders at Work（2007）</span></li>
+      <li><span class="key">子供</span><span class="val">2人の息子</span></li>
+      <li><span class="key">現在の拠点</span><span class="val">イギリス（家族でアメリカからイギリスへ移住）</span></li>
+    </ul>
+  </section>
+
+  <!-- 名言集 -->
+  <section>
+    <div class="section-label">Quotes</div>
+    <h2>名言集</h2>
+
+    <div class="quote">
+      「Make something people want.」
+      <cite>— YCのモットー。PGが最も繰り返す言葉。</cite>
+    </div>
+
+    <div class="quote">
+      「The best startup ideas seem at first like bad ideas.」
+      <cite>— How to Get Startup Ideas</cite>
+    </div>
+
+    <div class="quote">
+      「Live in the future, then build what's missing.」
+      <cite>— How to Get Startup Ideas</cite>
+    </div>
+
+    <div class="quote">
+      「It's hard to do a really good job on anything you don't think about in the shower.」
+      <cite>— Paul Graham Essays</cite>
+    </div>
+
+    <div class="quote">
+      「Nerds are unpopular because they're distracted. They're distracted by something more important — thinking.」
+      <cite>— Why Nerds Are Unpopular (2003)</cite>
+    </div>
+
+    <div class="quote">
+      「Startups don't die when they run out of money. They die when founders give up.」
+      <cite>— Paul Graham</cite>
+    </div>
+
+    <div class="quote">
+      「You can't wait for inspiration. You have to go after it with a club.」
+      <cite>— Jack London（PGが頻繁に引用する言葉）</cite>
+    </div>
+
+    <div class="quote">
+      「The test of whether someone has 'it' is whether they can work across uncertainty and ambiguity.」
+      <cite>— Paul Graham on founders</cite>
+    </div>
+  </section>
+
+  <!-- なぜLegendか -->
+  <section>
+    <div class="section-label">Why Legend</div>
+    <h2>なぜLegendか</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>スタートアップ文化の創造者</h3>
+        <p>
+          YCが定義した「シード投資＋短期集中育成＋Demo Day」というモデルは、
+          今や世界中のアクセラレーターの標準になった。
+          PGはスタートアップという概念そのものを大衆化した人物のひとりだ。
+        </p>
+      </div>
+      <div class="card">
+        <h3>知の遺産としてのエッセイ</h3>
+        <p>
+          単なる投資家・起業家を超えた「思想家」としての側面が、PGを唯一無二にしている。
+          Paul Grahamのエッセイを読まずにシリコンバレーを理解するのは難しい、
+          とさえ言われるほど、そのテキストは現代テック文化に刻まれている。
+        </p>
+      </div>
+      <div class="card">
+        <h3>Airbnb・Stripeを信じた眼力</h3>
+        <p>
+          「エアベッド貸し出しビジネス」に最初に投資したのはYCだった。
+          ほぼ全てのVCが断ったStripeも、YCが初期に採択した。
+          「他の全員が見逃したものを見抜く」眼力は、PGの本質的な才能のひとつ。
+        </p>
+      </div>
+      <div class="card">
+        <h3>多面性</h3>
+        <p>
+          博士号を持つコンピュータ科学者であり、フィレンツェで絵を学んだ画家であり、
+          Lisp本を書いた著者であり、スタートアップ投資家であり、エッセイストである。
+          これだけの多面性を持ちながら、いずれの分野でも第一人者レベルに達した人物は極めて稀だ。
+        </p>
+      </div>
+      <div class="card">
+        <h3>Sam Altmanとの連鎖</h3>
+        <p>
+          PGがYC Presidentとして指名したSam Altmanは、後にOpenAIを率いてAI革命の中心人物となった。
+          PGの人材眼が現代AIの行方にまで連鎖している——という意味で、彼の影響力は今も続いている。
+        </p>
+      </div>
+      <div class="card">
+        <h3>反権威・反形式主義</h3>
+        <p>
+          「大企業は嫌いだ」「偽物の権威には従うな」という姿勢は一貫している。
+          YCが最初期に無名の若者だけに賭けたのも、PGの「若さと知性こそが本物だ」という確信の反映だった。
+          ハッカー文化の本質的な精神を体現したリーダーシップ。
+        </p>
+      </div>
+    </div>
+
+    <div class="quote" style="margin-top:32px;">
+      「Paul Graham did more to systematically improve the quality of startups in Silicon Valley than anyone else.」
+      <cite>— Reid Hoffman（LinkedIn創業者）</cite>
+    </div>
+  </section>
+
+  <!-- フッター -->
+  <section style="margin-top:48px; padding-top:24px; border-top:1px solid var(--border);">
+    <p style="font-size:12px; color:var(--muted); line-height:1.8;">
+      作成日: 2026年4月6日 / 人物リサーチシリーズ — Tech Legend /
+      参照: paulgraham.com, YC公式、各種インタビュー・著書
+    </p>
+  </section>
+
+</div>
+</body>
+</html>

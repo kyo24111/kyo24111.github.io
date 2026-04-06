@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commonwealth Fusion Systems — 核融合スタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">核融合</span>
+    <span class="badge badge-white">HTS磁石・トカマク</span>
+    <span class="badge badge-solid">MIT Spinout</span>
+  </div>
+  <h1>Commonwealth Fusion Systems</h1>
+  <p class="hero-sub">
+    「世界最強の超伝導磁石でトカマクを再定義する」——<br>
+    MITプラズマ科学核融合センター発のスピンアウト。高温超伝導（HTS）REBCOテープを用いた20テスラ超の磁石でコンパクトトカマクSPARCを建設中。商用炉ARCで2030年代の電力網接続を目指す、核融合業界最大の民間プレイヤー。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$3B+</div><div class="lbl">累計調達額</div></div>
+    <div class="kpi"><div class="val">2018</div><div class="lbl">設立年</div></div>
+    <div class="kpi"><div class="val">Devens, MA</div><div class="lbl">本社・建設地</div></div>
+    <div class="kpi"><div class="val">~1,000名</div><div class="lbl">従業員数</div></div>
+    <div class="kpi"><div class="val">20T</div><div class="lbl">2021年HTS磁石達成（世界記録）</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">HTS磁石技術の本質</a></li>
+    <li><a href="#why-hts">なぜHTS磁石が革命的か</a></li>
+    <li><a href="#roadmap">開発ロードマップ SPARC→ARC</a></li>
+    <li><a href="#funding">資金調達・投資家</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#team">経営陣</a></li>
+    <li><a href="#risks">リスクと課題</a></li>
+    <li><a href="#why-now">なぜ今注目すべきか</a></li>
+  </ol>
+</div>
+
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Commonwealth Fusion Systems (CFS)</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2018年</div></div>
+    <div class="kv-item"><div class="k">本社・施設</div><div class="v">Devens, Massachusetts</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">Bob Mumgaard（共同創業者）</div></div>
+    <div class="kv-item"><div class="k">技術的起源</div><div class="v">MIT プラズマ科学核融合センター（PSFC）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約1,000名</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">約$3B+（2025年8月時点）</div></div>
+    <div class="kv-item"><div class="k">商用炉建設予定地</div><div class="v">Virginia（ARC）</div></div>
+  </div>
+
+  <p>Commonwealth Fusion Systems（CFS）は、マサチューセッツ工科大学（MIT）のプラズマ科学核融合センター（PSFC）から2018年にスピンアウトした核融合スタートアップである。創業者のBob Mumgaard CEOをはじめとするチームは、MITで20年以上にわたって蓄積されたトカマク型核融合の研究知見を民間レベルで実用化することを目的として会社を設立した。</p>
+
+  <p>CFSが選んだ技術戦略の核心は「<strong>高温超伝導（HTS）磁石によるコンパクトトカマク</strong>」だ。REBCOテープを用いた新世代のHTS磁石は、従来の低温超伝導磁石の2倍以上の磁場強度を実現でき、これによってトカマクを大幅に小型化しながら出力を維持することが可能になる。2021年9月には<strong>20テスラの世界最強超伝導磁石</strong>を実証し、この技術的マイルストーンが大規模な投資を呼び込む契機となった。</p>
+
+  <p>現在はデモンストレーション炉「<strong>SPARC</strong>」をDevensで建設中であり、純エネルギー利得（Q>1）の達成を目標としている。その後、商用発電所「<strong>ARC</strong>（~200MW出力）」をVirginia州に建設する計画で、2030年代の電力網接続を目指す。</p>
+
+  <div class="callout">
+    <strong>産業的文脈：</strong>世界全体で核融合スタートアップへの投資は過去10年で急増しており、Fusion Industry Association（FIA）の2024年報告では民間核融合企業全体で約70億ドルが調達されている。CFSはその中で単独で最大規模の調達額を誇り、業界をリードするポジションを確立している。
+  </div>
+</div>
+
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">2</span> Technology</div>
+  <h2>HTS磁石技術の本質 — REBCOテープとトカマク</h2>
+
+  <h3>トカマク型核融合の基本原理</h3>
+  <p>トカマク（Tokamak）とは、旧ソ連で開発されたドーナツ型（トーラス形状）のプラズマ閉じ込め装置だ。外部のトロイダルコイルと、プラズマ内部を流れる誘導電流が生み出すポロイダル磁場を組み合わせることで、1億度以上のプラズマをドーナツの中に閉じ込める。核融合反応は重水素（D）と三重水素（T）を用いるD-T反応が主流であり、反応によって生じるエネルギーで電力を生成する。</p>
+
+  <p>トカマクの核融合出力はプラズマ密度・温度・閉じ込め時間の積（トリプルプロダクト）に依存し、その改善には<strong>強磁場</strong>が最も効果的な手段の一つだ。磁場強度Bが上昇すると、プラズマ圧力はB²に比例して増大するため、装置を小型化しながらも十分な核融合出力を得られるようになる。</p>
+
+  <h3>HTS（高温超伝導）磁石とREBCOテープ</h3>
+  <p>従来の核融合装置（ITERを含む）が使用するニオブ-チタン（NbTi）やニオブ-スズ（Nb₃Sn）は「低温超伝導（LTS）」材料であり、4Kという極低温に冷却する必要があった。CFSが採用するのは<strong>REBCO（REBa₂Cu₃O₇、REはイットリウム等の希土類元素）</strong>テープと呼ばれるHTS材料で、液体窒素温度（77K）付近でも超伝導状態を保てる。</p>
+
+  <p>REBCOテープの最大の優位性は<strong>高い臨界電流密度</strong>にある。強磁場環境下でもLTS材料より高い電流密度を維持できるため、コイルの断面積を削減しながら大電流・強磁場を実現できる。CFSはこのREBCOテープをケーブル・イン・コンジット（CICC）構造で配置した独自のHTS磁石「<strong>VIPER</strong>」コイルシステムを開発した。</p>
+
+  <h3>2021年9月：世界最強磁石の実証</h3>
+  <p>2021年9月5日、CFSとMIT PSFCの共同チームは<strong>20テスラの超伝導磁石</strong>の実証に世界で初めて成功した。この磁石はトカマク型核融合装置に使用可能な単一コイルとして史上最強であり、ITERが採用するNb₃Sn磁石の約2倍の磁場強度を持つ。MITのチームは「これは技術的なゲームチェンジャーだ」と発表し、核融合業界全体に衝撃を与えた。</p>
+
+  <div class="callout">
+    <strong>20テスラが意味すること：</strong>磁場を2倍にすると、同じプラズマ圧力を維持するのに必要な装置の体積は16分の1（体積∝B⁻⁴）になる計算となる。これはITERサイズの巨大施設に代わり、工場で製造・輸送可能な小型装置でのネット発電が可能になることを意味する。
+  </div>
+
+  <h3>SPARCトカマク — コンパクト設計の哲学</h3>
+  <p>SPARC（Smallest Practical Approach to a burning plasma Research and Commercialization）は、CFSが建設中のデモンストレーション炉だ。主要半径2.25m、磁場強度12.2テスラ（プラズマ中心）というコンパクト設計でありながら、目標とする核融合利得はQ>2（投入エネルギーの2倍以上を核融合で生成）とされている。ITERが主半径6.2mで目標Q=10と比較すると、装置スケールの差は明白だ。</p>
+
+  <p>SPARCの設計はNature Physicsに2020年に論文として発表されており、査読プロセスを経た科学的裏付けが存在する。これは多くの核融合スタートアップが独自の「秘密技術」を開示しない中、CFSの透明性を示す重要な特徴でもある。</p>
+</div>
+
+
+<!-- ===================== 3. WHY HTS MATTERS ===================== -->
+<div class="sec" id="why-hts">
+  <div class="sec-label"><span class="num">3</span> Why HTS Magnets Matter</div>
+  <h2>なぜHTS磁石が革命的か — 20テスラ達成の意味</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">装置のコンパクト化 → コスト激減</div>
+        <div class="ind-desc">核融合出力は磁場強度のほぼ4乗に比例する。磁場を2倍にすれば理論上、同等出力を得るために必要な装置体積は1/16になる。ITERの建設費は2兆円超とされるが、CFSはSPARCをその数十分の一のコストで建設できると主張する。コンパクト化は核融合の最大の経済的ハードルを突破するカギだ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">建設スピードの加速</div>
+        <div class="ind-desc">ITERのような巨大施設は設計から建設完了まで数十年を要するが、コンパクトなSPARCはより短期間での建設が可能だ。核融合業界では「build small, iterate fast」というアプローチが新たなパラダイムとなっており、CFSはそのパイオニアとして位置づけられる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">工場生産・モジュール化の可能性</div>
+        <div class="ind-desc">商用炉ARCが十分に小さければ、現地での巨大建設工事ではなく工場での標準化製造と現地組み立てが可能になる。これは航空機エンジンや原子力潜水艦の動力炉に近い製造モデルであり、コスト曲線を劇的に改善する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">既存トカマクデータベースの活用</div>
+        <div class="ind-desc">トカマクは60年以上の研究歴史を持ち、プラズマ物理の知見が最も蓄積された磁場閉じ込め方式だ。CFSはこの膨大なデータベースを活用できるため、FRC（Helion）やレーザー核融合（NIF）など実績の少ないアプローチに比べ、物理リスクが相対的に低い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">MIT PSFCとの継続的連携</div>
+        <div class="ind-desc">スピンアウト後もCFSはMITと密接な共同研究体制を維持している。学術機関との連携は優秀な人材の獲得と最先端の基礎研究へのアクセスを確保し、純粋民間企業として研究開発を進める競合との差別化要因となる。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>The SPARC device is designed to be the first fusion experiment to achieve net energy gain, and to do so in a way that can be rapidly iterated toward a commercial power plant.</p>
+    <div class="attr">— Bob Mumgaard, CEO, Commonwealth Fusion Systems</div>
+  </div>
+</div>
+
+
+<!-- ===================== 4. ROADMAP ===================== -->
+<div class="sec" id="roadmap">
+  <div class="sec-label"><span class="num">4</span> Development Roadmap</div>
+  <h2>開発ロードマップ — SPARC → ARC</h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2018</span>
+          <span class="tl-title">CFS 創業</span>
+        </div>
+        <div class="tl-body">MIT PSFCからスピンアウト。Bob Mumgaard CEO率いるチームがコンパクトHTSトカマクのビジョンを掲げ創業。Breakthrough Energy VenturesよりシリーズA $50Mを調達。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2020</span>
+          <span class="tl-title">SPARC設計論文 — Nature Physicsに掲載</span>
+        </div>
+        <div class="tl-body">SPARCの物理設計が<b>Nature Physics</b>に査読付き論文として掲載。コンパクトトカマクによるQ>2達成の科学的根拠を公開。$84Mのシリーズ追加調達も実施。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2021年9月</span>
+          <span class="tl-title">HTS磁石 20テスラ達成 — 世界記録</span>
+        </div>
+        <div class="tl-body">VIPERコイル技術を用いた<b>20テスラ超伝導磁石</b>の実証に世界初で成功。核融合業界最大の技術マイルストーンの一つとして世界的に報道される。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2021年</span>
+          <span class="tl-title">シリーズB $1.8B調達</span>
+        </div>
+        <div class="tl-body">磁石実証の成功を受け、業界最大規模のシリーズB $1.8Bを調達。Google、Khosla Ventures、Breakthrough Energy Ventures、Tiger Globalら参加。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2022〜2023</span>
+          <span class="tl-title">Devens施設取得・SPARC建設開始</span>
+        </div>
+        <div class="tl-body">Massachusetts州Devensに大規模研究・製造施設を取得。SPARCの建設開始。HTS磁石の量産体制確立に向けた製造プロセス開発を並行推進。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年8月</span>
+          <span class="tl-title">シリーズB2 $863M追加調達</span>
+        </div>
+        <div class="tl-body">Nvidia、Google、Bill Gates（Breakthrough Energy）、Khosla Ventures、Tiger Globalから追加$863Mを調達。累計調達額が$3Bを超える。AI企業の核融合への戦略的投資として注目を集める。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2025年中（目標）</span>
+          <span class="tl-title">SPARC ファーストプラズマ</span>
+        </div>
+        <div class="tl-body">Devensで建設中のSPARCで初めてプラズマを生成する「ファーストプラズマ」を目指す。これはQ>1デモへの最初のステップ。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2020年代後半（目標）</span>
+          <span class="tl-title">SPARC ネットエネルギー実証（Q>1）</span>
+        </div>
+        <div class="tl-body">SPARCで核融合ネットエネルギー（投入エネルギーを上回る核融合エネルギー）の実証を目指す。科学的証明として業界・投資家・規制当局への信頼性を確立する。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2030年代（目標）</span>
+          <span class="tl-title">ARC 商用発電所 — 電力網接続</span>
+        </div>
+        <div class="tl-body">Virginia州に建設予定の商用発電所ARC（Affordable, Robust, Compact）で約<b>200MW</b>の電力を電力網に供給する。ARC 1基で約20万世帯分の電力をカバーできる規模。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>SPARCとARCの比較</h3>
+  <table class="t">
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>SPARC（実証炉）</th>
+        <th>ARC（商用炉）</th>
+        <th>ITER（参考）</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>主要半径</td>
+        <td>2.25 m</td>
+        <td>~4 m（推定）</td>
+        <td>6.2 m</td>
+      </tr>
+      <tr>
+        <td>磁場強度</td>
+        <td>12.2 T</td>
+        <td>~12 T</td>
+        <td>5.3 T</td>
+      </tr>
+      <tr>
+        <td>目標Q値</td>
+        <td>Q > 2</td>
+        <td>商用発電（Q >> 1）</td>
+        <td>Q = 10</td>
+      </tr>
+      <tr>
+        <td>電力出力</td>
+        <td>発電なし（実証のみ）</td>
+        <td>~200 MWe</td>
+        <td>発電なし（実験炉）</td>
+      </tr>
+      <tr>
+        <td>建設地</td>
+        <td>Devens, Massachusetts</td>
+        <td>Virginia（予定）</td>
+        <td>Cadarache, France</td>
+      </tr>
+      <tr>
+        <td>磁石技術</td>
+        <td>HTS REBCO（VIPER）</td>
+        <td>HTS REBCO</td>
+        <td>LTS Nb₃Sn</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">5</span> Funding & Investors</div>
+  <h2>資金調達・投資家</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <div class="r-badge">Series B2</div>
+      <div class="f-amount">$863M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年8月</div>
+        <div class="f-desc">Nvidia、Google、Bill Gates（Breakthrough Energy）、Khosla Ventures、Tiger Global参加。AI業界の核融合への戦略的投資として広く報道。累計調達額が$3Bを突破。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series B</div>
+      <div class="f-amount">$1.8B</div>
+      <div class="f-detail">
+        <div class="f-date">2021年</div>
+        <div class="f-desc">20テスラ磁石達成直後に実施。Google、Khosla Ventures、Tiger Global、Eni（伊エネルギー大手）、Salesforce等が参加。当時の核融合スタートアップ史上最大調達。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series A追加</div>
+      <div class="f-amount">$84M</div>
+      <div class="f-detail">
+        <div class="f-date">2020年</div>
+        <div class="f-desc">SPARCの設計論文公開と同時期。既存投資家主導で追加調達。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series A</div>
+      <div class="f-amount">$50M</div>
+      <div class="f-detail">
+        <div class="f-date">2018年</div>
+        <div class="f-desc">創業と同年。Breakthrough Energy Venturesがリード。Bill GatesのクリーンエネルギーファンドがCFSの最初の主要投資家となる。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">DOE助成</div>
+      <div class="f-amount">$50M+</div>
+      <div class="f-detail">
+        <div class="f-date">複数年</div>
+        <div class="f-desc">米国エネルギー省（DOE）のMilestone-Based Fusion Development Program等からの連邦補助金。民間資金との併用で政府も核融合民営化を後押し。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要投資家プロフィール</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <div class="lead-tag">創業期〜全ラウンド</div>
+      <div class="vc-name">Breakthrough Energy Ventures</div>
+      <div class="vc-role">Bill Gates主導のクリーンエネルギーVC</div>
+      <div class="vc-desc">CFS創業時からの最初の機関投資家。気候変動対策のブレークスルーを目指すBEVがリードすることで、CFSの科学的・社会的信頼性を底上げした。</div>
+    </div>
+    <div class="vc-card lead">
+      <div class="lead-tag">Series B〜B2</div>
+      <div class="vc-name">Khosla Ventures</div>
+      <div class="vc-role">深技術特化VC（Vinod Khosla）</div>
+      <div class="vc-desc">Sun Microsystemsの共同創業者Vinod Khoslaが率いる、深技術・エネルギー変革に積極的なトップティアVC。核融合を「10倍インパクト」の技術と評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Google (Alphabet)</div>
+      <div class="vc-role">テクノロジー企業・戦略投資</div>
+      <div class="vc-desc">電力消費量が急増するAIインフラのためのクリーン電力源として核融合に注目。2025年B2ラウンドでも追加参加し長期コミットメントを示す。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Nvidia</div>
+      <div class="vc-role">半導体・AIインフラ企業</div>
+      <div class="vc-desc">2025年B2で新規参加。データセンターの電力需要急増を受けた戦略的判断。核融合への投資はNvidiaにとって電力確保の長期ヘッジとなる。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Tiger Global Management</div>
+      <div class="vc-role">グローバルヘッジファンド・VC</div>
+      <div class="vc-desc">テクノロジー企業への大規模投資で知られる。Series BおよびB2双方に参加し、CFSを長期成長株として位置づける。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Eni / Salesforce / その他</div>
+      <div class="vc-role">戦略投資家群</div>
+      <div class="vc-desc">欧州エネルギー大手Eniは電力事業への核融合統合を視野に入れた戦略投資。Salesforce共同創業者Marc Benioffもインパクト投資として参加。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 6. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">6</span> Competitive Landscape</div>
+  <h2>競合比較 — ITER / Helion / TAE Technologies</h2>
+
+  <table class="t">
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>CFS（SPARC/ARC）</th>
+        <th>ITER（国際核融合実験炉）</th>
+        <th>Helion Energy</th>
+        <th>TAE Technologies</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>アプローチ</td>
+        <td>HTS磁石コンパクトトカマク</td>
+        <td>大型トカマク（国際共同）</td>
+        <td>FRC（磁場反転配位）</td>
+        <td>FRC + 水素-ホウ素核融合</td>
+      </tr>
+      <tr>
+        <td>設立/開始</td>
+        <td>2018年（民間）</td>
+        <td>1985年〜（国際条約）</td>
+        <td>2013年（民間）</td>
+        <td>1992年（民間）</td>
+      </tr>
+      <tr>
+        <td>燃料サイクル</td>
+        <td>D-T（重水素-三重水素）</td>
+        <td>D-T</td>
+        <td>D-He3（→D-T移行期）</td>
+        <td>p-B11（水素-ホウ素）</td>
+      </tr>
+      <tr>
+        <td>発電方式</td>
+        <td>蒸気タービン（熱電変換）</td>
+        <td>蒸気タービン</td>
+        <td>直接磁気誘導発電</td>
+        <td>直接エネルギー変換</td>
+      </tr>
+      <tr>
+        <td>累計調達</td>
+        <td>~$3B+（民間最大）</td>
+        <td>~€200億（各国政府）</td>
+        <td>~$2.2B</td>
+        <td>~$1.2B</td>
+      </tr>
+      <tr>
+        <td>Q>1実証見込み</td>
+        <td>2020年代後半（SPARC）</td>
+        <td>2035年以降</td>
+        <td>2028年頃（目標）</td>
+        <td>2030年代</td>
+      </tr>
+      <tr>
+        <td>物理リスク</td>
+        <td>低〜中（実績あるトカマク）</td>
+        <td>最も低い（実績豊富）</td>
+        <td>中〜高（FRCスケール不確実）</td>
+        <td>高（p-B11は難易度最高水準）</td>
+      </tr>
+      <tr>
+        <td>商用化スケジュール</td>
+        <td>2030年代前半（ARC）</td>
+        <td>実証炉（2040〜？）</td>
+        <td>2028年（50MWe、Microsoft PPA）</td>
+        <td>2030年代</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">CFS（Commonwealth Fusion）</div>
+      <div class="comp-tag">本命・業界最大調達</div>
+      <div class="comp-desc">最大の調達額と実証済みのHTS磁石技術が強み。トカマクの豊富な研究データを活用でき物理リスクが低い。一方でD-Tサイクルにはトリチウム増殖の課題が残る。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">ITER</div>
+      <div class="comp-tag">国際・政府主導</div>
+      <div class="comp-desc">最大かつ最も科学的根拠の確立した実験炉。しかし建設コスト2兆円超・スケジュール遅延が常態化しており、民間スタートアップの「アジャイル核融合」とは対照的な存在。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Helion Energy</div>
+      <div class="comp-tag">直接発電・Microsoft PPA</div>
+      <div class="comp-desc">直接磁気誘導発電という革新的アプローチとMicrosoft PPAが強み。Sam Altmanら著名投資家の支持も注目度を高める。ただしFRCのスケーリングと燃料問題は未解決。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">TAE Technologies</div>
+      <div class="comp-tag">p-B11・長期挑戦</div>
+      <div class="comp-desc">放射性を持たないp-B11核融合を目指す究極のクリーン核融合だが、反応温度・磁場要件が最も厳しく、技術的ハードルは業界最高水準。タイムラインは最も保守的。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 7. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">7</span> Leadership</div>
+  <h2>経営陣</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">BM</div>
+      <div>
+        <h3>Bob Mumgaard</h3>
+        <div class="p-role">CEO &amp; Co-Founder</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row">
+        <div class="lbl">学歴</div>
+        <div class="val">MIT プラズマ科学核融合センター（PSFC）にて物理学博士号取得。MITでのトカマク研究が直接CFSの創業につながった。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">経歴</div>
+        <div class="val">MIT PSFCでの核融合研究を経て、2018年にCFSを共同創業。核融合の民間商用化という明確なビジョンを持ち、技術者・投資家・政策立案者と幅広く渡り合うリーダーシップを発揮。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">哲学</div>
+        <div class="val">「核融合は科学の問題ではなく、もはやエンジニアリングと資金の問題だ」という信念のもと、スピードと実用性を最優先とした開発アプローチを採用。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">受賞等</div>
+        <div class="val">MIT Technology Review「35 Innovators Under 35」に選出。Forbes Energy Technology listを含む複数の業界表彰を受賞。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">注目発言</div>
+        <div class="val">「We're not waiting for physics breakthroughs — we're using known science to build something that works.」（物理的ブレークスルーを待つのではなく、既知の科学を使って機能するものを作る。）</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">CTO</div><div class="v">Brandon Sorbom — MIT PSFCでの同期。HTS磁石技術の中心人物。共同創業者。</div></div>
+    <div class="kv-item"><div class="k">CFO</div><div class="v">Priya Sridhar — FinanceおよびOperationsを統括。CFSの急成長を管理。</div></div>
+    <div class="kv-item"><div class="k">Chief Science Officer</div><div class="v">Dennis Whyte — MITプラズマ科学核融合センター元所長。コンパクトHTS磁石アイデアの提唱者。</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== 8. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">8</span> Risks &amp; Challenges</div>
+  <h2>リスクと課題</h2>
+
+  <div class="warn-box">
+    <div class="w-title">技術リスク</div>
+    <ul>
+      <li><b>プラズマ閉じ込めの不確実性：</b>SPARC設計はシミュレーションと外挿に基づいており、実際のQ>2達成は稼働するまで確証が得られない。プラズマ物理は未解明の現象も多く、実験結果が予測を下回るシナリオは常に存在する。</li>
+      <li><b>REBCOテープの量産課題：</b>商用炉ARCに必要なREBCOテープ量は現在の世界生産量の何倍もの規模となる見通し。サプライチェーンの構築と製造コストの低減が商用化の前提条件。</li>
+      <li><b>トリチウム増殖ブランケット：</b>D-T核融合では希少なトリチウムを炉内で増殖させるリチウムブランケットが必要だが、実用的なブランケット技術はまだ実証段階にない。</li>
+      <li><b>材料の中性子照射耐性：</b>核融合炉は高速中性子フラックスに長期間さらされる。構造材料の劣化と寿命は商業運転において重要な課題となる。</li>
+    </ul>
+  </div>
+
+  <div class="warn-box">
+    <div class="w-title">事業・資金リスク</div>
+    <ul>
+      <li><b>スケジュール遅延：</b>核融合に限らず巨大技術プロジェクトはスケジュール遅延が常態的だ。SPARCのファーストプラズマや商用化目標が後ろ倒しになれば、投資家の信頼を損なうリスクがある。</li>
+      <li><b>資金需要の巨大さ：</b>累計$3Bを超えても、商用炉ARCの建設には数十億ドル規模の追加資金が必要。政府支援・PPAなど多様な資金源確保が不可欠。</li>
+      <li><b>電力市場との競争：</b>核融合が商用化される2030年代には、太陽光・風力・蓄電池の価格がさらに低下している可能性が高い。コスト競争力の確保は自明ではない。</li>
+    </ul>
+  </div>
+
+  <div class="warn-box">
+    <div class="w-title">規制・社会的リスク</div>
+    <ul>
+      <li><b>核融合固有の規制枠組みの不在：</b>多くの国・地域で核融合発電所に対応した許認可体制が整備されていない。規制整備の遅れが商業運転を遅らせるリスク。</li>
+      <li><b>D-T核融合のトリチウム規制：</b>三重水素（トリチウム）は放射性物質であり、取り扱い・廃棄に関する規制対応が必要。核融合炉の「クリーン」イメージは社会的理解の醸成に依存する。</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ===================== 9. WHY NOW ===================== -->
+<div class="sec" id="why-now">
+  <div class="sec-label"><span class="num">9</span> Why Now</div>
+  <h2>なぜ今注目すべきか — 投資・産業的視点</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">AI・データセンターの電力需要急増が核融合を「現実解」に押し上げる</div>
+        <div class="ind-desc">GoogleやNvidiaがCFSに投資した背景には、AI学習・推論クラスターの電力消費が2030年代に現在の数倍〜十倍規模に達するという予測がある。再生可能エネルギーだけでは24時間安定供給が困難なため、核融合という「ベースロード・クリーン電源」の需要が一気に現実化している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">HTS磁石実証という「不可逆的な技術マイルストーン」を超えた</div>
+        <div class="ind-desc">2021年の20テスラ磁石実証は、CFSのアプローチが単なるコンセプトではなく機能する実際の技術であることを証明した。これ以前と以後では業界の評価が大きく変わり、機関投資家の参入が相次いだ。技術的マイルストーンの達成は「信頼のカタパルト」として機能する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">政府の核融合民営化推進（米国・英国・日本）</div>
+        <div class="ind-desc">米国DOEはMilestone-Based Fusion Development Programで民間核融合企業を支援。英国はSPHERE実証炉計画で官民連携を進める。日本も2023年に「核融合戦略」を策定。国家レベルの後押しが民間投資のリスクを部分的にヘッジする。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">核融合は「もし成功すれば勝者総取り」の構造</div>
+        <div class="ind-desc">核融合が商用化された世界では、燃料コストがほぼゼロの無尽蔵なクリーンエネルギーが供給される。これはエネルギー産業全体の再編を意味し、最初に商用化に成功したプレイヤーは莫大な経済的優位を享受する。CFSはそのポールポジションにいる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">脱炭素・エネルギー安全保障の両立という政策ニーズ</div>
+        <div class="ind-desc">ウクライナ危機以降、エネルギー安全保障が地政学的課題として浮上した。核融合は燃料（重水素）を海水から取れるため、特定国への依存なしにエネルギーを生産できる。これは化石燃料や現在の核分裂（ウラン依存）にはない核融合独自の優位性だ。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>投資家視点のまとめ：</strong>CFSは現時点で「最も実証済みの技術」「最大の調達規模」「最高の経営陣」の三拍子が揃った民間核融合企業だ。物理的リスクが最も低いトカマク型を、最先端のHTS技術でコンパクト化するアプローチは、核融合商用化の最短経路として多くの専門家の評価を得ている。2025年〜2027年のSPARCファーストプラズマ〜Q>1実証が次の「投資判断分岐点」となる。
+  </div>
+</div>
+
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>主要参考情報</h2>
+  <ul>
+    <li>Commonwealth Fusion Systems 公式サイト（cfs.energy）</li>
+    <li>Nature Physics — SPARC設計論文（2020）</li>
+    <li>MIT News — 20テスラ磁石実証発表（2021年9月）</li>
+    <li>Fusion Industry Association — Global Fusion Report 2024</li>
+    <li>Bloomberg / TechCrunch — Series B $1.8B 調達報道（2021）</li>
+    <li>Financial Times / Reuters — Series B2 $863M 報道（2025年8月）</li>
+    <li>US DOE — Milestone-Based Fusion Development Program</li>
+    <li>SPARC Physics Basis — Journal of Plasma Physics (2020特集号)</li>
+  </ul>
+</div>
+
+
+</div>
+</body>
+</html>
