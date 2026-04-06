@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valar Atomics — 核分裂マイクロ原子炉スタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">核分裂 / HTGR</span>
+    <span class="badge badge-white">マイクロ原子炉</span>
+    <span class="badge badge-solid">米国防総省・DOE 採択</span>
+  </div>
+  <h1>Valar Atomics</h1>
+  <p class="hero-sub">
+    「原子力の大量生産で、AIと重工業を動かす」——<br>
+    2023年創業、26歳の高校中退起業家が率いる次世代核エネルギースタートアップ。<br>
+    ヘリウム冷却HTGR（高温ガス炉）＋TRISO燃料で既存炉の3倍の高温を実現。<br>
+    「ギガサイト」構想で数千基を量産展開し、AIデータセンター・合成燃料市場を狙う。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$599M+</div><div class="lbl">累計調達額</div></div>
+    <div class="kpi"><div class="val">$2B</div><div class="lbl">直近バリュエーション（2026.3）</div></div>
+    <div class="kpi"><div class="val">2023</div><div class="lbl">設立年</div></div>
+    <div class="kpi"><div class="val">5MW</div><div class="lbl">Ward 250 出力</div></div>
+    <div class="kpi"><div class="val">2026.7</div><div class="lbl">フルパワー臨界目標</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">技術：HTGR ＋ TRISO燃料</a></li>
+    <li><a href="#team">創業者・経営陣</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#milestones">開発マイルストーン</a></li>
+    <li><a href="#partnerships">政府・軍・パートナーシップ</a></li>
+    <li><a href="#biz">ビジネスモデルと顧客</a></li>
+    <li><a href="#roadmap">商用化ロードマップ</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">リスクと懸念</a></li>
+    <li><a href="#news">最新ニュース（2024〜2026）</a></li>
+    <li><a href="#verdict">総合評価</a></li>
+  </ol>
+</div>
+
+
+<!-- ===================== 01 OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+  <h2>Valar Atomics とは何か</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">設立年</div><div class="v">2023年7月</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">El Segundo, California（ロサンゼルス近郊の防衛テックハブ）</div></div>
+    <div class="kv-item"><div class="k">創業者 / CEO</div><div class="v">Isaiah Taylor（イザイア・テイラー）26歳</div></div>
+    <div class="kv-item"><div class="k">技術タイプ</div><div class="v">核分裂（Fission）/ 高温ガス炉（HTGR）</div></div>
+    <div class="kv-item"><div class="k">燃料</div><div class="v">TRISO燃料 ＋ HALEU（高濃縮低濃縮ウラン、5〜20%）</div></div>
+    <div class="kv-item"><div class="k">冷却材</div><div class="v">ヘリウムガス</div></div>
+    <div class="kv-item"><div class="k">ステータス</div><div class="v">開発・テスト段階（DOE 原子炉パイロットプログラム参加中）</div></div>
+    <div class="kv-item"><div class="k">累計調達</div><div class="v">$599M以上（2026年3月時点）</div></div>
+  </div>
+
+  <p>Valar Atomicsは、AIデータセンター・重工業・合成燃料生産向けのグリッド独立型核エネルギーを提供するスタートアップである。同社は「<strong>ギガサイト（Gigasite）</strong>」と呼ぶ巨大産業拠点に数百〜数千基の小型原子炉を集約配備し、規模の経済で原子力を量産品へと変革しようとしている。</p>
+
+  <p>社名「Valar」はJ.R.R.トールキンの『指輪物語』に登場する創世の神々に由来する。CEOのIsaiah Taylorは「この名前には、規模の大きさと宇宙的な意志という意味を込めた」と語っている。旗艦製品<strong>Ward 250</strong>は5MWの高温ガスマイクロ炉であり、2026年2月に米空軍C-17による史上初の原子炉空輸「オペレーション・ウィンドロード」で注目を集めた。</p>
+
+  <div class="callout">
+    <strong>会社のミッション：</strong>「新しい原子力時代（The New Atomic Age）」——現代の産業とAIインフラが必要とするエネルギー・工業熱・炭素中立燃料を、高温反応炉のクラスターで大規模供給すること。
+  </div>
+</div>
+
+
+<!-- ===================== 02 TECH ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">02</span>技術：HTGR ＋ TRISO燃料</div>
+  <h2>何がユニークか：炉型・燃料・温度</h2>
+
+  <h3>炉型：高温ガス炉（HTGR）</h3>
+  <p>Ward 250は<strong>ヘリウム冷却・グラファイト減速・TRISO燃料使用の高温ガス炉</strong>である。通常の軽水炉が300〜350℃で動作するのに対し、Ward 250は<strong>運転温度750〜950℃以上</strong>を実現する。これは従来炉の約3倍の高温であり、電力だけでなく工業熱・水素生産・合成燃料製造に応用できる点が最大の差異化ポイントだ。</p>
+
+  <h3>TRISO燃料とは</h3>
+  <p>TRISO（Tri-structural Isotropic）燃料は、ウランオキシカーバイドの核を炭素・シリコンカーバイドの多層コーティングで包んだ粒子燃料である。各粒子が独立した「小さな圧力容器」として機能し、<strong>1600℃まで融解せず核分裂生成物を99.99%封じ込める</strong>。炉心全体が溶融するようなメルトダウンシナリオが原理的に起こらない。</p>
+
+  <table class="t">
+    <thead>
+      <tr><th>項目</th><th>Ward 250（Valar HTGR）</th><th>従来型軽水炉（参考）</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>冷却材</td><td>ヘリウムガス</td><td>軽水（液体水）</td></tr>
+      <tr><td>運転温度</td><td>750〜950℃</td><td>300〜350℃</td></tr>
+      <tr><td>燃料</td><td>TRISO ＋ HALEU（5〜20%）</td><td>酸化ウラン燃料棒（3〜5%）</td></tr>
+      <tr><td>出力</td><td>5MW（熱出力100kWt〜）</td><td>1,000MW級</td></tr>
+      <tr><td>メルトダウンリスク</td><td>原理的に不可（受動的安全性）</td><td>冷却喪失で発生リスク</td></tr>
+      <tr><td>用途</td><td>電力・水素・工業熱・合成燃料</td><td>主に電力</td></tr>
+    </tbody>
+  </table>
+
+  <h3>水素製造と合成燃料</h3>
+  <p>高温ガス炉の最大の付加価値が<strong>熱化学的水分解（硫黄-ヨウ素サイクル、800〜1000℃）</strong>による効率的な水素製造だ。電気分解を介さずに熱から直接水素を生成できるため、エネルギー効率が高い。さらにその水素をCO₂とフィッシャー・トロプシュ合成で組み合わせることで、<strong>ジェット燃料・ディーゼル・ガソリンと化学的に同一の合成炭化水素燃料</strong>を製造できる。既存インフラをそのまま利用できるドロップイン燃料であることが航空・海運業界からの関心を高めている。</p>
+
+  <div class="callout">
+    <strong>技術的ポジショニング：</strong>Valarの競合優位は「電力会社に電気を売る」のではなく、<strong>$2兆規模の液体燃料市場</strong>に炭素中立燃料を供給することにある。AIデータセンター向け電力供給はその入口に過ぎない。
+  </div>
+
+  <h3>NOVA Core：臨界実験</h3>
+  <p>2025年11月17日、ロスアラモス国立研究所（LANL）の国立臨界実験研究センターにて、Valarは<strong>「Project NOVA」の核分裂臨界（Zero-Power Criticality）を達成</strong>した。これはDOE原子炉パイロットプログラムにおいてベンチャーキャピタル支援のスタートアップとして初の核分裂マイルストーンとなった。ただし批評家は「ゼロパワー臨界は実際の出力密度でのテストではなく、真の設計完成証明ではない」と指摘している。</p>
+</div>
+
+
+<!-- ===================== 03 TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">03</span>創業者・経営陣</div>
+  <h2>Isaiah Taylor と核の夢</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">IT</div>
+      <div>
+        <h3>Isaiah Taylor</h3>
+        <div class="p-role">CEO &amp; Founder</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">年齢</div><div class="val">26歳（2026年時点）</div></div>
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">高校中退（16歳）。大学歴なし。独学でソフトウェアエンジニアリングを習得</div></div>
+      <div class="p-row"><div class="lbl">経歴</div><div class="val">オートリペアショップ起業 → ソフトウェア会社HoodHub創業（$264.9K調達）→ 6年間にわたり世界80カ国以上の原子力規制環境を独自調査 → 2023年Valar Atomics設立</div></div>
+      <div class="p-row"><div class="lbl">家族的背景</div><div class="val">曾祖父Ward Schaap氏がマンハッタン計画に参加した核物理学者。炉の名称「Ward 250」は曾祖父への敬意を込めたもの</div></div>
+      <div class="p-row"><div class="lbl">思想・コミュニティ</div><div class="val">アイダホ州モスクワのキリスト教ナショナリスト的教会（牧師ダグ・ウィルソン）のメンバー。同教会コミュニティからの人材採用が多い（批判の対象）</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">MM</div>
+      <div>
+        <h3>Mark Mitchell</h3>
+        <div class="p-role">Chief Nuclear Officer</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">経験</div><div class="val">25年以上のエネルギー業界経験</div></div>
+      <div class="p-row"><div class="lbl">前職</div><div class="val">Ultra Safe Nuclear Corporation 社長。南アフリカのPebble Bed Modular Reactor（PBMR）プロジェクトをリード</div></div>
+      <div class="p-row"><div class="lbl">専門</div><div class="val">TRISO燃料使用原子炉設計の第一人者。HTGRの商用化実績を持つ数少ない専門家</div></div>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    <div class="w-title">懸念点：経営チームの原子力経験不足</div>
+    <ul>
+      <li><b>Kip Mock（運営部長）</b>：教会コミュニティのメンバー。Taylorの自動車修理工場の共同創業者。核エネルギーのバックグラウンドなし。2021年にディーゼル燃料を薪ストーブに注いで同僚に重傷を負わせた事故歴あり</li>
+      <li><b>Elijah Froh（ビジネスオペレーションディレクター）</b>：同教会メンバー。核エネルギー経験なし</li>
+      <li>Allison Macfarlane元NRC委員長は「彼らは自分が何を知らないかを知らない'ニュークブロ'だ」と批判</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ===================== 04 FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">04</span>資金調達履歴</div>
+  <h2>シード→シリーズAを経て、わずか1年で$2Bバリュエーション</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <div class="r-badge">Series B相当</div>
+      <div class="f-amount">$450M</div>
+      <div class="f-detail">
+        <div class="f-date">2026年3月（発表）</div>
+        <div class="f-desc">エクイティ$340M ＋ デット$110M。バリュエーション<strong>$2B</strong>。Palmer Luckey（Anduril創業者）、Shyam Sankar（Palantir CTO）参加。Bloomberg報道で確認</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series A</div>
+      <div class="f-amount">$130M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年11月</div>
+        <div class="f-desc">Snowpoint Ventures（Doug Philippone、元Palantirグローバル防衛責任者）リード。Day One Ventures、Dream Ventures、Contraryが参加。Palmer Luckey、Shyam Sankar個人投資家として参加。ロッキードマーティン取締役 John Donoванも参加</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Seed</div>
+      <div class="f-amount">$19M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年2月（ステルス解除と同時発表）</div>
+        <div class="f-desc">Riot Venturesリード。AlleyCorp、Initialized Capital、Day One Ventures（Masha Bucher）、Steel Atlasが参加</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要投資家プロフィール</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <div class="lead-tag">Key Investor</div>
+      <div class="vc-name">Palmer Luckey</div>
+      <div class="vc-role">Anduril Industries 創業者</div>
+      <div class="vc-desc">Oculus VR創業後売却、Anduril（防衛テック）設立。国防・先端技術スタートアップへの個人投資家として存在感大。Valarに戦略的価値を見出す。</div>
+    </div>
+    <div class="vc-card lead">
+      <div class="lead-tag">Key Investor</div>
+      <div class="vc-name">Shyam Sankar</div>
+      <div class="vc-role">Palantir Technologies CTO</div>
+      <div class="vc-desc">AIデータ分析企業PalantirのCTO。防衛・インテリジェンス領域に深い知見。Valarをデータセンター電力需要の解として個人投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Doug Philippone / Snowpoint Ventures</div>
+      <div class="vc-role">Series A リード</div>
+      <div class="vc-desc">元Palantirグローバル防衛ヘッドが設立したVC。国防テック・核エネルギー領域に特化。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Masha Bucher / Day One Ventures</div>
+      <div class="vc-role">Seed〜継続投資</div>
+      <div class="vc-desc">ロシア系VC創業者。2009年プーチン支持活動歴、Epsteinの広報担当歴が報道で問題視。「Taylorより優れた起業家は思い浮かばない」と称賛継続。</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>資金調達速度の異常性：</strong>2025年2月のシード解除（$19M）からわずか13ヶ月で$2Bバリュエーションへ到達。原子力業界としては異例のスピードであり、批評家は「技術的実績より政治的コネクションが評価されている」と指摘する。
+  </div>
+</div>
+
+
+<!-- ===================== 05 MILESTONES ===================== -->
+<div class="sec" id="milestones">
+  <div class="sec-label"><span class="num">05</span>開発マイルストーン</div>
+  <h2>達成済みおよび予定の主要マイルストーン</h2>
+
+  <div class="timeline">
+
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年7月</span>
+          <span class="tl-title">Valar Atomics 設立</span>
+        </div>
+        <div class="tl-body">Isaiah TaylorがEl Segundo（CA）にて設立。6年間の規制調査を経てステルスモードで始動。</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年2月</span>
+          <span class="tl-title">ステルス解除 ＋ Seedラウンド発表（$19M）</span>
+        </div>
+        <div class="tl-body"><b>Ward Zero完成</b>——シリコンカーバイドを使用した非核プロトタイプ。10ヶ月で熱的・機械的システムを検証。フィリピン原子力研究所（PNRI）との提携発表（Ward One：ウラン充填炉）も公表。</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年4月</span>
+          <span class="tl-title">NRC提訴</span>
+        </div>
+        <div class="tl-body">テキサス・ユタ・フロリダ等の州および Last Energy、Deep Fission と共同でNRC（原子力規制委員会）を提訴。「1956年以来の過剰規制は原子力産業を衰退させた」と主張。</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年6月</span>
+          <span class="tl-title">ユタ州との覚書締結</span>
+        </div>
+        <div class="tl-body">ユタ州政府とWard 250試験炉の配備およびEmery郡でのTRISO燃料製造に関する覚書（MOU）締結。</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年9月</span>
+          <span class="tl-title">Ward 250 着工（ユタ・サンラファエルエネルギーラボ）</span>
+        </div>
+        <div class="tl-body">DOEの原子炉パイロットプログラムの一環としてOrangevilleのUSRELにてWard 250の建設開始。DOEはまた4社を燃料ライン開発パイロットに選定（Oklo、Terrestrial Energy、TRISO-X、Valar Atomics）。</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年11月17日</span>
+          <span class="tl-title">【重要】Project NOVA 核分裂臨界達成</span>
+        </div>
+        <div class="tl-body"><b>ベンチャー支援スタートアップとして史上初</b>の核分裂マイルストーン。ロスアラモス国立研究所（LANL）の国立臨界実験研究センターにてNOVA Coreがゼロパワー臨界を達成。DOE原子炉パイロットプログラムでの最初のマイルストーン達成企業となった。</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年11月</span>
+          <span class="tl-title">Series A 調達（$130M）</span>
+        </div>
+        <div class="tl-body">臨界達成の直後、$130M調達を発表。Palmer Luckey、Shyam Sankarらが参加。</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年2月15日</span>
+          <span class="tl-title">【歴史的】オペレーション・ウィンドロード</span>
+        </div>
+        <div class="tl-body">米空軍C-17グローブマスターIII×3機がWard 250（未燃料・8モジュールに分解）をMarch ARB（CA）からHill AFB（UT）へ空輸。<b>史上初の核炉複合体の軍用空輸</b>。核兵器輸送認定を持つ第62空輸翼が担当。その後ユタ・サンラファエルエネルギーラボへ陸送・設置。</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年3月</span>
+          <span class="tl-title">Series B相当 調達（$450M / $2B Val）</span>
+        </div>
+        <div class="tl-body">Bloomberg報道。エクイティ$340M ＋ デット$110M。バリュエーション$2B。Palmer Luckey、Shyam Sankar継続参加。「AIへの核エネルギー供給」をテーマに大型調達成功。</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2026年春（予定）</span>
+          <span class="tl-title">非核熱試験開始（電気ヒーターによるシミュレーション）</span>
+        </div>
+        <div class="tl-body">ユタのWard 250サイトにて、電気ヒーターで炉熱をシミュレートする非核熱試験を実施予定。</div>
+      </div>
+    </div>
+
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2026年7月4日（DOE目標）</span>
+          <span class="tl-title">フルパワー臨界目標</span>
+        </div>
+        <div class="tl-body">アメリカ独立宣言250周年に合わせたDOE目標日。Trumpが大統領令で3社が7月4日までに試験炉の臨界達成を義務付け。ただし専門家からは「非常に攻撃的で非現実的なタイムライン」との批判あり。</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- ===================== 06 PARTNERSHIPS ===================== -->
+<div class="sec" id="partnerships">
+  <div class="sec-label"><span class="num">06</span>政府・軍・パートナーシップ</div>
+  <h2>国防総省・DOE・国際機関との連携</h2>
+
+  <div class="f-stack">
+    <div class="f-card gov">
+      <div class="r-badge">DOE</div>
+      <div class="f-detail">
+        <div class="f-date">2025年〜</div>
+        <div class="f-desc"><strong>DOE 原子炉パイロットプログラム参加</strong>——Valarを含む複数スタートアップが参加。政府施設での試験炉の核分裂達成を支援。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">DOE</div>
+      <div class="f-detail">
+        <div class="f-date">2025年9月</div>
+        <div class="f-desc"><strong>先進核燃料ラインパイロットプログラム採択</strong>——DOEが4社（Oklo、Terrestrial Energy、TRISO-X、Valar Atomics）を選定。スピードアップされた燃料製造ラインの構築を支援。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">DOD / DoW</div>
+      <div class="f-detail">
+        <div class="f-date">2026年2月</div>
+        <div class="f-desc"><strong>Department of War（国防総省）との契約締結</strong>——DoW・DOEが共同でWard 250の輸送・テスト支援。Trumpの2025年5月の大統領令（核エネルギー強化・NRC改革・先進炉の国家安全保障配備）の一環として位置付けられる。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">LANL</div>
+      <div class="f-detail">
+        <div class="f-date">2025年11月</div>
+        <div class="f-desc"><strong>ロスアラモス国立研究所（LANL）との共同実験</strong>——国立臨界実験研究センターにてProject NOVAのゼロパワー臨界試験を実施。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">ユタ州</div>
+      <div class="f-detail">
+        <div class="f-date">2025年6月</div>
+        <div class="f-desc"><strong>ユタ州政府との覚書（MOU）</strong>——Emery郡（Orangeville）にWard 250試験炉およびTRISO燃料製造施設の誘致。Utah San Rafael Energy Lab（USREL）がホスト。</div>
+      </div>
+    </div>
+    <div class="f-card">
+      <div class="r-badge">フィリピン</div>
+      <div class="f-detail">
+        <div class="f-date">2025年2月</div>
+        <div class="f-desc"><strong>フィリピン原子力研究所（PNRI）との提携</strong>——Ward One（ウラン充填炉）をフィリピンで展開予定。米比123協定（原子力平和利用協定）を活用。国内NRC規制を避けた海外テストとして批判も受ける。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Trump政権との関係性：</strong>Valarは「トランプ政権お気に入りの核スタートアップ」と複数メディアに称され、政権の核エネルギー推進政策と深く連携。2025年5月のTrump大統領令4件がValarのタイムラインを後押しした。一方でGristは「政治的コネクションが技術的実績より先行している」と報じた。
+  </div>
+</div>
+
+
+<!-- ===================== 07 BIZ MODEL ===================== -->
+<div class="sec" id="biz">
+  <div class="sec-label"><span class="num">07</span>ビジネスモデルと顧客</div>
+  <h2>「電力会社」ではなく「燃料会社」を目指す</h2>
+
+  <h3>ギガサイト構想</h3>
+  <p>Valarのビジネスモデルの核心は<strong>「ギガサイト」</strong>——数百〜数千基の炉を一カ所に集約した超大規模産業拠点だ。これにより、1基ごとにかかるサイト固有のライセンスコストを多数の炉に分散できる。競合他社が10〜100基の炉のコストで賄う規模を、Valarは1000基以上で割ることで経済的に成立させようとしている。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">AIデータセンター向け電力供給</div>
+        <div class="ind-desc">2030年までにAIモデルは200TWh以上の追加電力を必要とすると推計。グリッド独立型のクリーン電力として核エネルギーを提供。Big Techのデータセンター直接供給を狙う。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">合成燃料製造（メインの収益源）</div>
+        <div class="ind-desc">水素製造（硫黄-ヨウ素熱化学サイクル）＋ CO₂とのフィッシャー・トロプシュ合成で、ジェット燃料・ディーゼル・ガソリン相当の炭素中立合成燃料を生産。既存インフラ対応のドロップイン燃料。$2兆規模の液体燃料市場にアクセス。100基の炉あたり年間約$10億の収益ポテンシャルと試算。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">重工業への高温熱供給</div>
+        <div class="ind-desc">鉄鋼・セメント・アルミニウム製造など、現在化石燃料で高温を得ている重工業プロセスの脱炭素化。950℃超の炉熱を直接産業プロセスに供給。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">国防・軍事基地</div>
+        <div class="ind-desc">遠隔地・戦場環境のエネルギー自立。C-17空輸可能な分解式設計により迅速展開が可能。米国防総省の「どこにでも核エネルギーを届ける」戦略と整合。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>ターゲット産業</h3>
+  <div class="pills">
+    <span class="pill s">AIデータセンター</span>
+    <span class="pill s">航空（SAF）</span>
+    <span class="pill s">海運（合成ディーゼル）</span>
+    <span class="pill">鉄鋼・セメント</span>
+    <span class="pill">軍事施設</span>
+    <span class="pill">水素製造</span>
+    <span class="pill">グリッド制約地域</span>
+  </div>
+
+  <div class="callout">
+    <strong>収益モデルの革新性：</strong>既存の原子力企業が「電力会社に電気を売るユーティリティ」モデルに縛られているのに対し、Valarは「核エネルギーを使って液体燃料を製造・販売する製造業」として自らを位置づけている。これにより電力グリッドへの接続義務や電力価格規制を回避し、より高いマージンを追求できる。
+  </div>
+</div>
+
+
+<!-- ===================== 08 ROADMAP ===================== -->
+<div class="sec" id="roadmap">
+  <div class="sec-label"><span class="num">08</span>商用化ロードマップ</div>
+  <h2>Ward 250 から Gigasite へ：4段階の道筋</h2>
+
+  <table class="t">
+    <thead>
+      <tr><th>フェーズ</th><th>内容</th><th>目標時期</th><th>ステータス</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Ward Zero</td>
+        <td>非核プロトタイプ（シリコンカーバイド使用）。熱・機械システム検証</td>
+        <td>2024年完了</td>
+        <td>完了</td>
+      </tr>
+      <tr>
+        <td>NOVA Core</td>
+        <td>LANLでのゼロパワー臨界試験</td>
+        <td>2025年11月</td>
+        <td>完了（臨界達成）</td>
+      </tr>
+      <tr>
+        <td>Ward 250（非核熱試験）</td>
+        <td>ユタSanRafael Energy Labにて電気ヒーターで熱をシミュレート</td>
+        <td>2026年春</td>
+        <td>予定</td>
+      </tr>
+      <tr>
+        <td>Ward 250（フルパワー臨界）</td>
+        <td>HALEU燃料を充填した5MW炉の核分裂臨界。DOE目標はUSA独立250周年（7/4）</td>
+        <td>2026年7月4日</td>
+        <td>予定（挑戦的）</td>
+      </tr>
+      <tr>
+        <td>Ward One（フィリピン）</td>
+        <td>PNRIと共同のウラン充填試験炉。別ラインで並行開発</td>
+        <td>2026〜2027年</td>
+        <td>進行中</td>
+      </tr>
+      <tr>
+        <td>商用第1号ギガサイト</td>
+        <td>数百〜数千基の炉を集約した商用施設。ユタ州が有力候補地</td>
+        <td>2028〜2030年（推定）</td>
+        <td>計画段階</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="warn-box">
+    <div class="w-title">タイムラインリスク</div>
+    <ul>
+      <li><b>7月4日のフルパワー臨界</b>は専門家から「非常に攻撃的・政治的な期限」と批判されている</li>
+      <li>元DOE核エネルギー担当次官補Katy Huffは「ゼロパワー臨界は実際の設計進捗の証明にならない」と指摘</li>
+      <li>TRISO-HALEU燃料の商業サプライチェーンはまだ確立されておらず、スケールアップに時間を要する</li>
+      <li>NRC訴訟の結果によっては国内でのライセンス取得が更に複雑化する可能性</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ===================== 09 COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">09</span>競合比較</div>
+  <h2>核エネルギースタートアップの地政学</h2>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">Valar Atomics</div>
+      <div class="comp-tag">比較対象</div>
+      <div class="comp-desc"><strong>差別化点：</strong>ギガサイト量産モデル、合成燃料へのピボット、軍×防衛テック投資家ネットワーク、DOE/DoD直結。<br><strong>弱点：</strong>未商用化、技術的実績薄、論争的リーダーシップ。バリュエーション$2B。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Oklo</div>
+      <div class="comp-tag">上場済（NYSE:OKLO）</div>
+      <div class="comp-desc">1.5MWe高速炉Aurora。HALEU燃料。SPAC上場（2024.5）で時価総額$16.2B（2025.11）。DOE Idahoサイトでの初商用展開を狙う。Sam Altman（OpenAI）会長。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">X-energy</div>
+      <div class="comp-tag">非上場</div>
+      <div class="comp-desc">HTGR・TRISO燃料を用いた電力・熱供給。Dow Chemicalとの産業向けパートナーシップ。2025年2月$700M調達（Amazon、Jane Street等）。Valarと最も技術的に近い競合。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Kairos Power</div>
+      <div class="comp-tag">非上場</div>
+      <div class="comp-desc">フッ化物塩冷却高温炉（FHR）。テネシー州にデモプラント建設中。Googleが電力購入契約（2030年代から複数炉）。技術的に最も進んだ非上場勢の一つ。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">TerraPower</div>
+      <div class="comp-tag">非上場</div>
+      <div class="comp-desc">Bill Gates設立の進行波炉（TWR）開発。ワイオミング州Kemmererに商用炉建設中。$830M以上調達。Valarより大型・高コストだが実績は豊富。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Terraform Industries</div>
+      <div class="comp-tag">非上場</div>
+      <div class="comp-desc">再エネ×電気分解で合成燃料（メタン）製造。核ではなく太陽光を使う点でValarの間接競合。$41M調達。</div>
+    </div>
+  </div>
+
+  <h3>Valarの差別化ポジション</h3>
+  <p>70社以上のSMR開発者が存在する中、Valarは<strong>①電力よりも液体燃料市場へのフォーカス、②ギガサイトによる量産モデル、③防衛テック投資家・軍との深い連携</strong>という3点で独自のポジションを構築している。X-energyが最も技術的に近いHTGRアプローチを持つ競合だが、電力供給メインである点で市場ターゲットが異なる。</p>
+</div>
+
+
+<!-- ===================== 10 RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">10</span>リスクと懸念</div>
+  <h2>楽観論の裏側：批評家が指摘する本質的リスク</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">技術的実績の薄さ vs 巨額バリュエーション</div>
+        <div class="ind-desc">2023年設立から3年以内で$2Bバリュエーション。達成しているのはゼロパワー臨界（非発電試験）のみ。フルパワー運転・商用炉はまだ先であり、バリュエーションは技術よりも将来期待と政治的コネクションに依存しているとの見方が多い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">安全性の主張に対する専門家の批判</div>
+        <div class="ind-desc">CEOが「使用済み燃料を5分間素手で持てる」と主張。核工学者Nick Touran・Gavin Ridleyは「85ミリ秒で致死量被曝」と反論。TaylorはDetailedな反論を約束したまま未回答。Katy Huff元DOE次官補も「ゼロパワー臨界はエンジニアリング進捗の証明ではない」と指摘。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">経営チームの原子力経験不足</div>
+        <div class="ind-desc">CNO（Mark Mitchell）を除くシニアメンバーの多くが核エネルギーのバックグラウンドを持たない。頭脳集団がアイダホ州の同一コミュニティ出身で固められているリスク。「自分たちが何を知らないかを知らない」という構造的盲点の可能性。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">論争的な投資家コネクション</div>
+        <div class="ind-desc">Day One Ventures（Masha Bucher）：元プーチン支持活動家・Epstein広報担当。関連会社AcronisはKremlin技術輸出疑惑で2025年に政府調達禁止。Taylor はこれらの報道後も関係継続を示唆。Grist・ユタ調査報道機関などが詳細に報道。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">規制リスク：NRC訴訟の行方</div>
+        <div class="ind-desc">NRC提訴はValar単独ではなく複数州・企業の集団訴訟だが、判決次第では原子力規制の枠組みが大きく変わる可能性。Trump政権のNRC改革姿勢が「デリスク」として機能する側面もあるが、政権交代リスクも存在。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">合成燃料の経済性</td>
+        <div class="ind-desc">熱化学水分解は商業未実証。カーボンキャプチャーコストは$100〜1,000/トンと幅が大きい。化石燃料価格の下落があれば合成燃料の競争力が低下。フィッシャー・トロプシュ合成の大規模実用化も未達成。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">7</div>
+      <div>
+        <div class="ind-title">HALEUサプライチェーンの未確立</div>
+        <div class="ind-desc">TRISO-HALEU燃料の商業サプライヤーは世界的に非常に限られる。品質問題が発生すれば規制当局による運転停止リスク。全炉が同一バッチの燃料を使用する場合、連鎖的障害の可能性。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 11 NEWS ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">11</span>最新ニュース（2024〜2026）</div>
+  <h2>直近2年のトピック</h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年3月31日</span>
+          <span class="tl-title">$450M調達・$2Bバリュエーション（Bloomberg報道）</span>
+        </div>
+        <div class="tl-body">Palmer Luckey支援で$2Bバリュエーション。AIデータセンターへの核エネルギー供給を標榜した大型ラウンドとして広く報道。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年3月</span>
+          <span class="tl-title">Grist・Utah Investigative Journalism Projectによる調査報道</span>
+        </div>
+        <div class="tl-body">「トランプ政権お気に入りの核スタートアップはロシアとEpsteinとつながりがある」——Day One VenturesのMasha Bucherの経歴・前プーチン支持・Epstein広報担当歴・ロシア技術輸出疑惑関係者との近さを詳報。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年2月15日</span>
+          <span class="tl-title">オペレーション・ウィンドロード：米空軍が核炉を空輸</span>
+        </div>
+        <div class="tl-body">C-17×3機でWard 250をCalifornia→Utahへ。「核兵器輸送認定部隊が炉輸送」という衝撃的な映像が世界的に拡散。Defence Postら多数のメディアが報道。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年11月</span>
+          <span class="tl-title">史上初：VC支援スタートアップが核分裂臨界を達成</span>
+        </div>
+        <div class="tl-body">LANL・Project NOVA。臨界直後に$130M調達も発表。「これは本物の原子力スタートアップか」という議論がTech界・核工学界双方で巻き起こる。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年9月</span>
+          <span class="tl-title">ユタにWard 250着工 ＋ DOE燃料パイロット4社選定</span>
+        </div>
+        <div class="tl-body">Oklo・Terrestrial Energy・TRISO-Xと共にValar AtomicsがDOE先進燃料ラインパイロットに選定。国家プロジェクトとしての地位を確立。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年5月</span>
+          <span class="tl-title">Trump大統領令4件：核エネルギー強化・NRC改革</span>
+        </div>
+        <div class="tl-body">国内核産業基盤強化・DOEでの炉テスト改革・NRC刷新・先進炉の国家安全保障配備の4令。Valarのロードマップと完全に連動し、「政権との関係性」がより強く意識されることに。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年4月</span>
+          <span class="tl-title">NRC提訴（テキサス州等と共同）</span>
+        </div>
+        <div class="tl-body">「1956年以来の過剰規制が原子力産業を衰退させた」として複数州・企業と共同提訴。規制改革の先頭に立つ姿勢がValarのブランドを強化。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年2月</span>
+          <span class="tl-title">ステルス解除・$19Mシード発表</span>
+        </div>
+        <div class="tl-body">TechCrunch等が大きく報道。「26歳高校中退起業家が率いる核スタートアップ」というナラティブが定着。マンハッタン計画に参加した曾祖父の名を冠した炉「Ward 250」のストーリーも注目を集める。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 12 VERDICT ===================== -->
+<div class="sec" id="verdict">
+  <div class="sec-label"><span class="num">12</span>総合評価</div>
+  <h2>Valar Atomics の本質：何者で何が問われているか</h2>
+
+  <h3>強み：なぜ本物かもしれないか</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">+</div>
+      <div>
+        <div class="ind-title">CNO Mark Mitchellの圧倒的専門性</div>
+        <div class="ind-desc">PBMR・Ultra Safe Nuclearなど実際のHTGR商用化プロジェクトをリードした数少ない人物。「Taylorが顔、Mitchellが技術」という分業体制は本物の技術基盤を示す。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">+</div>
+      <div>
+        <div class="ind-title">DOE・LANL・空軍という国家機関の採用</div>
+        <div class="ind-desc">民間スタートアップの技術を国家機関がここまでサポートするのは通常ありえない。これだけの機関承認は一定の技術的信頼性の証左でもある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">+</div>
+      <div>
+        <div class="ind-title">HTGR × TRISO × ギガサイト × 合成燃料という戦略的コンビネーション</div>
+        <div class="ind-desc">電力市場だけでなく液体燃料市場を狙う独自のビジネスモデルは理論上マーケットサイズが桁違いに大きい。概念的な革新性は高い。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>懸念：なぜ慎重になるべきか</h3>
+  <div class="warn-box">
+    <div class="w-title">Critical Concerns</div>
+    <ul>
+      <li><b>政治的追い風依存：</b>Trump政権交代・規制環境変化でValarのアドバンテージが一夜で消えるリスク</li>
+      <li><b>未実証の多層複合技術：</b>HTGR × 熱化学水分解 × フィッシャー・トロプシュを同時に商業スケールで実証した企業は世界にない</li>
+      <li><b>スキャンダルリスク：</b>投資家コネクションに関する継続的な報道がレピュテーションリスクに直結。政府契約のキャンセルリスク</li>
+      <li><b>超短期タイムライン：</b>設立3年以内でのフルパワー臨界→商用炉という野望は核エネルギー業界の常識を超えている</li>
+    </ul>
+  </div>
+
+  <div class="quote">
+    <p>彼らは自分たちが何を知らないかすら知らない。小型炉がエネルギー市場で成功したことは一度もない。</p>
+    <div class="attr">Allison Macfarlane / 元NRC委員長</div>
+  </div>
+
+  <div class="quote">
+    <p>AIは核エネルギーを必要としている。唯一の問題は、それを誰が最初に届けられるかだ。</p>
+    <div class="attr">Isaiah Taylor / Valar Atomics CEO</div>
+  </div>
+
+  <div class="callout">
+    <strong>結論：</strong>Valar Atomicsは「合理的な技術仮説 × 強力な政治コネクション × 論争的なキャラクター」の三角形の上に成り立つスタートアップだ。HTGR＋TRISO＋合成燃料という技術方向性は根拠がある。しかしゼロパワー臨界から商用ギガサイトへの距離は膨大であり、$2Bバリュエーションはその距離を過小評価している可能性が高い。AI電力需要という超強力な追い風と、原子力エネルギー政策の政治化という変数が、同社のセンチメントを支配している。
+  </div>
+</div>
+
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://www.valaratomics.com/" target="_blank">Valar Atomics 公式サイト</a></li>
+    <li><a href="https://www.valaratomics.com/technology" target="_blank">Valar Atomics — Technology</a></li>
+    <li><a href="https://www.valaratomics.com/ward-250" target="_blank">Valar Atomics — Ward 250</a></li>
+    <li><a href="https://research.contrary.com/company/valar-atomics" target="_blank">Contrary Research — Valar Atomics Business Breakdown</a></li>
+    <li><a href="https://techcrunch.com/2025/02/20/valar-atomics-comes-out-of-stealth-with-19m-and-a-pilot-reactor-site/" target="_blank">TechCrunch — Valar comes out of stealth with $19M</a></li>
+    <li><a href="https://www.cnbc.com/2025/11/10/nuclear-startup-valar-atomics-raises-130-million.html" target="_blank">CNBC — Valar Atomics raises $130 million</a></li>
+    <li><a href="https://www.bloomberg.com/news/articles/2026-03-31/palmer-luckey-backed-nuclear-startup-valar-lands-2-billion-valuation" target="_blank">Bloomberg — Valar Atomics $2B Valuation</a></li>
+    <li><a href="https://thenextweb.com/news/valar-atomics-nuclear-ai-data-centre-funding" target="_blank">The Next Web — Valar raises $450M at $2B valuation</a></li>
+    <li><a href="https://grist.org/energy/the-trump-administrations-favorite-nuclear-startup-has-ties-to-russia-and-epstein/" target="_blank">Grist — Trump admin's favorite nuclear startup has ties to Russia and Epstein</a></li>
+    <li><a href="https://www.utahinvestigative.org/who-is-valar-atomics/" target="_blank">Utah Investigative Journalism Project — Who is Valar Atomics?</a></li>
+    <li><a href="https://neutronbytes.com/2026/02/28/questions-abound-about-valar-atomics/" target="_blank">Neutron Bytes — Questions Abound About Valar Atomics</a></li>
+    <li><a href="https://www.valaratomics.com/docs/Project-Nova" target="_blank">Valar Atomics — Project NOVA Criticality Milestone</a></li>
+    <li><a href="https://www.ans.org/news/2025-09-25/article-7408/valar-atomics-breaks-ground-in-utah/" target="_blank">ANS — Valar Atomics breaks ground in Utah</a></li>
+    <li><a href="https://www.ans.org/news/2026-02-18/article-7764/ward250-reactor-rides-cargo-to-utah/" target="_blank">ANS — Ward250 reactor rides cargo to Utah</a></li>
+    <li><a href="https://www.twz.com/uncategorized/this-is-a-nuclear-reactor-packed-into-a-c-17-globemaster-iii" target="_blank">The War Zone — C-17 Airlifts A Micro Nuclear Reactor</a></li>
+    <li><a href="https://www.deseret.com/business/2026/03/17/isaiah-taylor-who-founded-valar-atomics-is-bringing-nuclear-power-online/" target="_blank">Deseret News — Who is Isaiah Taylor?</a></li>
+    <li><a href="https://www.energy.gov/articles/energy-department-selects-four-companies-advanced-nuclear-fuel-line-pilot-projects" target="_blank">DOE — Four Companies Selected for Advanced Nuclear Fuel Line Pilots</a></li>
+    <li><a href="https://www.valaratomics.com/docs/Valar-Atomics-is-Suing-the-NRC" target="_blank">Valar Atomics — Why We're Suing the NRC</a></li>
+    <li><a href="https://energylab.utah.gov/nuclear-energy/valar-atomics/" target="_blank">Utah San Rafael Energy Lab — Valar Atomics</a></li>
+    <li><a href="https://pulse2.com/valar-atomics-2-billion-valuation-for-nuclear-energy-startup-backed-by-defense-tech-leaders/" target="_blank">Pulse 2.0 — Valar Atomics $2B Valuation</a></li>
+  </ul>
+</div>
+
+
+</div>
+</body>
+</html>

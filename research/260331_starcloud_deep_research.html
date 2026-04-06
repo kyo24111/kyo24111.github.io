@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Starcloud — 宇宙データセンター・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* =====================================================
+     STARCLOUD DEEP RESEARCH — Monochrome
+     Font: Noto Sans JP (ja) + Poppins (en/num)
+     Design: profile.html と同系のモノクロシステム
+  ===================================================== */
+
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  /* ── KV GRID ── */
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  /* ── TABLE ── */
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  /* ── PROFILE CARD ── */
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 60px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  /* ── TIMELINE ── */
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  /* ── FUNDING ── */
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.yc    { border-left: 3px solid var(--mid); }
+  .f-card.a,.f-card.b,.f-card.c { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 72px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  /* ── VC CARD ── */
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-cp { font-size: 9.5px; color: var(--dim); text-transform: uppercase; font-family: 'Poppins', sans-serif; letter-spacing: .07em; margin: 10px 0 2px; }
+  .vc-cp-name { font-size: 13.5px; color: var(--text); font-weight: 600; margin-bottom: 4px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  /* ── INVESTOR PILLS ── */
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  /* ── CALLOUT ── */
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  /* ── QUOTE ── */
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  /* ── MARKET BOX ── */
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  /* ── CENTER PIN ── */
+  .centerpin { border: 2px solid var(--accent); border-radius: 12px; padding: 24px 28px; margin: 14px 0; background: var(--surface); text-align: center; }
+  .centerpin .cp-icon { font-size: 1.8rem; margin-bottom: 8px; }
+  .centerpin .cp-title { font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 10px; line-height: 1.4; }
+  .centerpin .cp-desc { font-size: 13.5px; color: var(--mid); line-height: 1.8; max-width: 560px; margin: 0 auto; }
+
+  /* ── IND LIST ── */
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  /* ── COMP CARD ── */
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  /* ── EPISODE CARD ── */
+  .ep-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; margin-bottom: 10px; }
+  .ep-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .ep-title { font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 8px; line-height: 1.4; }
+  .ep-body { font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .ep-body b { color: var(--text); font-weight: 600; }
+  .ep-body em { color: var(--muted); font-style: italic; }
+
+  /* ── SOURCES ── */
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">Space Tech</span>
+    <span class="badge badge-solid">Unicorn</span>
+  </div>
+  <h1>Starcloud</h1>
+  <p class="hero-sub">
+    地球のPower・Cooling・Location制約をゼロにする——<br>
+    低軌道（LEO）に本物のAI計算インフラを構築するスタートアップの全貌。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$1.1B</div><div class="lbl">Valuation (Mar 2026)</div></div>
+    <div class="kpi"><div class="val">$200M</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">Jan 2024</div><div class="lbl">設立</div></div>
+    <div class="kpi"><div class="val">3</div><div class="lbl">Co-Founders</div></div>
+    <div class="kpi"><div class="val">Redmond, WA</div><div class="lbl">本社</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Table of Contents</div>
+  <ol>
+    <li><a href="#hq">本社・会社概要</a></li>
+    <li><a href="#philip">創業者①：Philip Johnston</a></li>
+    <li><a href="#adi">創業者②：Adi Oltean</a></li>
+    <li><a href="#ezra">創業者③：Ezra Feilden</a></li>
+    <li><a href="#meeting">共同創業者の出会い</a></li>
+    <li><a href="#vc">VCと投資家の詳細</a></li>
+    <li><a href="#funding">資金調達の全体像</a></li>
+    <li><a href="#notable">著名人との関係・コメント</a></li>
+    <li><a href="#market">マーケット</a></li>
+    <li><a href="#bizmodel">ビジネスモデル</a></li>
+    <li><a href="#centerpin">センターピン</a></li>
+    <li><a href="#comp">競合</a></li>
+    <li><a href="#milestones">会社の歴史・マイルストーン</a></li>
+    <li><a href="#episode">会社のエピソード</a></li>
+    <li><a href="#industry">業界知識・背景</a></li>
+  </ol>
+</div>
+
+
+<!-- ========== 01 本社・会社概要 ========== -->
+<div class="sec" id="hq">
+  <div class="sec-label"><span class="num">01</span>本社・会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">現在の本社</div><div class="v">レドモンド、ワシントン州（シアトル近郊）</div></div>
+    <div class="kv-item"><div class="k">設立時の所在地</div><div class="v">エルセグンド、カリフォルニア州</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2024年1月</div></div>
+    <div class="kv-item"><div class="k">旧社名</div><div class="v">Lumen Orbit</div></div>
+    <div class="kv-item"><div class="k">YCバッチ</div><div class="v">Y Combinator S24（2024年夏）</div></div>
+    <div class="kv-item"><div class="k">業態</div><div class="v">宇宙コロケーションDC（衛星筐体の設計・打上・運用）</div></div>
+  </div>
+
+  <h3>事業の本質</h3>
+  <p>
+    Starcloudは<strong>「宇宙版コロケーション（ハウジング）データセンター」</strong>を構築する会社。
+    太陽光発電・放射冷却・通信を内蔵した<em>衛星筐体（ボックス）</em>を設計・打ち上げ、
+    その中に搭載するGPUチップはパートナー（Crusoe Cloud等）が持ち込んで運用するモデル。
+  </p>
+  <p>
+    地上データセンターの3制約（Power・Cooling・Location）を、軌道上の物理環境で根本解決する。
+    太陽光は遮蔽なし・永続・無料。宇宙空間（約−270℃）を無限の放熱先として活用、冷却水ゼロ。
+    土地取得・NIMBYも不要。エネルギーコストは地上比<strong>最大1/10</strong>と試算。
+  </p>
+
+  <h3>本社所在地の選択理由（推測・考察）</h3>
+  <p>創業時はエルセグンド（LA近郊）だったが、<strong>2024年2月、設立翌月</strong>にレドモンドへ移転。公式説明は「Starlink・Amazon LEO・AWS・Azureの宇宙・データセンター人材に近づくため」。実態を深掘りすると、Adi Olteanの存在がすべての起点になっている。</p>
+  <div class="callout">
+    <strong>立地のセンターピン：</strong>Adi Olteanが20年を過ごしたMicrosoft本社（レドモンド）と、直前職のSpaceX Starlink（レドモンド）が同じ地にある。彼の人脈・技術ネットワーク・元同僚が文字通り「ここに全員いる」という状態。
+  </div>
+  <table class="t">
+    <thead><tr><th>観点</th><th>評価・詳細</th></tr></thead>
+    <tbody>
+      <tr><td>Adi の人脈</td><td>Microsoft Redmondに20年在籍（Azureクラスター設計）＋SpaceX Starlink Redmondの直前職。元同僚エンジニアが最重要採用ターゲット</td></tr>
+      <tr><td>宇宙インフラ集積</td><td>SpaceX Starlink（レドモンド）、Blue Origin（ケント）、Amazon Kuiper（ベルビュー）が半径50km以内に集積。宇宙×クラウドの世界最高密度地帯</td></tr>
+      <tr><td>クラウド巨人への近接</td><td>Microsoft本社（レドモンド）、AWS本社（シアトル）が徒歩圏。将来顧客・パートナーとの日常的アクセスが可能</td></tr>
+      <tr><td>人材プール</td><td>宇宙エンジニア＋クラウドインフラ設計者が共存する世界でも稀有な地域。LA（JPL/Aerospace Corp）とは異なる「クラウド寄り」人材層</td></tr>
+      <tr><td>創業者の前職地</td><td>PhilipはMcKinsey（グローバル）、EzraはUK出身だが宇宙産業ネットワーク目的でWAを選択。Adiの地縁が決定打</td></tr>
+    </tbody>
+  </table>
+
+  <h3>戦略パートナー</h3>
+  <table class="t">
+    <thead>
+      <tr><th>パートナー</th><th>役割・内容</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Crusoe Cloud</td><td>Starcloud-1のH100を活用するAIクラウドサービスを提供。最初の顧客契約先。デンバー拠点</td></tr>
+      <tr><td>NVIDIA</td><td>H100 / Blackwell B200の宇宙向けパートナー。戦略投資家でもある（推定）。公式ブログで特集掲載</td></tr>
+      <tr><td>AWS</td><td>Starcloud-2にAWSサーバーブレードを搭載予定（クラウド連携実証）</td></tr>
+      <tr><td>Capella Space</td><td>Starcloud-1のH100でSAR衛星データをリアルタイム解析する顧客契約</td></tr>
+      <tr><td>SpaceX</td><td>Falcon 9でStarcloud-1を打ち上げ。Starcloud-3はStarshipからの展開を想定</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ========== 02 Philip Johnston ========== -->
+<div class="sec" id="philip">
+  <div class="sec-label"><span class="num">02</span>創業者①：Philip Johnston</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">PJ</div>
+      <div>
+        <h3>Philip Johnston</h3>
+        <div class="p-role">Co-Founder &amp; CEO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row">
+        <span class="lbl">出身地</span>
+        <span class="val">英国・サリー州ギルドフォード</span>
+      </div>
+      <div class="p-row">
+        <span class="lbl">生年</span>
+        <span class="val">1986年12月18日</span>
+      </div>
+      <div class="p-row">
+        <span class="lbl">生い立ち</span>
+        <span class="val">幼少期に南アフリカで5年間を過ごす。5人兄弟の末っ子。一卵性双生児の双子を持つ（弟：Adrian Johnston）</span>
+      </div>
+      <div class="p-row">
+        <span class="lbl">双子の弟</span>
+        <span class="val">Adrian Johnston — YCバックドスタートアップ「Elyos AI」創業者。兄弟で2社のYCユニコーンを生んだ異色の一家</span>
+      </div>
+      <div class="p-row">
+        <span class="lbl">特記</span>
+        <span class="val">Mensa（知能指数上位2%の団体）会員</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>学歴</h3>
+  <table class="t">
+    <thead>
+      <tr><th>学位</th><th>大学・機関</th><th>専攻</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>BSc（優等 First-class）</td><td>ノッティンガム大学（英国）</td><td>応用数学</td></tr>
+      <tr><td>MA（理学修士）</td><td>コロンビア大学（ニューヨーク）</td><td>応用数学・理論物理</td></tr>
+      <tr><td>MPA（行政学修士）</td><td>ハーバード大学 Kennedy School</td><td>国家安全保障・テクノロジー</td></tr>
+      <tr><td>MBA</td><td>ウォートン・スクール（ペンシルバニア大学）</td><td>経営学</td></tr>
+      <tr><td>CFA</td><td>CFA Institute</td><td>公認証券アナリスト資格</td></tr>
+    </tbody>
+  </table>
+
+  <h3>職歴</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">〜2021年</span>
+          <span class="tl-title">McKinsey &amp; Company</span>
+        </div>
+        <div class="tl-body">宇宙・防衛担当コンサルタント。各国の宇宙機関（国家宇宙庁）向け衛星プロジェクトを担当。この経験が「打上コスト低下＝軌道上DCのタイミング」という着想につながる</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2021〜2023年</span>
+          <span class="tl-title">Opontia（共同創業）</span>
+        </div>
+        <div class="tl-body">中東・アフリカを中心とするeコマース・ブランドアグリゲーター。2021年12月に<b>$42Mシリーズ A</b>（STV主導）を調達、Forbes中東トップ50スタートアップ12位。2023年にPerfectionに買収された（第一創業の成功と売却経験を持つ）</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年〜現在</span>
+          <span class="tl-title">Starcloud 共同創業・CEO</span>
+        </div>
+        <div class="tl-body">創業17ヶ月でYC史上最速ユニコーン（$1.1B）</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========== 03 Adi Oltean ========== -->
+<div class="sec" id="adi">
+  <div class="sec-label"><span class="num">03</span>創業者②：Adi Oltean</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">AO</div>
+      <div>
+        <h3>Adi Oltean</h3>
+        <div class="p-role">Co-Founder &amp; Chief Engineer</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row">
+        <span class="lbl">出身地</span>
+        <span class="val">ルーマニア（詳細は非公開）</span>
+      </div>
+      <div class="p-row">
+        <span class="lbl">生年</span>
+        <span class="val">推定1973〜1976年（ルーマニアでの学士取得が1995〜1996年と推定されることから逆算。非公開）</span>
+      </div>
+      <div class="p-row">
+        <span class="lbl">特記</span>
+        <span class="val">20年以上にわたり大規模GPUクラスター設計の第一線にいた希少な人材。Microsoft時代に25件以上の特許を取得</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>学歴</h3>
+  <table class="t">
+    <thead>
+      <tr><th>学位</th><th>大学</th><th>専攻</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>学士</td><td>ブカレスト大学（ルーマニア）</td><td>コンピュータサイエンス</td></tr>
+      <tr><td>学士</td><td>ブカレスト工科大学「ポリテフニカ」（ルーマニア）</td><td>化学</td></tr>
+    </tbody>
+  </table>
+
+  <h3>職歴</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">〜約20年間</span>
+          <span class="tl-title">Microsoft — Principal Software Engineer</span>
+        </div>
+        <div class="tl-body">Azure大規模GPUクラスターの設計・運用を担当。AIインフラの本質を熟知。特許取得数25件以上。まさに「クラウドGPUを誰よりも深く知るエンジニア」</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">〜2024年</span>
+          <span class="tl-title">SpaceX — Principal Software Engineer</span>
+        </div>
+        <div class="tl-body">Starlink向け「トラッキングビーム（Tracking Beams）」の責任エンジニア。Starship等の他の宇宙船でもStarlinkを利用可能にする技術を統括。<b>「GPUクラスター」×「宇宙通信」の両方を知る唯一の人物</b>として共同創業に参画</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年〜現在</span>
+          <span class="tl-title">Starcloud 共同創業・Chief Engineer</span>
+        </div>
+        <div class="tl-body">衛星搭載GPUシステムの設計を主導</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========== 04 Ezra Feilden ========== -->
+<div class="sec" id="ezra">
+  <div class="sec-label"><span class="num">04</span>創業者③：Ezra Feilden</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">EF</div>
+      <div>
+        <h3>Dr. Ezra Feilden</h3>
+        <div class="p-role">Co-Founder &amp; CTO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row">
+        <span class="lbl">出身地</span>
+        <span class="val">英国（詳細は非公開）</span>
+      </div>
+      <div class="p-row">
+        <span class="lbl">生年</span>
+        <span class="val">推定1990〜1993年（インペリアル・カレッジ博士課程修了2017年から英国標準の学位取得年数を逆算。非公開）</span>
+      </div>
+      <div class="p-row">
+        <span class="lbl">専門</span>
+        <span class="val">展開型ソーラーアレイ・大型展開構造物の設計。衛星ハードウェア10年超のキャリア</span>
+      </div>
+      <div class="p-row">
+        <span class="lbl">特記</span>
+        <span class="val">NASA「Lunar Pathfinder」ミッションに参画。XPRIZEファンデーションの公認人物</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>学歴</h3>
+  <table class="t">
+    <thead>
+      <tr><th>学位</th><th>大学</th><th>専攻</th><th>期間</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>MSc（理学修士）</td><td>インペリアル・カレッジ・ロンドン（英国）</td><td>材料科学・工学</td><td>2009〜2013年</td></tr>
+      <tr><td>PhD（博士）</td><td>インペリアル・カレッジ・ロンドン（英国）</td><td>材料工学</td><td>2014〜2017年</td></tr>
+    </tbody>
+  </table>
+
+  <h3>職歴</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">PhD後〜</span>
+          <span class="tl-title">Airbus Defence &amp; Space / SSTL</span>
+        </div>
+        <div class="tl-body">欧州最大の宇宙防衛企業で、展開型ソーラーパネルと大型構造物の設計に従事。複数の実証ミッションに参加</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">〜2024年</span>
+          <span class="tl-title">Oxford Space Systems</span>
+        </div>
+        <div class="tl-body">宇宙用展開構造物の専門企業。<b>NASA Lunar Pathfinder</b>ミッションにも貢献。宇宙衛星の電力・熱管理における技術的深みを積む</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年〜現在</span>
+          <span class="tl-title">Starcloud 共同創業・CTO</span>
+        </div>
+        <div class="tl-body">衛星本体の設計・構造・熱管理を統括。「宇宙でGPUを冷やす」という最難関の技術課題を担う</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========== 05 共同創業者の出会い ========== -->
+<div class="sec" id="meeting">
+  <div class="sec-label"><span class="num">05</span>共同創業者の出会い</div>
+
+  <p>3人の出会いの詳細な経緯は公式には明らかにされていないが、各種インタビューや公開情報から以下の文脈が読み取れる。</p>
+
+  <h3>Philip Johnston の問題意識</h3>
+  <p>
+    McKinseyで国家宇宙機関向け衛星プロジェクトを担当しつつ、
+    「生成AIの台頭」と「SpaceXによる打上コストの劇的低下」が同時に起きていることに着目。
+    <em>「地球のエネルギー制約が限界に達した時、宇宙に計算インフラを置くのが唯一の解」</em>という仮説を立てた。
+    ただし自身にはハードウェア（衛星設計）とGPUインフラ（クラウド）の深い専門性がなかったため、その2領域の第一人者を探し始める。
+  </p>
+
+  <h3>Adi Oltean との接点</h3>
+  <p>
+    Adi OlteanはMicrosoft Azureで20年間GPUクラスターを設計した後、SpaceXへ移ってStarlinkのトラッキングビームを担当。
+    「クラウドGPUインフラ」と「宇宙通信」の両方を知る唯一と言っていい人物。
+    Philip Johnstonとは業界ネットワークまたはYC応募プロセスを通じて接触したと考えられる。
+  </p>
+
+  <h3>Ezra Feilden との接点</h3>
+  <p>
+    EzraはAirbus/SSTL・Oxford Space Systemsで衛星用大型展開ソーラーアレイを設計してきたハードウェアの専門家。
+    「宇宙で大電力を生成し、熱をどう捨てるか」という課題はStarcloudのコア技術そのものであり、
+    英国の宇宙工学コミュニティを通じてPhilip（英国出身）またはAdiと繋がったと推定される。
+  </p>
+
+  <div class="callout">
+    <strong>3人の役割分担の完結性：</strong>
+    Philip（事業戦略・資金調達・宇宙政策）、Adi（GPUクラスター設計・衛星通信ソフト）、Ezra（衛星ハードウェア・電力・冷却）——
+    この3領域が全て揃わないと宇宙DCは実現しない。創業チームはそれを正確に意識して組まれている。
+  </div>
+
+  <h3>Lumen Orbit として YC S24 に採択</h3>
+  <p>
+    2024年のY Combinator Summer 24バッチに「Lumen Orbit」名義で採択。
+    わずか$3Mのプリシードで21ヶ月後の衛星打上（Starcloud-1）を達成し、
+    デモデー後17ヶ月でユニコーン到達という速度はYC全史でも前例がない。
+  </p>
+</div>
+
+
+<!-- ========== 06 VCと投資家 ========== -->
+<div class="sec" id="vc">
+  <div class="sec-label"><span class="num">06</span>VCと投資家の詳細</div>
+
+  <h3>リード投資家（シリーズA）</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Board Seat</span>
+      <div class="vc-name">Benchmark</div>
+      <div class="vc-role">Lead — Series A（Initial Tranche）</div>
+      <div class="vc-desc">
+        シリコンバレー最高峰のVCの一つ。eBay, Uber, Snapchat, Discordなど数多のユニコーンを初期から支援。
+        AUMは小規模を維持しつつ集中投資で世界最高水準のリターンを誇る。
+      </div>
+      <div class="vc-cp">担当GP</div>
+      <div class="vc-cp-name">Chetan Puttagunta（General Partner）</div>
+      <div class="vc-desc">
+        6度のMidas Lister（Forbes選出の世界トップVCランキング常連）。
+        Elastic、MongoDB、Modern Treasuryの初期投資を主導した、エンタープライズ・インフラ系の最有力GPの一人。
+        Starcloudのシリーズ Aをリードし、<strong>取締役会に参加</strong>。
+      </div>
+    </div>
+
+    <div class="vc-card lead">
+      <span class="lead-tag">Co-Lead</span>
+      <div class="vc-name">EQT Ventures</div>
+      <div class="vc-role">Co-Lead — Series A（Extension Tranche）</div>
+      <div class="vc-desc">
+        世界第2位のプライベートエクイティファンドEQTのベンチャー部門。
+        AUM $100B超。世界70か所以上のデータセンターを所有する、<em>字義通り「データセンター運営者」</em>でもある。
+      </div>
+      <div style="margin-top:10px">
+        <div class="vc-desc">
+          <strong>なぜ戦略的か：</strong>EQTにとってStarcloudへの投資は純粋なVC投資ではなく、
+          「将来の宇宙データセンター市場への早期ポジショニング」という戦略投資の側面が強い。
+          地上DCを70か所運営する立場から見て、次の計算インフラが宇宙に移行するシナリオを真剣に捉えている。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We believe that we are in the early innings of a decades-long buildout of AI infrastructure. Starcloudのコア・テーゼ——地上エネルギー制約が宇宙へのコンピュートシフトを強制する——は、現実と一致して進んでいる。</p>
+    <div class="attr">Chetan Puttagunta — Benchmark General Partner</div>
+  </div>
+
+  <h3>その他の投資家（シリーズA参加）</h3>
+  <div class="pills">
+    <span class="pill">Macquarie Capital</span>
+    <span class="pill">NFX</span>
+    <span class="pill">Nebular</span>
+    <span class="pill">Y Combinator</span>
+    <span class="pill">Adjacent</span>
+    <span class="pill">776 Ventures（Alexis Ohanian）</span>
+    <span class="pill">Fuse Ventures</span>
+    <span class="pill">Manhattan West</span>
+    <span class="pill">Monolith Power Systems</span>
+    <span class="pill s">NVIDIA（戦略投資・推定）</span>
+  </div>
+
+  <h3>各投資家のプロフィールと関係性</h3>
+  <table class="t">
+    <thead>
+      <tr><th>投資家</th><th>特徴・Starcloudとの関係性</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Macquarie Capital</td><td>オーストラリア系グローバル金融機関。インフラ投資の専門家。「宇宙DC」をインフラ資産として評価できる希少なLP層</td></tr>
+      <tr><td>NFX</td><td>ネットワーク効果特化のシリコンバレーVC。プリシード・シードからの継続支援。Morgan Bellerがシードでボード参加</td></tr>
+      <tr><td>Y Combinator</td><td>S24バッチとしてのプログラム参加に加え、シリーズAにもフォロー投資。YC史上最速ユニコーンとして公式に称賛</td></tr>
+      <tr><td>776 Ventures</td><td>Reddit共同創業者Alexis Ohanianのファンド。テック文化との親和性と宇宙インフラへの関心から参加</td></tr>
+      <tr><td>Monolith Power Systems</td><td>半導体・電力管理の専門企業。衛星上のGPU電力制御という技術的シナジーから戦略投資と推定</td></tr>
+      <tr><td>NVIDIA（推定）</td><td>H100・Blackwell B200の宇宙展開に際して戦略投資と複数メディアが報道。NVIDIA公式ブログでStarcloudを特集掲載、宇宙向けGPUハードウェアも共同発表</td></tr>
+    </tbody>
+  </table>
+
+  <h3>エンジェル投資家</h3>
+  <p>プリシード〜シリーズAを通じて多数のエンジェルが参加。特にプリシードでは「20人超のエンジェル投資家」が参加したとされる（個人名は多くが非公開）。以下は公開情報で確認できた主要エンジェル。</p>
+  <table class="t">
+    <thead><tr><th>エンジェル</th><th>経歴・背景</th><th>関係・出資の意味</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Alessandro Golkar</td>
+        <td>ミュンヘン工科大学（TUM）教授・ピコ/ナノ衛星コンステレーション講座長。元AirbusバイスプレジデントおよびMIT/Skoltech兼任教授</td>
+        <td>プリシード（2024年3月）参加。EzraがAirbus系のSSTLで働いていたことと英国宇宙工学コミュニティを通じてつながりがある。LinkedInで投資を自ら公開確認。技術的正当性の裏付けとして機能</td>
+      </tr>
+      <tr>
+        <td>Jan Leike</td>
+        <td>元OpenAI アラインメント研究部門責任者（Superalignment lead）。2024年にOpenAIを退職しAnthropicへ</td>
+        <td>シード（2024年10〜12月）参加。AI安全性の第一人者として宇宙DCというAIインフラの新フロンティアへの関与。宇宙LLM推論実証（2025年12月）の文脈での意味合いが大きい</td>
+      </tr>
+      <tr>
+        <td>Gen. Stephen Wilson</td>
+        <td>元米空軍副参謀総長（Vice Chief of Staff of the U.S. Air Force）</td>
+        <td>シリーズA（2026年3月）参加。防衛・宇宙インフラの政府側最高峰。宇宙DCの安全保障・政府契約面でのバリューアドが期待される</td>
+      </tr>
+      <tr>
+        <td>Dennis Muilenburg</td>
+        <td>元Boeing CEO（2015〜2019年）。737 MAX危機の責任者として退任したが航空宇宙の最深部を知る人物</td>
+        <td>シリーズA（2026年3月）参加。宇宙打上・大型構造物製造のサプライチェーン知見および航空宇宙業界ネットワークが資産</td>
+      </tr>
+      <tr>
+        <td>Kevin Johnson</td>
+        <td>元Starbucks CEO（2017〜2023年）。元Microsoft役員（Windows &amp; .NET担当EVP）でもあり、Redmondとの縁も深い</td>
+        <td>シリーズA（2026年3月）参加。Microsoft出身者としてAdi Olteanとの間接的ネットワークの可能性あり。Goldman Sachsボードメンバーとして大型インフラ資金調達への橋渡し期待</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ========== 07 資金調達 ========== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">07</span>資金調達の全体像</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <div class="r-badge">Pre-Seed</div>
+      <div class="f-amount">$2.4M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年3月（設立直後）</div>
+        <div class="f-desc">Nebular・Caffeinated Capital・Plug &amp; Play・Everywhere Ventures・Tiny.vc・Sequoia Scout Fund他、20人超のエンジェルが参加。この資金でStarcloud-1の設計・製造・打上の全サイクルを完遂。宇宙スタートアップとして桁外れのコスト効率。</div>
+      </div>
+      <div class="f-val">
+        <div class="vl">Valuation</div>
+        <div class="vv">非公開</div>
+      </div>
+    </div>
+
+    <div class="f-card yc">
+      <div class="r-badge">YC S24</div>
+      <div class="f-amount">~$500K</div>
+      <div class="f-detail">
+        <div class="f-date">2024年夏（S24バッチ）</div>
+        <div class="f-desc">Y Combinator Summer 2024バッチに「Lumen Orbit」名義で採択。標準投資額（$500K相当）に加えYCネットワークへのアクセス獲得。</div>
+      </div>
+      <div class="f-val">
+        <div class="vl">YC Post-money</div>
+        <div class="vv">~$5M</div>
+      </div>
+    </div>
+
+    <div class="f-card yc">
+      <div class="r-badge">Seed</div>
+      <div class="f-amount">$11M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年10〜12月</div>
+        <div class="f-desc">NFXリード（Morgan Bellerがボード参加）。Fuse VC・Soma Capital・Sequoia Scoutファンド・a16z Scoutファンド・In-Q-Tel・Plug &amp; Play参加。発表時は「200社以上のVCからタームシートオファー」と報道されるほど競争が過熱。Jan Leike（元OpenAI）もこのラウンドにエンジェル参加。</div>
+      </div>
+      <div class="f-val">
+        <div class="vl">Post-money</div>
+        <div class="vv">非公開</div>
+      </div>
+    </div>
+
+    <div class="f-card a">
+      <div class="r-badge">Series A</div>
+      <div class="f-amount">$170M</div>
+      <div class="f-detail">
+        <div class="f-date">2026年3月（発表：2026年3月30日）</div>
+        <div class="f-desc">Benchmark（リード：Chetan Puttagunta）＋EQT Ventures（共同リード）。2トランシェ構成：Initial（Benchmark主導）＋Extension（Benchmark・EQT共同主導）。累計調達$200Mに到達。バリュエーション$1.1Bでユニコーン到達。エンジェルにGen. Wilson・Muilenburg・Kevin Johnsonが参加。</div>
+      </div>
+      <div class="f-val">
+        <div class="vl">Post-money</div>
+        <div class="vv">$1.1B</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>調達資金の使途（公開情報から推定）</h3>
+  <table class="t">
+    <thead>
+      <tr><th>用途</th><th>内容</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Starcloud-2打上</td><td>2026年後半打上予定。H100複数枚＋NVIDIA Blackwell B200搭載。Starcloud-1の100倍の発電能力</td></tr>
+      <tr><td>Starcloud-3開発</td><td>SpaceX Starship搭載設計（200kW、3トン）。PEZディスペンサー方式による大量展開を想定</td></tr>
+      <tr><td>コンステレーション申請</td><td>FCC申請済みの最大88,000基の衛星コンステレーション構築に向けた設計・許認可</td></tr>
+      <tr><td>チーム・インフラ</td><td>レドモンドの本社・エンジニアリング体制拡充</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>資金効率の異常値：</strong>
+    通常の宇宙スタートアップが初号機打上までに$50M〜$200M以上を費やすのに対し、
+    Starcloudはわずか<strong>$3M（プリシード）</strong>で設計から打上まで21ヶ月で達成。
+    この資金効率がBenchmark・EQTを惹きつけた最大の根拠の一つ。
+  </div>
+</div>
+
+
+<!-- ========== 08 著名人との関係・コメント ========== -->
+<div class="sec" id="notable">
+  <div class="sec-label"><span class="num">08</span>著名人との関係・コメント</div>
+
+  <p>Starcloudは「荒唐無稽」と叩かれながら実績で証明した稀有なスタートアップ。業界の反応は強気と懐疑に二分され、両方の声を押さえておくことが本質理解に不可欠。</p>
+
+  <div class="quote">
+    <p>nanoGPT — the first LLM to train and inference in space. It begins.</p>
+    <div class="attr">Andrej Karpathy — 元OpenAI共同創業者・Tesla AI元責任者（X投稿, 2025年12月）</div>
+  </div>
+  <div class="quote">
+    <p>We believe that we are in the early innings of a decades-long buildout of AI infrastructure. Starcloud is pioneering a solution to the challenges of scaling AI infrastructure on Earth with orbital data centers. Their extraordinary engineering team has achieved significant technical breakthroughs in power and cooling, as well as innovative advancements in manufacturing processes. Most notably, the great team at Starcloud has reached these milestones while remaining exceptionally capital efficient.</p>
+    <div class="attr">Chetan Puttagunta — Benchmark General Partner, Midas Lister 6回（Series A発表, 2026年3月30日）</div>
+  </div>
+  <div class="quote">
+    <p>Space computing, the final frontier, has arrived. AI processing across space and ground systems enables real-time sensing, decision-making and autonomy.</p>
+    <div class="attr">Jensen Huang — NVIDIA CEO（NVIDIA Space Computing発表）</div>
+  </div>
+  <div class="quote">
+    <p>I honestly think the idea with the current landscape of putting data centers in space is ridiculous. It will make sense someday, but if you just do the very rough math of launch costs relative to the cost of power we can do on Earth, to say nothing of how you are going to fix a broken GPU in space — and they do break a lot, still, unfortunately. Orbital data centers are not something that's going to matter at scale this decade.</p>
+    <div class="attr">Sam Altman — OpenAI CEO（New Delhi インタビュー, 2026年2月）※Musk批判の文脈での発言、Starcloud固有ではない</div>
+  </div>
+
+  <h3>著名人一覧と見方</h3>
+  <table class="t">
+    <thead><tr><th>人物</th><th>所属</th><th>スタンス</th><th>コメント・根拠</th></tr></thead>
+    <tbody>
+      <tr><td>Andrej Karpathy</td><td>元OpenAI共同創業者</td><td>強気・感動</td><td>自身のnanoGPTが宇宙で訓練されたことへの純粋な感慨。「It begins.」という表現が歴史的瞬間への立会い意識を示す</td></tr>
+      <tr><td>Chetan Puttagunta</td><td>Benchmark GP</td><td>極めて強気</td><td>Series Aリード、自ら取締役会に参加。Benchmarkの看板案件として位置付け</td></tr>
+      <tr><td>Jensen Huang</td><td>NVIDIA CEO</td><td>強気・戦略的</td><td>NVIDIAはStarcloudをInceptionプログラムに加え、宇宙向けGPUモジュール共同発表。Starcloudはパートナー6社の一社</td></tr>
+      <tr><td>Sam Altman</td><td>OpenAI CEO</td><td>明確に懐疑的</td><td>打ち上げコスト・GPU故障率・修理不可能問題を根拠に「ridiculous」と断言。「今の十年では規模として機能しない」</td></tr>
+      <tr><td>Brad Smith</td><td>Microsoft社長</td><td>中立〜懐疑的</td><td>「将来的に衛星戦略を追求するかもしれないが今はそこに賭けない」（時期尚早との認識）</td></tr>
+      <tr><td>Cully Cavness</td><td>Crusoe共同創業者・COO</td><td>強気</td><td>「地球から宇宙の次のフロンティアへ、エネルギーファーストのアプローチを拡大する」（パートナー契約発表, 2025年10月）</td></tr>
+      <tr><td>Philip Johnston（自身）</td><td>Starcloud CEO</td><td>—</td><td>「An H100 is probably not the best chip for space, to be honest.」（技術的正直さが逆に信頼を生む）「fairly roundly pilloried（ボコボコに叩かれた）」と初期への批判を率直に認めた</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ========== 09 マーケット ========== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">09</span>マーケット</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM</div>
+      <div class="m-val">$391B</div>
+      <div class="m-desc">軌道上DCの推定市場規模（2035年）BIS Research。CAGR 67.4%（2029〜2035年）</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM</div>
+      <div class="m-val">$2T</div>
+      <div class="m-desc">地上AIデータセンター設備投資総額（今後5年、Goldman Sachs）。Starcloudが代替・補完する市場規模感</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM</div>
+      <div class="m-val">未定</div>
+      <div class="m-desc">現段階ではPoC。2030年以降のStarship商業運用後に競争力が生まれる構造</div>
+    </div>
+  </div>
+
+  <h3>市場拡大のドライバー</h3>
+  <table class="t">
+    <thead><tr><th>指標</th><th>数値・内容</th><th>出所</th></tr></thead>
+    <tbody>
+      <tr><td>地上DCの電力需要増</td><td>2022年比で2027年までに+50%、2030年末までに+165%</td><td>Goldman Sachs</td></tr>
+      <tr><td>米国DC電力消費</td><td>2022年の17GW → 2030年の35GW（倍増）</td><td>Goldman Sachs</td></tr>
+      <tr><td>宇宙経済全体</td><td>2035年までに$1.8兆</td><td>Morgan Stanley</td></tr>
+      <tr><td>軌道上DC市場（2029年）</td><td>$17.8億（約2,600億円）</td><td>BIS Research</td></tr>
+      <tr><td>軌道上DC市場（2035年）</td><td>$390.9億（約5.7兆円）、CAGR 67.4%</td><td>BIS Research</td></tr>
+      <tr><td>地上新設DC待機期間</td><td>電力グリッド接続待ち最長6〜7年が常態化（米国）</td><td>業界報告</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>注意：</strong>軌道上DCの市場規模数値はすべてアナリスト予測であり、現時点では実績市場がほぼゼロ（PoC段階）。Morgan Stanley・Goldman SachsはSpaceX・AI全体の分析であり、Starcloud単体への言及は少ない。Elon Musk「2〜3年以内に宇宙が最安コンピュートになる」は楽観的極端値として参照程度に。
+  </div>
+</div>
+
+
+<!-- ========== 10 ビジネスモデル ========== -->
+<div class="sec" id="bizmodel">
+  <div class="sec-label"><span class="num">10</span>ビジネスモデル</div>
+
+  <p>Starcloudは「地上のAWS/CoreWeaveに相当するが、プラットフォームが宇宙にある」インフラ事業者。現在は実証フェーズで収益の詳細は非公開だが、3つの収益源が設計されている。</p>
+
+  <h3>収益源①：GPU-as-a-Service（直接販売）</h3>
+  <p>Starcloudが衛星を所有・運用し、顧客がAPI/クラウドインターフェース経由で計算能力を購入するモデル。<strong>Capella Space</strong>はSAR衛星データのリアルタイム推論処理をStarcloud-1のH100に発注——データを地上に送信せず軌道上で処理することで帯域コストと処理遅延を劇的に削減。</p>
+
+  <h3>収益源②：コロケーション型ホスティング</h3>
+  <p><strong>Crusoe Cloud</strong>との契約（2025年10月発表）が代表例。Crusoeが顧客向けクラウドインターフェースを提供し、StarcloudはGPU+電力+冷却の物理インフラを担う分業構造。2026年後半のStarcloud-2にCrusoeのCloud moduleを搭載。2027年初頭にCrusoe経由で「宇宙からの限定GPU容量」を市場提供開始予定。</p>
+
+  <h3>収益源③：複合ペイロード戦略（Starcloud-2以降）</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">NVIDIA Blackwell GPU</div><div class="v">AI推論・訓練サービス。主力収益源</div></div>
+    <div class="kv-item"><div class="k">AWS Server Blade</div><div class="v">AWSクラウドの軌道上拡張（AWS Outposts）</div></div>
+    <div class="kv-item"><div class="k">Bitcoin採掘ASIC</div><div class="v">余剰電力での収益化。GPUの1/30のコストで同等kWあたり計算量。Johnston「ASICはGPUより30倍コスト効率が良い」</div></div>
+  </div>
+
+  <h3>コスト競争力の時系列</h3>
+  <table class="t">
+    <thead><tr><th>衛星世代</th><th>時期</th><th>状態</th><th>エネルギーコスト目安</th></tr></thead>
+    <tbody>
+      <tr><td>Starcloud-1</td><td>2025年11月〜</td><td>H100×1基、実証機</td><td>地上比で競争力なし（実証目的）</td></tr>
+      <tr><td>Starcloud-2</td><td>2026年後半</td><td>Blackwell+AWS+ASIC搭載</td><td>まだ非競争的。顧客実績構築フェーズ</td></tr>
+      <tr><td>Starcloud-3</td><td>2028〜2029年想定</td><td>200kW/3トン、Starship搭載</td><td><strong>$0.05/kWh</strong>目標。Starship $500/kg前提</td></tr>
+      <tr><td>コンステレーション</td><td>2030年代〜</td><td>最大88,000機</td><td>地上比1/10（Johnston主張）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>センターピンのビジネス的表現：</strong>Starcloudが「安くなる」のはStarship商業運用が前提。現在の事業は「将来の圧倒的コスト優位を確立するための実績構築フェーズ」であり、今のユニット経済性への疑問は的外れ。投資家はStarshipが飛ぶ2028〜2030年を見て$1.1Bを付けている。
+  </div>
+</div>
+
+
+<!-- ========== 11 センターピン ========== -->
+<div class="sec" id="centerpin">
+  <div class="sec-label"><span class="num">11</span>センターピン</div>
+
+  <div class="centerpin">
+    <div class="cp-icon">⚡</div>
+    <div class="cp-title">地上の電力制約崩壊 × Starship打ち上げコスト低下が、<br>同時に起きる「2〜5年の窓」が今だけ存在する</div>
+    <div class="cp-desc">「地上に建てられない」より先に「宇宙が安い」が実現する前のギャップを制するのがStarcloudの賭け。どちらか片方だけでは成立しない——両方が同時進行しているから今しかない。</div>
+  </div>
+
+  <h3>なぜ「今2024年」が起点か</h3>
+  <table class="t">
+    <thead><tr><th>要因</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>地上側の崩壊</td><td>2024年以降、AIモデルの訓練コンピュート需要が急増。米国新規DC建設は電力グリッド接続待ち3〜7年が常態化。許認可・環境アセスが年々難化</td></tr>
+      <tr><td>SpaceXコスト曲線</td><td>Falcon 9で$2,720/kgまで低下済み。Starshipが商業運用に入れば$500/kg以下が視野（2028〜2029年Johnston予測）。この曲線が宇宙DCを「いつか成立する話」から「もうすぐ成立する話」に変えた</td></tr>
+      <tr><td>GPUの登場</td><td>5年前はH100クラスのGPUが存在しなかった（A100登場は2020年）。高密度計算が小さい衛星に収まるようになったのは最近のこと</td></tr>
+      <tr><td>競合参入の気配</td><td>Blue Origin・SpaceX・Googleが2026年に相次いで参入表明。先行者利位を得るには実機実績が2025〜2026年に必要</td></tr>
+    </tbody>
+  </table>
+
+  <h3>成功のために「true でなければならない」前提</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">Starshipが2028〜2029年に商業打ち上げを開始し$500/kg以下を実現する</div>
+        <div class="ind-desc">Johnston自身「Starshipなしでは競争力がない」と明言。これが崩れるとビジネス全体の前提が変わる。最重要リスク。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">地上データセンターの電力制約が2030年代まで解消されない</div>
+        <div class="ind-desc">小型核融合・超小型SMR・送電網の急速整備が2028年以前に実現すると市場消滅リスクあり。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">LEO上でのGPU放射線耐性問題がソフトウェアで管理可能であり続ける</div>
+        <div class="ind-desc">Starcloud-1では30日以上の継続稼働を実証済み。ただし長期・大規模での検証はこれから。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">FCC・ITUで88,000衛星分の軌道スロットが確保できる</div>
+        <div class="ind-desc">Blue Origin・SpaceX・Googleも大規模申請中。軌道スロット競争が激化すれば先行者が有利。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========== 12 競合 ========== -->
+<div class="sec" id="comp">
+  <div class="sec-label"><span class="num">12</span>競合</div>
+
+  <h3>直接競合（宇宙データセンター）</h3>
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">Blue Origin — Project Sunrise</div>
+      <div class="comp-tag">最大の脅威</div>
+      <div class="comp-desc">FCC申請51,600衛星（2026年3月申請）。TeraWave通信衛星と併設。Bezos個人資産が背景で資本力は無限に近い。ただし未打ち上げ、実績ゼロ。</div>
+      <div class="comp-strong"><span>Starcloud優位点</span>H100稼働実績・LLM訓練実証という先行リード</div>
+    </div>
+    <div class="comp-card threat">
+      <div class="comp-name">SpaceX / xAI</div>
+      <div class="comp-tag">最大の脅威</div>
+      <div class="comp-desc">最大100万衛星申請（FCC）。Starlink 10,000機超の既存インフラ。「2〜3年で最安コンピュートは宇宙」（Musk発言）。xAIとの合併でAI事業との統合も視野。</div>
+      <div class="comp-strong"><span>Starcloud優位点</span>専業スタートアップとして意思決定速度が桁違い</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Google — Project Suncatcher</div>
+      <div class="comp-tag">中程度の脅威</div>
+      <div class="comp-desc">TPU搭載の太陽光衛星コンステレーション。プロトタイプ打ち上げ2027年初頭予定。Alphabet資本が背景。</div>
+      <div class="comp-strong"><span>Starcloud優位点</span>2年以上の先行実績</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">欧州コンソーシアム</div>
+      <div class="comp-tag">中程度の脅威</div>
+      <div class="comp-desc">Ariane Group + Airbus + Thales Alenia Space + HPE。2030年打ち上げ目標。EU資金背景。スピードは遅いが産業規模は大きい。</div>
+      <div class="comp-strong"><span>Starcloud優位点</span>4年以上の先行実績</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Aetherflux / Sophia Space / Aethero</div>
+      <div class="comp-tag">弱い脅威（現時点）</div>
+      <div class="comp-desc">同様の宇宙AIコンピュートスタートアップ。Aetherflux（2027年Q1打ち上げ目標）、Sophia Space（NVIDIA Inception参加）、Aethero（Jetson GPU搭載）が存在。いずれも小規模。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">地上AI Cloud（CoreWeave / Lambda / AWS）</div>
+      <div class="comp-tag">間接競合</div>
+      <div class="comp-desc">価格水準が下がれば代替選択肢。Starcloudが「置き換える」対象だが、Starship実現前は地上が圧倒的に安い。</div>
+    </div>
+  </div>
+
+  <h3>Starcloudの差別化ポイント</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">①</div>
+      <div>
+        <div class="ind-title">唯一の実証実績</div>
+        <div class="ind-desc">宇宙でのLLM訓練（2025年12月、世界初）。Data-center-class GPU（H100）を軌道上で30日以上継続稼働（世界初）。競合は全社まだ申請・設計段階。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">②</div>
+      <div>
+        <div class="ind-title">異常なキャピタルエフィシェンシー</div>
+        <div class="ind-desc">$3M（正確には$2.4M）で衛星製造・打ち上げを完遂。業界標準の$50M〜$200Mの1/20〜1/80。この効率がBenchmarkを惹きつけた核心。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">③</div>
+      <div>
+        <div class="ind-title">Starship展開設計</div>
+        <div class="ind-desc">SpaceXの「PEZディスペンサー」方式Starshipデプロイシステムに対応した設計。大量打ち上げ時代に最速でスケールできる構造を持つ唯一の企業。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========== 13 会社の歴史・マイルストーン ========== -->
+<div class="sec" id="milestones">
+  <div class="sec-label"><span class="num">13</span>会社の歴史・マイルストーン &amp; ロードマップ</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2024年1月</span>
+          <span class="tl-title">Lumen Orbit として設立</span>
+        </div>
+        <div class="tl-body">エルセグンド、CA。Philip Johnston・Adi Oltean・Ezra Feildenの3名で創業</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2024年夏</span>
+          <span class="tl-title">Y Combinator S24 採択</span>
+        </div>
+        <div class="tl-body">「データセンター in スペース」のピッチでアクセラレータに選出</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年11月</span>
+          <span class="tl-title">Starcloud-1 打上成功（SpaceX Falcon 9）</span>
+        </div>
+        <div class="tl-body">重量60kg、高度325〜350km LEO、ミッション寿命11ヶ月。<b>宇宙初のNVIDIA H100 GPU</b>を搭載（従来比100倍の計算性能）</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年12月</span>
+          <span class="tl-title">宇宙初のLLM推論・LLMトレーニングを実証</span>
+        </div>
+        <div class="tl-body">推論：Google DeepMindの「Gemma」（Geminiファミリー）を軌道上で実行。学習：Andrej Karpathy（OpenAI共同創業者）作のnanoGPTをシェイクスピア全集でトレーニング</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2026年2月</span>
+          <span class="tl-title">FCC申請：最大88,000基の衛星コンステレーション計画を提出</span>
+        </div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年3月</span>
+          <span class="tl-title">シリーズA $170M調達、バリュエーション$1.1B</span>
+        </div>
+        <div class="tl-body">YC史上最速ユニコーン到達（デモデー後17ヶ月）。社名をStarcloudに変更（レドモンド、WA）</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2026年後半（予定）</span>
+          <span class="tl-title">Starcloud-2 打上予定</span>
+        </div>
+        <div class="tl-body">NVIDIA H100複数枚＋<b>Blackwell B200</b>搭載。発電能力：SC-1の<b>100倍</b>。AWSサーバーブレード・ビットコインマイニング機器も搭載</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">将来（2027〜）</span>
+          <span class="tl-title">Starcloud-3：Starship搭載型大型DC衛星</span>
+        </div>
+        <div class="tl-body">200kW、3トン。SpaceX「PEZディスペンサー」方式で大量展開。長期目標：<b>5GW規模の軌道上データセンター</b>（ソーラーパネル4km×4km）</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ========== 14 会社のエピソード ========== -->
+<div class="sec" id="episode">
+  <div class="sec-label"><span class="num">14</span>会社のエピソード</div>
+
+  <div class="ep-card">
+    <div class="ep-label">Episode 01 — 創業のWhite Paper</div>
+    <div class="ep-title">「宇宙に送電するより、データセンターごと宇宙に置けばいい」</div>
+    <div class="ep-body">Philip Johnston（元McKinsey、ハーバードMPA/ウォートンMBA）が「宇宙太陽光を地上に送電する」という既存アイデアを研究中に視点を転換。コスト計算の結果「データセンターを宇宙に移動させる方が根本解決」という結論を出し、ホワイトペーパーを草稿。「GPUクラスター設計を誰よりも知るAdi」と「衛星ハードウェアを誰よりも知るEzra」を創業メンバーとして招聘。2024年1月、カリフォルニア州エルセグンドで<b>Lumen Orbit</b>として創業。設立翌月2月にはRedmondへ移転。</div>
+  </div>
+
+  <div class="ep-card">
+    <div class="ep-label">Episode 02 — 200社のVCが$11Mシードに殺到</div>
+    <div class="ep-title">YC後のシードラウンドに「200人以上のVC」からタームシートが届く</div>
+    <div class="ep-body">2024年夏のY Combinator S24バッチ採択後、デモデイでの$11Mシードに対し<b>200人以上のVCが投資を希望</b>した。ラウンドは3倍超のオーバーサブスクライブ。YCパートナーのTom Blomfield（Monzo創業者）に選ばれたことも話題に。結果的にNFX（Morgan Bellerがボード参加）、YC、FUSE、Soma Capital、Andreessen HorowitzスカウトファンドとSequoiaスカウトファンドが参加。2025年2月には追加$10M調達、合計$21Mのシードを達成。</div>
+  </div>
+
+  <div class="ep-card">
+    <div class="ep-label">Episode 03 — Lumen商標紛争と改名</div>
+    <div class="ep-title">大手通信会社に「Lumen」を取られていた</div>
+    <div class="ep-body">「Lumen Orbit」という社名でデータセンター事業を進めていたところ、大手通信企業<b>Lumen Technologies（旧CenturyLink）</b>がデータセンター事業における「Lumen」の商標権を主張。Johnston CEO「<em>Apparently, Lumen Technologies has the right to 'Lumen' for data centers.</em>」と認め、改名を決断。starcloud.comドメインを取得し、2025年3月に<b>Starcloud</b>として正式リブランド完了。$10Mの追加調達発表と同時に公表された。</div>
+  </div>
+
+  <div class="ep-card">
+    <div class="ep-label">Episode 04 — nanoGPT宇宙訓練（2025年12月）</div>
+    <div class="ep-title">Andrej KarpathyのnanoGPTをシェイクスピアで宇宙訓練</div>
+    <div class="ep-body">2025年11月2日、SpaceX Falcon 9（Bandwagon-4ライドシェアミッション）でStarcloud-1（60kg、H100 GPU 1基）を高度325kmのLEOに打ち上げ。打ち上げから数週間後の12月、以下の2つの「世界初」を達成：①Google DeepMindの「Gemma（2B）」を軌道上H100で推論実行（<b>世界初のLLM宇宙推論</b>）、②Andrej KarpathyのnanoGPTをシェイクスピア全集でゼロから訓練（<b>世界初のLLM宇宙訓練</b>）。Karpathyは「nanoGPT — the first LLM to train and inference in space. It begins.」とXに投稿。なお別搭載のNVIDIA A6000 GPUは<b>打ち上げ時に故障</b>。宇宙の過酷さを示す副産物でもあった。</div>
+  </div>
+
+  <div class="ep-card">
+    <div class="ep-label">Episode 05 — "Roundly Pilloried"（ボコボコに叩かれた）</div>
+    <div class="ep-title">「不可能だ」という批判の嵐の中でStarcloud-1を飛ばした</div>
+    <div class="ep-body">最初の発表時、X（旧Twitter）のコメント欄は「不可能だ」「馬鹿げている」で溢れた。Johnston CEO「<em>fairly roundly pilloried</em>」と表現。Sam Altman（OpenAI CEO）も別文脈で「ridiculous（馬鹿げている）」と発言。この批判の嵐の中で粛々とStarcloud-1を設計・製造・打ち上げし、LLM訓練という実績で反論した。「If you go back to some of the comments on X when we announced, people said it was impossible and we couldn't do it.」（Johnston）</div>
+  </div>
+
+  <div class="ep-card">
+    <div class="ep-label">Episode 06 — Starcloud-2にBitcoin採掘ASIC搭載（2026年3月）</div>
+    <div class="ep-title">「宇宙でビットコインを掘る」という予想外の発表</div>
+    <div class="ep-body">2026年3月7日、Starcloud-2（2026年後半打ち上げ予定）にBitcoin採掘ASIC搭載を発表。Johnston「<em>1kWあたりのBlackwell GPUコストは$30,000、1kWあたりのASICコストは$1,000。30倍の差がある</em>」と説明。軌道上は特定軌道でほぼ連続的に太陽光が得られるため、GPU使用率が低い時間帯にBTC採掘で余剰電力を収益化する戦略。The Silicon Snark誌「これが最も奇妙な部分ではない」と揶揄。しかしエネルギー効率という観点では合理的な判断。</div>
+  </div>
+
+  <div class="ep-card">
+    <div class="ep-label">Episode 07 — YC史上最速ユニコーン（2026年3月30日）</div>
+    <div class="ep-title">YCデモデーから17ヶ月でユニコーン到達——YC 2,000社超で最速</div>
+    <div class="ep-body">2026年3月30日、Series A $170M（Benchmark + EQT Ventures主導）クローズ、バリュエーション$1.1Bを達成。YCデモデーから<b>わずか17ヶ月</b>でユニコーン到達——これはY Combinator 2,000社超の歴史で最速記録。設立から換算すれば26ヶ月でユニコーン。累計調達$200M。エンジェル投資家に元Boeing CEO Dennis Muilenburg、米空軍退役大将Stephen Wilson、元Starbucks CEO Kevin Johnsonが参加したことも話題を呼んだ。</div>
+  </div>
+</div>
+
+
+<!-- ========== 15 業界知識・背景 ========== -->
+<div class="sec" id="industry">
+  <div class="sec-label"><span class="num">15</span>業界知識・背景</div>
+
+  <h3>なぜ「今」宇宙データセンターが浮上したか</h3>
+  <p>宇宙DCというアイデア自体は10年以上前から存在した。それが「荒唐無稽なSF」から「VCが$170Mを出す現実のビジネス」に変わったのは、2つの曲線の収束による。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">地上側の崩壊：データセンター電力需要の急騰</div>
+        <div class="ind-desc">GPT-4クラスのモデルは前世代比100倍以上の計算を要求。Goldman Sachs: 2022〜2030年でDC電力需要165%増。米国では新規DC建設の電力グリッド接続待ちが最長6〜7年。NIMBYと環境規制も強化。「建てたくても建てられない」という制約が現実化した。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">SpaceX打ち上げコスト革命</div>
+        <div class="ind-desc">Space Shuttle時代の$54,500/kg → Falcon 9再使用で$1,400〜2,000/kg（約1/30）。Starshipが商業運用に入れば$500/kg以下が視野（約1/100）。この曲線が「宇宙でのコンピュートはいつか成立する」を「もうすぐ成立する」に変えた。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>地上データセンターの3制約（物理的詳細）</h3>
+  <table class="t">
+    <thead><tr><th>制約</th><th>地上の問題</th><th>宇宙での解決</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><strong>Power（電力）</strong></td>
+        <td>大型DCは中規模都市並みの電力を消費。送電網整備・グリッド接続が律速。再エネでも「夜・曇天」に発電ゼロ</td>
+        <td>軌道上の太陽定数は<b>1,361 W/m²</b>（地上最良値より36%高い）。大気・天候損失ゼロ。日照軌道では<b>ほぼ連続発電</b>。宇宙用マルチジャンクション太陽電池は効率28〜39%（地上最良22〜26%）</td>
+      </tr>
+      <tr>
+        <td><strong>Cooling（冷却）</strong></td>
+        <td>大型DCは年間数百万ガロンの冷却水を消費。水資源問題・冷却設備コストが深刻化</td>
+        <td>宇宙空間の背景温度は<b>約2.7ケルビン（-270℃）</b>。放射パネルをDeep Spaceに向けるだけでGPU廃熱をパッシブに放出可能。冷媒・水・ポンプ不要の<b>放射冷却</b>のみで運用</td>
+      </tr>
+      <tr>
+        <td><strong>Location（立地）</strong></td>
+        <td>土地取得・環境アセス・地域住民調整・電力インフラ整備が必要。許認可に数年</td>
+        <td>物理的土地不要。FCC/ITU軌道スロット申請（現状は地上許認可より迅速）。NIMBYなし</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>宇宙でGPUを冷やす仕組み（放射冷却の物理）</h3>
+  <p>宇宙では対流（空気）も液体冷却も使えない。唯一の熱放出手段は<strong>熱放射（Stefan-Boltzmann則）</strong>。ラジエーターの面積と温度差を設計すれば高密度の廃熱放出が可能。技術的課題は：太陽光が当たる面と影側で温度差±150℃超が生じ、<em>熱膨張・熱収縮による機械的疲労（Thermal cycling）</em>が発生すること。CTO Feilden（Airbus SSTL出身、展開型ソーラーアレイ専門、インペリアル材料工学PhD）がこの設計の中核を担う。</p>
+
+  <h3>放射線リスク——GPUを宇宙に置く最大の技術課題</h3>
+  <p>LEO（高度325km）では<strong>高エネルギー陽子と重イオン</strong>が絶えず飛び交う。4nmプロセスのH100は微細化されるほど放射線脆弱性が増す（小さいトランジスタは少ないエネルギーでビットフリップ）。</p>
+  <table class="t">
+    <thead><tr><th>放射線現象</th><th>影響</th></tr></thead>
+    <tbody>
+      <tr><td>Single Event Upset (SEU)</td><td>ビットフリップ。演算誤りやシステムクラッシュ</td></tr>
+      <tr><td>Single Event Latch-up (SEL)</td><td>永続的ハードウェア損傷</td></tr>
+      <tr><td>Total Ionizing Dose (TID)</td><td>長期の性能劣化</td></tr>
+    </tbody>
+  </table>
+  <div class="callout">
+    <strong>Starcloudの対策：Software-defined radiation tolerance（ソフトウェア定義放射線耐性）</strong><br>
+    ハードウェアを強化（Radiation hardening）するのではなく、ソフトウェア層でエラー検知・訂正・再起動を行う独自アプローチ。実績：Starcloud-1は30日以上、重大クラッシュなしに継続稼働（実証済み）。ただし別搭載のA6000 GPUは打ち上げ時に故障しており、完全に解決した問題ではなく「管理可能な問題」として扱われている段階。
+  </div>
+
+  <h3>スケールの現実（批判者の論点）</h3>
+  <table class="t">
+    <thead><tr><th>比較指標</th><th>数値</th></tr></thead>
+    <tbody>
+      <tr><td>2025年地球上の全稼働衛星数</td><td>約10,000機（うちStarlink約7,000機）</td></tr>
+      <tr><td>Starcloud-1のH100枚数</td><td><b>1枚</b></td></tr>
+      <tr><td>2025年にNVIDIAが地上に販売したGPU数</td><td>数百万枚規模</td></tr>
+      <tr><td>Starcloudが申請した衛星数</td><td>88,000機（人類が宇宙に打ち上げた全衛星累計の約5.5倍）</td></tr>
+      <tr><td>GPT-4クラス訓練に必要なGPU数</td><td>数千〜数万枚（密結合クラスター）</td></tr>
+    </tbody>
+  </table>
+  <p>大規模AI訓練の問題：GPT-4クラスのモデル訓練は数千〜数万GPUの<em>密結合</em>が必要。宇宙でそれを実現するには超大型衛星か、編隊飛行（Formation flying）する衛星間のレーザー通信リンクが必要——これは現時点で未解決の技術課題。Starcloudが「今」提供できるのは推論・小規模実験・エッジ処理であり、大規模訓練は将来課題として残っている。</p>
+</div>
+
+
+<!-- ========== SOURCES ========== -->
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://techcrunch.com/2026/03/30/starcloud-raises-170-million-series-ato-build-data-centers-in-space/" target="_blank">Starcloud raises $170M Series A — TechCrunch</a></li>
+    <li><a href="https://www.cnbc.com/2025/12/10/nvidia-backed-starcloud-trains-first-ai-model-in-space-orbital-data-centers.html" target="_blank">Starcloud trains first AI model in space — CNBC</a></li>
+    <li><a href="https://www.businesswire.com/news/home/20260330024111/en/Starcloud-Raises-$170M-Series-A-at-$1.1bn-Valuation-Led-by-Benchmark-and-EQT-Ventures" target="_blank">Series A Press Release — BusinessWire</a></li>
+    <li><a href="https://www.geekwire.com/2026/orbital-ai-seattle-area-startup-starcloud-hits-1-1b-valuation-to-build-space-based-data-centers/" target="_blank">Starcloud hits $1.1B valuation — GeekWire</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Philip_Johnston_(entrepreneur)" target="_blank">Philip Johnston — Wikipedia</a></li>
+    <li><a href="https://blogs.nvidia.com/blog/starcloud/" target="_blank">Starcloud bringing data centers to space — NVIDIA Blog</a></li>
+    <li><a href="https://www.ycombinator.com/companies/starcloud" target="_blank">Starcloud — Y Combinator</a></li>
+    <li><a href="https://www.datacenterfrontier.com/site-selection/article/55337494/starcloud-launches-orbital-ai-data-center-with-nvidia-h100-gpu" target="_blank">Starcloud NVIDIA H100 launch — Data Center Frontier</a></li>
+    <li><a href="https://www.geekwire.com/2026/blue-origin-data-center-space-race-project-sunrise/" target="_blank">Blue Origin Project Sunrise — GeekWire</a></li>
+    <li><a href="https://nocap.blog/founder/adi-oltean/" target="_blank">Adi Oltean profile — No Cap Blog</a></li>
+    <li><a href="https://www.xprize.org/people/dr-ezra-feilden" target="_blank">Dr. Ezra Feilden — XPRIZE</a></li>
+    <li><a href="https://techstartups.com/2026/03/30/starcloud-raises-170m-at-1-1b-valuation-to-launch-orbital-ai-data-centers-as-demand-for-compute-outpaces-earths-limits/" target="_blank">Starcloud $1.1B — Tech Startups</a></li>
+  </ul>
+</div>
+
+
+</div>
+</body>
+</html>
