@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Top Talent DB</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #ffffff;
+      --surface: #f4f4f4;
+      --card:    #f0f0f0;
+      --border:  #d8d8d8;
+      --text:    #111111;
+      --muted:   #888888;
+      --accent:  #111111;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans JP', 'Hiragino Sans', sans-serif;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+    .page { max-width: 1040px; margin: 0 auto; padding: 48px 24px 80px; }
+
+    /* ── HERO ── */
+    .hero {
+      display: flex; align-items: center; gap: 28px;
+      padding: 28px 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      margin-bottom: 28px;
+    }
+    .hero-icon {
+      width: 64px; height: 64px; border-radius: 14px;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; flex-shrink: 0; color: #fff;
+    }
+    .hero-text h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 22px; font-weight: 800; letter-spacing: -0.3px;
+    }
+    .hero-text .sub { color: var(--muted); font-size: 13px; margin-top: 3px; }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 10px; }
+    .hero-meta span { font-size: 12px; color: var(--muted); }
+    .hero-meta span b { color: var(--text); font-weight: 600; }
+
+    /* ── FILTER TABS ── */
+    .filter-bar {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 28px;
+    }
+    .filter-btn {
+      padding: 6px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px; font-weight: 600;
+      font-family: 'Noto Sans JP', sans-serif;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .filter-btn:hover { border-color: var(--text); color: var(--text); }
+    .filter-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* ── SECTION LABEL ── */
+    .sec-label {
+      font-size: 11px; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: .7px;
+      margin: 36px 0 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .sec-label .count {
+      font-size: 11px; color: var(--muted); font-weight: 400;
+    }
+
+    /* ── CARDS GRID ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+
+    /* ── TALENT CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+      transition: border-color .15s;
+    }
+    .card:hover { border-color: #aaa; }
+    .card-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .card-name { font-size: 15px; font-weight: 700; line-height: 1.3; }
+    .card-name .en { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; color: var(--muted); display: block; margin-top: 1px; }
+    .card-industry-badge {
+      font-size: 10px; font-weight: 700; color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 7px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .card-row {
+      display: flex; gap: 6px; align-items: flex-start;
+      margin-bottom: 5px;
+      font-size: 12.5px;
+    }
+    .card-row .label {
+      color: var(--muted); font-weight: 600;
+      min-width: 50px; flex-shrink: 0;
+    }
+    .card-row .val { color: var(--text); }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+    .tag {
+      font-size: 11px; padding: 2px 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      color: var(--text);
+    }
+
+    .card-note {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      line-height: 1.6;
+    }
+
+    /* ── SEARCH ── */
+    .search-wrap {
+      margin-bottom: 20px;
+    }
+    .search-input {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: var(--surface);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      transition: border-color .15s;
+    }
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--muted); }
+
+    /* ── STATS ── */
+    .stats-bar {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .stat { text-align: center; }
+    .stat .num { font-family: 'Poppins', sans-serif; font-size: 24px; font-weight: 700; }
+    .stat .lbl { font-size: 11px; color: var(--muted); }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-icon">★</div>
+    <div class="hero-text">
+      <h1>Top Talent DB</h1>
+      <div class="sub">各業界のいけてる人材データベース</div>
+      <div class="hero-meta">
+        <span>Updated: <b>2026-04-09</b></span>
+        <span>Source: <b>top_talent.md</b></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-bar">
+    <div class="stat"><div class="num" id="total-count">0</div><div class="lbl">Total</div></div>
+    <div class="stat"><div class="num" id="industry-count">0</div><div class="lbl">Industries</div></div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-wrap">
+    <input class="search-input" type="text" placeholder="名前・所属・得意分野で検索..." id="search-input">
+  </div>
+
+  <!-- FILTER -->
+  <div class="filter-bar" id="filter-bar">
+    <button class="filter-btn active" data-industry="all">すべて</button>
+  </div>
+
+  <!-- CONTENT -->
+  <div id="content"></div>
+
+</div>
+
+<script>
+const talents = [
+  // AI / テック
+  {
+    name: "渡辺創太",
+    nameEn: "Sota Watanabe",
+    born: "1993年生まれ（32歳）",
+    affiliation: "Stake Technologies CEO / Astar Network創設者",
+    education: "慶應義塾大学",
+    expertise: ["ブロックチェーン", "Web3", "L1プロトコル設計", "グローバルDev Relations"],
+    industry: "AI / テック",
+    note: "日本発Web3プロジェクトとして最大規模。海外展開・資金調達で突出。"
+  },
+  {
+    name: "西川徹",
+    nameEn: "Toru Nishikawa",
+    born: "1979年生まれ（46歳）",
+    affiliation: "Preferred Networks CEO",
+    education: "東京大学大学院",
+    expertise: ["深層学習", "産業ロボット", "自動運転", "エッジAI"],
+    industry: "AI / テック",
+    note: "日本最強のAIスタートアップ創業者。トヨタ・ファナック・NTTから大型出資。"
+  },
+  {
+    name: "松尾豊",
+    nameEn: "Yutaka Matsuo",
+    born: "1975年生まれ（50歳）",
+    affiliation: "東京大学大学院教授 / 松尾研究室",
+    education: "東京大学 → 東京大学大学院",
+    expertise: ["深層学習", "NLP", "AI政策", "グラフニューラルネットワーク"],
+    industry: "AI / テック",
+    note: "日本のAI研究の象徴的人物。松尾研発のスタートアップ多数。データ分析（ゲーム/競馬/ソフトボール）好き。"
+  },
+  // スタートアップ / VC
+  {
+    name: "小泉文明",
+    nameEn: "Fumiaki Koizumi",
+    born: "1979年生まれ（46歳）",
+    affiliation: "株式会社メルカリ 取締役会長",
+    education: "早稲田大学",
+    expertise: ["グロース戦略", "上場準備", "CFO実務", "組織スケール"],
+    industry: "スタートアップ / VC",
+    note: "メルカリを世界展開・上場まで牽引。日本スタートアップエコシステムの中核人物。"
+  },
+  {
+    name: "田所雅之",
+    nameEn: "Masayuki Tadokoro",
+    born: "—",
+    affiliation: "ユニコーンファーム CEO",
+    education: "—",
+    expertise: ["スタートアップ戦略", "PMF理論", "エバンジェリスト"],
+    industry: "スタートアップ / VC",
+    note: "「起業の科学」著者。スタートアップ論の体系化で日本随一。"
+  },
+  {
+    name: "木下慶彦",
+    nameEn: "Yoshihiko Kinoshita",
+    born: "—",
+    affiliation: "WiL General Partner",
+    education: "—",
+    expertise: ["シリコンバレー型VC", "日本企業のグローバル展開", "ディープテック投資"],
+    industry: "スタートアップ / VC",
+    note: "日米ハイブリッドVCの先駆け。ソニー・トヨタ等大手との連携強い。"
+  },
+  // ファイナンス / 投資
+  {
+    name: "山口揚平",
+    nameEn: "Yohei Yamaguchi",
+    born: "1975年生まれ（50歳）",
+    affiliation: "シェアーズカフェ 代表",
+    education: "早稲田大学 → 東京大学大学院",
+    expertise: ["企業価値評価", "M&A", "哲学×経営"],
+    industry: "ファイナンス / 投資",
+    note: "BCG出身。「なぜ僕らは働くのか」など思想×ビジネス書多数。"
+  },
+  {
+    name: "藤野英人",
+    nameEn: "Hideto Fujino",
+    born: "1966年生まれ（59歳）",
+    affiliation: "レオス・キャピタルワークス 代表取締役社長",
+    education: "早稲田大学",
+    expertise: ["長期投資哲学", "日本株中小型株", "ファンドマネジメント"],
+    industry: "ファイナンス / 投資",
+    note: "ひふみ投信創設者。「投資家が『株を買う』よりも大切にしていること」著者。"
+  },
+  // コンサル / 戦略
+  {
+    name: "名和高司",
+    nameEn: "Takashi Nawa",
+    born: "1957年生まれ（68歳）",
+    affiliation: "一橋大学大学院 教授 / BCG元シニアパートナー",
+    education: "東京大学 → ハーバードビジネススクール MBA",
+    expertise: ["経営変革", "ESG経営", "パーパス経営", "大企業改革"],
+    industry: "コンサル / 戦略",
+    note: "「パーパス経営」著者。日本の大企業変革論の第一人者。"
+  },
+  // ハードウェア / インフラ / エネルギー
+  {
+    name: "坂本幸雄",
+    nameEn: "Yukio Sakamoto",
+    born: "1946年生まれ（79歳）",
+    affiliation: "エルピーダメモリ 元CEO",
+    education: "東北大学",
+    expertise: ["半導体製造", "大規模工場運営", "経営再建"],
+    industry: "ハードウェア / インフラ",
+    note: "DRAM世界大手の経営者として日本半導体の最後の砦を担った。"
+  },
+  {
+    name: "永田暁彦",
+    nameEn: "Akihiko Nagata",
+    born: "1979年生まれ（46歳）",
+    affiliation: "リアルテックファンド 代表 / ユーグレナ副社長",
+    education: "早稲田大学",
+    expertise: ["ディープテック投資", "バイオ/素材", "ハードウェアスタートアップ支援"],
+    industry: "ハードウェア / インフラ",
+    note: "日本唯一のディープテック専門VC。「地球を救う会社」への投資哲学。"
+  },
+  // メディア / クリエイター
+  {
+    name: "箕輪厚介",
+    nameEn: "Kosuke Minowa",
+    born: "1985年生まれ（40歳）",
+    affiliation: "幻冬舎 編集者",
+    education: "早稲田大学",
+    expertise: ["カリスマ編集", "コミュニティビジネス", "コンテンツマーケティング"],
+    industry: "メディア / クリエイター",
+    note: "「多動力」「メモの魔力」など累計100万部超を手がける。"
+  },
+  // 研究 / アカデミア
+  {
+    name: "大隅良典",
+    nameEn: "Yoshinori Ohsumi",
+    born: "1945年生まれ（80歳）",
+    affiliation: "東京工業大学 栄誉教授",
+    education: "東京大学 → 東京大学大学院",
+    expertise: ["オートファジー研究", "細胞生物学"],
+    industry: "研究 / アカデミア",
+    note: "2016年ノーベル生理学・医学賞。日本の基礎研究の象徴。"
+  },
+  // 政財界
+  {
+    name: "村上誠一郎",
+    nameEn: "Seiichiro Murakami",
+    born: "1952年生まれ（73歳）",
+    affiliation: "衆議院議員（自民党）",
+    education: "東京大学 → ハーバード大学",
+    expertise: ["規制改革", "行政改革", "財政政策"],
+    industry: "政財界 / 官僚",
+    note: "自民党内の改革派。規制改革・行政改革で独自路線。"
+  },
+];
+
+// Build industry list
+const industries = ["all", ...new Set(talents.map(t => t.industry))];
+
+// Stats
+document.getElementById("total-count").textContent = talents.length;
+document.getElementById("industry-count").textContent = industries.length - 1;
+
+// Build filter buttons
+const filterBar = document.getElementById("filter-bar");
+industries.slice(1).forEach(ind => {
+  const btn = document.createElement("button");
+  btn.className = "filter-btn";
+  btn.dataset.industry = ind;
+  btn.textContent = ind;
+  filterBar.appendChild(btn);
+});
+
+let currentIndustry = "all";
+let currentSearch = "";
+
+function buildContent() {
+  const content = document.getElementById("content");
+  content.innerHTML = "";
+
+  const filtered = talents.filter(t => {
+    const matchInd = currentIndustry === "all" || t.industry === currentIndustry;
+    const q = currentSearch.toLowerCase();
+    const matchSearch = !q || [t.name, t.nameEn, t.affiliation, t.education, ...t.expertise, t.note].some(s => s && s.toLowerCase().includes(q));
+    return matchInd && matchSearch;
+  });
+
+  if (filtered.length === 0) {
+    content.innerHTML = '<div style="color:var(--muted);text-align:center;padding:60px 0;font-size:13px;">該当する人材が見つかりません</div>';
+    return;
+  }
+
+  // Group by industry
+  const grouped = {};
+  filtered.forEach(t => {
+    if (!grouped[t.industry]) grouped[t.industry] = [];
+    grouped[t.industry].push(t);
+  });
+
+  Object.entries(grouped).forEach(([ind, people]) => {
+    const label = document.createElement("div");
+    label.className = "sec-label";
+    label.innerHTML = `${ind} <span class="count">${people.length}人</span>`;
+    content.appendChild(label);
+
+    const grid = document.createElement("div");
+    grid.className = "cards-grid";
+
+    people.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="card-header">
+          <div class="card-name">
+            ${p.name}
+            <span class="en">${p.nameEn}</span>
+          </div>
+          <div class="card-industry-badge">${p.industry}</div>
+        </div>
+        ${p.born !== "—" ? `<div class="card-row"><span class="label">年齢</span><span class="val">${p.born}</span></div>` : ""}
+        <div class="card-row"><span class="label">所属</span><span class="val">${p.affiliation}</span></div>
+        ${p.education !== "—" ? `<div class="card-row"><span class="label">学歴</span><span class="val">${p.education}</span></div>` : ""}
+        <div class="tags">${p.expertise.map(e => `<span class="tag">${e}</span>`).join("")}</div>
+        ${p.note ? `<div class="card-note">${p.note}</div>` : ""}
+      `;
+      grid.appendChild(card);
+    });
+
+    content.appendChild(grid);
+  });
+}
+
+// Filter click
+filterBar.addEventListener("click", e => {
+  const btn = e.target.closest(".filter-btn");
+  if (!btn) return;
+  filterBar.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  currentIndustry = btn.dataset.industry;
+  buildContent();
+});
+
+// Search
+document.getElementById("search-input").addEventListener("input", e => {
+  currentSearch = e.target.value;
+  buildContent();
+});
+
+buildContent();
+</script>
+</body>
+</html>
