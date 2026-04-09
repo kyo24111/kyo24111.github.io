@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oklo Inc. — マイクロ原子炉スタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">マイクロ原子炉</span>
+    <span class="badge badge-white">高速核分裂炉</span>
+    <span class="badge badge-solid">NYSE上場 / Sam Altman創業支援</span>
+  </div>
+  <h1>Oklo Inc.</h1>
+  <p class="hero-sub">
+    「10〜20年間無給油で動くマイクロ原子炉」——<br>
+    高速核分裂（Fast Fission）と使用済み核燃料リサイクルを組み合わせたAurora Powerhouseを開発。Sam AltmanはOpenAIでAI電力需要を生み出す一方、OkloのSPACを組成して上場させた「需要と供給の二刀流」として注目される。2024年5月NYSE上場、2025年9月INLで着工。データセンター向けにSwitch 12GW・Meta 1.2GWの大型契約を持つ。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$8.5B</div><div class="lbl">時価総額（2026年4月）</div></div>
+    <div class="kpi"><div class="val">$2.5B</div><div class="lbl">手元現金（2026年1月時点）</div></div>
+    <div class="kpi"><div class="val">18 GW</div><div class="lbl">受注パイプライン（2025年Q4）</div></div>
+    <div class="kpi"><div class="val">2013</div><div class="lbl">設立年</div></div>
+    <div class="kpi"><div class="val">Santa Clara</div><div class="lbl">本社所在地</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">Aurora技術の仕組み</a></li>
+    <li><a href="#timeline">開発経緯・マイルストーン</a></li>
+    <li><a href="#altman">Sam Altmanとの関係</a></li>
+    <li><a href="#funding">資金調達・NYSE上場（SPAC）</a></li>
+    <li><a href="#customers">顧客・受注パイプライン</a></li>
+    <li><a href="#team">経営陣</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">リスクと課題</a></li>
+    <li><a href="#why-now">なぜ今注目すべきか</a></li>
+  </ol>
+</div>
+
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Oklo Inc.</div></div>
+    <div class="kv-item"><div class="k">ティッカー</div><div class="v">NYSE: OKLO</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2013年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Santa Clara, California</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">Jacob DeWitte（共同創業者）</div></div>
+    <div class="kv-item"><div class="k">COO</div><div class="v">Caroline Cochran（共同創業者）</div></div>
+    <div class="kv-item"><div class="k">時価総額</div><div class="v">約$8.5B（2026年4月）</div></div>
+    <div class="kv-item"><div class="k">技術アプローチ</div><div class="v">高速核分裂炉（SFR）+ ヒートパイプ冷却 + 核燃料リサイクル</div></div>
+    <div class="kv-item"><div class="k">燃料</div><div class="v">HALEU（高濃縮低濃縮ウラン、10〜20%濃縮）</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">開発段階・売上前。初号機 2027〜2028年稼働目標</div></div>
+  </div>
+
+  <p>Okloは2013年にMIT核工学出身のJacob DeWitteとCaroline Cochranによって設立されたマイクロ原子炉スタートアップだ。2つの大きな問いを出発点にしている——「なぜ原子炉は巨大でなければならないのか」「なぜ核廃棄物を燃料として再利用できないのか」。</p>
+
+  <p>Okloが開発する<strong>Aurora Powerhouse</strong>は、高速中性子核分裂（Fast Fission）とヒートパイプによる受動冷却を組み合わせた小型炉だ。従来の軽水炉（LWR）のように大量の冷却水を必要とせず、遠隔地・データセンター・軍施設など電力グリッドの届かない場所に工場で組み立てて設置できる。さらに他の原子炉から出た使用済み燃料を再加工して自炉の燃料として使える「廃棄物→燃料」ループが長期的な最大の差別化要因だ。</p>
+
+  <p>同社が世界的に注目を浴びたのは、<strong>Sam Altman（OpenAI CEO）が2024年に自身のSPAC「AltC Acquisition Corp.」を通じてOkloをNYSEに上場させた</strong>ことがきっかけだ。AIが消費する膨大な電力を「需要側（OpenAI）」で生み出しながら、「供給側（Oklo）」でも事業を持つという構図が「核融合版のHelionに次ぐSam Altmanの次の賭け」として世界中の投資家と報道機関の関心を集めた。</p>
+
+  <div class="callout">
+    <strong>EBR-IIの直系：</strong>Okloの技術的系譜はIDAHO国立研究所（INL）で1964〜1994年に運転された実験炉EBR-II（Experimental Breeder Reactor II）に遡る。EBR-IIはすでに液体ナトリウム冷却高速炉の実用性を30年間証明しており、Okloはその知見をマイクロリアクター向けに再設計したとも言える。
+  </div>
+</div>
+
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">2</span> Technology</div>
+  <h2>Aurora Powerhouseの仕組み — 高速核分裂・HALEU・ヒートパイプ</h2>
+
+  <h3>高速核分裂炉（Fast Fission Reactor）とは</h3>
+  <p>一般的な原子炉は中性子を水（軽水）で「減速」してから核分裂を起こす。これを熱中性子炉（Light-Water Reactor）と呼ぶ。一方、Okloの<strong>高速炉（Fast Reactor）</strong>は中性子を減速させない。高エネルギーの「速い中性子」のまま核分裂連鎖反応を維持する。これによって2つの利点が生まれる——①使用済み核燃料（核廃棄物）を含む多様な燃料を燃やせる、②放射性廃棄物の総量を大幅に削減できる。</p>
+
+  <h3>HALEU燃料（High-Assay Low-Enriched Uranium）</h3>
+  <p>通常の原子炉燃料はウラン-235を3〜5%に濃縮したものを使う。OkloのAuroraは<strong>10〜20%に濃縮したHALEU</strong>を使う。濃度が高い分だけコンパクトな炉心で十分な核分裂を維持でき、炉のサイズを大幅に小型化できる。ただしHALEUの製造は世界的に供給量が限られており（後述のリスク参照）、これがOkloを含む次世代原子炉全体の最大のボトルネックとなっている。</p>
+
+  <h3>ヒートパイプ冷却 — 水ゼロのパッシブ冷却</h3>
+  <p>従来の原子炉は大量の冷却水を必要とし、川・湖・海岸沿いにしか建設できない。Okloは<strong>ヒートパイプ（金属製の密封管に液体金属を封入したもの）</strong>で炉心の熱を受動的に外部へ運ぶ。電動ポンプも冷却水も不要で、動作する部品が極めて少ない。炉心からの熱は超臨界CO₂（sCO₂）タービンで発電に変換される。この設計により、Okloのリアクターは<strong>砂漠・山岳地帯・データセンター敷地内・軍事基地</strong>など水資源のない場所にも設置できる。</p>
+
+  <h3>給油なし10〜20年間稼働</h3>
+  <p>一度燃料を装填すると<strong>10〜20年間無給油で稼働</strong>する設計だ（"Fire and forget"と同社は呼ぶ）。炉の規模は1棟の建物程度の敷地に収まり、工場で製造してトレーラーで輸送・設置するモジュール型。設置時間とコストを劇的に削減できる。</p>
+
+  <h3>核燃料リサイクル — 廃棄物が燃料になる</h3>
+  <p>Okloの長期的な最大の差別化は<strong>使用済み核燃料（核廃棄物）を自社炉の燃料に再加工できる</strong>点だ。米国には40年以上の商業炉運転から蓄積された9万トン以上の使用済み核燃料が保管されており、「処理に困る廃棄物」扱いされている。Okloはこれを高速炉用の金属燃料に再加工する燃料リサイクル施設をテネシー州・オハイオ州Piketon（Centrus Energyとの合弁）で計画している。これが実現すれば、HALEU供給制約を大幅に緩和しながら核廃棄物問題を同時に解決する、一石二鳥のビジネスモデルが完成する。</p>
+
+  <h3>炉サイズのラインナップ</h3>
+  <table class="t">
+    <thead>
+      <tr><th>モデル</th><th>出力</th><th>主要ターゲット</th><th>ステータス</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Aurora（初期設計）</td><td>1.5 MWe</td><td>遠隔地・軍施設</td><td>2020年NRC申請→2022年差し戻し</td></tr>
+      <tr><td>Aurora Powerhouse（現行）</td><td>15〜50 MWe</td><td>産業・データセンター</td><td>INL初号機着工（2025年9月）</td></tr>
+      <tr><td>Aurora Powerhouse Pool（大型）</td><td>75 MWe</td><td>大規模DC・グリッド</td><td>設計段階</td></tr>
+      <tr><td>複数台クラスター</td><td>最大1.2 GW+</td><td>ハイパースケーラー</td><td>Meta Ohio構想（2034年目標）</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===================== 3. TIMELINE ===================== -->
+<div class="sec" id="timeline">
+  <div class="sec-label"><span class="num">3</span> Milestones</div>
+  <h2>開発経緯・主要マイルストーン</h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2013</span><span class="tl-title">設立 — MITの二人が核廃棄物問題に挑む</span></div>
+        <div class="tl-body">Jacob DeWitte（CEO）とCaroline Cochran（COO）がMIT核工学部出身者として共同創業。「廃棄物を燃料にする原子炉」というビジョンで発足。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2014</span><span class="tl-title">Y Combinator参加 — Sam Altman（当時YC社長）と出会う</span></div>
+        <div class="tl-body">YCのバッチ参加でDeWitteとAltmanが出会う。Altmanは翌年Hydrazine Capitalのシードラウンドをリードし、以降10年間にわたってOkloの会長を務める。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2019</span><span class="tl-title">INLとHALEU燃料協定 — 政府から燃料確保</span></div>
+        <div class="tl-body">アイダホ国立研究所（INL）と協定を締結し、初号機用のHALEU燃料5MTを確保。INLサイトでの建設許可も取得し、政府支援の基盤が整う。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2020年3月</span><span class="tl-title">NRCへ史上初の非LWR複合ライセンス申請</span></div>
+        <div class="tl-body">1.5MWe Aurora炉に関する<b>Combined License Application（COLA）</b>をNRCへ提出。非軽水炉としてNRCへのCOLA提出は史上初。核規制の最前線に立つ。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2022年1月</span><span class="tl-title">NRCが申請を否認 — 最大の挫折</span></div>
+        <div class="tl-body">NRCが情報不足を理由に<b>申請を差し戻し（without prejudice）</b>。特に「最大想定事故」の解析が不十分と判断。株価・投資家心理に打撃。同年9月に新たなLicensing Project Planを再提出し、再申請プロセスを開始。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2024年5月</span><span class="tl-title">NYSE上場 — Sam AltmanのSPAC（AltC）経由</span></div>
+        <div class="tl-body">AltC Acquisition Corp.との合併でNYSE上場（OKLO）。調達額$306M。ただし上場初日に<b>株価54%下落</b>（$18→$8.45）。上場後は「前評判に対する現実」の格差が鮮明になった。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2024年12月</span><span class="tl-title">Switch 12GW マスター電力協定 — 史上最大級の核エネルギー契約</span></div>
+        <div class="tl-body">データセンター企業Switchと<b>12GW・20年間のマスター電力協定</b>を締結。米国史上最大級のクリーンエネルギー契約として業界に衝撃を与えた。株価が急騰し時価総額が急拡大。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年4月</span><span class="tl-title">Sam Altmanが会長を退任 — COI回避でOpenAIとの取引解禁へ</span></div>
+        <div class="tl-body">Sam AltmanがOpenAI CEOとOklo会長の<b>利益相反（COI）を排除</b>するため会長職を辞任。DeWitteが会長を兼任。「Okloが今後OpenAIや他のAI企業と直接取引できるようにするため」と明言。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年9月</span><span class="tl-title">INL初号機着工 — 米国で現代初の先進原子炉建設開始</span></div>
+        <div class="tl-body">Idaho National LaboratoryサイトでAurora Powerhouseの<b>着工式</b>。先進核分裂炉の実際の建設開始は米国で数十年ぶり。2027〜2028年の商業運転開始を目標とする。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年1月</span><span class="tl-title">Meta 1.2GW契約 + ATM$1.5B調達完了</span></div>
+        <div class="tl-body">MetaのPrometheus AIスーパークラスター向け<b>最大1.2GW</b>（オハイオ州Pike County）の電力供給契約。同時期にATMプログラムで$1.5B調達し、手元現金~$2.5Bを確保。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date muted">2027〜2028年（目標）</span><span class="tl-title">INL初号機商業運転開始</span></div>
+        <div class="tl-body">NRCライセンス取得を前提に、INLサイトの初号機が<b>商業発電を開始</b>する目標。達成されれば非LWR先進炉としての初のNRCライセンス取得＋商業運転となり、以降のフリート展開への道が開ける。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 4. SAM ALTMAN ===================== -->
+<div class="sec" id="altman">
+  <div class="sec-label"><span class="num">4</span> Sam Altman Connection</div>
+  <h2>Sam AltmanとOklo — 「需要と供給の二刀流」の全貌</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">関与開始</div><div class="v">2014年（YC期間中に出会い、2015年シード投資）</div></div>
+    <div class="kv-item"><div class="k">役職（会長期間）</div><div class="v">Chairman（2015〜2025年4月）</div></div>
+    <div class="kv-item"><div class="k">投資手段</div><div class="v">Hydrazine Capital（Peter Thielとの共同出資）</div></div>
+    <div class="kv-item"><div class="k">SPAC</div><div class="v">AltC Acquisition Corp.（Altmanが組成したSPAC）</div></div>
+    <div class="kv-item"><div class="k">上場後持株比率</div><div class="v">約2.6%（2024年中頃のSEC開示）</div></div>
+    <div class="kv-item"><div class="k">退任理由</div><div class="v">OpenAI CEOとの利益相反を解消し、Okloがより多くのAI企業と取引できるようにするため</div></div>
+  </div>
+
+  <h3>関与の経緯</h3>
+  <p>Sam AltmanはY Combinator社長時代の2014年にDeWitteと出会った。「エネルギーはあらゆる問題の根本」というAltmanの哲学と、「核廃棄物を燃料にする」というOkloのビジョンが共鳴し、翌2015年にHydrazine Capital（Peter Thielとの共同ファンド）でシードラウンドをリード、会長に就任した。</p>
+
+  <p>以降Altmanは<strong>約10年間にわたって会長を務め続ける</strong>という、スタートアップ支援者としては極めて異例の長期コミットメントを見せた。通常VCや支援者は3〜5年で手を引くが、Altmanは核規制の壁・資金難・NRC差し戻しなど困難な時期を通じて関与し続けた。</p>
+
+  <h3>AltC SPACとNYSE上場</h3>
+  <p>Altmanは2023年に自身のSPAC「AltC Acquisition Corp.」を組成し、Okloを$850M評価額で合併・上場させた。SPACの組成からOklo上場の舵取りまで、Altmanが個人として直接設計した上場プロセスだ。2024年5月のNYSE上場初日に株価が54%下落する洗礼を受けたものの、その後Switch契約・Meta契約を経て2025年10月には史上最高値$193.84を記録した。</p>
+
+  <h3>「需要と供給の二刀流」ナラティブ</h3>
+  <p>世界的な注目を集めたのは次のナラティブだ——<strong>Sam Altmanは「需要側」（OpenAI）でAI学習・推論に使う膨大な電力需要を生み出しながら、「供給側」（Oklo）でその電力源も抑えている</strong>。CNBCはOkloのNYSE上場を「Sam Altman、AI電力需要に応えるため核スタートアップOkloを上場させる」と報じた。この構図はAltmanを「AIエネルギー経済の垂直統合者」として描き出す強力なストーリーになっている。</p>
+
+  <div class="quote">
+    <p>We're going to need a lot more energy. I think nuclear is a key part of the solution. Jacob and Caroline have done an incredible job building Oklo.</p>
+    <div class="attr">— Sam Altman, 2024年SPAC上場時コメント</div>
+  </div>
+
+  <h3>会長退任（2025年4月）とその意味</h3>
+  <p>Altmanは2025年4月22日、OpenAI CEOとOklo会長の兼任による利益相反を排除するために退任を発表した。表向きはCOI回避だが、裏側の意味は大きい——<strong>Okloが今後OpenAIと直接の電力購入契約を結べるようになった</strong>。Altman在任中は「Okloの会長であるOpenAI CEOがOpenAIのためにOkloの電力を買う」という構造が成立しえなかった。退任によってその扉が開かれた。</p>
+
+  <div class="callout">
+    <strong>Altmanのエネルギー戦略全体像：</strong>Altmanは核融合（Helion Energy：取締役＋$375M個人投資）、核分裂マイクロ炉（Oklo：会長〜退任後も主要株主）、太陽光（個人ポートフォリオ）という形でAIに必要なエネルギー源の複数レイヤーに同時にポジションを持つ。エネルギー安全保障を「次の10年の最重要課題」と位置づけ、AI企業経営者でありながら最もエネルギー供給側に深くコミットしているシリコンバレーの人物の一人だ。
+  </div>
+</div>
+
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">5</span> Funding &amp; Listing</div>
+  <h2>資金調達 · NYSE上場（SPAC）</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <div class="r-badge">ATM Offering</div>
+      <div class="f-amount">$1.18B</div>
+      <div class="f-detail">
+        <div class="f-date">2025年12月〜2026年1月</div>
+        <div class="f-desc">$1.5Bプログラムの大半を実行。手元現金を~$2.5Bに積み上げ。経営陣は「2028年商業運転まで外部調達不要の fortress balance sheet」と表現。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">SPAC上場</div>
+      <div class="f-amount">$306M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年5月</div>
+        <div class="f-desc">AltC Acquisition Corp.との合併完了（NYSE: OKLO）。当初最大$500M想定だったがSPAC投資家の大量解約で$306Mに縮小。上場時時価総額$850M pre-money。初日に54%下落。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">DOE選定</div>
+      <div class="f-amount">—</div>
+      <div class="f-detail">
+        <div class="f-date">2025年1月</div>
+        <div class="f-desc">DOEのAdvanced Nuclear Fuel Line Pilot Projectsに選定。HALEU燃料供給の政府プログラムでCentrus等と並ぶ4社の一角に。補助金・燃料アクセスの確保。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Seed / Series A〜C</div>
+      <div class="f-amount">非公開</div>
+      <div class="f-detail">
+        <div class="f-date">2015〜2023年</div>
+        <div class="f-desc">Hydrazine Capital（Sam Altman）、Dustin Moskovitz（Facebook共同創業者）、Ron Conway（SV Angel）、Tim Draper（Draper Associates）、Kevin Efrusy（Accel）などが参加。核スタートアップとしては比較的少額で長期にわたるブートストラップ型の資金調達。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>株価の軌跡</h3>
+  <table class="t">
+    <thead>
+      <tr><th>時期</th><th>株価 / 時価総額</th><th>出来事</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>2024年5月10日（上場初日）</td><td>$8.45（-54%）</td><td>NYSE上場。期待値と現実のギャップが露呈し初日に急落。</td></tr>
+      <tr><td>2025年1月</td><td>~$28 / 時価総額$2.6B</td><td>Switch 12GW契約発表後の急騰。</td></tr>
+      <tr><td>2025年10月15日（高値）</td><td>$193.84</td><td>史上最高値。時価総額$11B超。AI核エネルギーブームの頂点。</td></tr>
+      <tr><td>2026年4月（現在）</td><td>~$51 / 時価総額$8.5B</td><td>高値から-73%下落。ただしYoY+300%。依然として無収益企業としては異例の評価額。</td></tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===================== 6. CUSTOMERS ===================== -->
+<div class="sec" id="customers">
+  <div class="sec-label"><span class="num">6</span> Customers &amp; Pipeline</div>
+  <h2>顧客・受注パイプライン — 18 GW（2025年Q4時点）</h2>
+
+  <div class="callout">
+    <strong>重要な注意点：</strong>下記の契約の大半はLOI（Letter of Intent：意向書）やMaster Agreementであり、法的拘束力のある個別PPAではない。収益が発生するのは炉が稼働してから。2026年4月時点では同社の売上はゼロ。
+  </div>
+
+  <table class="t">
+    <thead>
+      <tr>
+        <th>顧客</th>
+        <th>規模</th>
+        <th>詳細</th>
+        <th>種別</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Switch（DC）</td>
+        <td>12 GW</td>
+        <td>2024年12月 マスター電力協定。20年間・2044年まで。史上最大級のクリーンエネルギー契約の一つ。</td>
+        <td>Master Agreement</td>
+      </tr>
+      <tr>
+        <td>Meta（Prometheus AIクラスター）</td>
+        <td>最大1.2 GW</td>
+        <td>2026年1月。オハイオ州Pike County。第1フェーズ150MW（~2030年）、最終1.2GW（2034年目標）。TerraPowerとVistraと並ぶ6.6GW契約の一角。</td>
+        <td>Partnership Agreement</td>
+      </tr>
+      <tr>
+        <td>Equinix（DC）</td>
+        <td>最大500 MW</td>
+        <td>20年間PPA。$25M前払いあり。Equinixの世界的DC向け脱炭素戦略の一環。</td>
+        <td>PPA（前払あり）</td>
+      </tr>
+      <tr>
+        <td>Eielson空軍基地（USAF/DLA）</td>
+        <td>~100 MW</td>
+        <td>アラスカ州。30年間固定価格契約。2023年一度撤回も2025年6月に再選定通知。NRCライセンス取得が条件。</td>
+        <td>政府契約（条件付き）</td>
+      </tr>
+      <tr>
+        <td>Wyoming Hyperscale</td>
+        <td>100 MW</td>
+        <td>LOI</td>
+        <td>LOI</td>
+      </tr>
+      <tr>
+        <td>匿名DC企業×2社</td>
+        <td>計750 MW</td>
+        <td>2024年11月発表のLOI群</td>
+        <td>LOI</td>
+      </tr>
+      <tr>
+        <td>RPower</td>
+        <td>未定</td>
+        <td>天然ガス+核のフェーズドハイブリッドモデル。DC向け段階的供給。</td>
+        <td>MOU</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>18GWのパイプラインが実現した場合、長期収益ポテンシャルは電力単価$80〜100/MWhで試算すると<strong>累計$150B超</strong>に達する。ただし実際の稼働・収益化は早くて2027〜2028年以降であり、大半のプロジェクトは2030年代の話だ。</p>
+</div>
+
+
+<!-- ===================== 7. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">7</span> Leadership</div>
+  <h2>経営陣</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">JD</div>
+      <div>
+        <h3>Jacob DeWitte</h3>
+        <div class="p-role">Co-founder · CEO · Chairman（2025年4月〜）</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">MIT 核工学 学士・修士</div></div>
+      <div class="p-row"><div class="lbl">経歴</div><div class="val">MIT出身後、直接Okloを共同創業。実質的に核エネルギー以外のキャリアを持たず、ビジョナリーな専門家創業者の典型。</div></div>
+      <div class="p-row"><div class="lbl">特徴</div><div class="val">技術者でありながらビジネス開発・規制対応でもトップを張る。NRC審査官との対話や議会証言も自ら行う。Aspen Ideas等で積極的に発信。</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">CC</div>
+      <div>
+        <h3>Caroline Cochran</h3>
+        <div class="p-role">Co-founder · COO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">MIT 航空宇宙工学・核工学</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">DeWitteと並ぶ真の共同創業者。オペレーション全体を担い、製品・施工・サプライチェーンを統括。「二人でセットでOkloを作った」と多くのインタビューで語る。</div></div>
+      <div class="p-row"><div class="lbl">外部評価</div><div class="val">Fortune「世界で最も影響力のある女性」リスト掲載（2024年）など。</div></div>
+    </div>
+  </div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <div class="lead-tag">Founder</div>
+      <div class="vc-name">Sam Altman</div>
+      <div class="vc-role">元Chairman（2015〜2025年4月）/ 主要株主</div>
+      <div class="vc-desc">Hydrazine Capitalでシード投資。10年間会長。OpenAI CEOとの兼任COIを解消するため2025年4月退任。保有比率~2.6%（2024年）。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Craig Bealmear</div>
+      <div class="vc-role">CFO</div>
+      <div class="vc-desc">SPAC上場前から財務責任者。$1.5B ATMプログラムを主導し「2028年まで外部調達不要」の体制を構築。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Dustin Moskovitz</div>
+      <div class="vc-role">初期投資家</div>
+      <div class="vc-desc">Facebook共同創業者。効果的利他主義（EA）的観点から核エネルギーに早期投資。OKLOの初期エンジェル群の一人。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Ron Conway / Tim Draper</div>
+      <div class="vc-role">エンジェル投資家</div>
+      <div class="vc-desc">SV Angelのロン・コンウェイ、Draper AssociatesのティムドレイパーがSeed参加。シリコンバレーの「大御所エンジェル」からの信頼の証。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">8</span> Competitive Landscape</div>
+  <h2>競合比較 — SMR・マイクロ炉の勢力図</h2>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">Oklo（自社）</div>
+      <div class="comp-tag">最有力</div>
+      <div class="comp-desc">高速炉（SFR）。最小・最モジュール型（15〜50MWe）。核燃料リサイクル唯一。データセンター特化パイプライン18GW。NRC再申請中（先進炉として最もNRC審査を進めた実績）。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">TerraPower（Bill Gates）</div>
+      <div class="comp-tag">大型SMR</div>
+      <div class="comp-desc">Natrium炉（345MWe）。グリッド規模でOkloとは別市場。Meta契約でOkloと並立。2030年代稼働。HALEU不足で工期遅延経験あり（Okloと同じ課題）。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">X-energy（Amazon出資）</div>
+      <div class="comp-tag">ガス炉・大型</div>
+      <div class="comp-desc">Xe-100（高温ガス炉・80MWe）。Amazon 5GW PPA。$700M調達済み。2030年代稼働。Okloとはサイズ・燃料技術ともに異なる。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Kairos Power（Google出資）</div>
+      <div class="comp-tag">溶融塩炉</div>
+      <div class="comp-desc">フッ化物塩冷却炉（FHR・140MWe）。東テネシーに低出力デモ炉（KP-FHR）建設中——2026年臨界達成なら先進炉の最初の達成例に。Google 500MW PPA。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Last Energy（独立）</div>
+      <div class="comp-tag">最速展開</div>
+      <div class="comp-desc">PWR-20（20MWe・従来型軽水炉を小型化）。英国規制承認取得（2025年2月）。欧州で$32B受注。2026〜2027年初号機稼働を狙う。技術的に最も保守的だが最も近い稼働。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">NuScale Power（NYSE: SMR）</div>
+      <div class="comp-tag">上場・失速</div>
+      <div class="comp-desc">軽水炉SMR（77MWe）。2022年NRC設計認証取得も、2023年にIdahoプロジェクトが顧客撤退でキャンセル。SMR過大評価の代表例として反面教師に。TVAとの再起動を模索中。</div>
+    </div>
+  </div>
+
+  <h3>Okloの独自ポジション</h3>
+  <p>Okloが競合と最も異なるのは<strong>「燃料リサイクル×マイクロスケール×データセンター特化」の組み合わせ</strong>だ。他のSMR企業が電力会社や国家グリッド向けの100〜345MWe炉を開発する中、Okloは「ハイパースケーラーの構内に設置できる小型炉」×「10年後には既存核廃棄物を燃料にできる炉」という独自ポジションを持つ。また$2.5Bの手元現金という財務的優位性は競合の大半を上回る。</p>
+</div>
+
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">9</span> Risks &amp; Challenges</div>
+  <h2>リスクと課題</h2>
+
+  <div class="warn-box">
+    <div class="w-title">Risk 1 — NRCライセンシングの遅延（最大リスク）</div>
+    <ul>
+      <li><b>2022年の差し戻し</b>で2〜3年の遅れが生じた。非LWR先進炉がNRCから Combined License を取得した例は現時点でゼロ。</li>
+      <li>2025年時点でCOLA Phase 1の事前審査は「重大な欠缺なし」と評価されたが、フルCOLA審査は通常2〜4年以上。2027〜2028年稼働目標の達成は楽観的シナリオ。</li>
+      <li>1ヶ月の遅延 = 数億ドルの追加キャッシュバーン。遅延が続けばATMで得た$2.5Bでも不足する可能性。</li>
+    </ul>
+  </div>
+
+  <div class="warn-box">
+    <div class="w-title">Risk 2 — HALEU燃料の供給ボトルネック（業界共通の壁）</div>
+    <ul>
+      <li>世界のHALEU生産能力は現在<b>年間約900kg</b>（Centrus Piketon施設のみ）。Okloが10GWを展開するには2040年までに累計1,200MT（年間400MT）が必要——現在の生産量の<b>約450倍</b>が必要な計算。</li>
+      <li>Centrusとの合弁（Piketon、2030年代稼働予定）やDOE Fuel Line Programで対応を図るが、根本解決には10年以上かかる。</li>
+      <li>OkloはHistorically Russian HALEUに依存してきた業界の構造を変えようとしているが、米国内製造体制の構築には時間とコストがかかる。</li>
+    </ul>
+  </div>
+
+  <div class="warn-box">
+    <div class="w-title">Risk 3 — 無収益での高バリュエーション</div>
+    <ul>
+      <li>2026年4月時点で<b>売上ゼロ</b>、時価総額$8.5B。PERやEV/Revenueなど通常の株価指標は意味をなさない。</li>
+      <li>2025年10月に$193まで上昇後、2026年4月には$51まで-73%下落。投機的な株価変動が続く。</li>
+      <li>NuScale（NRC認証取得後にプロジェクトが頓挫）の前例が示すように「ライセンス取得=商業成功」ではない。</li>
+    </ul>
+  </div>
+
+  <div class="warn-box">
+    <div class="w-title">Risk 4 — 建設コスト超過（FOAK問題）</div>
+    <ul>
+      <li>First-of-a-Kind（FOAK）原子炉の建設コストは歴史的に予算の<b>2〜5倍</b>になるケースが多い（NuScale、Vogtle原発の事例）。</li>
+      <li>Okloのモジュール型工場製造アプローチは理論的にFOAK超過を軽減するが、それ自体が未実証の主張。</li>
+    </ul>
+  </div>
+
+  <div class="warn-box">
+    <div class="w-title">Risk 5 — Centrus依存とサプライチェーン集中</div>
+    <ul>
+      <li>現時点の米国内HALEU供給源はCentrus Energy一社のみ。同社に経営・規制・財務上の問題が生じた場合、Okloのロードマップは直接影響を受ける。</li>
+      <li>Centrusとの合弁JVはこの依存を緩和しようとするものだが、合弁自体もまだ計画段階。</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ===================== 10. WHY NOW ===================== -->
+<div class="sec" id="why-now">
+  <div class="sec-label"><span class="num">10</span> Why Now</div>
+  <h2>なぜ今注目すべきか — 投資テーゼの核心</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">AIが原子炉を必要にした</div>
+        <div class="ind-desc">大規模GPUクラスター（Meta Prometheusなど）は1棟で中規模都市に匹敵する電力を消費する。太陽光・風力では24時間安定供給できず、グリッド接続は数年待ち。原子炉こそが「AIデータセンターの電源問題の唯一の現実解」という認識がハイパースケーラーの間で固まりつつある。Amazon・Google・Meta・Microsoftが2024〜2026年に相次いで原子炉電力契約を結んだのがその証拠だ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">Trump政権による核ルネサンス</div>
+        <div class="ind-desc">2025年のトランプ政権は行政命令で先進原子炉の審査加速・DODとDOEの連携強化・既存DOE燃料備蓄の活用を指示。Oklo CEO DeWitteが「トランプの核政策で膠着したプロジェクトが前進した」と公言（Axios 2025年8月）。政策追い風が事業化の障壁を下げている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">手元$2.5B ＝ 2028年まで資金懸念ゼロ</div>
+        <div class="ind-desc">2026年1月時点の手元現金~$2.5Bは、年間$430〜550Mの支出見込みでも2028年初号機稼働まで充分。「資金枯渇リスクで失敗するスタートアップ」という一般的な死に方は当面ない。これは競合の多くに対する財務優位。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">18GWパイプラインの解像度が上がっている</div>
+        <div class="ind-desc">Switch 12GW（$25M前払い含む Equinix、Meta 1.2GW）と、単なるLOIを超えた「本気の顧客」が増えている。特にMetaとEquinixの前払いや長期契約は、将来収益の蓋然性を高める重要なシグナルだ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">フリートライセンス戦略 ＝ 初号機が全ての先行投資</div>
+        <div class="ind-desc">OkloはNRCと「フリートライセンス」フレームワークを交渉中——1号機のライセンスが通れば、同一設計の2〜N号機は大幅に簡略化されたプロセスで認可を受けられる仕組みだ。つまりINL初号機の投資とリスクは、以降の数十〜数百基の展開コストを劇的に下げるための「先払い」と見なせる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">「廃棄物→燃料」が長期的な圧倒的優位に</div>
+        <div class="ind-desc">米国だけで9万トン以上の使用済み核燃料が蓄積されている。これを燃料として利用できれば、HALEU供給制約を大幅に緩和しながら核廃棄物問題を解決する——これはOkloが唯一本格的に取り組んでいる領域で、実現すれば競合が追いつくには10年単位の遅れが生じる。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>Nuclear energy is the answer to the power problem. Oklo is building the reactors that will power the AI era. The combination of fast fission and fuel recycling is, I believe, the most important energy technology being developed today.</p>
+    <div class="attr">— Jacob DeWitte, CEO, Oklo Inc.</div>
+  </div>
+</div>
+
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>主要参照先</h2>
+  <ul>
+    <li>Oklo Inc. 公式サイト — oklo.com</li>
+    <li>Oklo Q4 2025 Earnings Call（2026年3月）</li>
+    <li>NRC — Aurora Oklo Application Page</li>
+    <li>CNBC — Sam Altman takes nuclear startup Oklo public（2024年5月）</li>
+    <li>CNBC — Sam Altman steps down as Oklo board chair（2025年4月）</li>
+    <li>Oklo & Switch 12GW MPA発表（2024年12月）</li>
+    <li>Meta Prometheus nuclear deals — CNBC（2026年1月）</li>
+    <li>Oklo Breaks Ground on Aurora Powerhouse — INL（2025年9月）</li>
+    <li>Axios — Trump nuclear moves, Oklo CEO interview（2025年8月）</li>
+    <li>NRC Denial Notice — Neutron Bytes（2022年1月）</li>
+    <li>Oklo/Centrus HALEU JV — Power Magazine（2026年3月）</li>
+    <li>Fortune — Next-gen nuclear tipping point（2026年2月）</li>
+    <li>Wikipedia — Oklo Inc. / Aurora nuclear reactor</li>
+    <li>SEC Filings — Oklo Inc.（EDGAR）</li>
+  </ul>
+</div>
+
+
+</div>
+</body>
+</html>
