@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anduril Industries — 防衛テックスタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">防衛テック</span>
+    <span class="badge badge-white">自律型兵器</span>
+    <span class="badge badge-solid">Palmer Luckey / $28B+ Valuation</span>
+  </div>
+  <h1>Anduril Industries</h1>
+  <p class="hero-sub">
+    「シリコンバレーの速度で防衛産業を再定義する」——<br>
+    Oculus創業者Palmer Luckeyが2017年に設立した防衛テックスタートアップ。AI搭載の自律型無人機・電子戦・指揮統制プラットフォームLattice OSを核に、Lockheed・Raytheonなど旧来の防衛大手（"Primes"）に真っ向から挑む。2026年は$60Bバリュエーションでの$4B調達が進行中。Arsenal-1（オハイオ州・500万sq ft）で自律型兵器の大量生産体制を構築。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$28B+</div><div class="lbl">Valuation（2025年）</div></div>
+    <div class="kpi"><div class="val">$2.1B</div><div class="lbl">推定売上（2025年）</div></div>
+    <div class="kpi"><div class="val">$4.3B</div><div class="lbl">売上目標（2026年）</div></div>
+    <div class="kpi"><div class="val">2017</div><div class="lbl">設立年</div></div>
+    <div class="kpi"><div class="val">Costa Mesa</div><div class="lbl">本社所在地</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#products">主要プロダクト群</a></li>
+    <li><a href="#timeline">沿革・主要マイルストーン</a></li>
+    <li><a href="#arsenal">Arsenal-1：自律型兵器工場</a></li>
+    <li><a href="#funding">資金調達・バリュエーション</a></li>
+    <li><a href="#contracts">主要契約・顧客</a></li>
+    <li><a href="#team">創業チーム・経営陣</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">リスクと課題</a></li>
+    <li><a href="#why-now">なぜ今注目すべきか</a></li>
+  </ol>
+</div>
+
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Anduril Industries, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2017年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Costa Mesa, California</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">Brian Schimpf（共同創業者）</div></div>
+    <div class="kv-item"><div class="k">会長 / 創業者</div><div class="v">Palmer Luckey（Oculus VR創業者）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">$28B（2025年）/ $60B検討中（2026年）</div></div>
+    <div class="kv-item"><div class="k">推定売上</div><div class="v">$1B（2024）→ $2.1B（2025）→ $4.3B（2026目標）</div></div>
+    <div class="kv-item"><div class="k">主要顧客</div><div class="v">米国DoD / SOCOM / USMC / US Navy / UK MoD / 豪州国防省</div></div>
+    <div class="kv-item"><div class="k">コアテック</div><div class="v">Lattice OS（AI C2プラットフォーム）+ 自律型無人機・兵器システム</div></div>
+    <div class="kv-item"><div class="k">Arsenal-1</div><div class="v">オハイオ州Columbus近郊・500万sq ft・自律型兵器専用工場（2026年7月生産開始予定）</div></div>
+  </div>
+
+  <p>Andurilは「シリコンバレーのソフトウェア開発速度を防衛産業に持ち込む」という命題のもと設立された。従来の防衛大手（Lockheed Martin・Raytheon・Boeing）は10〜20年単位の開発サイクル・コストプラス契約・巨大な官僚機構で成り立つ。Andurilはこれを「<strong>スタートアップの反復速度 × 政府調達の大型契約</strong>」で代替することを狙う。</p>
+
+  <p>中核となるのは<strong>Lattice OS</strong>——あらゆるセンサー・ドローン・自律システムをAIで統合し、戦場での状況認識（Situational Awareness）を司令官にリアルタイムで提供するソフトウェアプラットフォームだ。Latticeはハードウェアに依存しないオープンな設計であり、他社製の兵器システムも統合できる。これにより「ハードウェアを売る軍需企業」ではなく「戦闘知能（Combat Intelligence）のOS企業」としてのポジションを確立している。</p>
+
+  <div class="callout">
+    <strong>社名の由来：</strong>J.R.R.トールキン「指輪物語」に登場するアラゴルンの剣「Andúril（炎の刃）」から。折れた刀が鍛え直されて王者の剣となる——旧来の防衛産業を再鋳造するというビジョンを込めている。Palmer Luckeyのトールキン愛と同社の反骨精神が見事に重なる。
+  </div>
+</div>
+
+
+<!-- ===================== 2. PRODUCTS ===================== -->
+<div class="sec" id="products">
+  <div class="sec-label"><span class="num">2</span> Products</div>
+  <h2>主要プロダクト群</h2>
+
+  <h3>Lattice OS — 戦場のAI神経系</h3>
+  <p>AndurilのすべてのハードウェアはLattice OSを通じて接続される。センサーフュージョン・脅威検知・ターゲット追跡・自律的なミッション実行を単一プラットフォームで処理。司令官は文字通り全戦場の「神の視点」を持てる。2024年12月、国防省Chief Digital and AI Officeがネットワーク統合システム「Mesh」の3年間契約をAndurilに発注——Latticeが米軍全体のAI基盤として認められた象徴的な受注だ。</p>
+
+  <table class="t">
+    <thead>
+      <tr><th>プロダクト</th><th>カテゴリ</th><th>概要</th><th>主要顧客</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Lattice OS</td><td>ソフトウェア / C2</td><td>AI指揮統制プラットフォーム。センサー・無人機・兵器を統合</td><td>DoD全軍種・同盟国</td></tr>
+      <tr><td>Ghost 4</td><td>自律型UAV</td><td>バックパック収納可。AIで自律飛行。展開まで数分</td><td>SOCOM・陸軍</td></tr>
+      <tr><td>Roadrunner / Roadrunner-M</td><td>垂直離着陸型迎撃機</td><td>6ft・ターボジェット双発。再使用可能な対ドローン迎撃機。Roadrunner-Mは直撃破壊</td><td>DoD（$250M契約）</td></tr>
+      <tr><td>Sentry Tower</td><td>自律型監視タワー</td><td>レーダー＋光学センサー＋機械学習で脅威を自動検知・追跡</td><td>米国CBP（国境警備）・SOCOM</td></tr>
+      <tr><td>ALTIUS-600M</td><td>チューブ発射型UAV</td><td>弾薬搭載対応。戦術的浸透・打撃任務</td><td>SOCOM・同盟国</td></tr>
+      <tr><td>Pulsar</td><td>電子戦（EW）</td><td>ドローン・通信を妨害する電子戦システム。Roadrunnerと連携</td><td>DoD（$250M契約）</td></tr>
+      <tr><td>Barracuda</td><td>自律型巡航ミサイル</td><td>低コスト・大量生産を想定した自律型巡航ミサイル。Arsenal-1での量産を予定</td><td>DoD / 同盟国</td></tr>
+      <tr><td>Dive-LD</td><td>自律型UUV（潜水艦）</td><td>大型自律型水中無人機。海軍向け哨戒・機雷探知</td><td>US Navy / AUKUS</td></tr>
+      <tr><td>YFQ-44A（CCA）</td><td>有人・無人連携航空機</td><td>F-35等と連携する自律型戦闘機（Collaborative Combat Aircraft）。空軍受注</td><td>US Air Force</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>設計思想：</strong>「使い捨て可能な安価なシステムを大量に」——従来の$200M級の有人機を1機失うリスクを、$200K級の自律型UAVを1,000機運用するリスク分散に変換する。数で圧倒するSwarm（群れ）戦術がAndurilの根本的な軍事哲学だ。
+  </div>
+</div>
+
+
+<!-- ===================== 3. TIMELINE ===================== -->
+<div class="sec" id="timeline">
+  <div class="sec-label"><span class="num">3</span> Milestones</div>
+  <h2>沿革・主要マイルストーン</h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2017年</span><span class="tl-title">設立 — Palmer LuckeyがFacebookを去り防衛へ</span></div>
+        <div class="tl-body">OculusをFacebookに$2B売却後、Facebook社内での政治的対立を経て2017年3月にLuckeyは解雇。同年、Brian Schimpf・Trae Stephens・Matt Grimm・Joe Chenと共同でAndurilを設立。Founders Fundが初期投資をリード。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2018年</span><span class="tl-title">Series A / CBP 国境監視プロジェクト</span></div>
+        <div class="tl-body">$13M Series A（Founders Fund）。米国税関・国境警備局（CBP）からSentry Towerを用いた南部国境監視システムの受注。政府初受注で「本物」を証明。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2020年</span><span class="tl-title">$200M Series C — 本格的な防衛テック企業へ</span></div>
+        <div class="tl-body">$200M調達（a16z・Founders Fund）。バリュエーション$1.9B。SOCOM・UK MoD・豪州国防省との複数契約を確保。Ghost・ALTIUS・Latticeの実戦配備が始まる。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2022年1月</span><span class="tl-title">SOCOM $967M契約 — 当時最大規模の受注</span></div>
+        <div class="tl-body">米国特殊作戦軍（SOCOM）から10年間の対UASシステム統合契約（最大$967M）を受注。スタートアップが大型DoD契約を取れることを証明し、業界に衝撃を与えた。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2023年12月</span><span class="tl-title">Series F — $1.5B調達・$14Bバリュエーション</span></div>
+        <div class="tl-body">$1.5B Series F。バリュエーション$14B。Founders Fund・a16z・8VC等が参加。ウクライナ戦争でドローン・自律兵器の有効性が実証され、投資家の注目が急増。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年1月</span><span class="tl-title">Arsenal-1発表 — 史上初の自律型兵器専用超大型工場</span></div>
+        <div class="tl-body">オハイオ州Columbus近郊に<b>500万sq ft・$1B超投資・4,000人雇用</b>の自律型兵器製造施設「Arsenal-1」を発表。Arsenal Initiativeとして複数施設の整備を宣言。2026年7月生産開始予定。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年6月</span><span class="tl-title">Series G — $2.5B・$30.5Bバリュエーション</span></div>
+        <div class="tl-body">$2.5B Series G（Founders Fund主導）。バリュエーション$30.5B。売上$1B達成（前年比110%増）が評価された。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年8月</span><span class="tl-title">ミシシッピ州ロケットモーター工場稼働</span></div>
+        <div class="tl-body">固体ロケットモーター製造施設をミシシッピ州に開設（$75M投資 + 国防生産法$14.3M補助）。年産6,000基（戦術ロケットモーター）を2026年末までに達成予定。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年10月</span><span class="tl-title">American Infrared Solutions買収 — 赤外線センサーを内製化</span></div>
+        <div class="tl-body">冷却型赤外線カメラメーカーのAIRS（American Infrared Solutions）を買収。センサー部品の内製化でサプライチェーン依存を削減し、全製品のセンシング性能を強化。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年3月</span><span class="tl-title">ExoAnalytic Solutions買収 + $4B調達検討</span></div>
+        <div class="tl-body">宇宙状況認識（Space Domain Awareness）企業ExoAnalytic Solutionsを買収。宇宙領域でのLattice統合が可能に。同時期に<b>$4B調達・$60Bバリュエーション</b>（a16z・Thrive Capital主導）が報道される。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 4. ARSENAL ===================== -->
+<div class="sec" id="arsenal">
+  <div class="sec-label"><span class="num">4</span> Arsenal-1</div>
+  <h2>Arsenal-1：世界初の自律型兵器専用超大型工場</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">所在地</div><div class="v">オハイオ州 Columbus近郊</div></div>
+    <div class="kv-item"><div class="k">面積</div><div class="v">500万 sq ft（約46万㎡）</div></div>
+    <div class="kv-item"><div class="k">投資額</div><div class="v">$1B+</div></div>
+    <div class="kv-item"><div class="k">雇用創出</div><div class="v">4,000人以上</div></div>
+    <div class="kv-item"><div class="k">生産開始予定</div><div class="v">2026年7月</div></div>
+    <div class="kv-item"><div class="k">連携機関</div><div class="v">Ohio State University</div></div>
+  </div>
+
+  <p>Arsenal-1はAndurilが「Military-Industrial Complex 2.0」と呼ぶ構想の核心だ。従来の防衛産業は「受注→設計→製造」のサイクルが10〜20年かかる。Arsenal-1では自律型ロボットによる製造ラインとAIによる品質管理を導入し、<strong>兵器の設計変更から量産立ち上げまでを月単位で実現</strong>することを目指す。</p>
+
+  <p>製造対象はBarracuda巡航ミサイル・Roadrunner迎撃機・Ghost UAV・ALTIUS-600Mなど。中国との紛争シナリオで懸念される「弾薬の枯渇速度」問題に対して、Andurilは「消耗戦に耐えられる自律型兵器の工業生産基盤」を米国に再構築するという国家的使命を掲げている。</p>
+
+  <div class="callout">
+    <strong>Arsenal Initiativeの全体像：</strong>Arsenal-1はあくまで第一弾。Andurilはミシシッピ州のロケットモーター工場・中東でのEDGE-Anduril生産提携（2025年11月）も含め、複数地域に自律型兵器の製造拠点を展開する「Arsenal Initiative」を進行中。
+  </div>
+</div>
+
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">5</span> Funding</div>
+  <h2>資金調達・バリュエーション推移</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <div class="r-badge">Series G</div>
+      <div class="f-amount">$2.5B</div>
+      <div class="f-detail">
+        <div class="f-date">2025年6月 — Valuation $30.5B</div>
+        <div class="f-desc">Founders Fund主導。売上$1B達成・Arsenal-1着工を背景に大型調達を実現。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series F</div>
+      <div class="f-amount">$1.5B</div>
+      <div class="f-detail">
+        <div class="f-date">2023年12月 — Valuation $14B</div>
+        <div class="f-desc">Founders Fund・a16z・8VC。ウクライナ戦争での自律兵器注目が追い風。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series E</div>
+      <div class="f-amount">$450M</div>
+      <div class="f-detail">
+        <div class="f-date">2022年12月 — Valuation $8.5B</div>
+        <div class="f-desc">Valor Equity Partners・Founders Fund。SOCOM契約後のスケールアップ期。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series D</div>
+      <div class="f-amount">$450M</div>
+      <div class="f-detail">
+        <div class="f-date">2021年 — Valuation $4.6B</div>
+        <div class="f-desc">a16z・Founders Fund・8VC。国際展開（UK・豪州）加速期。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">次回検討中</div>
+      <div class="f-amount">$4B</div>
+      <div class="f-detail">
+        <div class="f-date">2026年 — Valuation $60B検討</div>
+        <div class="f-desc">a16z・Thrive Capital主導が報道。Arsenal-1量産体制確立に向けた資本増強。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Main</span>
+      <div class="vc-name">Founders Fund</div>
+      <div class="vc-role">Peter Thiel / 創業来の主要投資家</div>
+      <div class="vc-desc">Palmer Luckeyとの関係からSeries Aから一貫して主導。PayPal Mafia的な防衛テック支援。Trae Stephens（共同創業者）はFounders Fundパートナー。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Main</span>
+      <div class="vc-name">Andreessen Horowitz (a16z)</div>
+      <div class="vc-role">Series C〜 / American Dynamismリード</div>
+      <div class="vc-desc">a16zの「American Dynamism」投資テーマの筆頭事例。Katherine Boyle（GP）がAnduril取締役を務める。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">8VC</div>
+      <div class="vc-role">Joe Lonsdale</div>
+      <div class="vc-desc">Palantir共同創業者Joe LonsdaleのVC。防衛テック・GovTech特化型で深いDoD人脈を持つ。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Thrive Capital</div>
+      <div class="vc-role">Josh Kushner / 最新ラウンド</div>
+      <div class="vc-desc">次回$4B調達のリードとして報道。成長段階のテック系に強いVCが防衛テックへ本格参入。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 6. CONTRACTS ===================== -->
+<div class="sec" id="contracts">
+  <div class="sec-label"><span class="num">6</span> Contracts</div>
+  <h2>主要契約・顧客一覧</h2>
+
+  <table class="t">
+    <thead>
+      <tr><th>契約</th><th>金額</th><th>顧客</th><th>内容</th><th>年</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>SOCOM 対UAS統合</td><td>最大$967M</td><td>米特殊作戦軍</td><td>10年間のCounter-UASシステム統合・Lattice統合</td><td>2022</td></tr>
+      <tr><td>DoD 防空生産契約</td><td>$250M</td><td>米国防総省</td><td>Roadrunner-M 500機以上 + Pulsar電子戦システム納入</td><td>2024</td></tr>
+      <tr><td>USMC MADIS統合</td><td>$200M</td><td>米海兵隊</td><td>Anvil対ドローンシステムをMADIS（海兵隊防空統合システム）へ統合</td><td>2024</td></tr>
+      <tr><td>USMC 対ドローン</td><td>$642M</td><td>米海兵隊</td><td>Counter-UASシステム一括調達</td><td>2025</td></tr>
+      <tr><td>DoD AI/Mesh</td><td>非公開（3年）</td><td>国防省CDAO</td><td>Meshネットワーク統合AI基盤。Lattice OS拡張</td><td>2024年12月</td></tr>
+      <tr><td>UK MoD TALOS</td><td>非公開</td><td>英国防省</td><td>多領域自律基地防衛。Ghost・Sentry・Lattice統合実証</td><td>2021〜</td></tr>
+      <tr><td>US Air Force CCA</td><td>非公開</td><td>米空軍</td><td>YFQ-44A有人・無人連携戦闘機（Collaborative Combat Aircraft）開発</td><td>2024〜</td></tr>
+      <tr><td>CBP 国境監視</td><td>非公開</td><td>米国境警備局</td><td>Sentry Towerによる南部国境全域監視システム</td><td>2018〜継続</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>AUKUS三角関係：</strong>米・英・豪の防衛協力枠組みAUKUSにおいて、Andurilは英国（TALOS）・豪州（Dive-LD UUV・Ghost展開）双方に実績を持つ。核潜水艦ではなく自律型水中無人機（UUV）領域でのAndurilのプレゼンスが拡大中。
+  </div>
+</div>
+
+
+<!-- ===================== 7. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">7</span> Team</div>
+  <h2>創業チーム・経営陣</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">PL</div>
+      <div>
+        <h3>Palmer Luckey</h3>
+        <div class="p-role">共同創業者 / 会長</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">経歴</div><div class="val">18歳でOculus VRを設立→Facebookに$2B売却→2017年解雇→Anduril創設</div></div>
+      <div class="p-row"><div class="lbl">キャラクター</div><div class="val">日本アニメ・トールキン・ミリタリーオタク。Hawaiiの自宅に大型艦艇を係留するほどの防衛マニア。「技術で国家を守る」という使命感が原動力</div></div>
+      <div class="p-row"><div class="lbl">ポジション</div><td class="val">現在は「Chief Product Officer」相当的な役割でハードウェア設計に関与。Brian Schimpfが日常経営を担う</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">BS</div>
+      <div>
+        <h3>Brian Schimpf</h3>
+        <div class="p-role">共同創業者 / CEO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">経歴</div><div class="val">元NSA（国家安全保障局）エンジニア → Palantir初期エンジニア → Anduril創設</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">日常的な事業運営・政府調達・組織構築を主導。技術バックグラウンドを持つ実務型CEO</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">TS</div>
+      <div>
+        <h3>Trae Stephens</h3>
+        <div class="p-role">共同創業者 / Founders Fundパートナー（兼任）</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">経歴</div><div class="val">Palantir → Founders Fund → Anduril共同創業。VC側とのブリッジ役</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">投資・戦略・政策ロビーイングを担当。Washington D.C.での政府関係を構築</div></div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">8</span> Competition</div>
+  <h2>競合比較</h2>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">Anduril Industries</div>
+      <div class="comp-tag">主役</div>
+      <div class="comp-desc">Lattice OS × 自律型兵器ポートフォリオ。ソフトウェアファースト。Arsenal-1で量産スケール。$28B Val。創業7年で$2B売上。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Lockheed Martin</div>
+      <div class="comp-tag">Legacy Prime</div>
+      <div class="comp-desc">$66B売上の防衛最大手。F-35・PAC-3など実績は圧倒的だが開発サイクルは10〜15年。Andurilにとっての「倒すべき壁」。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Shield AI</div>
+      <div class="comp-tag">競合スタートアップ</div>
+      <div class="comp-desc">Hivemind AIパイロットで有人・無人連携。$2.7B Val。CCAでAndurilの直接競合。軍用機AIに特化したニッチ戦略。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Palantir</div>
+      <div class="comp-tag">AIソフト / C2</div>
+      <div class="comp-desc">MAVEN・AIP for Defenseで軍のデータ基盤を提供。$50B+ 時価総額。Lattice OSとC2領域で競合するが「分析ツール vs 自律実行システム」で棲み分けも存在。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Skydio</div>
+      <div class="comp-tag">民間UAV → 防衛</div>
+      <div class="comp-desc">自律飛行ドローンの米国最大手（民間→DoD展開）。Ghost 4の直接競合だが軍用特化度では劣る。$2.5B Val。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">AeroVironment</div>
+      <div class="comp-tag">UAV専業</div>
+      <div class="comp-desc">Switchblade 300/600自爆ドローンでウクライナでも実戦実績。ALTIUSはAeroVironment系との直接競合。上場企業・$4B時価総額。</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Andurilの本質的な差別化：</strong>競合他社が「ハードウェア企業」または「ソフトウェア企業」に分類されるのに対し、AndurilはLattice OSを通じてハードウェアとソフトウェアを垂直統合している唯一のプレイヤー。「iPhoneとiOS」の関係に近い——自社ハードを自社OSで動かすことで最大のパフォーマンスを引き出す。
+  </div>
+</div>
+
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">9</span> Risks</div>
+  <h2>リスクと課題</h2>
+
+  <div class="warn-box">
+    <div class="w-title">主要リスク</div>
+    <ul>
+      <li><b>政治・政策リスク：</b>米国防予算は議会の歳出決議に左右される。政権交代・防衛予算削減があればAndurilへの影響は甚大。ただしトランプ政権はPalmer Luckeyを国防政策顧問として活用しており現政権との関係は良好。</li>
+      <li><b>調達競争の激化：</b>Lockheed・Raytheonなど大手が「防衛テック子会社」設立で追随。政府調達でロビーイング力・実績・信頼関係で不利な場面も。</li>
+      <li><b>技術的リスク：</b>自律型致死兵器（LAWS）の倫理的・法的問題。AIが人間の判断なしに攻撃を実行することへの国際的規制リスク。</li>
+      <li><b>Arsenal-1の実行リスク：</b>500万sq ftの超大型工場の立ち上げは複雑性が高い。製造コスト・品質管理・納期遅延リスクが伴う。</li>
+      <li><b>人材競争：</b>最高のAI・ハードウェアエンジニアをOpenAI・Google DeepMind・SpaceXと取り合う。「防衛への使命感」を持つ人材確保が継続的課題。</li>
+      <li><b>地政学リスク：</b>中国・ロシアが類似技術で追い上げた場合、技術的優位が失われる可能性。特に量産体制の構築速度が問われる。</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ===================== 10. WHY NOW ===================== -->
+<div class="sec" id="why-now">
+  <div class="sec-label"><span class="num">10</span> Why Now</div>
+  <h2>なぜ今、Andurilは歴史的な追い風を受けているのか</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">ウクライナ・中東戦争が「ドローン戦争」を証明した</div>
+        <div class="ind-desc">2022年以降のウクライナ紛争で、安価な自律型ドローンが高価な有人機・装甲車を破壊できることが実証された。米軍は「高価な兵器を少数持つより、安価な自律型を大量に持つ」戦略へ根本的に転換。Andurilのビジネスモデルは偶然ではなく必然として選ばれている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">中国との競争が「製造速度」を国家安全保障の問題にした</div>
+        <div class="ind-desc">台湾有事シナリオでは最初の数週間で弾薬・ミサイルが枯渇するという試算がある。米国防総省は「Andurilのような民間企業と連携した高速量産体制の構築」を最優先課題として認識。Arsenal-1はまさにその答え。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">AIの成熟がLattice OSを「本物」にした</div>
+        <div class="ind-desc">5年前であれば「AIで戦場を自律制御する」は夢物語だった。2024〜2025年のLLM・コンピュータビジョン・エッジAIの急速な進化により、Lattice OSが約束するリアルタイム状況認識・自律意思決定が現実のシステムとして動き始めている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Palmer LuckeyとTrump政権の親和性</div>
+        <div class="ind-desc">Palmer Luckeyは2016年のTrump選挙キャンペーンへの献金で一度注目を集め、現政権とも近い関係を持つ。「シリコンバレー＝左派」というイメージを覆す存在として、現政権からの契約・政策的サポートを享受しやすい立場にある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">防衛テックへのVC資本流入が加速</div>
+        <div class="ind-desc">かつて「倫理的問題」でGoogleがMaven契約を辞退したような時代は終わった。a16z・Founders Fund・Thrive Capitalが率先してAndurilに数千億円規模を投資し、「技術で国を守ることはカッコいい」という空気がシリコンバレーに定着しつつある。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We're not building war — we're building the technology that prevents war by ensuring that the cost of aggression is too high for any adversary to bear.</p>
+    <div class="attr">— Palmer Luckey</div>
+  </div>
+</div>
+
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li>Anduril Industries 公式サイト / プレスリリース</li>
+    <li>Wikipedia — Anduril Industries</li>
+    <li>Sacra — Anduril Revenue & Valuation</li>
+    <li>Fortune — $31B Funding Round (June 2025)</li>
+    <li>Defense News — SOCOM $967M Contract</li>
+    <li>Breaking Defense — Anduril DoD Contracts</li>
+    <li>MIT Technology Review — Lattice OS Demo (Dec 2024)</li>
+    <li>The War Zone — Roadrunner Expanded Order</li>
+    <li>AI CERTs News — Anduril 2026 Revenue Targets</li>
+    <li>American Bazaar Online — $4B Round (Mar 2026)</li>
+    <li>Acquinox Capital — Investor Insights $30.5B</li>
+    <li>FNEX — Series G $2.5B Analysis</li>
+  </ul>
+</div>
+
+
+</div>
+</body>
+</html>

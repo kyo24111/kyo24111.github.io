@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Naval Ravikant — 人物リサーチ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #ffffff;
+      --surface: #f5f5f5;
+      --surface2: #ebebeb;
+      --accent:  #111111;
+      --accent2: #555555;
+      --text:    #111111;
+      --muted:   #888888;
+      --border:  #e0e0e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    /* HERO */
+    .hero {
+      background: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 40px 48px;
+    }
+    .hero-inner { max-width: 860px; margin: 0 auto; }
+    .hero-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.15);
+    }
+    .hero-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hero-meta-item .label { font-size: 11px; color: rgba(255,255,255,.45); letter-spacing: 0.1em; text-transform: uppercase; }
+    .hero-meta-item .value { font-size: 14px; font-weight: 600; color: #fff; }
+
+    /* LAYOUT */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 40px 80px; }
+
+    /* SUMMARY BOX */
+    .summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin: 40px 0;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .summary strong { color: var(--accent); font-weight: 700; }
+
+    /* SECTIONS */
+    section { margin-top: 48px; }
+    .section-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px; top: 8px; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -24px; top: 8px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .tl-year {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .tl-item p { font-size: 14px; line-height: 1.8; }
+
+    /* CARDS */
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 22px;
+    }
+    .card h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .card p, .card ul { font-size: 14px; line-height: 1.8; }
+    .card ul { padding-left: 18px; }
+    .card ul li { margin-bottom: 4px; }
+
+    /* FACT LIST */
+    .fact-list { list-style: none; }
+    .fact-list li {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      align-items: flex-start;
+    }
+    .fact-list li:last-child { border-bottom: none; }
+    .fact-list .key {
+      min-width: 130px;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 13px;
+      padding-top: 1px;
+    }
+    .fact-list .val { flex: 1; }
+
+    /* QUOTE */
+    .quote {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-style: italic;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .quote cite {
+      display: block;
+      margin-top: 8px;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* EPISODE */
+    .episode {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .episode h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .episode p { font-size: 14px; line-height: 1.8; }
+
+    /* TAG */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .tag {
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.7;
+    }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 600; width: 160px; }
+
+    /* PHILOSOPHY BLOCK */
+    .philo-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 22px 26px;
+      margin-bottom: 16px;
+    }
+    .philo-block h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .philo-block p { font-size: 14px; line-height: 1.85; }
+    .philo-label {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    /* NET WORTH */
+    .networth {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      padding: 6px 20px;
+      border-radius: 8px;
+      margin-top: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 20px 32px; }
+      .container { padding: 0 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">人物リサーチ — Tech Legend</div>
+    <h1>Naval Ravikant</h1>
+    <p style="color:rgba(255,255,255,.6); font-size:14px; max-width:620px; margin-top:8px;">
+      ニューデリー生まれ、ニューヨーク育ちの移民起業家。AngelListを通じてスタートアップ投資を民主化し、
+      200社以上の初期投資家として億ドル規模のリターンを残した。
+      しかし今やその名はビジネスより「富・哲学・幸福論」の思想家として語られることの方が多い。
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">生年</span>
+        <span class="value">1974年（推定52歳）</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">出身</span>
+        <span class="value">ニューデリー → ニューヨーク</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">純資産（推定）</span>
+        <span class="value">$1B〜$2B (2026)</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">主な肩書き</span>
+        <span class="value">AngelList共同創業者 / 哲学者 / 投資家</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <strong>一言で言うと？</strong><br>
+    「シリコンバレーで最も引用される思想家」。<strong>AngelList</strong>でスタートアップ投資を民主化し、Twitter・Uberを含む200社超の初期株主として数十億ドルのリターンを積み上げた。
+    しかしNavalの本当の影響力はビジネスより<strong>哲学</strong>にある。
+    「SpecificKnowledge」「Leverage」「Desire is suffering」——彼の言葉は世界中の起業家・投資家・思索家に深く刺さり続けている。
+  </div>
+
+  <!-- 生い立ち -->
+  <section>
+    <div class="section-label">Origins</div>
+    <h2>生い立ち・学歴</h2>
+    <ul class="fact-list">
+      <li>
+        <span class="key">出生</span>
+        <span class="val">1974年、インド・ニューデリー生まれ。幼少期にシングルマザーの母と共に米国ニューヨークへ移住。ブロンクス区の公営住宅（ハウジングプロジェクト）で育った。</span>
+      </li>
+      <li>
+        <span class="key">移民の原体験</span>
+        <span class="val">英語が全く話せない状態でニューヨークに来た。「図書館が唯一の居場所だった」と本人が語る。ブロンクスの公共図書館で毎日本を読み漁り、英語と知識を同時に獲得した。</span>
+      </li>
+      <li>
+        <span class="key">読書への傾倒</span>
+        <span class="val">幼少期から異常なペースで本を読んだ。哲学・科学・経済学・SF。「読書は最もROIが高い自己投資」という哲学の原点はこの時期に形成された。</span>
+      </li>
+      <li>
+        <span class="key">大学</span>
+        <span class="val">ダートマス大学（アイビーリーグ）でコンピュータサイエンスと経済学を専攻。卒業後、Boston Consulting Group（BCG）に就職するが数ヶ月で退職し起業の世界へ。</span>
+      </li>
+      <li>
+        <span class="key">学歴への哲学</span>
+        <span class="val">後年、「学校で教えるのはCredential（資格）であってSpecific Knowledge（特定知識）ではない」と主張。自分の成功は学位ではなく独学と実践から来ていると語る。</span>
+      </li>
+    </ul>
+
+    <div class="quote">
+      "I probably read about a book a week. That's probably the best investment I can make in myself."
+      <cite>— Naval Ravikant</cite>
+    </div>
+  </section>
+
+  <!-- Epinions → AngelList -->
+  <section>
+    <div class="section-label">Ventures</div>
+    <h2>Epinions → AngelList 創業</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">1999年 — Epinions設立</div>
+        <p>ドットコムバブル最盛期、消費者レビューサイト「Epinions.com」を共同創業。商品・サービスへのユーザーレビューを集積するプラットフォーム。
+        Amazon・Yahoo!が競合に立ちはだかる中でシェア確保に奮闘した。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2003年 — Dealerscope/DealTime合併 → Shopping.com</div>
+        <p>EpinionsはDealTimeと合併しShopping.comに。その後eBayが$620Mで買収。Navalにとっては財務的な成功だったが、後に共同創業者との株式配分をめぐる訴訟が発生。「Fuck-up」と自身が呼ぶ苦い経験となった。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2005年 — Vast.com</div>
+        <p>分類広告（classified ads）の検索エンジン「Vast.com」を共同創業。自動車・不動産・求人などの分散した情報を一元検索するプラットフォーム。こちらも起業家としての学びの場となった。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2007年 — エンジェル投資家として本格活動開始</div>
+        <p>起業家としての実績を踏まえ、個人エンジェル投資を本格化。Twitter・Yammer・Postmates等の初期ラウンドに参加。「創業者として得た視点が投資の判断力を上げる」という信念から。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2010年 — AngelList共同創業</div>
+        <p>Babak Niviとともに<strong>AngelList</strong>を創設。当初はシードステージのスタートアップが投資家を見つけるためのメーリングリストとして始まった。これが後に業界を根本から変えるプラットフォームへと進化する。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2013年 — シンジケートモデルの導入</div>
+        <p>AngelListに「Syndicates（シンジケート）」機能を追加。著名エンジェル投資家がリードし、一般投資家がその判断に追随する形でスタートアップに投資できる仕組み。エンジェル投資を「特権階級だけのもの」から解放した。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2018年 — AngelList会長を退任</div>
+        <p>日々のオペレーションから手を引き、会長職も退任。その後は個人投資・ポッドキャスト・哲学的思索に集中するスタイルへ移行。「AngelListは自分なしでも走れる段階に来た」と判断。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- AngelListの革命 -->
+  <section>
+    <div class="section-label">Revolution</div>
+    <h2>AngelList の革命</h2>
+    <div class="summary" style="margin-top:0;">
+      AngelListが変えたのは「誰が誰に投資できるか」という構造そのもの。
+      それまでスタートアップ投資は特定のVCファームと超富裕層エンジェルだけのものだったが、
+      Navalはそれを<strong>民主化</strong>した。
+    </div>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>AngelList の数字</h3>
+        <ul>
+          <li>登録スタートアップ数：40,000社以上</li>
+          <li>累計資金調達支援額：$10B以上</li>
+          <li>登録投資家数：100,000人以上</li>
+          <li>Syndicates参加者：数万人規模</li>
+          <li>採用（AngelList Talent）：数百万件の求人</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>什么が革命的だったか</h3>
+        <ul>
+          <li>シードラウンドへのアクセスを民主化</li>
+          <li>投資家←→創業者の直接マッチング</li>
+          <li>SPV（Special Purpose Vehicle）の普及</li>
+          <li>採用・資金調達を一つのプラットフォームに</li>
+          <li>スタートアップの「透明性」文化を促進</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="episode">
+      <h3>シンジケートモデルの本質</h3>
+      <p>
+        シンジケートとは「Navalが投資するなら自分も乗る」という仕組みを制度化したもの。
+        著名投資家の判断力を「信号」として小口投資家が活用できる。
+        これはYCombinator（バッチ型）やSoftBank（大口ファンド型）とも異なる第三のモデルで、
+        エンジェル投資の「情報の非対称性」を大幅に解消した。
+        Naval自身は「誰もが知識と資本を使って富を構築できる社会が理想」という哲学を持ち、
+        それをAngelListという形で実装した。
+      </p>
+    </div>
+  </section>
+
+  <!-- 主要投資実績 -->
+  <section>
+    <div class="section-label">Portfolio</div>
+    <h2>主要投資実績（Twitter / Uber 等）</h2>
+    <table>
+      <tr><th>企業</th><th>投資ステージ・結果</th></tr>
+      <tr>
+        <td>Twitter</td>
+        <td>超初期のエンジェルラウンドに参加。2013年のIPOで大きなリターンを実現。Navalが「シリコンバレーで最も早くTwitterの可能性を見抜いた一人」とされる。</td>
+      </tr>
+      <tr>
+        <td>Uber</td>
+        <td>シードステージで投資。2019年IPO時に巨額のリターン。Travis Kalanickとの関係を通じてアクセスを得た。</td>
+      </tr>
+      <tr>
+        <td>Yammer</td>
+        <td>企業向けSNS。2012年にMicrosoftが$1.2Bで買収。</td>
+      </tr>
+      <tr>
+        <td>Postmates</td>
+        <td>フードデリバリー。2020年にUberが$2.65Bで買収。</td>
+      </tr>
+      <tr>
+        <td>Notion</td>
+        <td>ドキュメント・知識管理ツール。2021年の評価額は$10B超。現在も成長中。</td>
+      </tr>
+      <tr>
+        <td>Figure AI</td>
+        <td>ヒューマノイドロボット企業。OpenAI・Microsoft・NVIDIAも出資。2024年評価額$2.6B。</td>
+      </tr>
+      <tr>
+        <td>その他200社以上</td>
+        <td>Opendoor、Clearbit、Compound、Pagerduty等を含む幅広いポートフォリオ。全体ヒット率よりも「一つの大当たりがポートフォリオ全体を超える」べき乗則を意識した投資哲学。</td>
+      </tr>
+    </table>
+
+    <div class="quote">
+      "Venture returns are dominated by power laws. One good deal can return an entire fund."
+      <cite>— Naval Ravikant</cite>
+    </div>
+  </section>
+
+  <!-- ツイートの衝撃 -->
+  <section>
+    <div class="section-label">The Tweetstorm</div>
+    <h2>「金持ちになる方法」ツイートの衝撃</h2>
+    <div class="episode">
+      <h3>2018年5月31日、ツイートストーム</h3>
+      <p>
+        Navalは2018年5月31日に「How to Get Rich (without getting lucky)」と題した40以上の連続ツイートを投稿した。
+        このツイートストームは瞬く間にSNSを席巻し、数百万のインプレッションを記録。
+        後にポッドキャストとして詳解され、さらにEric Jorgensonが一冊の本（<strong>「The Almanack of Naval Ravikant」</strong>）にまとめた。
+        本は無料でオンライン公開され、100万部以上相当が読まれている。
+      </p>
+    </div>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>ツイートの核心メッセージ</h3>
+        <ul>
+          <li>富はLeverageなしには作れない</li>
+          <li>時間を売るな（労働≠富の創造）</li>
+          <li>Specific Knowledgeを見つけろ</li>
+          <li>資本・コード・メディアは寝ている間も働く</li>
+          <li>長期ゲームで長期の人と付き合え</li>
+          <li>ポジティブサムゲームを選べ</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>なぜ刺さったか</h3>
+        <ul>
+          <li>「金持ちになる方法」を正面から語る潔さ</li>
+          <li>精神論でなく構造論で富を解剖</li>
+          <li>「運ではなくシステムで富を作る」という視点</li>
+          <li>140文字でも完結する密度の高さ</li>
+          <li>投資家・起業家・サラリーマン全員が対象</li>
+          <li>哲学・経済・実践が一体化した珍しさ</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="quote">
+      "Seek wealth, not money or status. Wealth is having assets that earn while you sleep. Money is how we transfer time and wealth. Status is your place in the social hierarchy."
+      <cite>— Naval Ravikant（「金持ちになる方法」ツイートストームより）</cite>
+    </div>
+  </section>
+
+  <!-- 哲学・思想体系 -->
+  <section>
+    <div class="section-label">Philosophy</div>
+    <h2>哲学・思想体系</h2>
+    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Navalの思想は「富の創造」と「幸福の追求」という二つの軸で体系化されている。どちらも精神論でなく、合理的・構造的にアプローチされているのが特徴。</p>
+
+    <div class="philo-block">
+      <div class="philo-label">Concept 01</div>
+      <h3>Specific Knowledge（特定知識）</h3>
+      <p>
+        学校で教えられる知識（General Knowledge）は誰でも習得できる。富を作るのは「<strong>Specific Knowledge</strong>」——自分だけが持つ、他人が簡単に真似できない知識・スキル・組み合わせ。
+        それは往々にして「仕事としてやっているのに遊んでいるように感じる」領域に宿っている。
+        Specific Knowledgeは訓練で得られるのではなく、自分の好奇心・情熱・才能の交点で見つかる。
+        「あなたのSpecific Knowledgeは、社会にとって価値があるが、自分では当然に感じる何かだ」。
+      </p>
+    </div>
+
+    <div class="philo-block">
+      <div class="philo-label">Concept 02</div>
+      <h3>Leverage（レバレッジ）の4種類</h3>
+      <p>
+        富を作るには時間を売ってはいけない。Leverageを持て。Navalはレバレッジを4種類に分類する。<br><br>
+        <strong>1. Labor（労働力）</strong>——他人を雇用する。最も古典的で、管理コストが高い。<br>
+        <strong>2. Capital（資本）</strong>——お金でお金を働かせる。アクセスのハードルが高い。<br>
+        <strong>3. Code（コード）</strong>——ソフトウェアは限界費用ゼロで複製できる。最もスケーラブル。<br>
+        <strong>4. Media（メディア）</strong>——書籍・ポッドキャスト・動画は寝ている間も拡散される。<br><br>
+        「Code と Media は許可なく使えるレバレッジ。民主化された武器だ」——Navalはこの2つを21世紀最強の富の道具と位置付ける。
+      </p>
+    </div>
+
+    <div class="philo-block">
+      <div class="philo-label">Concept 03</div>
+      <h3>長期ゲーム理論</h3>
+      <p>
+        「Long-term games with long-term people（長期的な人と長期的なゲームをしろ）」。
+        短期的な取引と長期的な関係では、信頼の積み上がり方が根本的に違う。
+        長期の関係では信頼が通貨になり、取引コストが激減する。
+        シリコンバレーは繰り返しゲームのコミュニティだ——一度の裏切りはすべての将来の取引を消す。
+        「人格（Character）を持つ人と長期的に付き合え。人格は素質（Identity）が時間の圧力にかかった結果だ」。
+      </p>
+    </div>
+
+    <div class="philo-block">
+      <div class="philo-label">Concept 04</div>
+      <h3>Judgement（判断力）こそ最重要スキル</h3>
+      <p>
+        AIが多くの労働を代替する時代において、最終的に差がつくのは<strong>Judgement（判断力）</strong>だとNavalは主張する。
+        Judgementは知識だけでなく、知識をいつ・どのように使うかを知ること。
+        Judgementを高めるのは経験よりも<strong>読書と思索</strong>。
+        「スマートに働くことよりも、何をすべきかを正しく判断することの方が重要だ」。
+        特に規模が大きくなればなるほど、一つの判断の影響が指数関数的に大きくなる。
+      </p>
+    </div>
+
+    <div class="philo-block">
+      <div class="philo-label">Concept 05</div>
+      <h3>Accountability（責任の可視化）</h3>
+      <p>
+        「本名・評判を賭けてビジネスをするな。あなたの名前そのものをブランドにせよ」——Naval。
+        匿名では大きなリターンは得られない。なぜならリスクとリターンは表裏一体だから。
+        公開されたアカウンタビリティこそが、信頼とリターンを最大化する鍵。
+        「失敗するなら公開で失敗しろ。成功するなら誰の目にも見える形で成功しろ」。
+      </p>
+    </div>
+  </section>
+
+  <!-- 瞑想・幸福論 -->
+  <section>
+    <div class="section-label">Happiness</div>
+    <h2>瞑想・幸福論</h2>
+    <div class="summary" style="margin-top:0;">
+      Navalは「富の哲学者」と同時に「幸福の研究者」でもある。
+      2010年代後半から瞑想・内省・精神的自由への探求を深め、
+      ビジネス的成功と精神的充足を切り離して語るようになった。
+    </div>
+
+    <div class="episode">
+      <h3>欲望は苦しみへの契約</h3>
+      <p>
+        Navalの幸福論で最も広く引用される言葉がこれだ。<br>
+        「<strong>Desire is a contract you make with yourself to be unhappy until you get what you want.</strong>（欲望とは、欲しいものを手に入れるまで不幸でいるという自分自身との契約だ）」。<br><br>
+        欲望そのものを否定するのではなく、「欲望を選ぶ行為」に自覚的になれという意味。
+        何かを欲しがるたびに「これは本当に今の不幸と引き換えにする価値があるか？」と問え。
+        欲望を「選ぶ」ことで、欲望に「動かされる」のではなく「使う」存在になれる。
+      </p>
+    </div>
+
+    <div class="episode">
+      <h3>瞑想への取り組み</h3>
+      <p>
+        Navalは2014年頃から瞑想を本格的に始め、現在も日課として継続している。
+        ヴィパッサナー瞑想（10日間のサイレントリトリート）を複数回経験。
+        「瞑想は脳の筋トレではなく、余計なプログラムを削除するデフラグだ」と表現する。
+        思考が静かになることで、本当に重要なことが見えるようになると語る。
+        Jiddu Krishnamurtiの「思考そのものが問題だ」という考えに深く影響を受けている。
+      </p>
+    </div>
+
+    <div class="episode">
+      <h3>幸福は選択であり技術だ</h3>
+      <p>
+        「Happiness is a choice（幸福は選択だ）」というのがNavalの立場。
+        生まれつきの気質・遺伝・環境に影響されるのは事実だが、長期的には「幸せであることを選び続ける」ことで変えられる。
+        具体的には：承認欲求の解放、比較からの離脱、現在への集中、自分の時間の自律的コントロール。
+        「最終的に幸福とは、余計な欲望を取り除いていった先に残るものだ」。
+      </p>
+    </div>
+
+    <ul class="fact-list">
+      <li>
+        <span class="key">影響を受けた思想家</span>
+        <span class="val">Jiddu Krishnamurti（インドの哲学者）、Charlie Munger（ウォーレン・バフェットのパートナー）、Richard Feynman（ノーベル物理学賞）、Nicholas Nassim Taleb（ブラック・スワン著者）</span>
+      </li>
+      <li>
+        <span class="key">読書スタイル</span>
+        <span class="val">週1冊以上。ジャンルを限定せず哲学・物理・経済・歴史を並行して読む。「同じ本を10回読む方が、10冊の違う本を1回読むより価値がある場合がある」。</span>
+      </li>
+      <li>
+        <span class="key">ヘルスケア</span>
+        <span class="val">筋力トレーニング・歩行・瞑想を日課に。スポーツ・サプリメントへの関心も高く、個人的に実験的なプロトコルを試していると語る。</span>
+      </li>
+      <li>
+        <span class="key">SNSとの距離</span>
+        <span class="val">Twitterは長年使ってきたが、徐々に距離を置き始めている。「ノイズが多すぎる場所からは退くべきだ」という自身の哲学を実践している。</span>
+      </li>
+    </ul>
+
+    <div class="quote">
+      "The most important trick to be happy is to realize that happiness is a skill that you develop and a choice that you make."
+      <cite>— Naval Ravikant</cite>
+    </div>
+  </section>
+
+  <!-- 名言集 -->
+  <section>
+    <div class="section-label">Quotes</div>
+    <h2>名言集</h2>
+
+    <div class="quote">
+      "Play long-term games with long-term people. All returns in life, whether in wealth, relationships, or knowledge, come from compound interest."
+      <cite>— Naval Ravikant（「金持ちになる方法」ツイートストームより）</cite>
+    </div>
+
+    <div class="quote">
+      "Desire is a contract you make with yourself to be unhappy until you get what you want."
+      <cite>— Naval Ravikant</cite>
+    </div>
+
+    <div class="quote">
+      "A fit body, a calm mind, a house full of love. These things cannot be bought — they must be earned."
+      <cite>— Naval Ravikant</cite>
+    </div>
+
+    <div class="quote">
+      "Specific knowledge is knowledge that you cannot be trained for. If society can train you, it can train someone else, and replace you."
+      <cite>— Naval Ravikant</cite>
+    </div>
+
+    <div class="quote">
+      "Reading is faster than listening. Doing is faster than watching."
+      <cite>— Naval Ravikant</cite>
+    </div>
+
+    <div class="quote">
+      "Code and media are permission-less leverage. They are the leverage behind the newly rich. You can create software and media that works for you while you sleep."
+      <cite>— Naval Ravikant</cite>
+    </div>
+
+    <div class="quote">
+      "If you can't see yourself working with someone for life, don't work with them for a day."
+      <cite>— Naval Ravikant</cite>
+    </div>
+
+    <div class="quote">
+      "Be patient with your ambitions. The more you want something, the further away it seems. The less you want something, the closer it comes."
+      <cite>— Naval Ravikant</cite>
+    </div>
+  </section>
+
+  <!-- なぜLegendか -->
+  <section>
+    <div class="section-label">Legacy</div>
+    <h2>なぜ Legend か</h2>
+
+    <div class="card-grid">
+      <div class="card">
+        <h3>投資の民主化</h3>
+        <p>AngelListを通じてエンジェル投資へのアクセスを劇的に広げた。VCファームだけが持っていたスタートアップ情報へのアクセスを、個人投資家にも開放した最初の人物の一人。</p>
+      </div>
+      <div class="card">
+        <h3>思想の普及力</h3>
+        <p>2018年のツイートストーム以来、「Navalの哲学」は世界中の起業家・投資家のバイブルになった。「The Almanack of Naval Ravikant」は100万部以上が無料で読まれ、日本語版も出版された。</p>
+      </div>
+      <div class="card">
+        <h3>移民起業家の象徴</h3>
+        <p>インドのニューデリーで生まれ、ブロンクスの公営住宅で育ち、アイビーリーグを経てシリコンバレーの頂点へ。「アメリカンドリームの最良の形」として引用される。</p>
+      </div>
+      <div class="card">
+        <h3>富と幸福の両立</h3>
+        <p>多くの富豪が「富は幸福をもたらさない」と語るのに対し、Navalは「富を正しく追求すれば幸福と両立できる」と体系的に示した。これは思想家として稀有な貢献。</p>
+      </div>
+    </div>
+
+    <div class="episode" style="margin-top:24px;">
+      <h3>「The Almanack of Naval Ravikant」の影響</h3>
+      <p>
+        Eric Jorgensonが编集・出版した本書は「著者なき本」として珍しい。Navalは原稿に参加したが印税を受け取らず、全文無料公開を許可した。
+        結果的に出版社なし・マーケティングなしで100万部以上相当が読まれた。
+        「コンテンツの価値が流通コストに勝てば、無料でも十分な影響力を持つ」というNaval自身の哲学の実証実験でもあった。
+        日本語版は2022年に出版され、日本の起業家・投資家コミュニティにも大きな影響を与えた。
+      </p>
+    </div>
+
+    <div class="episode">
+      <h3>シリコンバレーを超えた影響圏</h3>
+      <p>
+        Navalの影響力はシリコンバレーの外に広がっている。
+        インド・東南アジアの若い起業家、日本のスタートアップエコシステム、アフリカのテック起業家コミュニティ——
+        彼の言葉は「場所に関係なく適用できる普遍的な原理」として機能しているからだ。
+        「Specific Knowledge、Leverage、長期ゲーム」の三原則はどの国のどの文化でも通用する。
+        これはNavalが単なるシリコンバレーの成功者でなく、グローバルな思想家である証拠だ。
+      </p>
+    </div>
+
+    <div class="tags">
+      <span class="tag">AngelList創業者</span>
+      <span class="tag">Specific Knowledge</span>
+      <span class="tag">Leverage理論</span>
+      <span class="tag">投資民主化</span>
+      <span class="tag">移民起業家</span>
+      <span class="tag">哲学者</span>
+      <span class="tag">幸福論</span>
+      <span class="tag">瞑想実践者</span>
+    </div>
+  </section>
+
+  <!-- 人物関係 -->
+  <section>
+    <div class="section-label">Network</div>
+    <h2>主要な人間関係</h2>
+    <table>
+      <tr><th>人物</th><th>関係・経緯</th></tr>
+      <tr>
+        <td>Babak Nivi</td>
+        <td>AngelList共同創業者。Naval最大の共同作業者。Venturehacks（ブログ）を共に運営し、スタートアップの資金調達知識を無料で広めた。関係は長期的かつ深い。</td>
+      </tr>
+      <tr>
+        <td>Eric Jorgenson</td>
+        <td>「The Almanack of Naval Ravikant」の編者。Navalの発言を10年分まとめて体系化した。Navalはその作業を承認・協力したが原稿料は受け取らなかった。</td>
+      </tr>
+      <tr>
+        <td>Tim Ferriss</td>
+        <td>「4時間体台書」著者・ポッドキャスター。Navalとは複数回のポッドキャスト対談で深い哲学的議論を展開。思想的に共鳴する部分が多い。</td>
+      </tr>
+      <tr>
+        <td>Shane Parrish</td>
+        <td>「Farnam Street」ブログ・ポッドキャスト主宰。Navalと「Mental Models（思考モデル）」の重要性について対談。知的コミュニティでの相互影響。</td>
+      </tr>
+      <tr>
+        <td>Jack Dorsey</td>
+        <td>Twitter創業者。NavalのTwitter初期投資家としての関係を超え、瞑想・セルフアウェアネスへの共通の関心で繋がっている。</td>
+      </tr>
+      <tr>
+        <td>Elad Gil</td>
+        <td>シリアル起業家・投資家。AngelListのエコシステムを通じた長期的な協力関係。Navalのシンジケートに参加した投資家の一人。</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- FOOTER -->
+  <div style="margin-top:64px; padding-top:24px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; text-align:center;">
+    Research conducted via Claude — 2026年4月6日
+  </div>
+
+</div>
+</body>
+</html>

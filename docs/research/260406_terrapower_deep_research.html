@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TerraPower — 次世代原子力・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">Advanced Nuclear</span>
+    <span class="badge badge-white">Energy Storage</span>
+    <span class="badge badge-solid">Bill Gates</span>
+  </div>
+  <h1>TerraPower</h1>
+  <p class="hero-sub">
+    「原子力は答えだ、ただし作り直す必要がある」——<br>
+    Bill Gatesが2006年に創業した次世代原子力会社。ナトリウム冷却高速炉×溶融塩蓄熱という革新技術で、2031年に米国初の商用先進炉を稼働させようとしている。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$650M</div><div class="lbl">2025年6月 調達</div></div>
+    <div class="kpi"><div class="val">$4B</div><div class="lbl">Wyoming 1号炉 総事業費</div></div>
+    <div class="kpi"><div class="val">345 MW</div><div class="lbl">Natrium 定格出力</div></div>
+    <div class="kpi"><div class="val">2031</div><div class="lbl">初号炉 商業運転予定</div></div>
+    <div class="kpi"><div class="val">2006</div><div class="lbl">設立</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">コア技術：Natrium</a></li>
+    <li><a href="#wyoming">Wyoming プロジェクト</a></li>
+    <li><a href="#funding">資金調達・投資家</a></li>
+    <li><a href="#deals">主要パートナーシップ</a></li>
+    <li><a href="#isotopes">TerraPower Isotopes</a></li>
+    <li><a href="#leadership">経営陣</a></li>
+    <li><a href="#timeline">タイムライン</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#view">投資・参入観点の整理</a></li>
+  </ol>
+</div>
+
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><div class="num">1</div> Company Overview</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">TerraPower, LLC</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2006年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Bellevue, Washington, USA</div></div>
+    <div class="kv-item"><div class="k">Chairman</div><div class="v">Bill Gates</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">Chris Levesque</div></div>
+    <div class="kv-item"><div class="k">ミッション</div><div class="v">エネルギー・気候・人類の健康課題を核技術で解決</div></div>
+  </div>
+
+  <p>
+    Bill GatesとNathan Myhrvoldが「民間セクターが先進核エネルギーの開発に動かなければならない」という問題意識から創業。
+    現在は世界的な核技術イノベーションセンターとして認知されており、先進炉開発（Natrium）と医療用放射性同位体（Isotopes）の2事業を軸にする。
+  </p>
+
+  <div class="quote">
+    <p>The world needs clean, affordable energy that can be deployed at scale. Nuclear is the only baseload energy source that can reliably fill that role without carbon emissions.</p>
+    <div class="attr">— Chris Levesque, CEO</div>
+  </div>
+</div>
+
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><div class="num">2</div> Core Technology: Natrium Reactor</div>
+
+  <p>
+    Natriumは<strong>ナトリウム冷却高速炉（SFR）＋溶融塩エネルギー蓄熱システム</strong>を統合した次世代原子力プラント。
+    GE Vernova Hitachi Nuclear Energy Technologyとのジョイントベンチャーで開発・建設を推進している。
+  </p>
+
+  <h3>スペック詳細</h3>
+  <table class="t">
+    <tr><th>項目</th><th>スペック</th><th>備考</th></tr>
+    <tr><td>定格出力</td><td>345 MWe</td><td>約40万世帯分</td></tr>
+    <td>ピーク出力</td><td>500 MWe（5時間以上）</td><td>溶融塩蓄熱でブースト</td></tr>
+    <tr><td>ブースト速度</td><td>10%/分</td><td>再生可能エネルギーの補完に最適</td></tr>
+    <tr><td>冷却材</td><td>液体ナトリウム</td><td>低圧（大気圧）運転</td></tr>
+    <tr><td>蒸気温度</td><td>500°C以上</td><td>産業用脱炭素にも活用可能</td></tr>
+    <tr><td>燃料効率</td><td>従来LWR比 3倍</td><td>使用済み燃料の再利用も可能</td></tr>
+    <tr><td>廃棄物</td><td>従来比 40% 削減</td><td>高レベル廃棄物の体積減少</td></tr>
+    <tr><td>建設期間</td><td>約36ヶ月</td><td>核コンクリート打設〜燃料装填まで</td></tr>
+  </table>
+
+  <h3>技術的優位性</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">エネルギー貯蔵内蔵</div>
+        <div class="ind-desc">溶融塩タンクが巨大な「熱電池」として機能。太陽光・風力の出力変動を吸収し、電力需要ピーク時に345→500 MWeへ即座に増力できる。バッテリーと異なり数時間単位で持続可能。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">低圧設計による安全性</div>
+        <div class="ind-desc">従来の軽水炉（LWR）は高圧水を使うため、冷却材喪失事故（LOCA）リスクが高い。ナトリウム冷却は大気圧で運転できるため、圧力容器の破裂リスクが根本的にない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">コスト競争力</div>
+        <div class="ind-desc">安全関連のコンクリート・鉄鋼・人員を約50%削減。また高温蒸気（500°C+）を産業プロセスへ供給できるため、電力販売以外の収益源も持てる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">AI/データセンター需要との適合性</div>
+        <div class="ind-desc">24/7のカーボンフリー電力とオンデマンドの出力ブーストという特性は、AIクラスター・データセンターの電力需要に完璧にマッチ。Meta・KHNP・NVIDIA等のテックセクターが注目する背景。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 3. WYOMING ===================== -->
+<div class="sec" id="wyoming">
+  <div class="sec-label"><div class="num">3</div> Wyoming Project — Kemmerer Power Station</div>
+
+  <div class="callout">
+    <strong>米国初の商業規模・先進原子力プロジェクト。</strong>旧石炭火力発電所の跡地に建設中。2031年商業運転を目指す。
+  </div>
+
+  <table class="t">
+    <tr><th>項目</th><th>内容</th></tr>
+    <tr><td>場所</td><td>Kemmerer, Wyoming（旧石炭火力跡地）</td></tr>
+    <tr><td>総事業費</td><td>約$4B（400億円超）</td></tr>
+    <tr><td>建設主体</td><td>TerraPower × GE Vernova Hitachi Nuclear Energy Technology</td></tr>
+    <tr><td>NRC許可</td><td>2026年3月4日 建設許可（Construction Permit）取得</td></tr>
+    <tr><td>核コンクリート打設</td><td>2027年予定</td></tr>
+    <tr><td>燃料装填</td><td>2030年予定</td></tr>
+    <tr><td>商業運転開始</td><td>2031年予定</td></tr>
+    <tr><td>英国展開</td><td>2026年2月 英国規制審査プロセス受理</td></tr>
+  </table>
+
+  <h3>規制マイルストーン（2026年）</h3>
+  <p>
+    2026年3月4日、米国原子力規制委員会（NRC）が<strong>Natrium炉の建設許可（CP）を正式承認</strong>。
+    これは米国における先進炉の規制認可として画期的なマイルストーン。
+    また同年2月には英国の原子力規制局（GDA）のレビュープロセスにも受理され、グローバル展開への道が開かれた。
+  </p>
+</div>
+
+
+<!-- ===================== 4. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><div class="num">4</div> Funding & Investors</div>
+
+  <div class="f-stack">
+    <div class="f-card gov">
+      <div class="r-badge">DOE Grant</div>
+      <div class="f-amount">$2B</div>
+      <div class="f-detail">
+        <div class="f-date">2020年締結 / 7年間マッチング契約</div>
+        <div class="f-desc">DOE 先進炉実証プログラム（ARDP）。Wyoming プロジェクト総額$4Bの半額を政府が拠出。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series / Corporate</div>
+      <div class="f-amount">$650M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年6月</div>
+        <div class="f-desc">NVIDIA ベンチャー部門を含む複数機関が参加。AI・データセンター電力需要との親和性が評価されたラウンド。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Strategic</div>
+      <div class="f-amount">—</div>
+      <div class="f-detail">
+        <div class="f-date">2026年1月20日</div>
+        <div class="f-desc">韓国水力原子力（KHNP）が投資家として参加。国際的な原子力サプライチェーンの構築を意図。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要投資家・支援者</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Chairman</span>
+      <div class="vc-name">Bill Gates</div>
+      <div class="vc-role">個人投資家 / 共同創業者</div>
+      <div class="vc-desc">Wyoming プロジェクトに$1B個人拠出。Microsoft創業者。Breakthrough Energy設立者としてクリーンエネルギー全般に投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">SK Inc.</div>
+      <div class="vc-role">Strategic Investor</div>
+      <div class="vc-desc">韓国財閥SK系。$2.5Bのグリーン技術ポートフォリオを持つ。TerraPowerへの早期投資家として韓国市場との橋渡し役。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">NVIDIA (Venture Arm)</div>
+      <div class="vc-role">2025年6月ラウンド参加</div>
+      <div class="vc-desc">AIインフラの電力需要を見越した戦略投資。半導体・AIエコシステムから見ると電力源確保が最重要課題。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">KHNP（韓国水力原子力）</div>
+      <div class="vc-role">2026年1月 参加</div>
+      <div class="vc-desc">韓国の国営原子力会社。技術移転・国際展開の観点から投資。Natriumの韓国・アジア展開を視野に入れた動き。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 5. DEALS ===================== -->
+<div class="sec" id="deals">
+  <div class="sec-label"><div class="num">5</div> Key Partnerships & Deals</div>
+
+  <h3>Meta — 8基契約（2026年1月9日）</h3>
+  <div class="callout">
+    <strong>Meta史上最大の先進原子力投資。</strong>最大2.8 GW（蓄熱込み4 GW）のカーボンフリー電力をAI・データセンター向けに確保。
+  </div>
+  <table class="t">
+    <tr><th>項目</th><th>内容</th></tr>
+    <tr><td>契約内容</td><td>Natrium炉 最大8基の開発合意</td></tr>
+    <tr><td>出力</td><td>2.8 GW（ベース）／4 GW（蓄熱ブースト時）</td></tr>
+    <tr><td>初期2基</td><td>2032年以降納入。MetaがFunding提供</td></tr>
+    <tr><td>追加6基</td><td>2035年目標。MetaがEnergyの権利を保有</td></tr>
+    <tr><td>意義</td><td>Big Tech × 先進原子力の最大規模ディール。Microsoftのスリーマイル島再稼働に続く潮流</td></tr>
+  </table>
+
+  <h3>その他主要パートナーシップ</h3>
+  <table class="t">
+    <tr><th>パートナー</th><th>内容</th><th>時期</th></tr>
+    <tr><td>GE Vernova Hitachi</td><td>Natrium炉の設計・建設 JV</td><td>創業来</td></tr>
+    <tr><td>SoftServe × NVIDIA Omniverse</td><td>Omniverceを活用した先進核エネルギー展開加速</td><td>2026年3月</td></tr>
+    <tr><td>英国規制当局（GDA）</td><td>UK市場向け規制審査プロセス受理</td><td>2026年2月</td></tr>
+  </table>
+</div>
+
+
+<!-- ===================== 6. ISOTOPES ===================== -->
+<div class="sec" id="isotopes">
+  <div class="sec-label"><div class="num">6</div> TerraPower Isotopes</div>
+
+  <p>
+    TerraPowerの第二事業。原子炉技術を応用して<strong>医療用放射性同位体（ラジオアイソトープ）を製造</strong>する。
+    がん治療の精密医療（ターゲテッド放射線治療）向けに次世代同位体を開発・供給する。
+  </p>
+  <div class="kv">
+    <div class="kv-item"><div class="k">製品</div><div class="v">医療用放射性同位体（がん治療向け）</div></div>
+    <div class="kv-item"><div class="k">用途</div><div class="v">ターゲテッド放射線治療（精密医療）</div></div>
+    <div class="kv-item"><div class="k">直近動向</div><div class="v">2026年3月 cGMP製造設備を拡張</div></div>
+    <div class="kv-item"><div class="k">位置づけ</div><div class="v">核技術の医療応用。炉事業と技術シナジーあり</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== 7. LEADERSHIP ===================== -->
+<div class="sec" id="leadership">
+  <div class="sec-label"><div class="num">7</div> Leadership Team</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">BG</div>
+      <div>
+        <h3>Bill Gates</h3>
+        <div class="p-role">Chairman & Co-Founder</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">背景</div><div class="val">Microsoft 共同創業者。Breakthrough Energy を通じてクリーンエネルギー全般に注力。</div></div>
+      <div class="p-row"><div class="lbl">投資</div><div class="val">Wyoming プロジェクトに個人で$1B拠出。TerraPowerの最大個人株主。</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">CL</div>
+      <div>
+        <h3>Chris Levesque</h3>
+        <div class="p-role">CEO & Board Member</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">就任</div><div class="val">2015年 President → 2018年 CEO昇格</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">NRC審査・規制対応・メガ商業ディール（Meta等）を主導。</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">NM</div>
+      <div>
+        <h3>Nathan Myhrvold, Ph.D.</h3>
+        <div class="p-role">Vice Chairman & Co-Founder</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">背景</div><div class="val">元 Microsoft CTO。Intellectual Ventures 創業者。多領域にわたる発明家・投資家。</div></div>
+    </div>
+  </div>
+
+  <table class="t">
+    <tr><th>氏名</th><th>役職</th></tr>
+    <tr><td>John Gilleland, Ph.D.</td><td>Chief Technology Officer</td></tr>
+    <tr><td>Eric Williams</td><td>Chief Operations Officer</td></tr>
+    <tr><td>Steven Hellman</td><td>Chief Financial Officer</td></tr>
+    <tr><td>George Wilson</td><td>Senior VP, Regulatory Affairs</td></tr>
+  </table>
+</div>
+
+
+<!-- ===================== 8. TIMELINE ===================== -->
+<div class="sec" id="timeline">
+  <div class="sec-label"><div class="num">8</div> Timeline</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2006</span><span class="tl-title">TerraPower 創業</span></div>
+        <div class="tl-body">Bill Gates・Nathan Myhrvoldが先進原子力の民間開発を目的に設立。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2020</span><span class="tl-title">DOE ARDP 採択・$2Bマッチング契約</span></div>
+        <div class="tl-body">米国エネルギー省の先進炉実証プログラムに選定。7年間・最大$2Bの政府支援確定。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年6月</span><span class="tl-title">$650M 資金調達（NVIDIA参加）</span></div>
+        <div class="tl-body">NVIDIAベンチャー部門を含む複数機関から調達。AI電力需要の文脈でテックセクターの関心が急上昇。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年1月9日</span><span class="tl-title">Meta と 8基契約締結</span></div>
+        <div class="tl-body">最大2.8 GW（蓄熱時4 GW）のNatrium炉8基を供給する合意。Big Tech×先進核の最大規模ディール。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年1月20日</span><span class="tl-title">KHNP が投資家参加</span></div>
+        <div class="tl-body">韓国水力原子力が戦略投資。アジア展開への布石。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年2月19日</span><span class="tl-title">英国 GDA 審査プロセス受理</span></div>
+        <div class="tl-body">英国市場展開へ向けた規制審査がスタート。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年3月4日</span><span class="tl-title">NRC 建設許可（CP）取得 ★</span></div>
+        <div class="tl-body">米国原子力規制委員会がNatrium炉の建設許可を正式承認。米国初の先進炉CPとして歴史的マイルストーン。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date muted">2027年（予定）</span><span class="tl-title">Wyoming 核コンクリート打設開始</span></div>
+        <div class="tl-body">NRC建設許可を受けて本格着工。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date muted">2030年（予定）</span><span class="tl-title">燃料装填・コミッショニング開始</span></div>
+        <div class="tl-body">運転許可（OL）取得後、燃料を装填し試運転フェーズへ。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date muted">2031年（予定）</span><span class="tl-title">商業運転開始（グリッド接続）</span></div>
+        <div class="tl-body">米国初の商業先進原子力プラントとして電力網へ。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date muted">2032年〜（予定）</span><span class="tl-title">Meta向け初期2基 納入</span></div>
+        <div class="tl-body">Meta向け最初の2基が稼働開始。以降2035年目標で6基追加。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 9. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><div class="num">9</div> Competition</div>
+
+  <p>先進SMR・次世代炉の主要プレイヤーと比較。TerraPowerは規模・実績・Gatesブランドで一段上に位置する。</p>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">TerraPower（Natrium）</div>
+      <div class="comp-tag">最有力</div>
+      <div class="comp-desc">345 MWe SFR + 溶融塩蓄熱。NRC CP取得済み。Wyoming着工中。Meta 8基契約。Gates + DOE + NVIDIA + KHNP バックアップ。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">X-energy</div>
+      <div class="comp-tag">競合</div>
+      <div class="comp-desc">80 MWe HTGR（高温ガス炉）。DOE ARDPで共同採択。Amazon（AWS）と電力契約。規模は小さいが高温蒸気の産業利用に強み。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">NuScale Power</div>
+      <div class="comp-tag">競合</div>
+      <div class="comp-desc">77 MWe LWR系SMR。上場済みだがIdaho Fallsプロジェクトがコスト超過でキャンセル（2023年）。信頼性・コストで苦戦中。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Oklo</div>
+      <div class="comp-tag">新興</div>
+      <div class="comp-desc">小型高速炉（15 MWe）。Sam Altman会長。SPAC上場。Microsoftのデータセンター向け電力供給契約あり。まだ建設許可前。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Kairos Power</div>
+      <div class="comp-tag">新興</div>
+      <div class="comp-desc">溶融塩冷却炉（FHR）。Google と電力契約（2030年代・500 MW）。実証炉はまだ計画段階。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Commonwealth Fusion</div>
+      <div class="comp-tag">核融合</div>
+      <div class="comp-desc">高温超電導マグネットによる核融合。$1.8B調達済み。商業炉は2030年代後半以降。フィジョンとは別カテゴリ。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 10. VIEW ===================== -->
+<div class="sec" id="view">
+  <div class="sec-label"><div class="num">10</div> 投資・参入観点の整理</div>
+
+  <h3>なぜ今テックマネーが原子力に向かうのか</h3>
+  <p>
+    AIの爆発的拡大により、データセンターの電力需要は2030年にかけて現在の数倍に膨らむ見通し。
+    太陽光・風力は間欠性の問題で大規模AIクラスターの24/7需要を満たせない。
+    結果として<strong>「カーボンフリー × ベースロード × スケーラブル」</strong>な電源として先進核エネルギーが唯一の現実解として浮上している。
+    Meta・Microsoft・Amazon・Googleがそれぞれ異なる原子力スタートアップと電力契約を結んでいる事実がこれを裏付ける。
+  </p>
+
+  <h3>TerraPowerの強みと制約</h3>
+  <div class="warn-box">
+    <div class="w-title">Strengths</div>
+    <ul>
+      <li><b>技術的独自性</b>：SFR + 溶融塩蓄熱の統合は世界で唯一。エネルギーストレージ内蔵型の先進炉はNatrium以外に存在しない</li>
+      <li><b>規制進捗</b>：NRC建設許可取得（2026年3月）は競合に数年先行する最大の堀</li>
+      <li><b>Gatesブランド</b>：資金調達・パートナー獲得・政府関係で圧倒的なレバレッジ</li>
+      <li><b>Big Tech契約</b>：Meta 8基は確実な収益の見通しを作る。追随者が続く可能性が高い</li>
+    </ul>
+  </div>
+  <div class="warn-box">
+    <div class="w-title">Constraints / Risks</div>
+    <ul>
+      <li><b>超長期・超高capex</b>：商業運転は2031年、Meta向け納入は2032〜2035年。総事業費$4Bの1号炉でROIは2030年代以降</li>
+      <li><b>規制リスク</b>：NRCの運転許可（OL）取得は2028年予定。政権交代・事故・政治リスクに脆弱</li>
+      <li><b>建設コスト超過リスク</b>：NuScaleのキャンセル事例に代表されるように、原子力建設はコスト・スケジュール超過の歴史が長い</li>
+      <li><b>ナトリウム技術の実績</b>：日本「もんじゅ」・フランス「スーパーフェニックス」など過去のSFRはトラブル続き。Natriumが初めて成功するかは未知数</li>
+    </ul>
+  </div>
+
+  <div class="callout">
+    <strong>結論：</strong>TerraPowerは「確かに正しいこと（先進核×AI電力）を、確かに正しいアプローチ（SFR+蓄熱）で、確かに正しい時期に」やっている。ただし参入・競合・投資いずれの観点でも<strong>タイムラインが長すぎる</strong>。初期リターンまで10年以上かかる構造は、スタートアップとして次事業を考える際には参照・インスピレーション源として優れているが、参入先候補としては不向き。
+  </div>
+</div>
+
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://www.terrapower.com/" target="_blank">TerraPower 公式サイト</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/TerraPower" target="_blank">TerraPower — Wikipedia</a></li>
+    <li><a href="https://neutronbytes.com/2025/11/20/terrapower-natrium-reactor-on-the-grid-by-2031/" target="_blank">Natrium Reactor on the Grid by 2031 — Neutron Bytes</a></li>
+    <li><a href="https://www.enr.com/articles/60398-next-gen-4b-nuclear-power-plant-in-wyo-gets-key-approvals-union-labor-agreement" target="_blank">$4B Nuclear Plant in WY — ENR</a></li>
+    <li><a href="https://www.terrapower.com/terrapower-announces-deal-with-meta" target="_blank">TerraPower × Meta 8基契約 発表</a></li>
+    <li><a href="https://neutronbytes.com/2026/01/09/terrapower-in-mega-deal-with-meta-for-eight-natrium-345-mw-advanced-nuclear-plants/" target="_blank">TerraPower × Meta ディール詳細 — Neutron Bytes</a></li>
+    <li><a href="https://about.fb.com/news/2026/01/meta-nuclear-energy-projects-power-american-ai-leadership/" target="_blank">Meta Nuclear Energy Projects — Meta Newsroom</a></li>
+    <li><a href="https://www.wyomingpublicmedia.org/natural-resources-energy/2025-12-02/terrapower-inches-closer-to-nuclear-construction-permit" target="_blank">TerraPower Construction Permit Progress — Wyoming Public Media</a></li>
+    <li><a href="https://enkiai.com/data-center/terrapowers-natrium-smr-powers-ai-future-in-2025" target="_blank">Natrium SMR Powers AI Future — EnkiAI</a></li>
+    <li><a href="https://www.ans.org/news/2025-12-03/article-7590/nrc-completes-safety-review-for-terrapowers-kemmerer-project/" target="_blank">NRC Safety Review Complete — ANS</a></li>
+  </ul>
+</div>
+
+<p style="text-align:center; font-size:11px; color: var(--dim); margin-top:32px; font-family:'Poppins',sans-serif;">
+  Researched 2026-04-06 &nbsp;·&nbsp; /Users/a24111/Desktop/ai-projects/030_research/035_startup/260406_terrapower_deep_research.html
+</p>
+
+</div>
+</body>
+</html>

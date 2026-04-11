@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retro Biosciences — 老化科学スタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">老化科学</span>
+    <span class="badge badge-white">長寿研究</span>
+    <span class="badge badge-solid">Sam Altman $180M投資</span>
+  </div>
+  <h1>Retro Biosciences</h1>
+  <p class="hero-sub">
+    「人間の健康寿命を10年延ばす」——<br>
+    2022年創業。Sam Altmanが個人として過去最大の$180Mを投資した老化科学スタートアップ。オートファジー増強・部分的細胞リプログラミング・血漿由来若返り・iPSC療法の4本柱で、老化そのものを治療可能な疾患として捉え直す試みを進める。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$180M</div><div class="lbl">Altman個人投資（2022年）</div></div>
+    <div class="kpi"><div class="val">$1B</div><div class="lbl">Series A目標（2025年1月）</div></div>
+    <div class="kpi"><div class="val">$5B</div><div class="lbl">ターゲットバリュエーション</div></div>
+    <div class="kpi"><div class="val">3</div><div class="lbl">臨床試験中（含アルツハイマー）</div></div>
+    <div class="kpi"><div class="val">2022</div><div class="lbl">設立</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">技術解説：オートファジーと部分的リプログラミング</a></li>
+    <li><a href="#sam">Sam Altmanとの関係</a></li>
+    <li><a href="#pipeline">パイプラインと臨床試験</a></li>
+    <li><a href="#funding">資金調達</a></li>
+    <li><a href="#competition">競合：Unity/Calico/Altos Labs</a></li>
+    <li><a href="#team">経営陣・研究者</a></li>
+    <li><a href="#risks">リスクと課題</a></li>
+    <li><a href="#aging-science">老化科学の現在地</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Retro Biosciences</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2022年</div></div>
+    <div class="kv-item"><div class="k">所在地</div><div class="v">Redwood City, California</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">Joe Betts-LaCroix</div></div>
+    <div class="kv-item"><div class="k">ミッション</div><div class="v">人間の健康寿命を10年延ばす</div></div>
+    <div class="kv-item"><div class="k">主要投資家</div><div class="v">Sam Altman（個人）</div></div>
+    <div class="kv-item"><div class="k">臨床試験数</div><div class="v">3（アルツハイマー含む）</div></div>
+    <div class="kv-item"><div class="k">研究アプローチ</div><div class="v">オートファジー・リプログラミング・iPSC</div></div>
+  </div>
+
+  <p>Retro Biosciencesは、「老化は治療可能な疾患である」という命題を科学的に実証しようとするスタートアップだ。創業からわずか数年にして、老化研究の最先端を走る複数のアプローチを統合し、臨床試験まで進めている。</p>
+
+  <p>同社が特別なのは、技術力だけでなく資本構造にある。Sam AltmanがOpenAI CEOとしての報酬の大部分を注ぎ込んだとされる$180Mの個人投資は、AI業界の顔が「長寿」という人類の根本課題に最も強い確信を持って賭けた事実として世界的に注目された。</p>
+
+  <div class="callout">
+    <strong>ミッションの具体性：</strong> 「長寿」スタートアップの多くが曖昧なビジョンを掲げる中、Retroは「10年の健康寿命延伸」という具体的な目標を設定。これは「120歳まで生きる」という夢物語ではなく、現在の医療水準に対して測定可能なデルタを求める実践的なアプローチだ。
+  </div>
+</div>
+
+<!-- ===================== 2. TECH ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">2</span> Technology</div>
+  <h2>技術解説：オートファジー・部分的リプログラミング</h2>
+
+  <h3>4つの技術柱</h3>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">01</div>
+      <div>
+        <div class="ind-title">オートファジー増強（Autophagy Enhancement）</div>
+        <div class="ind-desc">オートファジー（autophagy）は細胞内の「自己浄化システム」であり、損傷したタンパク質や細胞小器官を分解・再利用するプロセスだ。加齢とともにオートファジーの活性は低下し、細胞内に老廃物が蓄積する——これが老化・疾患の主要因の一つとされる。RetroはATG（autophagy-related）遺伝子群の発現を制御することでオートファジーを増強し、細胞の若返りを誘導しようとしている。研究パートナーのDavid SabatiniはmTOR経路（オートファジーの主要調節因子）の世界的権威であり、科学的基盤は非常に強固だ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">02</div>
+      <div>
+        <div class="ind-title">部分的細胞リプログラミング（Partial Cellular Reprogramming）</div>
+        <div class="ind-desc">山中伸弥教授のYamanaka因子（Oct4, Sox2, Klf4, c-Myc）は、分化した体細胞を多能性幹細胞（iPSC）に初期化する能力を持つ。しかし完全な初期化は細胞の同一性を失わせ、癌化リスクも伴う。「部分的リプログラミング」はYamanaka因子の発現を短時間・低レベルに制御し、細胞同一性を保ったまま「エピジェネティック時計」を巻き戻すアプローチだ。マウス実験では視力や筋肉機能の回復が示されており、Retroはこれを人体に応用できる形に開発している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">03</div>
+      <div>
+        <div class="ind-title">血漿由来若返り（Plasma-Inspired Rejuvenation）</div>
+        <div class="ind-desc">若い個体の血漿を老いた個体に輸注すると若返り効果が生じるという「parabiosis（連体実験）」由来の知見を出発点に、血中の若返り因子（GDF11、oxytocin等）の同定と製剤化を目指す。若い血漿の直接輸注は倫理・安全面の問題があるため、RetroはFDA承認を得られる製剤アプローチとして特定因子を精製・合成する方向で研究を進めている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">04</div>
+      <div>
+        <div class="ind-title">iPSCベース療法（iPSC-Based Therapies）</div>
+        <div class="ind-desc">人工多能性幹細胞（iPSC）から特定の組織・臓器細胞を分化させ、老化・傷害を受けた組織を置き換える細胞療法。特に免疫細胞（T細胞・NK細胞等）の若化再生が老化に伴う免疫老化（immunosenescence）への直接的な対処策となり得る。Retroは他の長寿研究機関より具体的な細胞療法製品化を目指している点で特徴的だ。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>David SabatiniとmTOR/オートファジーの重要性</h3>
+  <p>David Sabatiniは、栄養センシング経路mTOR（mechanistic Target Of Rapamycin）の機能解明で世界的に著名な生物学者だ。mTORはオートファジーの主要な抑制因子であり、mTOR阻害薬（ラパマイシン等）が老化抑制効果を示すことは複数の動物実験で確認されている。Sabatiniの参加はRetroの科学的credibilityを著しく高めており、彼が長年蓄積してきたATG遺伝子群とmTOR経路の知識がRetroの薬剤スクリーニング・設計に直接活用されている。</p>
+
+  <div class="callout">
+    <strong>エピジェネティック時計という概念：</strong> Steve Horvathが開発した「DNAメチル化時計」は、細胞のDNAメチル化パターンから生物学的年齢を推定する。Retroの部分的リプログラミングアプローチはこの時計を逆回しにするものであり、効果検証の客観的指標として使用される。
+  </div>
+</div>
+
+<!-- ===================== 3. SAM ALTMAN ===================== -->
+<div class="sec" id="sam">
+  <div class="sec-label"><span class="num">3</span> Sam Altman Connection</div>
+  <h2>Sam Altmanとの関係</h2>
+
+  <div class="quote">
+    <p>I think it's possible that, in my lifetime, we will be able to solve the problem of aging. I wanted to do something about it now rather than waiting.</p>
+    <div class="attr">— Sam Altman（Retro投資に関して）</div>
+  </div>
+
+  <p>Sam Altmanの$180M個人投資は、いくつかの意味で異例だ。OpenAI CEO就任後、Altmanは個人としてほぼ無報酬に近い形でOpenAIを運営してきたが、その貯蓄・過去の投資益の大部分をRetroに注ぎ込んだとされている。これはAltmanの投資実績の中で最大の単一案件であり、Altmanが老化科学の実現可能性を「AI同様に近い地平にある技術革命」と捉えていることを示す。</p>
+
+  <h3>投資の意図と影響</h3>
+
+  <table class="t">
+    <thead>
+      <tr><th>側面</th><th>内容</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>資金面</td><td>$180Mという創業初期の大型資金は、Retroが採算を度外視した基礎研究に長期で取り組む余裕を与えた。「研究室を急かさない」ための財務的バッファー。</td></tr>
+      <tr><td>信頼性担保</td><td>AltmanというテックアイコンのエンドースメントはRetroの採用力・研究者誘致を劇的に向上させた。世界トップクラスの老化研究者がRetroを選ぶ理由の一つ。</td></tr>
+      <tr><td>Series A主導</td><td>2025年1月の$1B Series Aラウンドにおいても、AltmanはリードインベスターとしてRetroを引き続き支援。個人投資に留まらず組織的なキャピタル導入を主導。</td></tr>
+      <tr><td>戦略的ネットワーク</td><td>OpenAI・Y Combinatorのネットワークを通じて、AIを使った薬剤スクリーニング・タンパク質設計（AlphaFold活用等）への橋渡し役にもなっている。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>AI×長寿の交差点：</strong> AltmanはOpenAIを通じてAIの急速な進歩を最前線で目撃してきた。彼の見立てでは、AIによる薬剤候補スクリーニング・タンパク質設計の加速が老化研究のボトルネックを破壊し、10年前には不可能だった速度での臨床応用が可能になりつつある。RetroへのベットはAIと生命科学の融合への投資でもある。
+  </div>
+</div>
+
+<!-- ===================== 4. PIPELINE ===================== -->
+<div class="sec" id="pipeline">
+  <div class="sec-label"><span class="num">4</span> Pipeline</div>
+  <h2>パイプラインと臨床試験</h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年（進行中）</span>
+          <span class="tl-title">アルツハイマー病治療薬 — フェーズI（オーストラリア）</span>
+        </div>
+        <div class="tl-body">オートファジー増強機序に基づく化合物のPhase I臨床試験をオーストラリアで開始。安全性・忍容性の評価が主目的。米国ではなくオーストラリアでの実施は<b>規制スピードと試験コスト</b>の最適化のため（Australian CTN制度の活用）。アルツハイマーは老化関連疾患の中でも最も大きな市場を持ち、FDA承認経路も比較的明確。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年（進行中）</span>
+          <span class="tl-title">第2・第3化合物 — 前臨床〜Phase I</span>
+        </div>
+        <div class="tl-body">老化関連疾患（詳細非公開）を対象とした2つの化合物が臨床試験に進んでいる。Retroは具体的な疾患名・化合物名の多くを非公開としており、競合他社に対する知財的優位を守る姿勢が見える。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2026〜2027年（計画）</span>
+          <span class="tl-title">部分的リプログラミング — IND申請</span>
+        </div>
+        <div class="tl-body">山中因子ベースの部分的リプログラミング療法のIND（Investigational New Drug）申請を目標。適切な制御手法の開発とがん化安全性の実証が前提条件。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2028年以降（長期）</span>
+          <span class="tl-title">iPSC細胞療法 — 商業化</span>
+        </div>
+        <div class="tl-body">iPSCから分化させた免疫細胞・各種組織細胞の細胞療法製品化。製造スケールアップが最大のボトルネック。<b>同種（allogeneic）iPSCプラットフォーム</b>での「すぐに使える（off-the-shelf）」細胞療法を目指す。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout" style="margin-top:20px;">
+    <strong>オーストラリア試験の戦略的意味：</strong> FDA IND申請に比べ、オーストラリアのCTN（Clinical Trial Notification）制度は審査が迅速で費用も低い。国際的に承認された製薬会社が活用する「グローバル臨床試験戦略」の一形態であり、Retroはこれを速度優位のために活用している。
+  </div>
+</div>
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">5</span> Funding</div>
+  <h2>資金調達</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$1B</div>
+      <div class="f-detail">
+        <div class="f-date">2025年1月（調達中）</div>
+        <div class="f-desc">Sam Altmanがリードインベスターとして主導。$5Bバリュエーションを目標として設定。バイオテク史上でも希少な創業初期の$1Bシングルラウンドは、老化研究への市場の本気度を示す。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <span class="r-badge">創業資金</span>
+      <div class="f-amount">$180M</div>
+      <div class="f-detail">
+        <div class="f-date">2022年（Sam Altman個人）</div>
+        <div class="f-desc">Sam Altmanによる個人投資。Altman史上最大の単一個人投資案件。Retroが初期研究を急かされることなく長期視点で実行できる財務基盤を確立。</div>
+      </div>
+    </div>
+  </div>
+
+  <p>Retroの資金調達は非常に集中した構造が特徴だ。初期は実質的にSam Altman一人の個人資金で運営されており、これはY Combinator的な「少数の確信者が大きく張る」モデルの極端な形である。$1Bシリーズがクローズすれば、機関投資家も加わった本格的な組織資本へと移行し、臨床試験の加速・製造インフラ整備が可能になる。</p>
+
+  <div class="callout">
+    <strong>バリュエーションの合理性：</strong> $5Bバリュエーションは創業数年の前臨床〜Phase I段階の企業としては破格だが、老化薬市場のTAM（Total Addressable Market）は年間兆ドル規模の可能性があり、成功確率が低くても期待値ベースで正当化される。Calico（Google系）やAltos Labsが数十億ドルの資金を持つことも、この水準のバリュエーションの参照点となっている。
+  </div>
+</div>
+
+<!-- ===================== 6. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">6</span> Competition</div>
+  <h2>競合：Unity Bio / Calico / Altos Labs</h2>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">Retro Biosciences</div>
+      <div class="comp-tag">本社（比較基準）</div>
+      <div class="comp-desc">オートファジー・リプログラミング・血漿・iPSCの4本柱。Sam Altman投資。臨床試験3本進行中。「10年の健康寿命延伸」という具体的目標。速度と多様性が特徴。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Unity Biotechnology</div>
+      <div class="comp-tag">老化細胞除去（Senolytic）</div>
+      <div class="comp-desc">老化細胞（senescent cell）を除去するsenolytic療法に特化。Jeff Bezos、ARCH Venture Partners等が投資。眼科疾患では臨床試験が先行するが、主要適応症での挫折も経験。アプローチが単一であるためRetroより狭いが、より深い。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Calico (Google系)</div>
+      <div class="comp-tag">研究機関型・非公開</div>
+      <div class="comp-desc">Googleが設立した老化研究機関。AbbVieとのパートナーシップで$1.5B以上を調達・保有。研究は最高水準だが商業化スピードが遅く、2025年時点でも具体的な医薬品パイプラインは限られる。「学術研究機関に近い」との評価。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Altos Labs</div>
+      <div class="comp-tag">リプログラミング特化</div>
+      <div class="comp-desc">Jeff Bezos、Yuri Milner等が$3B超を投資した大型老化研究スタートアップ。Shinya YamanakaやManuel Serranoら世界トップ研究者を集結。リプログラミング研究ではRetroと直接競合するが、商業化より研究重視の姿勢。資金力は圧倒的。</div>
+    </div>
+  </div>
+
+  <h3>競合ポジショニング比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>企業</th><th>資金規模</th><th>アプローチ</th><th>商業化スピード</th><th>特徴</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Retro Biosciences</td><td>~$1.2B+</td><td>4本柱・統合型</td><td>速い</td><td>臨床試験先行、Altman関与</td></tr>
+      <tr><td>Unity Biotechnology</td><td>~$500M</td><td>Senolytic単独</td><td>中程度</td><td>眼科で先行、他は苦戦</td></tr>
+      <tr><td>Calico</td><td>$1.5B+</td><td>基礎研究広範</td><td>遅い</td><td>Google系、学術色強い</td></tr>
+      <tr><td>Altos Labs</td><td>$3B+</td><td>リプログラミング</td><td>遅い</td><td>Bezos系、研究者集積</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Retroの相対的優位：</strong> 資金規模ではAltos Labsに劣るが、臨床試験への速度と「10年延伸」という具体的産業目標がRetroを他社と差別化する。Calico・Altosが「研究機関」的な性格を持つ一方、Retroは最初から商業製品化を視野に入れた設計になっている。
+  </div>
+</div>
+
+<!-- ===================== 7. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">7</span> Leadership</div>
+  <h2>経営陣・研究者</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">JB</div>
+      <div>
+        <h3>Joe Betts-LaCroix</h3>
+        <div class="p-role">CEO &amp; Co-Founder</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><span class="lbl">背景</span><span class="val">シリアルアントレプレナー。Vium（動物試験の自動化）などバイオテク系スタートアップを複数経営。エンジニアリングと生命科学の両方のバックグラウンドを持つ。</span></div>
+      <div class="p-row"><span class="lbl">スタイル</span><span class="val">「研究者のための環境を作る」ことに注力。世界最高の老化研究者を採用し、彼らが最大限の成果を出せる組織・資金・設備を整備するCEO像。</span></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">DS</div>
+      <div>
+        <h3>David Sabatini</h3>
+        <div class="p-role">主要研究協力者（mTOR/オートファジー）</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><span class="lbl">業績</span><span class="val">mTOR複合体（mTORC1/2）の機能解明における世界的第一人者。MITホワイトヘッド研究所で長年研究を行い、オートファジー・代謝制御分野での論文引用数は膨大。</span></div>
+      <div class="p-row"><span class="lbl">Retroとの関係</span><span class="val">論文・特許・薬剤設計において協力関係。Retroのオートファジー増強アプローチの科学的根拠を提供する重要人物。</span></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">SA</div>
+      <div>
+        <h3>Sam Altman</h3>
+        <div class="p-role">主要投資家（$180M個人投資）</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><span class="lbl">役割</span><span class="val">取締役/投資家として経営に関与。Series Aリードインベスター。日常的なオペレーションへの介入は最小限で、「研究者が研究に集中できる環境」を資金で守る姿勢。</span></div>
+      <div class="p-row"><span class="lbl">AI×老化</span><span class="val">OpenAI CEOとしての知見から、AIを使った薬剤探索・タンパク質設計のRetroへの導入を推進。LLM・生成AIの科学応用における架け橋的役割。</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 8. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">8</span> Risks</div>
+  <h2>リスクと課題</h2>
+
+  <div class="warn-box">
+    <div class="w-title">主要リスク一覧</div>
+    <ul>
+      <li><b>科学的不確実性：</b>老化研究は歴史上、動物実験での有望結果が人体に転換されないケースが多い。ラパマイシン・NAD+前駆体など、動物で効果を示した介入が人体臨床でも有効かは現時点で不明。</li>
+      <li><b>規制ハードル：</b>FDAは「老化」を疾患として認定していない。アルツハイマーや特定疾患を介して承認を取る戦略は理解できるが、「老化そのものへの治療薬」の承認経路はいまだ確立されていない。</li>
+      <li><b>臨床試験の長期性：</b>老化関連疾患の臨床試験は効果測定に数年〜十数年を要する場合がある。投資家・組織の忍耐が試される長い時間軸と多額の資本が必要。</li>
+      <li><b>部分的リプログラミングの安全性：</b>Yamanaka因子の制御誤りは細胞の脱分化・癌化につながるリスクがある。適切なON/OFFスイッチ機構の開発が前提条件であり、現時点では技術的完成度は発展途上。</li>
+      <li><b>競合の資金力：</b>Altos Labs（$3B+）、Calico（$1.5B+）は資金規模でRetroを上回る。これらが研究成果を商業化に向けてシフトした場合、Retroの優位性は縮小する可能性がある。</li>
+      <li><b>キーパーソン依存：</b>Sam Altmanの関与は強力な資産であるが、OpenAIの動向次第で彼の時間・資本配分が変化するリスクがある。また研究陣のキーパーソン離脱も大きなリスク。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===================== 9. AGING SCIENCE ===================== -->
+<div class="sec" id="aging-science">
+  <div class="sec-label"><span class="num">9</span> Aging Science Today</div>
+  <h2>老化科学の現在地</h2>
+
+  <h3>老化研究のパラダイムシフト</h3>
+  <p>2013年にLopez-Otin et al.が発表した「老化の9つの特徴（Hallmarks of Aging）」は老化研究に共通言語をもたらし、研究が急速に体系化された。ゲノム不安定性・テロメア短縮・エピジェネティック変化・タンパク質恒常性の喪失・オートファジー機能不全など、老化の分子メカニズムへの理解が深まるにつれ、「老化は治療できる」という認識が科学コミュニティに広がってきた。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">01</div>
+      <div>
+        <div class="ind-title">エピジェネティック時計の発見（2013〜）</div>
+        <div class="ind-desc">Steve HorvathのDNAメチル化時計により、生物学的年齢の客観測定が可能になった。これにより「老化介入の効果」を短期間で測定できる指標が生まれ、臨床開発のサイクルが大幅に短縮された。Retroを含む多くの老化スタートアップがこの指標を活用している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">02</div>
+      <div>
+        <div class="ind-title">部分的リプログラミングの実証（2020年前後）</div>
+        <div class="ind-desc">David Sinclairら複数のグループが、部分的リプログラミングによるマウスの視力回復・筋力回復を実証。「細胞の生物学的年齢を実際に若返らせることができる」という概念実証が得られ、研究・投資双方の熱量が急上昇した。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">03</div>
+      <div>
+        <div class="ind-title">AI/MLの老化研究への統合（2022〜）</div>
+        <div class="ind-desc">AlphaFold2によるタンパク質構造予測の革命、大規模ゲノムデータへのLLM適用など、AIが老化研究のスループットを指数関数的に向上させている。Retroはこの波に乗り、AI活用による薬剤候補探索を加速させている。</div>
+      </div>
+    </div>
+  </div>
+
+  <p>老化科学が「ニッチな研究領域」から「ブロックバスター医薬品の次のフロンティア」へと認識を変えた背景には、上記の科学的ブレークスルーの集積がある。Retroはこのタイミングに最も積極的に資本と組織を投じた民間企業であり、分野全体の行方を左右する存在として注目される。</p>
+
+  <div class="quote">
+    <p>Aging is the biggest killer in the world. Every year, 40 million people die of aging-related disease. The question is: what can we do about it?</p>
+    <div class="attr">— Joe Betts-LaCroix, CEO</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Retro Biosciences 公式サイト・プレスリリース</li>
+    <li>Bloomberg — Sam Altman $180M投資報道（2022年）</li>
+    <li>MIT Technology Review — 老化リプログラミング特集</li>
+    <li>Nature — Lopez-Otin et al. 「Hallmarks of Aging」（2013年）</li>
+    <li>Cell — Horvath DNAメチル化時計論文</li>
+    <li>Forbes — Joe Betts-LaCroixプロフィール</li>
+    <li>TechCrunch — Retro Series A報道（2025年1月）</li>
+    <li>Science — 部分的リプログラミング・視力回復実験</li>
+    <li>FierceBiotech — 老化スタートアップ競合マップ</li>
+    <li>STAT News — Calico/Altos Labs比較分析</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>kyo — research archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --border:  #e0e0e0;
+    --accent:  #111111;
+    --mid:     #555555;
+    --muted:   #999999;
+    --dim:     #cccccc;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ====== HEADER ====== */
+  .header {
+    background: var(--accent);
+    color: var(--white);
+    padding: 48px 40px 40px;
+  }
+  .header-inner {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+  .header-tag {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    color: rgba(255,255,255,.45);
+    letter-spacing: .12em;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    margin-bottom: 8px;
+  }
+  .header-desc {
+    font-size: 13px;
+    color: rgba(255,255,255,.6);
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: .04em;
+  }
+  .header-stats {
+    display: flex;
+    gap: 32px;
+    margin-top: 28px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,.15);
+    flex-wrap: wrap;
+  }
+  .header-stats .stat-val {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .header-stats .stat-lbl {
+    font-size: 10px;
+    color: rgba(255,255,255,.45);
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: .08em;
+  }
+
+  /* ====== FILTER BAR ====== */
+  .filter-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .filter-bar-inner {
+    max-width: 960px;
+    margin: 0 auto;
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-bar-inner::-webkit-scrollbar { display: none; }
+  .filter-btn {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    letter-spacing: .08em;
+    padding: 14px 20px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: color .15s, border-color .15s;
+  }
+  .filter-btn:hover { color: var(--text); }
+  .filter-btn.active { color: var(--text); border-bottom-color: var(--accent); font-weight: 700; }
+
+  /* ====== MAIN ====== */
+  .main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 40px 80px;
+  }
+
+  /* ====== YEAR DIVIDER ====== */
+  .year-divider {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 40px 0 20px;
+  }
+  .year-divider:first-child { margin-top: 0; }
+  .year-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .year-cat {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .year-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* ====== INDUSTRY DIVIDER ====== */
+  .industry-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 32px 0 14px;
+  }
+  .industry-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+  .industry-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* ====== CARD GRID ====== */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    text-decoration: none;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    transition: border-color .15s, box-shadow .15s, transform .1s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 20px rgba(0,0,0,.08);
+    transform: translateY(-2px);
+  }
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .card-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--bg);
+    white-space: nowrap;
+  }
+  .badge.accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .card-date {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    color: var(--dim);
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+  .card-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text);
+    line-height: 1.3;
+    letter-spacing: -.01em;
+  }
+  .card-sub {
+    font-size: 12.5px;
+    color: var(--mid);
+    line-height: 1.6;
+  }
+  .card-arrow {
+    position: absolute;
+    bottom: 18px;
+    right: 18px;
+    font-size: 16px;
+    color: var(--dim);
+    transition: color .15s, transform .15s;
+  }
+  .card:hover .card-arrow {
+    color: var(--accent);
+    transform: translateX(3px);
+  }
+
+  /* ====== EMPTY ====== */
+  .empty {
+    text-align: center;
+    padding: 60px 0;
+    color: var(--muted);
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    display: none;
+  }
+
+  /* ====== FOOTER ====== */
+  .footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 40px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    color: var(--dim);
+    text-align: center;
+    letter-spacing: .06em;
+  }
+
+  @media (max-width: 600px) {
+    .header { padding: 32px 20px 28px; }
+    .filter-bar { padding: 0 16px; }
+    .main { padding: 28px 20px 60px; }
+    .card-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ====== HEADER ====== -->
+<div class="header">
+  <div class="header-inner">
+    <div class="header-tag">24111 / ai-projects / research</div>
+    <h1>Research Archive</h1>
+    <p class="header-desc">startup · science · legend · general — deep research log</p>
+    <div class="header-stats">
+      <div>
+        <div class="stat-val" id="total-count">—</div>
+        <div class="stat-lbl">total reports</div>
+      </div>
+      <div>
+        <div class="stat-val">5</div>
+        <div class="stat-lbl">categories</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ====== FILTER BAR ====== -->
+<div class="filter-bar">
+  <div class="filter-bar-inner">
+    <button class="filter-btn active" data-filter="all">ALL</button>
+    <button class="filter-btn" data-filter="startup">STARTUP</button>
+    <button class="filter-btn" data-filter="legend">LEGEND</button>
+  </div>
+</div>
+
+<!-- ====== MAIN ====== -->
+<div class="main">
+  <div class="empty" id="empty-msg">no results</div>
+
+  <div class="year-divider"><span class="year-label">Startup</span><span class="year-line"></span></div>
+
+  <!-- Energy -->
+  <div class="industry-divider" data-industry-div="energy"><span class="industry-label">Energy</span><span class="industry-line"></span></div>
+  <div class="card-grid" data-industry-grid="energy">
+
+    <a href="research/260406_helical_fusion_deep_research.html" class="card" data-cat="startup" data-industry="energy">
+      <div class="card-top"><div class="card-badges"><span class="badge">nuclear</span><span class="badge">fusion</span></div></div>
+      <div class="card-title">Helical Fusion</div>
+      <div class="card-sub">核融合スタートアップ・ディープリサーチ。ヘリカル方式で商用炉を目指す日本発の挑戦者。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260406_valar_atomics_deep_research.html" class="card" data-cat="startup" data-industry="energy">
+      <div class="card-top"><div class="card-badges"><span class="badge">nuclear</span><span class="badge">microreactor</span></div></div>
+      <div class="card-title">Valar Atomics</div>
+      <div class="card-sub">核分裂マイクロ原子炉・ディープリサーチ。小型・分散型の次世代原子力で電力問題に挑む。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260406_terrapower_deep_research.html" class="card" data-cat="startup" data-industry="energy">
+      <div class="card-top"><div class="card-badges"><span class="badge">nuclear</span><span class="badge">energy</span></div></div>
+      <div class="card-title">TerraPower</div>
+      <div class="card-sub">次世代原子力・ディープリサーチ。Natrium SFR × 溶融塩蓄熱。Bill Gates。Meta 8基契約。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260406_commonwealth_fusion_deep_research.html" class="card" data-cat="startup" data-industry="energy">
+      <div class="card-top"><div class="card-badges"><span class="badge">fusion</span><span class="badge">energy</span></div></div>
+      <div class="card-title">Commonwealth Fusion Systems</div>
+      <div class="card-sub">MIT発・HTSマグネット×コンパクトトカマク。SPARC実証炉でQ>1を目指す。$3B調達。Nvidia・Google・Gates。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260406_helion_energy_deep_research.html" class="card" data-cat="startup" data-industry="energy">
+      <div class="card-top"><div class="card-badges"><span class="badge">fusion</span><span class="badge">energy</span></div></div>
+      <div class="card-title">Helion Energy</div>
+      <div class="card-sub">FRCプラズマ直接発電。Microsoft PPA・Sam Altman $375M投資。$5.4B Valuation。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260401_power_dc_startups.html" class="card" data-cat="startup" data-industry="energy">
+      <div class="card-top"><div class="card-badges"><span class="badge">energy</span><span class="badge">datacenter</span></div></div>
+      <div class="card-title">電力 × DC 注目スタートアップ</div>
+      <div class="card-sub">AI電力需要に応える電力・データセンター領域の注目プレイヤー一覧。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260409_oklo_deep_research.html" class="card" data-cat="startup" data-industry="energy">
+      <div class="card-top"><div class="card-badges"><span class="badge">nuclear</span><span class="badge">microreactor</span></div></div>
+      <div class="card-title">Oklo Inc.</div>
+      <div class="card-sub">高速核分裂マイクロ原子炉。Sam Altman会長・NYSE上場。Switch 12GW・Meta 1.2GW受注。廃棄物を燃料にする次世代核エネルギー。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- Space -->
+  <div class="industry-divider" data-industry-div="space"><span class="industry-label">Space</span><span class="industry-line"></span></div>
+  <div class="card-grid" data-industry-grid="space">
+
+    <a href="research/260331_starcloud_deep_research.html" class="card" data-cat="startup" data-industry="space">
+      <div class="card-top"><div class="card-badges"><span class="badge">space</span><span class="badge">datacenter</span></div></div>
+      <div class="card-title">Starcloud</div>
+      <div class="card-sub">宇宙データセンター・ディープリサーチ。軌道上コンピューティングという新フロンティア。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260406_varda_space_deep_research.html" class="card" data-cat="startup" data-industry="space">
+      <div class="card-top"><div class="card-badges"><span class="badge">space</span><span class="badge">manufacturing</span></div></div>
+      <div class="card-title">Varda Space Industries</div>
+      <div class="card-sub">宇宙空間での微小重力製造。軌道上で医薬品結晶を生成し地球に帰還。$329M調達。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260406_astranis_deep_research.html" class="card" data-cat="startup" data-industry="space">
+      <div class="card-top"><div class="card-badges"><span class="badge">space</span><span class="badge">satellite</span></div></div>
+      <div class="card-title">Astranis</div>
+      <div class="card-sub">小型GEO衛星MicroGEOで未接続地域にインターネットを。$7.6B Valuation。a16z・BlackRock。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- Aerospace & Defense -->
+  <div class="industry-divider" data-industry-div="defense"><span class="industry-label">Aerospace & Defense</span><span class="industry-line"></span></div>
+  <div class="card-grid" data-industry-grid="defense">
+
+    <a href="research/260406_hermeus_deep_research.html" class="card" data-cat="startup" data-industry="defense">
+      <div class="card-top"><div class="card-badges"><span class="badge">aviation</span><span class="badge">hypersonic</span></div></div>
+      <div class="card-title">Hermeus</div>
+      <div class="card-sub">マッハ5超音速航空機。NYC→ロンドン90分。TBCCエンジン・USAF契約。$985M Valuation。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260401_saronic_deep_research.html" class="card" data-cat="startup" data-industry="defense">
+      <div class="card-top"><div class="card-badges"><span class="badge">defense</span><span class="badge">autonomous</span></div></div>
+      <div class="card-title">Saronic</div>
+      <div class="card-sub">自律型水上艦・ディープリサーチ。$9.25B Valuation。米海軍の次世代戦力へ。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260401_hadrian_deep_research.html" class="card" data-cat="startup" data-industry="defense">
+      <div class="card-top"><div class="card-badges"><span class="badge">manufacturing</span><span class="badge">CNC</span></div></div>
+      <div class="card-title">Hadrian</div>
+      <div class="card-sub">精密CNC加工の自動化。宇宙・防衛向け部品製造をソフトウェアで革新。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260411_anduril_deep_research.html" class="card" data-cat="startup" data-industry="defense">
+      <div class="card-top"><div class="card-badges"><span class="badge">defense</span><span class="badge">autonomous</span></div></div>
+      <div class="card-title">Anduril Industries</div>
+      <div class="card-sub">Palmer Luckey設立。Lattice OS × 自律型兵器。Arsenal-1超大型工場建設中。$28B Val。シリコンバレー速度で防衛産業を再定義。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- Biotech -->
+  <div class="industry-divider" data-industry-div="biotech"><span class="industry-label">Biotech</span><span class="industry-line"></span></div>
+  <div class="card-grid" data-industry-grid="biotech">
+
+    <a href="research/260406_retro_biosciences_deep_research.html" class="card" data-cat="startup" data-industry="biotech">
+      <div class="card-top"><div class="card-badges"><span class="badge">biotech</span><span class="badge">longevity</span></div></div>
+      <div class="card-title">Retro Biosciences</div>
+      <div class="card-sub">健康寿命を10年延ばす。Sam Altman $180M個人投資。オートファジー・部分的リプログラミング。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- Other -->
+  <div class="industry-divider" data-industry-div="other"><span class="industry-label">Other</span><span class="industry-line"></span></div>
+  <div class="card-grid" data-industry-grid="other">
+
+    <a href="research/260406_zipline_deep_research.html" class="card" data-cat="startup" data-industry="other">
+      <div class="card-top"><div class="card-badges"><span class="badge">drone</span><span class="badge">delivery</span></div></div>
+      <div class="card-title">Zipline</div>
+      <div class="card-sub">世界最大の自律ドローン配送網。累計200万件超・8カ国。Walmart・医療機関。$7.6B Valuation。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/260411_path_robotics_deep_research.html" class="card" data-cat="startup" data-industry="other">
+      <div class="card-top"><div class="card-badges"><span class="badge">robotics</span><span class="badge">manufacturing</span></div></div>
+      <div class="card-title">Path Robotics</div>
+      <div class="card-sub">AI自律溶接ロボット。製造業の深刻な溶接工不足をソフトウェアで解決。Columbus, Ohio発。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+  </div>
+
+  <div class="year-divider"><span class="year-label">Legend</span><span class="year-line"></span></div>
+  <div class="card-grid">
+
+    <a href="research/palmer_luckey.html" class="card" data-cat="legend">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="badge">legend</span>
+          <span class="badge">defense</span>
+          <span class="badge">VR</span>
+        </div>
+      </div>
+      <div class="card-title">Palmer Luckey</div>
+      <div class="card-sub">Oculus創業者、Anduril創業者。VR革命から米軍防衛テックへ転身した異端の天才。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/patrick_collison.html" class="card" data-cat="legend">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="badge">legend</span>
+          <span class="badge">fintech</span>
+        </div>
+      </div>
+      <div class="card-title">Patrick Collison</div>
+      <div class="card-sub">Stripe CEO。16歳でアイルランド科学者大賞。史上最年少自力億万長者。$65B Stripe。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/peter_thiel.html" class="card" data-cat="legend">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="badge">legend</span>
+          <span class="badge">VC</span>
+        </div>
+      </div>
+      <div class="card-title">Peter Thiel</div>
+      <div class="card-sub">PayPal共同創業者。Facebook初期投資。Palantir・Founders Fund。Zero to One。逆張りの哲学。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/paul_graham.html" class="card" data-cat="legend">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="badge">legend</span>
+          <span class="badge">YC</span>
+        </div>
+      </div>
+      <div class="card-title">Paul Graham</div>
+      <div class="card-sub">Y Combinator創業者。Airbnb・Stripe・Dropbox発掘。累計ポートフォリオ$1T+。Hacker News。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/mark_zuckerberg.html" class="card" data-cat="legend">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="badge">legend</span>
+          <span class="badge">social</span>
+          <span class="badge">AI</span>
+        </div>
+      </div>
+      <div class="card-title">Mark Zuckerberg</div>
+      <div class="card-sub">Meta CEO。Facebook創業者。Instagram・WhatsApp買収。Llama open source AI。純資産$220B+。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/demis_hassabis.html" class="card" data-cat="legend">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="badge">legend</span>
+          <span class="badge">AI</span>
+          <span class="badge">Nobel</span>
+        </div>
+      </div>
+      <div class="card-title">Demis Hassabis</div>
+      <div class="card-sub">Google DeepMind CEO。AlphaGo・AlphaFold。2024年ノーベル化学賞。チェス神童→AI研究者。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/travis_kalanick.html" class="card" data-cat="legend">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="badge">legend</span>
+          <span class="badge">mobility</span>
+        </div>
+      </div>
+      <div class="card-title">Travis Kalanick</div>
+      <div class="card-sub">Uber共同創業者。$70Bまで成長させ失墜。CloudKitchensで復活。破壊と創造の象徴。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/naval_ravikant.html" class="card" data-cat="legend">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="badge">legend</span>
+          <span class="badge">VC</span>
+          <span class="badge">philosophy</span>
+        </div>
+      </div>
+      <div class="card-title">Naval Ravikant</div>
+      <div class="card-sub">AngelList共同創業者。Twitter・Uber初期投資。「金持ちになる方法」ツイートが世界を席巻。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+    <a href="research/david_sacks.html" class="card" data-cat="legend">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="badge">legend</span>
+          <span class="badge">VC</span>
+          <span class="badge">policy</span>
+        </div>
+      </div>
+      <div class="card-title">David Sacks</div>
+      <div class="card-sub">PayPal Mafia。Yammer $1.2B売却。Craft Ventures。All-In Podcast。Trump AI/Crypto Czar。</div>
+      <span class="card-arrow">→</span>
+    </a>
+
+  </div>
+
+</div>
+
+<!-- ====== FOOTER ====== -->
+<div class="footer">
+  24111 / ai-projects &nbsp;·&nbsp; private research log &nbsp;·&nbsp; not for redistribution
+</div>
+
+
+<script>
+  // Count active cards
+  const allCards = document.querySelectorAll('.card[data-cat]');
+  document.getElementById('total-count').textContent = allCards.length;
+
+  // Filter
+  const btns = document.querySelectorAll('.filter-btn');
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      btns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const f = btn.dataset.filter;
+
+      allCards.forEach(card => {
+        card.style.display = (f === 'all' || card.dataset.cat === f) ? '' : 'none';
+      });
+
+      // hide/show main category dividers based on visible cards
+      document.querySelectorAll('.year-divider').forEach(div => {
+        let next = div.nextElementSibling;
+        let hasVisible = false;
+        while (next && !next.classList.contains('year-divider')) {
+          if (next.classList.contains('card-grid')) {
+            if ([...next.querySelectorAll('.card')].some(c => c.style.display !== 'none')) {
+              hasVisible = true;
+            }
+          }
+          next = next.nextElementSibling;
+        }
+        div.style.display = hasVisible ? '' : 'none';
+      });
+
+      // hide/show industry dividers — only visible when their grid has visible cards
+      document.querySelectorAll('.industry-divider').forEach(div => {
+        const grid = div.nextElementSibling;
+        if (!grid) { div.style.display = 'none'; return; }
+        const hasVisible = [...grid.querySelectorAll('.card')].some(c => c.style.display !== 'none');
+        div.style.display = hasVisible ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
