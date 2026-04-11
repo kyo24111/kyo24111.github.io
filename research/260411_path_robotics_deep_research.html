@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Path Robotics — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 600px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 60px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 72px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Industrial Robotics</span>
+    <span class="badge badge-white">Physical AI</span>
+    <span class="badge badge-solid">Series D</span>
+  </div>
+  <h1>Path Robotics</h1>
+  <p class="hero-sub">AIが自律的に溶接する。ファウンデーショナルモデル「Obsidian」を核に、従来の産業用ロボットでは対応不可能な高混合・低量産環境での溶接自動化を実現するPhysical AI企業。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$271M</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">$100M+</div><div class="lbl">Bookings (2025)</div></div>
+    <div class="kpi"><div class="val">17×</div><div class="lbl">vs Manual Welding Speed</div></div>
+    <div class="kpi"><div class="val">2018</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コア技術 — Obsidian & AI</a></li>
+    <li><a href="#business">ビジネスモデルと顧客</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#team">創業チーム</a></li>
+    <li><a href="#market">市場規模</a></li>
+    <li><a href="#competition">競合分析</a></li>
+    <li><a href="#milestones">マイルストーン</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Path Robotics, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2018年（商業的稼働）</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Columbus, Ohio, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series D（未上場）</div></div>
+    <div class="kv-item"><div class="k">総調達額</div><div class="v">$271M（5ラウンド）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">$500M〜$1B+（推定）</div></div>
+    <div class="kv-item"><div class="k">事業領域</div><div class="v">AI溶接ロボティクス / Physical AI</div></div>
+    <div class="kv-item"><div class="k">主要顧客業界</div><div class="v">防衛・造船・重工業・エネルギー</div></div>
+  </div>
+
+  <p>Path Roboticsは、AI（物理AI）を活用した自律溶接ロボットを開発・提供するオハイオ州コロンバスのスタートアップ。創業者Andy & Alex Lonsberryブラザーズが、Case Western Reserve大学でのPhD研究を起点に2018年に商業化した。</p>
+
+  <p>従来の産業用ロボット（ABB、Fanuc等）は部品の位置を完全に固定し、人手でパスをプログラムする必要があり、高混合・多品種少量・不均一形状には対応できない。Pathのシステムはリアルタイムのコンピュータビジョンと独自AIモデルにより、事前プログラムなしで溶接を自律実行する。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>米国では2030年までに60万人の溶接士不足が見込まれ、溶接工の平均年齢は55歳。製造業の最も深刻な労働力ギャップをAIロボットで埋める。
+  </div>
+</div>
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コア技術 — Obsidian & AI</div>
+
+  <h3>Obsidian™ — 溶接専用ファウンデーショナルモデル</h3>
+  <p>2025年12月に発表。数千万インチ（tens of millions of welded inches）の実溶接データで学習した、溶接分野初のファウンデーショナルAIモデル。各デプロイ済みセルからのデータが継続的に学習にフィードバックされ、毎月ソフトウェア・AIアップデートが全ユニットに配信される。</p>
+
+  <h3>技術スタック</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">センシング</div><div class="v">独自レーザー光学ビジョンシステム（リアルタイム溶接ビード・シーム検出）</div></div>
+    <div class="kv-item"><div class="k">AI計画</div><div class="v">Obsidianがリアルタイムで溶接プランとロボットパスを生成</div></div>
+    <div class="kv-item"><div class="k">フィードバック</div><div class="v">溶接中に熱変形・形状ズレを継続的に補正</div></div>
+    <div class="kv-item"><div class="k">フリート学習</div><div class="v">全デプロイ済みセルのデータが共有モデルを改善（データフライホイール）</div></div>
+  </div>
+
+  <h3>主要プロダクト</h3>
+  <table class="t">
+    <thead>
+      <tr><th>製品</th><th>特徴</th><th>対象</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>AW-3 Welding Cell</td><td>最大70フィートの大型構造部品に対応</td><td>造船・重工業・採掘機器</td></tr>
+      <tr><td>AF-1 Welding Cell</td><td>ピック〜フィット〜溶接まで完全自律</td><td>高度自動化を求める製造業</td></tr>
+      <tr><td>Multi-Arm Cell</td><td>複数ロボットアームが1セル内で並列稼働（2025年発表）</td><td>高スループット製造</td></tr>
+      <tr><td>Path Foundry™</td><td>Pathが自社でセルを稼働させる受託製造サービス（2024年発表）</td><td>CapEx不要でテストしたい企業</td></tr>
+    </tbody>
+  </table>
+
+  <h3>パフォーマンス指標</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">速度</div><div class="v"><strong>17×</strong> 手動溶接比</div></div>
+    <div class="kv-item"><div class="k">First-pass Yield</div><div class="v"><strong>97%+</strong>（手動は60〜70%）</div></div>
+    <div class="kv-item"><div class="k">コスト</div><div class="v"><strong>30%+</strong> 低減（従来手法比）</div></div>
+    <div class="kv-item"><div class="k">導入期間</div><div class="v"><strong>4週間</strong>以内（Path Foundry™経由）</div></div>
+  </div>
+</div>
+
+<!-- ===================== 3. BUSINESS MODEL ===================== -->
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデルと顧客</div>
+
+  <h3>Robotics-as-a-Service (RaaS)</h3>
+  <p>顧客はハードウェアを購入せず、サブスクリプション形式でロボット溶接サービスを利用。初期CapEx $0、24/7 Mission Controlサポート、月次AIアップデート込み。顧客のアップタイムと品質にPathの収益が連動するため、インセンティブが一致する構造。</p>
+
+  <h3>主要顧客・パートナー</h3>
+  <table class="t">
+    <thead>
+      <tr><th>顧客・パートナー</th><th>内容</th><th>発表時期</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>HII（Huntington Ingalls）</td><td>米最大の軍用造船会社。有人・無人艦艇の溶接自動化MOU締結</td><td>2026年2月</td></tr>
+      <tr><td>Saronic Technologies</td><td>自律無人艦艇スタートアップ。ルイジアナ州造船所にPathセルを導入</td><td>2026年2月</td></tr>
+      <tr><td>LAD Services</td><td>バージ製造業者。生産時間50%削減を目標に溶接自動化を展開</td><td>2025年</td></tr>
+      <tr><td>TYCROP</td><td>ALM Positionersとの3社協業で製造自動化を推進</td><td>2025年</td></tr>
+    </tbody>
+  </table>
+
+  <h3>ターゲット産業</h3>
+  <div class="pills">
+    <span class="pill s">防衛・造船</span>
+    <span class="pill s">重機・採掘機器</span>
+    <span class="pill">エネルギーインフラ</span>
+    <span class="pill">農業機器</span>
+    <span class="pill">バージ・海洋</span>
+    <span class="pill">一般金属加工</span>
+    <span class="pill">データセンター向け鉄骨</span>
+  </div>
+</div>
+
+<!-- ===================== 4. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">04</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed</span>
+      <div class="f-amount">—</div>
+      <div class="f-detail">
+        <div class="f-date">2018年12月</div>
+        <div class="f-desc">Basis Set Ventures主導。Case Western研究室から商業化へ踏み出す最初の資金。</div>
+      </div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$56M</div>
+      <div class="f-detail">
+        <div class="f-date">2021年5月</div>
+        <div class="f-desc">Drive Capital主導。製品PMFを確認後、スケール投資へ。</div>
+      </div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C</span>
+      <div class="f-amount">$100M</div>
+      <div class="f-detail">
+        <div class="f-date">2021年7月</div>
+        <div class="f-desc">SVB・Drive Capital主導。SeriesB から<strong>わずか2ヶ月後</strong>に追加調達。同年$156Mを連続調達した異例のスピード。</div>
+      </div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">Series D</span>
+      <div class="f-amount">$100M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年10月</div>
+        <div class="f-desc">Matter Venture Partners・Drive Capital主導。Path Foundry™とJobBuilderを同時発表。Tiger Global、Addition、Taiwania等が参加。</div>
+      </div>
+      <div class="f-val">
+        <div class="vl">Total</div>
+        <div class="vv">$271M</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>注目点：</strong> Series B・Cを2021年同年に連続調達（計$156M）したのは、同社のPMFと市場確信度の高さを示す。Series D後、NASDAQプライベートマーケット・Forgeでのセカンダリー取引も確認されており、機関投資家以外の流動性も形成されつつある。
+  </div>
+</div>
+
+<!-- ===================== 5. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">05</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Series B/C/D</span>
+      <div class="vc-name">Drive Capital</div>
+      <div class="vc-role">Columbus, Ohio VC</div>
+      <div class="vc-desc">ミッドウェスト特化の主要VCとして全ラウンドをリード。Pathのオハイオ地盤との親和性が高く、最も関与度の大きい投資家。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Series D</span>
+      <div class="vc-name">Matter Venture Partners</div>
+      <div class="vc-role">Industrial Tech VC</div>
+      <div class="vc-desc">フィジカルAI・ハードウェアスタートアップに特化したVC。Series Dをリードし、実用化フェーズのコミットを表明。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Tiger Global</div>
+      <div class="vc-role">Global Growth Fund</div>
+      <div class="vc-desc">グロースフェーズでの参入。グローバルなスケールポテンシャルへの確信を示す。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Addition (Lee Fixel)</div>
+      <div class="vc-role">New York VC</div>
+      <div class="vc-desc">Flipkart投資で著名なLee Fixelのファンド。高確信度・集中投資スタイルでの参加。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Taiwania Capital</div>
+      <div class="vc-role">Taiwan Gov. VC</div>
+      <div class="vc-desc">台湾政府系ファンド。アジア太平洋での製造業展開を見越した戦略的投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Basis Set Ventures</div>
+      <div class="vc-role">Seed Lead</div>
+      <div class="vc-desc">創業期から一貫して支援。AI×エンタープライズ特化で全ラウンドに継続参加。</div>
+    </div>
+  </div>
+
+  <div class="pills">
+    <span class="pill">Yamaha Ventures</span>
+    <span class="pill">MediaTek</span>
+    <span class="pill">Catapult Ventures</span>
+    <span class="pill">Gaingels</span>
+    <span class="pill">SVB（旧）</span>
+  </div>
+</div>
+
+<!-- ===================== 6. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">06</span>創業チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">AL</div>
+      <div>
+        <h3>Andy Lonsberry</h3>
+        <div class="p-role">Co-Founder & CEO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><span class="lbl">学歴</span><span class="val">Ohio State大学（機械・航空宇宙工学BS）、Case Western Reserve大学（機械工学MS）、博士課程を経て創業</span></div>
+      <div class="p-row"><span class="lbl">背景</span><span class="val">父・Ken Lonsberryと幼少期から溶接に親しむ。オハイオ製造業の文脈に深く根ざした起業家。「2050年までにコロンバスをグローバルなフィジカルAIハブにする」と公言。</span></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">AL</div>
+      <div>
+        <h3>Alex Lonsberry</h3>
+        <div class="p-role">Co-Founder & CTO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><span class="lbl">学歴</span><span class="val">Case Western Reserve大学でAI関連工学の高度学位を取得</span></div>
+      <div class="p-row"><span class="lbl">背景</span><span class="val">兄Andyの弟。PathのAIアーキテクチャとハードウェアプラットフォームを設計。技術的中核を担う。</span></div>
+    </div>
+  </div>
+
+  <div class="callout">その他の共同創業者にMatt Klein、父Ken Lonsberryが名を連ねる。ファミリービジネスの核を持ちながら、200名規模以上に成長（正確な従業員数は非公開）。</div>
+</div>
+
+<!-- ===================== 7. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — Global Robotic Welding</div>
+      <div class="m-val">$29.9B</div>
+      <div class="m-desc">2035年予測（CAGR 11.9%）<br>2025年時点で$9.7B</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">Labor Gap Value</div>
+      <div class="m-val">$26B+</div>
+      <div class="m-desc">米国の溶接士不足が生む年間逸失価値<br>（AWS試算）</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">Welder Shortage by 2029</div>
+      <div class="m-val">400K</div>
+      <div class="m-desc">米国内の溶接士不足数<br>溶接工の平均年齢55歳</div>
+    </div>
+  </div>
+
+  <h3>需要ドライバー</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">製造業リショアリング</div>
+        <div class="ind-desc">CHIPS法・IRA・関税政策による国内製造回帰。工場は増えるが溶接工は増えない構造的ミスマッチが拡大。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">防衛・造船の緊急需要</div>
+        <div class="ind-desc">米国は中国に対し造船能力で大幅に劣後（米7造船所 vs 中国20+）。HII・Saronicとの連携はPath技術が国家安全保障インフラになる可能性を示す。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">フィジカルAI投資テーマの台頭</div>
+        <div class="ind-desc">ソフトウェアLLMブームの次波として「現実世界で行動するAI」への投資が加速。PathはこのトレンドのManufacturing verticalの代表格。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合分析</div>
+
+  <h3>レガシー産業ロボット（高脅威・異なるセグメント）</h3>
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">Fanuc / ABB / KUKA / Yaskawa</div>
+      <span class="comp-tag">Legacy — High Volume</span>
+      <div class="comp-desc">高量産・固定ライン向けでは圧倒的シェア。しかし高混合・多品種・不均一形状への対応が本質的に困難。Pathの主戦場とは異なるセグメント。</div>
+      <div class="comp-strong"><span>Pathの優位</span>事前プログラム不要。Pathが狙うスポットは大手が「対応できない」市場。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Lincoln Electric Automation</div>
+      <span class="comp-tag">Legacy — Welding Cells</span>
+      <div class="comp-desc">溶接機器メーカーが展開する事前設計済みセル。高量産向け。カスタム対応力・AI水準でPathに劣る。</div>
+      <div class="comp-strong"><span>Pathの優位</span>RaaS vs CapEx。顧客のリスク負担が根本的に異なる。</div>
+    </div>
+  </div>
+
+  <h3>AIネイティブ競合（直接競合）</h3>
+  <div class="comp-grid">
+    <div class="comp-card mid">
+      <div class="comp-name">Novarc Technologies</div>
+      <span class="comp-tag">AI Welding — Pipe Niche</span>
+      <div class="comp-desc">パイプ溶接特化のAI溶接ロボット（Spool Welding Robot）。NovAI4ビジョンシステムを持つ。石油ガス・配管業界に強い。</div>
+      <div class="comp-strong"><span>Pathとの差異</span>Pathは汎用・大型構造物。Novarcはパイプ特化。市場の重複は限定的。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Hirebotics / Vectis</div>
+      <span class="comp-tag">Cobot Welding</span>
+      <div class="comp-desc">協働ロボット（cobot）を使った溶接自動化。自律度が低く、半自動・補助的な位置づけ。Pathのフル自律AIとは技術水準が異なる。</div>
+      <div class="comp-strong"><span>Pathとの差異</span>自律性・AI水準で大差。価格帯も異なる。</div>
+    </div>
+  </div>
+
+  <h3>Pathの競争優位（モート）</h3>
+  <ul class="blist">
+    <li><strong>Obsidianデータフライホイール：</strong>デプロイ台数が増えるほどモデルが賢くなる。先行者優位が時間とともに拡大。</li>
+    <li><strong>エンドツーエンドスタック：</strong>ハードウェア・ソフトウェア・サービスを一体提供。競合はソフトまたはハードのみ。</li>
+    <li><strong>防衛・造船参入：</strong>HII・Saronicとの連携で国防調達の信頼性を獲得。セキュリティクリアランスが必要な市場は後発参入が困難。</li>
+    <li><strong>RaaS：</strong>CapEx $0で試せる構造が導入ハードルを劇的に下げ、販売サイクルを短縮。</li>
+    <li><strong>約8年の実溶接データ蓄積：</strong>後発が同等のデータセットを築くのに要する時間がそのままバリアになる。</li>
+  </ul>
+</div>
+
+<!-- ===================== 9. MILESTONES ===================== -->
+<div class="sec" id="milestones">
+  <div class="sec-label"><span class="num">09</span>マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2018年</span><span class="tl-title">創業・Seed調達</span></div>
+        <div class="tl-body">Andy & Alex LonsberryがCase Westernの研究を商業化。Basis Set VenturesからSeed調達。コロンバスに拠点設立。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2021年5月〜7月</span><span class="tl-title">Series B $56M → Series C $100M を2ヶ月で連続調達</span></div>
+        <div class="tl-body">同年に計$156Mを調達。製品PMFと市場の爆発的反応を示す異例のスピード。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2024年10月</span><span class="tl-title">Series D $100M &amp; Path Foundry™ 発表</span></div>
+        <div class="tl-body">FABTECH 2024で受託製造サービスPath Foundry™とJobBuilder（自動パートプログラミングツール）を同時発表。Tiger Global、Addition等が参加。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年</span><span class="tl-title">Obsidian™ 発表 &amp; ブッキング$100M+突破</span></div>
+        <div class="tl-body">12月に溶接専用ファウンデーショナルモデルObsidian™を発表。年間ブッキングが$100Mを超え「記録的な成長年」に。Multi-Armセルも展開開始。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年2月</span><span class="tl-title">HII（米最大軍用造船会社）とMOU締結 &amp; Saronic連携</span></div>
+        <div class="tl-body">HII（Huntington Ingalls Industries）と有人・無人艦艇への物理AI統合MOU。同時にSaronicのルイジアナ州造船所へセルをデプロイ。防衛・造船市場への本格参入を宣言。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">10</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">製造業で最も深刻な人材危機に直撃する</div>
+        <div class="ind-desc">米国の溶接士不足は「将来の問題」ではなく、今この瞬間の工場ボトルネック。工場が増え・リショアリングが進む中で溶接士の数は増えない。Pathはこのギャップを直接マネタイズする。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">フィジカルAIという次の投資テーマ</div>
+        <div class="ind-desc">ソフトウェアLLMブームの次として「現実世界で行動するAI」が注目される中、PathはManufacturing Verticalの代表格。製造業×AIという交差点でユニークなポジションを占有。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">国家安全保障インフラになりうる</div>
+        <div class="ind-desc">HII・Saronicとの防衛造船連携は、Pathの技術が米海軍のサプライチェーンに組み込まれる可能性を示す。国防調達は長期・大型契約で、一度入れば簡単に代替されない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">データフライホイールが時間とともに強化される</div>
+        <div class="ind-desc">Obsidianは全デプロイ済みセルのデータで継続学習する。早期に市場を押さえるほどデータ優位が拡大し、後発が追いつけない状況が形成される。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">RaaS × リショアリングの掛け算</div>
+        <div class="ind-desc">$0 CapExのRaaSモデルは製造業のデジタル転換ハードルを下げる。国内製造回帰を進めたい企業にとって「すぐに使える溶接自動化」は戦略的に魅力的。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">Tiger Global・Addition等トップTierが本気のコミット</div>
+        <div class="ind-desc">$271Mをグローバルトップ投資家群から調達。特にSeries Dへの参加はPhysical AI×製造業に対する機関投資家の強い確信を示す。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We want to build the kind of company that makes Ohio proud, and in doing so, attract the investment and engineering talent to make Columbus the physical AI hub of the world by 2050.</p>
+    <div class="attr">— Andy Lonsberry, Co-Founder & CEO</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li>Path Robotics 公式サイト — path-robotics.com</li>
+    <li>Series D発表 — path-robotics.com/blog</li>
+    <li>Obsidian発表（2025年12月）— path-robotics.com/news</li>
+    <li>HII MOU発表（2026年2月）— hii.com/news</li>
+    <li>TechCrunch — Series C調達記事（2021年7月）</li>
+    <li>PR Newswire — Series B $56M（2021年5月）</li>
+    <li>The Robot Report — Series D報道</li>
+    <li>Ohio Tech News — HII連携報道（2026年）</li>
+    <li>American Welding Society — 溶接士不足予測</li>
+    <li>Saronic Technologies — パートナーシップ発表</li>
+  </ul>
+</div>
+
+</div><!-- /.page -->
+</body>
+</html>
