@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redwood Materials — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.gov { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.gov .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Battery Recycling</span>
+    <span class="badge badge-white">Clean Energy</span>
+    <span class="badge badge-solid">Series E</span>
+  </div>
+  <h1>Redwood Materials</h1>
+  <p class="hero-sub">Tesla元CTOのJB Straubelが創業。EV廃バッテリーを回収・精製し、正極材（CAM）・銅箔として再生する垂直統合型バッテリーリサイクル企業。「クローズドループ」のバッテリーサプライチェーンを米国内で完結させる。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$42B+</div><div class="lbl">Total Raised (Equity+DOE)</div></div>
+    <div class="kpi"><div class="val">$6B+</div><div class="lbl">Valuation (2025.10)</div></div>
+    <div class="kpi"><div class="val">20GWh</div><div class="lbl">Annual Capacity</div></div>
+    <div class="kpi"><div class="val">2017</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#founder">創業者 — JB Straubel</a></li>
+    <li><a href="#technology">コア技術・事業モデル</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#partners">顧客・パートナー</a></li>
+    <li><a href="#facilities">生産拠点</a></li>
+    <li><a href="#market">市場規模</a></li>
+    <li><a href="#competition">競合分析</a></li>
+    <li><a href="#risks">リスク・課題</a></li>
+    <li><a href="#outlook">将来展望</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Redwood Materials, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2017年（本格稼働 2019年〜）</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Carson City, Nevada, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series E（未上場）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">約42億ドル超（エクイティ+DOEローン）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">60億ドル超（2025年10月）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約1,200名（2025年11月レイオフ前）</div></div>
+    <div class="kv-item"><div class="k">売上（2024年）</div><div class="v">約2億ドル（run-rate）</div></div>
+    <div class="kv-item"><div class="k">事業領域</div><div class="v">バッテリーリサイクル / バッテリー材料製造</div></div>
+    <div class="kv-item"><div class="k">欧州拠点</div><div class="v">Redux（ドイツ）買収 2023年</div></div>
+  </div>
+
+  <p>Redwood Materialsは、EV・家電製品の廃バッテリーを回収・解体・精製し、正極材（CAM）と銅箔を製造して新たなEVバッテリーセルに還流させる、垂直統合型のバッテリー材料企業。Teslaのギガファクトリー・ネバダから約30マイルに本社を構え、米国内で完結する「クローズドループ型」バッテリーサプライチェーンの構築を目指す。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>EV1台のバッテリーには約8〜10kgのリチウム、13〜17kgのコバルト（NCM系）が含まれる。これを廃棄せずに95%以上の回収率で再生し、新品の正極材として供給することで、採掘コスト・CO₂排出量・中国依存のサプライチェーンを同時に解決する。
+  </div>
+</div>
+
+<!-- ===================== 2. FOUNDER ===================== -->
+<div class="sec" id="founder">
+  <div class="sec-label"><span class="num">02</span>創業者 — JB Straubel</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">JB</div>
+      <div>
+        <h3>JB Straubel（ジェイビー・ストローベル）</h3>
+        <div class="p-role">Founder & CEO — Redwood Materials</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">スタンフォード大学 エネルギーシステム工学 学士・修士</div></div>
+      <div class="p-row"><div class="lbl">前職</div><div class="val">Tesla共同創業者・CTO（2004〜2019年。16年間在籍）</div></div>
+      <div class="p-row"><div class="lbl">Tesla実績</div><div class="val">モデルS/X/3のバッテリーシステム設計を主導。ギガファクトリー構想の中心人物。Tesla在籍中からRedwoodをひそかに設立</div></div>
+      <div class="p-row"><div class="lbl">Redwood設立</div><div class="val">2019年7月Tesla退任後に本格始動。「バッテリーの廃棄問題はEV普及最大の盲点」として事業化</div></div>
+      <div class="p-row"><div class="lbl">人脈</div><div class="val">Jeff Bezos・Bill Gatesが個人投資家。ToyotaやPanasonicとの直接交渉を主導</div></div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We need to recycle batteries at the same pace we're manufacturing them. Otherwise, the whole clean energy transition doesn't close the loop.</p>
+    <div class="attr">— JB Straubel, Redwood Materials</div>
+  </div>
+</div>
+
+<!-- ===================== 3. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">03</span>コア技術・事業モデル</div>
+
+  <h3>3ステップの垂直統合モデル</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">回収（Collection）</div>
+        <div class="ind-desc">EV廃バッテリーパック・コンシューマー家電（スマホ・ノートPC等）・バッテリー製造スクラップをOEM・物流企業ネットワーク経由で回収。Amazon・Ford・BMW・Toyotaなど提携先から安定的に調達。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">解体・精製（Recycling & Refining）</div>
+        <div class="ind-desc">メカニカル分離後、<strong>ハイドロメタラジー（湿式製錬）</strong>を採用。ブラックマス（黒色粉末）へ変換後に各元素を分離精製。回収率：リチウム80%以上、ニッケル・コバルト・グラファイト95%以上。残存容量50〜80%のパックは定置用蓄電池として転用。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">バッテリー材料製造（Manufacturing）</div>
+        <div class="ind-desc"><strong>CAM（正極活物質）</strong>と<strong>銅箔（負極基材）</strong>を製造し、PanasonicやバッテリーメーカーへBtoB供給。新品セルに還流させることで米国産バッテリー材料のIRA要件を満たす。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要回収・製造素材</h3>
+  <div class="pills">
+    <span class="pill s">リチウム（炭酸Li）</span>
+    <span class="pill s">ニッケル</span>
+    <span class="pill s">コバルト</span>
+    <span class="pill s">マンガン</span>
+    <span class="pill">銅</span>
+    <span class="pill">グラファイト</span>
+    <span class="pill">アルミニウム</span>
+  </div>
+
+  <h3>差別化ポイント</h3>
+  <table class="t">
+    <thead>
+      <tr><th>項目</th><th>Redwood Materials</th><th>一般的なリサイクル業者</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>バリューチェーン</td><td>回収→精製→CAM/銅箔製造まで一気通貫</td><td>回収・精製のみ（材料製造は行わない）</td></tr>
+      <tr><td>付加価値</td><td>高（CAM・銅箔の製造マージンを取る）</td><td>低（金属スクラップ価格に依存）</td></tr>
+      <tr><td>IRA適合性</td><td>完全適合（北米産材料として認定）</td><td>不可または部分的</td></tr>
+      <tr><td>地理的優位</td><td>Teslaギガファクトリー隣接（輸送コスト最小化）</td><td>—</td></tr>
+      <tr><td>米国市場シェア</td><td>約70%（2025年）</td><td>断片的</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 4. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">04</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed</span>
+      <div class="f-amount">〜$2M</div>
+      <div class="f-detail">
+        <div class="f-date">2017年</div>
+        <div class="f-desc">JB Straubel個人等による初期投資。SEC申告ベース。Tesla在籍中からのステルス設立。</div>
+      </div>
+    </div>
+    <div class="f-card a">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$40M</div>
+      <div class="f-detail">
+        <div class="f-date">2019年</div>
+        <div class="f-desc">Amazon・Breakthrough Energy Ventures（Bill Gates）・Capricorn Investment Groupが参加。Tesla退任直後の本格始動に合わせた調達。</div>
+      </div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C</span>
+      <div class="f-amount">$775M</div>
+      <div class="f-detail">
+        <div class="f-date">2021年</div>
+        <div class="f-desc">Amazon・T. Rowe Price・Ford・Fidelity等が参加。急拡大フェーズへの大型投資。</div>
+      </div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">Series D</span>
+      <div class="f-amount">$1B+</div>
+      <div class="f-detail">
+        <div class="f-date">2023年8月</div>
+        <div class="f-desc">Goldman Sachs AM・T. Rowe Price・Capricorn・OMERS・Microsoft Climate Innovation Fund・Caterpillar VCが参加。バリュエーション53億ドル超。</div>
+      </div>
+      <div class="f-val"><div class="vl">Valuation</div><div class="vv">$5.3B+</div></div>
+    </div>
+    <div class="f-card gov">
+      <span class="r-badge">DOE Loan</span>
+      <div class="f-amount">$2B</div>
+      <div class="f-detail">
+        <div class="f-date">2023年2月〜2025年</div>
+        <div class="f-desc">米国エネルギー省（DOE）による条件付きローン。IRA（インフレ削減法）のクリーンエネルギー推進策の一環。政策変更リスクあり。</div>
+      </div>
+    </div>
+    <div class="f-card e">
+      <span class="r-badge">Series E</span>
+      <div class="f-amount">$350M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年10月</div>
+        <div class="f-desc">Eclipse（リード）・NVentures（<strong>NVIDIA</strong>のVC部門）・既存投資家が参加。バリュエーション60億ドル超。直後の11月にレイオフを実施。</div>
+      </div>
+      <div class="f-val"><div class="vl">Valuation</div><div class="vv">$6B+</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 5. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">05</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Series E</span>
+      <div class="vc-name">Eclipse Ventures</div>
+      <div class="vc-role">Lead Investor, Series E</div>
+      <div class="vc-desc">ハードテック・製造業特化のVC。Redwood Series Eをリード。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Strategic</span>
+      <div class="vc-name">NVentures（NVIDIA）</div>
+      <div class="vc-role">Strategic Investor, Series E</div>
+      <div class="vc-desc">NVIDIAのVC部門。AIグリッドストレージへの展開を見越した戦略的出資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Amazon</div>
+      <div class="vc-role">Strategic Investor</div>
+      <div class="vc-desc">Series A以降継続出資。配送用電動車両の廃バッテリー回収パートナーも兼務。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Breakthrough Energy Ventures</div>
+      <div class="vc-role">Impact VC</div>
+      <div class="vc-desc">Bill Gates主導のクリーンエネルギー特化VC。Series A参加。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Goldman Sachs Asset Management</div>
+      <div class="vc-role">Institutional</div>
+      <div class="vc-desc">Series D参加。機関投資家として資金規模の信認を付与。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">T. Rowe Price / Fidelity</div>
+      <div class="vc-role">Institutional</div>
+      <div class="vc-desc">Series C・D参加。IPO前の大手機関投資家の関与はIPO時の需要創出を示唆。</div>
+    </div>
+  </div>
+
+  <p><strong>個人投資家：</strong>Jeff Bezos（個人）・Bill Gates（Breakthrough Energy経由）が参加。JB Straubelの人脈力を示す。</p>
+</div>
+
+<!-- ===================== 6. PARTNERS ===================== -->
+<div class="sec" id="partners">
+  <div class="sec-label"><span class="num">06</span>顧客・パートナー</div>
+
+  <h3>回収側（フィードストックサプライヤー）</h3>
+  <table class="t">
+    <thead>
+      <tr><th>企業</th><th>関係</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Amazon</td><td>配送用電動車両・家電廃バッテリー回収 + 出資者</td></tr>
+      <tr><td>Ford</td><td>廃EVバッテリー回収パートナー</td></tr>
+      <tr><td>BMW</td><td>2024年9月発表。全米700箇所のディーラー・物流拠点から廃バッテリーをRedwoodへ</td></tr>
+      <tr><td>Toyota</td><td>廃バッテリー回収 + 正極材の長期供給契約（2023年11月締結）</td></tr>
+      <tr><td>Volkswagen / Audi</td><td>廃バッテリー回収</td></tr>
+      <tr><td>Volvo</td><td>廃バッテリー回収</td></tr>
+      <tr><td>Panasonic / Envision AESC</td><td>バッテリー製造スクラップの回収</td></tr>
+      <tr><td>Caterpillar</td><td>廃電池回収 + Series D投資家</td></tr>
+      <tr><td>Lyft</td><td>廃EVバッテリー回収</td></tr>
+    </tbody>
+  </table>
+
+  <h3>供給側（精製材料の購入先）</h3>
+  <table class="t">
+    <thead>
+      <tr><th>企業</th><th>内容</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Panasonic</td><td>RedwoodのCAMをPanasonicカンザス工場（EV Energy）向けセル製造に使用</td></tr>
+      <tr><td>Toyota</td><td>長期供給契約（2023年11月）。ノースカロライナ州バッテリー工場（投資額139億ドル）向けCAM供給</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>IRAの追い風：</strong>インフレ削減法（IRA）では、税額控除（最大$7,500）を受けるためにバッテリー材料が「北米産」であることを要件とする。中国からのCAM・銅箔調達が困難になる中、Redwoodは米国産バッテリー材料の事実上唯一の大規模供給源として戦略的ポジションを確立。
+  </div>
+</div>
+
+<!-- ===================== 7. FACILITIES ===================== -->
+<div class="sec" id="facilities">
+  <div class="sec-label"><span class="num">07</span>生産拠点</div>
+
+  <h3>ネバダ州（Carson City / Tahoe Reno Industrial Center）</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">立地</div><div class="v">Teslaギガファクトリー・ネバダから約30マイル</div></div>
+    <div class="kv-item"><div class="k">計画面積</div><div class="v">約500万平方フィート（≒47万m²）</div></div>
+    <div class="kv-item"><div class="k">CAM工場</div><div class="v">5棟計画。第1棟は稼働中（20GWh/年）</div></div>
+    <div class="kv-item"><div class="k">銅箔生産</div><div class="v">年間36,000トン目標</div></div>
+  </div>
+
+  <h3>サウスカロライナ州（Charleston近郊 — Battery Materials Campus）</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">起工</div><div class="v">2024年1月</div></div>
+    <div class="kv-item"><div class="k">投資総額</div><div class="v">35億ドル</div></div>
+    <div class="kv-item"><div class="k">初期フェーズ</div><div class="v">年間20,000トンの材料生産</div></div>
+    <div class="kv-item"><div class="k">最終フェーズ</div><div class="v">100GWh分のCAM＋銅箔（EV100万台超）</div></div>
+    <div class="kv-item"><div class="k">エネルギー方針</div><div class="v">100%再生可能電力・化石燃料ゼロ目標</div></div>
+    <div class="kv-item"><div class="k">雇用</div><div class="v">最終的に1,500名以上の雇用創出予定</div></div>
+  </div>
+
+  <h3>欧州（ドイツ — Redux買収）</h3>
+  <p>2023年にドイツのバッテリーリサイクラー<strong>Redux</strong>を買収。欧州のバッテリー規制（EU Battery Regulation 2027年施行）に先行対応し、欧州OEMからの廃バッテリー回収・材料再生の拠点として活用。</p>
+
+  <h3>生産能力の推移</h3>
+  <table class="t">
+    <thead>
+      <tr><th>年</th><th>実績 / 目標</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>2020年</td><td>10,000トン処理</td></tr>
+      <tr><td>2021年4月</td><td>日産60トン（年換算 6GWh相当）</td></tr>
+      <tr><td>2023年</td><td>10GWh処理（約44,000トン、EVバッテリー約10万台分）</td></tr>
+      <tr><td>2025年6月</td><td>20GWh run-rate達成（約26万台EV相当）</td></tr>
+      <tr><td>2028年目標</td><td>100GWh（EV約100万台分）</td></tr>
+      <tr><td>2030年目標</td><td>500GWh</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 8. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">08</span>市場規模</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM</div>
+      <div class="m-val">$231B</div>
+      <div class="m-desc">全リチウムイオン電池リサイクル市場（2033年予測）</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM</div>
+      <div class="m-val">$249B</div>
+      <div class="m-desc">EV用バッテリーリサイクル市場（2033年予測 / CAGR 23.9%）</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">North America</div>
+      <div class="m-val">CAGR 27%</div>
+      <div class="m-desc">北米市場成長率（2025〜2031年）が世界最速</div>
+    </div>
+  </div>
+
+  <p>2024年時点の市場規模はEV用バッテリーリサイクルで36億ドル。2033年には249億ドルへと約7倍成長が見込まれる（CAGR 23.9%）。アジア太平洋が現在シェア44.6%と首位だが、IRAによる北米での政策支援と製造回帰の流れで、北米のCAGR 27.1%が最も高い。</p>
+
+  <div class="callout">
+    <strong>北米市場シェア：</strong>Redwood Materialsは2025年時点で北米バッテリーリサイクル市場の約<strong>70%</strong>を占める圧倒的な存在。ただし市場全体は分散しており、上位5社合計でも35%未満。
+  </div>
+</div>
+
+<!-- ===================== 9. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">09</span>競合分析</div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">Redwood Materials</div>
+      <div class="comp-tag">自社</div>
+      <div class="comp-desc">垂直統合（回収→精製→CAM/銅箔製造）。北米シェア70%。IRA適合。Teslaギガファクトリー隣接の地理的優位。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Ascend Elements</div>
+      <div class="comp-tag">直接競合</div>
+      <div class="comp-desc">Hydro-to-Cathode直接技術（回収率98%）。マサチューセッツ拠点。2024年商業化。Redwoodに次ぐ米国2位候補。</div>
+      <div class="comp-strong"><span>調達</span>累計6,500万ドル（規模はRedwoodより小）</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Glencore（+ Li-Cycle買収）</div>
+      <div class="comp-tag">資本力脅威</div>
+      <div class="comp-desc">スイスの資源メジャー。2025年8月にLi-Cycle（カナダ）を買収して参入強化。大資本による垂直統合で長期的脅威。</div>
+      <div class="comp-strong"><span>状況</span>Li-Cycleは経営難で買収・再編</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Umicore</div>
+      <div class="comp-tag">欧州強者</div>
+      <div class="comp-desc">ベルギー老舗。欧州・アジアで強い。北米では存在感薄。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">POSCO / SungEel（韓国）</div>
+      <div class="comp-tag">アジア覇者</div>
+      <div class="comp-desc">韓国系バッテリーメーカー（LG・Samsung・SK）と連携しアジア太平洋を支配。北米展開は限定的。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Li-Cycle（買収済）</div>
+      <div class="comp-tag">経営難</div>
+      <div class="comp-desc">Spoke-Hub方式の湿式製錬。2025年8月にGlencoreが買収。過剰投資と需要鈍化で失速した教訓事例。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">10</span>リスク・課題</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">①</div>
+      <div>
+        <div class="ind-title">EV需要鈍化とフィードストック不足</div>
+        <div class="ind-desc">北米全体で年間45万トンの廃バッテリー処理キャパがあるのに、実際の供給量は18万トン（2025年）にとどまり稼働率40%未満。EVの普及が想定より遅れており、廃バッテリーの回収量が当初予測を下回っている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">②</div>
+      <div>
+        <div class="ind-title">レイオフ（2025年11月）</div>
+        <div class="ind-desc">Series E（3.5億ドル）調達直後の2025年11月26日、全従業員の約5〜6%（60〜70名）をレイオフ。一部の野心的プロジェクトを縮小しグリッドストレージへ戦略を部分転換。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">③</div>
+      <div>
+        <div class="ind-title">バッテリー材料価格の低迷</div>
+        <div class="ind-desc">リチウム・コバルト価格がコモディティ市場に連動。2023〜2024年の炭酸リチウム価格急落により収益を圧迫。2024年売上2億ドルに対し、35億ドルのSC工場など重い設備投資でキャッシュバーン状態継続。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">④</div>
+      <div>
+        <div class="ind-title">政策リスク（IRA・DOEローン）</div>
+        <div class="ind-desc">トランプ政権のEV補助金・IRA縮小方針がEV普及ペースを下げる可能性。DOEからの20億ドルローンは条件付きで、政策変更の影響を受けるリスクあり。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">⑤</div>
+      <div>
+        <div class="ind-title">バリュエーションと収益性のギャップ</div>
+        <div class="ind-desc">PSR（株価売上高倍率）で30倍（売上2億ドルに対しバリュエーション60億ドル）。上場すればスクルーティニが厳しく、黒字化の道筋を示せるまでIPOを急げない構造。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. OUTLOOK ===================== -->
+<div class="sec" id="outlook">
+  <div class="sec-label"><span class="num">11</span>将来展望</div>
+
+  <h3>Redwood Energy — グリッドストレージへのピボット</h3>
+  <p>2025年6月に新部門「Redwood Energy」を立ち上げ。EV廃バッテリーパックを解体せず、定置型蓄電システム（グリッドストレージ）として再展開する。AIデータセンターの電力需要急増による系統安定化ニーズが追い風。EV需要鈍化への現実的な適応戦略。</p>
+
+  <h3>生産能力目標</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年6月</span><span class="tl-title">20GWh run-rate達成</span></div>
+        <div class="tl-body">ネバダ州第1棟が本格稼働。EVバッテリー約26万台分の材料を年間処理。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年11月</span><span class="tl-title">Series E完了 + レイオフ</span></div>
+        <div class="tl-body">3.5億ドル調達（NVIDIA系NVentures参加）。直後に全体の5〜6%をレイオフし、選択と集中を強化。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date muted">2028年目標</span><span class="tl-title">100GWh達成</span></div>
+        <div class="tl-body">SC工場フェーズ2完成。EV約100万台分の材料を年間再生。米国産バッテリー材料の主要サプライヤーとして確立。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date muted">2030年目標</span><span class="tl-title">500GWh達成</span></div>
+        <div class="tl-body">ネバダ5棟＋SC全フェーズ＋欧州Redux連携で500GWh処理。EV500万台分相当。黒字化・IPO検討フェーズ。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>IPOの見通し</h3>
+  <p>2026年4月時点でIPOの具体的スケジュールは未定。プライベート資本での調達余力が十分あり、JB Straubelは公式コメントを控えている。アナリストは「3〜5年以内にIPO可能性」と見るが、売上2億ドル対バリュエーション60億ドル（PSR30倍）の乖離が解消されるまで上場を急がないのが合理的。黒字化の道筋を示せた段階でIPO、または大手資源・素材企業によるM&Aも視野。</p>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">A</div>
+      <div>
+        <div class="ind-title">「採掘しない採掘業者」という構造的優位</div>
+        <div class="ind-desc">リチウム・コバルト・ニッケルは地政学リスク（コンゴ、チリ、中国）の高い素材。Redwoodは廃バッテリーから95%以上の回収率でこれらを再生することで、採掘コストと中国サプライチェーン依存を同時に回避する。IRA適合はその副産物。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">B</div>
+      <div>
+        <div class="ind-title">JB Straubelという人的資産</div>
+        <div class="ind-desc">TeslaのCTOとして16年間、バッテリーシステム設計からギガファクトリー構想まで主導した人物が創業者。Panasonic・Toyota・Fordとの直接契約はこの信頼資産なしには成立しない。Jeff Bezos・Bill Gatesの個人出資も同様。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">C</div>
+      <div>
+        <div class="ind-title">グリッドストレージへのピボットが正しい判断</div>
+        <div class="ind-desc">EV需要鈍化は短期の逆風だが、AIデータセンター電力需要は急増中。廃EVバッテリーを蓄電システムとして転用する「Redwood Energy」は、同じ資産を別の高成長市場に向けるエレガントな対応策。バッテリーのライフサイクル全体を管理する会社としての地位を強化。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">D</div>
+      <div>
+        <div class="ind-title">競合の自滅（Li-Cycle）が示す参入障壁</div>
+        <div class="ind-desc">Li-Cycleは過剰設備投資と需要鈍化で2025年8月に買収・再編。同じ失敗をRedwoodも踏む可能性はあるが、垂直統合による高付加価値（CAM製造マージン）がLi-Cycleにはなかった構造的安全弁として機能している。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>バッテリーリサイクルは「クリーン産業」ではなく「素材産業」として捉えるべき。Redwoodは採掘業者でも廃棄業者でもなく、「都市鉱山を経営する製造業者」として唯一無二のポジションにいる。</p>
+    <div class="attr">— リサーチコメント（260412）</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li>Redwood Materials 公式サイト</li>
+    <li>Wikipedia — Redwood Materials / JB Straubel</li>
+    <li>Contrary Research — Redwood Materials Business Breakdown</li>
+    <li>Bloomberg — Redwood Materials Tops $6B Valuation (2025.10)</li>
+    <li>Bloomberg — Redwood Materials Layoffs (2025.11)</li>
+    <li>Wilson Sonsini — Series E $350M Press Release</li>
+    <li>Redwood Materials — Series D Press Release</li>
+    <li>Electrek — BMW Partners with Redwood Materials (2024.09)</li>
+    <li>US News — Redwood Inks Supply Deal with Toyota (2023.11)</li>
+    <li>Redwood Materials — South Carolina Campus Announcement</li>
+    <li>AutoNews — Redwood Layoffs & EV Pivot (2025.12)</li>
+    <li>IMARC Group — EV Battery Recycling Market Size 2025-2033</li>
+    <li>Business Wire — Battery Recycling Market Forecast 2025-2030</li>
+    <li>Ticker Nerd — Redwood Materials IPO Potential</li>
+  </ul>
+</div>
+
+</div><!-- /page -->
+</body>
+</html>
