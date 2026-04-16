@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Praia — 都市リサーチ 260416</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-eyebrow">City Research — 260416</div>
+    <h1>Praia</h1>
+    <div class="hero-country">🇨🇻 Cape Verde / Santiago Island / 首都 / 大西洋に面した港町</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">人口</div>
+        <div class="kv-val">約16万人</div>
+        <div class="kv-note">カーボベルデ最大都市</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">面積</div>
+        <div class="kv-val">97 km²</div>
+        <div class="kv-note">サンティアゴ島南端</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">GDP貢献</div>
+        <div class="kv-val">~50%</div>
+        <div class="kv-note">カーボベルデ全GDP中</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">国際空港</div>
+        <div class="kv-val">RAI</div>
+        <div class="kv-note">Nelson Mandela Int'l / 市内10分</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">基本情報</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">主要エリアガイド</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">気候</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">観光スポット</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">食・グルメ</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">アクセス・市内移動</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">行くなら</a></li>
+    </ol>
+  </div>
+
+  <!-- 01 -->
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">基本情報</span></div>
+    <table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>人口</td><td>約16万人（2024年推計）/ カーボベルデ全人口の約27%</td></tr>
+      <tr><td>面積</td><td>97 km²（サンティアゴ島の南端部）</td></tr>
+      <tr><td>属する国</td><td>カーボベルデ共和国 / サンティアゴ島（Santiago）</td></tr>
+      <tr><td>位置付け</td><td>首都・最大都市・経済・政治の中心。カーボベルデGDPの約50%を生む。</td></tr>
+      <tr><td>特徴</td><td>人口16万のコンパクトな首都。ヨーロッパ系観光客の乗継拠点。サンティアゴ島内陸（緑の山地）と沿岸部（乾燥）が混在する地形。</td></tr>
+      <tr><td>国際空港</td><td>ネルソン・マンデラ国際空港（RAI）/ 市内から約10〜15分</td></tr>
+      <tr><td>タイムゾーン</td><td>UTC-1（日本との時差 −10時間）</td></tr>
+    </table>
+    <div class="callout">
+      プライアはカーボベルデの中では最も「都市らしい」場所だが、人口16万のコンパクトな規模。欧州からの観光客の多くはサル島・ボア・ヴィスタ島で過ごし、プライアを素通りするケースも多い。しかし旧市街（プラトー）の植民地建築・スクピラ市場・クレオール料理は独自の魅力がある。
+    </div>
+  </div>
+
+  <!-- 02 エリア -->
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">主要エリアガイド</span></div>
+    <div class="area-grid">
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Platô（プラトー）</div>
+          <div class="area-night">🌙</div>
+        </div>
+        <div class="area-equiv">東京の丸の内・皇居周辺に相当</div>
+        <div class="area-tags">
+          <span class="tag">歴史</span>
+          <span class="tag">官庁</span>
+          <span class="tag">観光</span>
+          <span class="tag">植民地建築</span>
+        </div>
+        <div class="area-desc">崖の上に広がる旧市街地区。ポルトガル植民地時代の建築・大統領府・国会議事堂・大聖堂が集まる。海と市街を一望できる展望台がある。観光の起点として最適。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Achada Santo António（ASA）</div>
+          <div class="area-night">🌙🌙</div>
+        </div>
+        <div class="area-equiv">東京の渋谷・恵比寿に相当</div>
+        <div class="area-tags">
+          <span class="tag">商業</span>
+          <span class="tag">ショッピング</span>
+          <span class="tag night">カフェ・バー</span>
+          <span class="tag">オフィス</span>
+        </div>
+        <div class="area-desc">最も活気のある新興商業エリア。ショッピングセンター（Palmarejo Grand Mall）・企業オフィス・カフェ・バーが集まる。プライアのトレンドの中心地。若者・ビジネス層が多い。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Palmarejo</div>
+          <div class="area-night">🌙</div>
+        </div>
+        <div class="area-equiv">東京の品川・天王洲に相当</div>
+        <div class="area-tags">
+          <span class="tag upscale">高級</span>
+          <span class="tag">ホテル</span>
+          <span class="tag">海沿い</span>
+          <span class="tag">観光客</span>
+        </div>
+        <div class="area-desc">海沿いの新興ホテル・ビジネスエリア。中級〜高級ホテルが集中し観光客向け施設が充実。プライア最大のショッピングモール（Palmarejo Grand Mall）もここに。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Fazenda</div>
+          <div class="area-night">—</div>
+        </div>
+        <div class="area-equiv">東京の新宿・上野の庶民エリアに相当</div>
+        <div class="area-tags">
+          <span class="tag">市場</span>
+          <span class="tag">庶民的</span>
+          <span class="tag">食堂</span>
+        </div>
+        <div class="area-desc">プラトーとASAの間に広がる庶民的商業地区。ローカル食堂・雑貨屋・露天市場が立ち並ぶ。クレオール料理を安く食べるならここ。活気はあるが観光向けの整備は薄い。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Várzea</div>
+          <div class="area-night">—</div>
+        </div>
+        <div class="area-equiv">東京の文京区・本郷に相当</div>
+        <div class="area-tags">
+          <span class="tag">住宅街</span>
+          <span class="tag">大学</span>
+          <span class="tag">静か</span>
+        </div>
+        <div class="area-desc">プライア北部の住宅地。カーボベルデ大学（Uni-CV）周辺。学生・中産階級の居住エリア。観光スポットは少ないが市内の移動中継地として通過することが多い。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Quebra Canela ビーチ周辺</div>
+          <div class="area-night">🌙</div>
+        </div>
+        <div class="area-equiv">東京の海浜幕張・お台場に相当</div>
+        <div class="area-tags">
+          <span class="tag">ビーチ</span>
+          <span class="tag">レストラン</span>
+          <span class="tag">リラックス</span>
+        </div>
+        <div class="area-desc">プライア市内のビーチエリア。岩礁に囲まれた小さなビーチだが、市内最もリラックスできる場所。海沿いのシーフードレストランが週末に賑わう。サンセット鑑賞のスポット。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 03 気候 -->
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">気候</span></div>
+    <table class="t">
+      <tr><th>季節</th><th>期間</th><th>気温</th><th>特徴</th></tr>
+      <tr><td><strong>乾季（ベストシーズン）</strong></td><td>12月〜6月</td><td>23〜28℃</td><td>晴天続き。海風で過ごしやすい。観光最適期。ハルマッタン（砂風）が1〜2月に吹くことも。</td></tr>
+      <tr><td>雨季</td><td>8月〜10月</td><td>26〜30℃</td><td>スコールが来るが長続きしない。湿度やや上がる。サンティアゴ島内陸が緑になる。</td></tr>
+    </table>
+    <div class="callout">
+      カーボベルデ全体的に乾燥しており、プライアは年間平均降水量約250mm（東京の約1/6）。年間を通じて温暖で、ヨーロッパの冬にリゾートとして訪れる観光客が多い。
+    </div>
+  </div>
+
+  <!-- 04 スポット -->
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">観光スポット（市内）</span></div>
+    <div class="spot-grid">
+      <div class="spot-card">
+        <div class="spot-name">スクピラ市場（Mercado do Sucupira）</div>
+        <div class="spot-loc">プラトー南側</div>
+        <div class="spot-desc">プライア最大の屋外市場。布・工芸品・食材・衣類が揃う。クレオール文化の香りが漂う活気ある場所。値段交渉必須。カーボベルデの土産探しにも最適。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">大聖堂（Catedral Nossa Senhora da Graça）</div>
+        <div class="spot-loc">プラトー</div>
+        <div class="spot-desc">植民地時代に建設されたカトリック大聖堂。プラトー地区の中心に位置し、周辺の白い建築と合わせて散策スポットとして人気。日曜ミサも見どころ。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">民族博物館（Museu Etnográfico）</div>
+        <div class="spot-loc">プラトー</div>
+        <div class="spot-desc">カーボベルデのクレオール文化・伝統工芸・歴史を展示。小規模だが丁寧な展示内容。ポルトガル語・英語のガイドあり。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">プライア・ケブラ・カネラ</div>
+        <div class="spot-loc">Quebra Canela地区</div>
+        <div class="spot-desc">市内最もアクセスしやすいビーチ。岩に囲まれた小さな入り江で波が穏やか。週末は地元民で賑わう。サンセット鑑賞スポット。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">シダード・ヴェーリャ（世界遺産）</div>
+        <div class="spot-loc">プライアから西へ15km</div>
+        <div class="spot-desc">西アフリカ初のヨーロッパ植民都市（1462年）。UNESCO世界遺産。奴隷貿易の「帰還なき扉」・ペロウリーニョ（処刑台）・リベウ・グランジの廃墟が残る。プライアから車で20〜30分。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">大統領府・議会広場</div>
+        <div class="spot-loc">プラトー</div>
+        <div class="spot-desc">プラトーの崖の上に立つ植民地建築。周辺の広場からは港と大西洋を一望できる。夕方の散歩コースとして地元民にも親しまれている。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 食 -->
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">食・グルメ</span></div>
+    <div class="food-grid">
+      <div class="food-card">
+        <div class="food-name">カチュパ（Cachupa）</div>
+        <div class="food-desc">トウモロコシ・豆・野菜・肉（またはマグロ）を長時間煮込んだ国民食。「リッチ」（肉入り）と「プーブル」（野菜のみ）がある。朝食版のカチュパ・フリタ（揚げ焼き）も絶品。</div>
+      </div>
+      <div class="food-card">
+        <div class="food-name">パステル（Pastel）</div>
+        <div class="food-desc">魚（マグロ）・野菜入りの揚げパイ。カーボベルデ版の揚げ餃子。ストリートスナックの定番で$0.5〜1。サルサ（辛めのソース）と一緒に食べる。</div>
+      </div>
+      <div class="food-card">
+        <div class="food-name">カルド・デ・ペイシェ（Caldo de Peixe）</div>
+        <div class="food-desc">魚介の旨みが染み出たシンプルな魚スープ。マグロ・カジキが主役。ご飯またはパンと一緒に。漁港近くの食堂が本場。</div>
+      </div>
+      <div class="food-card">
+        <div class="food-name">グロッゲ（Grogue）</div>
+        <div class="food-desc">サトウキビから作る蒸留酒。カーボベルデ版ラム。度数高め（40〜50度）。土産にも人気。カイピリーニャ（ライム＋砂糖）で割るのがローカル流。</div>
+      </div>
+      <div class="food-card">
+        <div class="food-name">ブジュ（Buzio）</div>
+        <div class="food-desc">ホラ貝のシチュー。コクのあるソースが特徴でご飯・クスクスと合わせる。漁港エリアの食堂で食べられる。</div>
+      </div>
+      <div class="food-card">
+        <div class="food-name">ポンタ・デ・アグラ（Pontche d'Agra）</div>
+        <div class="food-desc">グロッゲ＋ライム＋蜂蜜のホットドリンク。風邪薬として飲まれる伝統的なカクテル。バーでも楽しめる。</div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:20px;">
+      <strong>おすすめエリア：</strong><br>
+      朝食はFazendaのローカル食堂でカチュパ・フリタ（約150〜300 CVE）。シーフードはQuebra Canela周辺の海沿いレストランで。ASAのカフェでは欧州式のコーヒー・ペストリーも楽しめる。土産のグロッゲはスクピラ市場で。
+    </div>
+  </div>
+
+  <!-- 06 アクセス -->
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">アクセス・市内移動</span></div>
+    <table class="t">
+      <tr><th>手段</th><th>詳細</th></tr>
+      <tr><td><strong>国際線</strong></td><td>ネルソン・マンデラ国際空港（RAI）/ リスボン・アムステルダム・ロンドン・パリ・フランクフルトからのチャーター・定期便が主流。日本からは乗継2回、約18〜22時間。</td></tr>
+      <tr><td>空港〜市内</td><td>タクシー：約10〜15分、500〜800 CVE（約700〜1,100円）。空港からプラトーへは非常に近い。</td></tr>
+      <tr><td>アルゲール（Aluguer）</td><td>カーボベルデの乗合ミニバス。市内の主要交通手段。安価（30〜80 CVE）だがルート把握が必要。</td></tr>
+      <tr><td>タクシー</td><td>メーターなし。市内どこでも500〜1,500 CVEが目安。Fazenda〜プラトーは短距離なので安い。</td></tr>
+      <tr><td>国内線（TACV / Binter）</td><td>サル島（SID）・サン・ヴィセンテ島（VXE）・フォゴ島へは国内線で1時間以内。複数島を回るなら必須。往復約4,000〜8,000 CVE。</td></tr>
+      <tr><td>フェリー</td><td>島間フェリーもあるが所要時間が長い（プライア〜ミンデーロは約8〜12時間）。飛行機推奨。</td></tr>
+    </table>
+  </div>
+
+  <!-- 07 行くなら -->
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">行くなら</span></div>
+    <div class="info-box">
+      <ul>
+        <li><strong>おすすめ滞在日数</strong>：1〜2日（他島への乗継拠点として）。シダード・ヴェーリャ（世界遺産）と市内観光で1〜2日は楽しめる。</li>
+        <li><strong>拠点にするなら</strong>：プラトー（観光アクセス最良）またはPalmarejo（快適さ重視・海沿い）。</li>
+        <li><strong>プライアの位置付け</strong>：サル島・ボア・ヴィスタ（ビーチリゾート）に比べて観光インフラは劣るが、クレオール文化・歴史体験はプライアが圧倒的に濃い。</li>
+        <li><strong>予算感（1日）</strong>：バックパッカー $40〜70 / 中級 $80〜130 / 快適 $150〜。ローカル食堂1食 150〜400 CVE（約200〜540円）。</li>
+        <li><strong>言語</strong>：ポルトガル語が公用語、日常会話はクリオウル語（クレオール語）。観光エリアは英語・フランス語も通じる。</li>
+        <li><strong>島めぐり</strong>：プライアをベースにしてサンティアゴ島内（シダード・ヴェーリャ・アスマーダ）を探索し、国内線で他島へ移動が効率的。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>Instituto Nacional de Estatística de Cabo Verde — Census 2021</li>
+      <li>Lonely Planet — Cape Verde (Praia)</li>
+      <li>Cape Verde Tourism Board 公式サイト</li>
+      <li>UNESCO — Cidade Velha World Heritage Site</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accra — 都市リサーチ 260416</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    /* ── AREA CARDS ── */
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    /* ── SPOT / FOOD GRID ── */
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-eyebrow">City Research — 260416</div>
+    <h1>Accra</h1>
+    <div class="hero-country">🇬🇭 Ghana / Greater Accra Region / 首都</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">都市圏人口</div>
+        <div class="kv-val">約400万人</div>
+        <div class="kv-note">市域約340万</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">面積</div>
+        <div class="kv-val">225 km²</div>
+        <div class="kv-note">大西洋沿岸の平坦地</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">GDP貢献</div>
+        <div class="kv-val">~40%</div>
+        <div class="kv-note">ガーナ全GDP中</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">国際空港</div>
+        <div class="kv-val">KIA (ACC)</div>
+        <div class="kv-note">Kotoka Int'l / 市内20分</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">基本情報</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">主要エリアガイド</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">気候</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">観光スポット</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">食・グルメ</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">アクセス・市内移動</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">行くなら</a></li>
+    </ol>
+  </div>
+
+  <!-- 01 基本情報 -->
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">基本情報</span></div>
+    <table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>都市圏人口</td><td>約400万人（市域約340万 / 2024年推計）</td></tr>
+      <tr><td>面積</td><td>225 km²（大西洋沿岸の平坦な低地）</td></tr>
+      <tr><td>属する国</td><td>ガーナ共和国 / Greater Accra Region</td></tr>
+      <tr><td>位置付け</td><td>首都・最大都市・経済首都。ガーナGDPの約40%を生む。</td></tr>
+      <tr><td>特徴</td><td>英語が通じる・比較的安全・スタートアップエコシステム発展中（「Silicon Accra」）・アフリカ系ディアスポラが帰国する都市としても注目</td></tr>
+      <tr><td>国際空港</td><td>コトカ国際空港（ACC）/ 市内から約20〜30分</td></tr>
+      <tr><td>タイムゾーン</td><td>GMT+0（日本との時差 −9時間）</td></tr>
+    </table>
+    <div class="callout">
+      西アフリカで最も旅行しやすい首都の一つ。英語が公用語なのでコミュニケーションが楽。治安はナイロビやラゴスと比べて良好。近年はデジタルノマド・帰還ディアスポラの増加で飲食・文化シーンが急成長中。
+    </div>
+  </div>
+
+  <!-- 02 エリアガイド -->
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">主要エリアガイド</span></div>
+    <div class="area-grid">
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Osu</div>
+          <div class="area-night">🌙🌙🌙</div>
+        </div>
+        <div class="area-equiv">東京の六本木に相当</div>
+        <div class="area-tags">
+          <span class="tag night">ナイトライフ</span>
+          <span class="tag">レストラン</span>
+          <span class="tag">外国人多</span>
+          <span class="tag">観光</span>
+        </div>
+        <div class="area-desc">Oxford Street沿いにバー・クラブ・外国人向けレストランが密集。週末は深夜まで賑わう。観光客・駐在員・帰還ディアスポラが集まるアクラの社交中心地。ショップ・カフェも充実。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">East Legon</div>
+          <div class="area-night">🌙🌙</div>
+        </div>
+        <div class="area-equiv">東京の麻布十番に相当</div>
+        <div class="area-tags">
+          <span class="tag upscale">高級</span>
+          <span class="tag">ショッピング</span>
+          <span class="tag">外国人多</span>
+          <span class="tag night">ナイトライフ</span>
+        </div>
+        <div class="area-desc">Accra Mall・West Hills Mallなどショッピングモールが集中。高級レストラン・カフェが充実。富裕層ガーナ人・帰還ディアスポラが多く住む新興エリア。活発なクラブシーンも。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Labone</div>
+          <div class="area-night">🌙</div>
+        </div>
+        <div class="area-equiv">東京の広尾に相当</div>
+        <div class="area-tags">
+          <span class="tag upscale">高級</span>
+          <span class="tag">住宅街</span>
+          <span class="tag">外国人多</span>
+          <span class="tag">閑静</span>
+        </div>
+        <div class="area-desc">外交官・NGO・欧米系駐在員が多く住む閑静な高級住宅街。高級レストランが点在。喧騒から離れた落ち着いた環境。セキュリティが高く安全なエリア。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Cantonments</div>
+          <div class="area-night">—</div>
+        </div>
+        <div class="area-equiv">東京の元麻布・番町に相当</div>
+        <div class="area-tags">
+          <span class="tag">大使館</span>
+          <span class="tag upscale">高級</span>
+          <span class="tag">住宅街</span>
+        </div>
+        <div class="area-desc">大使館・外交公館が集中する最もセキュアな住宅エリア。空港にも近い。ナイトライフはほぼなく、静かなビジネス・外交のゾーン。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Jamestown</div>
+          <div class="area-night">🌙</div>
+        </div>
+        <div class="area-equiv">東京の浅草・下北沢に相当</div>
+        <div class="area-tags">
+          <span class="tag">歴史</span>
+          <span class="tag">観光</span>
+          <span class="tag">アート</span>
+          <span class="tag">漁港</span>
+        </div>
+        <div class="area-desc">植民地時代からの歴史地区。カラフルな漁船・灯台・ボクシングジム（ガーナボクシングの聖地）が共存するアート・文化の発信地。旅人に人気の撮影スポット。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header">
+          <div class="area-name">Makola / Accra Central</div>
+          <div class="area-night">—</div>
+        </div>
+        <div class="area-equiv">東京の上野アメ横・秋葉原に相当</div>
+        <div class="area-tags">
+          <span class="tag">市場</span>
+          <span class="tag">商業</span>
+          <span class="tag">庶民的</span>
+        </div>
+        <div class="area-desc">アクラ最大の巨大市場「マコラ・マーケット」を中心とした庶民の商業地区。何でも揃う激混みエリア。スリに注意が必要だが、生活感あふれる市場体験ができる。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 03 気候 -->
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">気候</span></div>
+    <table class="t">
+      <tr><th>季節</th><th>期間</th><th>気温</th><th>特徴</th></tr>
+      <tr><td><strong>大乾季</strong></td><td>12月〜3月</td><td>27〜32℃</td><td>ベストシーズン。晴れが続く。ハルマッタン（砂まじりの風）が吹くこともある。</td></tr>
+      <tr><td>大雨季</td><td>4月〜7月</td><td>26〜30℃</td><td>最も雨が多い。スコールが突然来る。湿度高。</td></tr>
+      <tr><td><strong>小乾季</strong></td><td>8月〜9月</td><td>24〜28℃</td><td>涼しく過ごしやすい。曇りがちだが旅行しやすい。</td></tr>
+      <tr><td>小雨季</td><td>10月〜11月</td><td>26〜30℃</td><td>2回目の雨季。大雨季より雨量は少ない。</td></tr>
+    </table>
+    <div class="callout">
+      年間を通じて高温（25〜32℃）。海風があるため体感温度は内陸より低め。最も快適な旅行時期は12〜3月（大乾季）と8〜9月（小乾季）。
+    </div>
+  </div>
+
+  <!-- 04 観光スポット -->
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">観光スポット（市内）</span></div>
+    <div class="spot-grid">
+      <div class="spot-card">
+        <div class="spot-name">クワメ・ンクルマ記念公園</div>
+        <div class="spot-loc">Accra Central</div>
+        <div class="spot-desc">初代大統領の霊廟・博物館。独立広場に隣接。ガーナ独立の歴史を学べる必訪スポット。静かで整備された公園。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">ジェームズタウン灯台</div>
+        <div class="spot-loc">Jamestown</div>
+        <div class="spot-desc">植民地時代の白い灯台。登ると大西洋と漁港が一望できる。下に広がる漁村の風景が絵になる。地域ガイドと一緒に回るのがおすすめ。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">ラバディ・ビーチ</div>
+        <div class="spot-loc">La / 市内東部</div>
+        <div class="spot-desc">アクラ近郊最大のビーチ。週末はドラミング・ダンスパフォーマンスが行われる。ビーチバー・海水浴。市内から30〜40分。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">独立広場（ブラックスター広場）</div>
+        <div class="spot-loc">Accra Central</div>
+        <div class="spot-desc">1957年独立宣言が行われた歴史的広場。ブラック・スター門が象徴的。隣接するンクルマ記念公園とセットで訪問。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">ガーナ国立博物館</div>
+        <div class="spot-loc">Ring Road Central</div>
+        <div class="spot-desc">アシャンティ王国の黄金細工・伝統工芸・考古学資料が充実。ガーナの文化・歴史を体系的に学べる。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">Arts Centre / Centre for National Culture</div>
+        <div class="spot-loc">Accra Central</div>
+        <div class="spot-desc">ケンテ布・木彫り・アクセサリーなどガーナ工芸品が集まる大型市場兼文化センター。値段交渉必須。お土産探しの定番。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 05 食・グルメ -->
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">食・グルメ</span></div>
+    <div class="food-grid">
+      <div class="food-card">
+        <div class="food-name">フフ（Fufu）</div>
+        <div class="food-desc">キャッサバ＋プランテンを搗いて作るガーナの主食。ピーナッツスープ・ライトスープに浸して食べる。手で食べるのが作法。</div>
+      </div>
+      <div class="food-card">
+        <div class="food-name">ジョロフライス（Jollof Rice）</div>
+        <div class="food-desc">トマト・玉ねぎで炊いた西アフリカ最愛のライス料理。ガーナ vs ナイジェリアの「ジョロフ戦争」で話題。</div>
+      </div>
+      <div class="food-card">
+        <div class="food-name">チチンガ（Chichinga）</div>
+        <div class="food-desc">スパイスをまぶした牛肉・羊肉の串焼き。夕方の屋台で食べるのがローカル流。ストリートフードの王道。</div>
+      </div>
+      <div class="food-card">
+        <div class="food-name">ケレウェレ（Kelewele）</div>
+        <div class="food-desc">ショウガ・唐辛子・スパイスでマリネした揚げプランテン。屋台スナックとして夕方に売られる。甘辛で病みつきになる味。</div>
+      </div>
+      <div class="food-card">
+        <div class="food-name">レッドレッド（Red Red）</div>
+        <div class="food-desc">黒目豆のトマト煮込み＋揚げプランテン。シンプルながら滋味深い定番ランチ。ローカル食堂（チョップバー）の定番。</div>
+      </div>
+      <div class="food-card">
+        <div class="food-name">バンクー＆ティラピア（Banku & Tilapia）</div>
+        <div class="food-desc">発酵トウモロコシ粉を練った主食（バンクー）に、グリルしたティラピアと辛い玉ねぎソースを合わせる。海岸沿いの定番。</div>
+      </div>
+    </div>
+    <div class="callout" style="margin-top:20px;">
+      <strong>おすすめエリア・場所：</strong><br>
+      チョップバー（ローカル食堂）はMakola周辺に多数。Osuには欧米系レストランも充実。East Legonのレストラン街は帰還ディアスポラが経営する洒落た店が増加中。夕方のOxford Street屋台でチチンガ＋ケレウェレが鉄板。
+    </div>
+  </div>
+
+  <!-- 06 アクセス -->
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">アクセス・市内移動</span></div>
+    <table class="t">
+      <tr><th>手段</th><th>詳細</th></tr>
+      <tr><td><strong>国際線</strong></td><td>コトカ国際空港（ACC）/ エミレーツ・エチオピア航空・ケニア航空など経由が主流。日本からは乗継1〜2回、約18〜22時間。</td></tr>
+      <tr><td>空港〜市内</td><td>タクシー/Bolt（Uber相当）で20〜40分、約30〜60GHS。深夜着は料金交渉注意。</td></tr>
+      <tr><td>Bolt / Uber</td><td>アクラ市内の移動に最適。ガーナではBoltが主流。価格が明示されスリなどのリスク低。</td></tr>
+      <tr><td>トロトロ</td><td>ミニバス乗合。ローカルの主要交通手段。安いが路線わかりにくい。Osuや市場エリアはトロトロで動く地元民が多い。</td></tr>
+      <tr><td>タクシー</td><td>メーターなし。乗車前に必ず価格交渉。Boltアプリの方が安心。</td></tr>
+    </table>
+  </div>
+
+  <!-- 07 行くなら -->
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">行くなら</span></div>
+    <div class="info-box">
+      <ul>
+        <li><strong>おすすめ滞在日数</strong>：2〜3日。市内を見て、ケープコースト（約3時間）への日帰りor1泊旅行と組み合わせると◎。</li>
+        <li><strong>拠点にするなら</strong>：Osu（観光・飲食アクセス最良）またはEast Legon（快適さ重視）。</li>
+        <li><strong>避けるべきエリア</strong>：Nima・Maamobi（犯罪率高め）。夜間の単独行動は市場エリア（Makola周辺）も避ける。</li>
+        <li><strong>予算感（1日）</strong>：バックパッカー $40〜60 / 中級旅行者 $80〜150 / 快適 $200〜。ローカル食堂1食 $1〜3、中級レストラン $15〜30。</li>
+        <li><strong>SIM・通信</strong>：空港でMTN or Vodafone Ghanaの観光SIM取得推奨（$5〜10で数GBのデータ付）。</li>
+        <li><strong>Year of Return</strong>：2019年から続くアフリカ系ディアスポラの「帰還運動」でUSA・UK出身の黒人観光客が増加。このため観光インフラが急速に整備されている。</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>Ghana Statistical Service — 2021 Population & Housing Census</li>
+      <li>Lonely Planet — Accra City Guide</li>
+      <li>Accra Metropolitan Assembly 公式サイト</li>
+      <li>Bolt / Google Maps — 市内移動情報</li>
+    </ul>
+  </div>
+
+</div>
+</body>
+</html>
