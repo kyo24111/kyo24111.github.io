@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KoBold Metals — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .geo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 10px; margin: 12px 0; }
+  .geo-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .geo-country { font-family: 'Poppins', sans-serif; font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .geo-mineral { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .geo-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .geo-card.flagship { border-top: 3px solid var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+    .geo-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Critical Minerals</span>
+    <span class="badge badge-white">AI × Exploration</span>
+    <span class="badge badge-solid">Series D+</span>
+  </div>
+  <h1>KoBold Metals</h1>
+  <p class="hero-sub">AIと機械学習で地下資源探索を再定義するディープテック企業。衛星画像・地質調査・歴史的採掘記録をMLで統合分析し、EV時代に不可欠な銅・リチウム・ニッケル・コバルトの新鉱床を発見する。ザンビアで「1世紀最大の銅発見」を達成。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$1.22B+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">$2.96B</div><div class="lbl">Valuation (2024.09)</div></div>
+    <div class="kpi"><div class="val">60+</div><div class="lbl">Active Projects</div></div>
+    <div class="kpi"><div class="val">2018</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#founders">創業者</a></li>
+    <li><a href="#technology">コア技術・事業モデル</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#discoveries">主要発見・プロジェクト</a></li>
+    <li><a href="#geography">地理的プレゼンス</a></li>
+    <li><a href="#market">市場規模</a></li>
+    <li><a href="#competition">競合分析</a></li>
+    <li><a href="#risks">リスク・課題</a></li>
+    <li><a href="#outlook">将来展望</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">KoBold Metals Company</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2018年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Berkeley, California, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series D + Late-stage（未上場）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">12億2000万ドル以上</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">29億6000万ドル（2024年9月）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約278名（2026年2月時点）</div></div>
+    <div class="kv-item"><div class="k">事業形態</div><div class="v">鉱山持分取得型（発見後に権益を保有）</div></div>
+    <div class="kv-item"><div class="k">探索プロジェクト数</div><div class="v">60以上（4大陸）</div></div>
+    <div class="kv-item"><div class="k">コアターゲット</div><div class="v">銅・リチウム・ニッケル・コバルト</div></div>
+  </div>
+
+  <p>KoBold Metalsは、AI・機械学習を使って地球上の未発見鉱床を系統的に特定するディープテック企業。衛星画像、地質調査データ、地震探査記録、過去の採掘記録など膨大な地球科学データをMLモデルで統合分析し、従来の地質学者の経験則では見逃していた鉱床候補地を絞り込む。</p>
+
+  <p>収益モデルはSaaSライセンスではなく、<strong>自社で採掘権（鉱業ライセンス）を取得し、発見した鉱山の持分を保有・売却する資源開発型</strong>。Bill Gates（Breakthrough Energy Ventures）、Jeff Bezos、a16zなど著名投資家が出資。2024年にはザンビアで「1世紀最大の銅発見」とされるMingomba鉱床を公表した。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>EVのバッテリー1台に必要な銅・リチウム・ニッケル等のクリティカルミネラルは、現在の採掘速度では2030〜2035年のEV普及目標に全く追いつかない。KoBoldはAIで探索効率を10倍に高め、この供給ギャップを根本から解消することを目指す。
+  </div>
+</div>
+
+<!-- ===================== 2. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">02</span>創業者</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">KH</div>
+      <div>
+        <h3>Kurt House（カート・ハウス）</h3>
+        <div class="p-role">Co-Founder & CEO — KoBold Metals</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">ハーバード大学 地球・惑星科学 博士号（Ph.D.）</div></div>
+      <div class="p-row"><div class="lbl">専門</div><div class="val">地球化学・炭素循環。地球科学と機械学習の融合を先導</div></div>
+      <div class="p-row"><div class="lbl">起業家歴</div><div class="val">KoBold設立前にカーボンキャプチャー系スタートアップを創業</div></div>
+      <div class="p-row"><div class="lbl">ビジョン</div><div class="val">「エネルギー転換を可能にするには、まず素材の供給問題を解かなければならない」</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">JG</div>
+      <div>
+        <h3>Josh Goldman（ジョシュ・ゴールドマン）</h3>
+        <div class="p-role">Co-Founder & President — KoBold Metals</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">役割</div><div class="val">事業戦略・パートナーシップ・資金調達を主導</div></div>
+      <div class="p-row"><div class="lbl">背景</div><div class="val">エネルギー投資・鉱業開発の豊富な経験を持つ</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">JJ</div>
+      <div>
+        <h3>Jeff Jurinak（ジェフ・ジュリナク）</h3>
+        <div class="p-role">Co-Founder & COO — KoBold Metals</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">役割</div><div class="val">現場オペレーション・探索プロジェクト管理を統括</div></div>
+      <div class="p-row"><div class="lbl">背景</div><div class="val">鉱業・地質探査のフィールド経験が豊富</div></div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We have found what we believe is the largest copper discovery in the last hundred years, and that discovery was made using our AI technology.</p>
+    <div class="attr">— Kurt House, Co-Founder & CEO, KoBold Metals</div>
+  </div>
+</div>
+
+<!-- ===================== 3. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">03</span>コア技術・事業モデル</div>
+
+  <h3>Machine Prospector — AIベース探索エンジン</h3>
+  <p>KoBoldの中核技術は、自社開発の機械学習プラットフォーム<strong>「Machine Prospector」</strong>。地球上に存在する膨大な地球科学データを統合し、鉱床が存在する確率を地理的にマッピングする。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">データ統合（Data Fusion）</div>
+        <div class="ind-desc">衛星リモートセンシング画像、政府・大学の地質調査データ、歴史的採掘記録（一部は100年以上前のもの）、地震波探査記録、地球化学的サンプリングデータをクロスレイヤーで統合。既存の地質会社が使うデータの<strong>10〜100倍の量</strong>を処理する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">確率予測モデル（Probabilistic Mapping）</div>
+        <div class="ind-desc">ベイズ的機械学習を用いて「この地点に銅鉱床が存在する確率は何%か」を定量化。既知の優良鉱床（訓練データ）の地質的特徴パターンを学習し、未探索地への転移学習を行う。予測不確実性も同時に出力することで、掘削優先順位を最適化。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">掘削検証（Drill Validation）</div>
+        <div class="ind-desc">AIが示した候補地に対して実際にドリルサンプリングを実施し、予測精度をフィードバック学習させる。発見ごとにモデルが改善される<strong>自己強化ループ</strong>を形成。Mingomba発見ではAI予測の地点を掘ったところ実際に高品位の銅鉱床が確認された。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">権益取得・鉱山開発（Equity & Development）</div>
+        <div class="ind-desc">発見した鉱床の採掘権を自社で保有、または既存鉱業会社と共同開発でエクイティスタイルの持分を保有する。SaaS型ライセンス収益ではなく、<strong>発見した資源の上流価値そのものを資産として持つ</strong>ビジネスモデル。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>探索対象ミネラル</h3>
+  <div class="pills">
+    <span class="pill s">銅（Copper）</span>
+    <span class="pill s">リチウム（Lithium）</span>
+    <span class="pill s">ニッケル（Nickel）</span>
+    <span class="pill s">コバルト（Cobalt）</span>
+    <span class="pill">マンガン（Manganese）</span>
+    <span class="pill">プラチナ族元素（PGMs）</span>
+  </div>
+
+  <h3>従来の探索手法との比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>項目</th><th>KoBold（AI探索）</th><th>従来の地質探索</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>データ量</td><td>テラバイト級・多層統合</td><td>担当地質学者の経験と現地調査のみ</td></tr>
+      <tr><td>候補地絞り込み</td><td>確率マップで自動ランク付け</td><td>専門家の直感・ヒューリスティクスに依存</td></tr>
+      <tr><td>探索速度</td><td>従来比10倍以上の効率化</td><td>通常10〜20年かかる大型発見</td></tr>
+      <tr><td>掘削コスト</td><td>無駄なドリル削減→コスト最適化</td><td>「当たり外れ」が多く高コスト</td></tr>
+      <tr><td>地理的制約</td><td>データがあればどこでも適用可能</td><td>探索経験のある特定地域に偏りがち</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 4. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">04</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed / Series A</span>
+      <div class="f-amount">$20.5M</div>
+      <div class="f-detail">
+        <div class="f-date">2019年</div>
+        <div class="f-desc">Breakthrough Energy Ventures（Bill Gates主導）、a16zが参加。「クリティカルミネラル探索へのAI適用」というコンセプト段階での投資。</div>
+      </div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$201M</div>
+      <div class="f-detail">
+        <div class="f-date">2022年</div>
+        <div class="f-desc">T. Rowe Price、BHP Ventures、Equinor Ventures、Bond Capital、Mitsubishi Corporationが参加。BHPなど資源メジャーからの戦略的資本を獲得。</div>
+      </div>
+      <div class="f-val"><div class="vl">Valuation</div><div class="vv">非公開</div></div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C</span>
+      <div class="f-amount">$200M</div>
+      <div class="f-detail">
+        <div class="f-date">2023年</div>
+        <div class="f-desc">Mitsubishi Corporationが継続参加。Mingombaプロジェクトの掘削検証中に実施。探索パイプラインの拡大と技術開発資金。</div>
+      </div>
+      <div class="f-val"><div class="vl">Valuation</div><div class="vv">非公開</div></div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">Series D</span>
+      <div class="f-amount">$537M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年9月</div>
+        <div class="f-desc">Durable Capital Partners（リード）、T. Rowe Price、a16z Growth、Breakthrough Energy Ventures、Mitsubishi、StepStone Group、WCM Investment Managementが参加。Mingomba発見の公表と同時期。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$2.96B</div></div>
+    </div>
+    <div class="f-card late">
+      <span class="r-badge">Late Stage</span>
+      <div class="f-amount">$280M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年10月</div>
+        <div class="f-desc">追加ラウンド。Mingomba開発加速と新規探索プロジェクト拡大のための資金調達。累計調達額12億2000万ドル以上に到達。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>資金調達の特徴：</strong>Series B以降、BHP・Equinor・Mitsubishiといった資源・エネルギーメジャーの戦略的投資が続いている。これらは単なる財務投資ではなく、将来の鉱床開発における優先交渉権・協業関係を見越したものと考えられる。
+  </div>
+</div>
+
+<!-- ===================== 5. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">05</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.D</span>
+      <div class="vc-name">Durable Capital Partners</div>
+      <div class="vc-role">Lead Investor, Series D</div>
+      <div class="vc-desc">長期投資家。成長初期から中期の有望企業に集中投資するスタイル。Series DのLead Investorとして$537Mラウンドを主導した。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Impact — Seed</span>
+      <div class="vc-name">Breakthrough Energy Ventures</div>
+      <div class="vc-role">Bill Gates主導のクライメートVC</div>
+      <div class="vc-desc">Bill Gatesが設立したクライメートテックファンド。初期からKoBoldに投資し、エネルギー転換に必要な素材供給の観点から戦略的支援を継続。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Andreessen Horowitz (a16z)</div>
+      <div class="vc-role">Seed〜Series D（Growth）参加</div>
+      <div class="vc-desc">シリコンバレーを代表するVC。初期からKoBoldに投資し、a16z Growth部門がSeries Dにも継続参加。David Georgeパートナーが「現代に明確な競合が存在しない」と評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">T. Rowe Price</div>
+      <div class="vc-role">Series B〜D継続参加</div>
+      <div class="vc-desc">大手資産運用会社。Series BからD まで継続的に参加。成長株式として長期保有するスタイル。上場前の大型未公開企業への投資として位置付け。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">BHP Ventures</div>
+      <div class="vc-role">Series B参加 / 戦略的投資家</div>
+      <div class="vc-desc">世界最大級の資源メジャーBHPの投資部門。銅・ニッケル事業の戦略的観点からKoBoldのAI探索技術に投資。将来の鉱床開発における協業を視野に入れた戦略投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Mitsubishi Corporation</div>
+      <div class="vc-role">Series B〜D継続参加 / 戦略的投資家</div>
+      <div class="vc-desc">Series BからD まで継続参加する三菱商事。クリティカルミネラルのサプライチェーン確保という戦略目標のもと投資。日本の脱炭素化に必要な資源確保への布石とも言える。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Jeff Bezos（個人）</div>
+      <div class="vc-role">個人投資家</div>
+      <div class="vc-desc">Amazon創業者が個人として投資。Bill Gatesと並ぶ著名投資家の参加が、KoBoldの信頼性とブランド価値を高めている。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Equinor Ventures</div>
+      <div class="vc-role">Series B参加 / 戦略的投資家</div>
+      <div class="vc-desc">ノルウェーのエネルギーメジャーEquinorのVC部門。エネルギー転換に必要な素材供給の観点から投資。欧州の再生可能エネルギー移行と銅需要の増大を見据えた戦略投資。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 6. DISCOVERIES ===================== -->
+<div class="sec" id="discoveries">
+  <div class="sec-label"><span class="num">06</span>主要発見・プロジェクト</div>
+
+  <h3>フラッグシップ発見：Mingomba（ミンゴンバ）</h3>
+
+  <div class="callout">
+    <strong>Mingomba銅鉱床（ザンビア）</strong>は、KoBoldのAIが探索候補地として特定し、掘削で確認された超大型銅鉱床。埋蔵量<strong>2億4700万トン（平均品位 3.64% Cu）</strong>は、現在知られている銅鉱床の中でもトップクラス。100万台以上のEVに必要な銅量を賄える規模とされる。
+  </div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">鉱床名</div><div class="v">Mingomba</div></div>
+    <div class="kv-item"><div class="k">所在地</div><div class="v">ザンビア共和国（銅ベルト地帯）</div></div>
+    <div class="kv-item"><div class="k">埋蔵量</div><div class="v">247 Mt @ 3.64% Cu</div></div>
+    <div class="kv-item"><div class="k">品位</div><div class="v">3.64%（世界平均の約4倍以上）</div></div>
+    <div class="kv-item"><div class="k">発見年</div><div class="v">AIによる予測：2020年代前半 / 公表：2024年</div></div>
+    <div class="kv-item"><div class="k">権益構成</div><div class="v">KoBold 52%、EMR Capital 28%、ZCCM-IH（ザンビア国営）20%</div></div>
+  </div>
+
+  <div class="quote">
+    <p>enough copper to power more than 100 million electric vehicles</p>
+    <div class="attr">— Kurt House, KoBold Metals（Mingombaの規模について）</div>
+  </div>
+
+  <h3>その他主要プロジェクト</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">ザンビア</span>
+          <span class="tl-title">Dumbwa プロジェクト</span>
+        </div>
+        <div class="tl-body">Mingomba周辺の追加探索プロジェクト。銅ベルト地帯の連続性を調査中。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">ザンビア</span>
+          <span class="tl-title">Konkola West プロジェクト</span>
+        </div>
+        <div class="tl-body">コンコラ銅鉱山の西側延伸を狙った探索。AIが深部鉱床の存在を示唆。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">コンゴ民主共和国</span>
+          <span class="tl-title">リチウム探索プロジェクト</span>
+        </div>
+        <div class="tl-body">DRCにおけるリチウム鉱床探索。ペグマタイト型リチウムをターゲットとした複数プロジェクトを進行中。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">カナダ</span>
+          <span class="tl-title">ニッケル・コバルト探索</span>
+        </div>
+        <div class="tl-body">カナダ楯状地（Shield）のニッケル・コバルト鉱床を複数プロジェクトで探索。北米サプライチェーン形成への布石。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">オーストラリア</span>
+          <span class="tl-title">銅・ニッケル探索</span>
+        </div>
+        <div class="tl-body">西オーストラリア州・南オーストラリア州でのプロジェクト。BHP等との連携も見込む地域。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 7. GEOGRAPHY ===================== -->
+<div class="sec" id="geography">
+  <div class="sec-label"><span class="num">07</span>地理的プレゼンス</div>
+
+  <p>KoBoldは4大陸・60以上のプロジェクトを同時進行させている。アフリカ・カナダ・オーストラリア・南米の資源豊富地帯をカバーし、地政学リスクを分散させながら多様なクリティカルミネラルへのアクセスを確保する。</p>
+
+  <div class="geo-grid">
+    <div class="geo-card flagship">
+      <div class="geo-country">ザンビア</div>
+      <div class="geo-mineral">銅（Copper）</div>
+      <div class="geo-desc">Mingomba（フラッグシップ）、Dumbwa、Konkola Westを含む複数プロジェクト。世界的な銅ベルト地帯の中心。</div>
+    </div>
+    <div class="geo-card">
+      <div class="geo-country">コンゴ民主共和国（DRC）</div>
+      <div class="geo-mineral">銅・コバルト・リチウム</div>
+      <div class="geo-desc">世界最大のコバルト生産国。KoBoldはリチウムを含む複数プロジェクトを展開。地政学リスクを管理しつつ探索継続中。</div>
+    </div>
+    <div class="geo-card">
+      <div class="geo-country">カナダ</div>
+      <div class="geo-mineral">ニッケル・コバルト・銅</div>
+      <div class="geo-desc">北米サプライチェーン確保の観点から重要。楯状地の古い地質データをAIで再解析し、見逃されていた鉱床を発見するアプローチ。</div>
+    </div>
+    <div class="geo-card">
+      <div class="geo-country">オーストラリア</div>
+      <div class="geo-mineral">銅・ニッケル</div>
+      <div class="geo-desc">西オーストラリア・南オーストラリアでの探索。BHPなど現地メジャーとの戦略的連携も見込む地域。</div>
+    </div>
+    <div class="geo-card">
+      <div class="geo-country">グリーンランド</div>
+      <div class="geo-mineral">クリティカルミネラル全般</div>
+      <div class="geo-desc">氷床融解による探索可能エリア拡大で注目度上昇。レアアース・銅・ニッケルを含む多様な鉱種を探索。</div>
+    </div>
+    <div class="geo-card">
+      <div class="geo-country">南米（チリ・ペルー等）</div>
+      <div class="geo-mineral">銅・リチウム</div>
+      <div class="geo-desc">銅産出最大の地域。既知鉱床周辺の深部延長・近傍鉱床をAIで特定するアプローチ。リチウムトライアングルへの展開も。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 8. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">08</span>市場規模</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — 鉱業・探索市場</div>
+      <div class="m-val">$800B+</div>
+      <div class="m-desc">世界の鉱業産業の年間売上規模。銅・リチウム等のクリティカルミネラルを含む</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — クリティカルミネラル</div>
+      <div class="m-val">$300B+</div>
+      <div class="m-desc">EV・再エネ関連に不可欠な銅・リチウム・ニッケル・コバルトの世界市場規模（2030年予測）</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — AI探索が置き換える市場</div>
+      <div class="m-val">$20B+</div>
+      <div class="m-desc">年間世界探鉱投資額（Greenfield Exploration）。KoBoldが競合する直接市場</div>
+    </div>
+  </div>
+
+  <h3>需給ギャップ — なぜ今なのか</h3>
+  <table class="t">
+    <thead>
+      <tr><th>ミネラル</th><th>2030年の追加需要（推計）</th><th>現状の供給能力</th><th>不足率</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>銅（Cu）</td><td>年間1000万トン以上</td><td>年間約2200万トン（2023年）</td><td>2035年に最大800万トン不足</td></tr>
+      <tr><td>リチウム（Li）</td><td>現状の8〜10倍</td><td>急拡大中も追いつかず</td><td>2030年に40〜50%不足の予測あり</td></tr>
+      <tr><td>ニッケル（Ni）</td><td>EV用に現状の4〜6倍</td><td>バッテリーグレードは限定的</td><td>供給ボトルネックが顕在化中</td></tr>
+      <tr><td>コバルト（Co）</td><td>DRC依存90%超</td><td>地政学リスク高</td><td>脱コバルト化も含む再設計が必要</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>国際エネルギー機関（IEA）の推計</strong>によると、パリ協定の目標達成に必要なクリティカルミネラルは現在の採掘速度の2〜6倍が必要。この「素材の壁」を突破しない限り、EVの爆発的普及はあり得ない。
+  </div>
+</div>
+
+<!-- ===================== 9. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">09</span>競合分析</div>
+
+  <div class="callout">
+    <strong>a16zのDavid George：</strong>「KoBoldには現代における明確な競合が存在しない（no clear modern competitor）」。AIを核とした鉱床探索という市場カテゴリ自体をKoBoldが創出している。
+  </div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">BHP / Rio Tinto / Glencore</div>
+      <div class="comp-tag">間接競合</div>
+      <div class="comp-desc">世界最大の資源メジャー。自社で地質探索チームを持つが、AIファーストのアプローチはKoBoldに劣る。BHPはKoBoldへの投資家として協調関係にある側面もある。</div>
+      <div class="comp-strong"><span>脅威度</span>将来的にAI探索を内製化・買収する可能性はあるが、KoBoldのデータ資産・ノウハウの複製は困難。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Earth AI（オーストラリア）</div>
+      <div class="comp-tag">直接競合候補</div>
+      <div class="comp-desc">AIを使った鉱物探索スタートアップ。ただし規模・資金力・実績ともKoBoldに大きく差をつけられている。オーストラリア主体で事業範囲も限定的。</div>
+      <div class="comp-strong"><span>脅威度</span>現状は低い。KoBoldのMingomba発見という実績・資金力の差が圧倒的。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">SRK Consulting / Micon等</div>
+      <div class="comp-tag">従来型コンサル</div>
+      <div class="comp-desc">地質・鉱業エンジニアリングコンサルタント会社。AI活用は限定的。KoBoldの登場で探索市場のバリューチェーン自体が変わりつつあり、長期的には代替される可能性がある。</div>
+      <div class="comp-strong"><span>脅威度</span>ほぼなし。ビジネスモデルが異なる。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Lithium Americas / Sigma Lithium等</div>
+      <div class="comp-tag">リソースデベロッパー</div>
+      <div class="comp-desc">特定のリチウム鉱床を開発する企業群。探索フェーズはKoBoldと重なるが、AIベースの技術優位は持たない。探索コストはKoBoldより高くなりがち。</div>
+      <div class="comp-strong"><span>脅威度</span>特定鉱種・地域では競合するが、技術的優位はKoBoldにある。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">10</span>リスク・課題</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">地政学・規制リスク</div>
+        <div class="ind-desc">主要プロジェクトのザンビア・DRCはアフリカ政治リスクが高い。採掘権の突然の剥奪、資源ナショナリズム、外国企業規制の強化が事業継続を脅かす可能性がある。Mingombaでもザンビア国営会社（ZCCM-IH）が20%持分を保有しており、政府関与は構造的。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">収益化の長期性</div>
+        <div class="ind-desc">鉱山開発は探索→可能性調査→フィージビリティスタディ→建設→生産というプロセスに通常10〜20年かかる。Mingombaでも商業生産開始は2030年代中盤以降の見込み。投資家の辛抱が試される長期事業。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">AIモデルの精度依存リスク</div>
+        <div class="ind-desc">予測モデルが外れた場合の掘削コストは極めて高い（1本数百万〜数千万ドル）。訓練データの偏り、未知の地質パターン、過学習による誤発見が複数重なると莫大な損失につながる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">資金調達継続性</div>
+        <div class="ind-desc">商業収益が出るまで外部資本に依存し続ける構造。金利環境の悪化やリスクオフ局面では大型未公開企業への投資が細る可能性がある。累計12億ドル超を調達済みだが、鉱山開発には膨大な追加投資が必要。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">コモディティ価格変動</div>
+        <div class="ind-desc">銅・リチウム等の価格が大幅下落すると鉱山の経済合理性が失われる。2022〜2024年のリチウム価格急落（90%以上）がリチウム開発企業を直撃したように、資源価格サイクルのリスクは回避できない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">ESG・社会的ライセンス</div>
+        <div class="ind-desc">鉱業はESG批判の的になりやすい。先住民族の権利、生態系への影響、水資源への影響など、現地コミュニティとの摩擦が開発を遅らせたり中止に追い込む事例は多い。特にアフリカでは社会的ライセンスの取得が困難なケースがある。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. OUTLOOK ===================== -->
+<div class="sec" id="outlook">
+  <div class="sec-label"><span class="num">11</span>将来展望</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025〜2026年</span>
+          <span class="tl-title">Mingomba フィージビリティスタディ</span>
+        </div>
+        <div class="tl-body"><b>予備可能性調査（PFS）→詳細フィージビリティスタディ（DFS）</b>の完了を目指す。鉱山規模・採掘方法・インフラ計画が確定し、商業開発への道筋が明確になる。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026〜2028年</span>
+          <span class="tl-title">Mingomba 建設開始 / 追加発見の公表</span>
+        </div>
+        <div class="tl-body">インフラ・選鉱工場の建設に着手。同時に60以上のアクティブプロジェクトからの次の大型発見を公表する可能性がある。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2030年代前半</span>
+          <span class="tl-title">Mingomba 商業生産開始</span>
+        </div>
+        <div class="tl-body">Mingombaからの銅生産が本格化。KoBoldは発見者・権益保有者として<b>莫大な上流収益</b>を得るフェーズへ移行。採掘権52%保有の価値が顕在化。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date tl-date muted">IPO / 戦略的M&A</span>
+          <span class="tl-title">Exit シナリオ</span>
+        </div>
+        <div class="tl-body">商業生産開始後のIPOが自然な出口。あるいはBHP・Rio TintoなどのメジャーによるM&A。AI探索技術＋Mingomba権益のバンドルは巨額の買収プレミアムを生む可能性がある。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">EV革命の「レート制約」を解く</div>
+        <div class="ind-desc">EVの普及を最終的に制限するのはバッテリーコストでも充電インフラでもなく、銅・リチウムの物理的な供給量。KoBoldはこの根本制約に直接取り組む唯一の大型スタートアップ。問題の重要度と解法のユニークさが際立つ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">「発見した」という実績</div>
+        <div class="ind-desc">Mingomba発見は単なるコンセプトではなく、<strong>AIが実際に機能したことの証明</strong>。「1世紀最大の銅発見」という実績は他のAI系スタートアップには真似できない圧倒的な差別化要因。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">資源メジャー＋テックVCという異例の投資家構成</div>
+        <div class="ind-desc">BHP・Equinor・Mitsubishiという資源メジャーとa16z・BEV・T. Rowe Priceが共存する投資家構成は、KoBoldが「ピュアテック」でも「ピュアリソース」でもない新カテゴリの企業であることを示している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">データの自己強化ループ</div>
+        <div class="ind-desc">探索→掘削→発見→モデル改善→次の探索というループが回るたびにKoBoldの予測精度は上がり、競合の追随コストは上昇する。先行優位がデータ資産として蓄積されていく。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">地政学的追い風</div>
+        <div class="ind-desc">米中デカップリングの進展により、中国支配のサプライチェーンに頼らない西側の資源確保が国家安全保障の優先事項になっている。KoBoldの発見を各国政府が支援・歓迎する環境が整っている。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>There is no clear modern competitor to what KoBold is doing. They are building something entirely new — applying AI to an industry that has not seen fundamental innovation in a century.</p>
+    <div class="attr">— David George, Partner, Andreessen Horowitz</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>KoBold Metals 公式サイト（koboldmetals.com）</li>
+    <li>Bloomberg — "KoBold Metals Raises $537M, Valued at $2.96B" (2024.09)</li>
+    <li>Financial Times — "KoBold Metals finds what it says is biggest copper deposit in a century" (2024)</li>
+    <li>Wall Street Journal — KoBold Metals Series D coverage</li>
+    <li>TechCrunch — KoBold Metals funding announcements</li>
+    <li>IEA — Critical Minerals and the Clean Energy Transition (2021)</li>
+    <li>Wood Mackenzie — Copper Supply Gap Analysis (2024)</li>
+    <li>Crunchbase — KoBold Metals funding data</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>
