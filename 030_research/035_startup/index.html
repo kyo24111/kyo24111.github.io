@@ -11,31 +11,37 @@
     :root {
       --bg:      #ffffff;
       --surface: #f4f4f4;
-      --hover:   #ededed;
+      --hover:   #ebebeb;
       --border:  #e0e0e0;
       --text:    #111111;
-      --mid:     #555555;
-      --muted:   #999999;
+      --mid:     #444444;
+      --muted:   #888888;
       --dim:     #cccccc;
     }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Poppins', sans-serif;
-      min-height: 100vh;
-    }
+    body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; min-height: 100vh; padding-top: 48px !important; padding-bottom: 60px !important; }
 
-    .header { background: #111; color: #fff; padding: 40px 48px 36px; }
-    .breadcrumb { font-size: 10px; letter-spacing: .1em; color: rgba(255,255,255,.2); margin-bottom: 12px; }
+    .page-header { background: #111; color: #fff; padding: 36px 48px 32px; }
+    .breadcrumb { font-size: 10px; letter-spacing: .1em; color: rgba(255,255,255,.2); margin-bottom: 10px; }
     .breadcrumb a { color: rgba(255,255,255,.45); text-decoration: none; }
     .breadcrumb a:hover { color: rgba(255,255,255,.8); }
-    .header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; }
+    .page-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; }
 
-    .main { padding: 48px 48px 80px; max-width: 860px; }
+    .main { max-width: 900px; padding: 48px 48px 80px; }
 
+    .cat-block { margin-bottom: 48px; }
+    .cat-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
       gap: 10px;
     }
 
@@ -43,70 +49,155 @@
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 16px 18px 14px;
+      padding: 18px 18px 14px;
       background: var(--surface);
       border: 1px solid var(--border);
       text-decoration: none;
       color: var(--text);
-      min-height: 80px;
-      transition: background .12s;
+      min-height: 90px;
+      transition: background .12s, border-color .12s;
     }
-    .tile:hover { background: var(--hover); }
+    .tile:hover { background: var(--hover); border-color: #ccc; }
 
-    .tile-date {
-      font-size: 9.5px;
-      font-weight: 400;
-      letter-spacing: .08em;
-      color: var(--dim);
-      margin-bottom: 8px;
-    }
     .tile-name {
-      font-size: 13px;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+    .tile-tag {
+      display: inline-block;
+      font-size: 9px;
       font-weight: 600;
-      letter-spacing: -.01em;
-      line-height: 1.3;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      border: 1px solid var(--dim);
+      padding: 2px 6px;
+      align-self: flex-start;
     }
 
     @media (max-width: 600px) {
-      .header { padding: 28px 24px 24px; }
+      .page-header { padding: 28px 24px 24px; }
       .main { padding: 36px 24px 60px; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
     }
+  </style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
   </style>
 </head>
 <body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec">
+    <div class="snav-sec-label">030 Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a>
+    <a class="snav-a" href="/030_research/035_startup/index.html">startup</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">040 Personal</div>
+    <a class="snav-a" href="/040_personal/profile/index.html">profile</a>
+    <a class="snav-a" href="/040_personal/047_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
 
-<header class="header">
-  <div class="breadcrumb"><a href="../../index.html">24111</a> / 030 / 035</div>
+<header class="page-header">
+  <div class="breadcrumb"><a href="/index.html">24111</a> / 030 / 035</div>
   <h1>startup</h1>
 </header>
 
 <main class="main">
-  <div class="grid">
-    <a class="tile" href="260417_kobold_metals_deep_research.html"><span class="tile-date">260417</span><span class="tile-name">KoBold Metals</span></a>
-    <a class="tile" href="260415_harmattan_ai_deep_research.html"><span class="tile-date">260415</span><span class="tile-name">Harmattan AI</span></a>
-    <a class="tile" href="260415_thinkorbital_deep_research.html"><span class="tile-date">260415</span><span class="tile-name">ThinkOrbital</span></a>
-    <a class="tile" href="260415_general_matter_deep_research.html"><span class="tile-date">260415</span><span class="tile-name">General Matter</span></a>
-    <a class="tile" href="260412_redwood_materials_deep_research.html"><span class="tile-date">260412</span><span class="tile-name">Redwood Materials</span></a>
-    <a class="tile" href="260411_anduril_deep_research.html"><span class="tile-date">260411</span><span class="tile-name">Anduril</span></a>
-    <a class="tile" href="260411_path_robotics_deep_research.html"><span class="tile-date">260411</span><span class="tile-name">Path Robotics</span></a>
-    <a class="tile" href="260409_oklo_deep_research.html"><span class="tile-date">260409</span><span class="tile-name">Oklo</span></a>
-    <a class="tile" href="260406_helion_energy_deep_research.html"><span class="tile-date">260406</span><span class="tile-name">Helion Energy</span></a>
-    <a class="tile" href="260406_commonwealth_fusion_deep_research.html"><span class="tile-date">260406</span><span class="tile-name">Commonwealth Fusion</span></a>
-    <a class="tile" href="260406_terrapower_deep_research.html"><span class="tile-date">260406</span><span class="tile-name">TerraPower</span></a>
-    <a class="tile" href="260406_varda_space_deep_research.html"><span class="tile-date">260406</span><span class="tile-name">Varda Space</span></a>
-    <a class="tile" href="260406_astranis_deep_research.html"><span class="tile-date">260406</span><span class="tile-name">Astranis</span></a>
-    <a class="tile" href="260406_hermeus_deep_research.html"><span class="tile-date">260406</span><span class="tile-name">Hermeus</span></a>
-    <a class="tile" href="260406_zipline_deep_research.html"><span class="tile-date">260406</span><span class="tile-name">Zipline</span></a>
-    <a class="tile" href="260406_helical_fusion_deep_research.html"><span class="tile-date">260406</span><span class="tile-name">Helical Fusion</span></a>
-    <a class="tile" href="260406_retro_biosciences_deep_research.html"><span class="tile-date">260406</span><span class="tile-name">Retro Biosciences</span></a>
-    <a class="tile" href="260406_valar_atomics_deep_research.html"><span class="tile-date">260406</span><span class="tile-name">Valar Atomics</span></a>
-    <a class="tile" href="260401_hadrian_deep_research.html"><span class="tile-date">260401</span><span class="tile-name">Hadrian</span></a>
-    <a class="tile" href="260401_saronic_deep_research.html"><span class="tile-date">260401</span><span class="tile-name">Saronic</span></a>
-    <a class="tile" href="260401_power_dc_startups.html"><span class="tile-date">260401</span><span class="tile-name">Power × DC Startups</span></a>
-    <a class="tile" href="260331_starcloud_deep_research.html"><span class="tile-date">260331</span><span class="tile-name">Starcloud</span></a>
+
+  <div class="cat-block">
+    <div class="cat-label">Energy</div>
+    <div class="grid">
+      <a class="tile" href="260406_helion_energy_deep_research.html"><span class="tile-name">Helion Energy</span><span class="tile-tag">Fusion</span></a>
+      <a class="tile" href="260406_terrapower_deep_research.html"><span class="tile-name">TerraPower</span><span class="tile-tag">Nuclear · Natrium</span></a>
+      <a class="tile" href="260406_commonwealth_fusion_deep_research.html"><span class="tile-name">Commonwealth Fusion</span><span class="tile-tag">Fusion · SPARC</span></a>
+      <a class="tile" href="260406_helical_fusion_deep_research.html"><span class="tile-name">Helical Fusion</span><span class="tile-tag">Fusion · Japan</span></a>
+      <a class="tile" href="260406_valar_atomics_deep_research.html"><span class="tile-name">Valar Atomics</span><span class="tile-tag">Microreactor</span></a>
+      <a class="tile" href="260409_oklo_deep_research.html"><span class="tile-name">Oklo</span><span class="tile-tag">Microreactor · HALEU</span></a>
+      <a class="tile" href="260412_redwood_materials_deep_research.html"><span class="tile-name">Redwood Materials</span><span class="tile-tag">Battery · Recycling</span></a>
+    </div>
   </div>
+
+  <div class="cat-block">
+    <div class="cat-label">Defense &amp; Aerospace</div>
+    <div class="grid">
+      <a class="tile" href="260411_anduril_deep_research.html"><span class="tile-name">Anduril</span><span class="tile-tag">Defense · AI</span></a>
+      <a class="tile" href="260401_saronic_deep_research.html"><span class="tile-name">Saronic</span><span class="tile-tag">Autonomous · Maritime</span></a>
+      <a class="tile" href="260406_hermeus_deep_research.html"><span class="tile-name">Hermeus</span><span class="tile-tag">Hypersonic · Aviation</span></a>
+      <a class="tile" href="260406_astranis_deep_research.html"><span class="tile-name">Astranis</span><span class="tile-tag">GEO Satellite</span></a>
+      <a class="tile" href="260406_varda_space_deep_research.html"><span class="tile-name">Varda Space</span><span class="tile-tag">In-Space Mfg</span></a>
+      <a class="tile" href="260415_thinkorbital_deep_research.html"><span class="tile-name">ThinkOrbital</span><span class="tile-tag">Space Infrastructure</span></a>
+      <a class="tile" href="260331_starcloud_deep_research.html"><span class="tile-name">Starcloud</span><span class="tile-tag">GPU Cloud · Edge</span></a>
+    </div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-label">Manufacturing &amp; Robotics</div>
+    <div class="grid">
+      <a class="tile" href="260401_hadrian_deep_research.html"><span class="tile-name">Hadrian</span><span class="tile-tag">CNC · Defense</span></a>
+      <a class="tile" href="260411_path_robotics_deep_research.html"><span class="tile-name">Path Robotics</span><span class="tile-tag">Welding · Robotics</span></a>
+      <a class="tile" href="260417_kobold_metals_deep_research.html"><span class="tile-name">KoBold Metals</span><span class="tile-tag">Mining · AI</span></a>
+      <a class="tile" href="260415_general_matter_deep_research.html"><span class="tile-name">General Matter</span><span class="tile-tag">Advanced Mfg</span></a>
+      <a class="tile" href="260406_zipline_deep_research.html"><span class="tile-name">Zipline</span><span class="tile-tag">Drone · Logistics</span></a>
+    </div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-label">AI &amp; Infrastructure</div>
+    <div class="grid">
+      <a class="tile" href="260415_harmattan_ai_deep_research.html"><span class="tile-name">Harmattan AI</span><span class="tile-tag">AI · Inference</span></a>
+      <a class="tile" href="260401_power_dc_startups.html"><span class="tile-name">Power × DC</span><span class="tile-tag">Data Center · Power</span></a>
+    </div>
+  </div>
+
+  <div class="cat-block">
+    <div class="cat-label">Bio</div>
+    <div class="grid">
+      <a class="tile" href="260406_retro_biosciences_deep_research.html"><span class="tile-name">Retro Biosciences</span><span class="tile-tag">Longevity · Biology</span></a>
+    </div>
+  </div>
+
 </main>
 
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</footer>
 </body>
 </html>
