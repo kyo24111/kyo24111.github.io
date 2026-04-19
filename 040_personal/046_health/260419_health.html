@@ -405,6 +405,17 @@ const CAL_CSV = `date,calories,protein,fat,carbs,sugar,fiber,salt
 2025-11-14,1497,125.9,56.6,132.1,118.6,13.5,6.1
 2025-11-15,2398,150.6,114.9,197.0,182.7,14.3,10.06`;
 
+// ── DATE FORMATTER ──────────────────────────────────────────
+// MM/DD; first point of each new year shows '25 MM/DD
+function fmtLabels(dates) {
+  return dates.map((d, i) => {
+    const [y, m, day] = d.split('-');
+    const label = `${m}/${day}`;
+    if (i === 0 || y !== dates[i - 1].split('-')[0]) return `'${y.slice(2)} ${label}`;
+    return label;
+  });
+}
+
 // ── STATE ───────────────────────────────────────────────────
 let bodyData = [], calData = [];
 const charts   = {};
@@ -581,14 +592,14 @@ function closeModal() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 function renderCharts() {
-  const bd = bodyData.map(d => d.date);
+  const bd = fmtLabels(bodyData.map(d => d.date));
   mkLine('c-weight',   fv(bodyData,'weight'),      bd, GOALS.weight,      63, 82, '体重 (kg)',      '目標 69.5 kg');
   mkLine('c-fat',      fv(bodyData,'body_fat'),     bd, GOALS.body_fat,    11, 25, '体脂肪率 (%)',   '目標 15.3 %');
   mkLine('c-visceral', fv(bodyData,'visceral_fat'), bd, GOALS.visceral_fat, 0, 15, '内臓脂肪レベル', '目標 6');
   mkLine('c-water',    fv(bodyData,'body_water'),   bd, GOALS.body_water,  52, 65, '体水分率 (%)',   '目標 60.2 %');
 
   if (calData.length) {
-    const cd = calData.map(d => d.date);
+    const cd = fmtLabels(calData.map(d => d.date));
     mkBar('c-calories', fv(calData,'calories'), cd, 1500, '摂取カロリー (kcal)', '目標 1,500 kcal/day');
     mkLine('c-protein',  fv(calData,'protein'), cd, 130,  0, 200, 'タンパク質 (g)', '目標 130 g');
     mkLine('c-fat-cal',  fv(calData,'fat'),      cd, null, 0, 200, '脂質 (g)',       '');
