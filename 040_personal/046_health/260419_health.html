@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Health Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:      #ffffff;
+  --surface: #f5f5f5;
+  --card:    #f0f0f0;
+  --card2:   #e8e8e8;
+  --border:  #d8d8d8;
+  --accent:  #111111;
+  --mid:     #444444;
+  --muted:   #888888;
+  --dim:     #bbbbbb;
+  --text:    #111111;
+  --white:   #ffffff;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.page { max-width: 960px; margin: 0 auto; padding: 40px 24px 100px; }
+
+/* ── HERO ── */
+.hero {
+  background: var(--accent);
+  color: var(--white);
+  border-radius: 16px;
+  padding: 36px 40px 32px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+}
+.hero::after {
+  content: '';
+  position: absolute; bottom: -40px; right: -40px;
+  width: 200px; height: 200px; border-radius: 50%;
+  background: rgba(255,255,255,.04);
+  pointer-events: none;
+}
+.hero-tag {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: rgba(255,255,255,.45); margin-bottom: 12px;
+}
+.hero h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 2rem; font-weight: 800; letter-spacing: -.02em;
+  line-height: 1.2; margin-bottom: 8px;
+}
+.hero-sub {
+  font-size: .85rem; color: rgba(255,255,255,.55);
+  font-family: 'Poppins', sans-serif; margin-bottom: 24px;
+}
+.kpi-row { display: flex; gap: 28px; flex-wrap: wrap; padding-top: 18px; border-top: 1px solid rgba(255,255,255,.15); }
+.kpi .val {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.45rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px;
+}
+.kpi .val .delta {
+  font-size: .72rem; font-weight: 600; margin-left: 5px; opacity: .65;
+}
+.kpi .lbl {
+  font-size: 9px; color: rgba(255,255,255,.4);
+  letter-spacing: .08em; text-transform: uppercase;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ── TABS ── */
+.tabs-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 32px;
+  position: sticky; top: 0;
+  background: var(--bg); z-index: 10;
+  padding-top: 8px;
+}
+.tab-btn {
+  font-family: 'Poppins', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: .1em;
+  padding: 10px 22px;
+  border: none; background: none; cursor: pointer;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color .15s, border-color .15s;
+}
+.tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+
+/* ── CHART GRID ── */
+.chart-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.chart-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 18px 20px 14px;
+}
+.chart-box-wide { grid-column: 1 / -1; }
+.chart-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 14px;
+}
+.chart-target-note {
+  font-size: 9.5px; color: var(--dim);
+  font-family: 'Poppins', sans-serif; margin-top: 8px;
+}
+
+/* ── TABLES ── */
+.tbl-section { margin-bottom: 40px; }
+.sec-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px; font-weight: 700; color: var(--muted);
+  text-transform: uppercase; letter-spacing: .12em;
+  margin-bottom: 12px; display: flex; align-items: center; gap: 10px;
+}
+.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.raw {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; min-width: 640px;
+}
+table.raw th {
+  background: var(--card2); color: var(--mid);
+  font-family: 'Poppins', sans-serif;
+  font-size: 8.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 8px 12px; text-align: right;
+  border-bottom: 2px solid var(--accent); white-space: nowrap;
+}
+table.raw th:first-child { text-align: left; position: sticky; left: 0; background: var(--card2); }
+table.raw td {
+  padding: 7px 12px; border-bottom: 1px solid var(--border);
+  text-align: right; color: var(--text);
+  font-family: 'Poppins', sans-serif; white-space: nowrap;
+}
+table.raw td:first-child {
+  text-align: left; color: var(--mid); font-size: 11px;
+  position: sticky; left: 0; background: var(--bg);
+}
+table.raw tr.latest td { background: var(--surface); font-weight: 600; }
+table.raw tr.latest td:first-child { background: var(--surface); }
+table.raw tr:hover td { background: var(--surface); }
+table.raw tr:hover td:first-child { background: var(--surface); }
+table.raw tr:last-child td { border-bottom: none; }
+table.raw tr.goal-row td {
+  color: var(--dim); font-size: 11px; font-style: italic;
+  border-bottom: 2px dashed var(--border);
+}
+table.raw tr.goal-row td:first-child { background: var(--bg); }
+
+/* ── MSG ── */
+.msg {
+  text-align: center; padding: 32px;
+  color: var(--muted); font-family: 'Poppins', sans-serif; font-size: 11px;
+}
+
+@media (max-width: 640px) {
+  .chart-grid { grid-template-columns: 1fr; }
+  .hero { padding: 24px 20px 24px; }
+  .hero h1 { font-size: 1.5rem; }
+  .kpi-row { gap: 16px; }
+  .page { padding: 24px 16px 80px; }
+  .chart-box-wide { grid-column: 1; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-tag">040_personal / 046_health</div>
+  <h1>Health Dashboard</h1>
+  <p class="hero-sub">体組成 · カロリー推移 — raw CSV driven</p>
+  <div class="kpi-row" id="kpi-row">
+    <div class="kpi"><div class="val">—</div><div class="lbl">Weight (kg)</div></div>
+    <div class="kpi"><div class="val">—</div><div class="lbl">Body Fat (%)</div></div>
+    <div class="kpi"><div class="val">—</div><div class="lbl">Visceral Fat</div></div>
+    <div class="kpi"><div class="val">—</div><div class="lbl">Metabolic Age</div></div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="tabs-bar">
+  <button class="tab-btn active" onclick="switchTab('chart')">グラフ</button>
+  <button class="tab-btn" onclick="switchTab('table')">Raw Data</button>
+</div>
+
+<!-- CHART PANEL -->
+<div id="panel-chart">
+  <div class="chart-grid">
+    <div class="chart-box">
+      <div class="chart-title">体重 (kg)</div>
+      <canvas id="c-weight" height="180"></canvas>
+      <div class="chart-target-note">目標 69.5 kg</div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">体脂肪率 (%)</div>
+      <canvas id="c-fat" height="180"></canvas>
+      <div class="chart-target-note">目標 15.3 %</div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">内臓脂肪レベル</div>
+      <canvas id="c-visceral" height="180"></canvas>
+      <div class="chart-target-note">目標 6</div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">体水分率 (%)</div>
+      <canvas id="c-water" height="180"></canvas>
+      <div class="chart-target-note">目標 60.2 %</div>
+    </div>
+    <div class="chart-box chart-box-wide">
+      <div class="chart-title">摂取カロリー (kcal)</div>
+      <canvas id="c-calories" height="100"></canvas>
+      <div class="chart-target-note">目標 1,500 kcal/day（平日）</div>
+    </div>
+  </div>
+</div>
+
+<!-- TABLE PANEL -->
+<div id="panel-table" style="display:none">
+  <div class="tbl-section">
+    <div class="sec-label">体組成</div>
+    <div class="table-wrap" id="tbl-body"><div class="msg">loading...</div></div>
+  </div>
+  <div class="tbl-section">
+    <div class="sec-label">カロリー記録</div>
+    <div class="table-wrap" id="tbl-cal"><div class="msg">loading...</div></div>
+  </div>
+</div>
+
+</div><!-- /.page -->
+
+<script>
+// ── CONFIG ──────────────────────────────────────────────────
+const GOALS = {
+  weight: 69.5, body_fat: 15.3, bmi: 24.1,
+  fat_free_weight: 58.9, subcutaneous_fat: 13.0, visceral_fat: 6,
+  body_water: 60.2, skeletal_muscle: 54.3, bone_mass: 2.93,
+  bmr: 1690, muscle_mass: 28.07, protein: 19.0, metabolic_age: 23
+};
+
+const BODY_COLS = [
+  { key: 'weight',           label: 'Weight (kg)',    goal: GOALS.weight },
+  { key: 'body_fat',         label: 'BodyFat (%)',     goal: GOALS.body_fat },
+  { key: 'bmi',              label: 'BMI',             goal: GOALS.bmi },
+  { key: 'fat_free_weight',  label: 'FatFree (kg)',    goal: GOALS.fat_free_weight },
+  { key: 'subcutaneous_fat', label: 'SubcutFat (%)',   goal: GOALS.subcutaneous_fat },
+  { key: 'visceral_fat',     label: 'VisceralFat',     goal: GOALS.visceral_fat },
+  { key: 'body_water',       label: 'BodyWater (%)',   goal: GOALS.body_water },
+  { key: 'skeletal_muscle',  label: 'SkelMuscle (%)',  goal: GOALS.skeletal_muscle },
+  { key: 'bone_mass',        label: 'BoneMass (kg)',   goal: GOALS.bone_mass },
+  { key: 'bmr',              label: 'BMR (kcal)',      goal: GOALS.bmr },
+  { key: 'muscle_mass',      label: 'Muscle (kg)',     goal: GOALS.muscle_mass },
+  { key: 'protein',          label: 'Protein (%)',     goal: GOALS.protein },
+  { key: 'metabolic_age',    label: 'MetabAge',        goal: GOALS.metabolic_age },
+];
+
+const CAL_COLS = [
+  { key: 'calories', label: 'Calories (kcal)', goal: 1500 },
+  { key: 'protein',  label: 'Protein (g)',     goal: 130 },
+  { key: 'fat',      label: 'Fat (g)',         goal: null },
+  { key: 'carbs',    label: 'Carbs (g)',       goal: null },
+  { key: 'sugar',    label: 'Sugar (g)',       goal: null },
+  { key: 'fiber',    label: 'Fiber (g)',       goal: null },
+  { key: 'salt',     label: 'Salt (g)',        goal: null },
+];
+
+Chart.defaults.font.family = "'Poppins', sans-serif";
+Chart.defaults.font.size   = 10;
+Chart.defaults.color       = '#888';
+
+// ── STATE ───────────────────────────────────────────────────
+let bodyData = [], calData = [];
+const charts  = {};
+
+// ── LOAD ────────────────────────────────────────────────────
+async function loadData() {
+  try {
+    const [bRes, cRes] = await Promise.all([
+      fetch('./data/body.csv'),
+      fetch('./data/calories.csv'),
+    ]);
+    const [bText, cText] = await Promise.all([bRes.text(), cRes.text()]);
+
+    bodyData = Papa.parse(bText, { header: true, skipEmptyLines: true }).data
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+    calData = Papa.parse(cText, { header: true, skipEmptyLines: true }).data
+      .sort((a, b) => new Date(a.date) - new Date(b.date));
+
+    renderKPIs();
+    renderCharts();
+    renderTables();
+  } catch (e) {
+    console.error(e);
+    document.getElementById('panel-chart').innerHTML =
+      '<div class="msg">⚠ CSV の読み込みに失敗しました。GitHub Pages 経由でアクセスしてください。</div>';
+    document.getElementById('tbl-body').innerHTML = '';
+    document.getElementById('tbl-cal').innerHTML  = '';
+  }
+}
+
+// ── KPIs ────────────────────────────────────────────────────
+function renderKPIs() {
+  if (!bodyData.length) return;
+  const latest = bodyData[bodyData.length - 1];
+  const prev   = bodyData.length > 1 ? bodyData[bodyData.length - 2] : null;
+
+  const kpis = [
+    { key: 'weight',        label: 'Weight (kg)',  fmt: v => v.toFixed(1) },
+    { key: 'body_fat',      label: 'Body Fat (%)', fmt: v => v.toFixed(1) + '%' },
+    { key: 'visceral_fat',  label: 'Visceral Fat', fmt: v => v.toFixed(0) },
+    { key: 'metabolic_age', label: 'Metabolic Age',fmt: v => v.toFixed(0) },
+  ];
+
+  document.getElementById('kpi-row').innerHTML = kpis.map(k => {
+    const val = parseFloat(latest[k.key]);
+    let deltaStr = '';
+    if (prev) {
+      const d = val - parseFloat(prev[k.key]);
+      if (!isNaN(d) && d !== 0) {
+        deltaStr = `<span class="delta">${d > 0 ? '+' : ''}${d.toFixed(1)}</span>`;
+      }
+    }
+    return `<div class="kpi">
+      <div class="val">${isNaN(val) ? '—' : k.fmt(val)}${deltaStr}</div>
+      <div class="lbl">${k.label}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── CHARTS ──────────────────────────────────────────────────
+function fv(arr, key) {
+  return arr.map(d => { const v = parseFloat(d[key]); return isNaN(v) ? null : v; });
+}
+
+function mkLine(id, values, dates, goal, yMin, yMax) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  if (charts[id]) charts[id].destroy();
+
+  charts[id] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          data: values,
+          borderColor: '#111',
+          backgroundColor: 'rgba(17,17,17,0.05)',
+          tension: 0.35,
+          pointRadius: 4,
+          pointBackgroundColor: '#111',
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1.5,
+          fill: true,
+        },
+        {
+          data: Array(dates.length).fill(goal),
+          borderColor: '#bbb',
+          borderDash: [5, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: item => item.datasetIndex === 1
+              ? `目標: ${goal}`
+              : `${item.formattedValue}`,
+          },
+        },
+      },
+      scales: {
+        x: { ticks: { maxTicksLimit: 8 }, grid: { color: '#f0f0f0' } },
+        y: { min: yMin, max: yMax, grid: { color: '#f0f0f0' } },
+      },
+    },
+  });
+}
+
+function mkBar(id, values, dates, target) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  if (charts[id]) charts[id].destroy();
+
+  charts[id] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          data: values,
+          backgroundColor: values.map(v =>
+            v > target ? 'rgba(17,17,17,0.75)' : 'rgba(17,17,17,0.35)'
+          ),
+          borderRadius: 4,
+        },
+        {
+          type: 'line',
+          data: Array(dates.length).fill(target),
+          borderColor: '#bbb',
+          borderDash: [5, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { maxTicksLimit: 12 }, grid: { display: false } },
+        y: { grid: { color: '#f0f0f0' } },
+      },
+    },
+  });
+}
+
+function renderCharts() {
+  const bd = bodyData.map(d => d.date);
+  mkLine('c-weight',   fv(bodyData,'weight'),          bd, GOALS.weight,        63, 82);
+  mkLine('c-fat',      fv(bodyData,'body_fat'),         bd, GOALS.body_fat,      11, 25);
+  mkLine('c-visceral', fv(bodyData,'visceral_fat'),     bd, GOALS.visceral_fat,   0, 15);
+  mkLine('c-water',    fv(bodyData,'body_water'),       bd, GOALS.body_water,    52, 65);
+
+  if (calData.length) {
+    mkBar('c-calories', fv(calData,'calories'), calData.map(d => d.date), 1500);
+  } else {
+    const box = document.getElementById('c-calories').closest('.chart-box');
+    box.innerHTML = '<div class="chart-title">摂取カロリー (kcal)</div><div class="msg">データなし</div>';
+  }
+}
+
+// ── TABLES ──────────────────────────────────────────────────
+function renderTable(containerId, data, cols) {
+  const el = document.getElementById(containerId);
+  if (!data.length) { el.innerHTML = '<div class="msg">データなし</div>'; return; }
+
+  const hasGoals = cols.some(c => c.goal !== null && c.goal !== undefined);
+  const goalRow  = hasGoals
+    ? `<tr class="goal-row">
+        <td>目標</td>
+        ${cols.map(c => `<td>${c.goal !== null && c.goal !== undefined ? c.goal : '—'}</td>`).join('')}
+       </tr>`
+    : '';
+
+  const rows = [...data].reverse().map((row, i) => `
+    <tr class="${i === 0 ? 'latest' : ''}">
+      <td>${row.date}</td>
+      ${cols.map(c => {
+        const v = row[c.key];
+        return `<td>${v !== undefined && v !== '' ? v : '—'}</td>`;
+      }).join('')}
+    </tr>
+  `).join('');
+
+  el.innerHTML = `<table class="raw">
+    <thead>
+      <tr>
+        <th>Date</th>
+        ${cols.map(c => `<th>${c.label}</th>`).join('')}
+      </tr>
+    </thead>
+    <tbody>${goalRow}${rows}</tbody>
+  </table>`;
+}
+
+function renderTables() {
+  renderTable('tbl-body', bodyData, BODY_COLS);
+  renderTable('tbl-cal',  calData,  CAL_COLS);
+}
+
+// ── TABS ────────────────────────────────────────────────────
+function switchTab(name) {
+  document.getElementById('panel-chart').style.display = name === 'chart' ? '' : 'none';
+  document.getElementById('panel-table').style.display = name === 'table' ? '' : 'none';
+  document.querySelectorAll('.tab-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0) === (name === 'chart'));
+  });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── INIT ────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
