@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sam Altman — 人物リサーチ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #ffffff;
+      --surface: #f5f5f5;
+      --surface2: #ebebeb;
+      --accent:  #111111;
+      --accent2: #555555;
+      --text:    #111111;
+      --muted:   #888888;
+      --border:  #e0e0e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    /* HERO */
+    .hero {
+      background: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 40px 48px;
+    }
+    .hero-inner { max-width: 860px; margin: 0 auto; }
+    .hero-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.15);
+    }
+    .hero-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hero-meta-item .label { font-size: 11px; color: rgba(255,255,255,.45); letter-spacing: 0.1em; text-transform: uppercase; }
+    .hero-meta-item .value { font-size: 14px; font-weight: 600; color: #fff; }
+
+    /* LAYOUT */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 40px 80px; }
+
+    /* SUMMARY BOX */
+    .summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin: 40px 0;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .summary strong { color: var(--accent); font-weight: 700; }
+
+    /* SECTIONS */
+    section { margin-top: 48px; }
+    .section-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px; top: 8px; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -24px; top: 8px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .tl-year {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .tl-item p { font-size: 14px; line-height: 1.8; }
+
+    /* CARDS */
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 22px;
+    }
+    .card h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .card p, .card ul { font-size: 14px; line-height: 1.8; }
+    .card ul { padding-left: 18px; }
+    .card ul li { margin-bottom: 4px; }
+
+    /* FACT LIST */
+    .fact-list { list-style: none; }
+    .fact-list li {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      align-items: flex-start;
+    }
+    .fact-list li:last-child { border-bottom: none; }
+    .fact-list .key {
+      min-width: 130px;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 13px;
+      padding-top: 1px;
+    }
+    .fact-list .val { flex: 1; }
+
+    /* QUOTE */
+    .quote {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-style: italic;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .quote cite {
+      display: block;
+      margin-top: 8px;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* EPISODE */
+    .episode {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .episode h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .episode p { font-size: 14px; line-height: 1.8; }
+
+    /* TAG */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .tag {
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.7;
+    }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 600; width: 160px; }
+
+    /* PHILOSOPHY BLOCK */
+    .philo-block {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 22px 26px;
+      margin-bottom: 16px;
+    }
+    .philo-block h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+    .philo-block p { font-size: 14px; line-height: 1.85; }
+    .philo-label {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 4px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    /* NET WORTH */
+    .networth {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      padding: 6px 20px;
+      border-radius: 8px;
+      margin-top: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 20px 32px; }
+      .container { padding: 0 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">人物リサーチ — Tech Legend</div>
+    <h1>Sam Altman</h1>
+    <p style="color:rgba(255,255,255,.6); font-size:14px; max-width:620px; margin-top:8px;">
+      ミズーリ州生まれのYC出身起業家。Y Combinatorの元社長としてAirbnb・Stripe・Dropboxを輩出し、
+      OpenAIのCEOとして史上最速で普及したAIプロダクト「ChatGPT」を世に送り出した。現代AIブームの中心人物。
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">生年</span>
+        <span class="value">1985年（40歳）</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">出身</span>
+        <span class="value">セントルイス、ミズーリ州</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">純資産（推定）</span>
+        <span class="value">$2B〜$3B (2026)</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">主な肩書き</span>
+        <span class="value">OpenAI CEO / 元YC社長</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <strong>一言で言うと？</strong><br>
+    「AI時代の門番」。Paul Grahamの後継として<strong>Y Combinator</strong>を率い、Airbnb・Stripe・Dropboxといった現代テックの主役たちを世に出した。そしてOpenAI CEO就任後、2022年11月に<strong>ChatGPT</strong>をリリース——史上最速で1億ユーザーを達成し、AIブームの導火線に火をつけた。2023年11月の取締役会による解任劇と5日後の電撃復帰は「シリコンバレー史上最大のクーデター未遂」として語り継がれる。
+  </div>
+
+  <!-- 生い立ち -->
+  <section>
+    <div class="section-label">Origins</div>
+    <h2>生い立ち・学歴</h2>
+    <ul class="fact-list">
+      <li>
+        <span class="key">出生</span>
+        <span class="val">1985年、ミズーリ州セントルイス生まれ。幼少期からコンピュータに熱中し、8歳でMacintoshを分解していた。</span>
+      </li>
+      <li>
+        <span class="key">高校</span>
+        <span class="val">聡明さから飛び級、早熟な才能として地元で知られていた。</span>
+      </li>
+      <li>
+        <span class="key">スタンフォード大学</span>
+        <span class="val">コンピュータサイエンス専攻で入学。2年で中退し起業へ。「授業より実際に何かを作る方が学びになる」という信念は終生変わらない。</span>
+      </li>
+      <li>
+        <span class="key">性的指向</span>
+        <span class="val">2023年に同性愛者であることを公表。「テック業界でこれが普通のことになるべきだ」とコメント。</span>
+      </li>
+    </ul>
+
+    <div class="quote">
+      "The best entrepreneurs I've ever met are relentlessly resourceful."
+      <cite>— Sam Altman</cite>
+    </div>
+  </section>
+
+  <!-- Loopt → YC -->
+  <section>
+    <div class="section-label">Ventures</div>
+    <h2>Loopt → YC の軌跡</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">2005年 — Loopt創業</div>
+        <p>位置情報共有アプリ。スタンフォード在学中に創業、YCombinator第1期生として採用された（Paul Grahamから直接投資を受けた最初の世代）。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2011年 — YCombinatorにパートナーとして参加</div>
+        <p>Paul Grahamの引きで関与を深める。起業家としての実地経験を活かし、創業者へのメンタリングを本格化させた。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2012年 — Looptを売却</div>
+        <p>LooptをGreen Dotに約$43Mで売却。財務的には小さな成功だったが、創業者としての経験と人脈が後の資産となった。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2014年 — YC社長就任</div>
+        <p>Paul Grahamの後継としてYC社長に就任。当時28歳。「最年少でYCを率いる存在」として業界の注目を集めた。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2014〜2019年 — YCのスケールアップ</div>
+        <p>バッチあたりの採用数を拡大し、YC Continuity Fundを設立してシリーズB以降もフォローオン投資できる体制を整備。Airbnb、Stripe、Dropbox、Coinbase、Instacart等の成長を支えた。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2019年 — YC社長退任</div>
+        <p>OpenAIのCEOに専念するため退任。YC時代に投資・支援した企業群は現在も世界トップクラスのテック企業として君臨している。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OpenAI と ChatGPT -->
+  <section>
+    <div class="section-label">OpenAI</div>
+    <h2>OpenAI と ChatGPT</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">2015年 — OpenAI共同創業</div>
+        <p>Elon Musk、Greg Brockman、Ilya Sutskever等と共に非営利AI研究機関として設立。$1Bの初期コミットメント。「人類全体に利益をもたらすAI」をミッションに掲げた。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2019年 — OpenAI CEO就任</div>
+        <p>同時に「capped-profit」モデルへ移行。MicrosoftからSeries投資を獲得（$1B）。非営利の理念を維持しながら資本を調達するユニークな組織形態を設計した。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2020年 — GPT-3公開</div>
+        <p>テキスト生成の質が業界を驚かせた。APIを通じた外部公開により、スタートアップ・研究者がAI機能を自社プロダクトに組み込む流れが加速した。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2022年3月 — DALL-E 2公開</div>
+        <p>テキストから画像生成。生成AIの可能性を視覚的に示した最初の大きなモーメント。クリエイティブ業界に大きな衝撃を与えた。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2022年11月30日 — ChatGPTリリース</div>
+        <p>5日で100万ユーザー、2ヶ月で1億ユーザー——史上最速の普及速度を記録。AIが一般大衆に届いた歴史的瞬間。世界中のニュースを席巻し、AIブームの火付け役となった。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2023年3月 — GPT-4公開</div>
+        <p>マルチモーダル対応、弁護士試験上位10%レベルの性能を実証。モデルの急速な進化が「AGIは遠くない」という議論を加速させた。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2023年11月17日 — 解任劇</div>
+        <p>取締役会がAltmanを突如解任。「取締役会への情報開示が一貫していなかった」という曖昧な理由のみ。OpenAI社員の95%が辞表を提出し、Microsoftが全員の雇用を申し出るという前代未聞の展開に。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2023年11月21日 — 電撃復帰</div>
+        <p>わずか5日で復帰。新取締役会を編成してCEOに再任。「シリコンバレー史上最大のクーデター未遂」として歴史に刻まれた。Altmanの組織内での絶大な信頼が証明された。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2024年 — 評価額$157Bで$6.6Bを調達</div>
+        <p>年間売上$3.4B超。Sora（動画生成AI）、GPT-4o等をリリース。OpenAIは世界最高評価のスタートアップとしての地位を確固たるものにした。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2025年 — Stargateプロジェクト発表</div>
+        <p>SoftBank・Oracle・OpenAI連合で$500B投資のAIインフラ計画を発表。AIの次の主戦場が「モデル」から「インフラ」へと移行する時代の到来を宣言した。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 主要投資・支援実績 -->
+  <section>
+    <div class="section-label">Portfolio</div>
+    <h2>主要投資・支援実績</h2>
+    <table>
+      <tr><th>企業</th><th>関与・結果</th></tr>
+      <tr>
+        <td>Airbnb</td>
+        <td>YC採用当時は「マットレスをエアベッドで貸す変な会社」とVCに笑われていたが、Samは可能性を見抜き支援。上場時の評価額$100B超。</td>
+      </tr>
+      <tr>
+        <td>Stripe</td>
+        <td>PatrickとJohn Collisonの兄弟が創業。YC支援を経て決済インフラとして評価額$65B。</td>
+      </tr>
+      <tr>
+        <td>Reddit</td>
+        <td>個人投資家として初期から関与、後に会長に就任（2014〜2022年）。2024年IPO。</td>
+      </tr>
+      <tr>
+        <td>Instacart</td>
+        <td>YC採用。食料品配達プラットフォーム。2023年上場。</td>
+      </tr>
+      <tr>
+        <td>Helion Energy</td>
+        <td>核融合スタートアップに個人として$375M投資。クリーンエネルギーへの強い信念を持ち、OpenAIとも電力調達で連携構想。</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- 哲学・思想体系 -->
+  <section>
+    <div class="section-label">Philosophy</div>
+    <h2>哲学・思想体系</h2>
+    <p style="font-size:14px; color:var(--muted); margin-bottom:24px;">Altmanの思想は「AGIへの確信」「実行力の哲学」「長期視点」という三つの軸で体系化されている。悲観論者でなく「難問だと認識した上で楽観的」なスタンスが特徴。</p>
+
+    <div class="philo-block">
+      <div class="philo-label">Concept 01</div>
+      <h3>AGIが来る</h3>
+      <p>
+        「10年以内にAGIが実現する可能性がある」という立場を明確にしており、それを前提とした事業・社会設計を語る。
+        悲観論者ではなく「難問であることを認識した上で楽観的」なスタンスを一貫して保っている。
+        「AGIは人類史上最大の変曲点になる。それを正しく管理することが私たちの責任だ」——この信念がOpenAIというプロジェクトの根幹にある。
+      </p>
+    </div>
+
+    <div class="philo-block">
+      <div class="philo-label">Concept 02</div>
+      <h3>反脆弱性</h3>
+      <p>
+        解任・復帰という経験を経て「危機は人の本質を明らかにする」と語る。逆境から学ぶ姿勢を重視。
+        2023年11月の解任劇では、社員・投資家・パートナー企業が一斉に支持を表明し、わずか5日で復帰。
+        「最悪の事態が最強の証明になった」という経験は、Altmanにとって自身の哲学の実証実験となった。
+      </p>
+    </div>
+
+    <div class="philo-block">
+      <div class="philo-label">Concept 03</div>
+      <h3>Resourcefulness（機転の利かせ方）</h3>
+      <p>
+        「最高の起業家は <strong>relentlessly resourceful（しつこいほどに機転が利く）</strong>」という哲学。IQより実行力と問題解決力を重視。
+        リソースが足りなくても、制約の中で前に進む力——それが起業家を凡人と分けるものだとAltmanは繰り返し語る。
+        YC時代に数百社の創業者を見てきた観察が、この哲学の背景にある。
+      </p>
+    </div>
+
+    <div class="philo-block">
+      <div class="philo-label">Concept 04</div>
+      <h3>長期 vs 短期</h3>
+      <p>
+        YC時代から「10年単位で考えろ」という姿勢を一貫して説く。四半期決算思考を嫌う。
+        ChatGPTのリリースも「完璧を待たず、出してから改善する」という哲学の産物。
+        「多くの人は1年でできることを過大評価し、10年でできることを過小評価する」——Altmanがよく引用するシリコンバレーの格言だ。
+      </p>
+    </div>
+  </section>
+
+  <!-- 名言集 -->
+  <section>
+    <div class="section-label">Quotes</div>
+    <h2>名言集</h2>
+
+    <div class="quote">
+      "The most contrarian thing of all is not to oppose the crowd but to think for yourself."
+      <cite>— Sam Altman</cite>
+    </div>
+
+    <div class="quote">
+      "I think if you are not embarrassed by the first version of your product, you've launched too late."
+      <cite>— Sam Altman</cite>
+    </div>
+
+    <div class="quote">
+      "The most important thing is to be working on something you find genuinely interesting."
+      <cite>— Sam Altman</cite>
+    </div>
+
+    <div class="quote">
+      "The best entrepreneurs I've ever met are relentlessly resourceful."
+      <cite>— Sam Altman</cite>
+    </div>
+  </section>
+
+  <!-- 解任劇の詳細 -->
+  <section>
+    <div class="section-label">Incident</div>
+    <h2>解任劇——シリコンバレー史上最大のクーデター未遂</h2>
+
+    <div class="episode">
+      <h3>2023年11月17日：突如の解任通知</h3>
+      <p>
+        金曜日の午後、OpenAI取締役会はSam Altmanに「解任」を電話で通告した。
+        理由は「取締役会への情報開示が一貫していなかった」という極めて曖昧なもの。
+        Greg Brockmanも同日に辞表を提出。翌週月曜日には臨時CEOにMira Muratiが就任する予定だった。
+      </p>
+    </div>
+
+    <div class="episode">
+      <h3>社員・Microsoftの反乱</h3>
+      <p>
+        解任発表から数時間で、OpenAI社員の95%以上が「Sam復帰がなければ辞める」という連名書を取締役会に提出。
+        MicrosoftのSatya NadellaはAltmanとBrockmanをMicrosoftへ迎え入れる意向を即座に表明。
+        「社員が全員辞めるなら、会社に何が残るのか」——前代未聞の状況が展開した。
+      </p>
+    </div>
+
+    <div class="episode">
+      <h3>5日後の電撃復帰</h3>
+      <p>
+        2023年11月21日、わずか5日でSam Altmanはopnai CEOとして復帰。
+        取締役会を刷新し、Bret Taylor（元Salesforce共同CEO）を新取締役会長に迎えた。
+        「クーデターは失敗した」——この出来事はAltmanが組織内外からいかに信頼されているかを世界に示した。
+        同時に、非営利・商業・研究の三者間の緊張という、OpenAIが抱える構造的問題を浮き彫りにした。
+      </p>
+    </div>
+  </section>
+
+  <!-- Key Traits -->
+  <section>
+    <div class="section-label">Traits</div>
+    <h2>主要な特質</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>先見性</h3>
+        <p>ChatGPT以前からAI変革を確信し、非営利→営利ハイブリッドという珍しい組織形態でOpenAIを構築。業界の流れを先読みする力が突出している。</p>
+      </div>
+      <div class="card">
+        <h3>人脈構築</h3>
+        <p>Paul Graham、Peter Thiel、Elon Musk、Satya Nadella等との関係を戦略的に活用。YC社長時代に積み上げた起業家・投資家ネットワークが今もOpenAIの競争優位となっている。</p>
+      </div>
+      <div class="card">
+        <h3>危機管理</h3>
+        <p>解任劇で「社員が全員辞める」という状況を反転、より強固な立場で復帰。ピンチをチャンスに変える胆力と、人から支持を集める人間的魅力を示した。</p>
+      </div>
+      <div class="card">
+        <h3>実行速度</h3>
+        <p>「完璧を待つな、出してから改善しろ」がChatGPTリリースの哲学。YCで培った「動くものをまず出す」カルチャーをOpenAI規模の組織でも維持している。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tags -->
+  <section>
+    <div class="section-label">Keywords</div>
+    <h2>タグ</h2>
+    <div class="tags">
+      <span class="tag">AI</span>
+      <span class="tag">OpenAI</span>
+      <span class="tag">Y Combinator</span>
+      <span class="tag">ChatGPT</span>
+      <span class="tag">AGI</span>
+      <span class="tag">起業家</span>
+      <span class="tag">投資家</span>
+      <span class="tag">シリコンバレー</span>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <div style="margin-top:64px; padding-top:24px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; text-align:center;">
+    Research conducted via Claude — 2026年4月7日
+  </div>
+
+</div>
+</body>
+</html>

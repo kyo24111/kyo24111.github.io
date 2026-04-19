@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Palmer Luckey — 人物リサーチ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #ffffff;
+      --surface: #f5f5f5;
+      --surface2: #ebebeb;
+      --accent:  #111111;
+      --accent2: #555555;
+      --text:    #111111;
+      --muted:   #888888;
+      --border:  #e0e0e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    /* HERO */
+    .hero {
+      background: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 40px 48px;
+    }
+    .hero-inner { max-width: 860px; margin: 0 auto; }
+    .hero-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.15);
+    }
+    .hero-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hero-meta-item .label { font-size: 11px; color: rgba(255,255,255,.45); letter-spacing: 0.1em; text-transform: uppercase; }
+    .hero-meta-item .value { font-size: 14px; font-weight: 600; color: #fff; }
+
+    /* LAYOUT */
+    .container { max-width: 860px; margin: 0 auto; padding: 0 40px 80px; }
+
+    /* SUMMARY BOX */
+    .summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin: 40px 0;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .summary strong { color: var(--accent); font-weight: 700; }
+
+    /* SECTIONS */
+    section { margin-top: 48px; }
+    .section-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px; top: 8px; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -24px; top: 8px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .tl-year {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .tl-item p { font-size: 14px; line-height: 1.8; }
+
+    /* CARDS */
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 22px;
+    }
+    .card h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .card p, .card ul { font-size: 14px; line-height: 1.8; }
+    .card ul { padding-left: 18px; }
+    .card ul li { margin-bottom: 4px; }
+
+    /* FACT LIST */
+    .fact-list { list-style: none; }
+    .fact-list li {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      align-items: flex-start;
+    }
+    .fact-list li:last-child { border-bottom: none; }
+    .fact-list .key {
+      min-width: 130px;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 13px;
+      padding-top: 1px;
+    }
+    .fact-list .val { flex: 1; }
+
+    /* QUOTE */
+    .quote {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-style: italic;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .quote cite {
+      display: block;
+      margin-top: 8px;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* EPISODE */
+    .episode {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .episode h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .episode p { font-size: 14px; line-height: 1.8; }
+
+    /* TAG */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .tag {
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    /* TABLE */
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.7;
+    }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 600; width: 160px; }
+
+    /* JAPAN BADGE */
+    .japan-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-right: 8px;
+      letter-spacing: 0.05em;
+    }
+
+    /* NET WORTH */
+    .networth {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      padding: 6px 20px;
+      border-radius: 8px;
+      margin-top: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 20px 32px; }
+      .container { padding: 0 20px 60px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">人物リサーチ</div>
+    <h1>Palmer <span>Luckey</span></h1>
+    <p style="color:var(--muted); font-size:14px; max-width:560px;">
+      ホームスクール出身の天才少年。21歳でVRを世界に広め、Facebookに20億ドルで会社を売却。
+      今は自律型兵器で米国防衛産業を塗り替えようとしているリアル・アイアンマン。
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">生年月日</span>
+        <span class="value">1992年9月19日（33歳）</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">出身</span>
+        <span class="value">カリフォルニア州ロングビーチ</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">純資産（推定）</span>
+        <span class="value">$3.5B〜 (2026)</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">主な肩書き</span>
+        <span class="value">Oculus創業者 / Anduril CEO</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SUMMARY -->
+  <div class="summary">
+    <strong>一言で言うと？</strong><br>
+    ホームスクール育ちの自称オタク。10代でVRを発明し、21歳でFacebookに<strong>$2B（20億ドル）</strong>で売却。
+    その後、防衛スタートアップ<strong>Anduril Industries</strong>を創業し評価額$60Bを超える企業に育てた。
+    ハワイアンシャツ＋裸足がトレードマーク。日本のアニメ・マンガの熱烈なファン。
+    妻との出会いのきっかけは「らき☆すた」。
+  </div>
+
+  <!-- 人生史 -->
+  <section>
+    <div class="section-label">Chronology</div>
+    <h2>人生史</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">1992年</div>
+        <p>カリフォルニア州ロングビーチ生まれ。母親によるホームスクール環境で育つ。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2006年頃（14歳）</div>
+        <p>ゴールデンウェストカレッジ＆ロングビーチシティカレッジを並行受講。14歳でコミュニティカレッジに通う異例の経歴。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2007〜2009年（15〜16歳）</div>
+        <p>壊れたiPhoneを修理・転売するビジネスを立ち上げ、独力で$36,000以上を稼ぐ。実験・開発の軍資金に。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2007年</div>
+        <p>ワシントンD.C.のディベートサマーキャンプで、「らき☆すた」を読む女の子・Nicole Edelmannと出会う。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2009年</div>
+        <p>「ModRetro Forums」を立ち上げる。同年、両親のガレージで初のVRヘッドセットプロトタイプ開発開始（重さ3kg超）。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2011年</div>
+        <p>USC Mixed Reality Lab（Mark Bolas主宰）にコールドメールを送り、無報酬インターンとして採用。米陸軍のPTSD治療用VR「BRAVEMIND」開発に従事。50種超のHMDプロトタイプを製作。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2012年 — <span style="color:var(--accent2)">転換点①</span></div>
+        <p>Oculus VR設立。E3でJohn Carmackが無償で借りたプロトタイプをデモし世界が注目。Kickstarterで目標の974%にあたる$2.4Mを調達。Cal State Long Beachを中退。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2014年 — <span style="color:var(--accent2)">転換点②</span></div>
+        <p>21歳でFacebookがOculus VRを$2B（20億ドル）で買収。Luckey取り分は推定$700M。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2016年</div>
+        <p>親トランプのミームグループ「Nimble America」への$10,000寄付が報道され、ゲーム開発者コミュニティから大バッシング。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2017年 — <span style="color:var(--accent2)">転換点③</span></div>
+        <p>Facebookを退職（本人は「解雇」と明言）。徳島のアニメイベント「マチ★アソビ」にMGSVクワイエットのコスプレで登場。Anduril Industries設立。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2019年</div>
+        <p>Nicole Edelmannと結婚。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2022年</div>
+        <p>SAOオマージュ「プレイヤーが死んだら現実でも死ぬVRヘッドセット」をアート作品として発表。世界中で話題に。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2024年</div>
+        <p>レトロゲームハード企業「ModRetro」を正式発足。初製品「Chromatic」（ゲームボーイ互換機）を$199で発売。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2025〜2026年</div>
+        <p>Andurilの評価額が$60Bに倍増。Peter ThielとErebor Bank（防衛・暗号資産向け銀行）を共同設立。Forbes推定純資産$3.5B超。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 家族 -->
+  <section>
+    <div class="section-label">Family</div>
+    <h2>家族 / 親</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>父親 — Donald Luckey</h3>
+        <ul>
+          <li>職業：自動車ディーラーの営業職</li>
+          <li>ガレージをPalmerの"実験室"として提供</li>
+          <li>自動車修理を通じてドライバー・半田ごて・オシロスコープの使い方を教えた</li>
+          <li>多くの子が長除法を習う年齢に、電子工学の基礎を叩き込んだ</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>母親 — Julie Freeman Luckey</h3>
+        <ul>
+          <li>専業主婦兼ホームスクール教師</li>
+          <li>「どの教育機関も個別最適化された教育はできない」という信念</li>
+          <li>Palmerが"手に負えない子"だったという実際的事情も</li>
+          <li>他の子どもたちは後に通常学校に戻ったが、Palmerだけは最後まで戻らなかった</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="episode">
+        <h3>妹①：Ginger Luckey</h3>
+        <p>2021年8月、共和党下院議員<strong>Matt Gaetz</strong>とカタリナ島で挙式（駆け落ち婚）。出会いは2020年3月、トランプのマール・ア・ラーゴ資金調達パーティー。当時Ginger 26歳、Gaetz 38歳。Gaetzはトランプ政権のAG候補にもなった物議を醸す人物。</p>
+      </div>
+      <div class="episode">
+        <h3>妹②：Roxanne Luckey</h3>
+        <p>GingerとGaetzの関係について「気持ち悪い（weird and creepy）」「ペドフィリアだ」と公言。Luckey家内部の対立が表に出た形で、SNSでも注目を集めた。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 幼少期 -->
+  <section>
+    <div class="section-label">Childhood</div>
+    <h2>幼少期 / 学生時代</h2>
+    <ul class="fact-list">
+      <li>
+        <span class="key">性格</span>
+        <span class="val">自他ともに認める「手に負えない子」。悪意ではなく、エネルギーとアイデアが有り余っていた。読書家でSF小説とビデオゲームに没頭。</span>
+      </li>
+      <li>
+        <span class="key">ガレージ実験</span>
+        <span class="val">高出力レーザー、コイルガン、テスラコイルなどを自作。レーザーで視野に灰色のシミを焼き付けたり、感電するなど危険な目にも頻繁に遭った。</span>
+      </li>
+      <li>
+        <span class="key">没入ゲーム環境</span>
+        <span class="val">6台のモニターを囲むように配置した自作ゲーミングPCを製作。コストは数万ドルに。「どうすれば本当に没入できるか」を子供の頃から追求していた。</span>
+      </li>
+      <li>
+        <span class="key">学歴</span>
+        <span class="val">ホームスクール → ゴールデンウェストCC・ロングビーチシティCC（14歳） → Cal State Long Beach（ジャーナリズム専攻）→ Oculus集中のため中退</span>
+      </li>
+      <li>
+        <span class="key">原体験①</span>
+        <span class="val">父親のガレージ。車の修理を通じて電子工学に目覚め「何でも分解して再構築する」思想の原点となった。</span>
+      </li>
+      <li>
+        <span class="key">原体験②</span>
+        <span class="val">USC MixedReality LabでのPTSD治療用VR開発。軍・防衛との最初の接点。後のAnduril創業の遠因。</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 経歴 -->
+  <section>
+    <div class="section-label">Career</div>
+    <h2>経歴</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Oculus VR（2012〜2017）</h3>
+        <ul>
+          <li>21歳で$2Bのバイアウト</li>
+          <li>John CarmackがE3でデモし注目爆発</li>
+          <li>Kickstarter：目標974%達成（$2.4M調達）</li>
+          <li>Facebook買収後も製品開発の顔として活動</li>
+          <li>政治スキャンダルを経て2017年退職（本人は「解雇」）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Anduril Industries（2017〜現在）</h3>
+        <ul>
+          <li>Palantir出身幹部と共同創業</li>
+          <li>「防衛請負業者ではなく防衛プロダクト企業」モデル</li>
+          <li>自律型ドローン・国境監視システムなど</li>
+          <li>評価額$60B（2026年3月）</li>
+          <li>米陸軍・海軍・SOCOM等と数十億ドルの契約</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="episode">
+        <h3>Andurilのビジネスモデル革新</h3>
+        <p>従来の防衛産業は「受注→開発」モデル。AndurilはApple流の「先にプロダクトを作り、政府に売る」モデルを採用。Sentry Tower（国境監視タワー）、Roadrunner（帰還可能ドローン迎撃機）、Altius（徘徊型攻撃ドローン）などが主力製品。ウクライナでも実戦投入済み。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 恋愛 -->
+  <section>
+    <div class="section-label">Relationship</div>
+    <h2>恋愛 / パートナー</h2>
+    <div class="episode">
+      <h3>Nicoleとの出会い（2007年、双方15歳）</h3>
+      <p>
+        ワシントンD.C.のディベートサマーキャンプで、PalmerのチームがNicoleのチームを圧倒的大差で打ち負かし、Nicoleは悔し泣き。
+        その後、中庭で日本のマンガ「<strong>らき☆すた</strong>」を読むNicoleを見かけたPalmerが話しかけた。
+        2人ともホームスクール経験者で、物作りが共通の趣味だと判明（Nicoleはコスチューム制作）。
+        数ヶ月の文通を経てロングディスタンス交際開始。2019年に入籍。
+      </p>
+    </div>
+    <div class="quote">
+      "The one thing money can't buy is people who liked you before you had money.
+      I'm very lucky that I met my wife back when I had literally nothing."
+      <cite>— Palmer Luckey</cite>
+    </div>
+    <ul class="fact-list">
+      <li>
+        <span class="key">Nicole Edelmann</span>
+        <span class="val">プロゲーマー、コスプレイヤー（衣装を自製）。Palmer とのコラボコスプレも多数（MGSVクワイエット役など）。</span>
+      </li>
+      <li>
+        <span class="key">子ども</span>
+        <span class="val">少なくとも1人。プロフィールインタビューの翌日に第1子誕生というエピソードあり。詳細は非公開。</span>
+      </li>
+      <li>
+        <span class="key">その他</span>
+        <span class="val">「だらしない性生活」の目立ったエピソードなし。一方で妹がGaetz（不倫・性的スキャンダルで有名な政治家）と結婚したのは家族間でも物議。</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 私生活 -->
+  <section>
+    <div class="section-label">Personal Life</div>
+    <h2>私生活 / エピソード</h2>
+    <div class="episode">
+      <h3>ハワイアンシャツ哲学</h3>
+      <p>Facebook売却後、高級服に変えようとしたところ「お金で変わった」と言われ、以来"初心を忘れないユニフォーム"としてハワイアンシャツを着続ける決意。フォーマルなイベント・トレードショーでも、ハワイアンシャツ＋カーゴショーツ＋裸足（またはビーチサンダル）で現れる。「靴は過酷な環境から足を守るために発明されたが、現代のカリフォルニアは安全だ」。</p>
+    </div>
+    <div class="episode">
+      <h3>ボンドヴィランのガレージ（乗り物コレクション）</h3>
+      <p>米海軍から購入したMark V特殊作戦用艇（5,000馬力超）、潜水艦2隻、ヘリコプター6機（ブラックホーク含む）、元海兵隊ハンビー、アニメデカール巻きの1,600ポンドのAutozam AZ-1、ディズニーランドの1967年製オートピアカーなど。地下200フィートのミサイル基地に膨大なゲームコレクションも保管。</p>
+    </div>
+    <div class="episode">
+      <h3>SAOヘッドセット（2022年）</h3>
+      <p>「ゲーム内で死んだら現実でも死ぬ」VRヘッドセットをアート作品として製作・公開。Meta Quest Pro風の外観で、ゲームオーバー画面を感知すると3基の爆薬モジュールが作動してユーザーの前頭葉を破壊する設計。「フィクション以外でユーザーを実際に殺せるVRデバイスの世界初の実例」と本人談。SAO原作20周年オマージュ。</p>
+    </div>
+    <div class="episode">
+      <h3>家</h3>
+      <p>ニューポートビーチに$12.5M（約19億円）の邸宅を購入後、向かいの家（$3.8M）も購入して専用ガレージに改造。$2.5Mかけてリノベーションし、4基の車用エレベーターを設置。後日その車用エレベーターに閉じ込められ、製造業者を訴えるというエピソードも。</p>
+    </div>
+  </section>
+
+  <!-- 交友関係 -->
+  <section>
+    <div class="section-label">Network</div>
+    <h2>交友関係</h2>
+    <table>
+      <tr><th>人物</th><th>関係</th></tr>
+      <tr>
+        <td>Peter Thiel</td>
+        <td>Founders Fund経由でAndurilに大規模出資。2025年にErebor Bank共同設立。思想的にも近い。</td>
+      </tr>
+      <tr>
+        <td>John Carmack</td>
+        <td>id SoftwareのレジェンドCTO。Oculus初期に無償でプロトタイプを借りE3でデモ、世界に紹介。後にOculus CTO就任。</td>
+      </tr>
+      <tr>
+        <td>Joe Lonsdale</td>
+        <td>Palantir共同創業者。Anduril投資家、Erebor Bank共同出資者。</td>
+      </tr>
+      <tr>
+        <td>Mark Zuckerberg</td>
+        <td>Oculus買収者。政治スキャンダルを巡り不和に。退職後は確執残る（MetaのXR幹部が後年公式謝罪という異例の展開も）。</td>
+      </tr>
+      <tr>
+        <td>Matt Gaetz</td>
+        <td>共和党下院議員。妹Gingerと結婚し義理の兄弟に。トランプ政権AG候補にもなった物議の政治家。</td>
+      </tr>
+    </table>
+  </section>
+
+  <!-- 趣味 -->
+  <section>
+    <div class="section-label">Hobbies</div>
+    <h2>趣味</h2>
+    <div class="tags">
+      <span class="tag">コスプレ</span>
+      <span class="tag">レトロゲーム改造</span>
+      <span class="tag">セーリング</span>
+      <span class="tag">軍用乗り物の収集・操縦</span>
+      <span class="tag">アニメ・マンガ</span>
+      <span class="tag">DIYエレクトロニクス</span>
+    </div>
+    <ul class="fact-list" style="margin-top:20px;">
+      <li>
+        <span class="key">コスプレ</span>
+        <span class="val">キルラキル、オーバーウォッチ、遊☆戯☆王、MGSVクワイエット（Nicoleと共演）など本格的。Facebook在籍中はセルフ規制していたが退職後は解放。</span>
+      </li>
+      <li>
+        <span class="key">レトロゲーム</span>
+        <span class="val">ゲームボーイ・ファミコン等の改造（MODDINGが原点）。2024年にModRetroを正式発足、初製品「Chromatic」を$199で販売。</span>
+      </li>
+      <li>
+        <span class="key">セーリング</span>
+        <span class="val">幼少期から習い、ユースセーリングコーチも経験。</span>
+      </li>
+      <li>
+        <span class="key">DIYエレクトロニクス</span>
+        <span class="val">テスラコイル・コイルガン・高出力レーザーの自作は現在も継続。子供の頃から変わらない趣味。</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- 日本との関係 -->
+  <section>
+    <div class="section-label">Japan Connection</div>
+    <h2>日本との関係</h2>
+    <div style="margin-bottom:20px;">
+      <span class="japan-badge">深い</span>
+      <span style="color:var(--muted); font-size:13px;">単なるファン以上の密接なつながり</span>
+    </div>
+    <ul class="fact-list">
+      <li>
+        <span class="key">きっかけ</span>
+        <span class="val">Nicoleとの出会いが「らき☆すた」のマンガ。SAO、ひもうとうまるちゃん、らき☆すた等の熱烈なファン。「オタク」を自認。</span>
+      </li>
+      <li>
+        <span class="key">SAOとOculus</span>
+        <span class="val">「SAOブームで日本はOculusの第2位市場になった。SAOがなければここまで大きくなれなかった」と語る。</span>
+      </li>
+      <li>
+        <span class="key">マチ★アソビ2017（徳島）</span>
+        <span class="val">Facebook退職直後、MGSVクワイエットのコスプレでアニメイベントに参加。徳島の街と地域密着型イベントの設計を絶賛。自由を取り戻した姿を象徴するエピソード。</span>
+      </li>
+      <li>
+        <span class="key">東京ゲームショウ</span>
+        <span class="val">2016・2017年に参加。2017年TGSで「新しい会社を立ち上げた（=Anduril）」と初めて公言した場となった。</span>
+      </li>
+      <li>
+        <span class="key">Otaku Coin（2018）</span>
+        <span class="val">東京オタクモードが準備した暗号通貨「Otaku Coin」の諮問委員に就任。アニメ・マンガクリエイターへの直接支援モデルを支持。</span>
+      </li>
+      <li>
+        <span class="key">Unite Japan 2014</span>
+        <span class="val">Unityの日本大会に登壇・講演。VRの未来と日本市場について語った。</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- FOOTER -->
+  <div style="margin-top:64px; padding-top:24px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; text-align:center;">
+    Research conducted via Claude — 2026年3月28日
+  </div>
+
+</div>
+</body>
+</html>

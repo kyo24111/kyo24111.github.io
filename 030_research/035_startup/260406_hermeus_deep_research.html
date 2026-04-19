@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hermeus — 極超音速機スタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.gov .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">極超音速</span>
+    <span class="badge badge-white">TBCCエンジン</span>
+    <span class="badge badge-solid">NYC→London 90分</span>
+  </div>
+  <h1>Hermeus</h1>
+  <p class="hero-sub">
+    「マッハ5で飛ぶ商用機を、現実のものにする」——<br>
+    2018年創業。元Blue Origin・GE Aviation出身のエンジニアが開発するTBCC（タービンベース複合サイクル）エンジンは、通常のターボジェットからラムジェットへとマッハ3超で自動移行し、持続的なマッハ5飛行を実現する。ニューヨーク〜ロンドン90分、LA〜東京3時間を目指す。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$358M</div><div class="lbl">累計調達額</div></div>
+    <div class="kpi"><div class="val">~$985M</div><div class="lbl">推定バリュエーション</div></div>
+    <div class="kpi"><div class="val">Mach 5</div><div class="lbl">目標巡航速度</div></div>
+    <div class="kpi"><div class="val">$60M</div><div class="lbl">USAF Quarterhorse契約</div></div>
+    <div class="kpi"><div class="val">2025</div><div class="lbl">Quarterhorse Mk1 初飛行</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">技術解説：TBCCエンジンの原理</a></li>
+    <li><a href="#quarterhorse">Quarterhorse開発プログラム</a></li>
+    <li><a href="#halcyon">Halcyon商用機構想</a></li>
+    <li><a href="#usaf">USAFとの関係</a></li>
+    <li><a href="#funding">資金調達</a></li>
+    <li><a href="#competition">競合：Boom/Spike Aerospace</a></li>
+    <li><a href="#team">経営陣</a></li>
+    <li><a href="#risks">リスクと課題</a></li>
+    <li><a href="#why-now">なぜ今注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Hermeus Corporation</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2018年</div></div>
+    <div class="kv-item"><div class="k">所在地</div><div class="v">Atlanta, Georgia</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">AJ Piplica（元Blue Origin）</div></div>
+    <div class="kv-item"><div class="k">累計調達</div><div class="v">約$358M</div></div>
+    <div class="kv-item"><div class="k">推定バリュエーション</div><div class="v">~$985M</div></div>
+    <div class="kv-item"><div class="k">コア技術</div><div class="v">TBCCエンジン（Mach 5対応）</div></div>
+    <div class="kv-item"><div class="k">主要顧客</div><div class="v">USAF、民間航空会社（将来）</div></div>
+  </div>
+
+  <p>Hermeusは、極超音速（hypersonic）旅客機の商業化という、半世紀以上にわたって「夢物語」とされてきた課題に正面から挑むスタートアップだ。コンコルドが退役した2003年以降、超音速旅客機の商用化は空白地帯となっているが、Hermeusはその一歩先のマッハ5域を目指している。</p>
+
+  <p>同社の独自性は、エンジン技術にある。従来の超音速・極超音速機開発の最大の壁は「どうやってマッハ0から5まで一つの推進系でカバーするか」だった。Hermeusが開発するTBCC（Turbine-Based Combined Cycle）エンジンは、この問題に対する現実的な解答を提示している。</p>
+
+  <div class="callout">
+    <strong>社名の由来：</strong> ギリシャ神話の速度の神・Hermes（ヘルメス）から。スタートアップとしての速度（short development cycles）と、製品としての速度（Mach 5飛行）の両方を体現した名前。
+  </div>
+</div>
+
+<!-- ===================== 2. TECH ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">2</span> Technology</div>
+  <h2>技術解説：TBCCエンジンの原理</h2>
+
+  <h3>従来の推進系の限界</h3>
+  <p>航空機のエンジンには、速度域ごとに適したタイプが異なる。通常のターボジェット・ターボファンエンジンはマッハ3程度が上限であり、それ以上の速度では吸気の圧縮が追いつかなくなる。マッハ5以上でのスクラムジェット（supersonic combustion ramjet）は高速域で高効率だが、マッハ3未満では機能しない。この「速度の谷」を埋めることが極超音速民間機実現の最大技術課題だった。</p>
+
+  <h3>TBCCエンジンの仕組み</h3>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">01</div>
+      <div>
+        <div class="ind-title">Phase 1: ターボジェットモード（Mach 0〜3）</div>
+        <div class="ind-desc">地上から離陸し、マッハ3まではGE Aviationのターボファンコアをベースにした通常のターボジェットモードで飛行する。既存の航空エンジン技術の延長であり、空港インフラや燃料インフラとの互換性も維持できる。Hermeusがわざわざ独自エンジンを一から開発せずGE Aviationと協業した理由はここにある——既証の技術を活用し、ターボジェット部分のリスクを最小化。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">02</div>
+      <div>
+        <div class="ind-title">Phase 2: モード遷移（Mach 3付近）</div>
+        <div class="ind-desc">マッハ3前後に達すると、エンジンが自動的にターボジェットモードからラムジェットモードへと切り替わる。この「モード遷移」はエンジン設計の最大の難所であり、推力の連続性と安定性を保ちながらの切り替えには高度な制御技術が必要。Hermeusは地上試験でこの遷移の実証を繰り返し、2023年以降のQuarterhorseテストでデータを積み上げている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">03</div>
+      <div>
+        <div class="ind-title">Phase 3: ラムジェット・スクラムジェットモード（Mach 3〜5+）</div>
+        <div class="ind-desc">マッハ3以上では吸入空気の動圧だけで燃焼室に十分な圧力を供給でき、圧縮機（compressor）不要のラムジェットモードへ移行する。マッハ5域ではスクラムジェット（超音速燃焼）に移行し、極超音速巡航を実現する。この速度帯では空気抵抗による機体加熱が激しく、構造材料・冷却技術も課題となる。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>GE Aviationとのパートナーシップ</h3>
+  <p>Hermeusは世界最大の航空エンジンメーカーであるGE Aviationと提携し、GEのF414ターボファンエンジンをTBCCシステムのターボジェットコアとして採用している。F414は米海軍F/A-18 Super Hornetのエンジンとして実績のある軍用エンジンであり、その信頼性をHermeusの新規システムの基盤として活用している。これはHermeusがすべてをゼロから開発する必要をなくし、開発コストとリスクを大幅に圧縮する戦略的判断だ。</p>
+
+  <div class="callout">
+    <strong>なぜマッハ5なのか：</strong> マッハ5は超音速（マッハ1〜5未満）と極超音速（マッハ5以上）の境界線であり、この速度域が実現すれば「地球上どこへでも2〜3時間で到達」が技術的に射程に入る。Boom SupersonicのMach 1.7と比較してもその意味合いは桁違いに大きく、単に「速い飛行機」ではなく「時間距離の概念を変える輸送インフラ」となる。
+  </div>
+</div>
+
+<!-- ===================== 3. QUARTERHORSE ===================== -->
+<div class="sec" id="quarterhorse">
+  <div class="sec-label"><span class="num">3</span> Quarterhorse Program</div>
+  <h2>Quarterhorse開発プログラム</h2>
+
+  <p>Quarternhorseは、HermeusがTBCCエンジンを搭載した無人実証機（demonstrator）シリーズの総称だ。USAF（米空軍）のAFWERX（Air Force Research Laboratory）との契約のもとで開発・飛行試験が実施されている。目的はTBCCエンジンの実飛行実証と、エンベロープ拡張（flight envelope expansion）のデータ収集だ。</p>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2018〜2022年</span>
+          <span class="tl-title">創業・エンジン基礎開発・USAF初期契約</span>
+        </div>
+        <div class="tl-body">Atlanta本社設立。GE Aviationとの提携確立。USAFとの初期SBIR（Small Business Innovation Research）契約獲得。TBCCエンジンのコンポーネント地上試験を繰り返す。<b>エンジンコアの「モード遷移」機構の実証</b>が最初のマイルストーンだった。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年</span>
+          <span class="tl-title">Quarterhorse Mk0 — 地上エンジンテスト</span>
+        </div>
+        <div class="tl-body">エンジンスタンド上でのフルパワーテスト完了。ターボジェットモードからラムジェットへの遷移シーケンスのシミュレーション地上実証。<b>$60M USAF Quarterhorse飛行試験プログラム</b>の正式契約を締結。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年5月</span>
+          <span class="tl-title">Quarterhorse Mk1 — Edwards AFB 初飛行</span>
+        </div>
+        <div class="tl-body">カリフォルニア州エドワーズ空軍基地（Edwards AFB）にて初飛行成功。TBCCエンジンを搭載した実機の初の動力飛行。この時点での飛行はマッハ3以下の低速域が主体だが、<b>エンジンシステム統合と機体空力特性の実証</b>が主目的。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年1月</span>
+          <span class="tl-title">Quarterhorse Mk2.1 — Spaceport America</span>
+        </div>
+        <div class="tl-body">ニューメキシコ州スペースポートアメリカにて、Mk2.1の飛行試験を実施。エンベロープ拡張テスト。Mk1から改良された推進系・熱管理システムの検証。モード遷移域へのアプローチを継続。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2026〜2028年（計画）</span>
+          <span class="tl-title">Quarterhorse Mk3 — Mach 5飛行実証</span>
+        </div>
+        <div class="tl-body">Mk2シリーズの成果を踏まえ、フルMach 5飛行の実証を目標とするMk3の開発・テスト。これが成功すれば<b>民間Mach 5飛行の世界初実証</b>となり、Halcyon商用機開発への最大のエビデンスとなる。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 4. HALCYON ===================== -->
+<div class="sec" id="halcyon">
+  <div class="sec-label"><span class="num">4</span> Halcyon Commercial Aircraft</div>
+  <h2>Halcyon商用機構想</h2>
+
+  <p>Halcyonは、TBCCエンジン技術を搭載したMach 5商用旅客機の計画名だ。「Quarterhorse＝軍用実証機」に対し、「Halcyon＝商業旅客機」という二段階の製品ロードマップを形成している。</p>
+
+  <h3>Halcyon スペック概要（計画）</h3>
+  <table class="t">
+    <thead>
+      <tr><th>項目</th><th>スペック</th><th>備考</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>巡航速度</td><td>Mach 5（約6,000 km/h）</td><td>コンコルドの約2.5倍</td></tr>
+      <tr><td>座席数</td><td>20〜40席（ビジネスジェット規模）</td><td>超高価格帯プレミアム市場</td></tr>
+      <tr><td>NYC→London</td><td>約90分</td><td>現在の約8時間が約1/5に</td></tr>
+      <tr><td>LA→Tokyo</td><td>約3時間</td><td>現在の約11時間が約1/4に</td></tr>
+      <tr><td>巡航高度</td><td>約95,000ft（約29km）</td><td>成層圏〜中間圏域</td></tr>
+      <tr><td>商業運航目標</td><td>2030年代前半</td><td>Quarterhorse Mk3成功が前提</td></tr>
+    </tbody>
+  </table>
+
+  <h3>市場戦略</h3>
+  <p>Halcyonは当初、超高価格帯のプレミアム市場（エグゼクティブ・政府専用機に近い用途）をターゲットにする。コンコルドの失敗（燃料効率の悪さ、騒音問題、高コスト）を踏まえ、初期の顧客を「時間価値が極めて高い」富裕層・政府・企業エグゼクティブに絞ることで、運航コスト対収入の収支を成立させる戦略だ。</p>
+
+  <div class="callout">
+    <strong>ビジネスジェット市場との接点：</strong> Halcyonの想定規模（20〜40席）は大型旅客機ではなく、超高級ビジネスジェットに近い。ガルフストリームやボンバルディアの長距離ビジネスジェットを利用する層が最初の顧客であり、「飛行時間を1/4〜1/5にする」ことへの支払意思が高い市場が存在する。
+  </div>
+</div>
+
+<!-- ===================== 5. USAF ===================== -->
+<div class="sec" id="usaf">
+  <div class="sec-label"><span class="num">5</span> USAF Partnership</div>
+  <h2>USAFとの関係</h2>
+
+  <p>Hermeusにとって、USAF（米空軍）との関係は単なる「契約顧客」を超えた戦略的パートナーシップだ。Hermeusはスタートアップでありながら、USAFの飛行試験インフラ（Edwards AFB、Spaceport America）・試験データ・資金の三つを同時に活用できる立場を確立している。</p>
+
+  <div class="f-stack">
+    <div class="f-card gov">
+      <span class="r-badge">USAF契約</span>
+      <div class="f-amount">$60M</div>
+      <div class="f-detail">
+        <div class="f-date">Quarterhorse飛行試験プログラム</div>
+        <div class="f-desc">AFWERX（空軍研究所の革新プログラム）との契約。無人実証機の開発・飛行試験を資金援助。国家安全保障上の極超音速技術開発への投資という位置付け。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <span class="r-badge">USAF追加契約</span>
+      <div class="f-amount">複数</div>
+      <div class="f-detail">
+        <div class="f-date">継続的な研究開発・試験契約</div>
+        <div class="f-desc">Edwards AFBでの試験施設利用、技術評価、データシェアリングを含む複数の追加契約。具体的金額は非公開のものが多いが、HermeusのR&amp;Dコストの相当部分をカバー。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>なぜUSAFはHermeusに投資するのか</h3>
+  <p>米軍にとって極超音速技術は最重要の国家安全保障課題の一つだ。中国・ロシアが極超音速ミサイル・滑空体を実戦配備する中、米国は対抗手段の開発を急いでいる。Hermeusのような民間企業が商業目的でTBCC技術を開発・実証することは、軍が直接開発するよりもはるかに低コストかつ迅速に技術データを積み上げられる。USAF視点では、Hermeusへの投資は「民間に技術開発を委託する」レバレッジ効果が高い投資だ。</p>
+
+  <div class="quote">
+    <p>We want to be the company that makes hypersonic flight routine. Not just for the military — for everyone.</p>
+    <div class="attr">— AJ Piplica, CEO</div>
+  </div>
+</div>
+
+<!-- ===================== 6. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">6</span> Funding</div>
+  <h2>資金調達</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <span class="r-badge">最新ラウンド</span>
+      <div class="f-amount">$100M+</div>
+      <div class="f-detail">
+        <div class="f-date">2024〜2025年</div>
+        <div class="f-desc">Series C以降の最新調達。累計$358Mに貢献する最終ラウンド。Quarterhorse Mk1の初飛行成功を受けた調達で、Halcyon商用機開発の本格化に向けた資金。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <span class="r-badge">Series B/C</span>
+      <div class="f-amount">~$160M</div>
+      <div class="f-detail">
+        <div class="f-date">2022〜2023年</div>
+        <div class="f-desc">a16z（Andreessen Horowitz）がリード。Khosla Ventures、General Catalystが参加。USAF契約の拡大とQuarterhorse実機開発加速に資金を充当。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <span class="r-badge">Series A / 初期</span>
+      <div class="f-amount">~$98M</div>
+      <div class="f-detail">
+        <div class="f-date">2018〜2021年</div>
+        <div class="f-desc">創業期。Y Combinator出身（2019年YCバッチ）。初期投資家が航空宇宙ディープテックへの確信を示した時期。GE Aviationとの技術提携基盤構築に使用。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要投資家</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead</span>
+      <div class="vc-name">Andreessen Horowitz (a16z)</div>
+      <div class="vc-role">Series B/C Lead Investor</div>
+      <div class="vc-desc">シリコンバレー最大のVC。ディープテック・防衛テックへの投資を拡大しており、HermeusはそのAerospace/Defense portfolioの一角。a16zのブランドがHermeusの採用・パートナーシップ交渉力を大幅に向上させている。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Khosla Ventures</div>
+      <div class="vc-role">Deep Tech VC</div>
+      <div class="vc-desc">エネルギー・素材・宇宙・ハードウェア系ディープテックへの一貫した投資実績。Hermeusの技術難度の高さを理解した上での長期投資スタンス。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">General Catalyst</div>
+      <div class="vc-role">Growth VC</div>
+      <div class="vc-desc">複数のセクターにわたる大型VC。防衛テック・宇宙分野のポートフォリオ拡大の文脈でHermeusに投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">USAF (契約)</div>
+      <div class="vc-role">Government Anchor Customer</div>
+      <div class="vc-desc">$60M+の飛行試験契約は実質的な政府投資。民間VCとは異なる「顧客投資」の形態だが、技術実証資金として重要な役割を担う。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 7. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">7</span> Competition</div>
+  <h2>競合：Boom Supersonic / Spike Aerospace</h2>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">Hermeus</div>
+      <div class="comp-tag">Mach 5 / TBCC</div>
+      <div class="comp-desc">TBCCエンジンによるMach 5商用機。軍用実証機（Quarterhorse）を先行。2025年初飛行達成。防衛+民間の二本柱戦略。$358M調達。バリュエーション~$985M。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Boom Supersonic</div>
+      <div class="comp-tag">Mach 1.7 / 超音速</div>
+      <div class="comp-desc">コンコルドの後継を目指すMach 1.7旅客機「Overture」開発。United Airlines等から事前発注。2026年初飛行目標。~$700M調達。ただし開発遅延が続いており、採算性への懸念もある。Hermeusより現実的な速度だがインパクトは低い。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Spike Aerospace</div>
+      <div class="comp-tag">Mach 1.6 / 超音速</div>
+      <div class="comp-desc">小型超音速ビジネスジェット「S-512」の開発。18席規模で価格帯はビジネスジェット市場。開発は遅延気味。Hermeusと同じ高付加価値市場を狙うが速度域は大きく異なる。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Lockheed Martin X-59</div>
+      <div class="comp-tag">NASA Quiet Supersonic</div>
+      <div class="comp-desc">NASAとLockheedが共同開発する静粛超音速実証機。ソニックブーム軽減技術の検証が目的で、商業旅客機ではなく研究機。Hermeusとの直接競合ではないが、超音速規制の緩和を促す可能性がある。</div>
+    </div>
+  </div>
+
+  <h3>速度別ポジショニング比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>企業</th><th>目標速度</th><th>NYC→LON</th><th>調達額</th><th>開発段階</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Hermeus</td><td>Mach 5（極超音速）</td><td>90分</td><td>$358M</td><td>無人実証機飛行中</td></tr>
+      <tr><td>Boom Supersonic</td><td>Mach 1.7（超音速）</td><td>~3.5時間</td><td>~$700M</td><td>実証機開発中</td></tr>
+      <tr><td>Spike Aerospace</td><td>Mach 1.6（超音速）</td><td>~3.5時間</td><td>非公開</td><td>設計段階</td></tr>
+      <tr><td>現在の旅客機</td><td>Mach 0.85（亜音速）</td><td>約7〜8時間</td><td>—</td><td>商業運航中</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>Hermeusの戦略的優位：</strong> BoomやSpikeはMach 1.5〜1.7を目指す「コンコルド2.0」路線だが、Hermeusはその倍以上のMach 5を目指す。速度差が大きすぎるため直接競合せず、むしろ「全く別の価値提案」をする。USAF契約による開発資金の安定供給も、純民間資金のみのBoomとは対照的。
+  </div>
+</div>
+
+<!-- ===================== 8. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">8</span> Leadership</div>
+  <h2>経営陣</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">AJ</div>
+      <div>
+        <h3>AJ Piplica</h3>
+        <div class="p-role">CEO &amp; Co-Founder</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><span class="lbl">前職</span><span class="val">Blue Origin — 推進系エンジニア。Jeff Bezosのロケット開発における中核的なプロペルションシステム開発を担当。エンジン設計・試験の豊富な実務経験を持つ。</span></div>
+      <div class="p-row"><span class="lbl">強み</span><span class="val">航空宇宙エンジニアリングの実践的知識と、ディープテックスタートアップを率いる経営能力の両立。USAFとの交渉・関係構築においても中心的な役割を担う。</span></div>
+      <div class="p-row"><span class="lbl">スタイル</span><span class="val">「速く、安く、繰り返す」というSpaceX流のイテレーション哲学をHermeusに導入。軍との契約においても、伝統的な防衛調達ではなくアジャイル開発を実践。</span></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">Co</div>
+      <div>
+        <h3>共同創業者チーム</h3>
+        <div class="p-role">Co-Founders (複数名)</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><span class="lbl">背景</span><span class="val">SpaceX・Blue Origin・GE Aviation・NASA出身のエンジニアを中心とした創業チーム。极超音速推進、機体熱設計、電子制御の専門家が揃っている。</span></div>
+      <div class="p-row"><span class="lbl">特徴</span><span class="val">Atlantaという航空宇宙のメジャーな中心地ではない場所に本社を置くことで、地域の優秀なエンジニアリング人材（Georgia Tech出身者等）を採用できる環境を整備。</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">9</span> Risks</div>
+  <h2>リスクと課題</h2>
+
+  <div class="warn-box">
+    <div class="w-title">主要リスク一覧</div>
+    <ul>
+      <li><b>技術的難度：</b>TBCCエンジンのモード遷移（Mach 3での切り替え）は過去に多くの極超音速プログラムが挫折した技術的難所。地上試験での実証と実飛行での再現の間には大きなギャップがある可能性がある。</li>
+      <li><b>熱管理の課題：</b>Mach 5飛行では機体表面温度が数百〜千度を超える。航空機として繰り返し使用可能な熱管理材料・構造の開発は、軍用の使い捨て極超音速兵器と異なり、商用機ならではの困難がある。</li>
+      <li><b>規制・騒音問題：</b>超音速飛行に伴うソニックブームは多くの国で陸上での超音速飛行を禁止している。Mach 5ならより高高度を飛行するため影響は限定的とも言われるが、規制の枠組み整備は不可欠。</li>
+      <li><b>開発タイムラインの延長：</b>航空宇宙ハードウェア開発は当初計画より延伸するケースが多い。BoomのXB-1実証機も大幅に遅延した。Halcyon商用機の2030年代前半商用化は楽観的シナリオの可能性がある。</li>
+      <li><b>燃料・運航コスト：</b>Mach 5飛行は通常の旅客機に比べ燃料消費が格段に大きい。持続可能な燃料（SAF）のMach 5対応と運航経済性の実現は未解決の課題。チケット価格が「現実的な需要」と釣り合うかどうかが商業成功の鍵。</li>
+      <li><b>競合・ジオポリティクス：</b>中国・ロシアの極超音速開発が軍事転用に集中する中、民間極超音速機の規制・輸出管理への影響は不透明。技術流出防止の観点から政府の関与が強まる可能性がある。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ===================== 10. WHY NOW ===================== -->
+<div class="sec" id="why-now">
+  <div class="sec-label"><span class="num">10</span> Why Now</div>
+  <h2>なぜ今注目か</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">01</div>
+      <div>
+        <div class="ind-title">「SpaceX効果」による開発コスト革命</div>
+        <div class="ind-desc">SpaceXのアジャイル開発モデルが航空宇宙業界全体の開発コスト・スピードの基準値を変えた。HermeusはYC（Y Combinator）出身というスタートアップ文化を持ちながら、極超音速という従来なら「何十年・何百億ドルの国家プロジェクト」だった領域に挑んでいる。製造技術の進歩（積層造形・先進材料の商業化）も開発コスト低減を後押しする。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">02</div>
+      <div>
+        <div class="ind-title">極超音速の軍事的重要性の急上昇</div>
+        <div class="ind-desc">中国・ロシアの極超音速ミサイル実用化を受け、米国は2020年代に極超音速研究予算を大幅に増加させた。Hermeusのような民間企業が独立して技術を開発・実証することは、DARPA・AFWERX等の政府機関にとって「安価なR&D外注」として機能する。軍事的緊張の高まりは逆説的にHermeusの政府収入を安定させる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">03</div>
+      <div>
+        <div class="ind-title">超富裕層・企業エグゼクティブの移動需要の変化</div>
+        <div class="ind-desc">コロナ禍後、富裕層のプライベートジェット利用が急増した。「時間を買う」という消費行動の正当化が進み、Mach 5による「ニューヨーク〜ロンドン90分」への支払意思を持つ層の規模が10年前より大きくなっている。Halcyonのビジネスジェットポジショニングはこのトレンドに乗る。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">04</div>
+      <div>
+        <div class="ind-title">先進材料・製造技術の商業化</div>
+        <div class="ind-desc">炭化ケイ素繊維強化複合材料（SiC/SiC）、超耐熱合金、積層造形による複雑形状エンジン部品製造など、極超音速機に必要な先進材料・製造技術が宇宙・エネルギー分野の民間需要に引っ張られて商業利用可能なコストに近づいている。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>Hypersonic is the next internet. It will reshape how the world moves, thinks, and does business. We're building the infrastructure for that future.</p>
+    <div class="attr">— AJ Piplica, CEO</div>
+  </div>
+
+  <p>Hermeusは「夢物語」と「現実的なエンジニアリング」の境界線を着実に削っているスタートアップだ。Quarterhorse Mk1の初飛行は、TBCCエンジンを搭載した実機が実際に飛ぶという事実を世界に示した。$358Mの資金、a16zという強力な投資家、USAF契約による収入安定化、GE Aviationという大型産業パートナーが揃った今、Mach 5民間機というアイデアはもはや遠い未来の話ではない。2030年代前半の商業運航開始に向けた最大のハードルは「技術」ではなく「時間と反復」かもしれない。</p>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Hermeus 公式サイト・プレスリリース</li>
+    <li>Aviation Week — Quarterhorse Mk1初飛行報道（2025年5月）</li>
+    <li>Defense News — USAF Quarterhorse契約詳細</li>
+    <li>Forbes — AJ Piplica プロフィール</li>
+    <li>TechCrunch — Hermeus Series C報道</li>
+    <li>Wired — 極超音速民間機開発特集</li>
+    <li>AFWERX — Hermeus契約公示情報</li>
+    <li>GE Aviation — F414エンジン技術仕様</li>
+    <li>The Economist — 超音速旅客機市場分析</li>
+    <li>Crunchbase — Hermeus資金調達履歴</li>
+  </ul>
+</div>
+
+</div>
+</body>
+</html>

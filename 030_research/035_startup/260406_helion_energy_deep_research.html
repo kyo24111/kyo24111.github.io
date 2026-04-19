@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helion Energy — 核融合スタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">核融合</span>
+    <span class="badge badge-white">FRC・直接発電</span>
+    <span class="badge badge-solid">Microsoft PPA締結</span>
+  </div>
+  <h1>Helion Energy</h1>
+  <p class="hero-sub">
+    「タービン不要の核融合発電」——<br>
+    磁場反転配位（FRC）プラズマとD-He3燃料で、核融合エネルギーを直接電力に変換する革新的アプローチ。Sam Altmanが個人で$375M超を投じ、Microsoftとの世界初の核融合電力購入契約（PPA）を締結。2028年の電力供給開始を宣言した異端の核融合スタートアップ。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$5.4B</div><div class="lbl">バリュエーション（2025年1月）</div></div>
+    <div class="kpi"><div class="val">$2.2B</div><div class="lbl">累計調達額</div></div>
+    <div class="kpi"><div class="val">2013</div><div class="lbl">設立年</div></div>
+    <div class="kpi"><div class="val">Everett, WA</div><div class="lbl">本社所在地</div></div>
+    <div class="kpi"><div class="val">150M°C</div><div class="lbl">2026年2月 D-T融合達成温度</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">FRC技術と直接発電の仕組み</a></li>
+    <li><a href="#prototypes">プロトタイプ進化 Trenta→Polaris</a></li>
+    <li><a href="#microsoft">MicrosoftとのPPA</a></li>
+    <li><a href="#altman">Sam Altmanとの関係</a></li>
+    <li><a href="#funding">資金調達・投資家</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#team">経営陣</a></li>
+    <li><a href="#risks">リスクと課題</a></li>
+    <li><a href="#why-now">なぜ今注目すべきか</a></li>
+  </ol>
+</div>
+
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Helion Energy, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2013年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Everett, Washington</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">David Kirtley（共同創業者）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">$5.4B（2025年1月 Series F時点）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">約$2.2B</div></div>
+    <div class="kv-item"><div class="k">技術アプローチ</div><div class="v">磁場反転配位（FRC）+ 直接磁気誘導発電</div></div>
+    <div class="kv-item"><div class="k">燃料サイクル</div><div class="v">D-He3（将来目標）/ D-T（現行実証）</div></div>
+  </div>
+
+  <p>Helion Energyは2013年にWashington州Everettで創業された核融合スタートアップだ。創業者のDavid Kirtley CEOは核融合工学の博士号を持ち、米空軍研究所でのFRC（磁場反転配位）研究を経て民間での核融合商用化に踏み出した。</p>
+
+  <p>Helionが業界で際立つのは、そのアプローチの独自性にある。トカマク型が圧倒的多数を占める核融合業界において、Helionは「<strong>FRCプラズマ × D-He3燃料 × 直接磁気誘導発電</strong>」という三重の独自性を持つ。特に「タービンを使わずに磁場変化から直接電力を生成する」という発電方式は、核融合商用化において初めて提唱されたコンセプトに近い。</p>
+
+  <p>2021年にはMicrosoftとの間で<strong>世界初の核融合電力購入契約（PPA）</strong>を締結した。2028年までに少なくとも50MWeを供給するという内容であり、未達成時には$1/ワットのペナルティ条項が付く強気の内容だ。これにより核融合は初めて「ビジネス契約の対象」となり、業界全体を驚かせた。</p>
+
+  <div class="callout">
+    <strong>最大の特徴：</strong>Helionは核融合炉で発生する高温プラズマを「熱→蒸気→タービン→発電機」という従来の熱サイクルを経ずに、磁場の変化から直接電力を取り出す。これが実現すれば熱効率を大幅に改善できるが、一方でこのアプローチ自体がまだ商業規模では未実証の技術であり、最大のリスク要因でもある。
+  </div>
+</div>
+
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">2</span> Technology</div>
+  <h2>FRCプラズマの原理とD-He3アプローチ、直接発電の仕組み</h2>
+
+  <h3>磁場反転配位（FRC）とは何か</h3>
+  <p>FRC（Field-Reversed Configuration：磁場反転配位）は、外部トロイダルコイルとトカマクの複雑な構造を必要とせず、<strong>コンパクトなシリンダー状の装置でプラズマを閉じ込める</strong>磁場閉じ込め方式だ。FRCプラズマは内部の誘導電流によって、外部磁場と反対方向の磁場を持ち、磁力線がプラズマの中央で「閉じた」島状のトポロジーを形成する。これによって非常に高い「ベータ値」（プラズマ圧力と磁気圧の比）が実現できる。</p>
+
+  <p>Helionの装置では、2本の対向するFRCプラズマを超音速で衝突・合体させることで、プラズマを数千万度〜数億度に圧縮・加熱する。この動的圧縮プロセスを<strong>「磁化ターゲット核融合（MTF）」</strong>と呼ぶ変形アプローチで採用しており、定常的なトカマクとは異なりパルス（繰り返し）動作が基本となる。</p>
+
+  <h3>D-He3燃料サイクルの革新性</h3>
+  <p>ほとんどの核融合スタートアップがD-T（重水素-三重水素）燃料を採用する中、Helionの最終目標は<strong>D-He3（重水素-ヘリウム3）</strong>燃料サイクルだ。この反応の最大の利点は「<strong>ほぼ中性子フリー</strong>」な点にある。D-T反応では生成エネルギーの80%が高速中性子として放出され、これが炉材料の放射化・劣化を引き起こす。D-He3反応では中性子がほとんど生成されず、放射性廃棄物が極めて少ない「真にクリーンな核融合」が実現する。</p>
+
+  <p>ただし、D-He3反応はD-T反応より10倍以上高い温度（~10億度）が必要であり、技術的難易度は格段に高い。またHe3は地球上では極めて希少で（月面には豊富に存在）、商用スケールの燃料供給が現時点では未解決の課題だ。このため現在はD-T反応での実証を進め、将来的にD-He3への移行を目指すというロードマップを採用している。2026年2月に報告された1億5000万度でのD-T核融合達成はその第一歩だ。</p>
+
+  <h3>直接磁気誘導発電 — タービン不要の革命</h3>
+  <p>Helionの最も革新的な要素が<strong>直接発電（Direct Energy Conversion）</strong>の仕組みだ。通常の核融合発電では核融合で生じた熱でタービンを回し電力を生成する（効率30〜40%程度）。Helionはこのプロセスを根本から変える。</p>
+
+  <p>Helionの装置では核融合で生まれた超高温プラズマが外部に向かって膨張する際、装置の金属コイルと磁場を通過することで電磁誘導が起き、直接電流として電力を取り出す。これは電動モーターの逆動作（発電機原理）に近く、熱変換プロセスを排除することで理論効率は<strong>95%以上</strong>に達する可能性があるとHelionは主張する。仮にこの効率が実現されれば、核融合発電の経済性は劇的に改善される。</p>
+
+  <div class="callout">
+    <strong>直接発電の本質的リスク：</strong>直接磁気誘導発電は実験室レベルの小規模では実証されているが、商業規模（50〜数百MWe）での動作実績はゼロだ。パルス核融合から安定した電力グリッドへの変換には、高周波パルス電力の平滑化・安定化という独自の電力工学課題が伴う。この点がHelionの最大の技術リスクとなる。
+  </div>
+</div>
+
+
+<!-- ===================== 3. PROTOTYPES ===================== -->
+<div class="sec" id="prototypes">
+  <div class="sec-label"><span class="num">3</span> Prototype Evolution</div>
+  <h2>プロトタイプの進化 — Trenta（6号機）→ Polaris（7号機）</h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2013〜2015</span>
+          <span class="tl-title">1〜3号機（初期プロトタイプ）</span>
+        </div>
+        <div class="tl-body">FRCプラズマ形成の基礎実験。磁場反転配位の安定化と対向プラズマの合体・圧縮に関するデータ取得。資金は限られており小規模な実証が中心。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2016〜2018</span>
+          <span class="tl-title">4号機（Columbus） — 圧縮加熱の実証</span>
+        </div>
+        <div class="tl-body">プラズマの動的圧縮による加熱を実証。数千万度レベルの温度達成。直接発電コンセプトの初期検証も実施。Y Combinatorからの最初の資金で規模を拡大。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2020〜2021</span>
+          <span class="tl-title">5号機（Linus） — 温度記録更新</span>
+        </div>
+        <div class="tl-body">プラズマ温度が<b>9,000万度</b>に到達。核融合反応に必要な1億度超の閾値に迫る。Sam Altmanの個人投資による大規模資金調達（~$375M）がこの時期に行われ、開発が加速。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2022〜2024</span>
+          <span class="tl-title">6号機「Trenta」 — D-T核融合温度達成</span>
+        </div>
+        <div class="tl-body">Trenta（「30」のイタリア語）はHelionの最初の核融合実証装置として位置づけられた。<b>1億度超</b>のプラズマ温度を達成し、D-T核融合反応の発生を実証。2023年の時点で核融合反応を確認したと発表。直接発電の概念実証も継続。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年2月</span>
+          <span class="tl-title">1億5000万度でのD-T核融合達成</span>
+        </div>
+        <div class="tl-body"><b>1億5,000万度</b>というD-T核融合に十分な温度でのプラズマ実証を報告。太陽コアの温度（約1,500万度）の10倍に相当。核融合利得（Q>1）への残る課題はプラズマ閉じ込め時間と圧縮効率の改善。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">建設中（2025〜）</span>
+          <span class="tl-title">7号機「Polaris」 — 初の電力生成実証装置</span>
+        </div>
+        <div class="tl-body">Polaris（北極星）はTrentaの後継で、<b>初めて電力網への電力供給を目指す実証装置</b>として設計された。直接磁気誘導発電の商業実証が主目的。Microsoft PPAの2028年目標達成に向けた決定的な装置となる。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2028年（目標）</span>
+          <span class="tl-title">Microsoft PPA達成 — 50MWe供給開始</span>
+        </div>
+        <div class="tl-body">Microsoftとのパワー・パーチェス・アグリーメント（PPA）に基づき、<b>50MWe以上</b>の電力を電力網に供給することを目標とする。達成できない場合は$1/ワットのペナルティが発生する契約。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>各プロトタイプの技術進化サマリー</h3>
+  <table class="t">
+    <thead>
+      <tr>
+        <th>装置</th>
+        <th>世代</th>
+        <th>主要達成事項</th>
+        <th>温度（目安）</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1〜3号機</td>
+        <td>初期</td>
+        <td>FRC基礎、プラズマ形成</td>
+        <td>〜数百万度</td>
+      </tr>
+      <tr>
+        <td>Columbus（4号機）</td>
+        <td>中期</td>
+        <td>動的圧縮加熱の実証</td>
+        <td>〜数千万度</td>
+      </tr>
+      <tr>
+        <td>Linus（5号機）</td>
+        <td>中期</td>
+        <td>9,000万度達成、Sam Altman投資</td>
+        <td>9,000万度</td>
+      </tr>
+      <tr>
+        <td>Trenta（6号機）</td>
+        <td>現行</td>
+        <td>D-T核融合反応実証、1.5億度達成（2026年2月）</td>
+        <td>1億5,000万度+</td>
+      </tr>
+      <tr>
+        <td>Polaris（7号機）</td>
+        <td>次世代</td>
+        <td>直接発電実証（建設中・2028年目標）</td>
+        <td>設計中</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===================== 4. MICROSOFT PPA ===================== -->
+<div class="sec" id="microsoft">
+  <div class="sec-label"><span class="num">4</span> Microsoft PPA</div>
+  <h2>Microsoftとの歴史的PPA — 世界初の核融合電力購入契約</h2>
+
+  <p>2021年5月、HelionとMicrosoftは<strong>世界初の核融合電力購入契約（PPA）</strong>を締結したと発表した。これは核融合業界全体に与えたインパクトという意味でも、単なる2社間の契約を超えた歴史的なイベントだった。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">契約内容</div><div class="v">核融合電力の購入（電力量は非開示）</div></div>
+    <div class="kv-item"><div class="k">目標供給量</div><div class="v">50MWe以上（最低限）</div></div>
+    <div class="kv-item"><div class="k">目標年</div><div class="v">2028年</div></div>
+    <div class="kv-item"><div class="k">ペナルティ条項</div><div class="v">未達成時 $1/ワット（$50M相当の可能性）</div></div>
+    <div class="kv-item"><div class="k">供給先</div><div class="v">Microsoft社のデータセンター向け電力</div></div>
+    <div class="kv-item"><div class="k">契約の意義</div><div class="v">世界初の民間核融合PPA</div></div>
+  </div>
+
+  <h3>なぜMicrosoftがHelionと組んだのか</h3>
+  <p>Microsoftにとってのモチベーションは明快だ。Microsoft（およびAzure）は2030年までに「カーボンネガティブ」を達成するという公約を持つ。急増するクラウド・AIインフラの電力需要を再生可能エネルギーだけで賄うことへの限界を認識しており、24時間安定供給が可能なクリーンエネルギー源として核融合に注目した。</p>
+
+  <p>Sam Altmanとの関係も重要だ。Sam Altmanは個人としてHelionに$375M以上を投資し取締役に就任しており、同時にMicrosoftはOpenAIに数十億ドルを投資している。HelionとMicrosoftのPPA締結の背景には、こうしたシリコンバレーのインナーサークル内のネットワークが機能したという見方もある。</p>
+
+  <h3>$1/ワットのペナルティ条項が意味すること</h3>
+  <p>PPA契約に含まれる「2028年までに50MWe供給未達の場合は$1/ワット（推定$50M）のペナルティ」という条項は、業界内外で注目を集めた。これは「言葉だけの約束ではない」という意思表示であり、Helionが自社の技術タイムラインに相当の自信を持っていることを示す。一方で、2028年という期限まで2年を切った現在（2026年4月時点）においても、Polarisはまだ建設中であり達成の確証はない。</p>
+
+  <div class="quote">
+    <p>We're going to be able to power Microsoft's data centers with fusion energy by 2028. That's the commitment we've made.</p>
+    <div class="attr">— David Kirtley, CEO, Helion Energy（2021年PPA発表時）</div>
+  </div>
+
+  <div class="callout">
+    <strong>PPA締結の産業的意義：</strong>核融合の「電力購入契約」は概念的には購入できるものをゼロから作るという「前払い約束」に近い。これによって核融合は初めて「実際の市場需要」と接続された。Helionの成否に関わらず、このPPA締結自体が他の核融合企業（CFSを含む）にも電力会社・テクノロジー企業との交渉を促す契機となった。
+  </div>
+</div>
+
+
+<!-- ===================== 5. SAM ALTMAN ===================== -->
+<div class="sec" id="altman">
+  <div class="sec-label"><span class="num">5</span> Sam Altman Connection</div>
+  <h2>Sam AltmanとHelion — 個人投資$375M超の背景</h2>
+
+  <p>OpenAI CEOとして知られるSam Altmanは、Helionに<strong>個人として$375M以上を投資</strong>し、Helionの取締役を務める。この投資額はSam Altmanの個人投資として最大規模とされており、彼がHelionの技術と将来性を深く信じていることを示す。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">Sam Altmanの役職</div><div class="v">取締役（Board Member）</div></div>
+    <div class="kv-item"><div class="k">個人投資額</div><div class="v">$375M+（報告値）</div></div>
+    <div class="kv-item"><div class="k">OpenAI投資との関係</div><div class="v">OpenAI（会社）もHelionに出資</div></div>
+    <div class="kv-item"><div class="k">投資開始</div><div class="v">〜2020〜2021年頃（Series E前後）</div></div>
+  </div>
+
+  <p>Sam AltmanがHelionに惹きつけられた理由として、彼は複数のインタビューで「<strong>エネルギーは全ての問題の根本</strong>」という哲学を語っている。AIが世界を変えるためには膨大なエネルギーが必要であり、そのエネルギー源の革命こそが最も重要なインフラ投資だという信念だ。</p>
+
+  <p>一方で、この関係にはコンフリクト・オブ・インタレストの指摘もある。Sam AltmanはOpenAI CEOでありながら、OpenAIの最大スポンサーであるMicrosoftがHelionとPPAを締結している。OpenAI自身もHelionに出資しているとされ、Silicon ValleyのAI・核融合エコシステムにおける複雑な利害関係が形成されている。</p>
+
+  <div class="callout">
+    <strong>AI×核融合の戦略的シナジー：</strong>Sam Altmanの視点では、AI（OpenAI）と核融合（Helion）は「二つのエポックメイキングな技術」として相互補完関係にある。AIが核融合炉設計・プラズマ制御に活用され、核融合がAIデータセンターの電力を賄うという循環モデルは、将来の「AI-エネルギー共進化」シナリオとして注目に値する。
+  </div>
+</div>
+
+
+<!-- ===================== 6. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">6</span> Funding & Investors</div>
+  <h2>資金調達・投資家</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <div class="r-badge">Series F</div>
+      <div class="f-amount">$425M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年1月</div>
+        <div class="f-desc">バリュエーション$5.4Bで$425Mを調達。Polaris建設と2028年PPA目標達成に向けた資金。既存投資家群が主体で参加。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series E</div>
+      <div class="f-amount">$500M</div>
+      <div class="f-detail">
+        <div class="f-date">2021年</div>
+        <div class="f-desc">Microsoft PPA締結と同年。Sam Altman個人投資の中核部分もこの時期。業界最大規模の調達の一つとして注目を集めた。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series D以前</div>
+      <div class="f-amount">~$500M</div>
+      <div class="f-detail">
+        <div class="f-date">〜2020年</div>
+        <div class="f-desc">Mithril Capital（Peter Thiel）、Y Combinator、Dustin Moskovitz（Facebook共同創業者）、Sam Altman個人、その他エンジェル投資家による累積投資。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要投資家プロフィール</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <div class="lead-tag">個人最大投資家</div>
+      <div class="vc-name">Sam Altman</div>
+      <div class="vc-role">OpenAI CEO・個人投資家・取締役</div>
+      <div class="vc-desc">$375M以上の個人投資とボード参加。「エネルギーが全ての根本」という信念でHelionを支持。OpenAI・Microsoft・Helionの三角関係の中心人物。</div>
+    </div>
+    <div class="vc-card lead">
+      <div class="lead-tag">初期投資家</div>
+      <div class="vc-name">Mithril Capital</div>
+      <div class="vc-role">Peter Thielのグロースステージ VC</div>
+      <div class="vc-desc">PayPal・Palantir等の共同創業者Peter Thielが率いるVC。「未来を作る技術に投資する」という哲学のもと、長期的な核融合の可能性を評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Y Combinator</div>
+      <div class="vc-role">スタートアップアクセラレーター</div>
+      <div class="vc-desc">シリコンバレーの最上位アクセラレーター。Helionが卒業生であることはシリコンバレーのエコシステムとの深いつながりを示す。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Dustin Moskovitz</div>
+      <div class="vc-role">Facebook共同創業者・有効利他主義投資家</div>
+      <div class="vc-desc">Facebook共同創業者でAsanaの創業者でもあるMoskovitzは、効果的利他主義（EA）の立場からクリーンエネルギーへのインパクト投資を実施。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">OpenAI（法人）</div>
+      <div class="vc-role">AI研究企業・戦略投資</div>
+      <div class="vc-desc">Sam Altmanの関与を通じて、OpenAI法人もHelionに出資しているとされる。AI×核融合のエコシステム構築の一環。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">その他エンジェル多数</div>
+      <div class="vc-role">シリコンバレー著名投資家群</div>
+      <div class="vc-desc">Silicon Valleyの著名起業家・投資家群が複数参加。名称非公開の投資家も多く、核融合への民間投資がTech業界に広がっている。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 7. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">7</span> Competitive Landscape</div>
+  <h2>競合比較 — CFS / ITER / TAEとの対比</h2>
+
+  <table class="t">
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>Helion Energy</th>
+        <th>CFS（SPARC/ARC）</th>
+        <th>ITER</th>
+        <th>TAE Technologies</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>アプローチ</td>
+        <td>FRC + 直接磁気誘導発電</td>
+        <td>HTS磁石コンパクトトカマク</td>
+        <td>大型トカマク</td>
+        <td>FRC + p-B11</td>
+      </tr>
+      <tr>
+        <td>燃料（長期目標）</td>
+        <td>D-He3（中間D-T）</td>
+        <td>D-T</td>
+        <td>D-T</td>
+        <td>水素-ホウ素（p-B11）</td>
+      </tr>
+      <tr>
+        <td>発電方式</td>
+        <td>直接磁気誘導（タービン不要）</td>
+        <td>蒸気タービン</td>
+        <td>蒸気タービン</td>
+        <td>直接エネルギー変換</td>
+      </tr>
+      <tr>
+        <td>バリュエーション</td>
+        <td>$5.4B（2025年1月）</td>
+        <td>非公開（~$3B調達）</td>
+        <td>政府機関（N/A）</td>
+        <td>非公開（~$1.2B調達）</td>
+      </tr>
+      <tr>
+        <td>PPA有無</td>
+        <td>あり（Microsoft、2028年）</td>
+        <td>なし（2025年時点）</td>
+        <td>N/A</td>
+        <td>なし</td>
+      </tr>
+      <tr>
+        <td>主要支援者</td>
+        <td>Sam Altman、Microsoft、Mithril</td>
+        <td>Nvidia、Google、Khosla</td>
+        <td>35カ国政府</td>
+        <td>Chevron、Google</td>
+      </tr>
+      <tr>
+        <td>物理リスク</td>
+        <td>高（FRC+直接発電は未実証）</td>
+        <td>低〜中（トカマクは実績豊富）</td>
+        <td>最低（最も実績ある設計）</td>
+        <td>最高（p-B11は最難）</td>
+      </tr>
+      <tr>
+        <td>商用化目標</td>
+        <td>2028年（50MWe、PPA）</td>
+        <td>2030年代（ARC、200MW）</td>
+        <td>2040年代（DEMO炉？）</td>
+        <td>2030年代</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">Helion Energy</div>
+      <div class="comp-tag">最も野心的・最速主張</div>
+      <div class="comp-desc">2028年PPAという最も近い商用化目標を掲げる。直接発電という革新的アプローチが実現すれば経済性で圧倒的優位。ただし技術リスクは業界最高水準。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Commonwealth Fusion Systems</div>
+      <div class="comp-tag">最大調達・低リスク</div>
+      <div class="comp-desc">実証済みHTS磁石と豊富なトカマクデータに基づく最低リスクのアプローチ。調達額最大。2030年代の商用化目標はHelionより遅いが、確実性は高い。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">ITER</div>
+      <div class="comp-tag">科学基盤・最低物理リスク</div>
+      <div class="comp-desc">最も科学的根拠が確立されているが、スケジュール遅延・コスト超過が慢性的。民間スタートアップの機動性とは対照的なプロジェクト。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">TAE Technologies</div>
+      <div class="comp-tag">p-B11・最難技術</div>
+      <div class="comp-desc">放射性廃棄物ゼロのp-B11核融合を目指す究極の挑戦。技術的ハードルはHelion以上に高く、商用化タイムラインは最も不確実。Chevronなど戦略投資家が支持。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 8. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">8</span> Leadership</div>
+  <h2>経営陣</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">DK</div>
+      <div>
+        <h3>David Kirtley</h3>
+        <div class="p-role">CEO &amp; Co-Founder</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row">
+        <div class="lbl">学歴</div>
+        <div class="val">核融合工学の博士号取得。FRCプラズマに関する研究でキャリアをスタート。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">経歴</div>
+        <div class="val">米国空軍研究所（AFRL）でFRCプラズマの研究に従事。その後、2013年にHelion Energyを共同創業。10年以上にわたってFRCプラズマのプロトタイプを段階的に進化させてきた。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">哲学</div>
+        <div class="val">「核融合はロケット科学ではなく、工学の問題だ」という現実主義的アプローチ。プロトタイプを繰り返し改良するシリコンバレー的な「build and iterate」手法を核融合に持ち込んだ先駆者。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">注目発言</div>
+        <div class="val">「Fusion power is closer than people think. We're not waiting for some magic breakthrough — we're doing the engineering.」（核融合は人々が思うより近い。魔法のブレークスルーを待つのではなく、エンジニアリングをやっている。）</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">スタイル</div>
+        <div class="val">技術出身のCEOとして、具体的な工学的進捗を重視したコミュニケーションを行う。業界の「実現は50年後」という通念に対し、明確な工程表と約束を提示することで差別化。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">Co-Founder / CTO</div><div class="v">George Votroubek — FRCプラズマと圧縮加熱の中心的研究者。Kirtleyとともに初期プロトタイプを開発。</div></div>
+    <div class="kv-item"><div class="k">取締役（Sam Altman）</div><div class="v">OpenAI CEO・個人最大投資家。技術戦略・資金調達・Microsoft連携の面でHelionを支援。</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">9</span> Risks &amp; Challenges</div>
+  <h2>リスクと課題 — D-He3燃料とFRCスケーリングの壁</h2>
+
+  <div class="warn-box">
+    <div class="w-title">技術リスク — FRCスケーリング</div>
+    <ul>
+      <li><b>FRCの安定性：</b>FRCプラズマは磁気流体力学（MHD）的に不安定であり、スケールアップ時の安定性維持は難しい課題とされる。Helionのパルス圧縮アプローチがその回避策だが、商業規模での実証はまだない。</li>
+      <li><b>直接発電の未実証：</b>直接磁気誘導発電は概念的には有望だが、50MW以上の商業規模での動作実績がゼロ。パルス電力の平滑化・グリッド接続という固有の工学課題がある。</li>
+      <li><b>Q>1（ネットエネルギー）未達成：</b>2026年2月時点で1.5億度のD-T核融合温度は達成されているが、投入エネルギーを上回る核融合エネルギーの実証（Q>1）はまだ達成されていない。</li>
+      <li><b>繰り返し動作の実現：</b>パルス型装置として毎秒単位の高頻度パルス動作が商業運転には必要だが、機械的・電気的な疲労と耐久性の確保が課題。</li>
+    </ul>
+  </div>
+
+  <div class="warn-box">
+    <div class="w-title">燃料リスク — D-He3の困難</div>
+    <ul>
+      <li><b>ヘリウム3の地球上希少性：</b>He3（ヘリウム3）は核兵器の核融合起爆剤として使われるため、地球上の民間利用可能量は極めて限られる。商業規模のHelion発電所に必要なHe3量は現在の世界生産量の何百倍にもなる見通し。</li>
+      <li><b>10億度という技術的ハードル：</b>D-He3反応の点火には約10億度が必要で、現在のD-T核融合（約1億度）の10倍以上。この温度を商業装置で安定維持することは物理的に極めて難しい。</li>
+      <li><b>D-T→D-He3移行の実証未達：</b>現在はD-T燃料での実証を行っているが、最終目標のD-He3への移行には根本的な装置改良と温度レベルの大幅な飛躍が必要。</li>
+    </ul>
+  </div>
+
+  <div class="warn-box">
+    <div class="w-title">事業・タイムラインリスク</div>
+    <ul>
+      <li><b>2028年PPAペナルティ：</b>Microsoftとの契約未達成時の$1/ワット（最大$50M）ペナルティは財務的打撃となる。より深刻なのは信頼性の喪失であり、投資家・パートナー・業界全体への影響が懸念される。</li>
+      <li><b>調達ラウンドの圧力：</b>$5.4Bという高いバリュエーションで調達を重ねており、次のラウンドでのアップラウンドを維持するためには明確な進捗実証が必要。</li>
+      <li><b>電力市場の競争激化：</b>商用化が実現する2030年代には、再エネ+蓄電池がさらに低コスト化している可能性があり、核融合の経済的優位性の実証が不可欠。</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ===================== 10. WHY NOW ===================== -->
+<div class="sec" id="why-now">
+  <div class="sec-label"><span class="num">10</span> Why Now</div>
+  <h2>なぜ今注目すべきか — 投資・産業的視点</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">直接発電が実現すれば核融合経済性を一変させる「カードゲームチェンジャー」</div>
+        <div class="ind-desc">もしHelionの直接磁気誘導発電が商業規模で動作するなら、熱効率95%以上という数字は既存の発電方式（石炭: 35%、太陽光: 20%、核分裂: 33%）を根本から凌駕する。これは単なる「クリーンな核融合」ではなく「圧倒的に安い核融合」を意味し、エネルギー産業全体の構造を変える可能性がある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">Microsoft PPAという「現実のコミットメント」が業界のゲームを変えた</div>
+        <div class="ind-desc">Helionの最大の功績の一つは、核融合を「科学的夢」から「ビジネス契約の対象」に変えたことだ。PPA締結後、複数の核融合企業が電力会社・テクノロジー企業との対話を加速した。HelionがPPAを達成できなくても、このパラダイムシフト自体は不可逆だ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">AI電力需要爆発 × クリーン電力義務化の交差点</div>
+        <div class="ind-desc">MicrosoftがHelionに賭ける背景には、Azure/AIのカーボンニュートラル義務とデータセンター電力需要の急増という二つの圧力がある。この「グリーン電力不足」は2028年以降さらに深刻化すると予測されており、核融合への需要は構造的に高まる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">プロトタイプの段階的進化による技術信頼性の蓄積</div>
+        <div class="ind-desc">Helionは10年以上かけて6世代のプロトタイプを積み重ね、D-T核融合反応の実証と1.5億度という核融合閾値超えを達成した。「言葉だけ」の核融合スタートアップが多い中、実際のプラズマデータを積み上げているHelionの方法論は評価に値する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">リスク許容度が高い「ムーンショット投資」としての位置づけ</div>
+        <div class="ind-desc">Helionへの投資は高いリスクと引き換えに、成功した場合のリターンは計り知れない。Sam AltmanやPeter Thielという「リスク許容度が高く未来志向の投資家」が個人レベルで大規模に張っていることは、通常の機関投資家には出せないシグナルとして機能する。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>投資家・産業関係者へのサマリー：</strong>Helionは核融合業界で最もリスクが高く最もポテンシャルが高い企業だ。直接発電とD-He3というダブルの革新に賭けており、2028年PPAという自ら設けた期限が迫る。Polarisの進捗状況（2026〜2027年）が次の重要な観察点となる。失敗しても業界全体を前に進めた存在として記録されるが、成功すれば核融合の歴史を書き換える。
+  </div>
+
+  <div class="quote">
+    <p>Fusion power will be the most important energy source in human history. Helion's approach to generating electricity directly — without turbines — is the key that unlocks the economics.</p>
+    <div class="attr">— Sam Altman, Board Member, Helion Energy</div>
+  </div>
+</div>
+
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>主要参考情報</h2>
+  <ul>
+    <li>Helion Energy 公式サイト（helionenergy.com）</li>
+    <li>Microsoft Blog — Helion PPA発表（2021年5月）</li>
+    <li>Helion Energy プレスリリース — Series F $425M（2025年1月）</li>
+    <li>Helion Energy プレスリリース — 1.5億度D-T核融合達成（2026年2月）</li>
+    <li>Fusion Industry Association — Global Fusion Report 2024</li>
+    <li>Financial Times — Sam Altman Helion投資報道</li>
+    <li>TechCrunch — Helion Energy Series E $500M 調達報道（2021）</li>
+    <li>Nature Energy — FRC核融合商用化に関するレビュー論文</li>
+    <li>Bloomberg — Microsoft・Helion PPA詳細報道（2021年）</li>
+    <li>Forbes — David Kirtley CEO インタビュー</li>
+  </ul>
+</div>
+
+
+</div>
+</body>
+</html>

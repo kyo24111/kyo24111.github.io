@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zipline — 自律ドローン配送スタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">自律ドローン配送</span>
+    <span class="badge badge-white">Level-4 Autonomy</span>
+    <span class="badge badge-solid">Series H / $7.6B Val</span>
+  </div>
+  <h1>Zipline</h1>
+  <p class="hero-sub">
+    「空の物流インフラを再設計する」——<br>
+    世界初のLevel-4完全自律ドローン配送網を構築。120M+マイルの自律飛行実績と2M件超の商業配送で、医療物資からWalmartの日用品まで、ドローンによる即日配送を現実のビジネスとした唯一のスタートアップ。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$7.6B</div><div class="lbl">Valuation（Jan 2026）</div></div>
+    <div class="kpi"><div class="val">$2.03B</div><div class="lbl">累計調達額</div></div>
+    <div class="kpi"><div class="val">2M+</div><div class="lbl">商業配送件数（Jan 2026）</div></div>
+    <div class="kpi"><div class="val">120M+mi</div><div class="lbl">自律飛行総距離</div></div>
+    <div class="kpi"><div class="val">8カ国</div><div class="lbl">展開国数</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">技術解説（Platform 1 vs 2）</a></li>
+    <li><a href="#ops">オペレーション実績</a></li>
+    <li><a href="#bizmodel">ビジネスモデル</a></li>
+    <li><a href="#medical">医療インパクト</a></li>
+    <li><a href="#funding">資金調達・投資家</a></li>
+    <li><a href="#customers">顧客・パートナー</a></li>
+    <li><a href="#team">経営陣</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">リスクと課題</a></li>
+    <li><a href="#why">なぜ今注目か</a></li>
+  </ol>
+</div>
+
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Zipline International, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2014年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">South San Francisco, California, USA</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">Keller Rinaudo Cliffton</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">$7.6B（2026年1月 Series H）</div></div>
+    <div class="kv-item"><div class="k">累計調達</div><div class="v">$2.03B</div></div>
+    <div class="kv-item"><div class="k">配送件数</div><div class="v">2M+件（2026年1月時点）</div></div>
+    <div class="kv-item"><div class="k">展開国</div><div class="v">8カ国（アフリカ・米国・日本等）</div></div>
+  </div>
+
+  <p>Zipline（ジップライン）は、「自律配送の実用化」において世界で最も先行するスタートアップだ。2014年にKeller Rinaudo Clifftonが創業し、ルワンダでの医療物資輸送から始まって、今や8カ国・4,000以上の医療施設・Walmartのような小売大手にドローン配送を提供する、Level-4完全自律飛行の実績を持つ唯一の商業運用企業に成長した。</p>
+
+  <p>CEOのKeller Rinaudo Clifftonは、ハーバード大学卒（生物学・コンピュータサイエンス）で元プロクライマー。「医療アクセスの不平等を技術で解消する」という強い社会的使命感のもとでZiplineを設立した。創業当初から一貫して「医療物資の空輸」をユースケースとして選択したことが、規制当局との信頼構築と国家レベルのパートナーシップ獲得の源泉となっている。</p>
+
+  <p>Level-4自律性とは、パイロットなしで完全に自動化された飛行・配送・帰還を実現するレベルを指す。Ziplineは2026年1月時点で<strong>120M+マイルの自律飛行</strong>と<strong>2M件超の商業配送</strong>を達成しており、この実績はドローン業界全体で突出している。ピーク時には<strong>70秒に1件</strong>の配送ペースを実現している。</p>
+
+  <div class="callout">
+    <strong>Ziplineの本質：</strong>単なるドローン企業ではなく、「空の物流インフラ企業」だ。ルワンダから始まった医療配送の実績と安全記録が、Walmart・Cleveland Clinic・各国政府との大型契約獲得を可能にした。実績が次の契約を生む「フライホイール」が強力に回っている。
+  </div>
+</div>
+
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">2</span> Technology</div>
+  <h2>技術解説：Platform 1 vs Platform 2 "Zip"</h2>
+
+  <h3>Platform 1（固定翼・パラシュート投下型）</h3>
+  <p>Ziplineが創業以来運用してきた第1世代プラットフォームが<strong>Platform 1</strong>だ。固定翼（飛行機型）の自律ドローンで、ランチャーから弾力で打ち出され、高速で目的地まで飛行する。荷物は目的地上空で<strong>パラシュート（小型）付きのパッケージ</strong>として投下される仕組みで、ドローン本体は着陸せずに帰還する。</p>
+
+  <p>このアーキテクチャの優位性は、<strong>インフラ不要の配送</strong>にある。着陸場所を必要とせず、指定されたエリア（病院の駐車場、空き地など）に降下するだけでよい。アフリカの農村部のように舗装された着陸エリアが存在しない環境での運用に最適化されており、ルワンダ・ガーナ・ナイジェリア等での医療配送に広く使われてきた。</p>
+
+  <p>Platform 1の航続距離は約160km（往復）で、1フライトで1〜2kgの医療物資を輸送できる。血液製剤・ワクチン・医薬品など温度管理が必要な物資にも対応した専用パッケージが開発されている。</p>
+
+  <h3>Platform 2 "Zip"（ホバリング・精密降下型）</h3>
+  <p>2023年に本格展開を開始した第2世代プラットフォームが<strong>Platform 2、通称"Zip"</strong>だ。Platform 1との最大の違いは、<strong>垂直離着陸（VTOL）とホバリング能力</strong>を持つことだ。目的地上空でホバリングし、細いテザー（ワイヤー）を使って荷物を精密に地面まで降ろす。この方式により、特定の場所（玄関ドア前・バックヤード等）への精密配送が可能になった。</p>
+
+  <p>ZipはWalmartや一般消費者向けの商業配送に対応するために設計された。従来のパラシュート投下では難しかった「ユーザーが指定した正確な場所に届ける」という消費者向け配送の要件を満たす。最大積載量は約1.8kg、航続距離は32km（往復）と、Platform 1より短距離だが高精度配送に特化している。</p>
+
+  <table class="t">
+    <thead>
+      <tr>
+        <th>比較項目</th>
+        <th>Platform 1</th>
+        <th>Platform 2 "Zip"</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>機体タイプ</td>
+        <td>固定翼（飛行機型）</td>
+        <td>VTOL（マルチコプター）</td>
+      </tr>
+      <tr>
+        <td>配送方式</td>
+        <td>パラシュート投下</td>
+        <td><strong>テザー精密降下</strong></td>
+      </tr>
+      <tr>
+        <td>着陸</td>
+        <td>不要（帰還して回収）</td>
+        <td>不要（ホバリングのまま配送）</td>
+      </tr>
+      <tr>
+        <td>航続距離</td>
+        <td>約160km（往復）</td>
+        <td>約32km（往復）</td>
+      </tr>
+      <tr>
+        <td>最大積載量</td>
+        <td>1〜2 kg</td>
+        <td>約1.8 kg</td>
+      </tr>
+      <tr>
+        <td>主な用途</td>
+        <td>医療物資・農村部・長距離</td>
+        <td><strong>商業配送・都市郊外・精密配達</strong></td>
+      </tr>
+      <tr>
+        <td>主要顧客</td>
+        <td>政府・病院（アフリカ中心）</td>
+        <td>Walmart・Cleveland Clinic・一般消費者</td>
+      </tr>
+      <tr>
+        <td>ノイズレベル</td>
+        <td>低〜中（高速飛行）</td>
+        <td>低（設計上の静粛性重視）</td>
+      </tr>
+      <tr>
+        <td>展開国</td>
+        <td>ルワンダ・ガーナ・ナイジェリア等</td>
+        <td>米国・日本・その他先進国</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>自律飛行システムと安全性</h3>
+  <p>ZiplineのLevel-4自律性を支えるのは、独自開発の<strong>飛行管理AIとリアルタイム経路計算システム</strong>だ。各Zipドローンは毎秒数千のセンサーデータを処理しながら飛行し、障害物回避・気象変化・通信途絶時の自律判断を行う。</p>
+
+  <p>現在まで120M+マイルの飛行で重大な安全インシデントは報告されていない。この安全記録がFAA（米連邦航空局）やCAA（各国航空当局）との規制協議において最大の武器となっており、競合他社が苦戦する「BVLOS（目視外飛行）許可」をいち早く複数国で取得できた。</p>
+</div>
+
+
+<!-- ===================== 3. OPERATIONS ===================== -->
+<div class="sec" id="ops">
+  <div class="sec-label"><span class="num">3</span> Operations</div>
+  <h2>オペレーション実績：2M件・8カ国</h2>
+
+  <h3>主要KPI（2026年1月時点）</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">総配送件数</div><div class="v">2,000,000件超</div></div>
+    <div class="kv-item"><div class="k">自律飛行距離</div><div class="v">120,000,000マイル超</div></div>
+    <div class="kv-item"><div class="k">展開国数</div><div class="v">8カ国</div></div>
+    <div class="kv-item"><div class="k">対応医療施設</div><div class="v">4,000+施設</div></div>
+    <div class="kv-item"><div class="k">ピーク配送頻度</div><div class="v">70秒に1件</div></div>
+    <div class="kv-item"><div class="k">配送可能品目</div><div class="v">医薬品・血液・食品・日用品</div></div>
+  </div>
+
+  <h3>展開国・地域の概要</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <div class="tl-date">2016年〜</div>
+          <div class="tl-title">ルワンダ — 世界初の商業ドローン配送網</div>
+        </div>
+        <div class="tl-body">アフリカ・ルワンダ全土をカバーするドローン配送網を構築。農村部の医療施設への血液・医薬品輸送を担い、従来数時間かかっていた輸血用血液を約30分で届けることを可能にした。<b>世界初の国家規模商業ドローン配送</b>の実績を確立。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <div class="tl-date">2019年〜</div>
+          <div class="tl-title">ガーナ — アフリカ最大規模へ拡大</div>
+        </div>
+        <div class="tl-body">ガーナ政府との契約で展開を拡大。複数の配送拠点（ディストリビューションセンター）から全国をカバーする体制を構築。マラリア治療薬・ワクチン・血液製剤を中心に配送。<b>ガーナは現在Ziplineの最大市場の一つ。</b></div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <div class="tl-date">2021年〜</div>
+          <div class="tl-title">米国 — Walmart・病院向け商業展開</div>
+        </div>
+        <div class="tl-body">Arkansas州でWalmartとの商業配送パイロットを開始。Platform 2の投入とともにアーカンソー・テキサス等で本格展開。FAA BVLOS承認を取得し、<b>先進国市場での大規模展開</b>に向けた実績を積み上げる。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <div class="tl-date">2022年〜</div>
+          <div class="tl-title">日本 — アジア初の拠点</div>
+        </div>
+        <div class="tl-body">日本での展開を開始。日本郵便やYahoo! JAPANとの連携も報じられており、山間部・離島へのドローン配送実証が進む。<b>アジア市場進出の橋頭堡</b>として位置付けられている。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <div class="tl-date muted">2026年〜（予定）</div>
+          <div class="tl-title">米国拡大：Houston / Phoenix / Seattle</div>
+        </div>
+        <div class="tl-body">Series H調達資金を活用し、<b>Houston・Phoenix・Seattle</b>への展開を計画。米国内の大都市圏郊外での本格商業サービス化を推進し、Walmart・Pfizer等の既存顧客との深化を図る。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>2M件の重み：</strong>ドローン配送業界で商業ベースで2M件を超えた企業は世界でZiplineのみ。Wing（Google）やAmazon Prime Airが数万件レベルの実証段階にあるのと比較すると、Ziplineの実績は桁違いのリードを示している。
+  </div>
+</div>
+
+
+<!-- ===================== 4. BUSINESS MODEL ===================== -->
+<div class="sec" id="bizmodel">
+  <div class="sec-label"><span class="num">4</span> Business Model</div>
+  <h2>ビジネスモデル</h2>
+
+  <h3>Delivery-as-a-Service（DaaS）モデル</h3>
+  <p>Ziplineの収益モデルは主に<strong>配送サービスの従量課金</strong>および<strong>長期サービス契約</strong>だ。顧客（政府・病院・Walmart等）はZiplineとサービス契約を結び、1配送あたりの費用またはパッケージ月額費用を支払う。ドローン機体・ソフトウェア・メンテナンス・インフラ（Distribution Center）はすべてZiplineが所有・運営するため、顧客はインフラ投資なしにサービスを利用できる。</p>
+
+  <p>政府との契約（ルワンダ・ガーナ・ナイジェリア等）では、<strong>国家医療物流アウトソーシング</strong>の形をとるケースが多い。政府が薬品調達・配送を一括してZiplineに委託し、固定費＋変動費のハイブリッド料金体系で支払う。これにより政府は倉庫・冷蔵設備・運転手の管理から解放され、Ziplineには安定した長期経常収益が生まれる。</p>
+
+  <h3>米国商業市場（Platform 2）の収益モデル</h3>
+  <p>Walmartや医療機関との契約では、<strong>SaaS的なプラットフォーム利用料＋配送従量料</strong>の組み合わせが想定される。消費者がWalmartアプリでドローン配送をリクエストした場合、Walmartがサービス費用を支払い、Ziplineに配送料を支払う構造だ。Amazon Prime Airとの差別化として、Ziplineは特定小売企業のホワイトラベルパートナーとして機能し、顧客ブランドを維持できる点が評価されている。</p>
+
+  <h3>温度管理・医薬品配送の高付加価値</h3>
+  <p>Pfizer（医薬品）やCleveland Clinic（医療施設）との連携では、通常の物流では困難な<strong>温度管理品の即時配送</strong>が価値の源泉だ。冷蔵が必要な血液・ワクチン・インスリン等を、夜間・週末問わず数十分で届けることで、在庫コスト削減と患者アウトカム改善を同時に実現する。この高付加価値セグメントでの料金は一般物資より高く、マージンの向上に貢献する。</p>
+
+  <div class="callout">
+    <strong>TAM（Total Addressable Market）：</strong>世界の医療物流市場は2030年代に数十兆円規模。加えて米国ラストマイル配送市場（$150B+）へのPlatform 2展開が進めば、Ziplineのアドレッサブル市場は桁違いに拡大する。$7.6Bバリュエーションはこれらの市場ポテンシャルを織り込んだ評価だ。
+  </div>
+</div>
+
+
+<!-- ===================== 5. MEDICAL IMPACT ===================== -->
+<div class="sec" id="medical">
+  <div class="sec-label"><span class="num">5</span> Medical Impact</div>
+  <h2>医療インパクト：アフリカでの血液輸送から世界へ</h2>
+
+  <h3>ルワンダ：命を救う配送速度</h3>
+  <p>Ziplineの社会的インパクトが最も顕著なのが<strong>ルワンダ</strong>だ。農村部に点在する医療施設は、産後出血・外傷・マラリアなどの緊急時に適切な血液型の輸血用血液を確保するのが困難だった。血液の鮮度・冷蔵保管・搬送時間の問題が重なり、必要なときに血液が届かないことが多くの死亡事例につながっていた。</p>
+
+  <p>ZiplineはKigali近郊と全国数か所のDistribution Centerから、医療施設のオーダーを受けて平均<strong>30〜45分以内</strong>にドローンで血液を届ける体制を構築。医師はスマートフォンのWhatsAppメッセージでオーダーを送り、ZiplineのAIが最適ルートを計算してドローンを打ち出す。この仕組みによって、2016年以降ルワンダの周産期死亡率と外傷死亡率の低下に貢献したと現地政府・医療関係者が評価している。</p>
+
+  <h3>ガーナ・ナイジェリア：大規模展開</h3>
+  <p>ガーナではZiplineが全国的な医薬品配送ネットワークを運営しており、マラリア治療薬・抗レトロウイルス薬（HIV治療）・ワクチン等を配送している。2020年のCOVID-19パンデミック初期には、PCR検査キットや保護具のドローン配送でその真価を発揮した。政府はパンデミック対応でZiplineとの契約を拡大し、医療インフラとしての地位を確立した。</p>
+
+  <h3>先進国：医療コスト削減への貢献</h3>
+  <p>Cleveland Clinicとのパートナーシップでは、病院間での<strong>緊急検体・医薬品の輸送</strong>にPlatform 2が活用されている。従来は救急車や特別輸送で数時間かかっていた検体搬送が数十分に短縮され、診断・治療の高速化と医療コスト削減が実現している。</p>
+
+  <div class="quote">
+    <p>Every delivery we make is potentially saving a life. That's not a metaphor — in Rwanda, blood that arrives 40 minutes late can mean death.</p>
+    <div class="attr">— Keller Rinaudo Cliffton, CEO, Zipline</div>
+  </div>
+
+  <h3>配送可能品目の多様性</h3>
+  <div class="pills">
+    <span class="pill s">輸血用血液</span>
+    <span class="pill s">ワクチン（冷蔵）</span>
+    <span class="pill s">抗マラリア薬</span>
+    <span class="pill s">抗レトロウイルス薬</span>
+    <span class="pill">PCR検査キット</span>
+    <span class="pill">外傷治療物資</span>
+    <span class="pill">インスリン</span>
+    <span class="pill">食料品（Walmart）</span>
+    <span class="pill">日用品</span>
+    <span class="pill">ペット用医薬品</span>
+  </div>
+</div>
+
+
+<!-- ===================== 6. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">6</span> Funding &amp; Investors</div>
+  <h2>資金調達・投資家</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <div class="r-badge">Series H 拡張</div>
+      <div class="f-amount">$200M</div>
+      <div class="f-detail">
+        <div class="f-date">2026年3月</div>
+        <div class="f-desc">Paradigmが参加したSeries H拡張ラウンド。米国内（Houston・Phoenix・Seattle）への展開加速資金として活用予定。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series H</div>
+      <div class="f-amount">$600M</div>
+      <div class="f-detail">
+        <div class="f-date">2026年1月</div>
+        <div class="f-desc">Lead: Fidelity / Baillie Gifford / Valor Equity Partners / Tiger Global。バリュエーション$7.6B。Series H合計$800M。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">Series A〜G</div>
+      <div class="f-amount">$1.23B</div>
+      <div class="f-detail">
+        <div class="f-date">2015〜2024年</div>
+        <div class="f-desc">Andreessen Horowitz・Google Ventures・Sequoia・Microsoft・Boeing等から累計調達。医療特化フェーズからグローバル商業展開フェーズへの資金。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要投資家</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <div class="lead-tag">Lead H</div>
+      <div class="vc-name">Fidelity Investments</div>
+      <div class="vc-role">Series H リード</div>
+      <div class="vc-desc">米国大手資産運用会社。未上場グロースステージへの積極投資。ZiplineのIPO前の大型ポジションとして位置付け。AstranisにもSeries Dで参加しており、宇宙・ロボティクス分野への注目が鮮明。</div>
+    </div>
+    <div class="vc-card lead">
+      <div class="lead-tag">Lead H</div>
+      <div class="vc-name">Baillie Gifford</div>
+      <div class="vc-role">長期成長投資家</div>
+      <div class="vc-desc">SpaceX・Tesla・Airbnbへの早期投資で知られるスコットランドの長期ファンド。10〜20年スパンで社会変革企業を支援するスタイルがZiplineのミッションと親和性が高い。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Valor Equity Partners</div>
+      <div class="vc-role">グロース投資家</div>
+      <div class="vc-desc">Tesla・SpaceX等のハードウェア変革企業への投資実績を持つVC。Ziplineの「フィジカルインフラ×ソフトウェア」モデルへの評価が投資判断の背景。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Tiger Global</div>
+      <div class="vc-role">グロース投資家</div>
+      <div class="vc-desc">グローバルなテクノロジー成長株投資で知られるヘッジファンド。Series Hへの参加により機関投資家の幅広い支持を示す。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Paradigm</div>
+      <div class="vc-role">Series H 拡張参加</div>
+      <div class="vc-desc">主にWeb3・クリプト分野で知られるVCだが、Ziplineへの投資は物理インフラ×デジタルオートメーションへの関心を示す新展開として注目された。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Andreessen Horowitz (a16z)</div>
+      <div class="vc-role">初期投資家</div>
+      <div class="vc-desc">創業初期からの支援者。ヘルステック・ロボティクスへの強い関心を持つa16zが早期に投資したことでZiplineの信頼性向上に貢献した。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 7. CUSTOMERS ===================== -->
+<div class="sec" id="customers">
+  <div class="sec-label"><span class="num">7</span> Customers &amp; Partners</div>
+  <h2>顧客・パートナー</h2>
+
+  <table class="t">
+    <thead>
+      <tr>
+        <th>顧客 / パートナー</th>
+        <th>関係・用途</th>
+        <th>地域</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Walmart</td>
+        <td>商業配送（Platform 2）。日用品・食料品を顧客自宅へドローン配送。米国最大の小売企業との提携はZiplineの商業市場リーチを大幅に拡大。</td>
+        <td>米国（Arkansas等、拡大中）</td>
+      </tr>
+      <tr>
+        <td>Pfizer</td>
+        <td>医薬品・ワクチンのドローン配送。コールドチェーン対応の専用パッケージングで医療機関・薬局への直接配送を実現。</td>
+        <td>米国・一部海外</td>
+      </tr>
+      <tr>
+        <td>Cleveland Clinic</td>
+        <td>医療施設間での緊急検体・医薬品輸送。診断スピードと医療コストの改善に貢献。</td>
+        <td>米国（オハイオ州）</td>
+      </tr>
+      <tr>
+        <td>ルワンダ政府</td>
+        <td>国家医療物流アウトソーシング。全国の医療施設への血液・医薬品輸送を担う国家契約。</td>
+        <td>ルワンダ（全国）</td>
+      </tr>
+      <tr>
+        <td>ガーナ保健省</td>
+        <td>医薬品・ワクチン配送の国家契約。COVID-19対応でも活躍。</td>
+        <td>ガーナ（全国）</td>
+      </tr>
+      <tr>
+        <td>ナイジェリア政府</td>
+        <td>医療物資配送。アフリカ最大人口国への展開で市場規模を拡大。</td>
+        <td>ナイジェリア</td>
+      </tr>
+      <tr>
+        <td>日本（複数パートナー）</td>
+        <td>山間部・離島へのドローン配送実証。日本郵便等との連携が報じられている。</td>
+        <td>日本</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Walmartパートナーシップの戦略的意義</h3>
+  <p>Walmartとの提携はZiplineの<strong>商業市場への本格参入を象徴する</strong>出来事だ。Walmartは米国内に4,700以上の店舗を持ち、「店舗から顧客自宅まで数分以内」の即日配送は小売業界の競争優位に直結する。ZiplineがWalmartのドローン配送パートナーとして選ばれたことは、Safety（安全性）・Scale（拡張性）・Service reliability（サービス信頼性）の3つすべてにおいて最高評価を得たことを意味する。</p>
+</div>
+
+
+<!-- ===================== 8. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">8</span> Leadership</div>
+  <h2>経営陣</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">KR</div>
+      <div>
+        <h3>Keller Rinaudo Cliffton</h3>
+        <div class="p-role">Co-Founder &amp; CEO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row">
+        <div class="lbl">学歴</div>
+        <div class="val">Harvard University 卒業（生物学・コンピュータサイエンス）。学生時代から社会起業家精神が強く、卒業後はロボティクス分野へ。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">創業前</div>
+        <div class="val">プロクライマー・冒険家として活動。この経験が「ギリギリのリスク管理と判断力」を培い、ドローンの安全設計思想に影響を与えたとされる。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">創業哲学</div>
+        <div class="val">「医療アクセスは人権であり、地理的・経済的障壁によって命の差が生まれてはならない」。この信念がルワンダへの早期参入と政府パートナーシップ構築の原動力。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">特徴</div>
+        <div class="val">技術者でありながら政策・渉外に強い。FAA・CAA等の規制機関との長年の信頼関係構築がZiplineの参入障壁の一部を形成している。テック界ではBVLOS許可取得の先駆者として知られる。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">メディア</div>
+        <div class="val">TED Talk・World Economic Forum（ダボス会議）等での登壇多数。社会的インパクト投資コミュニティでの認知度が高く、資金調達での親和性が高い。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 9. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">9</span> Competitive Analysis</div>
+  <h2>競合比較：Wing / Amazon Prime Air</h2>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">Zipline</div>
+      <div class="comp-tag">実績No.1 / Level-4</div>
+      <div class="comp-desc">2M件超の商業配送実績。医療＋商業のデュアル市場。Platform 1（長距離・途上国）とPlatform 2（短距離・先進国）の二段構えで全市場をカバー。安全記録とBVLOS規制実績が最大の参入障壁。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Wing（Google / Alphabet）</div>
+      <div class="comp-tag">固定翼型・先進国中心</div>
+      <div class="comp-desc">Alphabetのムーンショット部門発。オーストラリア・米国・フィンランドで展開。商業配送件数は数十万件レベルで成長中。Googleのブランド・資金力が強みだが、ZiplineほどのOperational scaleは持たない。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Amazon Prime Air</div>
+      <div class="comp-tag">大手小売直営</div>
+      <div class="comp-desc">Amazonが自前で開発・運営するドローン配送サービス。テキサス・カレフォルニア等で展開するが、配送件数は数万件レベル。自社Amazonエコシステム内に閉じており、B2B展開はしていない。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Matternet / Flytrex等</div>
+      <div class="comp-tag">医療特化・ニッチ</div>
+      <div class="comp-desc">医療検体輸送に特化した小規模プレイヤー。スイス・米国等で運用実績があるがスケールはZiplineと比較にならない。特定ユースケースではパートナーとなる可能性もある。</div>
+    </div>
+  </div>
+
+  <h3>競合に対する優位性のまとめ</h3>
+  <table class="t">
+    <thead>
+      <tr>
+        <th>評価軸</th>
+        <th>Zipline</th>
+        <th>Wing（Google）</th>
+        <th>Amazon Prime Air</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>商業配送実績</td>
+        <td><strong>2M+件（圧倒的）</strong></td>
+        <td>数十万件</td>
+        <td>数万件</td>
+      </tr>
+      <tr>
+        <td>展開国数</td>
+        <td><strong>8カ国</strong></td>
+        <td>3〜4カ国</td>
+        <td>2カ国程度</td>
+      </tr>
+      <tr>
+        <td>医療市場</td>
+        <td><strong>強い（創業来の主戦場）</strong></td>
+        <td>弱い</td>
+        <td>なし</td>
+      </tr>
+      <tr>
+        <td>商業小売市場</td>
+        <td>Walmart等と拡大中</td>
+        <td>一部展開中</td>
+        <td>Amazon自社のみ</td>
+      </tr>
+      <tr>
+        <td>BVLOS許可</td>
+        <td>複数国取得</td>
+        <td>限定的</td>
+        <td>限定的</td>
+      </tr>
+      <tr>
+        <td>Platform多様性</td>
+        <td>Platform 1 + 2</td>
+        <td>単一機体</td>
+        <td>単一機体</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===================== 10. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">10</span> Risk Analysis</div>
+  <h2>リスクと課題</h2>
+
+  <div class="warn-box">
+    <div class="w-title">主要リスク</div>
+    <ul>
+      <li><b>規制リスク（BVLOS拡大）：</b>米国・欧州での商業ドローン配送拡大には、各地のFAA・EASA規制当局によるBVLOS（目視外飛行）許可が必要。規制変更・遅延が展開スケジュールに直結する。近隣騒音問題（NIMBYism）も地方自治体レベルでの摩擦要因。</li>
+      <li><b>Google（Wing）・Amazonの追い上げ：</b>資金力・ブランドで勝る大手の商業展開が加速すれば、先進国市場での競争が激化する。特にAmazonは自社物流網との統合で独自のコスト優位を持つ可能性がある。</li>
+      <li><b>ユニットエコノミクスの改善：</b>1配送あたりのコスト（機体減価償却・電力・保険・人件費）を十分に下げ、顧客が支払える価格設定で利益を確保するには、一定以上のスケールが必要。現時点の収益性は非公開だが、$2B超調達の継続が示すように未達の可能性がある。</li>
+      <li><b>天候・環境適応：</b>悪天候（強風・雷雨・降雪）下での運用継続性は今後の課題。現在は天候による飛行中止判断をシステムが行うが、商業SLAを維持するには悪天候対応能力の強化が必要。</li>
+      <li><b>途上国政府リスク：</b>アフリカ諸国での主要収益源は政府契約であり、政権交代・予算削減・政策転換が契約継続に影響しうる。地政学的リスクや為替リスクも含む。</li>
+      <li><b>競合新技術：</b>eVTOL（電動垂直離着陸機）市場の拡大や、大手物流企業（UPS・FedEx）のドローン事業参入が長期的な競合リスクとなりうる。</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ===================== 11. WHY NOW ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">11</span> Why Now</div>
+  <h2>なぜ今Ziplineに注目か</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">2M件突破：「実証」から「実事業」への転換点</div>
+        <div class="ind-desc">2026年1月の2M件達成は、Ziplineがドローン配送を「テクノロジーの実験」から「運用中の産業インフラ」に変えたことを象徴する。この実績は規制当局・顧客・投資家の全員に対して最強の説得材料だ。競合他社がPoC（概念実証）段階にある中、Ziplineだけが「運用する事業」を持つ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">Series H $800M（2026年）：米国都市展開の資金確保</div>
+        <div class="ind-desc">2026年1月〜3月に合計$800Mを調達（$600M + $200M拡張）し、Houston・Phoenix・Seattle等の米国大都市圏への展開資金を確保。Walmart等との既存契約を軸に、米国市場での商業化フェーズに本格突入する段階にある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">Platform 2「Zip」の先進国市場開拓</div>
+        <div class="ind-desc">医療配送（Platform 1）で培った安全実績とBVLOS規制経験を武器に、Platform 2（精密配送）で先進国の商業市場を開拓する戦略が具体化している。Walmartとの米国展開はその試金石であり、成功すれば他の大型小売・EC企業への横展開が期待できる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">医療費高騰・ラストマイル配送コストへの構造的解決策</div>
+        <div class="ind-desc">米国・欧州の医療コスト高騰と、ECラストマイル配送の赤字問題は2020年代の重要課題だ。Ziplineのドローン配送は薬品在庫コスト・搬送コスト・時間ロスを同時に削減できる唯一の実証済み手段として、大手ヘルスケア企業・小売企業のCFOへの訴求力が強い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">IPOポテンシャル</div>
+        <div class="ind-desc">$7.6Bバリュエーションと$2B超の累計調達を経て、Ziplineは2027〜2028年のIPO候補として業界内で広く認識されている。先進国市場での収益化が軌道に乗れば、「SpaceX of drone delivery」として公開市場でも強い評価を受けうるポジションにある。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>In 10 years, a world without instant drone delivery will feel as strange as a world without the internet. We are building that infrastructure now.</p>
+    <div class="attr">— Keller Rinaudo Cliffton, CEO, Zipline</div>
+  </div>
+</div>
+
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>主要情報源・参考資料</h2>
+  <ul>
+    <li>Zipline公式プレスリリース（Series H、2026年1月・3月）</li>
+    <li>TechCrunch — Zipline Series H記事</li>
+    <li>Forbes — Zipline 2M deliveries milestone</li>
+    <li>Bloomberg — Zipline valuation and growth</li>
+    <li>WHO / Rwanda Ministry of Health — ドローン血液輸送インパクト報告</li>
+    <li>Wall Street Journal — Walmart × Zipline提携</li>
+    <li>FAA — UAS Beyond Visual Line of Sight規制動向</li>
+    <li>Crunchbase — Zipline資金調達データ</li>
+    <li>Keller Rinaudo Cliffton — TED Talk 2019</li>
+    <li>Via Satellite — Platform 2 technology analysis</li>
+  </ul>
+</div>
+
+</div><!-- /page -->
+</body>
+</html>

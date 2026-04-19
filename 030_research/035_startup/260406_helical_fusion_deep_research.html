@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helical Fusion — 核融合スタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">核融合</span>
+    <span class="badge badge-white">ヘリカル型・ステラレータ</span>
+    <span class="badge badge-solid">日本発ディープテック</span>
+  </div>
+  <h1>Helical Fusion</h1>
+  <p class="hero-sub">
+    「60年の国家研究を商用化へ」——<br>
+    核融合科学研究所（NIFS）の知見を引き継ぎ、2021年創業。トカマク一辺倒の世界市場で、日本独自の「ヘリカル型」ステラレータによる定常発電炉の実現を目指す唯一無二のスタートアップ。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">約60億円</div><div class="lbl">累計調達（補助金・融資含む）</div></div>
+    <div class="kpi"><div class="val">2030s</div><div class="lbl">商用炉 Helix KANATA 稼働目標</div></div>
+    <div class="kpi"><div class="val">2027</div><div class="lbl">HARUKA Phase 1 通電試験</div></div>
+    <div class="kpi"><div class="val">2021</div><div class="lbl">設立</div></div>
+    <div class="kpi"><div class="val">~34人</div><div class="lbl">従業員数（2025年時点）</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">ヘリカル型技術の本質</a></li>
+    <li><a href="#vs-tokamak">vs トカマク型：比較分析</a></li>
+    <li><a href="#helix-program">Helix Program：開発計画</a></li>
+    <li><a href="#funding">資金調達・投資家</a></li>
+    <li><a href="#milestones">開発マイルストーン</a></li>
+    <li><a href="#partnerships">パートナーシップ・顧客</a></li>
+    <li><a href="#team">経営陣・チーム</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">リスクと課題</a></li>
+  </ol>
+</div>
+
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">株式会社 Helical Fusion</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2021年10月</div></div>
+    <div class="kv-item"><div class="k">所在地</div><div class="v">東京都中央区</div></div>
+    <div class="kv-item"><div class="k">代表者</div><div class="v">田口 昂哉（CEO）</div></div>
+    <div class="kv-item"><div class="k">共同創業者</div><div class="v">宮澤 順一（CTO）</div></div>
+    <div class="kv-item"><div class="k">資本金</div><div class="v">11億9,051万円</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約34名（2025年時点）</div></div>
+    <div class="kv-item"><div class="k">技術的起源</div><div class="v">核融合科学研究所（NIFS）</div></div>
+  </div>
+
+  <p>Helical Fusionは、日本の核融合研究の総本山である<strong>核融合科学研究所（NIFS）</strong>が60年以上積み上げてきたヘリカル型核融合の知見を引き継ぎ、その商用化を目指して2021年に創業された日本発のディープテック・スタートアップである。</p>
+
+  <p>設立のきっかけはシンプルだ。NIFSは世界最大級のヘリカル型装置「<strong>大型ヘリカル装置（LHD）</strong>」を有し、ヘリカル型核融合の研究で世界をリードしてきたが、商用化に向けたスピンアウトの仕組みがなかった。田口CEOが「この技術を世に出さなければ日本のためにならない」という強い使命感のもとで創業し、NIFSとの緊密な共同研究体制を構築した。</p>
+
+  <p>ミッションは「<strong>フュージョンエネルギーの実用化で人類を進化させる</strong>」。核融合による無限かつクリーンなエネルギーの社会実装を、2030年代という具体的な時間軸で目指している。田口CEOはその想いを著書『<strong>だから僕らは太陽をつくる</strong>』（2024年出版）に綴っている。</p>
+
+  <div class="callout">
+    <strong>日本の独自性：</strong>世界の核融合スタートアップ群が圧倒的にトカマク型に集中する中、Helical Fusionはヘリカル型ステラレータを追求する<strong>世界でほぼ唯一の民間スタートアップ</strong>として異彩を放つ。これはNIFSという世界唯一のヘリカル専門研究機関を抱える日本にしかできない戦略でもある。
+  </div>
+</div>
+
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">2</span> Technology</div>
+  <h2>ヘリカル型核融合技術の本質</h2>
+
+  <h3>核融合の基本原理</h3>
+  <p>核融合とは、軽い原子核（重水素・三重水素）を超高温・高圧下で融合させ、大量のエネルギーを取り出す反応である。太陽が1億度以上のプラズマを重力で閉じ込めるのに対し、地上では強力な磁場でドーナツ状にプラズマを閉じ込める「磁場閉じ込め方式」が主流となっている。</p>
+
+  <h3>ヘリカル型（ステラレータ）の仕組み</h3>
+  <p>ヘリカル型とは、<strong>DNA状の二重らせん構造のコイル</strong>に電流を流すことで、プラズマを閉じ込める磁場を形成する方式である。外部コイルのみで環状にねじれた複雑な磁場を生成するため、プラズマ自身に電流を流す必要がない。</p>
+
+  <p>NIFSが岐阜県土岐市に保有する「大型ヘリカル装置（LHD）」は、1998年の運転開始以来、ヘリカル型として世界最大・最高性能の実験装置として数多くの世界記録を打ち立ててきた。2017年には<strong>プラズマイオン温度1億2,000万度</strong>という世界記録を達成している。</p>
+
+  <div class="callout">
+    <strong>ヘリカル型の独自技術的要素：</strong>Helical Fusionが開発するのは、標準的なステラレータに高温超伝導（HTS）磁石技術と独自のブランケット・ダイバータ統合設計を組み合わせた次世代ヘリカル炉だ。単なるLHDの延長ではなく、商用電力網接続を念頭に置いた設計の最適化が施されている。
+  </div>
+
+  <h3>高温超伝導（HTS）コイル技術</h3>
+  <p>Helical Fusionの技術的差別化の核心が<strong>高温超伝導（HTS）磁石</strong>の採用だ。従来の低温超伝導コイルより高い臨界温度（約15K）で超伝導状態を実現できるため、冷却コストが大幅に下がる。2025年10月、世界で初めて核融合炉に相当する磁場環境（外部磁場7テスラ下で電流40kA）下でHTSコイルの安定動作を実証した——これは業界全体での<strong>世界初</strong>のマイルストーンである。</p>
+
+  <h3>ブランケット兼ダイバータ（一体型）</h3>
+  <p>核融合炉において、プラズマから生じる中性子でトリチウム（燃料）を生産する「ブランケット」と、不純物・熱を排出する「ダイバータ」は通常別々の構造だが、Helical Fusionはこれを<strong>一体化した設計</strong>を追求している。これにより保守性を大幅に改善し、商用炉における稼働率向上を狙う。</p>
+</div>
+
+
+<!-- ===================== 3. VS TOKAMAK ===================== -->
+<div class="sec" id="vs-tokamak">
+  <div class="sec-label"><span class="num">3</span> Helical vs Tokamak</div>
+  <h2>ヘリカル型 vs トカマク型：技術比較</h2>
+
+  <table class="t">
+    <thead>
+      <tr>
+        <th>比較項目</th>
+        <th>ヘリカル型（Helical Fusion）</th>
+        <th>トカマク型（ITER / CFS等）</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>磁場生成</td>
+        <td>外部コイルのみ（らせん状）</td>
+        <td>外部コイル＋プラズマ電流</td>
+      </tr>
+      <tr>
+        <td>プラズマ電流</td>
+        <td>不要（原理的）</td>
+        <td>必須（トロイダル電流）</td>
+      </tr>
+      <tr>
+        <td>運転モード</td>
+        <td><strong>定常運転が原理的に可能</strong></td>
+        <td>パルス運転が基本（CW化が課題）</td>
+      </tr>
+      <tr>
+        <td>ディスラプション</td>
+        <td>原理的に発生しない</td>
+        <td>プラズマ電流の突然崩壊リスクあり</td>
+      </tr>
+      <tr>
+        <td>プラズマ性能</td>
+        <td>やや劣る（閉じ込め効率）</td>
+        <td>優れる（Q値が高い）</td>
+      </tr>
+      <tr>
+        <td>コイル形状</td>
+        <td>複雑ならせん形状（製造難易度高）</td>
+        <td>比較的シンプルなトロイダル形状</td>
+      </tr>
+      <tr>
+        <td>装置サイズ</td>
+        <td>大型化しやすい傾向</td>
+        <td>コンパクト化が進んでいる（HTS活用）</td>
+      </tr>
+      <tr>
+        <td>商用炉適性</td>
+        <td>高い（定常・高稼働率）</td>
+        <td>パルス問題の解決が必要</td>
+      </tr>
+      <tr>
+        <td>代表装置</td>
+        <td>LHD（日本）、W7-X（ドイツ）</td>
+        <td>ITER（国際）、JET（欧）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>ヘリカル型の最大の強み：定常運転</h3>
+  <p>トカマク型最大の課題は、プラズマ電流を維持するためにパルス動作が避けられない点だ。発電所として24時間365日稼働するには定常運転が不可欠だが、これはトカマクにとって今も解決途上の技術的難題である。</p>
+
+  <p>一方ヘリカル型は<strong>原理的に定常運転が可能</strong>で、プラズマ崩壊（ディスラプション）も発生しない。これはまさに「実用発電の三要件」——定常運転・正味発電・保守性——を満たすための根本的な技術的優位性である。</p>
+
+  <div class="quote">
+    <p>ヘリカルプログラムは、世界の開発競争の中で商用化に最も近い位置にある</p>
+    <div class="attr">— 田口昂哉 CEO（2025年10月声明）</div>
+  </div>
+
+  <h3>ヘリカル型の課題</h3>
+  <p>コイル形状が複雑ならせん状のため、<strong>製造難易度が極めて高い</strong>。ミリ単位の精度が要求されるHTS巻線技術は、国内製造業との緊密な連携なしには実現できない。またプラズマ閉じ込め効率（βパラメータ）はトカマクに比べやや劣るため、炉のサイズが大きくなりやすく、建設コスト増につながる懸念がある。</p>
+</div>
+
+
+<!-- ===================== 4. HELIX PROGRAM ===================== -->
+<div class="sec" id="helix-program">
+  <div class="sec-label"><span class="num">4</span> Helix Program</div>
+  <h2>Helix Program：世界初の実用発電炉への開発計画</h2>
+
+  <p>Helical Fusionの開発ロードマップは「<strong>Helix Program</strong>」と呼ばれ、2020年代中に個別技術実証を完了させ、2030年代に世界初の定常核融合発電を実現するという2段構えの計画だ。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">Phase 1：個別技術実証（〜2020年代末）</div>
+        <div class="ind-desc">高温超伝導（HTS）マグネットとブランケット兼ダイバータの2大コア技術をそれぞれ独立して実証する。2025年10月にHTS実証が世界初成功。ブランケット実証も並行進行中。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">Phase 2：統合実証装置「Helix HARUKA」（2030年代前半）</div>
+        <div class="ind-desc">Phase 1で実証した2技術を統合した実証装置。岐阜県土岐市のNIFSキャンパス内に建設予定。2026年より建設開始、2027年にPhase 1（磁石実証）の通電試験を計画。日本国内初の民間核融合炉建設着手。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">Phase 3：商用発電初号機「Helix KANATA」（2030年代）</div>
+        <div class="ind-desc">世界初の定常・正味発電・保守可能な商用核融合発電所。24時間365日の電力供給を目指す。規模・出力・設置場所は現在設計最適化中。日本最初の核融合PPA（青木スーパーと締結済み）はKANATAからの電力供給を想定。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>「実用発電の三要件」——Helical Fusionが定義する商用核融合の条件</h3>
+  <table class="t">
+    <thead>
+      <tr>
+        <th>要件</th>
+        <th>内容</th>
+        <th>ヘリカル型の対応</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>定常運転</td>
+        <td>24時間365日、連続的に安定稼働できること</td>
+        <td>原理的に定常運転可能（プラズマ電流不要）</td>
+      </tr>
+      <tr>
+        <td>正味発電（ネットエネルギー）</td>
+        <td>炉で消費する電力を差し引いても正の電力を出力すること</td>
+        <td>HTSコイルによる低消費電力化で達成を目指す</td>
+      </tr>
+      <tr>
+        <td>保守性</td>
+        <td>ブランケット等の消耗部品を定期的かつ効率的に交換できること</td>
+        <td>ブランケット兼ダイバータ一体型設計で対応</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">5</span> Funding History</div>
+  <h2>資金調達履歴と投資家</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <div class="r-badge">Series A Extension</div>
+      <div class="f-amount">約8.7億円</div>
+      <div class="f-detail">
+        <div class="f-date">2025年12月</div>
+        <div class="f-desc">イークラウドNEXT1号合同会社、ゴムノイナキ株式会社、元ゴールドマン・サックス日本共同統括の田中渓氏ら個人投資家が参画。日本初の核融合分野への個人投資家ファンドとして注目を集めた。シリーズA全体では約32億円に到達。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series A</div>
+      <div class="f-amount">約23億円</div>
+      <div class="f-detail">
+        <div class="f-date">2025年7月</div>
+        <div class="f-desc">SBIインベストメント（リード）、慶應イノベーション・イニシアティブ（KII）を含む19機関が参画。青木スーパーも戦略的投資家として参加。調達資金はHelix Programの加速、HTSマグネット実証、Helix HARUKA建設着手に充当。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Seed</div>
+      <div class="f-amount">約8億円</div>
+      <div class="f-detail">
+        <div class="f-date">2023年4月</div>
+        <div class="f-desc">シードラウンドで8億円調達。初期の研究開発体制・チーム構築に活用。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">政府補助金</div>
+      <div class="f-amount">最大20億円</div>
+      <div class="f-detail">
+        <div class="f-date">経済産業省 SBIR Phase 3</div>
+        <div class="f-desc">核融合スタートアップとして最大額での採択。政府のSBIR（Small Business Innovation Research）フェーズ3プログラムで国内核融合スタートアップ最大規模の支援を獲得。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">東京都補助金</div>
+      <div class="f-amount">最大10億円</div>
+      <div class="f-detail">
+        <div class="f-date">2026年度 採択</div>
+        <div class="f-desc">東京都「ゼロエミッション東京の実現等に向けたイノベーション促進事業」に採択。3年間で最大10億円の支援（FY2026年度採択）。プロジェクト名「フュージョン炉を長持ちさせる新規液体金属壁」。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>累計調達額：</strong>エクイティ調達（シリーズAまで）約32億円＋政府補助金・融資等を合わせた<strong>累計総額は約60億円</strong>（2026年3月時点）。英語プレスリリースではUSD 38Mと表記。
+  </div>
+
+  <h3>主要投資家</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead</span>
+      <div class="vc-name">SBIインベストメント</div>
+      <div class="vc-role">Series A Lead</div>
+      <div class="vc-desc">SBIグループのVC部門。国内最大規模の独立系VC。Series AでリードVCを務め、核融合分野への本格参入を示した。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">慶應イノベーション・イニシアティブ（KII）</div>
+      <div class="vc-role">Series A</div>
+      <div class="vc-desc">慶應義塾大学発のVC。アカデミア発ディープテックへの投資を専門とし、科学的評価力でHelical Fusionの技術を評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">青木スーパー</div>
+      <div class="vc-role">戦略的投資家（Series A）</div>
+      <div class="vc-desc">愛知県を中心に50店舗を展開する地域スーパー。将来の電力購入を見据えた戦略的投資。日本初の核融合PPAも締結。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">イークラウド</div>
+      <div class="vc-role">個人投資家向けファンド</div>
+      <div class="vc-desc">日本初の核融合分野個人投資家ファンド「イークラウドNEXT」1・2号を通じて投資。小口投資家が未上場核融合株式に参加できる仕組みを構築。</div>
+    </div>
+  </div>
+
+  <h3>政府の核融合支援政策（2025-2026）</h3>
+  <p>2025年に発足した<strong>高市早苗政権</strong>は核融合を重点17分野の一つに位置づけ、2025年11月の補正予算で核融合関連に<strong>約1,000億円</strong>を計上（うち約600億円が民間スタートアップ向け）。経済産業省には「フュージョンエネルギー室」が設置され、内閣府は「フュージョンエネルギー・イノベーション戦略」を2025年6月に改定し、2030年代の発電実証を国家目標に掲げた。Helical Fusionは最大の恩恵を受けるポジションにある。</p>
+</div>
+
+
+<!-- ===================== 6. MILESTONES ===================== -->
+<div class="sec" id="milestones">
+  <div class="sec-label"><span class="num">6</span> Development Milestones</div>
+  <h2>開発マイルストーン</h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2021年10月</span>
+          <span class="tl-title">Helical Fusion 創業</span>
+        </div>
+        <div class="tl-body">田口昂哉・宮澤順一らが東京都中央区に設立。核融合科学研究所のヘリカル研究の商用化を使命に掲げる。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年4月</span>
+          <span class="tl-title">シードラウンド 8億円調達</span>
+        </div>
+        <div class="tl-body">初期の研究開発・チーム組成資金を確保。社員数を急拡大し、HTSコイル・ブランケット設計の基礎研究を加速。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年</span>
+          <span class="tl-title">Helix Program 発表 / 開発計画を公開</span>
+        </div>
+        <div class="tl-body">商用炉実現に向けた「Helix Program」を公式発表。Helix HARUKA（統合実証）→Helix KANATA（商用炉）の2段階ロードマップを提示。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年7月</span>
+          <span class="tl-title">シリーズA 約23億円調達</span>
+        </div>
+        <div class="tl-body">SBIインベストメントらから約23億円を調達。青木スーパーも投資家として参加。Helix Programを本格加速する資金を確保。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年10月</span>
+          <span class="tl-title">世界初：HTS コイル核融合環境下動作実証</span>
+        </div>
+        <div class="tl-body"><b>世界で初めて</b>、核融合炉相当の磁場環境（外部磁場7テスラ、電流40kA、温度15K）下でHTSコイルの安定超伝導動作を実証。業界全体での歴史的マイルストーン。これにより統合実証装置Helix HARUKAの製作・建設フェーズに移行。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年12月</span>
+          <span class="tl-title">日本初の核融合PPA締結 / シリーズA Extension 8.7億円</span>
+        </div>
+        <div class="tl-body">青木スーパーと<b>日本初の核融合電力購入契約（PPA）</b>を締結。世界で4例目の核融合PPA。同月、シリーズAエクステンションで追加8.7億円を調達（累計エクイティ32億円、総額60億円）。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年1〜2月</span>
+          <span class="tl-title">杉野機械との HTSコイル巻線機 完成</span>
+        </div>
+        <div class="tl-body">創業150年の老舗製造業・杉野機械との共同開発でHelix HARUKA用HTSコイル専用巻線機を完成。ヘリカルらせん形状のコイルを高精度で生産するワンオフの特殊機械。土岐市NIFSキャンパスへの搬送・組立を開始。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年3月</span>
+          <span class="tl-title">Helix HARUKA 建設サイト確定 / コイルケース完成</span>
+        </div>
+        <div class="tl-body">Phase 1（磁石実証）建設場所を<b>岐阜県土岐市NIFSキャンパス内</b>の専用ワークスペースに確定。RYOKI TOOLとの協働でコイルケース部品10点・ブランケット試作品1点を完成。日本国内製造業との実証ハードウェア製造が本格化。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年3月</span>
+          <span class="tl-title">東京都ゼロエミッション促進事業 採択</span>
+        </div>
+        <div class="tl-body">東京都FY2026「ゼロエミッション東京の実現等に向けたイノベーション促進事業」に採択。3年間最大10億円の支援を獲得予定。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2027年（予定）</span>
+          <span class="tl-title">Helix HARUKA Phase 1 通電試験</span>
+        </div>
+        <div class="tl-body">HTSコイル製造完了・組立後、初の通電試験（エネジャイゼーション試験）を実施予定。超伝導磁石システムとしての総合性能を実機で検証する。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2020年代末（予定）</span>
+          <span class="tl-title">2大コア技術の個別実証完了</span>
+        </div>
+        <div class="tl-body">HTSマグネットおよびブランケット兼ダイバータの両方について、実炉相当の性能実証を完了させるマイルストーン。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2030年代前半（予定）</span>
+          <span class="tl-title">Helix KANATA：世界初 商用核融合発電開始</span>
+        </div>
+        <div class="tl-body">定常運転・正味発電・保守性の三要件を満たす商用核融合発電初号機の稼働。青木スーパーへの電力供給開始（PPA履行）。世界初の核融合グリッド接続を目指す。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 7. PARTNERSHIPS ===================== -->
+<div class="sec" id="partnerships">
+  <div class="sec-label"><span class="num">7</span> Partnerships & Business</div>
+  <h2>パートナーシップ・ビジネスモデル・顧客</h2>
+
+  <h3>ビジネスモデル</h3>
+  <p>現段階のビジネスモデルは、将来の<strong>核融合電力販売（IPP：独立発電事業者モデル）</strong>を軸に設計されている。発電所（Helix KANATA）を建設・運営し、そこから生み出す電力を長期PPAを通じて産業用・商業用顧客に供給する形態だ。太陽光・風力のIRR（内部収益率）に近い経済性を目指している。</p>
+
+  <p>開発段階では、政府補助金・SBIR等のグラントと民間VC資金を組み合わせた調達構造を取り、巨大な設備投資を段階的に分散させる戦略をとる。</p>
+
+  <h3>主要パートナー一覧</h3>
+  <table class="t">
+    <thead>
+      <tr>
+        <th>パートナー</th>
+        <th>種別</th>
+        <th>連携内容</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>核融合科学研究所（NIFS）</td>
+        <td>研究機関</td>
+        <td>Helix HARUKA建設サイト提供（土岐市キャンパス）、共同研究グループ設立、60年の実験データ・ノウハウ共有。技術的バックボーンの核心。</td>
+      </tr>
+      <tr>
+        <td>杉野機械（Sugino Machine）</td>
+        <td>製造パートナー</td>
+        <td>Helix HARUKA用HTSコイル専用巻線機を共同開発・完成。創業150年の精密機械メーカー。</td>
+      </tr>
+      <tr>
+        <td>RYOKI TOOL</td>
+        <td>製造パートナー</td>
+        <td>Helix HARUKAのコイルケース部品10点・ブランケット試作品を製作。日本製造業との協働で国産核融合ハードウェアを実現。</td>
+      </tr>
+      <tr>
+        <td>青木スーパー</td>
+        <td>顧客・戦略的投資家</td>
+        <td>日本初の核融合PPA締結（2025年12月）。愛知県50店舗を運営。将来のHelix KANATAからの電力購入を契約。</td>
+      </tr>
+      <tr>
+        <td>AWS（Amazon Web Services）</td>
+        <td>クラウドインフラ</td>
+        <td>AWS Activateプログラムを通じ、AWS ParallelClusterとHpc7aインスタンスを活用したHPCインフラを構築。炉設計シミュレーションを8倍高速化。</td>
+      </tr>
+      <tr>
+        <td>NTT東日本</td>
+        <td>ITインフラ</td>
+        <td>クラウドソリューション導入。研究データ管理・セキュアな計算環境の整備を支援。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>日本初の核融合PPA（青木スーパー）</h3>
+  <p>2025年12月に締結した青木スーパーとのPPAは、単なる電力売買契約ではなく、<strong>需要側企業が核融合電力の将来性を認め、商用化前から関与する象徴的な契約</strong>だ。世界での核融合PPAは4例目（CFS×Google、Helion×Microsoft、Commonwealth×Virginia 電力会社に次ぐ）。</p>
+
+  <p>青木スーパーはカーボンニュートラルへのコミットメントから2025年7月にHelical Fusionへの投資も実施しており、投資家かつ将来の顧客という二重の関与を持つ。</p>
+
+  <div class="callout">
+    <strong>政府を「出口」として呼び込む戦略：</strong>田口CEOはPPA締結を「民間が先に出口を示すことで、政府の大規模資金（補正予算約600億円の民間向け部分）を引き込む」戦略の一部と位置づけている。需要側の具体的なコミットメントは、補助金審査での強力な説得材料となる。
+  </div>
+</div>
+
+
+<!-- ===================== 8. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">8</span> Team</div>
+  <h2>経営陣・チーム</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">TK</div>
+      <div>
+        <h3>田口 昂哉</h3>
+        <div class="p-role">代表取締役 CEO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">役割</div><div class="val">事業戦略・資金調達・対外渉外・ビジョン策定</div></div>
+      <div class="p-row"><div class="lbl">経歴</div><div class="val">日本の核融合商用化を使命として創業。著書『だから僕らは太陽をつくる』（2024年）にてフュージョンエネルギーへの哲学・想いを表現。</div></div>
+      <div class="p-row"><div class="lbl">特徴</div><div class="val">技術者ではなくビジネス側の創業者。「商用化に最も近い」という強気な主張を継続的に発信し、政府・産業界・投資家を巻き込む牽引役。</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">MJ</div>
+      <div>
+        <h3>宮澤 順一</h3>
+        <div class="p-role">共同創業者 CTO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">役割</div><div class="val">核融合炉設計・開発統括</div></div>
+      <div class="p-row"><div class="lbl">経歴</div><div class="val">核融合科学研究所・ヘリカル研究部 教授を歴任。現・総合研究大学院大学 教授。LHDを中心としたヘリカル型核融合炉研究の第一人者。</div></div>
+      <div class="p-row"><div class="lbl">特徴</div><div class="val">Helical FusionのコアIPの源泉。NIFSでの60年の研究蓄積を直接体現する存在。学術と産業の橋渡し役。</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">GT</div>
+      <div>
+        <h3>後藤（副CTO）</h3>
+        <div class="p-role">副CTO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">役割</div><div class="val">核融合炉設計（宮澤CTOと並走）</div></div>
+      <div class="p-row"><div class="lbl">特徴</div><div class="val">炉設計チームの実務責任者。HTSコイル・ブランケット設計の詳細実装を担う。</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>科学顧問：</strong>長年世界の炉設計研究を率いてきた「相良」氏（フルネーム非公開）が科学顧問として参画。戦略的な技術判断を支援。チーム全体は約34名（2025年時点）で、NIFS出身の核融合研究者を中核に、製造・エンジニアリング・ビジネスの専門家が結集している。
+  </div>
+</div>
+
+
+<!-- ===================== 9. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">9</span> Competitive Landscape</div>
+  <h2>競合比較——世界の核融合スタートアップ</h2>
+
+  <p>核融合スタートアップは2020年代に入り急増しており、世界全体で30社以上が存在する。主要プレイヤーとHelical Fusionの位置づけを整理する。</p>
+
+  <table class="t">
+    <thead>
+      <tr>
+        <th>企業名</th>
+        <th>本拠地</th>
+        <th>技術方式</th>
+        <th>累計調達</th>
+        <th>商用目標</th>
+        <th>特記</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Commonwealth Fusion Systems（CFS）</td>
+        <td>米国</td>
+        <td>トカマク型（HTS）</td>
+        <td>約$3B</td>
+        <td>2030年代初頭（ARC炉）</td>
+        <td>Google PPA 200MW。SPARC実証炉60%完成。MIT発。世界最大の民間核融合調達額。</td>
+      </tr>
+      <tr>
+        <td>Helion Energy</td>
+        <td>米国</td>
+        <td>逆場配位（FRC）</td>
+        <td>約$1B以上</td>
+        <td>2028年（Microsoft向け）</td>
+        <td>MicrosoftとPPA締結。SAM Altman出資。7th gen機「Polaris」試験中。</td>
+      </tr>
+      <tr>
+        <td>TAE Technologies</td>
+        <td>米国</td>
+        <td>逆場配位（陽子-ホウ素燃料）</td>
+        <td>約$1.3B</td>
+        <td>2030年代（Da Vinci）</td>
+        <td>中性子なし核融合（aneutronic）という差別化。Goldman Sachs等から調達。</td>
+      </tr>
+      <tr>
+        <td>General Fusion</td>
+        <td>カナダ</td>
+        <td>磁化標的型（MTF）</td>
+        <td>約$300M</td>
+        <td>2030年代</td>
+        <td>Amazon、Khosla出資。実証装置建設中。</td>
+      </tr>
+      <tr>
+        <td>Proxima Fusion</td>
+        <td>ドイツ</td>
+        <td>ステラレータ（QI型）</td>
+        <td>約$150M</td>
+        <td>2030年代</td>
+        <td>Max Planck研究所スピンオフ。欧州のヘリカル系スタートアップ。Helical Fusionに最も近い技術的競合。</td>
+      </tr>
+      <tr>
+        <td><strong>Helical Fusion</strong></td>
+        <td><strong>日本</strong></td>
+        <td><strong>ヘリカル型ステラレータ（HTS）</strong></td>
+        <td><strong>約$38M（総額$60M相当）</strong></td>
+        <td><strong>2030年代（KANATA）</strong></td>
+        <td><strong>60年のNIFS知見。定常運転優位性。日本初PPA。政府1,000億円支援の恩恵最有望。</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Helical Fusionの競争上の位置づけ</h3>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">vs CFS / Helion / TAE</div>
+      <div class="comp-tag">資金力で劣るが技術差別化</div>
+      <div class="comp-desc">CFSの$3Bに対しHelicalは$38Mと圧倒的な資金差があるが、ステラレータの定常運転優位性という根本的な技術差別化で共存可能。CFS（トカマク）が先にQ>1を達成しても、定常運転問題は残るため、ヘリカル型の価値が失われない。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">vs Proxima Fusion（独）</div>
+      <div class="comp-tag">最も近い技術的競合</div>
+      <div class="comp-desc">同じステラレータ系のスタートアップ。欧州ではW7-X（ドイツ）の実績を持つProxima Fusion（$150M調達）が競合する。ただしHelicalはLHD（日本）の知見を持ち、異なるコイル設計アプローチを採用。地理的にも棲み分け可能。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">日本市場での優位性</div>
+      <div class="comp-tag">国策・政府支援の筆頭候補</div>
+      <div class="comp-desc">日本政府の1,000億円核融合予算・SBIR支援においては、日本発でNIFSとの連携を持つHelical Fusionが最有力の受益者。外資系競合には取り得ない政治的・文化的アドバンテージ。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">グローバル知名度の課題</div>
+      <div class="comp-tag">資金・PR面で後塵を拝す</div>
+      <div class="comp-desc">CFSやHelionに比べ国際的な知名度・ブランド力が低く、グローバルな資金調達において不利。上場・大型IPO等の出口戦略も不透明。ただしシリーズBに向けた海外投資家開拓が次の重要課題。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 10. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">10</span> Risks & Challenges</div>
+  <h2>リスクと課題の構造的分析</h2>
+
+  <h3>技術リスク</h3>
+  <div class="warn-box">
+    <div class="w-title">技術的課題</div>
+    <ul>
+      <li><b>ネットエネルギー（Q>1）の実証：</b>炉が消費する電力を上回る電力を出力する「正味発電」はまだ実現していない。HTSコイルの動作実証はあくまで「磁石が機能する」ことの証明であり、プラズマ燃焼＋正味発電はまだ遠い。</li>
+      <li><b>プラズマ閉じ込め性能：</b>ヘリカル型はトカマクより閉じ込め効率（βパラメータ）が劣るため、同等の出力を得るには炉体を大型化する必要があり、建設コスト・製造難易度が上がる。</li>
+      <li><b>HTS巻線の製造スケールアップ：</b>ミリ精度のらせん状巻線を商用規模（数十〜数百コイル）で量産する技術は世界的にも前例がなく、Helix HARUKAでの実証が事実上の世界初挑戦となる。</li>
+      <li><b>ブランケット・ダイバータの統合：</b>一体型設計は保守性向上を狙うが、核融合炉環境下での長期耐久性・トリチウム増殖効率の実証が残課題。</li>
+    </ul>
+  </div>
+
+  <h3>資金・事業リスク</h3>
+  <div class="warn-box">
+    <div class="w-title">資金・事業リスク</div>
+    <ul>
+      <li><b>資金ギャップ：</b>現累計調達額（約60億円）は商用炉建設費（数千億円規模と推定）に対し桁違いに小さい。最終実証装置だけで約40億円以上が必要と言われ、シリーズB以降での大規模調達が必須。</li>
+      <li><b>政府資金依存：</b>田口CEOは「最終実証炉には政府支援が必要」と明言しており、高市政権の核融合政策が変わった場合のリスクが存在する。ただし超党派的な支持もあり、リスクは限定的。</li>
+      <li><b>スケジュール遅延：</b>2034年初号炉という目標は一度修正されており（現在2030年代と表現を緩和）、技術実証の遅れが商用炉稼働に直結する。</li>
+      <li><b>競合に先を越されるリスク：</b>CFSが2030年代初頭にSPARCで高Q値実証に成功した場合、「核融合=トカマク」の印象が固まり、ヘリカル型への投資が萎縮するシナリオも考えられる。</li>
+    </ul>
+  </div>
+
+  <h3>市場・社会リスク</h3>
+  <div class="warn-box">
+    <div class="w-title">市場・社会リスク</div>
+    <ul>
+      <li><b>再生可能エネルギーとの競争：</b>2030年代には太陽光・風力・蓄電池コストがさらに低下し、核融合の経済的優位性が薄れるシナリオ。核融合はベースロード電源としての価値を訴求する必要がある。</li>
+      <li><b>トリチウム調達：</b>燃料となる三重水素（トリチウム）の安定調達は商用化の前提条件だが、現在の世界的な供給量は限られており、炉内増殖（ブランケット）技術の確立が不可欠。</li>
+      <li><b>規制・許認可：</b>核融合炉の安全規制は原子力規制委員会の管轄だが、商用核融合炉に対する明確な規制フレームワークはまだ整備途上。商用運転開始前に法規制が確立されなければ遅延リスク。</li>
+    </ul>
+  </div>
+
+  <h3>リスクに対するHelical Fusionの応答</h3>
+  <div class="callout">
+    <strong>段階的実証：</strong>一気に商用炉を建てるのではなく、HTS実証→HARUKA統合実証→KANATA商用炉という3段階で技術・コスト・スケジュールのリスクを分散している。<br><br>
+    <strong>日本製造業エコシステムの活用：</strong>杉野機械・RYOKI TOOL等の国内製造業との緊密な連携により、複雑なHTS巻線の製造リスクを分散・知見を蓄積。<br><br>
+    <strong>政府・公的機関との深い連携：</strong>NIFSとの共同研究体制、政府のSBIR採択等により、公的リソースと民間スピードを掛け合わせたハイブリッド開発体制を実現。
+  </div>
+</div>
+
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://www.helicalfusion.com/" target="_blank">Helical Fusion 公式サイト（日本語）</a></li>
+    <li><a href="https://global.helicalfusion.com/" target="_blank">Helical Fusion 公式サイト（英語）</a></li>
+    <li><a href="https://www.businesswire.com/news/home/20250710025259/en/Helical-Fusion-Raises-JPY-2-3-Billion-Series-A" target="_blank">BusinessWire: Series A 2.3B JPY（2025年7月）</a></li>
+    <li><a href="https://www.businesswire.com/news/home/20251026597002/en/Helical-Fusion-Achieves-Milestone" target="_blank">BusinessWire: HTS コイルマイルストーン（2025年10月）</a></li>
+    <li><a href="https://www.businesswire.com/news/home/20251204842199/en/Helical-Fusion-Developer-of-Next-Generation-Clean-Energy" target="_blank">BusinessWire: Series A Extension $5.5M（2025年12月）</a></li>
+    <li><a href="https://www.helicalfusion.com/en/post/helical-fusion-signs-japan-s-first-power-purchase-agreement-for-fusion-energy-with-aoki-super" target="_blank">Helical Fusion: 青木スーパーとのPPA締結（2025年12月）</a></li>
+    <li><a href="https://global.helicalfusion.com/post/helical-fusion-completes-a-new-coil-manufacturing-machine-for-its-integrated-demonstration-device-in" target="_blank">Helical Fusion: 杉野機械との巻線機完成（2026年1月）</a></li>
+    <li><a href="https://www.einpresswire.com/article/900381850/helical-fusion-completes-critical-components-for-helix-haruka-with-ryoki-tool" target="_blank">Helical Fusion: RYOKI TOOLとのコイルケース完成（2026年3月）</a></li>
+    <li><a href="https://finance.yahoo.com/news/helical-fusion-announces-construction-phase-130000161.html" target="_blank">Yahoo Finance: Helix HARUKA 建設サイト確定（2026年3月）</a></li>
+    <li><a href="https://www.ans.org/news/2025-07-14/article-7189/japans-helical-fusion-raises-15m-in-series-a-funding/" target="_blank">ANS Nuclear Newswire: Series A $15M（2025年7月）</a></li>
+    <li><a href="https://www.ans.org/news/2025-10-29/article-7500/helical-fusion-marks-milestone-in-progress-toward-fusion-power/" target="_blank">ANS Nuclear Newswire: HTS マイルストーン（2025年10月）</a></li>
+    <li><a href="https://prtimes.jp/main/html/rd/p/000000047.000089262.html" target="_blank">PR TIMES: Helix HARUKA 製作着手発表</a></li>
+    <li><a href="https://prtimes.jp/main/html/rd/p/000000048.000089262.html" target="_blank">PR TIMES: Series A Extension 8.7億円</a></li>
+    <li><a href="https://www.businessinsider.jp/article/2507-helicalfusion-ceo-interview/" target="_blank">Business Insider Japan: 田口CEO インタビュー（2025年7月）</a></li>
+    <li><a href="https://toyokeizai.net/articles/-/908003" target="_blank">東洋経済オンライン: すごいベンチャー Helical Fusion</a></li>
+    <li><a href="https://www.jaif.or.jp/journal/japan/30516.html" target="_blank">原子力産業新聞: HTS コイル実証 世界初</a></li>
+    <li><a href="https://casehub.news/category/insight/helical-fusionaws2034.html" target="_blank">CaseHUB News: 2034年 定常核融合炉稼働目標</a></li>
+    <li><a href="https://interestingengineering.com/energy/japan-firm-funding-nuclear-fusion-plant" target="_blank">Interesting Engineering: Japan Helical stellarator</a></li>
+    <li><a href="https://thefusionreport.com/helical-fusion-secures-5-5m-funding-signs-japans-first-fusion-power-purchase-agreement/" target="_blank">The Fusion Report: $5.5M Funding + PPA</a></li>
+    <li><a href="https://www8.cao.go.jp/cstp/fusion/taskforce_social/2kai/siryou4-2.pdf" target="_blank">内閣府 フュージョン戦略TF：Helical Fusion開発計画資料</a></li>
+    <li><a href="https://aws.amazon.com/jp/solutions/case-studies/helical-fusion/" target="_blank">AWS: Helical Fusion 導入事例</a></li>
+    <li><a href="https://aichi-deeptech.com/news/interview-helicalfusion/" target="_blank">Aichi Deeptech Launchpad: 田口CEO インタビュー</a></li>
+  </ul>
+</div>
+
+<p style="text-align:center; color: var(--dim); font-family: 'Poppins', sans-serif; font-size: 11px; margin-top: 32px; letter-spacing: .08em;">
+  Research Date: 2026-04-06 &nbsp;|&nbsp; Helical Fusion Deep Research Report
+</p>
+
+</div>
+</body>
+</html>

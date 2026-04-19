@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astranis — MicroGEO衛星スタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">宇宙通信</span>
+    <span class="badge badge-white">MicroGEO衛星</span>
+    <span class="badge badge-solid">Series D / $7.6B Val</span>
+  </div>
+  <h1>Astranis</h1>
+  <p class="hero-sub">
+    「小型・低コスト・高速で軌道投入」——<br>
+    従来GEO通信衛星の10分の1以下のサイズと建造期間で、地球上40億人の未接続地域にブロードバンドを届ける。ソフトウェア定義型MicroGEO衛星で宇宙通信の経済性を根本から変えるサンフランシスコ発スタートアップ。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$7.6B</div><div class="lbl">Valuation（Jan 2026）</div></div>
+    <div class="kpi"><div class="val">$750M+</div><div class="lbl">累計調達額</div></div>
+    <div class="kpi"><div class="val">10-12 Gbps</div><div class="lbl">衛星1機あたり通信容量</div></div>
+    <div class="kpi"><div class="val">12-18mo</div><div class="lbl">製造期間（従来の1/3以下）</div></div>
+    <div class="kpi"><div class="val">2015</div><div class="lbl">設立</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">MicroGEO技術解説</a></li>
+    <li><a href="#comparison">従来GEOとの比較</a></li>
+    <li><a href="#omega">Omegaプログラム</a></li>
+    <li><a href="#bizmodel">ビジネスモデル</a></li>
+    <li><a href="#funding">資金調達・投資家</a></li>
+    <li><a href="#customers">顧客・パートナー</a></li>
+    <li><a href="#team">経営陣</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">リスクと課題</a></li>
+    <li><a href="#why">なぜ今注目か</a></li>
+  </ol>
+</div>
+
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Astranis Space Technologies Corp.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2015年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">San Francisco, California, USA</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">John Gedmark</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">$7.6B（2026年1月 Series D）</div></div>
+    <div class="kv-item"><div class="k">累計調達</div><div class="v">$750M+</div></div>
+    <div class="kv-item"><div class="k">コア技術</div><div class="v">MicroGEO ソフトウェア定義型通信衛星</div></div>
+    <div class="kv-item"><div class="k">対象市場</div><div class="v">未接続地域40億人へのブロードバンド提供</div></div>
+  </div>
+
+  <p>Astranis（アストラニス）は、通信衛星の「民主化」を掲げる宇宙スタートアップである。従来の大型GEO（静止軌道）通信衛星が重量数トン、製造に3〜4年、コスト数百億円を要したのに対し、AstranisのMicroGEO衛星は重量350〜400kg、製造期間12〜18か月という圧倒的なスペックを実現した。</p>
+
+  <p>創業者兼CEOのJohn Gedmarkは、2015年にAstranisを設立する以前、Commercial Spaceflight Federation（商業宇宙飛行連盟）のエグゼクティブ・ディレクターを務めた宇宙政策の専門家だ。深い業界知見と強力なネットワークを持つGedmarkのもとで、Astranisは「衛星通信版Tesla」とも評される急速な成長を遂げている。</p>
+
+  <p>同社のミッションは「Connecting the world（世界を繋げる）」——インターネットにアクセスできない地球上の40億人に、静止軌道から直接ブロードバンドを提供することだ。先進国では5G・光ファイバーが普及する一方、地形的・経済的理由でインフラ整備が困難な地域は依然広大に存在する。AstranisのMicroGEO衛星はこの市場ギャップを埋める、スケーラブルな解決策として注目されている。</p>
+
+  <div class="callout">
+    <strong>なぜMicroGEOか：</strong>LEO（低軌道）コンステレーション（Starlink等）とは異なり、GEO衛星は1機で固定した地理的エリアをカバーできる。地域の通信事業者にとって「自社専用の衛星容量を持つ」ことが可能になり、コスト・制御性・収益モデルのすべてで優位性が生まれる。AstranisはこのGEOの優位性を維持しつつ、コストを桁違いに下げることに成功した。
+  </div>
+</div>
+
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">2</span> Technology</div>
+  <h2>MicroGEO技術解説</h2>
+
+  <h3>MicroGEO衛星とは何か</h3>
+  <p>MicroGEOとは、Astranis社が独自に定義した「小型静止軌道通信衛星」のカテゴリーである。高度約35,786kmの静止軌道に投入され、地球の自転と同期して特定の地上エリアを常時カバーする。サイズは1辺約60〜70cmの立方体に近いバス（衛星本体）に、展開型のソーラーパネルと通信アンテナを備える構成だ。</p>
+
+  <p>重量は350〜400kgと、従来のGEO通信衛星（3,000〜6,000kg）の約10分の1。コンパクトな設計により、他のペイロードとのライドシェア打ち上げが可能となり、専用ロケット打ち上げに比べてコストが大幅に削減される。ロケットにはSpaceX Falcon 9やArianespace Ariane 5/6が使用されてきた。</p>
+
+  <h3>ソフトウェア定義型ラジオ（SDR）ペイロード</h3>
+  <p>Astranisの最大の技術的差別化要因が、<strong>プロプライエタリなソフトウェア定義型ラジオ（SDR）ペイロード</strong>である。従来の通信衛星は、特定の周波数・変調方式に固定されたハードウェアペイロードを搭載するため、打ち上げ後に仕様変更ができなかった。</p>
+
+  <p>一方、AstranisのSDRペイロードはソフトウェアで通信パラメータを定義・変更できる。打ち上げ後も地上からのコマンドで周波数帯域・変調・コーディングスキームを再設定でき、顧客の需要変化や技術進化に柔軟に対応可能だ。これはスマートフォンのOSアップデートに相当する概念を衛星通信に持ち込んだ革新であり、長期運用における陳腐化リスクを大幅に低減する。</p>
+
+  <h3>通信性能と軌道位置</h3>
+  <p>1機のMicroGEO衛星は<strong>10〜12 Gbpsの通信容量</strong>を提供する。これは地方の通信事業者が数万〜数十万のユーザーに十分なブロードバンドサービスを提供できる規模である。使用する周波数帯はKu帯・Ka帯が中心で、各顧客向けにカスタマイズされた特定の軌道スロットに投入される。</p>
+
+  <p>全電気推進（All-electric propulsion）を採用しており、化学推進剤を必要としない。これにより衛星の軽量化とコスト削減に貢献しつつ、軌道上での姿勢制御・デブリ回避機動も可能だ。設計寿命は<strong>10年以上</strong>であり、通信インフラとして長期的な価値を提供できる。</p>
+
+  <h3>地上セグメントとの統合</h3>
+  <p>Astranisはペイロードハードウェアだけでなく、地上セグメント（ゲートウェイ局・ネットワーク管理システム）も含めた<strong>エンドツーエンドのシステム</strong>を提供する。顧客の通信事業者は既存のインフラに統合しやすく、ターンキーソリューションとして衛星容量を取得できる。このワンストップ提供モデルが、技術リソースの限られた地域通信事業者に対して大きな競争優位となっている。</p>
+
+  <div class="callout">
+    <strong>技術サマリー：</strong>MicroGEO = 小型・GEO・SDRペイロード・全電気推進・ライドシェア打ち上げ。この5要素の組み合わせが、従来比10分の1以下のコストと3分の1以下の製造期間を実現し、新興市場での衛星通信展開を経済的に成立させる。
+  </div>
+</div>
+
+
+<!-- ===================== 3. COMPARISON ===================== -->
+<div class="sec" id="comparison">
+  <div class="sec-label"><span class="num">3</span> Competitive Positioning</div>
+  <h2>従来GEO衛星との比較</h2>
+
+  <table class="t">
+    <thead>
+      <tr>
+        <th>比較項目</th>
+        <th>Astranis MicroGEO</th>
+        <th>従来型 GEO 通信衛星</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>衛星重量</td>
+        <td>350〜400 kg</td>
+        <td>3,000〜6,000 kg</td>
+      </tr>
+      <tr>
+        <td>製造期間</td>
+        <td><strong>12〜18か月</strong></td>
+        <td>3〜4年</td>
+      </tr>
+      <tr>
+        <td>打ち上げ方式</td>
+        <td>ライドシェア（コスト低減）</td>
+        <td>専用ロケット（高コスト）</td>
+      </tr>
+      <tr>
+        <td>通信容量</td>
+        <td>10〜12 Gbps / 機</td>
+        <td>50〜100+ Gbps / 機（大型）</td>
+      </tr>
+      <tr>
+        <td>ペイロード方式</td>
+        <td><strong>ソフトウェア定義型（SDR）</strong></td>
+        <td>固定ハードウェア型</td>
+      </tr>
+      <tr>
+        <td>推進方式</td>
+        <td>全電気推進</td>
+        <td>化学推進が多い</td>
+      </tr>
+      <tr>
+        <td>設計寿命</td>
+        <td>10年以上</td>
+        <td>15〜20年</td>
+      </tr>
+      <tr>
+        <td>対象顧客</td>
+        <td>地域通信事業者・政府・航空海運</td>
+        <td>大手通信事業者・政府機関</td>
+      </tr>
+      <tr>
+        <td>初期投資</td>
+        <td><strong>大幅に低い</strong>（数十億円規模）</td>
+        <td>数百億〜1,000億円規模</td>
+      </tr>
+      <tr>
+        <td>レイテンシ</td>
+        <td>GEO特有の約600ms</td>
+        <td>GEO特有の約600ms（同等）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>MicroGEOが解決する市場の空白</h3>
+  <p>従来の大型GEO衛星は、初期コストが膨大なため大手通信事業者にしか発注できなかった。一方、LEO（低軌道）コンステレーション（Starlink等）は全球カバレッジを提供するが、特定地域に特化した容量配分が難しく、地域通信事業者が「自社ブランドの通信サービス」を提供するには不向きだ。</p>
+
+  <p>AstranisのMicroGEOは、この両者のギャップを埋める「<strong>ミドルマーケット衛星通信</strong>」として機能する。地域通信事業者がアラスカやアフリカの特定エリア向けに、専有帯域を持つ衛星を合理的なコストで取得できる。これはビジネスモデルとして非常に説得力がある。</p>
+
+  <div class="quote">
+    <p>We're not competing with Starlink. We're selling to the telcos that want their own satellite — dedicated capacity for their specific region.</p>
+    <div class="attr">— John Gedmark, CEO, Astranis</div>
+  </div>
+</div>
+
+
+<!-- ===================== 4. OMEGA PROGRAM ===================== -->
+<div class="sec" id="omega">
+  <div class="sec-label"><span class="num">4</span> Omega Program</div>
+  <h2>Omegaプログラム：次世代MicroGEO</h2>
+
+  <p>2026年1月のSeries Dラウンドで調達した$200Mは、主に次世代機「<strong>Omega</strong>」の開発に充当される。OmegaはAstranisの第2世代MicroGEOプラットフォームであり、現行機からさらなる能力向上を図る野心的なプログラムだ。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">大型化と容量増大</div>
+        <div class="ind-desc">現行MicroGEO（350〜400kg）より大型のバスに、より大容量のSDRペイロードを搭載。1機あたりの通信容量を現行の10〜12 Gbpsから大幅に向上させ、より広いエリアカバレッジまたはより高密度なサービスを実現する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">Series D資金による完全開発ファンド</div>
+        <div class="ind-desc">Omegaプログラムの開発資金は2026年1月のSeries Dで全額確保されたとAstranisは発表。製造ラインの拡張とともに、Omegaの量産体制構築に向けた投資が進む。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">Impulse Spaceとの2027年打ち上げ計画</div>
+        <div class="ind-desc">Impulse Space（低軌道輸送サービス）との提携により、2027年のLEO→GEO軌道遷移デリバリーを計画。Falcon 9等でLEO投入後、Impulseの軌道上輸送機でGEOに送届けるアーキテクチャにより、打ち上げコストと柔軟性をさらに改善する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">製造能力の倍増</div>
+        <div class="ind-desc">現在サンフランシスコ本社の製造施設を拡張し、年間製造台数を増加させる計画。スケールアップにより1機あたりの製造コストをさらに低減し、新興国市場への価格競争力を強化する。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Omega が開く新市場</h3>
+  <p>Omegaが実現する大容量化によって、AstranisはAnuvu（航空・海事エンターテインメント）のような既存顧客の需要増に応えると同時に、政府向け通信・防衛・国家安全保障用途への展開も視野に入れている。現行のMicroGEOで実証した信頼性と、Omegaの向上した性能を組み合わせることで、衛星通信市場でより大きなシェアを狙う。</p>
+</div>
+
+
+<!-- ===================== 5. BUSINESS MODEL ===================== -->
+<div class="sec" id="bizmodel">
+  <div class="sec-label"><span class="num">5</span> Business Model</div>
+  <h2>ビジネスモデル</h2>
+
+  <h3>専有容量モデル（Dedicated Capacity）</h3>
+  <p>Astranisのビジネスモデルの核心は、<strong>衛星容量の専有販売</strong>である。顧客（地域通信事業者・政府・航空海運会社）に対し、特定の地理的エリアをカバーするMicroGEO衛星1機（またはその容量の一部）を長期契約で販売・リースする。これにより顧客は他社と共有しない専有帯域を確保でき、サービス品質の安定的な維持が可能になる。</p>
+
+  <p>収益構造は大きく2つに分かれる。第1は衛星本体の<strong>販売収益</strong>（またはファイナンスリース収益）。第2は衛星運用期間を通じた<strong>マネージドサービス収益</strong>（地上セグメント運用・ネットワーク管理・保守）。後者は月次・年次のサブスクリプション型で、安定的な経常収益（ARR）として積み上がる。</p>
+
+  <h3>バリューチェーンの垂直統合</h3>
+  <p>Astranisは衛星の設計・製造から、ペイロード（SDR）開発、地上局構築、運用管理まで<strong>バリューチェーンを垂直統合</strong>している。これにより外部依存を最小化し、コスト最適化と品質管理を自社でコントロールできる。製造はサンフランシスコ本社の自社工場で行い、サプライチェーンの主要コンポーネントも内製化を進める。</p>
+
+  <h3>市場規模と拡張性</h3>
+  <p>インターネット未接続人口40億人のうち、衛星通信が最も現実的なソリューションとなるのは、固定通信インフラの整備が経済的に困難なエリアに住む数億〜10億人超と推計される。アジア太平洋・アフリカ・中南米・北極圏などが主な対象地域だ。1衛星あたり数千万〜数億ドルの取引規模となる場合が多く、受注1件のインパクトが大きいビジネスである。</p>
+
+  <div class="callout">
+    <strong>収益の見通し：</strong>2025年に複数のMicroGEO衛星がAnuvuのために運用開始となったことで、初の本格的な経常収益が積み上がっている。Omegaプログラムの量産化と追加顧客獲得が進めば、2027〜2028年にかけて収益が急拡大するフェーズに入ると見られる。
+  </div>
+</div>
+
+
+<!-- ===================== 6. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">6</span> Funding &amp; Investors</div>
+  <h2>資金調達・投資家</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <div class="r-badge">Series D</div>
+      <div class="f-amount">$200M</div>
+      <div class="f-detail">
+        <div class="f-date">2026年1月</div>
+        <div class="f-desc">Lead: Andreessen Horowitz (a16z) + BAM Elevate。バリュエーション$7.6B。Omegaプログラム開発資金として充当。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Series C</div>
+      <div class="f-amount">$250M</div>
+      <div class="f-detail">
+        <div class="f-date">2022年</div>
+        <div class="f-desc">BlackRock、Baillie Gifford、Fidelity等の大手機関投資家が参加。製造拡張と初期顧客獲得に活用。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">Series B / 以前</div>
+      <div class="f-amount">$300M+</div>
+      <div class="f-detail">
+        <div class="f-date">〜2021年</div>
+        <div class="f-desc">a16z主導のシード〜Series B。技術開発フェーズの資金。累計調達$750M+。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要投資家</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <div class="lead-tag">Lead</div>
+      <div class="vc-name">Andreessen Horowitz (a16z)</div>
+      <div class="vc-role">リード投資家（複数ラウンド）</div>
+      <div class="vc-desc">シリコンバレー最大級のVC。宇宙・ディープテックへの積極投資で知られる。Astranisへは創業初期から継続的に投資し、Series Dでもリードを務めた。</div>
+    </div>
+    <div class="vc-card lead">
+      <div class="lead-tag">Lead</div>
+      <div class="vc-name">BAM Elevate</div>
+      <div class="vc-role">Series D 共同リード</div>
+      <div class="vc-desc">BlackRock Alternative Management。大手資産運用会社Blackrockの代替投資部門。Series Dでa16zと共同でリードを務め、機関投資家からの信認を示す。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">BlackRock</div>
+      <div class="vc-role">機関投資家</div>
+      <div class="vc-desc">世界最大の資産運用会社。インフラ・テクノロジー投資の一環としてAstranisに参画。BAM ElevateはBlackRockの傘下。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Baillie Gifford</div>
+      <div class="vc-role">機関投資家</div>
+      <div class="vc-desc">スコットランドの長期投資ファンド。Tesla・SpaceX・Airbnb等への早期投資で知られる。Astranisへの投資はその宇宙・ディープテック戦略の延長線上にある。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Fidelity Investments</div>
+      <div class="vc-role">機関投資家</div>
+      <div class="vc-desc">米国大手資産運用会社。未上場スタートアップへのグロースステージ投資で積極姿勢を持つ。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Impulse Space（戦略パートナー）</div>
+      <div class="vc-role">打ち上げパートナー</div>
+      <div class="vc-desc">LEO→GEO軌道輸送サービス。2027年のAstranis Omega打ち上げに向けた戦略的パートナーシップを締結。投資関係も含む。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 7. CUSTOMERS ===================== -->
+<div class="sec" id="customers">
+  <div class="sec-label"><span class="num">7</span> Customers &amp; Partners</div>
+  <h2>顧客・パートナー</h2>
+
+  <h3>Anuvu（航空・海事エンターテインメント）</h3>
+  <p>Astranisの最大かつ最重要顧客。Anuvu（旧Global Eagle）は航空機・クルーズ船向けのコネクティビティ・エンターテインメントサービスプロバイダーであり、2025年には複数のAstranis MicroGEO衛星が稼働を開始した。Anuvu向けに特定の地理的エリア（太平洋ルート等）をカバーする専有衛星容量を提供しており、これがAstranisの初期商業収益の中核となっている。</p>
+
+  <h3>アラスカ州政府・地域通信事業者</h3>
+  <p>Astranisが当初からターゲットとしてきた市場の一つが、<strong>アラスカ州</strong>だ。地理的な孤立と厳しい気候によりケーブル・光ファイバー敷設が困難なアラスカでは、衛星通信が唯一の現実的なブロードバンド手段となる地域が多い。アラスカ州内の地域通信事業者に対し、MicroGEO衛星の専有容量を提供する複数の取引が成立している。</p>
+
+  <h3>Impulse Space（打ち上げパートナー）</h3>
+  <p>2023年に設立されたImpulse Spaceは、軌道上輸送サービスに特化したスタートアップ。AstranisはImpulse SpaceとのパートナーシップによりLEO→GEO輸送の新アーキテクチャを採用し、<strong>2027年にOmega衛星の打ち上げ</strong>を計画している。これにより従来の直接GEO投入に比べ、打ち上げコストをさらに削減できる見通しだ。</p>
+
+  <table class="t">
+    <thead>
+      <tr>
+        <th>顧客 / パートナー</th>
+        <th>関係</th>
+        <th>地域・用途</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Anuvu</td>
+        <td>主要顧客（複数機運用中）</td>
+        <td>太平洋・大西洋ルート、航空・海事通信</td>
+      </tr>
+      <tr>
+        <td>アラスカ州通信事業者</td>
+        <td>地域顧客（複数）</td>
+        <td>アラスカ州内の遠隔地ブロードバンド</td>
+      </tr>
+      <tr>
+        <td>Impulse Space</td>
+        <td>戦略的打ち上げパートナー</td>
+        <td>LEO→GEO輸送（2027年〜）</td>
+      </tr>
+      <tr>
+        <td>SpaceX（Falcon 9）</td>
+        <td>ロケット打ち上げ事業者</td>
+        <td>GEO/LEO軌道打ち上げ</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
+<!-- ===================== 8. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">8</span> Leadership</div>
+  <h2>経営陣</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">JG</div>
+      <div>
+        <h3>John Gedmark</h3>
+        <div class="p-role">Co-Founder &amp; CEO</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row">
+        <div class="lbl">経歴</div>
+        <div class="val">Commercial Spaceflight Federation エグゼクティブ・ディレクター出身。宇宙政策・規制・業界連携の専門家として活動後、2015年にAstranisを共同創業。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">強み</div>
+        <div class="val">宇宙業界の政策・規制・調達に関する深い知識と人脈。政府機関・大手通信事業者との交渉力。技術バックグラウンドと政策知見を兼備する稀有なCEO。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">投資家評価</div>
+        <div class="val">a16zが創業初期から複数ラウンドにわたりリード投資を継続。投資家からの信頼が厚く、調達面での実績が際立つ。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">ビジョン</div>
+        <div class="val">「衛星通信の民主化」——地域の通信事業者が自社専有の衛星を持てる世界の実現。GEO衛星を「手の届くインフラ」にする。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 9. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">9</span> Competitive Analysis</div>
+  <h2>競合比較：SpaceX Starlink・OneWebとの差別化</h2>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">Astranis</div>
+      <div class="comp-tag">MicroGEO / 専有容量</div>
+      <div class="comp-desc">地域通信事業者向けに専有衛星容量を販売。1機のMicroGEO衛星で特定エリアに特化した高品質サービスが可能。コスト・納期・柔軟性でGEO市場の空白を埋める。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">SpaceX Starlink</div>
+      <div class="comp-tag">LEO コンステレーション</div>
+      <div class="comp-desc">7,000機超のLEO衛星で全球カバレッジ。低レイテンシが強み。ただし特定地域への専有容量提供は不得意で、地域通信事業者が「自社ブランドサービス」を構築しにくい。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">OneWeb（Eutelsat）</div>
+      <div class="comp-tag">LEO コンステレーション</div>
+      <div class="comp-desc">600機超のLEO衛星を運用するEutelsatグループ。B2B（通信事業者・政府）向けが中心。Astranisと部分的に競合するが、全球サービスが主力でMicroGEOとは棲み分けが可能。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">SES / Intelsat（従来型GEO）</div>
+      <div class="comp-tag">従来型 GEO</div>
+      <div class="comp-desc">大型GEO衛星の既存大手。高容量だが製造コストと期間が膨大。Astranisが狙う中小規模の地域通信事業者向け市場には参入しにくいポジションにある。</div>
+    </div>
+  </div>
+
+  <h3>差別化のポイント</h3>
+  <p>Astranisが強調する差別化は「<strong>Starlinkと競合していない</strong>」という点だ。StarlinkはB2C（エンドユーザー直販）が主力であるのに対し、AstranisはB2B（通信事業者・政府）モデルで動く。地域の通信事業者は「Starlinkの卸売容量を使う」よりも「自社専有の衛星を持つ」方が、ビジネス上の自由度・収益性・ブランド維持の観点で有利な場合が多い。</p>
+
+  <p>またGEOの<strong>固定した仰角・カバレッジ</strong>は、LEOコンステレーション（常に衛星が動き、地上局のトラッキングが必要）と比較して、地上設備のシンプルさと安定性という面で優れる。特に農村部・島嶼部など、設備メンテナンスが困難なエリアにはGEOアーキテクチャが適している。</p>
+
+  <div class="callout">
+    <strong>Astranisの競合ポジション：</strong>LEO vs GEOという対立構図ではなく、GEO市場の中で「大型衛星しか選択肢がなかった層」に対する新市場創造型の競合戦略。直接競合の少ないニッチで高い参入障壁を構築している。
+  </div>
+</div>
+
+
+<!-- ===================== 10. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">10</span> Risk Analysis</div>
+  <h2>リスクと課題</h2>
+
+  <div class="warn-box">
+    <div class="w-title">主要リスク</div>
+    <ul>
+      <li><b>打ち上げリスク：</b>衛星は打ち上げ時の失敗で全損する可能性がある。複数のMicroGEOが単一のロケットで打ち上げられる場合、1回の失敗が複数顧客への影響となりうる。保険・冗長設計でリスク軽減を図るが、信頼性の継続的な実証が不可欠。</li>
+      <li><b>LEOコンステレーションの圧迫：</b>Starlinkの急速な拡大・低価格化が続けば、地域通信事業者がMicroGEO購入よりもStarlinkホールセール利用を選択する可能性がある。Astranisのバリュープロポジションが変容しうるリスク。</li>
+      <li><b>製造スケールアップ：</b>現在はサンフランシスコ本社工場のみで製造。需要拡大に応じた製造能力拡大が遅れると、納期遅延・機会損失が発生する。Omega量産化は特に難易度が高い。</li>
+      <li><b>顧客集中リスク：</b>現時点での収益の大半をAnuvuへの依存が占める可能性がある。顧客分散が進まなければ、Anuvu事業の変調がAstranisに直撃するリスク。</li>
+      <li><b>規制・軌道スロット：</b>GEO軌道スロットは国際電気通信連合（ITU）が管理する有限資源。顧客が希望する軌道位置の確保には規制手続きに時間がかかる場合があり、事業展開速度に制約が生じる可能性。</li>
+      <li><b>資本集約性と収益化タイミング：</b>バリュエーション$7.6Bに対して収益規模は初期段階。IPOまでの期間が長引く場合、投資家の期待値管理と継続的な資金調達が課題となる。</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ===================== 11. WHY NOW ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">11</span> Why Now</div>
+  <h2>なぜ今Astranisに注目か</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">GEO市場のリプレイスメント需要</div>
+        <div class="ind-desc">既存の大型GEO衛星は2020年代後半〜2030年代にかけて寿命を迎える機体が多い。地域通信事業者はリプレイス先として、従来型大型衛星（高コスト・長期間）ではなくMicroGEO（低コスト・短納期）を選択する強いインセンティブを持つ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">打ち上げコストの劇的低下</div>
+        <div class="ind-desc">Falcon 9のライドシェアプログラムによりGEOへの打ち上げコストが過去10年で大幅に低下。これはAstranisのビジネスモデルの前提条件であり、打ち上げコスト低減が続くほどMicroGEOのコスト優位性は拡大する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">$7.6B評価でのSeries D完了</div>
+        <div class="ind-desc">2026年1月にa16z・BAM Elevate主導で$200M調達。バリュエーション$7.6Bは宇宙スタートアップとして屈指の高評価。機関投資家（BlackRock・Baillie Gifford・Fidelity）の参加は、ステルスな「宇宙インフラ株」としての位置付けを示す。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Anuvu向け衛星の実証成功（2025年）</div>
+        <div class="ind-desc">2025年に複数のMicroGEO衛星がAnuvu向けに商業運用を開始。技術的概念実証（TRL）から商業運用（収益化）へのステージ移行が完了しており、次のスケールアップフェーズに向けた信頼性が確立された。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">デジタルデバイド解消への社会的要請</div>
+        <div class="ind-desc">SDGs・各国政府のブロードバンド普及政策・ESG投資の観点から、インターネット未接続人口へのアクセス提供は巨大な政治的・社会的要請を持つ。政府との契約・補助金獲得においてもこの追い風は強い。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>The satellite industry is about to undergo the same transformation that happened to computing — from mainframe to personal computer. We are building the PC of satellites.</p>
+    <div class="attr">— John Gedmark, CEO, Astranis</div>
+  </div>
+</div>
+
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>主要情報源・参考資料</h2>
+  <ul>
+    <li>Astranis公式プレスリリース（Series D、2026年1月）</li>
+    <li>Andreessen Horowitz — Astranis投資発表</li>
+    <li>TechCrunch — Astranis Series D記事</li>
+    <li>SpaceNews — MicroGEO技術解説</li>
+    <li>Space.com — Astranis MicroGEO打ち上げレポート</li>
+    <li>Anuvu公式アナウンスメント</li>
+    <li>Impulse Space パートナーシップ発表</li>
+    <li>Via Satellite — Astranis Omega program</li>
+    <li>ITU軌道資源管理規則</li>
+    <li>Crunchbase — Astranis資金調達データ</li>
+  </ul>
+</div>
+
+</div><!-- /page -->
+</body>
+</html>
