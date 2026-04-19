@@ -169,6 +169,41 @@ table.raw tr.goal-row td:first-child { background: var(--bg); }
   color: var(--muted); font-family: 'Poppins', sans-serif; font-size: 11px;
 }
 
+/* ── MODAL ── */
+.chart-box { cursor: pointer; transition: box-shadow .15s; }
+.chart-box:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); }
+
+#modal-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.55);
+  z-index: 100;
+  align-items: center; justify-content: center;
+  padding: 20px;
+}
+#modal-overlay.open { display: flex; }
+#modal-box {
+  background: var(--bg);
+  border-radius: 16px;
+  padding: 28px 28px 20px;
+  width: min(800px, 100%);
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+#modal-close {
+  position: absolute; top: 16px; right: 18px;
+  background: none; border: none; cursor: pointer;
+  font-size: 20px; color: var(--muted); line-height: 1;
+  font-family: 'Poppins', sans-serif;
+}
+#modal-close:hover { color: var(--accent); }
+#modal-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--muted); margin-bottom: 18px;
+}
+
 @media (max-width: 640px) {
   .chart-grid { grid-template-columns: 1fr; }
   .hero { padding: 24px 20px 24px; }
@@ -204,30 +239,50 @@ table.raw tr.goal-row td:first-child { background: var(--bg); }
 <!-- CHART PANEL -->
 <div id="panel-chart">
   <div class="chart-grid">
-    <div class="chart-box">
+    <div class="chart-box" onclick="openModal('c-weight')">
       <div class="chart-title">体重 (kg)</div>
       <canvas id="c-weight" height="180"></canvas>
       <div class="chart-target-note">目標 69.5 kg</div>
     </div>
-    <div class="chart-box">
+    <div class="chart-box" onclick="openModal('c-fat')">
       <div class="chart-title">体脂肪率 (%)</div>
       <canvas id="c-fat" height="180"></canvas>
       <div class="chart-target-note">目標 15.3 %</div>
     </div>
-    <div class="chart-box">
+    <div class="chart-box" onclick="openModal('c-visceral')">
       <div class="chart-title">内臓脂肪レベル</div>
       <canvas id="c-visceral" height="180"></canvas>
       <div class="chart-target-note">目標 6</div>
     </div>
-    <div class="chart-box">
+    <div class="chart-box" onclick="openModal('c-water')">
       <div class="chart-title">体水分率 (%)</div>
       <canvas id="c-water" height="180"></canvas>
       <div class="chart-target-note">目標 60.2 %</div>
     </div>
-    <div class="chart-box chart-box-wide">
+    <div class="chart-box chart-box-wide" onclick="openModal('c-calories')">
       <div class="chart-title">摂取カロリー (kcal)</div>
       <canvas id="c-calories" height="100"></canvas>
-      <div class="chart-target-note">目標 1,500 kcal/day（平日）</div>
+      <div class="chart-target-note">目標 1,500 kcal/day</div>
+    </div>
+    <div class="chart-box" onclick="openModal('c-protein')">
+      <div class="chart-title">タンパク質 (g)</div>
+      <canvas id="c-protein" height="180"></canvas>
+      <div class="chart-target-note">目標 130 g</div>
+    </div>
+    <div class="chart-box" onclick="openModal('c-fat-cal')">
+      <div class="chart-title">脂質 (g)</div>
+      <canvas id="c-fat-cal" height="180"></canvas>
+      <div class="chart-target-note"></div>
+    </div>
+    <div class="chart-box" onclick="openModal('c-carbs')">
+      <div class="chart-title">炭水化物 (g)</div>
+      <canvas id="c-carbs" height="180"></canvas>
+      <div class="chart-target-note"></div>
+    </div>
+    <div class="chart-box" onclick="openModal('c-fiber')">
+      <div class="chart-title">食物繊維 (g)</div>
+      <canvas id="c-fiber" height="180"></canvas>
+      <div class="chart-target-note"></div>
     </div>
   </div>
 </div>
@@ -245,6 +300,16 @@ table.raw tr.goal-row td:first-child { background: var(--bg); }
 </div>
 
 </div><!-- /.page -->
+
+<!-- MODAL -->
+<div id="modal-overlay" onclick="closeModal()">
+  <div id="modal-box" onclick="event.stopPropagation()">
+    <button id="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-title"></div>
+    <canvas id="modal-canvas"></canvas>
+    <div id="modal-note" class="chart-target-note" style="margin-top:12px"></div>
+  </div>
+</div>
 
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
@@ -342,7 +407,8 @@ const CAL_CSV = `date,calories,protein,fat,carbs,sugar,fiber,salt
 
 // ── STATE ───────────────────────────────────────────────────
 let bodyData = [], calData = [];
-const charts  = {};
+const charts   = {};
+const chartDefs = {};   // { id: { config, title, note } }
 
 // ── LOAD ────────────────────────────────────────────────────
 function loadData() {
@@ -390,44 +456,40 @@ function fv(arr, key) {
   return arr.map(d => { const v = parseFloat(d[key]); return isNaN(v) ? null : v; });
 }
 
-function mkLine(id, values, dates, goal, yMin, yMax) {
-  const ctx = document.getElementById(id);
-  if (!ctx) return;
-  if (charts[id]) charts[id].destroy();
-
-  charts[id] = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels: dates,
-      datasets: [
-        {
-          data: values,
-          borderColor: '#111',
-          backgroundColor: 'rgba(17,17,17,0.05)',
-          tension: 0.35,
-          pointRadius: 4,
-          pointBackgroundColor: '#111',
-          pointBorderColor: '#fff',
-          pointBorderWidth: 1.5,
-          fill: true,
-        },
-        {
-          data: Array(dates.length).fill(goal),
-          borderColor: '#bbb',
-          borderDash: [5, 4],
-          borderWidth: 1.5,
-          pointRadius: 0,
-          fill: false,
-        },
-      ],
+function mkLineConfig(values, dates, goal, yMin, yMax) {
+  const datasets = [
+    {
+      data: values,
+      borderColor: '#111',
+      backgroundColor: 'rgba(17,17,17,0.05)',
+      tension: 0.35,
+      pointRadius: 4,
+      pointBackgroundColor: '#111',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 1.5,
+      fill: true,
     },
+  ];
+  if (goal !== null && goal !== undefined) {
+    datasets.push({
+      data: Array(dates.length).fill(goal),
+      borderColor: '#bbb',
+      borderDash: [5, 4],
+      borderWidth: 1.5,
+      pointRadius: 0,
+      fill: false,
+    });
+  }
+  return {
+    type: 'line',
+    data: { labels: dates, datasets },
     options: {
       responsive: true,
       plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
-            label: item => item.datasetIndex === 1
+            label: item => (goal !== null && item.datasetIndex === 1)
               ? `目標: ${goal}`
               : `${item.formattedValue}`,
           },
@@ -438,15 +500,11 @@ function mkLine(id, values, dates, goal, yMin, yMax) {
         y: { min: yMin, max: yMax, grid: { color: '#f0f0f0' } },
       },
     },
-  });
+  };
 }
 
-function mkBar(id, values, dates, target) {
-  const ctx = document.getElementById(id);
-  if (!ctx) return;
-  if (charts[id]) charts[id].destroy();
-
-  charts[id] = new Chart(ctx, {
+function mkBarConfig(values, dates, target) {
+  return {
     type: 'bar',
     data: {
       labels: dates,
@@ -477,21 +535,70 @@ function mkBar(id, values, dates, target) {
         y: { grid: { color: '#f0f0f0' } },
       },
     },
-  });
+  };
 }
+
+function mkLine(id, values, dates, goal, yMin, yMax, title, note) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  if (charts[id]) charts[id].destroy();
+  const cfg = mkLineConfig(values, dates, goal, yMin, yMax);
+  charts[id] = new Chart(ctx, cfg);
+  chartDefs[id] = { config: cfg, title, note };
+}
+
+function mkBar(id, values, dates, target, title, note) {
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  if (charts[id]) charts[id].destroy();
+  const cfg = mkBarConfig(values, dates, target);
+  charts[id] = new Chart(ctx, cfg);
+  chartDefs[id] = { config: cfg, title, note };
+}
+
+// ── MODAL ────────────────────────────────────────────────────
+let modalChart = null;
+
+function openModal(id) {
+  const def = chartDefs[id];
+  if (!def) return;
+  document.getElementById('modal-title').textContent = def.title;
+  document.getElementById('modal-note').textContent  = def.note || '';
+  if (modalChart) { modalChart.destroy(); modalChart = null; }
+  const canvas = document.getElementById('modal-canvas');
+  canvas.style.maxHeight = '60vh';
+  modalChart = new Chart(canvas, JSON.parse(JSON.stringify(def.config)));
+  document.getElementById('modal-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  if (modalChart) { modalChart.destroy(); modalChart = null; }
+}
+
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 function renderCharts() {
   const bd = bodyData.map(d => d.date);
-  mkLine('c-weight',   fv(bodyData,'weight'),          bd, GOALS.weight,        63, 82);
-  mkLine('c-fat',      fv(bodyData,'body_fat'),         bd, GOALS.body_fat,      11, 25);
-  mkLine('c-visceral', fv(bodyData,'visceral_fat'),     bd, GOALS.visceral_fat,   0, 15);
-  mkLine('c-water',    fv(bodyData,'body_water'),       bd, GOALS.body_water,    52, 65);
+  mkLine('c-weight',   fv(bodyData,'weight'),      bd, GOALS.weight,      63, 82, '体重 (kg)',      '目標 69.5 kg');
+  mkLine('c-fat',      fv(bodyData,'body_fat'),     bd, GOALS.body_fat,    11, 25, '体脂肪率 (%)',   '目標 15.3 %');
+  mkLine('c-visceral', fv(bodyData,'visceral_fat'), bd, GOALS.visceral_fat, 0, 15, '内臓脂肪レベル', '目標 6');
+  mkLine('c-water',    fv(bodyData,'body_water'),   bd, GOALS.body_water,  52, 65, '体水分率 (%)',   '目標 60.2 %');
 
   if (calData.length) {
-    mkBar('c-calories', fv(calData,'calories'), calData.map(d => d.date), 1500);
+    const cd = calData.map(d => d.date);
+    mkBar('c-calories', fv(calData,'calories'), cd, 1500, '摂取カロリー (kcal)', '目標 1,500 kcal/day');
+    mkLine('c-protein',  fv(calData,'protein'), cd, 130,  0, 200, 'タンパク質 (g)', '目標 130 g');
+    mkLine('c-fat-cal',  fv(calData,'fat'),      cd, null, 0, 200, '脂質 (g)',       '');
+    mkLine('c-carbs',    fv(calData,'carbs'),    cd, null, 0, 350, '炭水化物 (g)',   '');
+    mkLine('c-fiber',    fv(calData,'fiber'),    cd, null, 0,  30, '食物繊維 (g)',   '');
   } else {
-    const box = document.getElementById('c-calories').closest('.chart-box');
-    box.innerHTML = '<div class="chart-title">摂取カロリー (kcal)</div><div class="msg">データなし</div>';
+    ['c-calories','c-protein','c-fat-cal','c-carbs','c-fiber'].forEach(id => {
+      const box = document.getElementById(id)?.closest('.chart-box');
+      if (box) box.innerHTML = `<div class="chart-title">${id}</div><div class="msg">データなし</div>`;
+    });
   }
 }
 
