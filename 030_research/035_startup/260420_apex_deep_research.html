@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apex — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav"><a class="snav-logo" href="/index.html">24111</a><button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button></div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec"><div class="snav-sec-label">030 Research</div><a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a><a class="snav-a" href="/030_research/033_legend/index.html">legend</a><a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a><a class="snav-a" href="/030_research/035_startup/index.html">startup</a></div>
+  <div class="snav-sec"><div class="snav-sec-label">040 Personal</div><a class="snav-a" href="/040_personal/profile/profile.html">profile</a><a class="snav-a" href="/040_personal/047_books/books.html">books</a><a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a></div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Space × Defense</span>
+    <span class="badge badge-white">Satellite Manufacturing</span>
+    <span class="badge badge-solid">Unicorn</span>
+  </div>
+  <h1>Apex</h1>
+  <p class="hero-sub">衛星バスの大量生産によって宇宙産業のボトルネックを解消するロサンゼルス発のスペーステックスタートアップ。「Aries」「Nova」「Comet」の標準化プラットフォームを量産し、国防・商業顧客へ迅速にデリバリー。2025年9月にユニコーン（評価額10億ドル超）に到達。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$500M+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">$1B+</div><div class="lbl">Valuation (2025.09)</div></div>
+    <div class="kpi"><div class="val">$100M+</div><div class="lbl">受注残高</div></div>
+    <div class="kpi"><div class="val">2022</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー・プロダクト</a></li>
+    <li><a href="#business">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">最近のニュース・マイルストーン</a></li>
+    <li><a href="#kpi">財務指標・KPI（推定）</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Apex（旧：Apex Space）</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2022年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Playa Vista, Los Angeles, California, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series D（ユニコーン）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">5億ドル以上（エクイティ＋デット）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">10億ドル超（2025年9月）</div></div>
+    <div class="kv-item"><div class="k">工場面積</div><div class="v">100,000平方フィート超（Playa Vista）</div></div>
+    <div class="kv-item"><div class="k">プロダクトライン</div><div class="v">Aries / Nova / Comet / Comet Mini / Comet XL</div></div>
+    <div class="kv-item"><div class="k">主要顧客</div><div class="v">米宇宙軍・BAE Systems・Anduril 他</div></div>
+    <div class="kv-item"><div class="k">公式サイト</div><div class="v">apexspace.com</div></div>
+  </div>
+
+  <p>Apexは、宇宙産業で長年のボトルネックとなってきた「衛星バス調達の遅さ・高コスト」を解消するために設立されたスタートアップ。衛星バスとは、衛星本体の構造・電源・通信・姿勢制御などを担う"共通プラットフォーム"であり、これを<strong>標準化・大量生産</strong>することでリードタイムを劇的に短縮した。</p>
+
+  <p>従来は顧客ごとにカスタム設計されていた衛星バスを、自動車のプラットフォーム戦略のように「規格化された量産品」として提供。顧客は自社のペイロード（センサー・通信機器・兵器等）を規格品のバスに搭載するだけでよく、開発期間を年単位から月単位に短縮できる。</p>
+
+  <div class="callout">
+    <strong>核心命題：</strong>宇宙コンステレーション（大規模衛星群）の急拡大と米国防総省のスペースドメイン強化によって、衛星バスの需要が爆発的に増加している。しかし既存の宇宙産業はカスタム製造に依存しており、供給が追いつかない。Apexはこの「製造ボトルネック」を、製品化・工場オートメーション・量産化で根本解決する。
+  </div>
+</div>
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー・プロダクト</div>
+
+  <h3>プロダクトライン</h3>
+  <p>Apexは用途・サイズ別に5つの衛星バスプラットフォームを展開している。すべて「標準化・製品化」されたオフザシェルフ設計で、顧客のペイロードを最短納期で搭載できる。</p>
+
+  <table class="t">
+    <thead>
+      <tr><th>プラットフォーム</th><th>ペイロード質量</th><th>電力</th><th>価格帯</th><th>主要用途</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Aries</td><td>最大150 kg（約330 lb）</td><td>中程度</td><td>$3.5M〜$9.5M</td><td>LEO・GEO汎用、防衛・商業</td></tr>
+      <tr><td>Nova</td><td>最大300 kg（約660 lb）</td><td>Ariesの2倍</td><td>$6M〜</td><td>大型ペイロード対応</td></tr>
+      <tr><td>Comet</td><td>最大500 kg</td><td>5 kW以上（連続）</td><td>非公開</td><td>大規模コンステレーション向けフラットパック設計</td></tr>
+      <tr><td>Comet Mini</td><td>大型ペイロード対応</td><td>約20 kW</td><td>非公開</td><td>ミサイル防衛・軌道コンピューティング（2028年目標）</td></tr>
+      <tr><td>Comet XL</td><td>超大型</td><td>最大100 kW</td><td>非公開</td><td>Starship級ロケット対応・超大型コンステレーション</td></tr>
+    </tbody>
+  </table>
+
+  <h3>製造アプローチ — 「衛星のiPhone化」</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">製品化（Productization）</div>
+        <div class="ind-desc">顧客ごとのカスタム設計を廃止し、標準化されたバスを「カタログ製品」として販売。自動車業界が採用するプラットフォーム戦略を宇宙産業に適用。設計の再利用により開発コストと製造コストを大幅削減する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">工場式量産（Serial Manufacturing）</div>
+        <div class="ind-desc">Playa Vistaに100,000平方フィート超の専用製造施設を構え、ライン生産方式を宇宙産業に導入。従来の「クリーンルームで職人が手作り」というモデルから、繰り返し可能な量産プロセスへ転換。2026年にかけてさらに55,000平方フィートを増床予定。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">迅速デリバリー（Fast Delivery）</div>
+        <div class="ind-desc">従来の衛星バスは設計から納品まで数年かかるのが常識だった。Apexは製品化と量産によってリードタイムを劇的に短縮。国防顧客が求める「緊急性のある打上げスケジュール」に対応できる唯一の量産バスメーカーとして差別化。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Comet フラットパック設計</div>
+        <div class="ind-desc">Cometは5メートルのロケットフェアリングに最大6機を同時に収納できる「フラットパック」設計を採用。SpaceX Falcon 9のTransporterやStarshipへの搭載効率を最大化し、コンステレーション展開コストを大幅に削減できる。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Project Shadow — 宇宙ベースのインターセプター実証</h3>
+  <div class="callout">
+    <strong>Project Shadow</strong>は、Apexが独自資金1500万ドルを投じて進める、米国初の商業主導による軌道上インターセプター実証プログラム。2026年に自社バス上でインターセプターを展開し、迎撃シミュレーションを実施。米国防総省の「ゴールデンドーム」ミサイル防衛構想に向けた技術実証を兼ねる。
+  </div>
+</div>
+
+<!-- ===================== 3. BUSINESS MODEL ===================== -->
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル・収益構造</div>
+
+  <h3>収益モデル</h3>
+  <p>Apexの収益は<strong>衛星バスの販売（ハードウェア）</strong>を中心に構成される。顧客は契約時に前払い（プリデリバリーペイメント）を行い、製造・納品後に残額を支払う形式が基本。1台あたりAriesで350万〜950万ドル、Nova系・Comet系はより高単価になる。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">主要収益源</div><div class="v">衛星バス販売（ハードウェア）</div></div>
+    <div class="kv-item"><div class="k">顧客セグメント</div><div class="v">国防（約2/3）、商業（約1/3）</div></div>
+    <div class="kv-item"><div class="k">主要国防顧客</div><div class="v">米宇宙軍・BAE Systems・Anduril</div></div>
+    <div class="kv-item"><div class="k">受注残高</div><div class="v">1億ドル超（約12社の顧客）</div></div>
+    <div class="kv-item"><div class="k">生産枠</div><div class="v">2027〜2028年まで完売</div></div>
+    <div class="kv-item"><div class="k">米宇宙軍契約</div><div class="v">4590万ドル（2025年2月、2032年まで）</div></div>
+  </div>
+
+  <h3>顧客構造と価値提案</h3>
+  <p>国防顧客にとってのApexの価値は「スピード」にある。米国防総省はゴールデンドームや宇宙ドメイン強化のために急速な衛星コンステレーション展開を必要としており、カスタム設計・長納期の従来型宇宙産業では対応できない。Apexは<strong>在庫保有・短納期・標準化</strong>という製造業の常識を宇宙産業に持ち込むことで、国防調達の効率を根本から変える。</p>
+
+  <p>商業顧客にとっては、衛星バスの設計・製造リスクをApexにアウトソースできる点が最大のメリット。自社ペイロードの開発・差別化に専念でき、宇宙ミッション全体のリードタイムを短縮できる。</p>
+
+  <div class="quote">
+    <p>The satellite bus is the boring part. We make it boring on purpose, so our customers can focus on what makes their mission unique.</p>
+    <div class="attr">— Ian Cinnamon, CEO & Co-Founder, Apex</div>
+  </div>
+</div>
+
+<!-- ===================== 4. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">IC</div>
+      <div>
+        <h3>Ian Cinnamon（イアン・シナモン）</h3>
+        <div class="p-role">Co-Founder & CEO — Apex</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">前職</div><div class="val">フィジカルセキュリティ企業を創業し、Palantirに売却。PalantirでAI・データ分析のコンサルタントとして衛星・宇宙企業を担当</div></div>
+      <div class="p-row"><div class="lbl">投資経験</div><div class="val">エンジェル投資家・機関投資家として活動経験あり。複数回のベンチャー経験を持つシリアルアントレプレナー</div></div>
+      <div class="p-row"><div class="lbl">Apex着想</div><div class="val">Palantirで宇宙産業各社と協業する中で、衛星バスの調達ボトルネックを直接観察し、2022年にMax Benassiとともに創業</div></div>
+      <div class="p-row"><div class="lbl">ビジョン</div><div class="val">「衛星バスは自動車のシャシーのように製品化できる。宇宙産業に製造革命を起こす」</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">MB</div>
+      <div>
+        <h3>Max Benassi（マックス・ベナッシ）</h3>
+        <div class="p-role">Co-Founder & CTO — Apex</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">前職</div><div class="val">SpaceXにてロケット・宇宙機のエンジン量産を主導するエンジニアリングディレクター。その後AstraでCTO相当職</div></div>
+      <div class="p-row"><div class="lbl">専門</div><div class="val">宇宙機・エンジンの製造スケーリング。「宇宙機を量産するにはどうするか」というSpaceXでの実経験が創業の核心</div></div>
+      <div class="p-row"><div class="lbl">Ian との出会い</div><div class="val">2020年に共通の友人を通じてIan Cinnamonと知り合い、2022年に共同創業</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>チームの強み：</strong>Ian（ビジネス・調達・Palantirでの宇宙産業理解）とMax（SpaceX/Astraでの宇宙機量産エンジニアリング）の組み合わせは、「何を作るべきか」と「どう量産するか」の両方を補完する理想的な創業者ペアといえる。宇宙産業の既得権に縛られない外部視点が製造革命を可能にした。
+  </div>
+</div>
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed</span>
+      <div class="f-amount">$7M</div>
+      <div class="f-detail">
+        <div class="f-date">2022年10月</div>
+        <div class="f-desc">a16z（Andreessen Horowitz）主導。「衛星バスのボトルネック解消」というコンセプト段階での初期投資。「Apex Space」として衛星バス製造の概念実証に着手。</div>
+      </div>
+    </div>
+    <div class="f-card a">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$16M</div>
+      <div class="f-detail">
+        <div class="f-date">2023年6月</div>
+        <div class="f-desc">Shield Capital（国防テックVC）とAndreessen Horowitz（a16z）が共同リード。累計調達額2700万ドル超へ。Ariesバスの顧客公表、工場建設資金として活用。</div>
+      </div>
+      <div class="f-val"><div class="vl">Co-leads</div><div class="vv">Shield + a16z</div></div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$95M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年6月</div>
+        <div class="f-desc">XYZ VenturesとCRVが共同リード。Upfront、8VC、Point72 Ventures、Mirae Asset、Outsiders Fund、GSBackers、a16zが参加。2024年3月の初号機打上げ成功後のラウンド。Novaバス量産立上げ資金。</div>
+      </div>
+      <div class="f-val"><div class="vl">Co-leads</div><div class="vv">XYZ + CRV</div></div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C</span>
+      <div class="f-amount">$200M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年4月</div>
+        <div class="f-desc">Point72 VenturesとCRVが共同リード。8VC、a16z、Washington Harbour Partners、StepStone Groupが参加。工場拡張・Cometシリーズ開発・国防案件拡大に充当。</div>
+      </div>
+      <div class="f-val"><div class="vl">Co-leads</div><div class="vv">Point72 + CRV</div></div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">Series D</span>
+      <div class="f-amount">$200M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年9月</div>
+        <div class="f-desc">Interlagos（元SpaceX従業員が設立したVC）がリード。ユニコーン（評価額10億ドル超）に到達。生産能力を大幅拡大し2027〜2028年の需要増に備える。Project Shadow（軌道上インターセプター実証）への投資も加速。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$1B+</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>資金調達の特徴：</strong>創業からわずか3年（2022〜2025年）でシードからユニコーンへ。a16z・Shield Capitalという国防テックと一般テックの両方のトップVCが初期から継続参加。Series DはSpaceX出身者が設立したInterlagosがリードを務めるなど、宇宙産業の内側からの強い信認を受けている。
+  </div>
+</div>
+
+<!-- ===================== 6. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.D</span>
+      <div class="vc-name">Interlagos</div>
+      <div class="vc-role">Series D Lead</div>
+      <div class="vc-desc">元SpaceX従業員らが設立した宇宙・防衛特化VC。宇宙製造・打上げ産業の内情に精通した投資家が、Series DのLeadとして参加。Apexの製造革命を最もよく理解する投資家の一つ。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.B/C</span>
+      <div class="vc-name">CRV (Charles River Ventures)</div>
+      <div class="vc-role">Series B / Series C Co-lead</div>
+      <div class="vc-desc">シリコンバレーの老舗VC。Series BとCを連続してリード。Apexのスケールアップフェーズを継続支援。ハードウェア・ディープテックへの投資実績も豊富。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.A</span>
+      <div class="vc-name">Shield Capital</div>
+      <div class="vc-role">Series A Co-lead / 国防テック特化VC</div>
+      <div class="vc-desc">国防・安全保障テックに特化したVC。Apexの国防顧客開拓を戦略的に支援。Series AをAndreessen Horowitz と共同リードし、宇宙防衛分野の戦略的パートナーとなった。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Andreessen Horowitz (a16z)</div>
+      <div class="vc-role">Seed〜Series C継続参加</div>
+      <div class="vc-desc">シードラウンドのリードからSeries Cまで継続参加する最長期投資家。a16zの宇宙・防衛テック投資の核心ポートフォリオの一つとして位置付け。Ian Cinnamonとの関係も深い。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Point72 Ventures</div>
+      <div class="vc-role">Series B〜C参加</div>
+      <div class="vc-desc">ヘッジファンドPoint72のVC部門。Series Cの共同リードを務め、Apexの成長初期の重要な投資家の一つ。ディープテック・製造業への投資を積極化しているファンド。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">8VC</div>
+      <div class="vc-role">Series B〜C参加</div>
+      <div class="vc-desc">Joe Lonsdaleが創設したVC。国防テック・産業テックへの投資に強み。Anduril（Apexの顧客の一つ）への投資家でもあり、エコシステム的連携がある。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Toyota Ventures</div>
+      <div class="vc-role">戦略的投資家</div>
+      <div class="vc-desc">トヨタのVC部門。モビリティとインフラの融合という長期的視点から宇宙産業に投資。「衛星バスの量産」というモビリティ製造の知見と親和性の高いビジネスモデルを評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">StepStone Group</div>
+      <div class="vc-role">Series C〜参加</div>
+      <div class="vc-desc">グローバルな大型オルタナティブ資産運用会社。後期ラウンドへの参入で機関投資家の信認を示す。Apexの中長期的な成長ステージを見越した参加。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 7. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — 衛星・宇宙機市場</div>
+      <div class="m-val">$46B+</div>
+      <div class="m-desc">衛星バス市場（2030年予測）。CAGR約17%で急成長中（Grand View Research / Yahoo Finance）</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — 小型衛星市場</div>
+      <div class="m-val">$32B</div>
+      <div class="m-desc">小型衛星全体市場（2030年予測）。CAGR 28%。Apexが主に対応するセグメント（MarketsandMarkets）</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — 標準化バス市場</div>
+      <div class="m-val">$5B+</div>
+      <div class="m-desc">商業・国防向け標準化バスの年間需要（推定）。製品化バスが普及するほど市場全体が拡大する</div>
+    </div>
+  </div>
+
+  <h3>需要ドライバー</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">米国防総省のスペースドメイン強化</div>
+        <div class="ind-desc">ゴールデンドーム（宇宙ベースミサイル防衛）、衛星コンステレーションによるISR（情報・監視・偵察）強化、宇宙軍の急拡大が、国防向け衛星バスの需要を爆発的に増大させている。Apexは2025年2月に4590万ドルの宇宙軍契約を獲得し、同分野のリーディングプレイヤーに浮上した。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">商業コンステレーションの急増</div>
+        <div class="ind-desc">通信（Starlink競合）・地球観測・宇宙計算など、商業コンステレーション計画が世界中で立ち上がっている。数百〜数千機規模の衛星群を展開するには、カスタム製造ではなく「量産されたオフザシェルフバス」が必要不可欠。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">軌道上コンピューティング（Orbital Compute）</div>
+        <div class="ind-desc">AIワークロードを宇宙空間で処理する「軌道上データセンター」が新たな市場として浮上。Cometシリーズの高電力（20〜100 kW）バスはこの用途に最適化されており、宇宙AIインフラの基盤として新たな需要を取り込む。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">打上げコスト革命との相乗効果</div>
+        <div class="ind-desc">SpaceX Falconシリーズ・StarshipによるLEO打上げコストの劇的低下が、宇宙活用の敷居を下げ続けている。打上げが安くなると衛星バス需要が増える構造であり、Apexの市場はロケット革命によってさらに拡大する。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合比較</div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">Rocket Lab（スペースビークル事業）</div>
+      <div class="comp-tag">主要競合</div>
+      <div class="comp-desc">打上げサービスと衛星製造の垂直統合を進めるRocket Lab。フォトン衛星バスを提供し、Electroロケットとのバンドルが強み。自社打上げとの統合という点でApexにはないエコシステムを持つ。</div>
+      <div class="comp-strong"><span>Apexとの差異</span>Rocket Labは打上げ込みのフルソリューション。Apexはバス単体の量産に特化。Apexの方が打上げ業者を選ばない柔軟性がある。</div>
+    </div>
+    <div class="comp-card threat">
+      <div class="comp-name">Terran Orbital（Lockheed傘下）</div>
+      <div class="comp-tag">主要競合</div>
+      <div class="comp-desc">衛星製造特化企業。Lockheed Martinが買収し、大型防衛コンステレーション向け量産能力を持つ。Lockheedの調達力・関係性を背景に、大型防衛案件では強力な競合。</div>
+      <div class="comp-strong"><span>Apexとの差異</span>大企業傘下となったことで意思決定の速度・価格競争力でApexに劣る可能性。Apexのスタートアップ的な機動力が優位に立てる場面も多い。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">York Space Systems</div>
+      <div class="comp-tag">類似アプローチ</div>
+      <div class="comp-desc">コロラド拠点の衛星バス製造スタートアップ。Apexと同様に標準化バスの量産を目指す。国防顧客中心で、Apexと直接競合するセグメントで活動する。</div>
+      <div class="comp-strong"><span>Apexとの差異</span>規模・資金力・工場規模でApexに劣後。Apexが2025〜2026年に大幅に差を広げる局面にある。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Blue Canyon Technologies（Raytheon傘下）</div>
+      <div class="comp-tag">中規模競合</div>
+      <div class="comp-desc">高精度小型衛星バスの専門メーカー。Raytheonが買収しコングロマリットの一部に。精密な姿勢制御能力に強みを持ち、科学・商業ミッションに実績あり。</div>
+      <div class="comp-strong"><span>Apexとの差異</span>大企業統合による遅さと高コスト体質が課題。量産対応力でApexが上回る局面が増えている。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Northrop Grumman / Airbus / Maxar</div>
+      <div class="comp-tag">大型衛星〜間接競合</div>
+      <div class="comp-desc">中大型衛星バスの既存プレイヤー。数百kg〜数トンクラスの大型衛星が主戦場で、ApexのAriesやNovaとは重ならないが、Comet XL（100 kW）が成立すれば競合ゾーンに入る可能性がある。</div>
+      <div class="comp-strong"><span>脅威度</span>現時点では低い。Apexが大型バス市場に本格進出する2028年以降に注目。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Anduril / BAE Systems（垂直統合の可能性）</div>
+      <div class="comp-tag">顧客兼潜在競合</div>
+      <div class="comp-desc">現在はApexの主要顧客だが、将来的にバス内製化を進める可能性は否定できない。AndurilはGeometryというドローン量産プラットフォームを持つなど、製造能力を積み上げている。</div>
+      <div class="comp-strong"><span>脅威度</span>中長期リスク。ただしApexのデータ・製造ノウハウ・スピードを内製で超えるのはコスト合理性が低い。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">09</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">製造スケール失敗リスク</div>
+        <div class="ind-desc">Apexのビジネスモデルの根幹は「量産によるコスト優位」。しかし宇宙機の量産は航空機でさえも困難であり、品質管理・サプライチェーン管理・打上げ失敗率のコントロールに失敗すれば顧客の信頼を一気に失う。生産スロットが2027〜2028年まで完売状態である分、遅延・品質問題が起きると影響が連鎖的に広がる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">国防予算・政策変動リスク</div>
+        <div class="ind-desc">売上の約2/3を占める国防顧客は、政府の予算配分・調達方針の変更に強く依存する。議会の宇宙防衛予算削減、ゴールデンドーム計画の縮小・遅延、または軍が特定の競合メーカーへの発注を優先した場合、Apexの成長軌道が大きく変わる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">大手aerospace企業の反撃</div>
+        <div class="ind-desc">Northrop Grumman・Lockheed・Boeingなど既存大手が量産型バスの重要性を認識し、本格参入または有望スタートアップを買収した場合、競争環境が急変する。Terran OrbitalのLockheed買収がその前例。資金力・調達関係・認知で圧倒する大手の動きには注意が必要。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">打上げ失敗・軌道上異常</div>
+        <div class="ind-desc">初号機（Ariesバス）は2024年3月に打上げ成功・健全性確認済みだが、今後の量産品が宇宙で機能不全を起こすリスクはゼロではない。バス自体の問題による衛星の喪失は、顧客・保険会社・投資家への信頼を大幅に損なう。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">タレント確保競争</div>
+        <div class="ind-desc">SpaceX・Rocket Lab・Andurli・Axiomなど宇宙・防衛テック企業が急増する中、宇宙工学・製造エンジニアの人材確保は業界全体の課題。Playa VistaというLAの地の利はあるが、給与水準・ストック価値でSpaceXと競争できるかが継続的な課題。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">Project Shadow / ミサイル防衛リスク</div>
+        <div class="ind-desc">軌道上インターセプターの実証は技術的・政治的・外交的に複雑なリスクをはらむ。Space Treaty（宇宙条約）の解釈問題、他国の反応、万一の実証失敗によるレピュテーションリスクが存在する。スタートアップが宇宙兵器に自己資金を投じる前例のない試みは、両刃の剣になりうる。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. NEWS ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">10</span>最近のニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2022年10月</span>
+          <span class="tl-title">創業・シードラウンド（700万ドル、a16z主導）</span>
+        </div>
+        <div class="tl-body">Ian CinnamonとMax BenassiがロサンゼルスでApexを設立。a16zがシードをリード。「衛星バスの製品化・大量生産」というミッションを公表し、業界の注目を集める。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年6月</span>
+          <span class="tl-title">Series A（1600万ドル）、初期顧客公表</span>
+        </div>
+        <div class="tl-body">Shield CapitalとAndreessen Horowitz共同リードで1600万ドルを調達。BAE SystemsやAndurilを含む最初の顧客群を公表。国防テックへの明確なポジショニングを示す。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年12月</span>
+          <span class="tl-title">Playa Vista 新工場オープン（50,000平方フィート）</span>
+        </div>
+        <div class="tl-body">宇宙産業に量産ラインを持ち込む専用製造施設をオープン。ライン生産方式の導入と製造プロセスの標準化を本格始動。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年3月</span>
+          <span class="tl-title">初号機（Ariesバス）打上げ成功・軌道上健全性確認</span>
+        </div>
+        <div class="tl-body">SpaceX Transporter-10に便乗してAriesバスを打上げ。軌道上で「健全」との確認を取得。「プロトタイプではなく量産品と同じ設計で宇宙実証」という点が業界から高評価を受ける。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年6月</span>
+          <span class="tl-title">Series B（9500万ドル）調達</span>
+        </div>
+        <div class="tl-body">XYZ VenturesとCRVが共同リードで9500万ドルを調達。宇宙軍・国防需要の増大を受け、工場拡張とNovaバス量産立ち上げに充当。累計調達額1億2700万ドル超へ。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年2月</span>
+          <span class="tl-title">米宇宙軍と4590万ドル契約締結</span>
+        </div>
+        <div class="tl-body">米宇宙軍（Space Force）から複数の宇宙機を対象とする4590万ドルの契約を獲得。2032年まで履行期間。国防本格参入の確証となるマイルストーン。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年4月</span>
+          <span class="tl-title">Series C（2億ドル）調達・Comet発表</span>
+        </div>
+        <div class="tl-body">Point72 VenturesとCRV共同リードで2億ドルを調達。大規模コンステレーション向けCometバスを正式発表。フラットパック設計でFalcon 9に最大6機同時搭載が可能。工場を100,000平方フィートに倍増。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年9月</span>
+          <span class="tl-title">Series D（2億ドル）・ユニコーン到達</span>
+        </div>
+        <div class="tl-body">Interlagosリードで2億ドルを追加調達。評価額10億ドル超でユニコーンステータス獲得。生産スロットが2027〜2028年まで完売であることを公表。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年4月</span>
+          <span class="tl-title">Comet Mini / Comet XL 発表、Project Shadow ローンチ</span>
+        </div>
+        <div class="tl-body">ミサイル防衛・軌道コンピューティング向けの超高電力バスCometミニ（20 kW）とComet XL（100 kW、Starship対応）を発表。同時に、米国初の商業主導型軌道インターセプター実証「Project Shadow」を発表。自己資金1500万ドルを投じ、2026年内に実証予定。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. KPI ===================== -->
+<div class="sec" id="kpi">
+  <div class="sec-label"><span class="num">11</span>財務指標・KPI（推定）</div>
+
+  <p>非公開企業のためすべて推定値・外部レポート等からの算出値。</p>
+
+  <table class="t">
+    <thead>
+      <tr><th>指標</th><th>数値（推定）</th><th>備考・出典</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>2024年売上</td><td>約6000万ドル</td><td>Sacra推計。主にAriesのプリデリバリーペイメント</td></tr>
+      <tr><td>受注残高</td><td>1億ドル超</td><td>約12社以上の顧客（公式発表）</td></tr>
+      <tr><td>生産スロット</td><td>2027〜2028年まで完売</td><td>2025年末時点公表</td></tr>
+      <tr><td>累計調達額</td><td>5億ドル超</td><td>エクイティ＋デット合計（公式発表）</td></tr>
+      <tr><td>評価額</td><td>10億ドル超</td><td>Series D（2025年9月）。Bloomberg報道</td></tr>
+      <tr><td>工場面積</td><td>100,000平方フィート超</td><td>Playa Vista本社工場（2025年時点）</td></tr>
+      <tr><td>国防顧客比率</td><td>約66%</td><td>防衛約2/3・商業約1/3と報道されている</td></tr>
+      <tr><td>主要国防契約</td><td>4590万ドル</td><td>米宇宙軍、2025年2月〜2032年9月</td></tr>
+      <tr><td>Project Shadow 投資</td><td>1500万ドル</td><td>Apex自己資金（2026年4月公表）</td></tr>
+      <tr><td>創業年</td><td>2022年</td><td>ユニコーン到達まで約3年という異例の速度</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>成長速度の特異性：</strong>2022年の創業からわずか3年でユニコーン到達は、宇宙・ハードウェア系スタートアップの中では異例の速度。通常ハードウェアスタートアップは収益化・スケールに時間がかかるが、Apexは標準化製品・量産アプローチと国防需要の追い風で、ソフトウェアスタートアップに迫る成長速度を実現した。
+  </div>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">宇宙産業の「製造革命」を担う唯一の存在</div>
+        <div class="ind-desc">ロケット革命（SpaceX）が打上げコストを下げた次のフェーズは「衛星製造のコスト革命」。Apexはその担い手として最も有力なポジションにいる。自動車産業でいう「トヨタ生産方式の宇宙版」を構築しようとしており、成功すれば産業構造を根本から変える可能性がある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">国防×商業の両軸で需要が爆発</div>
+        <div class="ind-desc">ゴールデンドーム・宇宙ベースISR・商業コンステレーション・軌道コンピューティングという複数の独立した超大型需要ドライバーが同時に顕在化している。複数の追い風が一方向に吹いているタイミングでApexがポジションを取れている点が稀有。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">創業3年でユニコーン・生産スロット完売という実証</div>
+        <div class="ind-desc">「衛星バスを量産できる」というコンセプトを検証したのではなく、<strong>実際に工場を建て、初号機を宇宙に打上げ、2027〜2028年まで生産枠が完売</strong>という具体的な実績を積み上げている。ハードウェアスタートアップにありがちな「実証前」でなく、「実証後に資金が集まる」段階に入っている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Project Shadowによる戦略的な市場先取り</div>
+        <div class="ind-desc">ゴールデンドーム構想の最重要コンポーネントである軌道上インターセプターを、自己資金で実証するという大胆な戦略。成功すれば「宇宙インターセプターの標準プラットフォーム提供者」として政府調達の中核に入り込む可能性がある。スタートアップが軍のアジェンダを先取りして実証する姿勢は、AndurilらDefense Techの先人に学んだアプローチ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">SpaceX出身者・a16z・Shield Capitalという最強の信認</div>
+        <div class="ind-desc">元SpaceX人材が設立したInterlagosがSeries Dをリードしたことは、「宇宙製造のプロが投資判断した」という最強の信認。a16zのシードからの継続参加、国防テックVCのShield Capitalとの結合は、シリコンバレーと国防の橋渡し役としてのポジションを体現している。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We're not building one-of-a-kind spacecraft. We're building the same bus over and over again, better and faster each time. That's how you change an industry.</p>
+    <div class="attr">— Ian Cinnamon, CEO & Co-Founder, Apex</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Apex 公式サイト（apexspace.com）</li>
+    <li>TechCrunch — "Apex raises $95M to scale satellite bus production" (2024.06)</li>
+    <li>TechCrunch — "a16z-backed Apex Space's first satellite 'healthy' on orbit" (2024.03)</li>
+    <li>PR Newswire — Apex Series B / Series C / Series D 各プレスリリース</li>
+    <li>Bloomberg — "Space Startup Apex Raises $200M, Reaches Unicorn Status" (2025.09)</li>
+    <li>SpaceNews — Apex資金調達・宇宙軍契約・Comet発表記事</li>
+    <li>Crunchbase — Apex資金調達データ</li>
+    <li>Sacra — Apex revenue & news レポート（2024年売上推計）</li>
+    <li>CNBC — "Spacecraft builder Apex raises $16M from a16z and Shield Capital" (2023.06)</li>
+    <li>Air &amp; Space Forces — "Startup Apex Plans Golden Dome Demo with Launch Set for 2026"</li>
+    <li>PR Newswire — "Apex Launches Project Shadow" (2025)</li>
+    <li>Orbital Today — "Apex Targets Missile Defence and Orbital Compute" (2026.04)</li>
+    <li>Shield Capital — Series Aアナウンスメント</li>
+    <li>Toyota Ventures — Apex投資ブログ（Medium）</li>
+  </ul>
+</div>
+
+</div>
+<footer class="snav-footer"><div class="snav-footer-sns"><a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a><a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a></div></footer>
+</body>
+</html>

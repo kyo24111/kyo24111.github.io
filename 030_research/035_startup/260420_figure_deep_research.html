@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Figure AI — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav"><a class="snav-logo" href="/index.html">24111</a><button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button></div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec"><div class="snav-sec-label">030 Research</div><a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a><a class="snav-a" href="/030_research/033_legend/index.html">legend</a><a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a><a class="snav-a" href="/030_research/035_startup/index.html">startup</a></div>
+  <div class="snav-sec"><div class="snav-sec-label">040 Personal</div><a class="snav-a" href="/040_personal/profile/profile.html">profile</a><a class="snav-a" href="/040_personal/047_books/books.html">books</a><a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a></div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Humanoid Robotics</span>
+    <span class="badge badge-white">Embodied AI</span>
+    <span class="badge badge-solid">Series C</span>
+  </div>
+  <h1>Figure AI</h1>
+  <p class="hero-sub">汎用二足歩行ヒューマノイドロボットを製造・展開するディープテック企業。BMW工場への実用導入、独自AI「Helix」の開発、シリーズCで390億ドル超の評価額を達成。AIに「身体」を与え、労働力不足という構造問題を解決することを目指す。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$1.9B+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">$39B</div><div class="lbl">Valuation (2025.09)</div></div>
+    <div class="kpi"><div class="val">Figure 03</div><div class="lbl">Latest Robot</div></div>
+    <div class="kpi"><div class="val">2022</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー</a></li>
+    <li><a href="#business">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">最近のニュース・マイルストーン</a></li>
+    <li><a href="#kpi">財務指標・KPI（推定）</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Figure AI, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2022年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Sunnyvale, California, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series C（未上場）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">約19億ドル</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">390億ドル（2025年9月）</div></div>
+    <div class="kv-item"><div class="k">製品</div><div class="v">Figure 01 / 02 / 03（汎用ヒューマノイド）</div></div>
+    <div class="kv-item"><div class="k">AI基盤</div><div class="v">Helix VLA（自社開発）</div></div>
+    <div class="kv-item"><div class="k">主要顧客</div><div class="v">BMW Manufacturing（自動車製造）</div></div>
+    <div class="kv-item"><div class="k">公式サイト</div><div class="v">figure.ai</div></div>
+  </div>
+
+  <p>Figure AIは、汎用二足歩行ヒューマノイドロボットの開発・製造・展開を行うスタートアップ。「AIに身体を与える（Give AI a body）」というミッションのもと、製造・物流・倉庫・小売・家庭など幅広い環境で稼働できる汎用ロボットの実現を目指す。</p>
+
+  <p>2022年の設立以来、わずか3年で第3世代ロボット（Figure 03）と独自の視覚言語行動モデル（Helix）を開発。2024年にはBMW製造工場への実用導入を開始し、2025年には390億ドルの評価額でシリーズCを完了。Microsoft・OpenAI・NVIDIA・Jeff Bezosなど世界有数の投資家が出資する、ヒューマノイドロボット分野を代表する企業に成長した。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>先進国では製造・物流・介護分野の労働力不足が構造的問題となっている。人間と同じ空間・ツールを使える汎用ヒューマノイドロボットは、既存の産業インフラを改造せずに導入できる唯一のロボティクスソリューション。Figureはその普及を目指す。
+  </div>
+</div>
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー</div>
+
+  <h3>Helix — 独自VLAモデル</h3>
+  <p>Figureの中核技術は、自社開発の視覚言語行動（Vision-Language-Action / VLA）モデル<strong>「Helix」</strong>。知覚・言語理解・動作制御を統合した汎用AIで、自然言語の指示だけで未知の物体を含む数千種類のアイテムを操作できる。Helix 01・Helix 02の2世代を開発済み。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">高速連続制御（200Hz動作）</div>
+        <div class="ind-desc">8000万パラメータのモジュールが200Hzで稼働し、上半身全体（手首・体幹・頭部・指の1本1本）をリアルタイム連続制御する。従来のロボットAIが苦手とした「滑らかな動作」を実現する業界初のVLA。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">汎用物体操作</div>
+        <div class="ind-desc">自然言語プロンプトだけで、事前に学習していない物体を含む数千種類のアイテムの把持・操作が可能。製造ラインの部品交換から家庭用品の整理まで、単一モデルで対応する汎用性が特徴。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">同時2ロボット制御</div>
+        <div class="ind-desc">Helixは最大2台のロボットを1つのモデルで同時制御できる。協調作業が必要なタスクへの対応が可能で、将来的な大規模フリート運用の基盤となる設計。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">エンドツーエンド自社開発</div>
+        <div class="ind-desc">2025年初頭にOpenAIとの協業を終了し、AIモデルを完全内製化。「LLMは急速にコモディティ化しつつある。自社でエンドツーエンドのロボットAIを構築することが競争優位の源泉」（Brett Adcock）という判断による。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>ロボットハードウェア世代比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>モデル</th><th>発表年</th><th>主な特徴</th><th>用途</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Figure 01</td><td>2023年</td><td>初代プロトタイプ。二足歩行・基本作業の実証</td><td>研究・デモ</td></tr>
+      <tr><td>Figure 02</td><td>2024年</td><td>OpenAI協業モデル。音声対話・BMW工場導入版。実用商業化第1号</td><td>製造（BMW）</td></tr>
+      <tr><td>Figure 03</td><td>2025年</td><td>身長5'8"・61kg・16DoF/手・5時間駆動。Figure 02比2倍速アクチュエータ・9%軽量化。ワイヤレス充電対応。家庭市場向け（$20,000目標）</td><td>製造・家庭</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Figure 03 主要スペック</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">身長 / 体重</div><div class="v">5'8"（約172cm）/ 61kg</div></div>
+    <div class="kv-item"><div class="k">最大搭載重量</div><div class="v">20kg</div></div>
+    <div class="kv-item"><div class="k">手の自由度</div><div class="v">16DoF（1手あたり）</div></div>
+    <div class="kv-item"><div class="k">バッテリー</div><div class="v">5時間駆動 / ワイヤレス充電（2kW）</div></div>
+    <div class="kv-item"><div class="k">移動速度</div><div class="v">1.2 m/s</div></div>
+    <div class="kv-item"><div class="k">触覚センサー</div><div class="v">3グラム（ペーパークリップ相当）の力を検出</div></div>
+  </div>
+</div>
+
+<!-- ===================== 3. BUSINESS MODEL ===================== -->
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル・収益構造</div>
+
+  <h3>現在のビジネスモデル</h3>
+  <p>現段階は<strong>ロボット販売（Hardware-as-a-Product）モデル</strong>を中心に商業化が進んでいる。BMW等の製造パートナーへロボットを納入し、稼働データ・フィードバックを収集してモデル改善に活用するフライホイール構造。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">ロボット販売（製造業向け）</div>
+        <div class="ind-desc">BMW Manufacturing（Spartanburg工場）への実用導入を2024年に開始。Figure 02ロボットが自動車製造ラインで金属部品の組み付けなどを担当。2025年1月時点でフルタイム稼働中。産業用ロボットとしての信頼実績を積み上げる段階。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">家庭用ロボット市場への参入（Figure 03）</div>
+        <div class="ind-desc">Figure 03は家庭環境向けに設計され、将来的に約$20,000での販売を目指す。ソフトな外装・ワイヤレス充電・高精度触覚センサーを備え、コンシューマー向け新市場を開拓する戦略。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">AIプラットフォーム（Helix）の水平展開</div>
+        <div class="ind-desc">Helixを自社ロボット以外にもライセンスする可能性を示唆。GPU基盤への投資・シミュレーションデータ収集への注力から、将来的に「ロボットOS」としての水平展開も視野に入れている。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>BMW連携の成果</h3>
+  <div class="callout">
+    <strong>2025年時点でFigure 02はBMW Spartanburg工場で3万台以上の車両生産に貢献。</strong>2週間のパイロットテスト後、正式商業契約に移行。シャーシ組み立て工程でのシートメタル部品の精密組み付けなどを担当。ロボットが実際の生産ラインで長期稼働できることを世界で初めて実証した事例の一つ。
+  </div>
+</div>
+
+<!-- ===================== 4. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">BA</div>
+      <div>
+        <h3>Brett Adcock（ブレット・アドコック）</h3>
+        <div class="p-role">Founder & CEO — Figure AI</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">フロリダ大学 ファイナンス・不動産学部 学士号（2008年卒）</div></div>
+      <div class="p-row"><div class="lbl">Vettery</div><div class="val">2012年創業。オンライン人材マーケットプレイス。1億ドル以上でAdeccoに売却（2018年）。18か国に展開</div></div>
+      <div class="p-row"><div class="lbl">Archer Aviation</div><div class="val">2018年共同創業。eVTOL（電動垂直離着陸機）スタートアップ。2021年NYSE上場。業界未経験から300人超の専門家に取材して立ち上げた</div></div>
+      <div class="p-row"><div class="lbl">Figure AI</div><div class="val">2022年創業。Vettery売却益のほぼ全額を投入してロボティクス領域に参入。同様のゼロベース学習アプローチで業界を席巻</div></div>
+      <div class="p-row"><div class="lbl">受賞歴</div><div class="val">TIME誌「2024年AIの最も影響力のある人物」選出</div></div>
+      <div class="p-row"><div class="lbl">特徴</div><div class="val">未知の産業に入り込み、数百人の専門家を徹底インタビューして急速にキャッチアップするスタイル。シリアル・アントレプレナーとして連続起業の実績を持つ</div></div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>I wanted to give AI a body. Everything we know about intelligence suggests that embodiment is critical — you can't truly understand the world without interacting with it.</p>
+    <div class="attr">— Brett Adcock, Founder & CEO, Figure AI</div>
+  </div>
+
+  <div class="quote">
+    <p>LLMs are getting smarter yet more commoditized. For us, LLMs have quickly become the smallest piece of the puzzle. We made a major breakthrough on fully end-to-end robot AI, built entirely in-house.</p>
+    <div class="attr">— Brett Adcock, on exiting the OpenAI partnership (2025.02)</div>
+  </div>
+</div>
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed / Early</span>
+      <div class="f-amount">非公開</div>
+      <div class="f-detail">
+        <div class="f-date">2022〜2023年</div>
+        <div class="f-desc">設立初期の資金調達。Brett Adcock自身のVettery売却益を大部分投入。早期プロトタイプ（Figure 01）の開発に充当。</div>
+      </div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$675M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年2月</div>
+        <div class="f-desc">Microsoft・OpenAI Startup Fund・NVIDIA・Jeff Bezos（Bezos Expeditions）・Parkway Venture Capital・Intel Capital・Align Ventures・ARK Investが参加。OpenAIとの協業契約も同時締結。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$2.6B</div></div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C</span>
+      <div class="f-amount">$1B+</div>
+      <div class="f-detail">
+        <div class="f-date">2025年9月</div>
+        <div class="f-desc">Parkway Venture Capital（リード）、Brookfield Asset Management、NVIDIA、Intel Capital、Microsoft、OpenAI Startup Fund、Jeff Bezos（Bezos Expeditions）が参加。Helix VLA開発加速・GPU基盤強化・大規模シミュレーションデータ収集に充当。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$39B</div></div>
+    </div>
+    <div class="f-card late">
+      <span class="r-badge">目標ラウンド</span>
+      <div class="f-amount">$1.5B</div>
+      <div class="f-detail">
+        <div class="f-date">2026年（予定・報道ベース）</div>
+        <div class="f-desc">Series C後に追加調達を検討との報道あり。$39.5Bバリュエーションでの$1.5B調達を目指すとされる。10万台規模のロボット生産体制構築に向けた製造投資が目的。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>評価額の急上昇：</strong>2024年2月のシリーズBでは26億ドルだったが、2025年9月には390億ドルへ。わずか1年半で約15倍の評価上昇。BMW納入・Helix開発・OpenAIとの決別による自立戦略の明確化が投資家の信頼を急速に高めた。
+  </div>
+</div>
+
+<!-- ===================== 6. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.C</span>
+      <div class="vc-name">Parkway Venture Capital</div>
+      <div class="vc-role">Lead Investor, Series B & C</div>
+      <div class="vc-desc">シリーズBおよびCをリードした主要VC。Figure AIの成長全期間を通じて深く関与する最大のFigure支援者。ロボティクス・ディープテック領域に強みを持つ。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Strategic</span>
+      <div class="vc-name">Microsoft</div>
+      <div class="vc-role">Series B & C参加 / 戦略的投資家</div>
+      <div class="vc-desc">OpenAIへの大型投資に続き、Figureにも出資。AI基盤（Azure）とロボティクスの統合という観点から戦略的に支援。Figure AIのクラウドインフラパートナーとしての役割も期待される。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">NVIDIA</div>
+      <div class="vc-role">Series B & C参加 / 戦略的投資家</div>
+      <div class="vc-desc">AIインフラの覇者NVIDIAがFigureに戦略投資。FigureのHelix AI学習にはNVIDIA GPUが不可欠。NVIDIAが推進する「Physical AI」エコシステム構築との整合性から持続的に支援。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Jeff Bezos（個人）</div>
+      <div class="vc-role">Bezos Expeditions / Series B & C参加</div>
+      <div class="vc-desc">Amazon創業者が個人投資ビークル「Bezos Expeditions」を通じて参加。ロボティクス・宇宙・エネルギーなど長期テーマへの積極投資スタイルと合致。Amazonの物流オートメーション戦略との親和性も高い。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">OpenAI Startup Fund</div>
+      <div class="vc-role">Series B & C参加</div>
+      <div class="vc-desc">OpenAIの投資部門として参加。技術協業関係の終了後も財務投資家として継続参加していることは注目点。OpenAIがFigureを競合と位置付けつつも投資関係を維持するという複雑な関係にある。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Intel Capital</div>
+      <div class="vc-role">Series B & C参加 / 戦略的投資家</div>
+      <div class="vc-desc">Intelの投資部門。ロボティクス用チップ・センサー技術との連携を視野に入れた戦略投資。Figureのエッジコンピューティング需要がIntelのAIチップ事業の成長機会となる。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Brookfield Asset Management</div>
+      <div class="vc-role">Series C参加</div>
+      <div class="vc-desc">数千億ドル規模のグローバル資産運用会社。インフラ・製造・物流領域への深い知見を持ち、Series Cから参加。大規模な製造・物流オペレーション向けロボット需要の観点からの戦略投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">ARK Invest</div>
+      <div class="vc-role">Series B参加</div>
+      <div class="vc-desc">Cathie Wood率いる革新的技術投資ファンド。ロボティクス・AIを長期的な破壊的イノベーションとして捉え、Figureを重点投資先の一つに位置付ける。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 7. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — ロボット全体市場</div>
+      <div class="m-val">$500B+</div>
+      <div class="m-desc">製造・物流・医療・農業を含む産業用ロボット全体の世界市場（2035年予測）</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — ヒューマノイド市場</div>
+      <div class="m-val">$38B</div>
+      <div class="m-desc">Goldman Sachsの推計。ヒューマノイド型ロボット市場規模（2035年）。強気予測では$100B超</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — Figure初期ターゲット</div>
+      <div class="m-val">$15B</div>
+      <div class="m-desc">製造・物流分野の自動化投資のうち、汎用ヒューマノイドが置き換え可能な市場（2030年推計）</div>
+    </div>
+  </div>
+
+  <h3>労働力不足という構造的ドライバー</h3>
+  <table class="t">
+    <thead>
+      <tr><th>地域・国</th><th>課題</th><th>ヒューマノイドの役割</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>米国</td><td>製造業・物流の慢性的人手不足。最低賃金上昇でコスト増加</td><td>工場・倉庫の反復作業を代替。人間は監督・判断業務へ</td></tr>
+      <tr><td>ドイツ</td><td>2035年までに700万人の熟練労働者不足が予測される</td><td>自動車・精密機械製造ラインでの人手不足を補完</td></tr>
+      <tr><td>日本</td><td>生産年齢人口が20年以上減少し続ける先進的少子高齢化社会</td><td>製造・介護・物流での労働力補充が緊急課題</td></tr>
+      <tr><td>中国</td><td>製造業就労人口が2017年にピーク、その後減少に転じる</td><td>「世界の工場」の継続に向けた自動化が国策レベルの優先事項</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>なぜ「ヒューマノイド」でなければならないか：</strong>既存の産業用ロボットは特定タスク向けに設計され、ラインの変更に数百万ドル・数ヶ月の改修が必要。人間の形をしたロボットは既存のツール・設備・動線をそのまま使えるため、<strong>設備改造コストゼロで導入できる</strong>という圧倒的な経済合理性がある。
+  </div>
+</div>
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合比較</div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">Tesla Optimus</div>
+      <div class="comp-tag">最大の脅威</div>
+      <div class="comp-desc">Elon MuskのTeslaが開発する社内向けヒューマノイド。2025年に1万台生産計画。Tesla自社工場での実証から外部販売へ拡張する戦略。VerticalIntegrationとFSDの知見がある。</div>
+      <div class="comp-strong"><span>差別化点</span>Figureは外部顧客への実用導入で先行。ただしTeslaの製造スケールと自社AI（FSD）の転用は脅威。</div>
+    </div>
+    <div class="comp-card threat">
+      <div class="comp-name">Physical Intelligence（PI）</div>
+      <div class="comp-tag">AIモデル競合</div>
+      <div class="comp-desc">元Google・DeepMindの研究者が設立したAIロボット基盤モデル企業。$400M調達。ハードウェア非依存の汎用ロボットAI（π0）を開発。FigureのHelixと直接競合するAIレイヤー。</div>
+      <div class="comp-strong"><span>差別化点</span>Figureはハード＋ソフトの垂直統合。PIはソフトウェア層に特化。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">1X Technologies</div>
+      <div class="comp-tag">OpenAI支援</div>
+      <div class="comp-desc">OpenAIが出資するノルウェー系ヒューマノイド企業。NEOを家庭向けに開発中。OpenAIがFigureとの関係終了後に実質的なロボットパートナーとして支援を強化している。</div>
+      <div class="comp-strong"><span>差別化点</span>家庭用途に特化。Figureは製造＋家庭の両方を狙う。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Agility Robotics（Digit）</div>
+      <div class="comp-tag">物流特化</div>
+      <div class="comp-desc">Amazon出資のヒューマノイドロボット企業。Digitはアマゾン倉庫での運用テストを実施済み。物流・倉庫特化で深い実証実績を持つ。Amazonとの関係が強み。</div>
+      <div class="comp-strong"><span>差別化点</span>倉庫特化 vs. Figureの汎用路線。Figureは用途の幅が広い。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Boston Dynamics（Atlas）</div>
+      <div class="comp-tag">技術実証先行</div>
+      <div class="comp-desc">ヒューマノイドロボットの技術的先駆者だが、商業展開は遅れ気味。HyundaiグループがAtlasの商業化に取り組んでいるが、価格・量産性でFigureに劣る可能性。</div>
+      <div class="comp-strong"><span>差別化点</span>技術知名度は高いが商業化でFigureが先行。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Unitree / UBTECH（中国勢）</div>
+      <div class="comp-tag">コスト競争</div>
+      <div class="comp-desc">中国の低コストヒューマノイドロボットメーカー。Unitreeは数万ドル台のヒューマノイドを量産。政府補助金・低コスト製造で価格競争力があるが、AIソフトウェアの質でFigureに劣る。</div>
+      <div class="comp-strong"><span>差別化点</span>価格競争は中国勢に不利。FigureはAI・安全性・信頼性で差別化。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">09</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">技術的成熟度と信頼性</div>
+        <div class="ind-desc">ヒューマノイドロボットの産業実用化はまだ初期段階。長時間稼働時の故障率・安全性・メンテナンスコストが商業展開のボトルネックになる。製造ラインでの誤動作は重大事故に直結するリスクがある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">製造スケールの課題</div>
+        <div class="ind-desc">現在は年間数百台レベルの生産規模。Adcockが目標とする「4年で10万台」の生産体制実現には、サプライチェーン構築・製造工場の整備に数十億ドル規模の追加投資が必要。製造スケール化の失敗が事業存続リスクとなる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">OpenAI競合化リスク</div>
+        <div class="ind-desc">OpenAIが自社でヒューマノイドロボット開発に参入することを宣言。「We're going to be competitors」（Adcock）という状況。OpenAIの豊富な資金力とAI技術を持つ新参者が市場に参入することで、資金調達競争・人材獲得競争が激化する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">評価額と実績のギャップ</div>
+        <div class="ind-desc">390億ドルの評価額に対し、現在の商業収益はまだ極めて限定的。投資家の期待値が現実を大幅に先行しており、技術開発の遅れや市場普及の遅延が評価額の急落を招く可能性がある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">中国勢のコスト競争</div>
+        <div class="ind-desc">Unitree・UBTECHなど中国企業は政府補助金と低コスト製造で、Figure製品の数分の1の価格でヒューマノイドロボットを提供できる可能性がある。価格が主要な競争要因になった場合、Figureのプレミアム戦略が通用しなくなるリスク。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">雇用・社会的受容の問題</div>
+        <div class="ind-desc">大規模なヒューマノイドロボット導入は製造・物流分野の大量失業につながる可能性があり、社会的・政治的反発を生む。規制強化・労働組合との摩擦が市場展開を制約するリスクがある。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. NEWS ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">10</span>最近のニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年1月</span>
+          <span class="tl-title">BMW Manufacturing商業契約締結</span>
+        </div>
+        <div class="tl-body">BMW Spartanburg工場（サウスカロライナ州）にFigure 02を導入する商業契約を締結。自動車製造ラインへの汎用ヒューマノイド展開の先駆的事例となった。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年2月</span>
+          <span class="tl-title">シリーズB 6億7500万ドル調達・OpenAI協業締結</span>
+        </div>
+        <div class="tl-body"><b>Microsoft・OpenAI・NVIDIA・Bezosら</b>から6億7500万ドルを調達。26億ドル評価。同時にOpenAIとの技術協業協定（Collaboration Agreement）を締結し、Figure 02への大規模言語モデル統合に着手。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年8月</span>
+          <span class="tl-title">Figure 02 発表・デモ公開</span>
+        </div>
+        <div class="tl-body">第2世代ヒューマノイド<b>Figure 02</b>を発表。OpenAI協業による音声対話機能・高度な物体操作能力を実証するデモ映像が世界的に注目を集めた。商業出荷可能な最初の世代と位置付け。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年12月</span>
+          <span class="tl-title">有料顧客へのFigure 02出荷開始</span>
+        </div>
+        <div class="tl-body">有料顧客（BMW）へのFigure 02システム納入を開始。実際の商業収益を伴う運用フェーズへ正式に移行した。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年1月</span>
+          <span class="tl-title">BMW工場でフルタイム稼働開始・3万台生産貢献</span>
+        </div>
+        <div class="tl-body">Figure 02の小規模フリートがBMW Spartanburg工場でフルタイム稼働を開始。累計3万台以上の車両生産に貢献したと公表。実際の量産ラインでの持続的稼働を実証。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年2月</span>
+          <span class="tl-title">OpenAIとの協業終了・Helix完全内製化を宣言</span>
+        </div>
+        <div class="tl-body">Brett AdcockがOpenAIとの協業協定終了を発表。<b>「社内で重大なブレークスルーを達成した」</b>と述べ、完全内製エンドツーエンドのロボットAI「Helix」への移行を宣言。「LLMはコモディティ化しつつある。我々にとって最小のピースになった」。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年9月</span>
+          <span class="tl-title">シリーズC 10億ドル超調達・評価額390億ドル</span>
+        </div>
+        <div class="tl-body">Parkway Venture Capital主導でシリーズCを完了。390億ドルポストマネー評価。1年半で評価額が約15倍に上昇。GPU基盤・シミュレーション・データ収集に投資すると表明。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2025〜2026年</span>
+          <span class="tl-title">Figure 03 発表・家庭市場参入</span>
+        </div>
+        <div class="tl-body">第3世代<b>Figure 03</b>を発表。ソフト外装・ワイヤレス充電・16DoF/手・$20,000目標価格で家庭向け市場への参入を宣言。製造業向けに加えてコンシューマー市場を第二の柱とする戦略を明確化。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. KPI ===================== -->
+<div class="sec" id="kpi">
+  <div class="sec-label"><span class="num">11</span>財務指標・KPI（推定）</div>
+
+  <p>非上場企業のため財務データは非公開。以下は公開情報・業界推計をもとにした参考値。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">約19億ドル（2025年9月時点）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">390億ドル（2025年9月）</div></div>
+    <div class="kv-item"><div class="k">稼働ロボット数（推定）</div><div class="v">数十台（BMW工場・2026年初頭）</div></div>
+    <div class="kv-item"><div class="k">生産目標（Adcock発言）</div><div class="v">4年以内に10万台</div></div>
+    <div class="kv-item"><div class="k">Figure 03 目標価格</div><div class="v">約20,000ドル（家庭向け）</div></div>
+    <div class="kv-item"><div class="k">推定従業員数</div><div class="v">数百名規模（非公開）</div></div>
+  </div>
+
+  <h3>評価額 vs. 競合比較（2025年推定）</h3>
+  <table class="t">
+    <thead>
+      <tr><th>企業</th><th>評価額（推定）</th><th>累計調達額</th><th>商業展開状況</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Figure AI</td><td>$39B（2025.09）</td><td>約$1.9B</td><td>BMW工場で商業稼働中</td></tr>
+      <tr><td>Tesla Optimus</td><td>Teslaの時価総額に内包</td><td>Teslaの自己資本</td><td>自社工場での実証段階</td></tr>
+      <tr><td>Physical Intelligence</td><td>非公開（$400M調達）</td><td>約$400M</td><td>ソフトウェア技術検証段階</td></tr>
+      <tr><td>1X Technologies</td><td>非公開</td><td>約$100M+</td><td>家庭用NEO開発中</td></tr>
+      <tr><td>Agility Robotics</td><td>非公開（Amazon出資）</td><td>非公開</td><td>Amazonの倉庫でテスト中</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>投資リターンへの道筋：</strong>現在の390億ドル評価は、ロボット1台あたり数十万ドルの産業用価格で数万台、あるいは年間サブスクリプション型収益でUnicorn以上のキャッシュフローを生むシナリオを織り込んでいる。商業収益の本格化まで数年を要する構造は、投資家の長期コミットメントが前提。
+  </div>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">「AIに身体を与える」という最大のフロンティア</div>
+        <div class="ind-desc">LLMがソフトウェアに革命をもたらしたように、ヒューマノイドは物理世界に革命をもたらす可能性がある。FigureはそのAI×身体の統合において最も先進的な商業実績を持つ。評価額390億ドルはこの「物理世界のAI」への期待の裏返し。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">実際にBMWで動いているという実績</div>
+        <div class="ind-desc">「デモ映像だけ」の競合が多い中、FigureはBMWの実際の製造ラインで3万台以上の車両生産に貢献した唯一の企業。この「実際に動いている」という実績は、投資家・顧客・採用において圧倒的な差別化要因。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">OpenAIからの自立：AIの内製化という強い意志</div>
+        <div class="ind-desc">OpenAIとの協業を「ほぼ価値がなかった」と評価して関係を終了し、自社でエンドツーエンドのHelixを構築したことは、単なる技術決定ではなく戦略的な独立宣言。ロボットAIの本質的な差別化要因はLLMではなく、ロボット固有のデータ・制御アーキテクチャにあるという洞察が正しければ、競合優位は持続的になる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Brett Adcockという連続起業家の強み</div>
+        <div class="ind-desc">Vettery（HR×テック）→Archer Aviation（eVTOL）→Figure AI（ヒューマノイド）と、全く異なる業界で毎回ゼロベースからキャッチアップして成果を出す稀有なキャリア。業界経験がないからこそ既成概念に縛られず、業界のベストプレイヤーを集めて短期間で最先端を走る能力が実証済み。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">データフライホイールという構造的優位</div>
+        <div class="ind-desc">BMW工場での実稼働により、Figure は他のどの企業よりも多くの「実際の工場環境でのロボット稼働データ」を収集できる。このデータがHelixの精度向上につながり、より多くの契約を勝ち取り、さらにデータが増えるというフライホイール構造が成立すれば、後発が追いつくことは困難になる。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>Our goal is human-level intelligence. Not just for specific tasks — but the full range of things a human can do in the physical world.</p>
+    <div class="attr">— Brett Adcock, Founder & CEO, Figure AI</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Figure AI 公式サイト（figure.ai）</li>
+    <li>PR Newswire — Figure Raises $675M at $2.6B Valuation (2024.02)</li>
+    <li>PR Newswire — Figure × BMW Commercial Agreement (2024.01)</li>
+    <li>BMW Group Press — Successful Test of Humanoid Robots at Spartanburg</li>
+    <li>TechCrunch — Figure drops OpenAI in favor of in-house models (2025.02)</li>
+    <li>The Robot Report — Figure AI Series C $1B+ funding (2025)</li>
+    <li>Inc. Magazine — Figure Valued at $39B (2025)</li>
+    <li>Goldman Sachs — The global market for humanoid robots ($38B by 2035)</li>
+    <li>Brett Adcock — X (@adcock_brett), OpenAI split announcement</li>
+    <li>Figure AI News — Introducing Figure 03 / Helix VLA model</li>
+    <li>Wikipedia — Figure AI / Brett Adcock</li>
+    <li>Crunchbase — Figure AI funding data</li>
+  </ul>
+</div>
+
+</div>
+<footer class="snav-footer"><div class="snav-footer-sns"><a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a><a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a></div></footer>
+</body>
+</html>

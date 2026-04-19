@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Saildrone — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav"><a class="snav-logo" href="/index.html">24111</a><button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button></div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec"><div class="snav-sec-label">030 Research</div><a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a><a class="snav-a" href="/030_research/033_legend/index.html">legend</a><a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a><a class="snav-a" href="/030_research/035_startup/index.html">startup</a></div>
+  <div class="snav-sec"><div class="snav-sec-label">040 Personal</div><a class="snav-a" href="/040_personal/profile/profile.html">profile</a><a class="snav-a" href="/040_personal/047_books/books.html">books</a><a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a></div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Maritime Defense</span>
+    <span class="badge badge-white">Autonomous USV</span>
+    <span class="badge badge-solid">Series C+</span>
+  </div>
+  <h1>Saildrone</h1>
+  <p class="hero-sub">風力・太陽光のみで動く自律航行型海洋ドローン（USV）を開発・運用する海洋インテリジェンス企業。カテゴリー4ハリケーンの内部映像を世界で初めて収集し、NOAA・米海軍・Lockheed Martinと協業する次世代海洋防衛プラットフォーム。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$345M+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">$575M</div><div class="lbl">Valuation (2024)</div></div>
+    <div class="kpi"><div class="val">$43M</div><div class="lbl">Revenue (2024)</div></div>
+    <div class="kpi"><div class="val">2012</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー</a></li>
+    <li><a href="#business">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">最近のニュース・マイルストーン</a></li>
+    <li><a href="#kpi">財務指標・KPI（推定）</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 01. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Saildrone, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2012年（法人登記：2011年10月）</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Alameda, California, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series C-1（未上場）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">3億4500万ドル以上</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">5億7500万ドル（2024年Series C-1）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約250名</div></div>
+    <div class="kv-item"><div class="k">プロダクト形態</div><div class="v">自律航行型無人水上艇（USV）+ データサービス</div></div>
+    <div class="kv-item"><div class="k">主要顧客</div><div class="v">NOAA・米海軍・DIU・沿岸警備隊・各国政府</div></div>
+    <div class="kv-item"><div class="k">オフィス</div><div class="v">Alameda CA（本社）/ Washington DC / St. Petersburg FL</div></div>
+  </div>
+
+  <p>Saildrone（セールドローン）は、燃料を一切使わず風力と太陽光のみで動く自律航行型無人水上艇（USV: Unmanned Surface Vehicle）を設計・製造・運用する企業。創業者Richard Jenkinsが風力陸上速度記録挑戦の中で開発したウィングセイル技術を海洋ドローンに転用し、2012年に設立した。</p>
+
+  <p>単なるハードウェアメーカーではなく、<strong>「Mission as a Service（MaaS）」</strong>モデルを採用。顧客はドローン本体を購入するのではなく、収集したデータと任務遂行のサービスそのものに対価を支払う。設立以来200万海里以上を航行し、海洋気象・漁業・海底マッピング・海上保安・防衛インテリジェンスなど多分野に用途を拡大している。</p>
+
+  <div class="callout">
+    <strong>創業のきっかけ：</strong>Jenkinsは陸上風力速度記録（Blackbird）挑戦中に開発した精密ウィング制御システムを海洋ドローンに応用できると確信。2013年にUSVとして初めて太平洋横断（サンフランシスコ→ハワイ、34日間）を達成し、技術実証に成功した。
+  </div>
+</div>
+
+<!-- ===================== 02. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー</div>
+
+  <h3>ウィングセイル・システム</h3>
+  <p>Saildrone最大の技術的差別化は、<strong>剛体翼（リジッドウィング）を使った風力推進システム</strong>。軟質の帆とは異なり、航空機の翼に近い形状のウィングが揚力を生成し高い推進効率を実現する。ウィング中央部に取り付けられたテール（舵）がアングル・オブ・アタックを精密制御することで、複雑な風況でも安定した推進力を維持する。ハリケーン内部での120mph超の暴風・50フィート（約15m）の波浪にも耐えられる構造剛性を持つ。</p>
+
+  <h3>3つのプラットフォーム</h3>
+  <table class="t">
+    <thead>
+      <tr><th>機種</th><th>全長</th><th>主な用途</th><th>航続日数</th><th>特徴</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Explorer</td><td>23フィート（7m）</td><td>気象・漁業・海洋環境モニタリング</td><td>最大365日</td><td>純風力・ソーラー。100機以上量産済み</td></tr>
+      <tr><td>Voyager</td><td>33フィート（10m）</td><td>海底マッピング・沿岸警備・麻薬密輸阻止</td><td>180日以上</td><td>補助4kW電動モーター付き。コンテナ輸送可能</td></tr>
+      <tr><td>Surveyor</td><td>65フィート（20m）</td><td>深海マッピング・防衛ISR・兵器搭載</td><td>100日以上</td><td>15トン。ABS格付け取得済み。JAGM発射機搭載予定</td></tr>
+    </tbody>
+  </table>
+
+  <h3>センサー・ペイロード</h3>
+  <div class="pills">
+    <span class="pill s">マルチビーム音響測深機（海底マッピング）</span>
+    <span class="pill s">気象センサー（風速・波高・気温・湿度）</span>
+    <span class="pill s">魚群探知ソナー（漁業管理）</span>
+    <span class="pill s">AIS受信機（船舶監視）</span>
+    <span class="pill">水中聴音機（潜水艦探知）</span>
+    <span class="pill">光学カメラ（監視・動画撮影）</span>
+    <span class="pill">JAGM四連装発射機（防衛）</span>
+    <span class="pill">Thales BlueSentry曳航アレイ</span>
+  </div>
+
+  <h3>自律航行・AIシステム</h3>
+  <p>オンボードコンピュータと衛星通信によりほぼリアルタイムでデータを地上に送信しながら、数ヶ月にわたって自律的に航行する。2025年にはPalantir Technologies との戦略的パートナーシップを締結し、200万海里超の航行データをPalantirのAIクラウドインフラと統合。海上監視・インテリジェンス分析・精密ターゲティングへの応用を加速している。</p>
+
+  <div class="callout">
+    <strong>南極大陸一周（2019）：</strong>USV「SD 1020」が史上初めて南極大陸を完全周回した（全経度通過）。燃料補給なしで数ヶ月間、地球上最過酷な海域を自律航行したことで、長期ミッション耐久性を証明した。
+  </div>
+</div>
+
+<!-- ===================== 03. BUSINESS MODEL ===================== -->
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル・収益構造</div>
+
+  <h3>Mission as a Service（MaaS）</h3>
+  <p>Saildrone はドローン本体を販売せず、<strong>「ミッション単位」または「データサービス契約」</strong>で収益を得る。顧客は目的（海洋調査・沿岸警備・防衛ISR等）を定義してSaildrone に発注し、Saildrone がドローンを運用してデータと成果を納品する。これにより顧客側は高額な初期投資なしにUSV能力を調達でき、Saildrone 側は車両運用ノウハウと蓄積データを資産として保有できる。</p>
+
+  <h3>収益セグメント</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">政府・防衛契約（主力・急成長）</div>
+        <div class="ind-desc">米海軍・NOAA・沿岸警備隊・DIU・麻薬取締局など複数の米政府機関との長期契約。Voyagerによる「Operation Southern Spear（カリブ海麻薬密輸監視）」は3,600ミッション日規模。防衛向け収益が全体の過半を占めるまで急拡大中。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">科学・環境データサービス</div>
+        <div class="ind-desc">NOAA・NASAとのハリケーン観測・海洋気象データ収集契約。漁業資源評価（FAO・各国漁業機関）。気候モデリング向け海洋データのサブスクリプション。気候科学予算の取り込みから防衛契約への移行が近年の特徴。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">海底マッピング・インフラ調査</div>
+        <div class="ind-desc">国際水路機関（IHO）準拠の海底地形図作成。海底ケーブルルート調査・インフラ監視。Voyager に搭載のNORBIT Wingheadマルチビーム測深機による高精度マッピング。商業海運・エネルギーインフラ企業が顧客。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">防衛プラットフォーム（兵器統合・新規）</div>
+        <div class="ind-desc">Lockheed MartinのJAGMミサイル発射機をSurveyor に統合するプロジェクト（2025年〜）。Mk70 VLS（垂直発射システム）・曳航アレイ搭載も開発中。無人艦艇としての「致死的効果（Lethal Effects）」提供が次フェーズの成長ドライバー。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>防衛への軸足移行：</strong>2023年に気候科学中心の組織を解体し、防衛・安全保障特化へ大規模リストラを実施（大量レイオフ）。その後2024年の年次収益が231%増と急回復。「海洋防衛プラットフォーム」へのポジショニング転換が奏功した。
+  </div>
+</div>
+
+<!-- ===================== 04. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">RJ</div>
+      <div>
+        <h3>Richard Jenkins（リチャード・ジェンキンス）</h3>
+        <div class="p-role">Founder & CEO — Saildrone, Inc.</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">出身</div><div class="val">英国・サウサンプトン近郊Lymington生まれ。幼少期から帆船レーシングを始め、16歳で大西洋単独横断を達成。</div></div>
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">インペリアル・カレッジ・ロンドン、機械工学士号。</div></div>
+      <div class="p-row"><div class="lbl">世界記録</div><div class="val">2009年、Nevada州の乾燥湖床にて風力車両「Blackbird（ブラックバード）」で<strong>時速126.2mph（203km/h）の風力陸上速度世界記録</strong>を樹立。この制御技術がSaildrone のコアに。</div></div>
+      <div class="p-row"><div class="lbl">起業経緯</div><div class="val">Blackbird開発中に「このウィング技術を海洋ドローンに転用できる」と確信。10年の開発期間を経て2012年にSaildrone を創業。</div></div>
+      <div class="p-row"><div class="lbl">受賞歴</div><div class="val">Navy League of the United States — Michelson Award for Innovation 受賞。米国議会でUSV技術について証言（2024年）。</div></div>
+      <div class="p-row"><div class="lbl">ビジョン</div><div class="val">「海洋は地球の70%を占めるが、依然として最も把握できていない空間。Saildrone はその空白を埋める。」</div></div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We believe in using ocean data at scale to derive quantified, planetary insights that affect humanity — from hurricane forecasting to protecting undersea infrastructure to understanding climate change.</p>
+    <div class="attr">— Richard Jenkins, Founder & CEO, Saildrone</div>
+  </div>
+
+  <p>Jenkinsのほか、元国防総省・NOAA出身のアドバイザーや防衛調達の専門家を含む経営チームを整備。ロビイング拠点としてのワシントンDCオフィスが政府契約獲得に貢献している。</p>
+</div>
+
+<!-- ===================== 05. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed</span>
+      <div class="f-amount">〜$5M</div>
+      <div class="f-detail">
+        <div class="f-date">2012〜2015年</div>
+        <div class="f-desc">Schmidt Family Foundation（Eric &amp; Wendy Schmidt）が初期の海洋ミッション関連投資を提供。環境・科学的観点からの慈善的色彩が強い初期資金。</div>
+      </div>
+    </div>
+    <div class="f-card a">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$14M</div>
+      <div class="f-detail">
+        <div class="f-date">2016年9月</div>
+        <div class="f-desc">Social Capital（リード）、Capricorn Investment Group、Lux Capitalが参加。艦隊拡張と海洋データサービスの商用化加速。</div>
+      </div>
+      <div class="f-val"><div class="vl">Lead</div><div class="vv">Social Capital</div></div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$60M</div>
+      <div class="f-detail">
+        <div class="f-date">2018年5月</div>
+        <div class="f-desc">Horizons Ventures（新規参加）、Social Capital、Capricorn、Lux Capital（既存継続）。グローバルフリート拡大と国際展開資金。</div>
+      </div>
+      <div class="f-val"><div class="vl">Lead</div><div class="vv">Horizons Ventures</div></div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C</span>
+      <div class="f-amount">$100M</div>
+      <div class="f-detail">
+        <div class="f-date">2021年10月</div>
+        <div class="f-desc">Bond Capital（Mary Meeker、リード）、XN、Standard Investments、Emerson Collective、Crowley Maritime、Capricorn、Lux、Social Capital、Tribe Capitalが参加。ハリケーンSam映像公開直後の大型調達。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$600M</div></div>
+    </div>
+    <div class="f-card late">
+      <span class="r-badge">Series C-1</span>
+      <div class="f-amount">$75M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年</div>
+        <div class="f-desc">防衛ピボット後の成長資金調達。収益が231%増と急回復した段階での追加ラウンド。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$575M</div></div>
+    </div>
+    <div class="f-card late">
+      <span class="r-badge">Strategic</span>
+      <div class="f-amount">$60M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年5月</div>
+        <div class="f-desc">EIFO（デンマーク輸出投資ファンド、リード）、Lux Capital、Washington Harbor Partners、Crowley、Academy Securities、Pinegrove参加。欧州展開・NATO加盟国への海洋安全保障技術提供を目的とした戦略的資金。</div>
+      </div>
+      <div class="f-val"><div class="vl">Lead</div><div class="vv">EIFO（デンマーク）</div></div>
+    </div>
+    <div class="f-card late">
+      <span class="r-badge">Strategic</span>
+      <div class="f-amount">$50M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年10月</div>
+        <div class="f-desc">Lockheed Martin による戦略的投資。JAGMミサイル発射機・Mk70 VLSをSurveyor に統合し、米海軍向け武装USVを共同開発。2026年に実弾射撃デモを予定。</div>
+      </div>
+      <div class="f-val"><div class="vl">Investor</div><div class="vv">Lockheed Martin</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>調達の変遷：</strong>2021年Series Cまでは「海洋科学・気候データ」文脈でのVC資金が中心。2024年以降は防衛産業複合体（Lockheed Martin）と同盟国政府ファンド（EIFO）が加わり、「デュアルユース海洋防衛プラットフォーム」としての資本調達に変化した。
+  </div>
+</div>
+
+<!-- ===================== 06. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Series A Lead</span>
+      <div class="vc-name">Social Capital</div>
+      <div class="vc-role">Series A〜C 継続参加</div>
+      <div class="vc-desc">Chamath Palihapitiya が創設したVC。Series Aでリードを務め、以降も複数ラウンドで継続投資。科学・テクノロジー分野への長期投資スタンスが一致。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Series B Lead</span>
+      <div class="vc-name">Horizons Ventures</div>
+      <div class="vc-role">Series B リード</div>
+      <div class="vc-desc">香港の富豪Li Ka-shing の投資ビークル。DeepMind・Spotify・Siriなど先進技術への先見的投資で知られる。Series Bでリードを担い、Saildrone の国際展開を後押し。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Series C Lead</span>
+      <div class="vc-name">Bond Capital（Mary Meeker）</div>
+      <div class="vc-role">Series C リード</div>
+      <div class="vc-desc">「インターネット女王」Mary Meeker が率いるグロースVC。2021年のハリケーン映像インパクト直後のSeries Cをリード。海洋データプラットフォームとしての成長ポテンシャルを高く評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Capricorn Investment Group</div>
+      <div class="vc-role">Series A〜C 継続参加</div>
+      <div class="vc-desc">Jeff Skoll（eBay共同創業者）のファミリーオフィス。サステナビリティ・科学技術への長期投資が特徴。Series Aから一貫して参加する古参投資家。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Lux Capital</div>
+      <div class="vc-role">Series A〜C-1 継続参加</div>
+      <div class="vc-desc">物理世界の科学技術に特化したVC（科学機器・ロボット・宇宙など）。Series Aから一貫して参加し、2025年のEIFOラウンドにも継続投資。防衛テックへの関心と方向性が一致。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">EIFO（デンマーク輸出投資基金）</div>
+      <div class="vc-role">2025年 $60Mラウンド リード</div>
+      <div class="vc-desc">デンマーク政府系ファンド。NATOの海洋安全保障需要を背景に欧州展開に特化した戦略投資。バルト海・北海における重要インフラ保護（海底ケーブル・パイプライン）への適用を視野に入れている。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Strategic 2025</span>
+      <div class="vc-name">Lockheed Martin</div>
+      <div class="vc-role">2025年10月 $50M 戦略的投資</div>
+      <div class="vc-desc">米国防衛産業最大手。JAGMミサイル・VLS統合を目的とした戦略的投資で単なるVCとは性格が異なる。米海軍のUSVプログラムに直結した「開発資金兼ベンダー関係」。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Emerson Collective</div>
+      <div class="vc-role">Series C 参加</div>
+      <div class="vc-desc">Steve Jobs の妻Laurene Powell Jobsが運営する社会投資ファンド。教育・環境・移民問題に加え、海洋・気候科学分野にも投資。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 07. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — 海洋インテリジェンス市場</div>
+      <div class="m-val">$20B+</div>
+      <div class="m-desc">海洋データ・調査・監視の年間市場規模。気候・漁業・防衛・エネルギーインフラを含む</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — 海洋AIインテリジェンス</div>
+      <div class="m-val">$4.3B</div>
+      <div class="m-desc">海洋AI市場（2024年推計）、CAGR 40.6%で2030年に急拡大予測</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — 無人水上艇サービス</div>
+      <div class="m-val">$1B+</div>
+      <div class="m-desc">Saildrone が直接競合するUSVデータサービス・防衛ミッション市場（近中期）</div>
+    </div>
+  </div>
+
+  <h3>成長ドライバー</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">海洋安全保障需要の急増</div>
+        <div class="ind-desc">2022年のNordStream爆破事件以降、海底ケーブル・パイプラインなど重要海洋インフラの監視需要が急騰。NATO加盟国が競って無人海洋監視システムの調達を加速しており、Saildrone のターゲット市場が急拡大している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">米海軍のUnmanned Maritime大量調達</div>
+        <div class="ind-desc">米海軍は2020年代に「ディストリビューテッド・マリタイム・オペレーション（DMO）」戦略のもと、大量の無人艦艇導入を計画。Saildrone のSurveyor と大型後継機が、低コスト・長期耐久型の持続的海洋監視プラットフォームとして最適な位置にある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">気候変動による海洋データ需要拡大</div>
+        <div class="ind-desc">海面水温上昇・ハリケーン激甚化・漁業資源変動により、継続的な海洋観測データの価値が年々高まっている。NOAAなど各国の気象機関がUSVを使ったリアルタイムデータ収集に予算を拡充。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">麻薬密輸・不法漁業取締まりの無人化</div>
+        <div class="ind-desc">広大な海域を限られた人員でパトロールするコストと限界から、各国沿岸警備隊・海軍が無人監視艇に注目。カリブ海の「Operation Southern Spear」はVoyagerを使った実証事例として世界的に注目されている。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 08. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合比較</div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">Saronic Technologies</div>
+      <div class="comp-tag">強力な競合</div>
+      <div class="comp-desc">a16zから$175M調達した米国の軍用USVスタートアップ。より大型の有人対応艦艇を軍事ロジスティクス・センサー搭載向けに開発。米海軍から$392M OTAを受注（2025年）しており、Saildrone の防衛市場と直接競合する。</div>
+      <div class="comp-strong"><span>脅威度</span>高い。米海軍調達で最も直接競合する。資金力・契約実績で急追中。</div>
+    </div>
+    <div class="comp-card threat">
+      <div class="comp-name">Anduril Industries</div>
+      <div class="comp-tag">間接競合・強力</div>
+      <div class="comp-desc">Palmer Luckeyが創業した防衛テック企業。陸・海・空を横断するオートノマス兵器プラットフォームを開発。HD Hyundaiと海洋ドローン開発で提携。潤沢な資金力と既存の防衛契約網がSaildrone の防衛参入の障壁になりうる。</div>
+      <div class="comp-strong"><span>脅威度</span>中〜高。「防衛テックプラットフォーム」としての総合力で上回る可能性。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">L3Harris / Kongsberg / Thales</div>
+      <div class="comp-tag">伝統的防衛企業</div>
+      <div class="comp-desc">既存の防衛大手がUSVをバンドル販売。既存の海軍調達ルートと確立された顧客関係を持つ。ただし技術イノベーション速度・コスト競争力でSaildrone に劣る傾向。ThalesはSaildrone と協業関係でもある（曳航アレイ提供）。</div>
+      <div class="comp-strong"><span>脅威度</span>中。調達関係では優位だが技術革新速度で劣後。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Liquid Robotics（Wave Glider）</div>
+      <div class="comp-tag">先行者・買収済み</div>
+      <div class="comp-desc">波力と太陽光で動くWave Gliderを開発した先行企業。現在はBoeing傘下。比較的小型・低速で海洋気象モニタリングに特化。Saildrone のより大型・高速・マルチミッション設計と異なる市場に存在。</div>
+      <div class="comp-strong"><span>脅威度</span>低。Boeingによる買収でスタートアップ的機動性を失いつつある。</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Saildrone の差別化：</strong>200万海里超の実運用データ資産、ハリケーン内部映像など「世界初」実績の積み重ね、純風力・太陽光による無燃料長期ミッション（最大1年）能力、ABS格付け取得済みSurveyor の存在が競合優位の核心。
+  </div>
+</div>
+
+<!-- ===================== 09. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">09</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">防衛ピボットによるレピュテーションリスク</div>
+        <div class="ind-desc">もともと海洋科学・気候データを掲げていた企業が、JAGMミサイル搭載の武装USVへ転換することへの批判リスク。研究機関・NGO・環境科学コミュニティとの関係悪化。さらに自律致死システムに関する国際法的枠組みが未整備であり、法的・倫理的不確実性が残る。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">政府契約依存・予算変動リスク</div>
+        <div class="ind-desc">収益の大部分を米政府（NOAA・海軍・DIU等）との契約に依存。政権交代や国防予算削減、調達優先度の変化で突然収益が消えるリスク。政府契約は競争入札であり、継続性が民間契約より低い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">バリュエーションのダウンラウンド</div>
+        <div class="ind-desc">2021年Series C時点のバリュエーション$600Mに対し、2024年Series C-1で$575Mへわずかに下落（実質ダウンラウンド）。防衛ピボット前の2022〜2023年に一時的な事業縮小とレイオフがあり、投資家の評価が固まりきっていない時期もあった。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">競合のキャッチアップ</div>
+        <div class="ind-desc">Saronicが米海軍から$392M OTAを受注するなど、競合の資金力と契約実績が急速に伸びている。Andurilのような「総合防衛プラットフォーム」企業が海洋ドメインに本格参入した場合、単機能USVとして対抗するのが困難になる可能性。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">スケールアップの製造コスト</div>
+        <div class="ind-desc">現在はExplorer 100機体制だが、防衛需要に応えるにはSurveyor・Voyagerを大量生産する体制が必要。航空宇宙級の材料・精密部品が必要な65フィートSurveyorの量産コストは高く、利益率圧迫が懸念される。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">輸出規制・国際展開リスク</div>
+        <div class="ind-desc">武器システムを搭載したUSVは輸出管理規制（EAR/ITAR）の対象となる。欧州・インド太平洋への展開にあたり、同盟国であっても政府間の承認プロセスが長期化・不許可になるリスクがある。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. NEWS ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">10</span>最近のニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2021年9月</span>
+          <span class="tl-title">世界初：カテゴリー4ハリケーン内部映像を収集</span>
+        </div>
+        <div class="tl-body">Saildrone Explorer「SD 1045」が大西洋の<b>カテゴリー4ハリケーン「Sam」</b>に突入し、海上で世界初のハリケーン内部映像を収集・送信。風速120mph超・波高50フィートの海況下での撮影成功は世界中で大きく報道された。NOAAとの共同ミッション。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2021年10月</span>
+          <span class="tl-title">Series C — $100M 調達（Bond Capital リード）</span>
+        </div>
+        <div class="tl-body">ハリケーン映像の反響直後にMary MeekerのBond Capitalをリードに$100M調達。バリュエーション$600M。海洋インテリジェンスプラットフォームへの本格的成長フェーズへ。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年</span>
+          <span class="tl-title">防衛ピボット・大規模リストラ実施</span>
+        </div>
+        <div class="tl-body">気候科学・環境データ部門を縮小、防衛・安全保障特化へ組織再編。大規模な人員削減を実施。収益が$13Mまで落ち込むも、防衛契約の獲得により翌年に急反転する布石となった。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年</span>
+          <span class="tl-title">年間収益231%増（$43M）・Series C-1 $75M調達</span>
+        </div>
+        <div class="tl-body">防衛ピボット後の本格的な収益回復。NOAA・海軍・DIUからの複数の防衛・安全保障契約が収益急成長をけん引。Series C-1で$75M調達（バリュエーション$575M）。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年2月</span>
+          <span class="tl-title">Operation Southern Spear — カリブ海麻薬密輸阻止</span>
+        </div>
+        <div class="tl-body">米海軍第4艦隊のJIATF-S（統合省庁間任務部隊）とともにVoyagerを投入。3,600ミッション日規模の大型契約。カリブ海主要チョークポイントでの海洋ドメイン認識（MDA）に活用。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年3月</span>
+          <span class="tl-title">Palantir Technologies との戦略的パートナーシップ締結</span>
+        </div>
+        <div class="tl-body">PalantirのAIクラウド（AIP）とSaildrone の200万海里超の海洋データを統合。海上監視・精密ターゲティング・インテリジェンス分析への応用を共同開発。防衛AIの主要プレイヤーとの連携で競争力を強化。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年5月</span>
+          <span class="tl-title">EIFO主導 $60M調達 — 欧州進出</span>
+        </div>
+        <div class="tl-body">デンマーク政府系EIFOをリードに$60M調達。バルト海・北海における重要インフラ（海底ケーブル・パイプライン）監視ニーズに対応し、NATO加盟国への展開を加速。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年10月</span>
+          <span class="tl-title">Lockheed Martin $50M投資 — 武装USV共同開発</span>
+        </div>
+        <div class="tl-body">Lockheed MartinがSaildrone に$50M戦略投資。SurveyorへのJAGM四連装発射機・Mk70 VLS統合を進め、2026年に実弾射撃デモを予定。米海軍の水上ドローン戦力化ロードマップに直接組み込まれた形。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. KPI ===================== -->
+<div class="sec" id="kpi">
+  <div class="sec-label"><span class="num">11</span>財務指標・KPI（推定）</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">年間収益（2024年）</div><div class="v">$43M（前年比+231%）</div></div>
+    <div class="kv-item"><div class="k">年間収益（2023年）</div><div class="v">$13M</div></div>
+    <div class="kv-item"><div class="k">バリュエーション（2024年）</div><div class="v">$575M（Series C-1 Post-Money）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">$345M+（2025年10月時点）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約250名</div></div>
+    <div class="kv-item"><div class="k">累計航行距離</div><div class="v">200万海里超</div></div>
+    <div class="kv-item"><div class="k">Explorer量産数</div><div class="v">100機以上</div></div>
+    <div class="kv-item"><div class="k">Revenue Multiple</div><div class="v">約13.4x（$575M / $43M）</div></div>
+  </div>
+
+  <h3>収益構造の推定（2024年）</h3>
+  <table class="t">
+    <thead>
+      <tr><th>セグメント</th><th>構成比（推定）</th><th>主な顧客・契約</th><th>成長方向</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>防衛・安全保障契約</td><td>50〜60%</td><td>米海軍・DIU・沿岸警備隊・JIATF-S</td><td>急拡大</td></tr>
+      <tr><td>海洋環境・気象データ</td><td>25〜35%</td><td>NOAA・NASA・漁業機関</td><td>横ばい〜微増</td></tr>
+      <tr><td>海底マッピング・インフラ調査</td><td>10〜20%</td><td>エネルギー企業・通信会社・政府</td><td>成長</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>2025〜2026年の収益見通し：</strong>Lockheed Martin $50M投資・Palantirパートナーシップ・欧州EIFO $60M調達が一斉に動き出す時期と重なり、防衛向け収益がさらに加速する可能性が高い。2026年のJAGM実弾射撃デモ成功が次の大型海軍契約獲得の鍵。
+  </div>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">「海の目」としての戦略的価値が明確になった</div>
+        <div class="ind-desc">NordStream爆破・南シナ海緊張・北極圏競争などを経て、海洋監視は国家安全保障の最前線課題になった。Saildrone は低コストで長期間・広域を持続的に監視できる唯一の大規模運用実績を持つUSVプラットフォームとして、この需要の真ん中に位置している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">「燃料ゼロ・1年間運用」という物理的モート</div>
+        <div class="ind-desc">競合他社がディーゼル・電池に頼る中、Saildrone は純粋な風力・太陽光で最大365日運用できる。補給船不要・燃料コストゼロ・低メンテナンスという運用経済性は、大量展開が前提の海洋監視に決定的な優位性をもたらす。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">創業者の「世界記録」起源という技術の本質性</div>
+        <div class="ind-desc">ウィングセイル技術は理論ではなく、风力陸上速度記録（126mph）という極限状況で磨かれた実戦技術。カテゴリー4ハリケーン内部での耐久性証明も、机上の設計ではなく現場で実証された。この「先に極限に挑んで技術を作った」という文脈が信頼性の根拠になっている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">200万海里の海洋データ資産が競合の追随を阻む</div>
+        <div class="ind-desc">過去10年以上の運用で蓄積した気象・海洋・生物・船舶動態データは、新規参入者が短期間で複製できるものではない。PalantirとのAI統合によりこのデータ資産の価値は指数関数的に高まる。データ×AIという「規模の経済」が機能し始めている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">Lockheed Martin投資が「防衛プラットフォーム化」を公式に確定させた</div>
+        <div class="ind-desc">米国最大の防衛企業がSaildrone に$50Mを注入し、JAGMミサイル統合を共同開発することは、Saildrone が米海軍の正式な調達エコシステムに組み込まれることを意味する。スタートアップから「防衛インフラの一部」への格上げが2025〜2026年に完成しつつある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">気候×防衛のデュアルユースが地政学的追い風に</div>
+        <div class="ind-desc">同一プラットフォームでハリケーン観測も潜水艦探知もできるデュアルユース性が、気候変動対策と安全保障の両方で政府予算を取り込める強みになっている。片方の予算が削られても他方で補える構造的安定性がある。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>The ocean covers 70 percent of the planet, yet it remains the least understood. Saildrone is changing that — one nautical mile at a time, with no fuel and no crew.</p>
+    <div class="attr">— Richard Jenkins, Founder & CEO, Saildrone</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Saildrone 公式サイト（saildrone.com）</li>
+    <li>Saildrone — "World First: Ocean Drone Captures Video from Inside a Category 4 Hurricane" (2021.09)</li>
+    <li>NOAA — "World first: Ocean drone captures video from inside a hurricane" (2021)</li>
+    <li>Saildrone — "Saildrone Closes $100 Million Series C Funding" (2021.10)</li>
+    <li>Saildrone — "Saildrone Closes $60M Financing to Bring Maritime Autonomy to Europe" (2025.05)</li>
+    <li>Lockheed Martin — "Lockheed Martin Invests $50M in Saildrone" (2025.10)</li>
+    <li>Saildrone — "Saildrone and Palantir Announce Strategic Partnership" (2025.03)</li>
+    <li>Sacra — "Saildrone at $43M/year growing 231% YoY"</li>
+    <li>Contrary Research — "Saildrone Business Breakdown & Founding Story"</li>
+    <li>Wikipedia — Richard Jenkins (engineer)</li>
+    <li>Grand View Research — Maritime AI Market Report (2024)</li>
+    <li>DefenseScoop — "Navy moves to buy autonomous maritime drones from Saronic" (2025.08)</li>
+    <li>The Defense Post — "Lockheed Backs $50M Effort to Arm Saildrone USV" (2025.10)</li>
+    <li>Saildrone — "Operation Southern Spear" Press Release (2025.02)</li>
+  </ul>
+</div>
+
+</div>
+<footer class="snav-footer"><div class="snav-footer-sns"><a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a><a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a></div></footer>
+</body>
+</html>

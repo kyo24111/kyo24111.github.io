@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flexport — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav"><a class="snav-logo" href="/index.html">24111</a><button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button></div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec"><div class="snav-sec-label">030 Research</div><a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a><a class="snav-a" href="/030_research/033_legend/index.html">legend</a><a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a><a class="snav-a" href="/030_research/035_startup/index.html">startup</a></div>
+  <div class="snav-sec"><div class="snav-sec-label">040 Personal</div><a class="snav-a" href="/040_personal/profile/profile.html">profile</a><a class="snav-a" href="/040_personal/047_books/books.html">books</a><a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a></div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Logistics × Tech</span>
+    <span class="badge badge-white">Supply Chain</span>
+    <span class="badge badge-solid">Unicorn</span>
+  </div>
+  <h1>Flexport</h1>
+  <p class="hero-sub">デジタルフレートフォワーダーのパイオニア。海上・航空・トラック・通関を一気通貫でカバーするSaaS型グローバルサプライチェーン・プラットフォーム。創業者Ryan Petersenが2023年にCEOに復帰し、大規模リストラを経て黒字化へ向かう。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$2.5B+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">~$3.8B</div><div class="lbl">Valuation (2024)</div></div>
+    <div class="kpi"><div class="val">$2.1B</div><div class="lbl">Revenue (2024)</div></div>
+    <div class="kpi"><div class="val">2013</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー・プロダクト</a></li>
+    <li><a href="#business">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">最近のニュース・マイルストーン</a></li>
+    <li><a href="#kpi">財務指標・KPI（推定）</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Flexport, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2013年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">San Francisco, California, USA</div></div>
+    <div class="kv-item"><div class="k">代表者</div><div class="v">Ryan Petersen（創業者 兼 CEO）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">約25億ドル（2024年時点）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">約38億ドル（2024年末推計）</div></div>
+    <div class="kv-item"><div class="k">売上高</div><div class="v">21億ドル（2024年）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約2,600名（2024年）</div></div>
+    <div class="kv-item"><div class="k">事業形態</div><div class="v">デジタルフレートフォワーダー / 3PL</div></div>
+    <div class="kv-item"><div class="k">対応モード</div><div class="v">海上・航空・陸上（トラック）・通関・フルフィルメント</div></div>
+  </div>
+
+  <p>Flexportは、グローバルな貿易・物流を一気通貫でデジタル化するプラットフォーム企業。従来は電話・FAX・エクセルに依存していた国際貨物輸送のプロセスをソフトウェアで統合し、荷主・フレートフォワーダー・通関ブローカー・港湾オペレーターをリアルタイムで接続する。</p>
+
+  <p>創業者Ryan Petersenが2022年にExeecutive Chairmanに退き、元Amazon物流責任者のDave Clarkを招聘したが、過剰採用と支出拡大で経営が混乱。2023年9月にPetersenがCEOに復帰し、人員の20%削減・執行役員刷新という大規模リストラを断行した。その後、ShopifyからShopify Logistics（Deliverr含む）を取得し、Eコマースフルフィルメント分野へも進出している。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>年間貿易額9兆ドルを支える貨物輸送産業は、いまだに紙・FAX・属人的なブローカーネットワークで動いている。Flexportはこのアナログ市場に「可視化・自動化・データ分析」を持ち込み、テクノロジーによる業界構造の変革を目指す。
+  </div>
+</div>
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー・プロダクト</div>
+
+  <h3>Platform Overview</h3>
+  <p>Flexportのコアはクラウドベースのサプライチェーン管理プラットフォーム。荷主は一つのインターフェースから見積もり・予約・貨物追跡・書類管理・関税計算・在庫管理までを操作できる。2025年以降はAI機能の大幅強化が進んでいる。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">リアルタイム貨物追跡・可視化</div>
+        <div class="ind-desc">海上・航空・陸上の全輸送手段にわたってリアルタイムでステータスを追跡。遅延予測・在庫影響のアラートを自動生成。従来「ブラックボックス」だった輸送中の貨物状況を完全に可視化する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">Flexport Intelligence（AIチャットボット）</div>
+        <div class="ind-desc">2025年Winter Release で公開。自然言語でサプライチェーンデータにクエリを投げられるAIアシスタント。「先月の海上輸送コストはなぜ上昇したか」「このSKUの在庫は何日で切れるか」などを平易な日本語・英語で尋ねると即座に回答する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">Tariff Simulator Pro（関税シミュレーター）</div>
+        <div class="ind-desc">2025年5月に米中関税引き上げを受けてリリース。製品カタログ全体の関税率変更・ランデッドコストをリアルタイムでシミュレーション。関税率の変化をスマート通知で受け取る機能も搭載。輸入企業の意思決定を大幅に加速する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Customs Analysis（AI通関分析）</div>
+        <div class="ind-desc">米国税関・国境警備局（CBP）データをAIで解析し、輸入企業のコンプライアンスリスクと節税機会を特定するプラットフォーム。2025年のFall Releaseで25以上の新機能を一括公開した。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">ML-Driven Planning Engine（機械学習物流最適化）</div>
+        <div class="ind-desc">海上輸送の経路・タイミング・積み合わせをMLで最適化するエンジン。2025年時点で海上貨物コストを約2%削減しながら、平均トランジットタイムを約20%短縮することに成功した（Ryan Petersen発表）。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">Trade Finance &amp; Insurance</div>
+        <div class="ind-desc">輸出入に伴う貿易金融（在庫ファイナンス・請求書払い）と輸送保険をプラットフォーム上で提供。BlackRockとのパートナーシップで2.5億ドルの融資枠を確保し、荷主への与信能力を大幅拡大。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>対応サービス</h3>
+  <div class="pills">
+    <span class="pill s">海上貨物（FCL/LCL）</span>
+    <span class="pill s">航空貨物</span>
+    <span class="pill s">国内トラック輸送</span>
+    <span class="pill s">通関・関税</span>
+    <span class="pill s">フルフィルメント（倉庫管理）</span>
+    <span class="pill">ラストマイル配送</span>
+    <span class="pill">貿易金融</span>
+    <span class="pill">輸送保険</span>
+    <span class="pill">カーボン計測</span>
+    <span class="pill">B2B配送</span>
+  </div>
+</div>
+
+<!-- ===================== 3. BUSINESS MODEL ===================== -->
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル・収益構造</div>
+
+  <h3>収益モデル</h3>
+  <p>Flexportの収益は主に3つの柱から構成される。中核はフレートフォワーディング手数料（海上・航空輸送の仲介マージン）で、全体の約50%を海上輸送が占める。フルフィルメント・保管・ラストマイル配送はDeliverr買収後に加わった第二の柱。通関ブローカーサービスは2024年に粗利益が倍増した成長領域。</p>
+
+  <table class="t">
+    <thead>
+      <tr><th>収益セグメント</th><th>内容</th><th>成長性</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>海上貨物フォワーディング</td><td>FCL/LCLの輸送手配。スポットレートと差額のマージン。全体の約50%</td><td>中 — 運賃変動に左右される</td></tr>
+      <tr><td>航空貨物フォワーディング</td><td>緊急・高価値品の航空輸送手配</td><td>中 — eコマース急成長が追い風</td></tr>
+      <tr><td>通関ブローカー</td><td>輸入通関代行・HS分類・関税支払代行。粗利が高い</td><td>高 — 関税複雑化で需要増大</td></tr>
+      <tr><td>フルフィルメント</td><td>Deliverr由来の倉庫保管・ピッキング・出荷。eコマース向け</td><td>高 — D2Cブランド需要増</td></tr>
+      <tr><td>貿易金融・保険</td><td>在庫ファイナンス・Invoice Financing・輸送保険</td><td>高 — プラットフォーム粘着性向上</td></tr>
+    </tbody>
+  </table>
+
+  <h3>競争優位の源泉</h3>
+  <div class="callout">
+    <strong>ネットワーク効果：</strong>プラットフォームに荷主・フォワーダー・キャリア・通関ブローカーが集まるほど、データの質が向上し、AIの予測精度が上がり、コスト効率が改善するポジティブフィードバックループを持つ。Flexportが保有する貿易データの蓄積量は競合の新規参入障壁になりつつある。
+  </div>
+</div>
+
+<!-- ===================== 4. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">RP</div>
+      <div>
+        <h3>Ryan Petersen（ライアン・ピーターセン）</h3>
+        <div class="p-role">創業者 &amp; CEO — Flexport</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">UC Berkeley（経済学）</div></div>
+      <div class="p-row"><div class="lbl">起業歴</div><div class="val">Flexport創業前に輸出入コンサルタント業務・中国でのeコマース事業を展開。物流業界の非効率さをインサイダーとして体感し創業に至る</div></div>
+      <div class="p-row"><div class="lbl">CEO離任</div><div class="val">2022年9月、Executive Chairmanに移行しDave ClarkをCEOに招聘</div></div>
+      <div class="p-row"><div class="lbl">CEO復帰</div><div class="val">2023年9月、Dave Clark解任後にCEOとして復帰。過剰採用・過剰支出の抜本的リストラを断行</div></div>
+      <div class="p-row"><div class="lbl">特徴</div><div class="val">Twitterでの直接的な物流提言で知られる。2022年のロングビーチ港渋滞問題をTwitterスレッドで世論を動かしたことで有名</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">DC</div>
+      <div>
+        <h3>Dave Clark（デイブ・クラーク）</h3>
+        <div class="p-role">元CEO（在任期間：2022.09〜2023.09）</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">前職</div><div class="val">Amazon コンシューマー部門CEO。Amazonの物流ネットワーク（ARC）を構築した立役者</div></div>
+      <div class="p-row"><div class="lbl">在任内容</div><div class="val">数百人規模の採用（Amazon出身者を多数登用）、大型オフィスリースなど大規模な組織拡大を推進</div></div>
+      <div class="p-row"><div class="lbl">離任経緯</div><div class="val">支出超過・収益目標未達・Ryan Petersenとの戦略対立。2023年9月に解任。CFO・HR責任者も相次いで退任</div></div>
+      <div class="p-row"><div class="lbl">クラーク側の主張</div><div class="val">「自分が就任した時点ですでに複数四半期にわたってコスト・マージン・売上が未達だった」と反論。責任の所在は係争中</div></div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We're going to build the operating system for global trade.</p>
+    <div class="attr">— Ryan Petersen, Founder &amp; CEO, Flexport</div>
+  </div>
+</div>
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed / Angel</span>
+      <div class="f-amount">$2.5M</div>
+      <div class="f-detail">
+        <div class="f-date">2013〜2014年</div>
+        <div class="f-desc">初期エンジェル投資家からのシード資金。Flexportのコンセプト実証と初期顧客獲得に充当。</div>
+      </div>
+    </div>
+    <div class="f-card a">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$20M</div>
+      <div class="f-detail">
+        <div class="f-date">2015年</div>
+        <div class="f-desc">Founders Fund（ピーター・ティールのファンド）がリード。早期からのコアVCとしてFlexportの成長を支える。</div>
+      </div>
+      <div class="f-val"><div class="vl">Lead</div><div class="vv">Founders Fund</div></div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B/C</span>
+      <div class="f-amount">$110M</div>
+      <div class="f-detail">
+        <div class="f-date">2016〜2018年</div>
+        <div class="f-desc">DST Global、Founders Fund、Bloomberg Beta等が参加。プラットフォームの国際展開と営業拠点増設に活用。</div>
+      </div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">Series D</span>
+      <div class="f-amount">$1.0B</div>
+      <div class="f-detail">
+        <div class="f-date">2019年2月</div>
+        <div class="f-desc">SoftBank Vision Fundがリード。Founders Fund、DST Global、Cherubic Ventures、SF Expressも参加。物流テックの最大ラウンドの一つとして注目を浴びた。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$3.2B</div></div>
+    </div>
+    <div class="f-card e">
+      <span class="r-badge">Series E</span>
+      <div class="f-amount">$935M</div>
+      <div class="f-detail">
+        <div class="f-date">2022年2月</div>
+        <div class="f-desc">Andreessen Horowitz、Shopify、Michael Dell（MSD Partners）等が参加。パンデミック物流ブームの頂点での大型調達。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$8.0B</div></div>
+    </div>
+    <div class="f-card late">
+      <span class="r-badge">Strategic</span>
+      <div class="f-amount">$260M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年1月</div>
+        <div class="f-desc">Shopifyから戦略的追加投資。Shopifyの持分は累計17%に。Shopify Logistics（Deliverr含む）の取得対価として13%株式を付与し、さらに現金4000万ドルの追加拠出も含む。</div>
+      </div>
+      <div class="f-val"><div class="vl">Valuation</div><div class="vv">~$3.8B</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>バリュエーションの変遷：</strong>2022年のSeries E（$8B）をピークに、物流ブーム終焉・Dave Clark問題・リストラによって大幅に評価額が下落。2024年時点でShopify持分17%をもとにした算出では約38億ドルと推計され、ピーク比▲53%の水準にある。
+  </div>
+</div>
+
+<!-- ===================== 6. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Series D Lead</span>
+      <div class="vc-name">SoftBank Vision Fund</div>
+      <div class="vc-role">Lead Investor, Series D（2019）</div>
+      <div class="vc-desc">孫正義率いるビジョンファンドが2019年Series Dで10億ドルをリード。物流テックへの大型ベットとして当時大きな話題に。バリュエーション3.2億ドルでの投資。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">最大株主（17%）</span>
+      <div class="vc-name">Shopify</div>
+      <div class="vc-role">Strategic Investor — 17%持分</div>
+      <div class="vc-desc">2023年5月のShopify Logistics売却対価として13%を取得。2024年1月に追加2600万ドル投資で17%に拡大。Flexportが「Shopify Promise」の主要物流パートナーとして機能。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Founders Fund</div>
+      <div class="vc-role">Series A〜E継続参加</div>
+      <div class="vc-desc">Peter Thiel主導のファンド。Series Aから継続投資する最長期のコアVC。Flexportの「物流業界をテクノロジーで刷新する」というテーゼに最も早く賭けた投資家の一つ。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">DST Global</div>
+      <div class="vc-role">Series B以降継続参加</div>
+      <div class="vc-desc">Yuri Milner率いるグローバルテックVC。Facebook・AirbnbなどへのグロースステージへのベットスタイルでFlexportにも参加。グローバル物流データ資産の価値を早期に評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Andreessen Horowitz (a16z)</div>
+      <div class="vc-role">Series E参加</div>
+      <div class="vc-desc">2022年Series Eに参加。サプライチェーンのデジタル化をソフトウェア革命の次のフロンティアと位置付け、Flexportをその代表的投資先として選定。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">MSD Partners（Michael Dell）</div>
+      <div class="vc-role">Series E参加</div>
+      <div class="vc-desc">デル創業者Michael DellのファミリーオフィスがSeries Eに参加。テクノロジー企業への成長投資として、FlexportのSaaS型グローバル物流モデルを評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">BlackRock（パートナーシップ）</div>
+      <div class="vc-role">貿易金融パートナー（2025）</div>
+      <div class="vc-desc">エクイティ投資家ではなく貿易金融パートナーとして参画。BlackRock管理ファンドが2.5億ドルをFlexportに提供し、荷主向け貿易金融の融資枠をほぼ倍増させた。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">SF Express</div>
+      <div class="vc-role">Series D参加 / 戦略的投資家</div>
+      <div class="vc-desc">中国最大級の民間宅配・物流企業。FlexportのアジアTOC側ネットワーク強化に貢献。戦略的パートナーとしてアジア発着貨物の受け渡し協力も期待される。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 7. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — 世界貨物フォワーディング</div>
+      <div class="m-val">$140B+</div>
+      <div class="m-desc">年間世界フレートフォワーディング市場。上位6社でも市場の1/3以下という極度に断片化された構造</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — デジタルフォワーディング</div>
+      <div class="m-val">$30B+</div>
+      <div class="m-desc">米国デジタルフォワーディング市場は2032年に296億ドル到達予測（CAGR 17.8%）</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — Flexport想定市場</div>
+      <div class="m-val">$5B+</div>
+      <div class="m-desc">自社プラットフォームで取り込み可能なeコマース主体の中〜大型荷主セグメント</div>
+    </div>
+  </div>
+
+  <h3>市場のドライバー</h3>
+  <table class="t">
+    <thead>
+      <tr><th>ドライバー</th><th>内容</th><th>Flexportへの影響</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>eコマース爆発的成長</td><td>グローバルeコマース市場は2027年に7兆ドル超の予測。D2Cブランドの国際展開が急増</td><td>中小荷主の需要拡大。Deliverr由来のフルフィルメントが活きる</td></tr>
+      <tr><td>関税・通商政策の複雑化</td><td>米中関税摩擦・IRA・CHIPSなど政策の複雑化が加速。通関コンプライアンスコスト増大</td><td>AIによる関税最適化ツールの需要が急拡大</td></tr>
+      <tr><td>サプライチェーン可視化需要</td><td>コロナ禍・港湾混雑・紅海問題で「見えない物流」のリスクが顕在化</td><td>リアルタイム追跡・遅延予測というコア機能の価値が高まる</td></tr>
+      <tr><td>貿易金融デジタル化</td><td>中小輸入企業の資金ショートリスクが課題。組み込み型ファイナンスへの需要増加</td><td>BlackRockとの提携で貿易金融をプラットフォームに組み込み</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合比較</div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">Kuehne + Nagel / DSV / DHL</div>
+      <div class="comp-tag">最大脅威</div>
+      <div class="comp-desc">世界最大級の物流コングロマリット。規模・ネットワーク・顧客基盤でFlexportを大きく上回る。近年はデジタル化投資を急増させ、Flexportの技術的優位が侵食されつつある。KNは2024年に290億ドルの年間売上。</div>
+      <div class="comp-strong"><span>主な差別化ポイント</span>規模と地理的網羅性。ただしSaaS思想のプラットフォーム性ではFlexportに劣る。</div>
+    </div>
+    <div class="comp-card threat">
+      <div class="comp-name">Expeditors International</div>
+      <div class="comp-tag">大手従来型</div>
+      <div class="comp-desc">伝統的な高粗利フォワーダー。自社IT投資は限定的だったが、近年はデジタル化に注力。グロスマージン約28%という高収益体質はFlexportが目指すベンチマーク。</div>
+      <div class="comp-strong"><span>主な差別化ポイント</span>顧客との長期関係と専門知識の深さ。スタートアップよりリスク許容度が高い大企業に強い。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">C.H. Robinson</div>
+      <div class="comp-tag">デジタル化中</div>
+      <div class="comp-desc">米国最大の3PLブローカー。ACE（AI統合プラットフォーム）でデジタル化を推進中。トラック輸送が主力でFlexportとは一部競合。ただしデジタルフォワーディングのプラットフォーム思想はFlexportが先行。</div>
+      <div class="comp-strong"><span>主な差別化ポイント</span>陸上輸送（トラック）の圧倒的なネットワーク。海上・航空ではFlexportに比べ機能が限定的。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Forto / Zencargo / Beacon</div>
+      <div class="comp-tag">直接競合（デジタル）</div>
+      <div class="comp-desc">欧州・英国を中心とするデジタルフォワーダー。Flexportと同様にSaaS×物流のモデルを採用するが、規模・調達額でFlexportに大きく差をつけられている。</div>
+      <div class="comp-strong"><span>主な差別化ポイント</span>欧州特化の地域密着。Flexportのグローバル展開に対する地域的な対抗軸。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Amazon Logistics（AFN）</div>
+      <div class="comp-tag">潜在的脅威</div>
+      <div class="comp-desc">Amazonが自社EC向けに構築した物流ネットワーク。外部向けへの開放が進むと将来的にFlexportと競合する可能性がある。Dave Clarkという元Amazonキーマンがいた皮肉な競合関係。</div>
+      <div class="comp-strong"><span>主な差別化ポイント</span>Amazonエコシステム内での圧倒的な規模。ただし独立系荷主への対応はFlexportに劣る。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Freightos</div>
+      <div class="comp-tag">マーケットプレイス型</div>
+      <div class="comp-desc">フレートの即時見積もり・予約マーケットプレイス。プラットフォーム思想はFlexportに近いが、自社でフォワーダーとして機能するFlexportとは異なり、純粋な仲介に特化。ナスダック上場済み。</div>
+      <div class="comp-strong"><span>主な差別化ポイント</span>マーケットプレイス型の中立性。ただし統合型プラットフォームとしての機能は限定的。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">09</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">物流ブーム終焉と運賃下落</div>
+        <div class="ind-desc">2020〜2022年のコロナ禍物流ブームで海上運賃が歴史的高値を記録。Flexportの売上もこの時期に急拡大した。しかしブーム終焉後の2023年は運賃が暴落し、売上が16億ドルへ縮小。コモディティ化したフォワーディング事業は運賃相場への依存度が高く、市況悪化時の収益圧迫リスクが続く。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">大手フォワーダーのデジタル化追随</div>
+        <div class="ind-desc">KNやDSVなど伝統的大手が急速にデジタル化投資を加速し、Flexportの技術的優位が侵食されつつある。「IT系スタートアップの優位性」が薄れ、規模と顧客基盤を持つ大手に追い上げられる可能性がある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">ガバナンスの脆弱性</div>
+        <div class="ind-desc">Dave Clark問題に象徴されるように、外部経営者登用後の混乱・CXO離職が連鎖するリスク。CFO・HR責任者の退任が相次ぎ、組織の安定性への懸念が生じた。創業者依存型の経営体制が続く限り、後継者問題は潜在リスクとして残る。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Eコマースフルフィルメントの統合困難</div>
+        <div class="ind-desc">Deliverr買収（Shopify Logistics）は倉庫ネットワーク・人員・システムの統合が必要な複雑な取引だった。フルフィルメント事業はマージンが低く運営コストが高いため、2024年末の収益目標未達の一因ともなった。統合の遅れは継続リスク。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">バリュエーション下落とIPO難航</div>
+        <div class="ind-desc">ピーク時80億ドルから約38億ドルへのバリュエーション下落は、既存投資家（特にSoftBank）に含み損を生んでいる可能性がある。Ryan PetersenはIPOを「2025年末以降の検討課題」としており、上場まで投資家の辛抱が続く。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">地政学・通商政策リスク</div>
+        <div class="ind-desc">米中関税戦争の激化は輸入企業に打撃を与え、Flexportの主要顧客である中国からの輸入ブランドの多くが窮地に陥る可能性がある。Petersenは「中国のみから輸入するブランドの80%が倒産リスクあり」と警告。顧客基盤の損失につながりうる。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. NEWS ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">10</span>最近のニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2022.02</span>
+          <span class="tl-title">Series E — $935M調達、バリュエーション80億ドル</span>
+        </div>
+        <div class="tl-body">a16z・Shopify・Michael Dellらを含む大型ラウンド。物流ブームの頂点での調達。<b>ピーク評価額80億ドル</b>を記録。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2022.09</span>
+          <span class="tl-title">Dave Clark就任、Ryan Petersen Executive Chairmanへ</span>
+        </div>
+        <div class="tl-body">Amazon物流の元トップDave ClarkをCEOに招聘。PetersenはExecutive Chairmanに退く。IPO準備の布石とされた。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023.05〜06</span>
+          <span class="tl-title">Shopify Logistics（Deliverr含む）を取得</span>
+        </div>
+        <div class="tl-body">Shopifyが21億ドルで買収したDeliverr含む物流部門をFlexportが取得。対価はFlexport株式13%。eコマースフルフィルメント事業へ本格参入。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023.09</span>
+          <span class="tl-title">Dave Clark解任、Ryan Petersen CEO復帰</span>
+        </div>
+        <div class="tl-body">過剰採用・予算超過・収益目標未達を理由にClarkが解任。CFO・HR責任者も相次いで退任。Petersenが経営立て直しに着手。<b>数十件の採用内定を取り消し</b>、人員20%削減（約600名）を発表。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024.01</span>
+          <span class="tl-title">Shopifyから2.6億ドル追加調達</span>
+        </div>
+        <div class="tl-body">Shopifyが2600万ドルを追加投資し、持分は累計17%に。評価額は約38億ドルと推計。物流ブームの頂点から▲53%の水準。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025.05</span>
+          <span class="tl-title">Tariff Simulator Pro公開、関税対応ツール群を展開</span>
+        </div>
+        <div class="tl-body">トランプ政権による対中関税引き上げを受け、荷主向け関税シミュレーションツールをリリース。Petersenは100社以上と顧客対話を実施し「中国依存の輸入企業80%が倒産リスク」と警告。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025.10</span>
+          <span class="tl-title">Customs Technology Suite発表、Fall 2025 Release</span>
+        </div>
+        <div class="tl-body">25以上の新AIツールを搭載した秋のプロダクトリリース。通関・関税管理スイートを正式発表。カスタム分析とAIチャットボットを中核機能として展開。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2026年以降</span>
+          <span class="tl-title">有機的黒字化・IPO検討</span>
+        </div>
+        <div class="tl-body">2025年はConvoy Platform売却益（約2.5億ドル）込みで「技術的黒字」に到達するも、<b>有機的な黒字化は2026年が目標</b>。IPOは「2025年末以降に検討する段階」（Petersen発言）。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. KPI ===================== -->
+<div class="sec" id="kpi">
+  <div class="sec-label"><span class="num">11</span>財務指標・KPI（推定）</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">売上高 2022年</div><div class="v">約33億ドル（物流ブームのピーク）</div></div>
+    <div class="kv-item"><div class="k">売上高 2023年</div><div class="v">約16億ドル（前年比▲52%）</div></div>
+    <div class="kv-item"><div class="k">売上高 2024年</div><div class="v">約21億ドル（前年比+31%）</div></div>
+    <div class="kv-item"><div class="k">売上高 2025年目標</div><div class="v">EBITDAで黒字化（+1億ドル想定）</div></div>
+    <div class="kv-item"><div class="k">海上輸送の売上比率</div><div class="v">約50%（紅海問題で運賃高騰が追い風）</div></div>
+    <div class="kv-item"><div class="k">通関事業 粗利成長</div><div class="v">2024年比で2倍（2025年）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約2,600名（2023年リストラ後。ピーク時は4,000名超）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">約38億ドル（2024年末、Shopify持分から逆算）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">約25億ドル</div></div>
+    <div class="kv-item"><div class="k">MLによるコスト削減</div><div class="v">海上輸送コスト▲2%、トランジット時間▲20%（2025年）</div></div>
+  </div>
+
+  <h3>Key Metrics</h3>
+  <table class="t">
+    <thead>
+      <tr><th>指標</th><th>2022年</th><th>2023年</th><th>2024年</th><th>備考</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>売上高</td><td>$3.3B</td><td>$1.6B</td><td>$2.1B</td><td>2024年は前年比+31%で回復</td></tr>
+      <tr><td>バリュエーション</td><td>$8.0B（Series E）</td><td>下落中</td><td>~$3.8B</td><td>ピーク比▲53%</td></tr>
+      <tr><td>従業員数</td><td>約4,000名+</td><td>~2,600名（リストラ後）</td><td>~2,600名</td><td>Dave Clark期に急拡大→縮小</td></tr>
+      <tr><td>EBITDA</td><td>赤字</td><td>大幅赤字</td><td>赤字縮小</td><td>2025年黒字化目標（特別利益込み）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>収益性の課題：</strong>2025年はConvoy Platform（トラック輸送マーケットプレイス）の売却益約2.5億ドルを計上することで技術的な黒字を達成する見込みだが、特別利益を除いた有機的黒字化は2026年に持ち越した。関税複雑化を機に高マージンの通関ビジネスをどこまで拡大できるかが黒字化の鍵。
+  </div>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">9兆ドル市場のデジタル化「最後のフロンティア」</div>
+        <div class="ind-desc">グローバル貿易は年間9兆ドル規模でありながら、プロセスの多くがいまだに電話・FAX・属人的ネットワークに依存している。この「デジタル化されていない巨大市場」に本格参入した最初の大型スタートアップがFlexport。産業構造の転換点に立つ企業として注目度は依然高い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">関税複雑化という「追い風」</div>
+        <div class="ind-desc">米中摩擦・トランプ関税の激化は、通常ならば荷主にとってのコストだが、Flexportにとっては「AIによる関税最適化ツール」の需要爆発を意味する。Tariff Simulator Pro・Customs Analysisなど高付加価値ツールで通関ビジネスの粗利を急拡大させる好機。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">創業者復帰による経営の安定化</div>
+        <div class="ind-desc">Dave Clark騒動後のリストラを素早く断行し、2024年に売上が前年比+31%と回復軌道に乗った。「本業（フォワーディング）への集中」「コスト規律の回復」というRyan Petersenの原則が機能しつつある。創業者主導の再建は投資家の信頼回復にもつながった。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">AIがロジスティクスの本質的なコストを下げる</div>
+        <div class="ind-desc">MLによって海上輸送コストを2%削減しトランジット時間を20%短縮したという実績は、「Flexportのプラットフォームを使う方が安い・早い」という価値命題に直結する。データ量が増えるほどAI精度が向上するネットワーク効果が徐々に顕在化している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">Shopifyとの戦略的共生関係</div>
+        <div class="ind-desc">Shopifyが17%の大株主として存在し、「Shopify Promise」の主要物流パートナーの地位を確保している。世界最大のeコマースプラットフォームとの連携は、中小D2Cブランドの物流需要を安定的に取り込む強力な顧客獲得チャネル。eコマースの成長と共にFlexportの需要も伸びる構造。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">IPO前ラストチャンスの価格水準</div>
+        <div class="ind-desc">ピーク80億ドルから約38億ドルへのバリュエーション下落は、見方を変えれば「IPO前の割安買いの機会」とも言える。2026年の有機的黒字化が実現し、IPO機運が高まれば再評価の余地は大きい。特にAIツール群の成長と通関事業の粗利拡大が加速すれば、SaaS的なバリュエーション論が復活しうる。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>Our goal is to make global trade so easy it will be as simple as shipping a package across town.</p>
+    <div class="attr">— Ryan Petersen, Founder &amp; CEO, Flexport</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Flexport 公式サイト（flexport.com）</li>
+    <li>Wikipedia — Flexport</li>
+    <li>TechCrunch — "Flexport kicks off restructuring with layoffs" (2023.10)</li>
+    <li>CNBC — "Flexport fires CFO, HR chief departs" (2023.09)</li>
+    <li>CNBC — "The inside story of Dave Clark's tumultuous last days at Flexport" (2023.10)</li>
+    <li>Sourcing Journal — "Flexport Targets Profitability by End of 2025"</li>
+    <li>Crunchbase / Tracxn — Flexport funding data (2026)</li>
+    <li>Sacra — Flexport revenue &amp; valuation analysis</li>
+    <li>TechCrunch — "Flexport raises $935M at $8B valuation" (2022.02)</li>
+    <li>BusinessWire — "Flexport Launches Customs Technology Suite" (2025.10)</li>
+    <li>Yahoo Finance — "Flexport Projects 2025 Profit from Convoy Sale"</li>
+    <li>McKinsey — "Flexport's CEO on dealing with canal slowdowns"</li>
+    <li>PYMNTS — "Flexport Debuts Tools to Help Imports Ease Tariff Tensions" (2025)</li>
+    <li>Flexport Fall 2025 Product Release（公式発表）</li>
+  </ul>
+</div>
+
+</div>
+<footer class="snav-footer"><div class="snav-footer-sns"><a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a><a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a></div></footer>
+</body>
+</html>

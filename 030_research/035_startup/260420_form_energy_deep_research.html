@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Energy — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .geo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 10px; margin: 12px 0; }
+  .geo-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .geo-country { font-family: 'Poppins', sans-serif; font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .geo-mineral { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .geo-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .geo-card.flagship { border-top: 3px solid var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+    .geo-grid { grid-template-columns: 1fr; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec">
+    <div class="snav-sec-label">030 Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a>
+    <a class="snav-a" href="/030_research/035_startup/index.html">startup</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">040 Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/047_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Long-Duration Storage</span>
+    <span class="badge badge-white">Iron-Air Battery</span>
+    <span class="badge badge-solid">Series F</span>
+  </div>
+  <h1>Form Energy</h1>
+  <p class="hero-sub">鉄と空気の酸化還元反応を使った100時間級マルチデイ蓄電池を開発・製造するディープテック企業。従来のリチウムイオン電池の約1/10のコストで数日間にわたる大規模グリッド蓄電を実現し、再エネの「天候依存性」という根本課題を解消する。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$1.2B+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">~$20/kWh</div><div class="lbl">Target Cost</div></div>
+    <div class="kpi"><div class="val">100h+</div><div class="lbl">Storage Duration</div></div>
+    <div class="kpi"><div class="val">2017</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー</a></li>
+    <li><a href="#business">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">最近のニュース・マイルストーン</a></li>
+    <li><a href="#kpi">財務指標・KPI（推定）</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Form Energy, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2017年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Somerville, Massachusetts, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series F（未上場、IPO検討中）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">約12億ドル以上</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">約34億ドル（2024年10月時点）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約900名以上</div></div>
+    <div class="kv-item"><div class="k">主要拠点</div><div class="v">マサチューセッツ州（本社）、ウェストバージニア州Weirton（製造）、カリフォルニア州</div></div>
+    <div class="kv-item"><div class="k">コア技術</div><div class="v">鉄空気電池（Iron-Air Battery）</div></div>
+    <div class="kv-item"><div class="k">蓄電時間</div><div class="v">100時間以上（マルチデイ対応）</div></div>
+  </div>
+
+  <p>Form Energyは、再生可能エネルギーの最大の弱点である「数日間にわたる発電停止（Dark Doldrums）」に対応できる唯一の商業規模ソリューションを開発する長期蓄電スタートアップ。従来のリチウムイオン電池が4〜8時間の蓄電を想定するのに対し、同社の鉄空気電池は<strong>100時間以上の連続放電</strong>が可能で、コストはリチウムイオンの約1/10の<strong>20ドル/kWh以下</strong>を目標とする。</p>
+
+  <p>MITの材料科学者Yet-Ming Chiangらが共同創業。ウェストバージニア州ウェイアトンの旧鉄鋼工場跡地に米国初の鉄空気電池専用製造工場「Form Factory 1」を建設し、2025年に商業生産を開始した。Breakthrough Energy Ventures（ビル・ゲイツ）、TPG Rise Climate、GICなど有力投資家が支援し、2026年2月にはGoogleデータセンター向けに史上最大規模の蓄電プロジェクト（30GWh）を受注している。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>太陽光・風力は数日間にわたって発電量がほぼゼロになる「マルチデイ無発電」が避けられない。リチウムイオン電池では経済的に対応不可能な時間スケールをForm Energyの鉄空気電池は解決し、グリッドの完全脱炭素化に不可欠な「最後のピース」となる。
+  </div>
+</div>
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー</div>
+
+  <h3>鉄空気電池（Iron-Air Battery）の仕組み</h3>
+  <p>Form Energyの電池は、<strong>鉄ペレット（鉄の粒）と空気中の酸素の酸化還元反応</strong>を利用して電気を蓄放電する。化学反応そのものは「錆び（酸化）」と「錆が取れる（還元）」という地球上で最も安価・豊富な反応を活用しており、材料コストが根本的に安い。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">放電（Discharge）— 鉄が錆びる → 電気を取り出す</div>
+        <div class="ind-desc">空気極から空気中の酸素を取り込み、鉄ペレットと反応させる。鉄が酸化鉄（錆）に変わる際に電子を放出し、外部回路に電流が流れる。電池が「呼吸する」イメージ。100時間以上にわたって安定した放電が可能。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">充電（Charge）— 錆を鉄に戻す → 電気を蓄える</div>
+        <div class="ind-desc">電力を注入すると電気分解が起き、酸化鉄（錆）が金属鉄に還元される。同時に電池から酸素が排出される。余剰の再エネ（昼間の太陽光・強風時）が生まれた際に充電し、エネルギーを鉄の化学エネルギーとして貯蔵する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">材料の安さ — 鉄は地球最安の金属</div>
+        <div class="ind-desc">鉄は地球の地殻中で最も豊富な金属のひとつで、価格はリチウム・コバルト・ニッケルの数十分の一〜数百分の一。電池の主要コスト要因が根本的に異なる。稀少資源への依存がなく、サプライチェーンリスクも低い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">スケール — 大型モジュールの積み重ねで容量を拡大</div>
+        <div class="ind-desc">個々のセルはコンテナサイズのモジュールに積層され、数MWから数GWまでスケールアウト可能。Weirton工場で生産する標準ユニットを積み重ねることで、プロジェクト規模に応じた柔軟なシステム構成を実現。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>リチウムイオンとの比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>項目</th><th>Form Energy（鉄空気）</th><th>リチウムイオン（従来型）</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>蓄電時間</td><td>100時間以上</td><td>4〜8時間（経済的上限）</td></tr>
+      <tr><td>コスト目標</td><td>約$20/kWh</td><td>$100〜$200/kWh</td></tr>
+      <tr><td>主要材料</td><td>鉄（鉄鋼産業の副産物活用可）</td><td>リチウム・コバルト・ニッケル</td></tr>
+      <tr><td>供給制約</td><td>ほぼなし</td><td>高い（地政学リスク含む）</td></tr>
+      <tr><td>最適用途</td><td>マルチデイ・週次グリッド平準化</td><td>日内・時間内ピークシフト</td></tr>
+      <tr><td>エネルギー密度</td><td>低い（設置面積大）</td><td>高い</td></tr>
+      <tr><td>安全性</td><td>不燃性（熱暴走なし）</td><td>火災リスクあり</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>重要な前提：</strong>鉄空気電池はリチウムイオンの「代替」ではなく「補完」。4〜8時間の短期蓄電はリチウムイオンが得意であり、Form Energyが狙うのはリチウムイオンでは経済的に対応できない「数日間スケール」の市場ニッチ。この棲み分けが成功の鍵。
+  </div>
+</div>
+
+<!-- ===================== 3. BUSINESS MODEL ===================== -->
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル・収益構造</div>
+
+  <h3>ハードウェア販売 + 長期サービス契約</h3>
+  <p>Form Energyの収益モデルは<strong>電池システムの販売</strong>と<strong>長期の運用・保守契約（O&amp;M）</strong>の組み合わせ。電力会社（ユーティリティ）や大手企業が主要顧客であり、数十〜数百MWのシステムを数百億円規模の契約で販売する。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">主要顧客セグメント</div><div class="v">電力会社・グリッド事業者・大手テック企業（データセンター向け）</div></div>
+    <div class="kv-item"><div class="k">製品形態</div><div class="v">鉄空気電池モジュール（大型コンテナ型）をオンサイト設置</div></div>
+    <div class="kv-item"><div class="k">契約形態</div><div class="v">ハードウェア販売 + 長期O&amp;Mサービス（10〜20年）</div></div>
+    <div class="kv-item"><div class="k">価値提案</div><div class="v">マルチデイ蓄電で再エネの「間欠性」を解消しグリッド安定化</div></div>
+    <div class="kv-item"><div class="k">製造拠点</div><div class="v">Form Factory 1（ウェストバージニア州Weirton）</div></div>
+    <div class="kv-item"><div class="k">製造能力目標</div><div class="v">年間500MW（2028年目標）</div></div>
+  </div>
+
+  <h3>Form Factory 1 — ウェイアトン工場</h3>
+  <p>旧ウェイアトン製鉄所跡地（約85万平方フィート）に建設した米国初の鉄空気電池専用工場。鉄鋼業で職を失った地域コミュニティへの雇用創出と製造のローカル化という点で、政治的・社会的支持を得やすい立地戦略を持つ。2025年末には拡張工事を完了し、約85万平方フィートから更なる拡張を計画中。米DOEから補助金（最大1.5億ドル）も獲得済み。</p>
+
+  <h3>主要顧客と案件</h3>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">Great River Energy（ミネソタ）</span>
+          <span class="tl-title">1.5MW / 150MWh — 初の商業パイロット</span>
+        </div>
+        <div class="tl-body">ミネソタ州の電力協同組合。Form Energyの<b>最初の商業顧客</b>。1.5MW・100時間蓄電（150MWh）のシステムを旧石炭発電所跡地に設置。2025年後半の稼働を目指す。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">Georgia Power（ジョージア）</span>
+          <span class="tl-title">15MW / 1,500MWh — 確定契約</span>
+        </div>
+        <div class="tl-body">ジョージア州の大手電力会社と15MW・1,500MWh（100時間）のシステムについて確定契約締結。2026年の稼働を予定。規制当局の承認を経て実行。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">Xcel Energy × Google（ミネソタ）</span>
+          <span class="tl-title">300MW / 30GWh — 史上最大規模の蓄電案件</span>
+        </div>
+        <div class="tl-body">2026年2月発表。<b>史上最大規模</b>の蓄電システム（300MW・30GWh）をXcel Energyと共同でGoogleデータセンターへ供給する約10億ドル規模の契約。Weirton工場で製造、2028年頃に納入開始予定。Form Energyの商業的突破口となる案件。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">コロラド・カリフォルニア・ニューヨーク・バージニア</span>
+          <span class="tl-title">複数案件が2025〜2026年に稼働予定</span>
+        </div>
+        <div class="tl-body">複数の電力会社向けプロジェクトが順次稼働予定。カリフォルニア州からは$3,000万の助成金も獲得済み。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 4. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">MJ</div>
+      <div>
+        <h3>Mateo Jaramillo（マテオ・ハラミーヨ）</h3>
+        <div class="p-role">Co-Founder &amp; CEO — Form Energy</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">前職</div><div class="val">Tesla, Inc. — VP of Products and Programs, Energy Storage（テスラエナジーの製品・プログラム担当VP）</div></div>
+      <div class="p-row"><div class="lbl">実績</div><div class="val">TeslaのPowerwall・Powerpak等の定置型蓄電製品ラインを立ち上げ。エネルギー貯蔵の事業化をゼロから構築した経験を持つ</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">CEO として全社戦略・事業開発・顧客開拓を主導。ユーティリティとの大型契約交渉を牽引</div></div>
+      <div class="p-row"><div class="lbl">ビジョン</div><div class="val">「グリッドを完全に再エネで動かすには、マルチデイ蓄電が不可欠。それを大規模・低コストで実現するのが我々の使命」</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">YC</div>
+      <div>
+        <h3>Yet-Ming Chiang（チェット・チャン）</h3>
+        <div class="p-role">Co-Founder — Form Energy / MIT 材料科学教授</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">所属</div><div class="val">MIT（マサチューセッツ工科大学）材料科学・工学科 教授</div></div>
+      <div class="p-row"><div class="lbl">専門</div><div class="val">電池材料・電気化学。リチウムイオン電池の商業化にも貢献した世界的権威</div></div>
+      <div class="p-row"><div class="lbl">起業家歴</div><div class="val">24M Technologies（薄膜電池）、A123 Systems（リン酸鉄リチウム電池）など複数の電池スタートアップを共同創業した連続起業家</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">鉄空気電池の基礎化学・材料科学の研究開発をリード</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">TW</div>
+      <div>
+        <h3>Ted Wiley（テッド・ワイリー）</h3>
+        <div class="p-role">Co-Founder — Form Energy</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">背景</div><div class="val">エネルギーシステム・電気化学の専門家。長期蓄電技術の事業化戦略を担う</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">事業開発・技術戦略を担当。ユーティリティ向けの製品ポートフォリオ設計に貢献</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">MF</div>
+      <div>
+        <h3>Marco Ferrara（マルコ・フェラーラ）</h3>
+        <div class="p-role">Co-Founder — Form Energy</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">背景</div><div class="val">電気化学・エネルギーシステムの研究者。MITで博士号取得</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">電池セルおよびシステムの技術開発をリード</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">BW</div>
+      <div>
+        <h3>Billy Woodford（ビリー・ウッドフォード）</h3>
+        <div class="p-role">Co-Founder — Form Energy</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">背景</div><div class="val">MIT出身の電気化学者。Yet-Ming Chiangの研究室出身</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">材料・電気化学の研究開発を担当。電池性能の基礎技術を支える</div></div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We need batteries that can power the grid for days, not hours. That's the only way to make renewable energy work for the grid 100% of the time.</p>
+    <div class="attr">— Mateo Jaramillo, Co-Founder &amp; CEO, Form Energy</div>
+  </div>
+</div>
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed</span>
+      <div class="f-amount">$9M</div>
+      <div class="f-detail">
+        <div class="f-date">2018年</div>
+        <div class="f-desc">創業期の最初の資金調達。Breakthrough Energy Ventures（BEV）が主導。鉄空気電池のコンセプト実証に充当。</div>
+      </div>
+    </div>
+    <div class="f-card a">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$20M</div>
+      <div class="f-detail">
+        <div class="f-date">2019年</div>
+        <div class="f-desc">Breakthrough Energy Venturesが継続リード。Prelude Ventures、Capricorn Investment Groupが参加。技術開発・チーム拡充に充当。</div>
+      </div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$50M</div>
+      <div class="f-detail">
+        <div class="f-date">2020年</div>
+        <div class="f-desc">Breakthrough Energy Ventures、Eni Next、The Engine（MITのファンド）等が参加。プロトタイプ開発・パイロットシステム構築段階。</div>
+      </div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C</span>
+      <div class="f-amount">$200M</div>
+      <div class="f-detail">
+        <div class="f-date">2021年7月</div>
+        <div class="f-desc">ArcelorMittalのXCarb™イノベーションファンドがリード。鉄鋼メジャーが戦略的投資家として参加。製品開発とファクトリー建設に向けた大型調達。Softbank Vision Fundも参加。</div>
+      </div>
+      <div class="f-val"><div class="vl">Lead</div><div class="vv">ArcelorMittal</div></div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">Series D</span>
+      <div class="f-amount">$240M</div>
+      <div class="f-detail">
+        <div class="f-date">2021年8月</div>
+        <div class="f-desc">同年2度目の大型調達。ArcelorMittal、Breakthrough Energy Ventures、GIC（シンガポール政府系投資機関）等が参加。Weirtonファクトリー建設資金。</div>
+      </div>
+      <div class="f-val"><div class="vl">累計</div><div class="vv">~$530M</div></div>
+    </div>
+    <div class="f-card e">
+      <span class="r-badge">Series E</span>
+      <div class="f-amount">$450M</div>
+      <div class="f-detail">
+        <div class="f-date">2022年9月</div>
+        <div class="f-desc">TPG Rise ClimateがリードしGIC、CPP Investments（カナダ年金）、T. Rowe Price等が参加。Weirton工場の建設加速・量産化に向けた大型調達。</div>
+      </div>
+      <div class="f-val"><div class="vl">Lead</div><div class="vv">TPG Rise</div></div>
+    </div>
+    <div class="f-card late">
+      <span class="r-badge">Series F</span>
+      <div class="f-amount">$405M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年10月</div>
+        <div class="f-desc">T. Rowe Priceがリード。GE Vernova（戦略的投資家として新規参加）、Breakthrough Energy Ventures、TPG Rise Climate、Coatue、Temasek等が参加。累計調達額12億ドル超に到達。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">~$3.4B</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>DOE補助金（非希薄化）：</strong>米エネルギー省（DOE）から最大1.5億ドルの補助金採択（Bipartisan Infrastructure Law）。Weirton工場の製造ライン拡張（Project RAPID）に充当。民間資金に加え、政府補助金も活用した強固な資金基盤を構築している。
+  </div>
+</div>
+
+<!-- ===================== 6. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Impact — Seed〜F</span>
+      <div class="vc-name">Breakthrough Energy Ventures</div>
+      <div class="vc-role">Bill Gates主導のクライメートVC / 全ラウンド継続</div>
+      <div class="vc-desc">Bill Gatesが設立したクライメートテックファンド。創業時のSeedから最新Series Fまで全ラウンドで継続支援。長期蓄電はエネルギー転換の必須インフラと位置付ける。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.E</span>
+      <div class="vc-name">TPG Rise Climate</div>
+      <div class="vc-role">Series Eリード / クライメートインパクト投資</div>
+      <div class="vc-desc">TPGのクライメートフォーカスファンド。Series Eの$450Mラウンドをリード。再エネインフラへの大規模投資戦略の一環として、Form Energyをポートフォリオの中核に位置付ける。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.F</span>
+      <div class="vc-name">T. Rowe Price</div>
+      <div class="vc-role">Series Fリード / 大手資産運用会社</div>
+      <div class="vc-desc">大手機関投資家としてSeries F（$405M）をリード。上場前の有望未公開企業への成長株式投資として位置付け。長期保有スタイル。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">ArcelorMittal（XCarb™）</div>
+      <div class="vc-role">Series C〜Dリード / 戦略的投資家</div>
+      <div class="vc-desc">世界最大の鉄鋼メジャー。鉄の主要サプライヤーとして、Form Energyへの投資と同時に鉄ペレットの供給契約も締結。電池向け特殊鉄の需要開拓という戦略目的を持つ。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">GIC（シンガポール政府投資公社）</div>
+      <div class="vc-role">Series D〜F参加 / 政府系ソブリンファンド</div>
+      <div class="vc-desc">シンガポールの政府系ソブリンファンド。長期インフラ投資の観点からLDES市場の成長性を評価。複数ラウンドにわたり継続投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">GE Vernova</div>
+      <div class="vc-role">Series F新規参加 / 戦略的投資家</div>
+      <div class="vc-desc">GEからスピンオフしたエネルギーテクノロジー企業。Series Fで新たに投資家として参画するとともに、グリッド向けソリューションにおける技術協力関係も構築。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Temasek</div>
+      <div class="vc-role">Series F参加 / シンガポール政府系</div>
+      <div class="vc-desc">シンガポール政府系投資会社。GICとともにアジア系政府系資本の参加がForm Energyの国際的な信頼性を高めている。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">MIT The Engine Ventures</div>
+      <div class="vc-role">早期参加 / MIT系ファンド</div>
+      <div class="vc-desc">MITが支援するタフテックファンド。共同創業者Yet-Ming Chiangとの関係からも自然な投資。技術的な深みと長期的な研究資産をバックアップ。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 7. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — グローバルグリッドストレージ</div>
+      <div class="m-val">$1.5T+</div>
+      <div class="m-desc">2050年までに必要な世界のグリッド蓄電設備投資の累計推計（IEA・BloombergNEF）</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — LDES市場（2035年予測）</div>
+      <div class="m-val">$17B+</div>
+      <div class="m-desc">長期蓄電（LDES）市場。2025年の約50億ドルから年率13〜15%で拡大予測</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — Form Energy初期ターゲット</div>
+      <div class="m-val">$1B+</div>
+      <div class="m-desc">米国ユーティリティ向けマルチデイ蓄電市場。Google案件だけで$1B超の受注実績あり</div>
+    </div>
+  </div>
+
+  <h3>なぜ今 LDES なのか — 追い風の構造</h3>
+  <table class="t">
+    <thead>
+      <tr><th>ドライバー</th><th>内容</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>再エネの急拡大</td><td>太陽光・風力の設備容量が急増するほど「天候由来の数日間無発電」問題が深刻化する。LDES需要は再エネ普及と正比例する</td></tr>
+      <tr><td>石炭・天然ガス廃止</td><td>ピーク対応の化石燃料発電廃止が進む中、代替としての長期蓄電ニーズが高まる</td></tr>
+      <tr><td>AIデータセンター需要</td><td>Google・Microsoft等のAIデータセンターは24時間365日の安定電力を必要とし、LDES＋再エネという組み合わせが唯一の解決策となりつつある</td></tr>
+      <tr><td>グリッドの信頼性規制強化</td><td>米国各州でグリッド信頼性基準が厳格化。2〜7日間の無発電でも対応できる蓄電設備の義務化が進む</td></tr>
+      <tr><td>IRAによる補助政策</td><td>インフレ抑制法（IRA）のInvestment Tax Credit（ITC）がLDES含む蓄電設備に適用。プロジェクトコストを実質30%削減</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合比較</div>
+
+  <div class="callout">
+    <strong>市場の構造：</strong>LDES（長期蓄電）市場は技術ごとに棲み分けが進む。Form Energyの鉄空気電池は「24〜100時間超」の領域に特化しており、リチウムイオンとは直接競合しない。真の競合は同じ「マルチデイ」レンジの他技術。
+  </div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">ESS Inc.（鉄フロー電池）</div>
+      <div class="comp-tag">直接競合</div>
+      <div class="comp-desc">鉄・塩水を使ったフロー電池で12時間級の蓄電を実現。同じ「鉄系」素材で安価な長期蓄電を狙うが、蓄電時間はForm Energyより短い（12時間 vs 100時間）。上場済み（NYSE: GWH）。2025年にSalt River Projectと50MWh契約。</div>
+      <div class="comp-strong"><span>Form Energyとの差異</span>蓄電時間が短く「マルチデイ」には未対応。Form Energyの棲み分けは明確。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Ambri（液体金属電池）</div>
+      <div class="comp-tag">間接競合</div>
+      <div class="comp-desc">MITスピンオフの液体金属電池。高温動作で4〜24時間の蓄電を想定。2024年に経営破綻・チャプター11申請後、再建。Form Energyとは直接競合しないが、LDES市場の先行プレイヤーとして比較対象になる。</div>
+      <div class="comp-strong"><span>現況</span>経営破綻を経て再建中。Form Energyの相対的な安定性が際立つ。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Energy Vault（重力蓄電）</div>
+      <div class="comp-tag">間接競合</div>
+      <div class="comp-desc">重力位置エネルギーを活用した蓄電システム。4〜12時間程度の蓄電を想定。同じLDES市場だが技術原理が全く異なる。オーストラリア・米国等でプロジェクト展開中。</div>
+      <div class="comp-strong"><span>蓄電時間</span>Form Energyの100時間には遠く及ばない。市場セグメントが異なる。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">リチウムイオン（Tesla等）</div>
+      <div class="comp-tag">隣接市場</div>
+      <div class="comp-desc">TeslaのMegapackに代表される短期蓄電（4〜8時間）。LDES市場とは異なるセグメントだが、グリッド蓄電という大枠では予算を争う間接競合。コスト低下が続くため、長期的には重なる可能性もある。</div>
+      <div class="comp-strong"><span>Form Energyとの差異</span>100時間蓄電はコスト的に不可能。棲み分けは当面維持される。</div>
+    </div>
+  </div>
+
+  <h3>技術ロードマップ比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>技術</th><th>蓄電時間</th><th>コスト（目標/実績）</th><th>商業化状況</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Form Energy（鉄空気）</td><td>100時間以上</td><td>~$20/kWh（目標）</td><td>2025年商業生産開始済み</td></tr>
+      <tr><td>ESS Inc.（鉄フロー）</td><td>12時間</td><td>~$150/kWh</td><td>商業案件複数進行中</td></tr>
+      <tr><td>Ambri（液体金属）</td><td>4〜24時間</td><td>未公開</td><td>破綻・再建中</td></tr>
+      <tr><td>Tesla Megapack（Li-ion）</td><td>4〜8時間</td><td>~$150〜200/kWh</td><td>量産・世界展開済み</td></tr>
+      <tr><td>抽水蓄電（PHES）</td><td>数日間〜数週間</td><td>~$5〜50/kWh</td><td>地形制約あり・成熟技術</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">09</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">製造スケールアップリスク</div>
+        <div class="ind-desc">鉄空気電池はラボ・小規模実証では実績があるが、工場での大量生産では全く異なる課題が生じる。収率・品質管理・製造コストが想定通りに達成できない場合、$20/kWhという目標コストを実現できず事業計画全体が崩れる。Weirton工場の立ち上げは最大の実証ポイント。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">コスト目標未達リスク</div>
+        <div class="ind-desc">$20/kWhというコスト目標は現時点では「目標」であり、商業量産での達成は未確認。電解液・空気極・制御システム等の複合的なコスト低減が必要で、いずれかの要素で想定外のコスト増が生じると、リチウムイオンとのコスト差が縮小しバリュープロポジションが揺らぐ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">規制・政策リスク</div>
+        <div class="ind-desc">IRA（インフレ抑制法）のITCなど米国の補助政策に依存している部分が大きい。政権交代・法律改正による補助金縮小・廃止はプロジェクト経済性に直接影響する。電力会社との長期契約が規制当局の承認を必要とするケースもリスク要因。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">長期放電時の性能劣化</div>
+        <div class="ind-desc">鉄空気電池は100時間放電を繰り返すたびに鉄ペレットの形状が変化し、充放電サイクル寿命・効率の低下が懸念される。商業運用での長期耐久性データが限られており、想定より早い性能劣化が発生すると顧客の信頼を損なうリスクがある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">収益化までの時間軸の長さ</div>
+        <div class="ind-desc">電力設備の調達・設置・試運転から本格稼働まで数年を要するため、受注から売上計上・キャッシュ回収までのリードタイムが長い。Google向け案件は2028年納入予定であり、それまでの資金繰りは継続的な外部資本調達に依存する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">リチウムイオンの急速なコスト低下</div>
+        <div class="ind-desc">リチウムイオン電池の価格低下が想定以上に進み、4〜8時間の繰り返し充放電で「擬似的なマルチデイ」を安価に実現できるようになると、Form Energyの差別化が薄れる可能性がある。技術的優位は現状明確だが、長期的な代替リスクとして留意が必要。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. NEWS ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">10</span>最近のニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年2〜3月</span>
+          <span class="tl-title">Xcel Energy × Google — 史上最大規模の蓄電案件受注</span>
+        </div>
+        <div class="tl-body"><b>300MW・30GWh</b>の鉄空気電池システムをXcel Energyと共同でGoogleデータセンター（ミネソタ州）に供給する約10億ドル規模の契約を締結。史上最大規模の蓄電システム受注として業界の話題をさらった。納入は2028年頃を予定。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年</span>
+          <span class="tl-title">Form Factory 1 — 商業生産開始</span>
+        </div>
+        <div class="tl-body">ウェイアトン工場（Weirton, WV）で商業生産を正式に開始。2028年までに年間500MW生産能力を目指す。工場拡張（追加約28万平方フィート）も完了し、約85万平方フィートの規模に。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年10月</span>
+          <span class="tl-title">Series F — $405M調達、累計12億ドル超に</span>
+        </div>
+        <div class="tl-body">T. Rowe Priceリードで$405Mを調達。GE Vernovaが新規戦略的投資家として参画。累計調達額が約12億ドルを超えた。バリュエーションは約34億ドルと推定。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年2月</span>
+          <span class="tl-title">Weirton工場の製造開始を正式発表</span>
+        </div>
+        <div class="tl-body">Form Factory 1での鉄空気電池製造の本格開始を公式に発表。旧製鉄所跡地の活用でウェストバージニア州の雇用創出にも貢献。地域・連邦両政府から強い支持を受ける。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025〜2026年（稼働予定）</span>
+          <span class="tl-title">Great River Energy・Georgia Power等が順次稼働</span>
+        </div>
+        <div class="tl-body">ミネソタ州（Great River Energy）の初商業パイロットが2025年後半に稼働予定。ジョージア州（Georgia Power）の15MW案件は2026年稼働予定。コロラド・カリフォルニア・ニューヨーク・バージニア各州でも案件が進行中。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">IPO観測（2026年以降）</span>
+          <span class="tl-title">IPO候補として注目集まる</span>
+        </div>
+        <div class="tl-body">Google案件の受注とSeries Fの成功を受け、IPO候補企業として業界アナリストが注目。明確なタイムラインは未発表だが、製造実績と受注残が積み上がれば上場への道が開く。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. KPI ===================== -->
+<div class="sec" id="kpi">
+  <div class="sec-label"><span class="num">11</span>財務指標・KPI（推定）</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">約12億ドル以上（2024年10月時点）</div></div>
+    <div class="kv-item"><div class="k">推定バリュエーション</div><div class="v">約34億ドル（Series F後）</div></div>
+    <div class="kv-item"><div class="k">推定年間売上（2024）</div><div class="v">約8,500万ドル（アナリスト推計）</div></div>
+    <div class="kv-item"><div class="k">最大受注案件</div><div class="v">Google向け約10億ドル（30GWh）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約900名以上</div></div>
+    <div class="kv-item"><div class="k">製造能力（2025年）</div><div class="v">商業生産開始（年間500MWが2028年目標）</div></div>
+    <div class="kv-item"><div class="k">工場面積</div><div class="v">約85万平方フィート（拡張後）</div></div>
+    <div class="kv-item"><div class="k">DOE補助金</div><div class="v">最大1.5億ドル（採択済み）</div></div>
+    <div class="kv-item"><div class="k">コスト目標</div><div class="v">約$20/kWh（量産時。現状より大幅低減が必要）</div></div>
+    <div class="kv-item"><div class="k">投資ラウンド数</div><div class="v">9ラウンド（Seed〜Series F）</div></div>
+  </div>
+
+  <div class="callout">
+    <strong>注記：</strong>Form Energyは未上場企業であり、財務情報は非公開。売上・コスト等の数値はアナリスト推計・メディア報道に基づく推定値。実際の数値は大きく異なる可能性がある。商業生産初年度であるため、売上高は急速に変化する見込み。
+  </div>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">再エネ100%化の「ラストマイル問題」を解く唯一の選手</div>
+        <div class="ind-desc">太陽光・風力が全発電の80〜90%を占める社会では、数日間の無発電を乗り越えるマルチデイ蓄電が必須インフラとなる。その市場で商業量産に到達しているのはForm Energyだけ。カテゴリ創造者としての先行優位は圧倒的。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">AIデータセンター需要という新たな巨大顧客層の出現</div>
+        <div class="ind-desc">Google・Microsoft等のAI企業は24時間365日の安定電力を必要とし、再エネ100%での電力調達を公約している。マルチデイ蓄電＋再エネという組み合わせはAIデータセンターの電力問題の決定的な解となり、想定外のほど大きな商業機会が出現しつつある。Google向け30GWh案件はその象徴。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">材料は「鉄」— 稀少資源依存ゼロという圧倒的な差別化</div>
+        <div class="ind-desc">リチウム・コバルト・ニッケルは地政学的に不安定な地域に偏在し、サプライチェーンリスクが高い。形成Energyの鉄空気電池は主原料が鉄のみ。鉄は地球上で最も豊富かつ安価な金属であり、米国内での調達も容易。製造の地政学的安全性という点で他技術を圧倒する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">製鉄所跡地×地元雇用 — 政治的・社会的支持が強固</div>
+        <div class="ind-desc">ウェストバージニア州という旧鉄鋼・石炭の地でかつての製鉄所を電池工場に転換する事業は、超党派の政治的支持を得やすい。DOEからの最大1.5億ドル補助採択もこの文脈。政治リスクが低く規制優遇を受けやすい立地戦略は、他の多くのスタートアップが持ち合わせないアドバンテージ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">鉄鋼メジャー（ArcelorMittal）の戦略的投資 — 原材料バリューチェーン垂直統合</div>
+        <div class="ind-desc">世界最大の鉄鋼メジャーArcelorMittalが複数ラウンドをリードし、鉄ペレットの供給契約も締結している。単なる投資ではなく「鉄鋼需要の新市場開拓」という産業レベルの協業。原材料から電池システムまでのバリューチェーンに大手製鉄会社が組み込まれた構造は競合の参入障壁を高める。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">MIT × Tesla出身 — 科学的深みと商業化実績を兼ね備えたチーム</div>
+        <div class="ind-desc">Yet-Ming ChiangというA123 SystemsやLi-ionの商業化を牽引した世界的材料科学者と、TeslaでPowerwallを立ち上げたMateo Jaraimilloの組み合わせは、深い科学的基盤と大規模商業化の実行力を同時に備えた稀有なチーム。技術の信頼性と市場開拓力の両立が強み。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>Iron-air technology from Form Energy has the potential to be one of those breakthrough solutions that lets us fully decarbonize the electricity grid at a cost that actually works.</p>
+    <div class="attr">— Breakthrough Energy Ventures（投資声明）</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Form Energy 公式サイト（formenergy.com）</li>
+    <li>Utility Dive — "Form Energy raises $405M, announces GE Vernova collaboration" (2024)</li>
+    <li>Canary Media — "Gigantic Form Energy battery to power Google data center in Minnesota" (2026)</li>
+    <li>CNBC — "Form Energy raises $240M on iron-air battery promise" (2021)</li>
+    <li>MIT News — "Power when the sun doesn't shine" (2024)</li>
+    <li>MIT Technology Review — "Form Energy and its iron batteries" (2023)</li>
+    <li>ArcelorMittal Press Release — XCarb™ Innovation Fund investment (2021/2022)</li>
+    <li>Great River Energy Press Release — Multi-day storage groundbreaking</li>
+    <li>Form Energy Press Release — Georgia Power agreement (2023)</li>
+    <li>SNS Insider — Long Duration Energy Storage Market Report (2026)</li>
+    <li>Tracxn / Crunchbase — Form Energy funding data</li>
+    <li>Tech Startups — "Form Energy lands $1B Google deal, eyes IPO" (2026.02)</li>
+  </ul>
+</div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Antora Energy — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .geo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 10px; margin: 12px 0; }
+  .geo-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .geo-country { font-family: 'Poppins', sans-serif; font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .geo-mineral { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .geo-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .geo-card.flagship { border-top: 3px solid var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+    .geo-grid { grid-template-columns: 1fr; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec">
+    <div class="snav-sec-label">030 Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a>
+    <a class="snav-a" href="/030_research/035_startup/index.html">startup</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">040 Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/047_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Industrial Decarbonization</span>
+    <span class="badge badge-white">Thermal Energy Storage</span>
+    <span class="badge badge-solid">Series B</span>
+  </div>
+  <h1>Antora Energy</h1>
+  <p class="hero-sub">炭素ブロックを2,400°Cまで加熱してエネルギーを蓄える「熱電池」で産業脱炭素化を推進するディープテック企業。再エネの間欠性を克服し、セメント・化学・製鉄などの重工業に24時間365日のゼロエミッション熱・電力を供給する。スタンフォード発、Series B完了で累計2億4400万ドル以上を調達。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$244M+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">2,400°C</div><div class="lbl">Storage Temperature</div></div>
+    <div class="kpi"><div class="val">産業熱市場</div><div class="lbl">Target Market</div></div>
+    <div class="kpi"><div class="val">2018</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー</a></li>
+    <li><a href="#business">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">最近のニュース・マイルストーン</a></li>
+    <li><a href="#kpi">財務指標・KPI（推定）</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Antora Energy, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2018年3月</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">San Jose, California, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series B（未上場）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">2億4400万ドル以上（2025年8月時点）</div></div>
+    <div class="kv-item"><div class="k">推定バリュエーション</div><div class="v">約5億ドル（2024年）</div></div>
+    <div class="kv-item"><div class="k">出自</div><div class="v">スタンフォード大学・Cyclotron Road（LBNL）発</div></div>
+    <div class="kv-item"><div class="k">事業形態</div><div class="v">熱電池の製造・設置・Heat-as-a-Service</div></div>
+    <div class="kv-item"><div class="k">ターゲット顧客</div><div class="v">化学・食品・製紙・セメント・鉄鋼等の重工業</div></div>
+    <div class="kv-item"><div class="k">コアテクノロジー</div><div class="v">炭素ブロック蓄熱 + 熱光起電（TPV）変換</div></div>
+  </div>
+
+  <p>Antora Energyは、再生可能エネルギーの余剰電力を炭素ブロックの熱として蓄え、産業プロセスに必要な高温熱・電力を安定供給する「熱電池」を開発・製造するクリーンテック企業。重工業の脱炭素化——とりわけ電化が困難な産業プロセス熱——に正面から取り組む。</p>
+
+  <p>スタンフォード大学のTomKat Sustainable Energyセンター及びLBNLのCyclotron Road（現Activate）から輩出されたスタートアップ。Breakthrough Energy Ventures（Bill Gates）、Lowercarbon Capital（Chris Sacca）、BHP Ventures、Decarbonization Partners（BlackRock×Temasek）などの著名投資家が出資。2024年2月には1億5000万ドルのSeries Bを完了し、製造拡大フェーズに突入した。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>世界の産業部門は全CO2排出量の約25〜30%を占め、その大半は「プロセス熱」が原因。しかし産業熱は電化しにくく、従来の再エネ・蓄電ソリューションは対応できなかった。Antaraの炭素ブロック蓄熱技術は、この「ハードトゥアビット（Hard-to-Abate）」問題を正面から解くための根本的アプローチである。
+  </div>
+</div>
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー</div>
+
+  <h3>炭素ブロック蓄熱システム</h3>
+  <p>再生可能エネルギー（太陽光・風力）の余剰電力を使って、地球上に豊富に存在する炭素（黒鉛）のブロックを最高<strong>2,400°C</strong>まで加熱する。この高温の炭素ブロックが「熱電池」として機能し、エネルギーを時間・日単位で蓄積。需要に合わせて熱または電力として放出する。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">炭素ブロック蓄熱（Carbon Block TES）</div>
+        <div class="ind-desc">安価で豊富、かつ安定した炭素（グラファイト）を蓄熱媒体として使用。従来の溶融塩・耐火レンガと比較して<strong>最高温度が圧倒的に高く（2,400°C対比600°C以下）</strong>、繰り返し充放電による劣化がほぼゼロ。コンパクトかつモジュール式で設置場所を選ばない。充電中と放電中を同時に実行できる独自設計。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">熱光起電（TPV）電力変換</div>
+        <div class="ind-desc">超高温の炭素ブロックが放射する光（熱輻射）を、Antaraが独自開発した<strong>熱光起電（Thermophotovoltaic / TPV）セル</strong>で電力に変換する。太陽光パネルが太陽光を電気に変えるのと同じ原理を、超高温物体の熱輻射に適用。熱→電力の変換効率は<strong>40%超</strong>を達成（世界最高水準）。従来のスターリングエンジン・蒸気タービン等の熱機関と比較して、部品数が少なくメンテナンスコストが低い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">高温直接熱供給</div>
+        <div class="ind-desc">炭素ブロックから直接放射される高温熱を工場の産業プロセスへ供給。温度範囲は数百°Cから最高1,500°C以上まで対応可能で、セメント焼成・化学品合成・食品加工・製紙など多様なプロセス温度帯をカバーする。再エネ由来のゼロエミッション熱として化石燃料バーナーを置き換える。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">工場出荷・モジュール設計</div>
+        <div class="ind-desc">サンノゼの製造施設（5万平方フィート）でユニットを完成品として製造し、顧客サイトに出荷・設置する。現地での建設作業を最小化し、スケールアップが容易。初期ユニットは<strong>5 MWh〜数十MWh規模</strong>からスタートし、複数台並列でより大規模な産業負荷にも対応。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>競合技術との比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>技術</th><th>蓄熱温度</th><th>主な用途</th><th>Antolaとの差異</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>炭素ブロック（Antora）</td><td>最高2,400°C</td><td>産業熱・電力</td><td>—（基準）</td></tr>
+      <tr><td>溶融塩蓄熱</td><td>～565°C</td><td>集光型太陽熱発電</td><td>温度域が大幅に低く産業熱に不向き</td></tr>
+      <tr><td>耐火レンガ（Rondo等）</td><td>～1,500°C</td><td>産業熱</td><td>温度・コスト面で類似。炭素の安定性で差別化</td></tr>
+      <tr><td>リチウムイオン電池</td><td>—（電気のみ）</td><td>電力系統調整</td><td>産業直接熱の供給不可。コスト高</td></tr>
+      <tr><td>グリーン水素</td><td>—（化学エネルギー）</td><td>重工業・輸送</td><td>変換ロス大・インフラコスト高</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>TPV記録：</strong>Antoraは2022年に「世界で最も効率的な固体熱エンジン」を実証したと発表。熱光起電・熱電子・熱電気デバイス全ての中で最高効率を達成した。2023年にはTPV製造ライン（世界初の専用TPVセル量産施設）をサニーベールに開設、年産2MW相当の生産能力を確立。
+  </div>
+</div>
+
+<!-- ===================== 3. BUSINESS MODEL ===================== -->
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル・収益構造</div>
+
+  <h3>Heat-as-a-Service（HaaS）モデル</h3>
+  <p>Antoraの主力ビジネスモデルは、熱電池システムを顧客工場に設置し、熱・電力の出力を長期契約（PPAに類似した熱供給契約）で販売する<strong>「Heat-as-a-Service」</strong>。顧客は初期設備投資なしに、従来の化石燃料コストと同等以下の価格でゼロエミッションの安定した熱・電力を調達できる。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">主な収益源①</div><div class="v">熱供給契約（HaaS）：長期固定価格または変動価格で熱・電力を販売</div></div>
+    <div class="kv-item"><div class="k">主な収益源②</div><div class="v">システム販売：熱電池ユニットを顧客へ直接販売（オンサイト所有モデル）</div></div>
+    <div class="kv-item"><div class="k">コスト優位性</div><div class="v">再エネの低コスト電力（オフピーク）を蓄熱し、産業需要ピーク時に放出することで経済合理性を実現</div></div>
+    <div class="kv-item"><div class="k">顧客ターゲット</div><div class="v">主に米国中西部・カリフォルニアの化学・食品・製紙・セメントメーカー</div></div>
+  </div>
+
+  <h3>バリューチェーン</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">製造（USA）</div>
+        <div class="ind-desc">サンノゼの自社製造施設（5万平方フィート）で熱電池ユニットとTPVセルを量産。Series B資金で製造能力を拡大中。将来的には追加製造拠点を開設予定。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">設置・統合</div>
+        <div class="ind-desc">顧客サイトへのユニット出荷・設置・グリッドとの統合。2023年にMedley Thermal（産業ボイラー制御ソフトウェア企業）を統合したことで、既存設備との連携能力を強化。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">運用・モニタリング</div>
+        <div class="ind-desc">設置後のシステム運用・最適化・データ管理をリモートで提供。HaaSモデルでは長期にわたって安定稼働を保証するため、メンテナンス契約も含む。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 4. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">AP</div>
+      <div>
+        <h3>Andrew Ponec（アンドリュー・ポネック）</h3>
+        <div class="p-role">Co-Founder & CEO — Antora Energy</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">スタンフォード大学 学士（BS '17）</div></div>
+      <div class="p-row"><div class="lbl">起業歴</div><div class="val">21歳でソーラースタートアップ「Dragonfly Systems」を共同創業・売却後、Antoraを設立</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">会社全体の戦略・製品ロードマップ・資金調達・対外関係を統括</div></div>
+      <div class="p-row"><div class="lbl">特記</div><div class="val">スタンフォードのTomKat Sustainable Energyセンター出身。シリアル起業家としてのビジネス感覚が強み</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">JB</div>
+      <div>
+        <h3>Justin Briggs（ジャスティン・ブリッグス）</h3>
+        <div class="p-role">Co-Founder & COO — Antora Energy</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">スタンフォード大学 応用物理学 博士（PhD '17）</div></div>
+      <div class="p-row"><div class="lbl">専門</div><div class="val">応用物理学。TPV・熱輻射の物理メカニズムに精通</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">エンジニアリング・製造・オペレーションを主導</div></div>
+      <div class="p-row"><div class="lbl">背景</div><div class="val">気候変動問題への強い使命感からPhD取得後即Antoraを共同創業</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">DB</div>
+      <div>
+        <h3>David Bierman（デイビッド・ビアマン）</h3>
+        <div class="p-role">Co-Founder & Chief Commercial Officer — Antora Energy</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">MIT 機械工学 博士（PhD '17）</div></div>
+      <div class="p-row"><div class="lbl">専門</div><div class="val">熱エネルギー貯蔵・熱輻射工学。LBNLのCyclotron Roadで蓄熱製品を開発中にPonec/Briggsと出会い共同創業</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">商業化・顧客開拓・パートナーシップを担当</div></div>
+      <div class="p-row"><div class="lbl">特記</div><div class="val">Aspen Ideas Festival登壇など産業脱炭素の啓発活動にも積極的</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>創業のきっかけ：</strong>Biermanがバークレー国立研究所（LBNL）のCyclotron Roadで蓄熱製品を開発していた頃、共通の指導者Brian Bartholomeuszを通じてスタンフォードのPonec/Briggsと接触。当初は競合する可能性も考えたが、三者の知見を合わせることで大きな突破口が開けると判断し2018年にAntoraを共同創業した。
+  </div>
+
+  <div class="quote">
+    <p>We're building the technology to make industrial operations run entirely on renewable energy. The carbon block is the perfect medium — it's abundant, cheap, and can store energy at temperatures far exceeding anything else.</p>
+    <div class="attr">— Andrew Ponec, Co-Founder & CEO, Antora Energy</div>
+  </div>
+</div>
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Pre-Seed / Seed</span>
+      <div class="f-amount">$5.8M</div>
+      <div class="f-detail">
+        <div class="f-date">2018〜2020年</div>
+        <div class="f-desc">Fifty Years VC（初期VCとして特に重要な支援者）、Cyclotron Road（LBNL）からのプログラム支援。技術実証・チーム構築フェーズ。</div>
+      </div>
+    </div>
+    <div class="f-card a">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$50M</div>
+      <div class="f-detail">
+        <div class="f-date">2022年2月</div>
+        <div class="f-desc">Breakthrough Energy Ventures（Bill Gates）とLowercarbon Capital（Chris Sacca）が共同リード。Shell Ventures、BHP Ventures、Grok Ventures、Trust Ventures、Overture VC、Impact Science Venturesが参加。技術検証から商業化移行のための資金。</div>
+      </div>
+    </div>
+    <div class="f-card late">
+      <span class="r-badge">Grant / Award</span>
+      <div class="f-amount">$4M+</div>
+      <div class="f-detail">
+        <div class="f-date">2023年11月</div>
+        <div class="f-desc">カリフォルニアエネルギー委員会（CEC）とARPA-E（DAYS program）よりTPV技術拡大のための助成金4百万ドル超を獲得。</div>
+      </div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$150M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年2月</div>
+        <div class="f-desc">Decarbonization Partners（BlackRock×Temasek合弁）がリード。Emerson Collective、GS Futures（ゴールドマン・サックス）、The Nature Conservancy、NextEra Energy Resources子会社が新規参加。既存投資家のBreakthrough Energy Ventures、Lowercarbon Capital、BHP Ventures、Grok Ventures、Trust Ventures、Overture VCも継続参加。製造拡大・量産体制構築のための資金。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">〜$500M</div></div>
+    </div>
+    <div class="f-card late">
+      <span class="r-badge">ARPA-E Award</span>
+      <div class="f-amount">$14.5M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年6月</div>
+        <div class="f-desc">ARPA-E SCALEUPプログラムから最大1,450万ドルの選定助成。熱・電力を同時供給する複合製品の商業ランチを加速するための政府資金。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>資金調達の特徴：</strong>Series Aではクライメートテック特化VCが主体だったが、Series BではBlackRock（世界最大の資産運用会社）とTemasek（シンガポール政府系ファンド）の合弁であるDecarbonization PartnersがリードしたことがAntoraの信頼性を大きく高めた。NextEra（米国最大の再エネ発電会社）の参加は、将来的な大規模グリッド連携の可能性も示唆する。
+  </div>
+</div>
+
+<!-- ===================== 6. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.B</span>
+      <div class="vc-name">Decarbonization Partners</div>
+      <div class="vc-role">Lead Investor, Series B</div>
+      <div class="vc-desc">BlackRock（世界最大の資産運用会社）とTemasek（シンガポール政府系投資会社）の合弁VC。脱炭素技術への長期大型投資を専門とする。Series Bのリードとして産業脱炭素化スタートアップへの最大規模投資のひとつを実行。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.A</span>
+      <div class="vc-name">Breakthrough Energy Ventures</div>
+      <div class="vc-role">Bill Gates主導のクライメートVC</div>
+      <div class="vc-desc">Bill Gatesが設立したクライメートテック専門ファンド。Series AリードからSeries Bまで継続参加。「重工業の脱炭素化」をポートフォリオの重点領域として位置づけており、Antoraは中核的な投資先。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Lowercarbon Capital</div>
+      <div class="vc-role">Series A co-lead / 継続参加</div>
+      <div class="vc-desc">Chris Sacca（Twitterへの初期投資家）が設立したクライメートテックVC。Series AでBEVと共同リードし、Series Bも継続参加。クライメートテック界で最も影響力あるVCのひとつ。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">BHP Ventures</div>
+      <div class="vc-role">Series A〜B継続参加 / 戦略的投資家</div>
+      <div class="vc-desc">世界最大級の資源メジャーBHPの投資部門。自社の採掘・製造施設の脱炭素化を見据えた戦略投資。Antoraの熱電池が将来的にBHPの鉱山・製造拠点で採用される可能性がある。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">NextEra Energy Resources（子会社）</div>
+      <div class="vc-role">Series B新規参加 / 戦略的投資家</div>
+      <div class="vc-desc">米国最大の再生可能エネルギー発電会社NextEra Energyの子会社。Antoraの蓄熱技術と自社の再エネ発電資産との組み合わせに戦略的価値を見出す。大規模商業展開への重要パートナーとなりうる。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Emerson Collective</div>
+      <div class="vc-role">Series B新規参加</div>
+      <div class="vc-desc">Steve Jobsの妻Laurene Powell Jobsが設立したフィランソロピー・投資機関。教育・環境・移民問題など社会的インパクトへの投資を行う。Series Bへの新規参加で社会的支持の広がりを示す。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Shell Ventures</div>
+      <div class="vc-role">Series A参加 / 戦略的投資家</div>
+      <div class="vc-desc">国際石油大手Shellのベンチャー部門。化石燃料依存からの移行を見据えた産業熱脱炭素技術への投資。将来的な大規模工業施設での採用を想定した戦略投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">GS Futures（Goldman Sachs）</div>
+      <div class="vc-role">Series B新規参加</div>
+      <div class="vc-desc">ゴールドマン・サックスのクリーンエネルギー・未来技術投資部門。大手金融機関によるエネルギー転換投資の一環としてSeries Bに参加。機関投資家の信任をさらに高める存在。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 7. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — 産業熱市場</div>
+      <div class="m-val">$1T+</div>
+      <div class="m-desc">世界の産業プロセス熱市場の年間規模（化石燃料費用ベース）</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — 電化可能な産業熱</div>
+      <div class="m-val">$300B+</div>
+      <div class="m-desc">400°C以下の低〜中温域の産業熱。全体の約60%を占め、技術的に電化・蓄熱が可能な市場</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — 短〜中期目標市場</div>
+      <div class="m-val">$50B+</div>
+      <div class="m-desc">米国内の化学・食品・製紙・セメント等でAntoraが直接狙える産業熱・電力供給市場（2030年推計）</div>
+    </div>
+  </div>
+
+  <h3>産業熱が「最後のフロンティア」である理由</h3>
+  <p>世界の温室効果ガス排出の約25〜30%は産業部門が占め、そのうち最大部分は「プロセス熱」の燃焼由来。EV・太陽光・風力などの再エネ革命が電力部門を急速に脱炭素化しているのに対し、産業熱はほぼ手つかずのまま残っている。その理由は：</p>
+  <ul class="blist">
+    <li>高温（数百〜数千°C）プロセスへの電力直接供給が技術的に困難</li>
+    <li>再エネは間欠的であり、24時間稼働する工場の需要に応えられない</li>
+    <li>グリーン水素は変換ロスが大きく、コスト面で競争力が低い</li>
+    <li>既存のリチウムイオン電池は熱ではなく電気の蓄積に特化</li>
+  </ul>
+
+  <h3>需要加速要因</h3>
+  <table class="t">
+    <thead>
+      <tr><th>要因</th><th>内容</th><th>Antoraへの影響</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>米国IRA（インフレ抑制法）</td><td>クリーン製造・産業脱炭素への税額控除・補助</td><td>顧客の投資回収期間を大幅短縮→採用加速</td></tr>
+      <tr><td>DOE産業実証プログラム</td><td>60億ドル規模の産業脱炭素化への政府補助</td><td>セメント等の大規模実証案件を後押し</td></tr>
+      <tr><td>再エネ価格の下落</td><td>太陽光・風力のコストが過去10年で80〜90%低下</td><td>蓄熱に使う電力コストがさらに低下→経済合理性向上</td></tr>
+      <tr><td>カーボンプライシング</td><td>欧州CBAM・米国内炭素税議論が進展</td><td>化石燃料熱のコストが上昇→再エネ熱の相対競争力向上</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合比較</div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">Rondo Energy</div>
+      <div class="comp-tag">直接競合</div>
+      <div class="comp-desc">耐火レンガを蓄熱媒体とする産業熱電池スタートアップ。累計1億9000万ドル以上を調達。Chevron、Breakthrough Energy Ventures、Carbon Direct Capitalなどが出資。同じ「熱-as-a-service」モデルで産業熱を供給。</div>
+      <div class="comp-strong"><span>Antoraとの差異</span>炭素ブロックvs耐火レンガ。Antoraは最高温度・TPV変換効率で優位。Rondoは一部の産業熱向けに既に実績あり。最大の直接競合。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Electrified Thermal Solutions（ETS）</div>
+      <div class="comp-tag">直接競合候補</div>
+      <div class="comp-desc">「Joule Hive」という電気抵抗加熱式の蓄熱システムを開発。金属鍛造・セラミックス・ガラスなどの超高温プロセス向け。2400万ドル調達＋3500万ドルのDOE助成。MIT発スタートアップ。</div>
+      <div class="comp-strong"><span>Antoraとの差異</span>超高温（1,600°C以上）で差別化するが、規模・資金力・商業実績でAntoraに差をつけられている。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Fourth Power</div>
+      <div class="comp-tag">間接競合</div>
+      <div class="comp-desc">グラファイト＋溶融スズ＋TPVを組み合わせた超高温蓄熱システムで、主に電力グリッド向け電力供給を狙う。1900万ドルのSeries Aを調達。MIT発。</div>
+      <div class="comp-strong"><span>Antoraとの差異</span>主な用途が「電力グリッド」であり、「産業熱供給」に注力するAntoraとは市場が若干異なる。TPV技術では類似。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">グリーン水素（各社）</div>
+      <div class="comp-tag">代替技術</div>
+      <div class="comp-desc">再エネ電力で製造した水素を産業熱源として利用する代替技術。Shell・BP・Mitsubishi等の大企業が投資。超高温プロセスに対応できる可能性があるが、変換効率・インフラコストが課題。</div>
+      <div class="comp-strong"><span>Antoraとの差異</span>変換ロスが大きく（電気→水素→熱で50〜60%ロス）、インフラ整備コストが莫大。短中期では熱電池の経済合理性が高い。</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>競合比較の結論：</strong>Rondo Energyが最も近い直接競合だが、Antoraの炭素ブロック技術は最高温度・TPV電力変換効率・劣化のなさで差別化されている。産業熱脱炭素市場はまだ黎明期であり、複数社が共存して市場を開拓していく可能性が高い。
+  </div>
+</div>
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">09</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">製造スケールアップの難易度</div>
+        <div class="ind-desc">TPVセルはまだ製造経験が浅く、量産コスト・歩留まりの改善が必要。炭素ブロックとTPVを組み合わせたシステムの工場出荷ライン立ち上げは技術的チャレンジが多い。Series B資金の多くをここに投じているが、予定通り進まないリスクがある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">重工業の採用サイクルの長さ</div>
+        <div class="ind-desc">セメント・化学・製鉄等の大型工場は設備導入の意思決定サイクルが非常に長い（3〜7年）。新技術の導入には安全規制・信頼性実証・長期契約交渉が伴い、売上計上まで時間がかかる。スタートアップにとって資金繰りリスクとなりうる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">政策・補助金依存リスク</div>
+        <div class="ind-desc">IRA税額控除・DOE補助金・ARPA-E支援が現在の経済合理性を大きく支えている。米国の政権交代や政策変更（特にIRAの縮小・撤廃）が事業計画に打撃を与えるリスクがある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">競合の急追</div>
+        <div class="ind-desc">Rondo、ETS、Fourth Powerなど複数の競合がほぼ同時期に同じ市場を狙っている。より資金力のある大企業（GE、Siemens、Shell等）が類似技術を内製化・買収して参入する可能性もある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">収益化の遅れと資金繰り</div>
+        <div class="ind-desc">Heat-as-a-Serviceモデルでは設備投資先行で収益回収が長期にわたる。大型案件が遅延した場合、Series C以降の追加調達が必要になる可能性が高く、金利環境や市場センチメントの悪化が調達条件を悪化させうる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">技術リスク（TPVの長期耐久性）</div>
+        <div class="ind-desc">TPVセルは超高温環境下での長期稼働実績がまだ限定的。数十年にわたる産業設備としての耐久性保証には、さらなる実証データの蓄積が必要。Long-duration storageとしての信頼性実証が商業展開の前提条件。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. NEWS ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">10</span>最近のニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2018年3月</span>
+          <span class="tl-title">Antora Energy 創業</span>
+        </div>
+        <div class="tl-body">Andrew Ponec、Justin Briggs、David Biermanがスタンフォード大学・LBNLのCyclotron Roadから輩出する形で設立。Fifty Years VCが初期支援。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2022年2月</span>
+          <span class="tl-title">Series A 5000万ドル調達</span>
+        </div>
+        <div class="tl-body"><b>Bill GatesのBreakthrough Energy VenturesとChris SaccaのLowercarbon Capitalが共同リード。</b>Shell Ventures、BHP Ventures、Grok Venturesなども参加。技術検証から商業化移行への資金を確保。CNBCが大きく報道し注目度が一気に上昇。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2022年</span>
+          <span class="tl-title">世界最高効率TPV実証</span>
+        </div>
+        <div class="tl-body">熱光起電（TPV）デバイスにおいて、過去の全ての熱光起電・熱電子・熱電気デバイスを上回る世界最高効率の固体熱エンジンを実証。スタンフォードTomKatセンターが発表。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年</span>
+          <span class="tl-title">初の商業規模熱電池（5MWh）をカリフォルニアで稼働</span>
+        </div>
+        <div class="tl-body"><b>フレズノ近郊で商業規模5 MWhの熱電池をコミッショニング。</b>産業施設向けの最初の実証案件として機能し、技術の商業適用性を証明。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年</span>
+          <span class="tl-title">Medley Thermal買収・統合</span>
+        </div>
+        <div class="tl-body">産業用ボイラーの再エネ切り替え制御ソフトウェアを開発するMedley ThermalをAntoraに統合。既存の産業設備との連携・制御能力を強化し、顧客の移行コストを削減する。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年10月</span>
+          <span class="tl-title">米国内熱電池製造施設を発表</span>
+        </div>
+        <div class="tl-body">サンノゼの5万平方フィート製造施設を正式発表。工場出荷型の熱電池ユニット量産ラインが本格稼働。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年11月</span>
+          <span class="tl-title">CEC・ARPA-E から400万ドル超の助成取得</span>
+        </div>
+        <div class="tl-body">カリフォルニアエネルギー委員会とARPA-EのDAYSプログラムからTPV技術拡大のための400万ドル超を獲得。TPV製造ラインへの投資を加速。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年2月</span>
+          <span class="tl-title">Series B 1億5000万ドル調達完了</span>
+        </div>
+        <div class="tl-body"><b>BlackRock×Temasek合弁のDecarbonization PartnersがリードするSeries B完了。</b>累計調達額2億ドル超へ到達。製造能力の大幅拡大と米国内出荷体制の構築に充当。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年6月</span>
+          <span class="tl-title">ARPA-E SCALEUP 1450万ドル選定</span>
+        </div>
+        <div class="tl-body">ARPA-EのSCALEUPプログラムから最大1450万ドルの選定を受け、熱・電力複合製品の商業ランチを加速。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年</span>
+          <span class="tl-title">DOE産業実証プログラム：セメント脱炭素プロジェクト選定</span>
+        </div>
+        <div class="tl-body"><b>DOEの60億ドル産業実証プログラムの一環としてSummit Materials（セメントメーカー）のメリーランド・ジョージア・テキサス施設の脱炭素化に参加。</b>年間100万トン超のCO2削減を目標とする大型プロジェクト。DOEがSummit Materialsに2億1500万ドルを助成。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2025年〜</span>
+          <span class="tl-title">量産・顧客出荷拡大フェーズ</span>
+        </div>
+        <div class="tl-body">主に米国中西部への顧客サイト出荷・設置を本格化。追加製造拠点の開設も計画中。化学・食品・石油ガス・採掘業界への展開拡大。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. KPI ===================== -->
+<div class="sec" id="kpi">
+  <div class="sec-label"><span class="num">11</span>財務指標・KPI（推定）</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">2億4400万ドル以上（2025年8月時点）</div></div>
+    <div class="kv-item"><div class="k">推定バリュエーション</div><div class="v">約5億ドル（2024年Series B時点）</div></div>
+    <div class="kv-item"><div class="k">従業員数（推定）</div><div class="v">100〜200名規模（2024〜2025年）</div></div>
+    <div class="kv-item"><div class="k">製造施設</div><div class="v">サンノゼ（5万平方フィート）+ TPV専用ライン（サニーベール、年産2MW）</div></div>
+    <div class="kv-item"><div class="k">初期商業規模</div><div class="v">5 MWh（2023年コミッション済み、カリフォルニア）</div></div>
+    <div class="kv-item"><div class="k">TPV変換効率</div><div class="v">40%超（世界最高水準）</div></div>
+    <div class="kv-item"><div class="k">最高蓄熱温度</div><div class="v">2,400°C（従来の溶融塩の4倍以上）</div></div>
+    <div class="kv-item"><div class="k">対象温度帯</div><div class="v">数百°C〜1,500°C超（産業用途の大半をカバー）</div></div>
+  </div>
+
+  <h3>今後の重点KPI</h3>
+  <table class="t">
+    <thead>
+      <tr><th>指標</th><th>現状（推定）</th><th>目標（2026〜2027年）</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>稼働システム数</td><td>数件（パイロット・初期商業）</td><td>数十件（量産フェーズ移行）</td></tr>
+      <tr><td>製造能力</td><td>サンノゼ工場稼働中</td><td>追加製造拠点開設</td></tr>
+      <tr><td>年間回避CO2量</td><td>数千トン規模（推定）</td><td>Summit Materialsだけで100万トン超/年</td></tr>
+      <tr><td>TPV製造コスト</td><td>試作・量産初期段階</td><td>$/W単位での大幅コスト低減</td></tr>
+      <tr><td>契約顧客数</td><td>非公開（複数の工業顧客）</td><td>米国中西部中心に数十社</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>重要な注意点：</strong>Antoraは未公開企業のため正確な収益・EBITDA等の財務データは非公開。上記KPIはプレスリリース・VC投資家コメント・業界調査レポートから推定した参考値。収益化は本格的な量産・出荷フェーズに入る2025〜2026年以降に加速すると見られる。
+  </div>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">「電化できない産業熱」という最後のフロンティアに正面突破</div>
+        <div class="ind-desc">再エネ・EVの普及で電力・輸送部門の脱炭素化は急進しているが、産業プロセス熱（全CO2の約25〜30%）はほぼ手つかず。Antoraの炭素ブロック蓄熱技術はこの「最も解きにくい問題」を直接解くアプローチとして、他に類を見ない独自性を持つ。問題の重要性と解法のユニークさが突出している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">2,400°Cという非常識な高温が生み出す技術的優位</div>
+        <div class="ind-desc">従来の蓄熱技術（溶融塩：565°C、耐火レンガ：1,500°C）を大幅に超える2,400°Cの蓄熱は、より幅広い産業プロセスをカバーし、TPV変換効率（40%超）のような高効率電力回収も実現できる。この温度域は物理的に炭素（グラファイト）でしか実現できず、競合が簡単に複製できない本質的な差別化要因となっている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">BlackRock・Bill Gates・NextEraという「最強の投資家群」</div>
+        <div class="ind-desc">世界最大の資産運用会社（BlackRock）、最も影響力あるクライメートVC（BEV）、米国最大の再エネ発電会社（NextEra）が揃って出資する構図は、資金調達力だけでなく顧客開拓・政策ロビー・大規模展開においても圧倒的な後押しとなる。この投資家構成をつくれたスタートアップはほとんど存在しない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">米国政府がフルバックアップ</div>
+        <div class="ind-desc">IRA、DOE産業実証プログラム（60億ドル）、ARPA-E複数案件など、米国政府があらゆる角度でAntoraの技術・商業展開を支援している。政府補助が経済合理性を底上げし、かつ大型の初期採用事例（セメント工場等）を生み出す触媒となっている。政策リスクはあるが、現状は追い風が強い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">「製造→設置→熱供給」の垂直統合モデルが参入障壁を形成</div>
+        <div class="ind-desc">TPVセルの製造ライン（世界初の専用量産施設）から炭素ブロックシステムの組み立て、顧客サイトへの設置・運用まで垂直統合している。特にTPV製造は自社で世界最大の量産能力を持ち、競合が追いつくには数年単位の時間と巨額投資が必要。製造ノウハウというソフトな参入障壁が着実に積み上がっている。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>Industrial heat is one of the hardest problems in decarbonization, and Antora has built an approach that can work at scale. We believe their thermal battery can transform heavy industry the way solar has transformed electricity generation.</p>
+    <div class="attr">— Decarbonization Partners（BlackRock × Temasek）, Series B Lead Investor</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Antora Energy 公式サイト（antora.com）</li>
+    <li>Antora — Series B $150M 公式プレスリリース（2024.02）</li>
+    <li>CNBC — "Bill Gates and Chris Sacca invest in Antora" (2022.02)</li>
+    <li>Contrary Research — Antora Energy Business Breakdown</li>
+    <li>ESG Today — Industrial Decarbonization Startup Antora Energy Raises $150M (2024)</li>
+    <li>Latitude Media — Antora raises $150 million to boost manufacturing</li>
+    <li>Stanford TomKat Center — Antora Energy founding story</li>
+    <li>MIT Energy Initiative — Thermal battery helps industry eliminate fossil fuels</li>
+    <li>BusinessWire — Antora Energy ARPA-E $14.5M SCALEUP Award (2024.06)</li>
+    <li>BusinessWire — Antora Energy Manufacturing Facility (2023.10)</li>
+    <li>ARPA-E — Deep Decarbonization Enabled by TPV Scale-Up project page</li>
+    <li>ClearPath — Antora Energy: Thermal Batteries Revolutionizing Industrial Decarbonization</li>
+    <li>IEA — Global Energy Review 2025: CO2 Emissions</li>
+    <li>ResearchAndMarkets — Global Industrial Decarbonization Market 2025-2035</li>
+  </ul>
+</div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Heron Power — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .geo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 10px; margin: 12px 0; }
+  .geo-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .geo-country { font-family: 'Poppins', sans-serif; font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .geo-mineral { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .geo-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .geo-card.flagship { border-top: 3px solid var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+    .geo-grid { grid-template-columns: 1fr; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec">
+    <div class="snav-sec-label">030 Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a>
+    <a class="snav-a" href="/030_research/035_startup/index.html">startup</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">040 Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/047_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Grid Infrastructure</span>
+    <span class="badge badge-white">Solid-State Transformer</span>
+    <span class="badge badge-solid">Series B</span>
+  </div>
+  <h1>Heron Power</h1>
+  <p class="hero-sub">元TeslaのSVP Drew Baglinoが創業した次世代電力インフラスタートアップ。100年以上変わらなかった電力変圧器をソリッドステート化し、再生可能エネルギー・AIデータセンター・グリッドストレージの急拡大を支える「グリッドの神経系」を再構築する。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$178M+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">Solid-State</div><div class="lbl">Transformer Tech</div></div>
+    <div class="kpi"><div class="val">40GW</div><div class="lbl">Factory Target (Annual)</div></div>
+    <div class="kpi"><div class="val">2024</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー</a></li>
+    <li><a href="#biz">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">最近のニュース・マイルストーン</a></li>
+    <li><a href="#kpi">財務指標・KPI（推定）</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 01. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Heron Power Electronics Company</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2024年（Drew Baglino がTesla退社後に創業）</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Scotts Valley, California, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series B（2026年2月完了）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">1億7800万ドル以上（Seed〜Series B）</div></div>
+    <div class="kv-item"><div class="k">従業員規模</div><div class="v">50〜999名（非公開）</div></div>
+    <div class="kv-item"><div class="k">主力製品</div><div class="v">Heron Link（ソリッドステートトランスフォーマー）</div></div>
+    <div class="kv-item"><div class="k">主要顧客セグメント</div><div class="v">太陽光・蓄電池・AIデータセンター開発者</div></div>
+    <div class="kv-item"><div class="k">工場計画</div><div class="v">年間40GW生産能力の米国内工場（建設予定）</div></div>
+    <div class="kv-item"><div class="k">公式サイト</div><div class="v">heronpower.com</div></div>
+  </div>
+
+  <p>Heron Powerは、米国カリフォルニア州スコッツバレーを拠点とする産業用パワーエレクトロニクス企業。創業者Drew Baglinoが18年間Teslaで培った電動パワートレイン・エネルギー事業の経験をもとに、電力系統に不可欠な変圧器（トランスフォーマー）を根本から刷新することを使命とする。</p>
+
+  <p>従来の変圧器は1960〜90年代設計の受動電気部品が中心で、<strong>重量10トン超・リードタイム24カ月・コスト急騰（2020年比+60〜80%）</strong>という深刻な供給ボトルネックを生んでいる。米国の変圧器需要は2019年以降119%増加したにもかかわらず、国内生産は需要の20%以下しか賄えていない。Heron Powerはこの課題をソフトウェア定義のソリッドステートトランスフォーマー（SST）で解決する。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>AIデータセンター・再生可能エネルギー・蓄電池の爆発的需要増大を支えるには、電力グリッドの接続インフラそのものを再発明しなければならない。Heron Powerは「電力網の神経系」となるソリッドステートトランスフォーマーで、グリッドの近代化を加速させる。
+  </div>
+</div>
+
+<!-- ===================== 02. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー</div>
+
+  <h3>Heron Link — ソリッドステートトランスフォーマー</h3>
+  <p>Heron Powerの中核製品<strong>「Heron Link」</strong>は、ワイドバンドギャップ半導体（シリコンカーバイド・窒化ガリウム）を用いたモジュール型メガワットスケールのパワーコンバーター。中電圧AC（34.5kV）から低電圧DC（800V）への直接変換を実現し、従来の変圧器・インバーター・整流器の役割を一体化する。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">直接接続（Direct Medium-Voltage Connection）</div>
+        <div class="ind-desc">太陽光パネル・蓄電池・AIコンピュート（低電圧DC）を、従来の大型変圧器を経由せず中電圧AC送電網に直接接続できる。変圧器・インバーター・整流器・UPSなど複数の機器を単一デバイスで代替し、<strong>機器点数を最大70%削減</strong>できるとBaglino自身が明言している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">ソフトウェア制御（Software-Defined Grid）</div>
+        <div class="ind-desc">電圧・周波数の調整をソフトウェアで行う「グリッドフォーミング」機能を内蔵。系統制御システムとのインターフェースも備え、オペレーターがリモートで動作パラメーターを監視・調整できる。従来の受動変圧器では不可能だったリアルタイム制御が可能になる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">AIデータセンター対応（Gigascale AI Power）</div>
+        <div class="ind-desc">NVIDIAの800V DC参照ラック設計にネイティブ対応。GPUパワーリップル（瞬間的な電力変動）を安定させる統合エネルギーストレージを内蔵し、30秒間の電力バッファを提供。これにより大型UPS（無停電電源装置）が不要となる。2025年10月にNVIDIAのOpen Innovation Ecosystem（OCP Global Summit）に認定データセンターパワーサプライヤーとして登録された。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">高速製造・サプライチェーン独立（American Manufacturing）</div>
+        <div class="ind-desc">従来の変圧器は電磁鋼板（エレクトリカルスチール）の調達に依存するため製造に長期間を要する。Heron Linkは半導体ベースのため製造速度が格段に速く、国内調達が可能。中国依存の大型変圧器サプライチェーンからの脱却を実現する。18〜24ヶ月の開発サイクルで「2〜3世代先のテクノロジーリード」を維持するTesla流の高速イテレーション戦略を採用。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要製品ラインナップ</h3>
+  <div class="pills">
+    <span class="pill s">Heron Link for Solar & Storage</span>
+    <span class="pill s">Heron Link for Data Centers</span>
+    <span class="pill">34.5kV AC → 800V DC 変換</span>
+    <span class="pill">グリッドフォーミング機能</span>
+    <span class="pill">N+1 冗長設計</span>
+    <span class="pill">統合エネルギーストレージ</span>
+  </div>
+
+  <h3>従来変圧器との比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>項目</th><th>Heron Link（SST）</th><th>従来の変圧器</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>重量・サイズ</td><td>コンパクト・モジュール型</td><td>10トン超の大型機器</td></tr>
+      <tr><td>リードタイム</td><td>大幅短縮（半導体製造）</td><td>最大24ヶ月待ち</td></tr>
+      <tr><td>制御性</td><td>ソフトウェアで電圧・周波数を動的制御</td><td>受動部品のみ・制御不可</td></tr>
+      <tr><td>DC接続</td><td>太陽光・蓄電池・EVと直接接続可</td><td>AC変換が必要・別途インバーター要</td></tr>
+      <tr><td>機器点数</td><td>変圧器・インバーター・UPSを統合</td><td>複数機器が必要</td></tr>
+      <tr><td>国内調達</td><td>半導体ベースで国産化容易</td><td>電磁鋼板の多くを中国に依存</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 03. BUSINESS MODEL ===================== -->
+<div class="sec" id="biz">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル・収益構造</div>
+
+  <h3>ハードウェア販売モデル</h3>
+  <p>Heron Powerの収益は、Heron Linkユニットの製造・販売によるハードウェア収益が中心。再生可能エネルギー開発者・エネルギーストレージ事業者・AIデータセンター開発者を主要顧客として、中電圧グリッド接続機器の代替需要を取り込む。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">主要顧客①</div><div class="v">太陽光・風力発電開発者（ユーティリティスケール）</div></div>
+    <div class="kv-item"><div class="k">主要顧客②</div><div class="v">グリッドスケール蓄電池（BESS）事業者</div></div>
+    <div class="kv-item"><div class="k">主要顧客③</div><div class="v">AIデータセンター・ハイパースケール開発者</div></div>
+    <div class="kv-item"><div class="k">収益源</div><div class="v">Heron Linkユニット販売＋ソフトウェア/サービス（予定）</div></div>
+  </div>
+
+  <h3>製造戦略</h3>
+  <p>Series Bで調達した1億4000万ドルを主に工場建設に充て、カリフォルニア州内に<strong>年間40GWの生産能力</strong>を持つ高度自動化工場を建設する。まず2026年に社内パイロット生産を開始し、2027年初頭にパートナー向け設置を開始する計画。2027〜2028年にかけて段階的に量産規模を拡大する。</p>
+
+  <div class="callout">
+    <strong>40GWの意味：</strong>中国除く世界の変圧器年間生産量の10〜15%相当。米国内での変圧器ショートカット解消に向けた実効的なスケールを持つ工場となる計画。既に40GW超の初期顧客関心（LOI/協業）を獲得済み。
+  </div>
+
+  <h3>ソフトウェアレイヤー（将来的収益源）</h3>
+  <p>Heron Linkはソフトウェア定義の機器であり、将来的にはグリッド管理プラットフォームとしてのSaaS/MaaS（Monitoring as a Service）型の継続課金収益も見込まれる。運用データの蓄積により予知保全・グリッド最適化サービスへの展開余地がある。</p>
+</div>
+
+<!-- ===================== 04. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">DB</div>
+      <div>
+        <h3>Drew Baglino（ドリュー・バグリーノ）</h3>
+        <div class="p-role">Founder & CEO — Heron Power</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">Tesla歴</div><div class="val">2006〜2024年（18年間）。電気エンジニアとして入社し、最終的にSVP of Powertrain & Energyに昇進</div></div>
+      <div class="p-row"><div class="lbl">主な実績</div><div class="val">Model SのPowertrain Architect、TeslaエネルギーエンジニアリングFg立ち上げ、Powerwall/Powerpack複数世代の開発、4680バッテリーセルと乾式電極プロセスの開発、テキサス工場（50GWh）の建設を指揮</div></div>
+      <div class="p-row"><div class="lbl">事業規模</div><div class="val">Tesla在籍時、エネルギー・充電事業を年間売上100億ドル超・黒字化まで成長させた</div></div>
+      <div class="p-row"><div class="lbl">退社後</div><div class="val">2024年4月Tesla退社。同年中にHeron Powerを創業</div></div>
+      <div class="p-row"><div class="lbl">専門性</div><div class="val">パワーエレクトロニクス、バッテリー技術、大規模製造（ギガファクトリー立ち上げ）</div></div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We're at an inflection point where clean, abundant energy is ready to come online — but grid interconnection challenges hold us back. Too much electrical infrastructure is passive equipment from decades ago. We manifest an alternative future where modern power electronics accelerate project timelines and grid reliability.</p>
+    <div class="attr">— Drew Baglino, Founder & CEO, Heron Power</div>
+  </div>
+
+  <h3>アドバイザー・初期バッカー</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">JB Straubel</div><div class="v">Tesla共同創業者。Redwood Materials CEO。個人投資家としてSeries Aから参加</div></div>
+    <div class="kv-item"><div class="k">Zach Kirkhorn</div><div class="v">元Tesla CFO。個人投資家としてSeries Aから参加。財務・スケーリング戦略でのアドバイス</div></div>
+  </div>
+
+  <p>チームは全体として、過去10年間でグリッド接続パワーエレクトロニクスを合計<strong>80GW以上</strong>設計・導入した経験を持つ専門家集団。パワーエレクトロニクス・ソフトウェア・大量生産の三領域にまたがる深い実行力が強みとされる。</p>
+</div>
+
+<!-- ===================== 05. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed</span>
+      <div class="f-amount">$5M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年（推定）</div>
+        <div class="f-desc">創業直後のシードラウンド。Capricorn Investment Groupなど初期支持者からの資金。Series A公表時の累計調達額が$43Mであったため、Seed分は約$5Mと推定。</div>
+      </div>
+    </div>
+    <div class="f-card a">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$38M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年5月29日</div>
+        <div class="f-desc">Capricorn Investment Group（Technology Impact Fund）がリード。Breakthrough Energy Ventures、Energy Impact Partners、Gigascale Capital、Powerhouse Ventures、Valor Equity Partners、JB Straubel、Zach Kirkhornが参加。累計調達額は$43Mに。</div>
+      </div>
+      <div class="f-val"><div class="vl">Lead</div><div class="vv">Capricorn</div></div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$140M</div>
+      <div class="f-detail">
+        <div class="f-date">2026年2月18日</div>
+        <div class="f-desc">a16z American Dynamism FundとBreakthrough Energy Venturesの共同リード。Capricorn Investment Group、Energy Impact Partners、Valor Atreides AI Fund、Gigascale Capitalが既存投資家として継続参加。40GW工場建設および量産準備に充当。</div>
+      </div>
+      <div class="f-val"><div class="vl">Co-Lead</div><div class="vv">a16z / BEV</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>調達スピードの特異性：</strong>創業（2024年）からSeries B完了（2026年2月）まで約2年以内に累計$178M超を調達。通常のハードウェアスタートアップより格段に速いラウンド進行は、Drew Baglinoの実績と信頼性、およびトランスフォーマー不足という明確な市場需要によるもの。
+  </div>
+</div>
+
+<!-- ===================== 06. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Co-Lead — Ser.B</span>
+      <div class="vc-name">Andreessen Horowitz (a16z)</div>
+      <div class="vc-role">American Dynamism Fund — Series B Co-Lead</div>
+      <div class="vc-desc">a16zの「American Dynamism」部門は、米国の製造業・国防・エネルギーインフラ分野への投資を専門とする。担当パートナーErin Price-Wrightは「Heronは老朽化したグリッドをソフトウェア定義・AI対応の21世紀インフラへとアップグレードする技術を構築している」と評価。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Co-Lead — Ser.B</span>
+      <div class="vc-name">Breakthrough Energy Ventures</div>
+      <div class="vc-role">Bill Gates主導のクライメートVC — Series A〜B継続</div>
+      <div class="vc-desc">Bill Gatesが設立したクライメートテックファンド。Series AからBまで継続参加。電力グリッドの近代化がエネルギー転換の根幹であるという戦略判断のもと投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Capricorn Investment Group</div>
+      <div class="vc-role">Technology Impact Fund — Series A Lead〜B継続</div>
+      <div class="vc-desc">Technology Impact FundでSeries AをリードしB にも継続参加。共同マネージングパートナーDipender Saluja氏は「パワーエレクトロニクスの革新はエネルギー分野にムーアの法則をもたらす」と語り、チームの技術力と実行力を高く評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Energy Impact Partners</div>
+      <div class="vc-role">Series A〜B継続参加</div>
+      <div class="vc-desc">電力・エネルギーインフラ専門のVC/PE。ユーティリティ企業との深いネットワークを持ち、顧客開拓面でも支援。電力会社・グリッドオペレーターへのアクセスを提供できる戦略的投資家。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Gigascale Capital</div>
+      <div class="vc-role">Series A〜B継続参加</div>
+      <div class="vc-desc">大規模インフラ・製造スタートアップに特化した投資ファンド。ギガファクトリー規模の製造展開を支援する知見を持つ。Heron Powerの40GW工場建設に向けたスケールアップ戦略でも知見を提供。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Valor Equity Partners</div>
+      <div class="vc-role">Series A参加（Atreides AI FundとしてB継続）</div>
+      <div class="vc-desc">Tesla・SpaceXの初期投資で知られる製造・テクノロジー系PE。Drew Baglinoとのネットワークを通じた投資。Series BではValor Atreides AI Fundとして継続参加し、AIインフラ角度でも評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">JB Straubel（個人）</div>
+      <div class="vc-role">Tesla共同創業者 / アドバイザー兼投資家</div>
+      <div class="vc-desc">Tesla共同創業者でRedwood Materials CEO。電気自動車とグリッドインフラの深い理解を持つ。Drew Baglinoとの長年の協働経験から個人投資家兼アドバイザーとして参加。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Zach Kirkhorn（個人）</div>
+      <div class="vc-role">元Tesla CFO / アドバイザー兼投資家</div>
+      <div class="vc-desc">元Tesla CFO。大規模製造事業の財務管理・資本配分の専門家。Heron Powerの工場建設・スケールアップフェーズにおける財務戦略でのサポートが期待される。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 07. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — 変圧器市場全体</div>
+      <div class="m-val">$137B</div>
+      <div class="m-desc">2032年の世界変圧器市場予測規模（2024年は$61B）。需要拡大でCAGR 12%成長</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — SST対応可能市場</div>
+      <div class="m-val">$30B+</div>
+      <div class="m-desc">再エネ・蓄電池・データセンター向け中電圧グリッド接続機器の市場（2026年推計）</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — 初期獲得可能市場</div>
+      <div class="m-val">$2B+</div>
+      <div class="m-desc">Heron Powerが40GW工場で狙う米国内ターゲット市場（2027〜2029年）</div>
+    </div>
+  </div>
+
+  <h3>市場を動かす4つのドライバー</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">トランスフォーマー危機（Transformer Crisis）</div>
+        <div class="ind-desc">米国内の電力変圧器の半数以上が設置から30年以上経過。需要は2019年比119%増（電力用）・34%増（配電用）にもかかわらず、国内生産は需要の20%以下。価格は2020年比80%上昇。24ヶ月待ちという異常な供給不足が継続中。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">再生可能エネルギーの爆発的拡大</div>
+        <div class="ind-desc">太陽光・蓄電池・風力発電の導入量は2014年のわずか数GWから2024年には500GW超に成長。しかしこれを送電網に繋ぐためのグリッド接続インフラが追いつかず、プロジェクトの遅延・中断が多発している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">AIデータセンターの電力需要急増</div>
+        <div class="ind-desc">ChatGPT以降のAIブームによりデータセンターの電力需要は急増。AIコンピューティングクラスターは数百MWから数GWの電力を必要とし、従来のグリッド接続インフラでは対応不能。Heron LinkはNVIDIA 800V DC対応で直接応答する唯一の商用ソリューション。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">電化による電力需要の3倍化</div>
+        <div class="ind-desc">EV・ヒートポンプ・産業電化の進展により、電力需要は将来3倍に達すると予測。新規グリッド接続インフラの需要は今後10年で継続的に拡大。従来型変圧器メーカーのキャパシティでは絶対に追いつかない構造的需要がある。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>地政学的背景</h3>
+  <p>米国の変圧器の多くは電磁鋼板（エレクトリカルスチール）の調達で中国に依存している。米中デカップリングの進展とともに、<strong>米国内製造・サプライチェーン国産化</strong>は安全保障・産業政策の最優先事項となっており、Heron Powerの国内製造戦略は政策の追い風を受けやすい。</p>
+</div>
+
+<!-- ===================== 08. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合比較</div>
+
+  <div class="callout">
+    <strong>市場の現状：</strong>過去数年でソリッドステートトランスフォーマー（SST）市場は「ほぼ存在しない」状態から「競争過熱気味」に急変した。SST関連スタートアップの合計調達額は3億3000万ドル超（PitchBook調べ）に達している。ただし規模・実績・投資家の質ではHeron Powerがリードを保つ。
+  </div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">DG Matrix</div>
+      <div class="comp-tag">直接競合・主要脅威</div>
+      <div class="comp-desc">イスラエル発のSST開発スタートアップ。2026年2月にEngine VenturesリードのSeries A（6000万ドル）を発表。ABB（産業用電気機器の世界大手）と三菱重工業が戦略投資家として参加。ABBという業界最大手のバックアップが差別化要因。</div>
+      <div class="comp-strong"><span>脅威度</span>高い。ABB・三菱という業界最大手の戦略支援を受けており、グリッド顧客への販売力でHeron Powerと競合。ただし調達規模と米国市場へのアクセスではHeron Powerが優位。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Hyperscale Power</div>
+      <div class="comp-tag">直接競合・新興</div>
+      <div class="comp-desc">2025年創業の欧州系SSTスタートアップ。2026年3月にシードラウンド（500万ユーロ）を発表。Heron Powerより後発で資金規模も小さいが、欧州市場向けに特化する可能性がある。</div>
+      <div class="comp-strong"><span>脅威度</span>現時点では低い。規模・資金・実績でHeron Powerに大きな差をつけられている。ただし欧州での先行に注意。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Amperesand</div>
+      <div class="comp-tag">直接競合・ステルス系</div>
+      <div class="comp-desc">シンガポールのTemasek系早期ファンドがインキュベートしたSST企業。詳細は非公開だが、アジア太平洋市場向けのSST開発を進めているとされる。</div>
+      <div class="comp-strong"><span>脅威度</span>アジア市場では潜在的な競合。米国市場への影響は限定的とみられる。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Hitachi Energy / ABB / Siemens Energy</div>
+      <div class="comp-tag">大手既存プレーヤー</div>
+      <div class="comp-desc">世界の変圧器市場を支配する大手メーカー。いずれも鉄道・グリッド向けにパワーエレクトロニクス型変圧器を試験展開している。ただし従来型変圧器事業の保護が優先され、SST商用化への本格投資は遅れている。</div>
+      <div class="comp-strong"><span>脅威度</span>中長期では脅威。ただし現時点では既存ビジネスの慣性が大きく、Heron Powerが技術・スピードで先行できるウィンドウが存在する。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 09. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">09</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">ハードウェア製造スケールアップリスク</div>
+        <div class="ind-desc">ソフトウェアスタートアップと異なり、40GW工場の立ち上げには莫大な設備投資と製造ノウハウが必要。歩留まり改善・品質管理・調達チェーンの構築に想定以上の時間とコストがかかるリスクが高い。Tesla自身もギガファクトリー立ち上げで何度も生産地獄（Production Hell）を経験した。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">保守的なユーティリティ顧客の採用障壁</div>
+        <div class="ind-desc">電力系統へ接続する機器は信頼性が最優先される。ユーティリティ（電力会社）は数十年単位の実績がない新技術を採用することに極めて慎重。大手電力会社への本格採用には時間がかかる可能性が高く、初期は再エネデベロッパー・データセンターへの販売に限定されるかもしれない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">海外製造コストとの価格競争</div>
+        <div class="ind-desc">将来的に中国・韓国・台湾の競合メーカーが低コストでSST市場に参入する可能性がある。米国製ブランドと補助金優位は一定の保護になるが、価格差が大きくなればコスト競争力で不利になるリスクがある。Baglinoも「海外メーカーの追随が最大リスクの一つ」と明言している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">技術検証・信頼性証明の時間軸</div>
+        <div class="ind-desc">Heron Linkの大規模グリッド実証データはまだ限定的。パイロット生産（2026年予定）と顧客導入（2027年予定）を経て、長期信頼性データが蓄積されるまで大口顧客獲得は難しい。電力系統機器に求められる数十年の耐用年数証明には時間がかかる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">資金繰りと収益化までのバーンレート</div>
+        <div class="ind-desc">工場建設・量産立ち上げ・営業拡大には$178Mを超える継続的な資金投入が必要になる可能性が高い。初期収益が計画を下回った場合や、金利環境悪化でVC投資が細った場合、追加調達が難しくなるリスクがある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">規制・グリッド接続承認の複雑さ</div>
+        <div class="ind-desc">新型電力機器を既存グリッドに接続するためには、NERC・FERC等の規制機関と各州の電力規制当局の承認が必要。承認プロセスに時間がかかり、ビジネス拡大の速度に影響する可能性がある。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. NEWS ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">10</span>最近のニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年4月</span>
+          <span class="tl-title">Drew Baglino、Tesla退社</span>
+        </div>
+        <div class="tl-body">18年間在籍したTeslaを退社。SVP of Powertrain & Energyとして年間売上100億ドル超のエネルギー事業を黒字化まで率いた後、次の事業機会を模索する。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年後半</span>
+          <span class="tl-title">Heron Power 創業・シードラウンド</span>
+        </div>
+        <div class="tl-body">Scotts Valley, CAにてHeron Power Electronics Companyを創業。パワーエレクトロニクス・ソフトウェア・製造の専門家チームを結成。初期シード資金を調達。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年4月7日</span>
+          <span class="tl-title">TechCrunch がHeron Powerをスクープ報道</span>
+        </div>
+        <div class="tl-body"><b>「元Tesla幹部Drew BaglinoのHeron Powerが、送電変圧器を再考している」</b>と報道。調達ターゲット$30〜50Mと記載。Axios Proも同日に報道。業界の注目が集まる。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年5月29日</span>
+          <span class="tl-title">Series A — $38M クローズ</span>
+        </div>
+        <div class="tl-body"><b>Capricorn Investment Group</b>がリード。Breakthrough Energy Ventures、Energy Impact Partners、Gigascale Capital、Powerhouse Ventures、Valor Equity Partners、JB Straubel、Zach Kirkhornが参加。プレスリリースで「All-Electric Futureを加速させる」と宣言。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年10月13日</span>
+          <span class="tl-title">NVIDIA OCP Global Summit — データセンター電力サプライヤー認定</span>
+        </div>
+        <div class="tl-body">NVIDIAのOpen Innovation Ecosystem（OCP Global Summit 2025）において、AIデータセンター向け電力システムプロバイダーとして正式認定。「<b>Heron Link: Unlocking Efficient Power Conversion For Gigascale AI</b>」ホワイトペーパーを同時公開。AIデータセンター市場への本格参入を宣言。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年2月18日</span>
+          <span class="tl-title">Series B — $140M クローズ</span>
+        </div>
+        <div class="tl-body"><b>a16z American Dynamism Fund × Breakthrough Energy Ventures</b>が共同リード。40GW年産能力の米国内工場建設と量産立ち上げのための資金。40GW超の初期顧客関心を獲得済みと発表。累計調達額$178M+に到達。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2026年（予定）</span>
+          <span class="tl-title">社内パイロット生産開始</span>
+        </div>
+        <div class="tl-body">カリフォルニア州内での第一製造ラインの稼働開始。Heron Linkの量産プロセスを検証し、歩留まりと品質基準を確立するフェーズ。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2027年初頭（予定）</span>
+          <span class="tl-title">パートナー顧客への初出荷開始</span>
+        </div>
+        <div class="tl-body">太陽光・蓄電池・データセンター向けパートナー企業へのHeron Link初期納品を開始。フィールド実績の積み上げとフィードバックループの確立。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. KPI ===================== -->
+<div class="sec" id="kpi">
+  <div class="sec-label"><span class="num">11</span>財務指標・KPI（推定）</div>
+
+  <p>Heron Powerは非上場企業であり、財務情報は非公開。以下は公開情報・業界水準からの推計。</p>
+
+  <table class="t">
+    <thead>
+      <tr><th>指標</th><th>現状（2026年4月時点）</th><th>備考・根拠</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>累計調達額</td><td>$178M+</td><td>Seed〜Series B合計（確定値）</td></tr>
+      <tr><td>初期顧客関心（LOI相当）</td><td>40GW超</td><td>Series Bプレスリリースで言及</td></tr>
+      <tr><td>工場目標生産能力</td><td>年産40GW</td><td>Series B発表時の計画値</td></tr>
+      <tr><td>従業員数</td><td>推定50〜200名</td><td>LinkedIn・Series B時期から推定</td></tr>
+      <tr><td>パイロット開始予定</td><td>2026年内</td><td>公式ロードマップ</td></tr>
+      <tr><td>初期納品開始予定</td><td>2027年初頭</td><td>公式ロードマップ</td></tr>
+      <tr><td>売上（現時点）</td><td>0（プレレベニュー）</td><td>量産前フェーズのため収益なし</td></tr>
+      <tr><td>チームの累計グリッド展開実績</td><td>80GW+</td><td>Series A発表時に言及（個人経歴合計）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>ユニットエコノミクス（推計）：</strong>ソリッドステートトランスフォーマーは従来変圧器より高単価だが、インバーター・UPS等の省略により<strong>システム全体コストでは削減</strong>が可能とされる。「データセンター向けでは1桁違う（オーダーオブマグニチュード）節約が可能」とBaglinoは言及。大規模展開が進めばコスト低減により競争力が更に高まる構造。
+  </div>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">AIブームの「見えない制約」を解く</div>
+        <div class="ind-desc">AIデータセンターの電力問題はGPU不足・電力容量不足として語られることが多いが、真のボトルネックは「グリッド接続インフラ」。トランスフォーマー不足・24ヶ月待ちという現実は、どれだけGPUや発電所を増やしても送電網に繋げなければ意味がないことを示す。Heron Powerはこの本質的な問題に正面から取り組む唯一の大型スタートアップ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">Drew Baglinoという希少な創業者</div>
+        <div class="ind-desc">Tesla式ギガファクトリー立ち上げを実際に経験した人物が、同じアプローチをグリッドインフラに適用する。「パワーエレクトロニクスを本当に最適化できる人材は世界に数百〜数千人しかいない」と本人が語るほど希少なスキルセット。スタートアップ創業者としての実行力と製造大企業経営者の両面を持つ人物は極めて少ない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">再エネ・AIデータセンター・EVの三重需要</div>
+        <div class="ind-desc">Heron Powerの事業機会は単一のメガトレンドに依存しない。太陽光・蓄電池（再エネ転換）、AIデータセンター（AI拡大）、EV・産業電化（電力需要3倍化）という<strong>三つの独立したメガトレンドがすべてHeron Linkを必要とする</strong>構造は、どれか一つが失速してもビジネスが崩れないポートフォリオ効果を持つ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Tesla Mafia 最高品質の人脈</div>
+        <div class="ind-desc">JB Straubel（Tesla共同創業者）、Zach Kirkhorn（元Tesla CFO）、Valor Equity Partners（Tesla初期投資家）が初期から参与。a16z American Dynamism、Breakthrough Energy Venturesという「本物の産業変革を支援できる投資家」が揃った布陣は、単なるVCの支持を超えた戦略的バリューをもたらす。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">NVIDIA認定 × a16z American Dynamism という二重のシグナル</div>
+        <div class="ind-desc">NVIDIAのOCPエコシステム認定は、AIデータセンター顧客への直接アクセスパスを意味する。a16zのAmerican Dynamism Fundは米国製造業・国防・インフラへの深いコミットメントを持ち、政府調達・規制環境での支援も期待できる。この二つが揃ったスタートアップは他にない。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>Heron is building technology catapulting our aging grid into a software-defined, AI-native 21st century.</p>
+    <div class="attr">— Erin Price-Wright, Partner, Andreessen Horowitz</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Heron Power 公式サイト（heronpower.com）</li>
+    <li><a href="https://techcrunch.com/2026/02/18/heron-power-raises-140m-to-ramp-production-of-grid-altering-tech/" target="_blank" rel="noopener">TechCrunch — "Heron Power raises $140M to ramp production of grid-altering tech" (2026.02)</a></li>
+    <li><a href="https://www.globenewswire.com/news-release/2026/02/18/3240170/0/en/Heron-Power-Raises-140-Million-to-Build-a-Next-Generation-Power-Grid-in-Series-B-Co-led-by-Andreessen-Horowitz-Breakthrough-Energy-Ventures.html" target="_blank" rel="noopener">GlobeNewswire — Series B Press Release (2026.02.18)</a></li>
+    <li><a href="https://www.globenewswire.com/news-release/2025/05/29/3090121/0/en/Heron-Power-Raises-38M-Series-A-to-Accelerate-an-All-Electric-Future.html" target="_blank" rel="noopener">GlobeNewswire — Series A Press Release (2025.05.29)</a></li>
+    <li><a href="https://techcrunch.com/2025/05/29/tesla-alums-heron-power-closes-38m-series-a-to-transform-key-grid-technology/" target="_blank" rel="noopener">TechCrunch — Series A Coverage (2025.05)</a></li>
+    <li><a href="https://capricornllc.com/news/heron-power-raises-38m-series-a-led-by-capricorn-investment-group/" target="_blank" rel="noopener">Capricorn Investment Group — Series A Announcement</a></li>
+    <li><a href="https://www.latitudemedia.com/news/inside-heron-powers-plan-to-transform-the-grid/" target="_blank" rel="noopener">Latitude Media — Inside Heron Power's Plan</a></li>
+    <li><a href="https://www.globenewswire.com/news-release/2025/10/13/3165715/0/en/Heron-Power-Reinvents-the-Power-Foundation-for-Gigascale-AI.html" target="_blank" rel="noopener">GlobeNewswire — Gigascale AI Announcement (2025.10.13)</a></li>
+    <li><a href="https://techcrunch.com/2025/04/07/former-tesla-exec-drew-baglinos-new-startup-is-rethinking-the-electrical-transformer/" target="_blank" rel="noopener">TechCrunch — First Scoop on Heron Power (2025.04.07)</a></li>
+    <li>Crunchbase — Heron Power Funding Data</li>
+  </ul>
+</div>
+
+</div>
+<!-- snav:footer -->
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</footer>
+</body>
+</html>

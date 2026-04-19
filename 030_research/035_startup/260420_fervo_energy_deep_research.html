@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fervo Energy — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .geo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 10px; margin: 12px 0; }
+  .geo-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+  .geo-country { font-family: 'Poppins', sans-serif; font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .geo-mineral { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .geo-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .geo-card.flagship { border-top: 3px solid var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+    .geo-grid { grid-template-columns: 1fr; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec">
+    <div class="snav-sec-label">030 Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a>
+    <a class="snav-a" href="/030_research/035_startup/index.html">startup</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">040 Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/047_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Enhanced Geothermal</span>
+    <span class="badge badge-white">Clean Baseload</span>
+    <span class="badge badge-solid">Series E</span>
+  </div>
+  <h1>Fervo Energy</h1>
+  <p class="hero-sub">石油・ガス業界の水平掘削・水圧破砕（フラッキング）技術を地熱発電に転用し、場所を選ばず24/7ベースロード電力を供給する次世代地熱（EGS）スタートアップ。Googleとの実証実験を成功させ、ユタ州で世界最大の次世代地熱プロジェクト「Cape Station」を建設中。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$1.5B+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">~$2.86B</div><div class="lbl">Post-Money Val (2025.12)</div></div>
+    <div class="kpi"><div class="val">500MW</div><div class="lbl">Cape Station Target</div></div>
+    <div class="kpi"><div class="val">2017</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー</a></li>
+    <li><a href="#bizmodel">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">最近のニュース・マイルストーン</a></li>
+    <li><a href="#kpi">財務指標・KPI（推定）</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Fervo Energy</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2017年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Houston, Texas, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series E（2025年12月完了）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">15億ドル以上（エクイティ＋デット含む）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">約28億6000万ドル（Series E後）</div></div>
+    <div class="kv-item"><div class="k">主力プロジェクト</div><div class="v">Cape Station（ユタ州）— 500MW目標</div></div>
+    <div class="kv-item"><div class="k">技術領域</div><div class="v">Enhanced Geothermal Systems（EGS）</div></div>
+    <div class="kv-item"><div class="k">IPO動向</div><div class="v">2026年IPOに向けてS-1を機密申請済み（2026年1月時点）</div></div>
+    <div class="kv-item"><div class="k">主要顧客</div><div class="v">Google、NV Energy、Southern California Edison、Shell Energy他</div></div>
+  </div>
+
+  <p>Fervo Energyは、従来の地熱発電では不可能だった「場所を選ばない地熱」を実現するEGS（Enhanced Geothermal Systems）スタートアップ。石油・ガス業界で確立された水平掘削と水圧破砕（フラッキング）技術を地熱開発に応用し、熱水が存在しない場所でも地下の岩盤に人工的に熱水経路を作り出すことで、どこでも電力を生産できる。</p>
+
+  <p>2023年にネバダ州での実証プロジェクト「Project Red」でEGS史上最高の性能を記録（毎秒63リットル流量・3.5MW発電）、技術成熟度TRL-9（量産展開に技術的障壁なし）を取得。現在はユタ州で世界最大の次世代地熱プロジェクト「Cape Station」を建設中で、Phase I（100MW）を2026年、Phase II（追加400MW）を2028年に稼働予定。</p>
+
+  <div class="callout">
+    <strong>核心命題：</strong>再生可能エネルギーのアキレス腱は「間欠性」だが、地熱は天候・時刻に左右されない24/7ベースロード電力を供給できる。EGSが商業スケールで成立すれば、地下の熱エネルギーは事実上無尽蔵——AIデータセンター急拡大による電力需要増への究極の回答になりうる。
+  </div>
+</div>
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー</div>
+
+  <h3>Enhanced Geothermal Systems（EGS）の仕組み</h3>
+  <p>従来の地熱発電は、天然の熱水・蒸気が存在する限られた場所（カルデラ周辺など）でしか発電できなかった。Fervoが採用するEGSは、石油・ガス採掘技術を転用し、熱水が存在しない場所でも地下深くの高温岩盤に人工的に熱交換システムを構築する革新的アプローチ。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">水平掘削（Horizontal Drilling）</div>
+        <div class="ind-desc">シェール革命で確立された水平掘削技術を使い、地下深部（3〜4km）の高温岩盤に注水井・生産井の2本の水平坑井を掘削する。水平区間は最大1km以上に及び、岩盤との接触面積を大幅に増やして熱効率を高める。この「2本の水平井」アプローチはFervoの最大の技術的差別化要因。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">水圧破砕による連結（Hydraulic Fracturing）</div>
+        <div class="ind-desc">2本の水平坑井の間の岩盤に高圧水を注入してマイクロフラクチャーを形成し、注水井→岩盤→生産井という流路（熱交換網）を作る。シェール掘削と同じ技術だが、プロパントの使用方法やフラクチャーデザインをEGS向けに最適化。Jack NorbeckのStanford博士研究で確立された「混合機構刺激法（Mixed-Mechanism Stimulation）」を採用。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">熱水循環・発電（Closed-Loop Circulation）</div>
+        <div class="ind-desc">注水井から地下に水を注入すると、高温岩盤（150〜300°C）で加熱されて生産井から熱水・蒸気として回収される。この熱で地上のタービンを回して発電。水は地表で冷却後、再び注水井に戻す閉回路方式。天候・時刻に依存しない24/7連続発電が可能で、発電過程でCO2を排出しない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">分散ファイバーセンシング（Distributed Fiber Optics）</div>
+        <div class="ind-desc">坑井内に光ファイバーセンサーを設置し、地下の温度・流量・地震活動をリアルタイムで高精度に監視。これによりフラクチャーの発展状況を把握し、微小地震リスクを最小化しながら最適な坑井間隔・フラクチャー設計を実現。Project Redでこの技術の有効性が実証された。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>従来地熱・他EGSとの技術比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>項目</th><th>Fervo EGS（水平井）</th><th>従来の地熱発電</th><th>Eavor（閉ループ）</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>立地制約</td><td>ほぼなし（高温岩盤があればOK）</td><td>天然熱水帯のみ</td><td>ほぼなし</td></tr>
+      <tr><td>熱交換効率</td><td>高（水平井+フラクチャーで接触面積最大化）</td><td>天然流体に依存</td><td>低（未破砕岩との接触のみ）</td></tr>
+      <tr><td>掘削技術</td><td>油ガス業界の水平掘削を転用</td><td>垂直井・従来地熱掘削</td><td>垂直+水平（closed-loop）</td></tr>
+      <tr><td>地震リスク</td><td>段階的フラッキングで管理可能</td><td>低（天然流体）</td><td>極めて低（破砕なし）</td></tr>
+      <tr><td>商業実績</td><td>TRL-9達成・Project Red実証済み</td><td>実証済み（限定立地）</td><td>商業実証中（まだ初期）</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>油ガス業界との人材・技術シナジー：</strong>Fervoの最大の優位性の一つは、10年以上かけて蓄積されたシェール掘削の人材・機材・サプライチェーンをそのまま活用できる点。掘削コストが劇的に下がったシェール革命と同じ経験曲線をEGSにも適用できる可能性がある。
+  </div>
+</div>
+
+<!-- ===================== 3. BUSINESS MODEL ===================== -->
+<div class="sec" id="bizmodel">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル・収益構造</div>
+
+  <h3>IPP（独立発電事業者）モデル</h3>
+  <p>FervoはEGS技術の開発・販売ではなく、<strong>自ら電力プロジェクトを開発・所有し、発電した電力を長期PPA（電力売買契約）で大手企業・電力会社に販売するIPP（Independent Power Producer）モデル</strong>を採用。技術ライセンス収益ではなく、発電量に応じた電力販売収益が主収益源。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">主要収益源</div><div class="v">長期PPA（電力売買契約）による電力販売</div></div>
+    <div class="kv-item"><div class="k">主要顧客</div><div class="v">Google（データセンター用24/7クリーン電力）、Southern California Edison、NV Energy他</div></div>
+    <div class="kv-item"><div class="k">契約形態</div><div class="v">10〜20年の長期PPA。価格は固定または変動。RE100・24/7CFEコミットメントを持つ大企業が主要顧客</div></div>
+    <div class="kv-item"><div class="k">コスト構造</div><div class="v">掘削・建設コスト（初期CAPEX大）、運転維持費（OPEX小・燃料費ゼロ）</div></div>
+    <div class="kv-item"><div class="k">IRA税制優遇</div><div class="v">米インフレ抑制法（IRA）のPTC/ITCによる税控除が収益性に直結</div></div>
+    <div class="kv-item"><div class="k">プロジェクトファイナンス</div><div class="v">Cape StationはMercuria、XRA等からの債務調達を活用。プロジェクト会社方式</div></div>
+  </div>
+
+  <h3>バリューチェーン</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">立地選定・許認可</div>
+        <div class="ind-desc">地質データ分析で高温岩盤エリアを選定し、連邦・州の掘削許可・環境アセスメントを取得。Cape Stationの許認可は約3年を要した。連邦有地での開発は10年超かかるケースも。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">井戸掘削・貯留層開発</div>
+        <div class="ind-desc">水平坑井の掘削・フラクチャー施工が最大のCAPEXフェーズ。シェール業界の設備・人材を活用することでコスト低減。経験曲線を通じて将来的には大幅なコスト削減を見込む。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">地上設備・電力系統接続</div>
+        <div class="ind-desc">熱水からの発電設備（バイナリーサイクル発電機等）と送電網接続工事。Cape StationはPhase I（100MW）とPhase II（400MW）で段階的に系統接続を進める。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">長期PPA・電力販売</div>
+        <div class="ind-desc">稼働後は燃料費ゼロ・天候依存なしで電力を売り続ける。売電収益がCAPEXを回収するまでの期間は長いが、回収後は安定的なキャッシュフローを生成。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 4. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">TL</div>
+      <div>
+        <h3>Tim Latimer（ティム・ラティマー）</h3>
+        <div class="p-role">Co-Founder & CEO — Fervo Energy</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">テキサス大学オースティン校（学士）→ スタンフォード大学 MBA＋MS（Environment &amp; Resources）</div></div>
+      <div class="p-row"><div class="lbl">前職</div><div class="val">BHP Billiton 掘削エンジニア（パーミアン盆地・イーグルフォード）。石油・ガスの水平掘削の現場を熟知</div></div>
+      <div class="p-row"><div class="lbl">転換点</div><div class="val">2015年、気候変動への危機感からエネルギー業界を離れスタンフォードへ。「油ガスの掘削技術を地熱に使えないか」という発想から起業</div></div>
+      <div class="p-row"><div class="lbl">ビジョン</div><div class="val">「地熱はエネルギー転換に欠けているピースだ。どこでも24時間発電できる電源が必要」</div></div>
+      <div class="p-row"><div class="lbl">評価</div><div class="val">MIT Technology Review「気候テックの注目企業リーダー（2025年）」、ヒューストン主要イノベーターとして受賞多数</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">JN</div>
+      <div>
+        <h3>Jack Norbeck（ジャック・ノルベック）</h3>
+        <div class="p-role">Co-Founder & CTO — Fervo Energy</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">スタンフォード大学 エネルギー資源工学 博士（Ph.D.）</div></div>
+      <div class="p-row"><div class="lbl">専門</div><div class="val">貯留層工学・EGS。博士研究で「混合機構刺激法（Mixed-Mechanism Stimulation）」を開発し、EGSの効率を飛躍的に向上させる手法を確立</div></div>
+      <div class="p-row"><div class="lbl">前職</div><div class="val">スタンフォード博士課程後、USGS地震科学センターポスドク研究員。Cyclotron Road（現Activate）プログラムを通じてFervoを創業</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">地熱探査・貯留層エンジニアリング戦略の全体を統括。EGS技術の中核であるフラクチャー設計・流体管理の責任者</div></div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>The geothermal industry has been limited to specific geographies for too long. By applying the horizontal drilling and hydraulic fracturing techniques proven in oil and gas, we can unlock geothermal energy anywhere in the world.</p>
+    <div class="attr">— Tim Latimer, Co-Founder & CEO, Fervo Energy</div>
+  </div>
+</div>
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed〜Ser.A</span>
+      <div class="f-amount">~$28M</div>
+      <div class="f-detail">
+        <div class="f-date">2018〜2021年</div>
+        <div class="f-desc">Breakthrough Energy Ventures、DCVC、Congruent Ventures、Prelude Venturesが参加。EGSのコンセプト実証・技術開発の初期段階。2021年にはGoogleとの共同開発契約（Project Red）も締結。</div>
+      </div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$138M</div>
+      <div class="f-detail">
+        <div class="f-date">2023年2月</div>
+        <div class="f-desc">Liberty Energy（油ガス掘削大手・戦略投資家）、NGP Energy Capital Managementが参加。Project RedのEGS実証成功を受けたラウンド。Cape Station開発の本格着手に向けた資金。</div>
+      </div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C / D</span>
+      <div class="f-amount">$244M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年2月</div>
+        <div class="f-desc">Devon Energy（独立系石油・ガス大手）がリード。CalSTRS（カリフォルニア州教職員退職年金基金）、CPP Investments（カナダ年金）、Capricorn Investment Groupが新規参加。機関投資家層が本格的に入り始めたラウンド。</div>
+      </div>
+      <div class="f-val"><div class="vl">Cumulative</div><div class="vv">~$420M</div></div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">追加エクイティ＋デット</span>
+      <div class="f-amount">$255M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年12月</div>
+        <div class="f-desc">エクイティと負債の混合調達。Cape Station Phase Iの建設加速のための資金。Mercuria（コモディティトレーダー）のタームローン、XRAのブリッジローンを含む。</div>
+      </div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">プロジェクトファイナンス</span>
+      <div class="f-amount">$206M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年6月</div>
+        <div class="f-desc">Breakthrough Energy Catalyst（優先株100M）、Mercuriaターム拡大（100M）、XRAブリッジ拡大（145.6M）の3本立て。Cape Stationプロジェクトレベルの資金調達。</div>
+      </div>
+    </div>
+    <div class="f-card e">
+      <span class="r-badge">Series E</span>
+      <div class="f-amount">$462M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年12月（過剰申込）</div>
+        <div class="f-desc">B Capital（新規リード）、Google、Mitsui &amp; Co.、JB Straubel（Tesla共同創業者）等の新規投資家に加え、BEV・CalSTRS・DCVC・Devon Energy・Mitsubishi Heavy Industries等リターン組が参加。過剰申込（オーバーサブスクライブ）で締め切られた。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">~$2.86B</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>資金調達の特徴：</strong>エクイティ（VC・戦略投資家・機関投資家）とデット（プロジェクトファイナンス）を組み合わせた複合的な資金構造。2024〜2025年で累計1,000億円超を調達し、累計15億ドル以上に到達。エネルギーインフラ企業として機関投資家・年金基金が入ってきたことが成熟の証。
+  </div>
+</div>
+
+<!-- ===================== 6. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.E</span>
+      <div class="vc-name">B Capital</div>
+      <div class="vc-role">Series E Lead Investor</div>
+      <div class="vc-desc">BCGとのジョイントベンチャー起源のグローバル多段階VCファンド。2025年12月のSeries Eをリード。エネルギー転換・インフラ領域への投資を拡大中。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.D</span>
+      <div class="vc-name">Devon Energy</div>
+      <div class="vc-role">Series D Lead / Strategic Investor</div>
+      <div class="vc-desc">独立系石油・ガス大手。2024年のSeries DをリードしFervoに戦略投資。同社が持つ水平掘削の知見・サプライチェーンをFervoが活用できる関係性。エネルギー転換を見据えた戦略投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Breakthrough Energy Ventures</div>
+      <div class="vc-role">初期〜Series E継続参加</div>
+      <div class="vc-desc">Bill Gates主導のクライメートVCファンド。Fervoの初期から一貫して投資を継続。Breakthrough Energy Catalystとして2025年のプロジェクトファイナンスにも参加しており、VC・触媒資本の両面で支援。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Google</div>
+      <div class="vc-role">PPA契約先 + Series E投資家</div>
+      <div class="vc-desc">2021年のProject Red（ネバダ）でのPPAパートナーとして関係開始。2025年Series EでFervoに直接出資。データセンターの24/7クリーン電力需要を満たすためにEGSが不可欠との戦略判断。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">DCVC（Data Collective）</div>
+      <div class="vc-role">初期〜継続参加</div>
+      <div class="vc-desc">サイエンス・エンジニアリング系ディープテックに特化したVC。Fervoの技術的な深さを早期から評価し、初期から継続投資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">CalSTRS / CPP Investments</div>
+      <div class="vc-role">2024年〜機関投資家</div>
+      <div class="vc-desc">カリフォルニア州教職員年金（CalSTRS）とカナダ年金（CPP Investments）。クリーンエネルギーインフラへの長期投資枠として参加。機関投資家の参入はFervoの事業安定性の証左。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Mitsui &amp; Co. / Mitsubishi Heavy</div>
+      <div class="vc-role">Series E 日本企業投資家</div>
+      <div class="vc-desc">三井物産と三菱重工業が2025年Series Eに参加。エネルギー転換・地熱技術の観点からの戦略投資。日本は世界有数の地熱ポテンシャルを持つ国であり、EGS技術の将来的な日本展開も視野に。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">JB Straubel（個人）</div>
+      <div class="vc-role">Series E 個人投資家</div>
+      <div class="vc-desc">Tesla共同創業者・元CTO。リチウムイオン電池リサイクルのRedwood Materialsも創業。エネルギー転換インフラへの深い知見を持つ著名起業家の個人投資。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 7. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — 世界電力市場</div>
+      <div class="m-val">$2T+</div>
+      <div class="m-desc">世界の電力販売市場の年間規模。2030〜2050年にかけて電化推進で倍増が見込まれる</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — 24/7クリーン電力</div>
+      <div class="m-val">$500B+</div>
+      <div class="m-desc">データセンター・再エネ24/7コミットメント需要等、ベースロードクリーン電力の市場（2035年推計）</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — 米国EGS市場</div>
+      <div class="m-val">$100B+</div>
+      <div class="m-desc">米DOEの推計では米国の次世代地熱ポテンシャルは90GW以上。Fervoが先行者として取りにいける市場</div>
+    </div>
+  </div>
+
+  <h3>AI・データセンター需要爆増という追い風</h3>
+  <p>GPT-4以降の生成AI普及でデータセンターの電力需要が急増している。GoogleやMicrosoftは2030年までに100%24/7クリーン電力でデータセンターを運用する目標を掲げているが、太陽光・風力は間欠性の問題を抱える。<strong>24時間365日安定して発電できる地熱は、AIインフラの電力需要を満たす「究極の電源」</strong>として位置付けられる。</p>
+
+  <table class="t">
+    <thead>
+      <tr><th>需要ドライバー</th><th>詳細</th><th>Fervoへの意味</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>AIデータセンター急増</td><td>米国のデータセンター電力需要は2030年までに3倍以上になる見通し（IEA）</td><td>Googleなど大手テック企業がFervoの主要顧客になる</td></tr>
+      <tr><td>24/7 CFE要求</td><td>Google・Microsoft・Amazonが時間帯を問わないゼロカーボン電力を調達する目標を設定</td><td>間欠性のない地熱は太陽光・風力を補完する理想的な電源</td></tr>
+      <tr><td>IRA税制優遇</td><td>インフレ抑制法（IRA）の生産税控除（PTC）・投資税控除（ITC）が地熱に適用</td><td>プロジェクト収益性を大幅に改善し、資金調達コストを低下</td></tr>
+      <tr><td>米国エネルギー安全保障</td><td>地熱は国内資源で輸入エネルギー依存を削減。地政学リスクがない</td><td>DOEからの$25M補助金取得など、政府支援を受けやすい</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合比較</div>
+
+  <div class="callout">
+    <strong>EGSは「次世代地熱」の代表格：</strong>従来の地熱発電は立地制約が大きく、世界の電力供給に占めるシェアは約0.4%に過ぎない。EGSが商業スケールで確立されれば、この市場は根本的に変わる。Fervoは現時点でEGS商業化の最先端を走っているが、技術アプローチの異なる複数の競合が存在する。
+  </div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">Eavor Technologies（カナダ）</div>
+      <div class="comp-tag">直接競合（クローズドループ）</div>
+      <div class="comp-desc">岩盤を破砕せずに閉ループで熱水を循環させる技術。地震リスクがほぼゼロという優位性を持つ。2025年時点で約$530M以上を調達しており、Fervoの最有力競合。ただし熱交換効率がEGSより低く、同等発電量にはより多くの坑井が必要とされる。</div>
+      <div class="comp-strong"><span>差別化ポイント</span>Fervoは水平井+フラクチャーによる高熱交換効率。Eavorは地震リスクゼロ。市場は共存の余地あり。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Sage Geosystems（米国）</div>
+      <div class="comp-tag">直接競合（Huff-n-puff型）</div>
+      <div class="comp-desc">廃坑や既存井戸を再利用し、より高圧・短サイクルでの地熱エネルギー貯蔵・発電を行う「Huff-n-puff」アプローチ。プロパントを使わない点がFervoとの違い。Halliburtonのバックアップを受ける。</div>
+      <div class="comp-strong"><span>差別化ポイント</span>廃坑再利用でコスト削減の可能性。ただし発電規模でFervoに劣る。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Quaise Energy（米国）</div>
+      <div class="comp-tag">超深部EGS（電磁波掘削）</div>
+      <div class="comp-desc">ジャイロトロン（電磁波）で岩盤を蒸発させ、深度12km超の超高温地熱にアクセスする革新的技術。温度が高いほど発電効率が上がるが、技術成熟度はFervoより早期段階。商業実証はまだ先。</div>
+      <div class="comp-strong"><span>差別化ポイント</span>長期的には超高温によるコスト優位の可能性。現時点での脅威は低い。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">既存地熱企業（Ormat、Calpine）</div>
+      <div class="comp-tag">従来型地熱（立地制約あり）</div>
+      <div class="comp-desc">天然熱水帯（カルデラ周辺）での従来型地熱発電に特化した上場企業。技術的には保守的で立地制約が強い。EGS技術を内製化する動きは限定的。競合というよりも将来のパートナーになりうる。</div>
+      <div class="comp-strong"><span>差別化ポイント</span>FervoのEGSは立地制約がなく、将来の市場規模が段違いに大きい。</div>
+    </div>
+  </div>
+
+  <h3>電源間比較：なぜEGSが必要か</h3>
+  <table class="t">
+    <thead>
+      <tr><th>電源</th><th>ベースロード</th><th>立地制約</th><th>CO2排出</th><th>天候依存</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Fervo EGS地熱</td><td>○（24/7）</td><td>低（高温岩盤があれば可）</td><td>ほぼゼロ</td><td>なし</td></tr>
+      <tr><td>太陽光</td><td>×（昼間のみ）</td><td>低</td><td>ほぼゼロ</td><td>強依存</td></tr>
+      <tr><td>風力</td><td>×（変動）</td><td>中</td><td>ほぼゼロ</td><td>強依存</td></tr>
+      <tr><td>原子力</td><td>○</td><td>高（規制・社会合意）</td><td>ほぼゼロ</td><td>なし</td></tr>
+      <tr><td>天然ガス（CCGT）</td><td>○</td><td>低</td><td>高</td><td>なし</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">09</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">誘発地震リスク</div>
+        <div class="ind-desc">水圧破砕（フラッキング）を用いるEGSは、微小地震（誘発地震）を引き起こすリスクがある。韓国・スイスでは誘発地震によるEGSプロジェクトの中止事例もある。Fervoは段階的なフラッキングと光ファイバーモニタリングで管理しているが、大規模な地震発生リスクはゼロではなく、プロジェクト中止・社会的反発につながる可能性がある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">IRA税制優遇の縮小リスク</div>
+        <div class="ind-desc">米インフレ抑制法（IRA）の生産税控除（PTC）・投資税控除（ITC）はFervoのプロジェクト経済性の根幹。共和党政権・議会によるIRA見直し・縮小は、Cape Stationの収益性と今後の資金調達に直接影響する。2025年以降の政治動向が最大のマクロリスク。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">建設・コストオーバーランリスク</div>
+        <div class="ind-desc">EGSプロジェクトは掘削が主要コストで、地下条件が予想外だった場合の追加コストが大きい。Cape Stationのような大規模開発は初めてであり、コスト見積もりの誤差・工期遅延のリスクがある。Project Redで実証された技術も、500MWスケールへの拡張が想定通りに進む保証はない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">許認可・連邦土地規制リスク</div>
+        <div class="ind-desc">Cape Stationの許認可取得には約3年を要した。連邦有地での開発は10年超かかるケースも。環境影響評価（EIA）の遅延・地域住民の反発・政権交代による方針変更が、プロジェクトタイムラインを大幅に狂わせる可能性がある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">技術スケールアップリスク</div>
+        <div class="ind-desc">Project Red（3.5MW）からCape Station（500MW）へのスケールアップは約140倍。実証された単体技術が大型プロジェクトで同等のパフォーマンスを発揮できるかは未証明。多数の坑井の管理・系統接続・長期的な貯留層枯渇の問題など、スケールならではの課題が潜在する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">資本集約型ビジネスモデルの長期性</div>
+        <div class="ind-desc">大規模な地熱プロジェクトは初期CAPEX（掘削・建設）が巨額で、PPA収益でのROI回収には長期間かかる。金利上昇局面やリスクオフ環境ではプロジェクトファイナンスの条件が悪化し、新規開発の経済性が低下するリスクがある。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. NEWS ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">10</span>最近のニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2021年</span>
+          <span class="tl-title">Project Red — Googleとの共同開発開始</span>
+        </div>
+        <div class="tl-body">ネバダ州でGoogleとの共同開発プロジェクト「Project Red」を発足。NV Energyと115MWのPPAも締結。Googleのデータセンターに24/7クリーン電力を供給する目標を設定。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年7月</span>
+          <span class="tl-title">Project Red — EGS史上最高性能を達成・TRL-9取得</span>
+        </div>
+        <div class="tl-body">30日間の坑井テストで<b>毎秒63リットルの流量・3.5MWの発電</b>を達成。EGS史上最高記録。独立第三者機関が技術成熟度TRL-9（量産展開に技術的障壁なし）を認定。「地熱はどこでも作れる」ことを世界で初めて商業スケールで証明した歴史的マイルストーン。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2023年11月</span>
+          <span class="tl-title">Project Red — ネバダ州グリッドへの電力供給開始</span>
+        </div>
+        <div class="tl-body">米国初のEGS商業電力をネバダ州の送電網に供給開始。Googleのデータセンターにクリーン電力が届き始める。「EGSは動く」という証明が現実のものに。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年2月</span>
+          <span class="tl-title">Series D $244M調達 — Devon EnergyがリードしCape Station加速</span>
+        </div>
+        <div class="tl-body">独立系石油・ガス大手Devon EnergyがリードするSeries Dで2億4400万ドルを調達。油ガス業界の戦略投資家・機関投資家が大量参入。Cape Station Phase Iの建設着手に向けた資金を確保。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年4月</span>
+          <span class="tl-title">DOE EGSデモグラントとして$25M獲得</span>
+        </div>
+        <div class="tl-body">米エネルギー省（DOE）のEGS実証プログラムから2500万ドルの非希薄化補助金を獲得。政府の地熱エネルギー推進政策の恩恵を受ける。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年6月</span>
+          <span class="tl-title">Cape Station向け$206Mプロジェクトファイナンス</span>
+        </div>
+        <div class="tl-body">BECatalyst（優先株$100M）、Mercuriaタームローン拡大（$100M）、XRAブリッジ拡大（$145.6M）の3本立て。Cape Station建設が本格加速。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年12月</span>
+          <span class="tl-title">Series E $462M調達（過剰申込）— 累計$1.5B超に到達</span>
+        </div>
+        <div class="tl-body">B Capital（リード）、Google、Mitsui &amp; Co.、JB Straubel等が新規参加。過剰申込で締め切られた大型ラウンド。Post-Money評価額約28.6億ドル。累計調達額は15億ドル超に到達。MIT Technology Reviewの「2025年注目クライメートテック企業」に選出。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年1月</span>
+          <span class="tl-title">IPO向けS-1機密申請を報道</span>
+        </div>
+        <div class="tl-body">米SEC（証券取引委員会）にS-1登録届出書を機密申請したと複数メディアが報道。2026年中のIPOを目指す準備段階に入ったとされる。ターゲットバリュエーションは20〜30億ドル程度の見通し。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2026年（予定）</span>
+          <span class="tl-title">Cape Station Phase I（100MW）稼働開始予定</span>
+        </div>
+        <div class="tl-body">ユタ州ビーバー郡のCape Stationから初の電力供給開始予定。Southern California Edison、Shell Energy North Americaへの売電開始。世界最大のEGSプロジェクトとして稼働する歴史的なマイルストーン。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2028年（予定）</span>
+          <span class="tl-title">Cape Station Phase II（追加400MW）稼働・総計500MW</span>
+        </div>
+        <div class="tl-body">Phase IIの400MWが追加稼働し、Cape Station全体で500MWに到達。将来的には最大2GWへの拡張許可も取得済み。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. KPI ===================== -->
+<div class="sec" id="kpi">
+  <div class="sec-label"><span class="num">11</span>財務指標・KPI（推定）</div>
+
+  <div class="callout">
+    <strong>注意：</strong>Fervoは非上場企業のため、財務データは公開情報・推定値に基づく。2026年のIPO時に詳細が明らかになる予定。
+  </div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">$1.5B以上（エクイティ＋デット）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション（2025.12）</div><div class="v">約$2.86B（Series E後）</div></div>
+    <div class="kv-item"><div class="k">Project Red発電容量</div><div class="v">3.5MW（ネバダ州・稼働中）</div></div>
+    <div class="kv-item"><div class="k">Cape Station Phase I</div><div class="v">100MW（2026年稼働予定）</div></div>
+    <div class="kv-item"><div class="k">Cape Station Phase II</div><div class="v">+400MW（2028年予定）</div></div>
+    <div class="kv-item"><div class="k">Cape Station 最大拡張</div><div class="v">2GW（許可取得済み）</div></div>
+    <div class="kv-item"><div class="k">PPA契約先（確認済み）</div><div class="v">Google / NV Energy（Nevada）、Southern California Edison、Shell Energy NA（Cape Station）</div></div>
+    <div class="kv-item"><div class="k">DOE補助金（非希薄化）</div><div class="v">$25M（2024年）</div></div>
+  </div>
+
+  <h3>Cape Station稼働後の推定収益ポテンシャル</h3>
+  <table class="t">
+    <thead>
+      <tr><th>フェーズ</th><th>容量</th><th>年間発電量（推定）</th><th>推定売電収益（年間）</th><th>稼働時期</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Phase I</td><td>100MW</td><td>約876GWh（稼働率100%換算）</td><td>$70〜100M/年（$80〜120/MWh想定）</td><td>2026年</td></tr>
+      <tr><td>Phase I+II</td><td>500MW</td><td>約4,380GWh</td><td>$350〜500M/年</td><td>2028年</td></tr>
+      <tr><td>フル拡張（将来）</td><td>最大2GW</td><td>約17,520GWh</td><td>$1.4〜2.1B/年</td><td>2030年代〜</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>投資収益性：</strong>地熱発電はCAPEX（初期掘削・建設コスト）が高いが、OPEX（燃料費ゼロ・維持費低）が極めて低い。IRAの生産税控除（PTC）適用後は発電コストが大幅に低下し、長期PPAベースでのプロジェクトIRR（内部収益率）は10〜15%程度を達成できると業界では想定されている。
+  </div>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">「間欠性問題」を根本から解く唯一の電源</div>
+        <div class="ind-desc">太陽光・風力が急拡大する中、電力系統の安定性を担うベースロード電源が不足している。原子力はコスト・工期が重く社会的合意が難しい。天然ガスはCO2を排出する。EGSは「クリーン×24/7×立地自由」という3つの条件を唯一満たせる電源として、エネルギー転換の最後のピースになりうる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">油ガス技術の「ピボット」という独自の参入障壁</div>
+        <div class="ind-desc">Fervoの技術は「油ガスでは当たり前」の水平掘削・フラッキングを地熱に持ち込んだ発想転換。この技術を実用化できるのは、現場の油ガス掘削を知り尽くし、かつ地熱の貯留層工学も理解したチームだけ。TL（油ガス→スタンフォードMBA）とJN（スタンフォードEGS博士）の組み合わせは再現が難しい。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">GoogleとのPPAという「実績のある顧客」</div>
+        <div class="ind-desc">Project Redの成功でGoogleというティア1顧客を獲得し、実際に電力を売り始めている。これは「地熱は商業的に成立する」という市場への強力なシグナル。GoogleのSeries E参加（投資家でもある）は、技術的・商業的な検証を経た上での投資と言える。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">AI需要爆増が生む「追い風の波」</div>
+        <div class="ind-desc">生成AI・データセンターの電力需要急増は、Fervoにとって事業創業時には想定していなかった規模の追い風。24/7クリーン電力への需要はFervoの主力製品の価値を数倍に高める。AIインフラの電力問題の「解答」として、投資家・顧客の関心が急激に高まっている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">IPO前の「最後の投資機会」</div>
+        <div class="ind-desc">2026年IPOのS-1を機密申請済みとの報道がある中、Series Eは上場前最後の大型ラウンドだった可能性が高い。$2.86Bのバリュエーションで入った投資家は、IPO後・Cape Station本格稼働後の価値上昇を見込んでいる。成功すれば「地熱版Exxon」の出現となりうる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">日本との関連性：地熱大国へのパスウェイ</div>
+        <div class="ind-desc">日本は地熱ポテンシャル世界3位（米・インドネシアに次ぐ）だが、温泉地・国立公園規制・住民合意の壁で開発が遅れている。EGS技術が普及すれば温泉地外の深部岩盤でも発電可能になり、日本のエネルギー自給率向上に直結する。三井物産・三菱重工がSeries Eに参加したのはこの文脈でも理解できる。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>Geothermal is a 24/7, carbon-free resource that can be built anywhere. Cape Station will demonstrate that the clean energy transition can be powered by firm, clean power at scale.</p>
+    <div class="attr">— Tim Latimer, Co-Founder & CEO, Fervo Energy</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Fervo Energy 公式サイト（fervoenergy.com）</li>
+    <li>Fervo Energy — Series E $462M 発表（2025.12）</li>
+    <li>Utility Dive — "Geothermal developer Fervo raises $244M" (2024)</li>
+    <li>TechCrunch — "Fervo lands $206M for Cape Station" (2025.06)</li>
+    <li>TechCrunch — "Google invests in Fervo's $462M round" (2025.12)</li>
+    <li>ESG Today — "Google, BEV back $462M Fervo fundraise" (2025.12)</li>
+    <li>Canary Media — "America's first enhanced geothermal plant" (2023)</li>
+    <li>MIT Technology Review — "2025 Climate Tech: Fervo Energy" (2025.10)</li>
+    <li>Wikipedia — Fervo Energy</li>
+    <li>Fervo Energy — 2024 Year in Review</li>
+    <li>ThinkGeoEnergy — "Fervo planned IPO: key takeaways" (2026)</li>
+    <li>Medium / Cyclotron Road — "Backstories: Fervo Energy"</li>
+    <li>Bitget Wiki — Fervo Energy IPO &amp; Valuation</li>
+    <li>Crunchbase — Fervo Energy funding data</li>
+  </ul>
+</div>
+
+</div>
+<!-- snav:footer -->
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</footer>
+</body>
+</html>

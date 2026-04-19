@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skydio — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav"><a class="snav-logo" href="/index.html">24111</a><button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button></div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec"><div class="snav-sec-label">030 Research</div><a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a><a class="snav-a" href="/030_research/033_legend/index.html">legend</a><a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a><a class="snav-a" href="/030_research/035_startup/index.html">startup</a></div>
+  <div class="snav-sec"><div class="snav-sec-label">040 Personal</div><a class="snav-a" href="/040_personal/profile/profile.html">profile</a><a class="snav-a" href="/040_personal/047_books/books.html">books</a><a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a></div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Autonomous Drones</span>
+    <span class="badge badge-white">Defense × Enterprise</span>
+    <span class="badge badge-solid">Series E+</span>
+  </div>
+  <h1>Skydio</h1>
+  <p class="hero-sub">コンピュータビジョンとAIで「自律飛行」を実現した米国最大のドローンメーカー。DJI排除の波に乗り、米軍・連邦政府・インフラ企業へ展開。2023年に消費者市場を捨てエンタープライズ／防衛特化にピボット、現在は米陸軍の主力小型偵察ドローン（SRR）として実戦配備されている。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$715M+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">$2.5B</div><div class="lbl">Valuation (2024.11)</div></div>
+    <div class="kpi"><div class="val">$295M</div><div class="lbl">Revenue (FY2025推定)</div></div>
+    <div class="kpi"><div class="val">2014</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー</a></li>
+    <li><a href="#business">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">最近のニュース・マイルストーン</a></li>
+    <li><a href="#kpi">財務指標・KPI（推定）</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Skydio, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2014年4月8日</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">San Mateo, California, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series E+（未上場）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">7億1500万ドル以上</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">25億ドル（2024年11月）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約835名（2025年）</div></div>
+    <div class="kv-item"><div class="k">事業形態</div><div class="v">B2B・ハードウェア＋SaaS</div></div>
+    <div class="kv-item"><div class="k">主要顧客</div><div class="v">米軍・連邦・州政府、インフラ事業者</div></div>
+    <div class="kv-item"><div class="k">出荷台数</div><div class="v">5万5000台以上（2025年8月時点）</div></div>
+  </div>
+
+  <p>Skydioは、コンピュータビジョンと深層学習を活用した<strong>完全自律型ドローン</strong>の開発・製造を行う米国最大のドローンメーカー。GPS不要の屋内環境でもリアルタイムに障害物を回避しながら自律飛行できる技術が核心的差別化要因。</p>
+
+  <p>2014年の創業以来、消費者向け自律追跡ドローンとして注目を集めたが、中国製DJIに価格・機能で押されるなか、2023年8月に消費者事業を閉鎖。以降はエンタープライズ・防衛・公共安全への完全特化へ舵を切った。現在は米陸軍の短距離偵察（SRR）プログラム唯一の調達対象として実戦配備中。</p>
+
+  <div class="callout">
+    <strong>ポジショニング：</strong>米国政府によるDJI・中国製ドローンの規制排除（Blue UAS制度）の最大受益者。国家安全保障×自律飛行AIという2つの強力なトレンドが交差する地点に位置する。
+  </div>
+</div>
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー</div>
+
+  <h3>Skydio Autonomy Engine — 自律飛行の核心</h3>
+  <p>Skydioの最大の差別化は、<strong>「Skydio Autonomy Engine」</strong>と呼ばれる独自の自律飛行スタック。6台の魚眼カメラから取得した360度のビジュアルデータをリアルタイムで処理し、障害物回避・自己位置推定・経路計画を同時実行する。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">Visual SLAM（同時位置推定・地図作成）</div>
+        <div class="ind-desc">複数カメラの映像を融合させ、GPSなしでもセンチメートル精度で自機位置を推定。屋内・橋梁下部・トンネル内など電波が届かない環境でも安定飛行が可能。MITのロボティクスグループで研究された技術が実用化されている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">リアルタイム障害物回避</div>
+        <div class="ind-desc">360度カメラで検知した障害物情報をオンボードNVIDIA GPUで処理し、毎秒数百回の軌道再計算を実施。木々・電線・建物など複雑な環境下でも時速45km以上での安全な飛行を実現。パイロットのスキルに依存しない「誰でも安全に飛ばせる」設計。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">AI被写体追跡（Active Track）</div>
+        <div class="ind-desc">深層学習による人物・車両・構造物の認識と自動追尾。SkydioのX10Dは48MPの望遠カメラで<strong>730m先から人物を、約2000m先から車両を識別</strong>可能。夜間IRカメラとの組み合わせで24時間ISR（情報収集・監視・偵察）を実現。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">3Dスキャン・デジタルツイン生成</div>
+        <div class="ind-desc">橋梁・風力発電設備・送電線などのインフラを自動飛行でスキャンし、高精度な3Dモデルを生成するSkydio 3D Scanソフトウェア。現場担当者が点検コースを事前設定すれば以降は完全自動化可能。クラウドへのデータ連携でデジタルツイン化を推進。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">組み立て9分・製造の米国内完結</div>
+        <div class="ind-desc">X10およびX10DはSan Mateoの工場で製造。2025年時点でX10系は9分で1台を組み立て可能な生産効率を実現。中国製部品に依存しないサプライチェーンを意識した設計で、Blue UAS認定に必要なセキュリティ要件を満たす。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要プロダクトライン</h3>
+  <table class="t">
+    <thead>
+      <tr><th>製品</th><th>ターゲット</th><th>主要スペック</th><th>ステータス</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Skydio R1</td><td>消費者（初代）</td><td>自律追跡・障害物回避の実証機</td><td>販売終了</td></tr>
+      <tr><td>Skydio 2 / 2+</td><td>消費者・エントリー企業</td><td>4K・障害物回避・45分飛行</td><td>消費者版終了（2023）</td></tr>
+      <tr><td>Skydio X2 / X2D</td><td>企業・防衛</td><td>熱・可視光デュアルカメラ・Blue UAS認定</td><td>現行</td></tr>
+      <tr><td>Skydio X10</td><td>企業・インフラ点検</td><td>61MP高精度カメラ・3Dスキャン特化</td><td>主力（2023〜）</td></tr>
+      <tr><td>Skydio X10D</td><td>防衛・軍・公共安全</td><td>48MP望遠+IR・Blue UAS最高認定・SRR採用</td><td>主力・実戦配備中</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 3. BUSINESS MODEL ===================== -->
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル・収益構造</div>
+
+  <h3>ハードウェア＋SaaSの複合モデル</h3>
+  <p>Skydioはドローン本体（ハードウェア）を販売し、クラウドソフトウェアのサブスクリプション収益を積み上げる複合モデルを採用。2023年時点でソフトウェア収益が全体の約<strong>30%</strong>を占め、高マージンの経常収益化が進行中。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">ハードウェア収益</div><div class="v">ドローン本体・アクセサリー販売。1台あたり数千〜数万ドル</div></div>
+    <div class="kv-item"><div class="k">SaaS収益</div><div class="v">Skydio CloudおよびSkydio 3D Scan等のソフトウェアサブスクリプション</div></div>
+    <div class="kv-item"><div class="k">政府契約</div><div class="v">IDIQやOTA（Other Transaction Authority）による米軍・政府向け大型受注</div></div>
+    <div class="kv-item"><div class="k">サービス収益</div><div class="v">導入支援・トレーニング・カスタムインテグレーション</div></div>
+  </div>
+
+  <h3>主要顧客セグメント</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">防衛・軍（Defense & Military）</div>
+        <div class="ind-desc">米陸軍SRRプログラムの唯一採用製品。DoD全軍種に納品済み。NATO・25か国の同盟軍にも展開。2024年に米陸軍から$52M超の単一ベンダー最大受注を獲得。Blue UAS認定により他の米国製ドローンを含む競合を実質的に排除した。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">公共安全（Public Safety）</div>
+        <div class="ind-desc">47州200以上の公共安全機関が採用。「Drone as First Responder（DFR）」プログラムで緊急通報前にドローンが現場確認。Axon（TASER・Body Camメーカー）との統合で証拠管理プラットフォームと連携。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">インフラ点検（Critical Infrastructure）</div>
+        <div class="ind-desc">米国全州の道路局（DOT）の50%超が採用。60以上のエネルギーユーティリティが電力線・風力発電施設の点検に使用。橋梁・ダム・送電線・鉄塔など人が入れない場所の自動点検で点検コストを大幅削減。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>戦略的転換点（2023年8月）：</strong>消費者ドローン事業を完全撤退し、エンタープライズ・防衛・公共安全の3セグメントに集中。DJIが事実上排除された政府・防衛市場で競合なしのポジションを確立することが判断の本質。
+  </div>
+</div>
+
+<!-- ===================== 4. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">AB</div>
+      <div>
+        <h3>Adam Bry（アダム・ブライ）</h3>
+        <div class="p-role">Co-Founder & CEO — Skydio</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">MIT 航空宇宙工学 修士号（M.S.）。MIT CSAIL（コンピュータ科学・人工知能研究所）所属</div></div>
+      <div class="p-row"><div class="lbl">前職</div><div class="val">Google X — Project Wing（ドローン配送）の中心メンバー。2007年DARPA Urban Challenge（自律走行車コンテスト）優勝チームにも参加</div></div>
+      <div class="p-row"><div class="lbl">実績</div><div class="val">MITでAbe Bachrach等とともにGPS不要の自律飛行デモ（駐車場を高速飛行）を実現し学術的注目を浴びる</div></div>
+      <div class="p-row"><div class="lbl">スタイル</div><div class="val">技術者出身のCEO。製品・技術への深い理解を強みに顧客・軍・政府との信頼構築を担う</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">ABa</div>
+      <div>
+        <h3>Abe Bachrach（エイブ・バクラック）</h3>
+        <div class="p-role">Co-Founder & CTO — Skydio</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">UC Berkeley 電気工学・コンピュータサイエンス（B.S.）→ MIT Ph.D.（Nicholas Roy教授の指導の下、自律飛行の軌道推定を研究）</div></div>
+      <div class="p-row"><div class="lbl">前職</div><div class="val">Google X — Project Wing。Adam Bryとともに2009年からMITで自律飛行の基礎技術を共同研究</div></div>
+      <div class="p-row"><div class="lbl">専門</div><div class="val">知覚駆動型経路計画（Perception-Driven Planning）。Skydio R1のソフトウェアアーキテクチャの設計者</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">MD</div>
+      <div>
+        <h3>Matt Donahoe（マット・ドナホー）</h3>
+        <div class="p-role">Co-Founder — Skydio</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">学歴</div><div class="val">MIT出身。Adam Bry・Abe Bachrach同期の共同研究者</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">ハードウェア・製造・プロダクト開発を担当。2014年の創業時から製品具現化に貢献</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>チームの本質：</strong>3人全員がMITロボティクスグループ同期で、Google X（Project Wing）という同一の実戦経験を経て創業。「研究室からの技術移転」ではなく「実用化まで見届けた研究者が事業化した」モデルがSkydioの技術的優位の根源。
+  </div>
+
+  <div class="quote">
+    <p>The skill barrier is the fundamental problem with drones. We built Skydio to eliminate that barrier entirely — a drone that anyone can fly safely, that goes where you need it to go.</p>
+    <div class="attr">— Adam Bry, Co-Founder & CEO, Skydio</div>
+  </div>
+</div>
+
+<!-- ===================== 5. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed</span>
+      <div class="f-amount">$3M</div>
+      <div class="f-detail">
+        <div class="f-date">2015年1月</div>
+        <div class="f-desc">Andreessen Horowitz（a16z）がリード。Bob Bachrach（Abe父）のガレージで開発したプロトタイプが評価された。自律飛行デモが「誰も見たことがない」と話題に。</div>
+      </div>
+    </div>
+    <div class="f-card a">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$25M</div>
+      <div class="f-detail">
+        <div class="f-date">2016年1月</div>
+        <div class="f-desc">a16zが継続参加。消費者向け自律追跡ドローン「R1」の開発資金。</div>
+      </div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$42M</div>
+      <div class="f-detail">
+        <div class="f-date">2018年2月</div>
+        <div class="f-desc">IVPが初参加。Skydio R1の量産・販売開始に向けた資金調達。a16zも継続参加。</div>
+      </div>
+      <div class="f-val"><div class="vl">Investors</div><div class="vv">IVP, a16z</div></div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C</span>
+      <div class="f-amount">$100M</div>
+      <div class="f-detail">
+        <div class="f-date">2020年7月</div>
+        <div class="f-desc">Next47（Siemens系VC）が参加。Skydio 2の発売・企業市場への本格展開資金。新型コロナによるドローン需要の増加も追い風に。</div>
+      </div>
+      <div class="f-val"><div class="vl">Investors</div><div class="vv">Next47, a16z</div></div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">Series D</span>
+      <div class="f-amount">$170M</div>
+      <div class="f-detail">
+        <div class="f-date">2021年2月</div>
+        <div class="f-desc">Linse Capitalが参加。Skydio 2のヒットと防衛・政府需要の急拡大を受け、ユニコーン到達（評価額$1B超）。製造能力の拡張と防衛向け製品開発を加速。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$1B+</div></div>
+    </div>
+    <div class="f-card e">
+      <span class="r-badge">Series E</span>
+      <div class="f-amount">$230M</div>
+      <div class="f-detail">
+        <div class="f-date">2023年2月</div>
+        <div class="f-desc">Linse Capitalがリード。Andreessen Horowitz、IVP、Next47、DoCoMo、NVIDIA、UP.Partners、Axon、Hercules Capitalが参加。消費者市場撤退前後のエンタープライズ転換期の主要ラウンド。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$2.2B</div></div>
+    </div>
+    <div class="f-card late">
+      <span class="r-badge">Series E Ext.</span>
+      <div class="f-amount">$170M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年11月</div>
+        <div class="f-desc">Series Eの追加クローズ。KDDI（日本の通信会社）とAxonが新規参加。累計調達額が$715Mに到達。米陸軍SRRプログラムへの採用・$52M大型受注を受けた成長加速のための資金。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$2.5B</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>調達の特徴：</strong>NVIDIAの参加（Series E）は技術的な親和性の象徴。SkydioのドローンはオンボードにNVIDIA Jetsonプラットフォームを採用しており、NVIDIAにとってもエッジAIの重要な実証環境。KDDIの参加は日本市場展開・インフラ点検での協業を示唆。
+  </div>
+</div>
+
+<!-- ===================== 6. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.E</span>
+      <div class="vc-name">Linse Capital</div>
+      <div class="vc-role">Lead Investor, Series D & E</div>
+      <div class="vc-desc">Series DとEの両方でリード投資家を務めた成長株専門VC。KatieとMarcusのLinseが設立。防衛・テクノロジーへの深い知見を持ち、Skydioの最大支援者の一つ。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Initial — Seed</span>
+      <div class="vc-name">Andreessen Horowitz (a16z)</div>
+      <div class="vc-role">Seed〜Series E 全ラウンド参加</div>
+      <div class="vc-desc">2015年のシード段階から全ラウンドに参加し続けるシリコンバレーを代表するVC。「誰も見たことがない自律飛行」に賭けた初期のコンビクションが最大リターンにつながった形。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">NVIDIA</div>
+      <div class="vc-role">Series E 参加（2022年）/ 戦略的投資家</div>
+      <div class="vc-desc">Skydioのドローンに搭載されるJetsonプラットフォームのメーカー。顧客であり投資家でもある戦略的関係。エッジAI・自律システムの最前線ユースケースとしてSkydioを重視。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">IVP（Institutional Venture Partners）</div>
+      <div class="vc-role">Series B〜E 継続参加</div>
+      <div class="vc-desc">Twitter・Snap・GitHubなどを手がけた老舗成長VC。Series B以降全ラウンドに参加。成長ステージの企業への継続的な資本支援で知られる。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Next47（Siemens系）</div>
+      <div class="vc-role">Series C〜E 参加</div>
+      <div class="vc-desc">Siemensのグローバルベンチャー部門。産業用ドローン・インフラ点検という観点でSkydioに戦略的投資。Siemensのエネルギー・インフラ顧客へのアクセスを提供できる可能性。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Axon</div>
+      <div class="vc-role">Series E 参加 / 戦略的パートナー</div>
+      <div class="vc-desc">TASER・ボディカメラ・証拠管理プラットフォームで法執行機関向け製品を展開するAxonがSkydioに出資。Axonのエビデンス管理基盤との統合でスマートポリシング市場を共同開拓。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">KDDI</div>
+      <div class="vc-role">Series E Extension 参加（2024）</div>
+      <div class="vc-desc">日本の大手通信会社。5G×ドローンの文脈でSkydioとの協業を目指す戦略投資。日本市場でのインフラ点検・スマートシティ展開を見据えた布石。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Hercules Capital</div>
+      <div class="vc-role">Series E 参加</div>
+      <div class="vc-desc">テクノロジー・ライフサイエンス専門のベンチャーデット・成長ファンド。ベンチャーデットによる柔軟な資本供給でSkydioの成長を支援。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 7. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — 商用ドローン市場</div>
+      <div class="m-val">$54B+</div>
+      <div class="m-desc">2030年までの世界商用ドローン市場（防衛・企業・インフラ含む）</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — 米国防衛・企業</div>
+      <div class="m-val">$15B+</div>
+      <div class="m-desc">Skydioが直接競合する米国内の防衛・政府・インフラ点検・公共安全向けドローン市場</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — Blue UAS認定市場</div>
+      <div class="m-val">$3B+</div>
+      <div class="m-desc">Blue UAS認定が要件となる米政府調達の短中期獲得可能市場（2026年現在）</div>
+    </div>
+  </div>
+
+  <h3>Blue UAS制度 — 構造的優位の源泉</h3>
+  <p>米国防総省（DoD）が2020年に開始した<strong>Blue UAS（Blue Unmanned Aerial Systems）</strong>プログラムは、セキュリティ審査を通過した米国製ドローンのみを調達対象とする認定制度。中国のDJIはFCCのブラックリストにも登録されており、政府・防衛・重要インフラでの使用が実質禁止されている。</p>
+
+  <div class="callout">
+    <strong>Skydio X2DおよびX10D</strong>はいずれもBlue UAS最高認定を取得済み。競合他社を含む審査通過済みリストの中でも高機能・実績・量産体制を持つ唯一の存在として位置付けられ、米軍・政府の実質的な標準調達対象になっている。
+  </div>
+
+  <h3>未点検インフラという膨大な市場</h3>
+  <table class="t">
+    <thead>
+      <tr><th>インフラ種別</th><th>米国内規模</th><th>点検課題</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>橋梁</td><td>約61.5万橋</td><td>約40%が老朽化。人力点検は危険・高コスト</td></tr>
+      <tr><td>送電線</td><td>約435万km</td><td>目視・ヘリコプター点検が主流で非効率</td></tr>
+      <tr><td>風力発電設備</td><td>7万基超</td><td>高所・過酷環境での定期点検が必須</td></tr>
+      <tr><td>石油・ガスパイプライン</td><td>約477万km</td><td>広域・遠隔地での漏洩・腐食検出</td></tr>
+      <tr><td>鉄道</td><td>約25万km</td><td>軌道・トンネル・橋梁の複合点検</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合比較</div>
+
+  <div class="callout">
+    <strong>市場の本質：</strong>消費者ドローン市場ではDJIが70〜80%のシェアを持ち圧倒的だが、Skydioが戦うのは「Blue UAS認定が必要な政府・防衛・インフラ市場」。DJIはこの市場から事実上排除されており、Skydioは競合なしに近いポジションを持つ。
+  </div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">DJI（中国）</div>
+      <div class="comp-tag">最大の潜在脅威</div>
+      <div class="comp-desc">世界最大のドローンメーカー。消費者・民間向けで70〜80%のシェア。ただしFCCブラックリスト・DONDCリスト登録によりBlue UAS認定取得不可。米政府・軍・重要インフラでの使用は実質禁止。</div>
+      <div class="comp-strong"><span>Skydioの優位</span>規制による参入障壁が高く、直接競合できる市場でDJIはゼロ。ただし民間市場でのエコシステム・価格競争力は圧倒的。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Autel Robotics（中国系米国法人）</div>
+      <div class="comp-tag">部分的競合</div>
+      <div class="comp-desc">DJIの主な代替として台頭。2025年に消費者向けを縮小しエンタープライズに移行中。中国との資本・技術関係が疑問視されBlue UAS認定取得が困難な状況。</div>
+      <div class="comp-strong"><span>Skydioの優位</span>サプライチェーンの透明性・米国内製造でBlue UAS適合性が高く信頼性に差がある。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Red Cat Holdings（米国）</div>
+      <div class="comp-tag">防衛市場での競合</div>
+      <div class="comp-desc">小型防衛ドローンのメーカー。米陸軍SRRの次世代ラウンドでSkydioとの競合入札に勝利するなど、防衛調達の競争が激化している。Skydioは既存のT2を継続納品中。</div>
+      <div class="comp-strong"><span>Skydioの優位</span>既存SRRでの実績・量産体制・AI自律性での差別化。ただし価格競争リスクあり。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Parrot（フランス）</div>
+      <div class="comp-tag">欧州・企業向け</div>
+      <div class="comp-desc">欧州を本拠とするドローンメーカー。ANAFI USAシリーズはBlue UAS認定を取得。ただし量産体制・技術水準・自律飛行能力ではSkydioに大きく後れを取る。</div>
+      <div class="comp-strong"><span>Skydioの優位</span>自律飛行・AIの差別化と米国内製造の規模感でSkydioが大きく上回る。</div>
+    </div>
+  </div>
+
+  <h3>主要スペック比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>比較項目</th><th>Skydio X10D</th><th>DJI Matrice 30T</th><th>Autel EVO II Enterprise</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Blue UAS認定</td><td>取得済み（最高レベル）</td><td>非対象（中国製）</td><td>未取得（審査困難）</td></tr>
+      <tr><td>自律飛行能力</td><td>最高水準（Autonomy Engine）</td><td>中程度（ActiveTrack）</td><td>限定的</td></tr>
+      <tr><td>カメラ</td><td>48MP望遠+IR+ズーム</td><td>48MP+ズーム+IR</td><td>50MP+IR</td></tr>
+      <tr><td>最大飛行時間</td><td>約35分</td><td>約41分</td><td>约42分</td></tr>
+      <tr><td>政府調達適格性</td><td>全ての米政府調達に適格</td><td>不適格</td><td>事実上不適格</td></tr>
+      <tr><td>生産地</td><td>米国カリフォルニア</td><td>中国</td><td>中国（米拠点あり）</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 9. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">09</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">政府調達の集中リスク</div>
+        <div class="ind-desc">収益の大部分を米政府・軍向け大型契約に依存する構造。予算削減・政権交代・調達方針変更がビジネスに直撃するリスクが高い。実際に米陸軍SRRの次世代ラウンドではRed Catに契約を奪われており、特定契約への過度な依存が脆弱性となっている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">消費者事業撤退後の市場規模制約</div>
+        <div class="ind-desc">政府・インフラ・公共安全市場はDJIが排除されている分Skydioが独占に近いが、そもそもの市場規模が消費者ドローン市場より小さい。TAMの拡大に時間がかかる可能性があり、高バリュエーションを正当化する高成長維持が課題。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">DJI規制の変更リスク</div>
+        <div class="ind-desc">米中関係の変化や規制緩和によってDJIが再び米政府市場に参入できるようになった場合、Skydioの最大の護城河が失われる。また、DJIは技術・価格両面で大きく上回るため、政治的障壁なしでの競合は非常に困難。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">未上場・資金調達継続性</div>
+        <div class="ind-desc">累計$715Mを調達しながらもまだ収益化の規模が追いついていない。IPO市場の低迷・金利環境の変化で追加調達が困難になった場合の事業継続リスク。2025年売上約$295Mに対してバリュエーション$2.5Bはまだ高倍率で、利益化が遅れると圧力になる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">ハードウェア製造コストと拡張性</div>
+        <div class="ind-desc">ドローンは半導体・精密部品を多用するハードウェア製品。サプライチェーンの混乱・部品不足・製造コスト上昇が利益率を圧迫する。米国内製造のコスト競争力は中国勢に比べて構造的に不利であり、規模拡大に伴うマージン確保が経営課題。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">プライバシー・規制リスク</div>
+        <div class="ind-desc">法執行機関によるドローン活用が社会的な批判にさらされるリスク。住宅街でのDrone as First Responderプログラムや軍事転用に対する市民団体・規制当局の介入が事業制約となる可能性がある。FAA規制の変化もオペレーション制限につながりうる。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. NEWS ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">10</span>最近のニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年11月</span>
+          <span class="tl-title">Series E延長$170M調達 — バリュエーション$2.5B</span>
+        </div>
+        <div class="tl-body">KDDIとAxonが新規参加。累計調達額が$715M超に到達。日本での5G×ドローン展開とAxonとの警察向けプラットフォーム統合が本格化。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年中</span>
+          <span class="tl-title">米陸軍から$52M超の大型受注 — 陸軍史上最大の単一ベンダー小型戦術ドローン発注</span>
+        </div>
+        <div class="tl-body">Skydio X10Dが米陸軍Short Range Reconnaissance（SRR）Tranche 2の唯一調達対象として$52M超の発注を受領。陸軍史上最大規模の小型戦術ドローン単一発注と発表された。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2024年6月</span>
+          <span class="tl-title">Skydio X10D — DoD Blue UAS Cleared List最高認定取得</span>
+        </div>
+        <div class="tl-body">X10DがDoD Blue UASクリアードリストに追加。X2D以来2機種目の最高認定取得。防衛調達における参入障壁がさらに高まった。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年5月</span>
+          <span class="tl-title">SRR Tranche 2の初回納品完了</span>
+        </div>
+        <div class="tl-body">米陸軍SRR Tranche 2向けSkydio X10Dの初回システム納品が完了。Tranche 2において唯一の納品実績を持つメーカーとして確認。X10/X10Dの生産効率は1台9分に到達。出荷累計5万5000台超に。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年6月</span>
+          <span class="tl-title">国務省から$74M IDIQを受注</span>
+        </div>
+        <div class="tl-body">米国務省向けに先端ドローン技術を供給する$74M規模のIDIQ（Indefinite Delivery, Indefinite Quantity）契約を受注。政府市場での受注基盤が軍から外交・安全保障省庁にも拡大。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年7月</span>
+          <span class="tl-title">ノルウェー国防省が$9.4Mで選定</span>
+        </div>
+        <div class="tl-body">ノルウェー王国国防省がSkydio自律ドローンを$9.4Mで採用。NATO同盟国への展開が着実に進行中。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年8月</span>
+          <span class="tl-title">NSPA（NATO支援調達機関）がNano UASフレームワーク協定でSkydioを選定</span>
+        </div>
+        <div class="tl-body">NATOのSupport and Procurement Agency（NSPA）がNATO加盟国に対するSmall ISRドローン供給ベンダーとしてSkydioを採用。NATO全体への展開という大型の受注機会が開いた。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">注目</span>
+          <span class="tl-title">米陸軍次世代SRRでRed Catに敗北 — 競争激化</span>
+        </div>
+        <div class="tl-body">次世代SRRプログラムの入札でRed Cat Holdingsに契約を奪われるという出来事も発生。防衛市場での独占的地位が長期的に維持できるかは不確実性が残る。既存Tranche 2は継続中。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. KPI ===================== -->
+<div class="sec" id="kpi">
+  <div class="sec-label"><span class="num">11</span>財務指標・KPI（推定）</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">年間売上高（推定）</div><div class="v">約$295M（2025年）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約835名（2025年）</div></div>
+    <div class="kv-item"><div class="k">累計出荷台数</div><div class="v">5万5000台以上（2025年8月）</div></div>
+    <div class="kv-item"><div class="k">ソフトウェア比率</div><div class="v">約30%（サブスクリプション等）</div></div>
+    <div class="kv-item"><div class="k">主要顧客数</div><div class="v">1,500社以上</div></div>
+    <div class="kv-item"><div class="k">DoD全軍種への納品</div><div class="v">達成済み（全軍種・25か国同盟軍）</div></div>
+    <div class="kv-item"><div class="k">法執行機関数</div><div class="v">47州200以上</div></div>
+    <div class="kv-item"><div class="k">エネルギーユーティリティ数</div><div class="v">60以上</div></div>
+    <div class="kv-item"><div class="k">州DOT採用率</div><div class="v">全米50州DOTの50%超</div></div>
+    <div class="kv-item"><div class="k">生産速度</div><div class="v">X10系：9分/台</div></div>
+  </div>
+
+  <h3>収益規模の推移（推定）</h3>
+  <table class="t">
+    <thead>
+      <tr><th>年度</th><th>売上高（推定）</th><th>主なイベント</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>2021年</td><td>数十M$</td><td>Series D調達・ユニコーン認定・X2発売</td></tr>
+      <tr><td>2022年</td><td>$50〜100M（推定）</td><td>防衛・政府向け急拡大・X2D Blue UAS認定</td></tr>
+      <tr><td>2023年</td><td>$100〜150M（推定）</td><td>消費者事業撤退・X10発表・Series E $230M調達</td></tr>
+      <tr><td>2024年</td><td>$150〜250M（推定）</td><td>X10D Blue UAS認定・陸軍$52M受注・Series E延長</td></tr>
+      <tr><td>2025年</td><td>約$295M</td><td>SRR T2納品・国務省$74M・NSPA選定・NATO展開</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>SaaSシフトの重要性：</strong>ハードウェア販売1台あたりの収益は大きいが、ソフトウェアサブスクリプション（Skydio Cloud、3D Scan等）が30%を占めることで経常収益が安定化。ドローンを売った後も継続的な収益を生む「razor-and-blade」モデルに近づいている。
+  </div>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">地政学的追い風という「護城河」</div>
+        <div class="ind-desc">DJIの規制排除は単なる政策ではなく、米中デカップリングという長期トレンドの産物。どの政権でもリバーサルが難しい構造的変化であり、Skydioにとっては政策によって作られた競合ゼロの市場という稀有な恩恵。これを短期的なフォーチュンではなく長期的な護城河として活用できるかが問われる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">「技術で勝つ」が本物である証明</div>
+        <div class="ind-desc">Blue UAS規制がなくても、Skydioの自律飛行技術はインフラ点検・公共安全の現場で実際に価値を生み出している。規制の恩恵だけでなく<strong>技術的優位が実需を生んでいる</strong>ことが重要。MITロボティクス由来の技術力は10年以上の蓄積があり、容易に模倣できない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">ハードウェア＋SaaSで「飛ぶインフラ」を目指す</div>
+        <div class="ind-desc">Skydioの長期ビジョンは単なるドローンメーカーではなく、「インフラとしてのドローン」。Axonとの証拠管理統合・KDDIとの通信インフラ連携・NVIDIAとのエッジAI深化が示すように、ドローンを中心としたエコシステムを構築しつつある。SaaSの経常収益が高まるほど企業価値の安定性が増す。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">米軍・NATOという最高の顧客リファレンス</div>
+        <div class="ind-desc">米陸軍SRRの実戦採用・NATO加盟国への展開という実績は、技術の信頼性・信用度において最高レベルの「お墨付き」。政府・企業・インフラ事業者が「軍が使っているドローン」として採用を正当化しやすく、民間エンタープライズへのクロスセルを促進する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">IPO候補としての期待値</div>
+        <div class="ind-desc">累計$715M調達・バリュエーション$2.5B・年間売上$295Mという規模は、2026〜2027年のIPOを現実的な出口として示している。防衛×AIという市場の人気度・NATOへの地理的拡大・SaaSシフトが進むタイミングでの上場は高い評価を期待できる。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>Skydio is the leading U.S. autonomous-drone maker and a strategic domestic alternative to Chinese vendors like DJI, particularly for public-safety, utilities, and defense customers.</p>
+    <div class="attr">— Market Analysis, UAV Coach / Industry Consensus</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Skydio 公式ブログ — Series E・軍事契約・Blue UAS認定（skydio.com）</li>
+    <li>TechCrunch — "Skydio closing consumer drone business" (2023.08)</li>
+    <li>TechCrunch — "Drone manufacturer Skydio raises $170M extension" (2024.11)</li>
+    <li>Crunchbase News — "Drone-Maker Skydio Raises $230M at $2.2B Valuation"</li>
+    <li>DRONELIFE — "Skydio delivers first X10D systems for U.S. Army SRR T2" (2025.05)</li>
+    <li>Army Technology — Skydio X10D sUAS profile</li>
+    <li>Fly Eye — "Adam Bry CEO of Skydio — Innovator Series"</li>
+    <li>Fly Eye — "Abe Bachrach CTO of Skydio — Innovator Series"</li>
+    <li>Sacra — Skydio revenue, funding &amp; news</li>
+    <li>Wikipedia — Skydio</li>
+    <li>Contrary Research — Skydio Business Breakdown &amp; Founding Story</li>
+    <li>UAS Magazine — "DoD adds Skydio X10D to Blue UAS Cleared List"</li>
+  </ul>
+</div>
+
+</div>
+<footer class="snav-footer"><div class="snav-footer-sns"><a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a><a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a></div></footer>
+</body>
+</html>

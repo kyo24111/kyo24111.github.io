@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radiant Nuclear — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-content:hover { border-color: #aaaaaa; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .f-card.late { border-left: 3px solid var(--mid); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge,.f-card.d .r-badge,.f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-card.late .r-badge { background: var(--mid); color: #fff; border-color: var(--mid); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+  .f-val { text-align: right; flex-shrink: 0; }
+  .f-val .vl { font-size: 9.5px; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+  .f-val .vv { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav"><a class="snav-logo" href="/index.html">24111</a><button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button></div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec"><div class="snav-sec-label">030 Research</div><a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a><a class="snav-a" href="/030_research/033_legend/index.html">legend</a><a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a><a class="snav-a" href="/030_research/035_startup/index.html">startup</a></div>
+  <div class="snav-sec"><div class="snav-sec-label">040 Personal</div><a class="snav-a" href="/040_personal/profile/profile.html">profile</a><a class="snav-a" href="/040_personal/047_books/books.html">books</a><a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a></div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Nuclear Energy</span>
+    <span class="badge badge-white">Defense Tech</span>
+    <span class="badge badge-solid">Series D</span>
+  </div>
+  <h1>Radiant Nuclear</h1>
+  <p class="hero-sub">コンテナサイズに収まる可搬型核マイクロリアクター「Kaleidos」を量産化する米国スタートアップ。元SpaceXエンジニアが創業。米軍基地・遠隔地・データセンターへの展開を目指し、2026年にアイダホ国立研究所で米国50年ぶりの新炉型フルパワーテストを予定。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$518M+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">$1.8B</div><div class="lbl">Valuation (2025.12)</div></div>
+    <div class="kpi"><div class="val">1 MWe</div><div class="lbl">Kaleidos Output</div></div>
+    <div class="kpi"><div class="val">2020</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー</a></li>
+    <li><a href="#business">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">最近のニュース・マイルストーン</a></li>
+    <li><a href="#kpi">財務指標・KPI（推定）</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<!-- ===================== 01. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Radiant Industries, Inc.（通称：Radiant Nuclear）</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2020年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">El Segundo, California, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series D（2025年12月）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">5億1800万ドル以上（2026年4月時点）</div></div>
+    <div class="kv-item"><div class="k">バリュエーション</div><div class="v">18億ドル（2025年12月）</div></div>
+    <div class="kv-item"><div class="k">プロダクト</div><div class="v">Kaleidos（1MWe 可搬型核マイクロリアクター）</div></div>
+    <div class="kv-item"><div class="k">燃料形式</div><div class="v">TRISO燃料（高温ガス冷却、ヘリウム冷却）</div></div>
+    <div class="kv-item"><div class="k">ターゲット顧客</div><div class="v">米軍基地、遠隔地産業施設、データセンター</div></div>
+    <div class="kv-item"><div class="k">創業者</div><div class="v">Doug Bernauer（CEO）、Bob Urberger（CTO）</div></div>
+  </div>
+
+  <p>Radiant Nuclearは、可搬型の核マイクロリアクター「Kaleidos」を世界で初めて量産化することを目指すスタートアップ。コンテナ1個に収まるサイズで約1MWe（電気出力）を発電し、トラック・鉄道・船・航空機で輸送可能。現地での設置は48時間以内、燃料なし運転期間は最大5年間という設計。</p>
+
+  <p>2019年に米国防総省が「コンテナに収まる小型核炉の設計案」を公募した際、当時SpaceXで働いていた創業者２名がその要件を満たす設計を着想し、2020年に創業。a16z、Founders Fund、DCVC、Draper Associatesなど名だたる投資家が出資し、2025年12月のSeries Dで総累計5億1800万ドルを突破した。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>世界の遠隔地・最前線では今もディーゼル発電機が主力電源。燃料輸送コスト・CO₂排出・サイバー脆弱性という3つの課題を同時に解決できるのが核マイクロリアクター。Kaleidos 1基は標準的なディーゼル発電機数十台分の出力を5年間無補給で供給できる。
+  </div>
+</div>
+
+<!-- ===================== 02. TECHNOLOGY ===================== -->
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー</div>
+
+  <h3>Kaleidos — 可搬型核マイクロリアクター</h3>
+  <p>RadiantのフラッグシッププロダクトKaleidos（カレイドス）は、TRISO燃料とヘリウムガス冷却を組み合わせた高温ガス冷却炉（HTGR）。出力は約1MWe（電気）/ 3MWth（熱）。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">炉型</div><div class="v">高温ガス冷却炉（HTGR）</div></div>
+    <div class="kv-item"><div class="k">燃料</div><div class="v">TRISO（三層同心構造セラミックコーティング燃料粒子）</div></div>
+    <div class="kv-item"><div class="k">冷却材</div><div class="v">ヘリウムガス（水不要）</div></div>
+    <div class="kv-item"><div class="k">電気出力</div><div class="v">約1 MWe</div></div>
+    <div class="kv-item"><div class="k">熱出力</div><div class="v">約3 MWth（暖房・淡水化にも活用可）</div></div>
+    <div class="kv-item"><div class="k">燃料交換周期</div><div class="v">5年ごとに工場へ返却・再燃料化</div></div>
+    <div class="kv-item"><div class="k">サービス寿命</div><div class="v">20年</div></div>
+    <div class="kv-item"><div class="k">輸送形態</div><div class="v">コンテナ1個に収納。トラック・鉄道・船・空輸に対応</div></div>
+    <div class="kv-item"><div class="k">起動時間</div><div class="v">到着後48時間以内に電力供給開始</div></div>
+    <div class="kv-item"><div class="k">水冷要否</div><div class="v">不要（ヘリウム冷却のため砂漠・極地でも展開可）</div></div>
+  </div>
+
+  <h3>TRISO燃料の安全性</h3>
+  <p>TRISOとはTRi-structural ISOtropic粒子燃料の略。ウラン燃料粒子を炭化珪素（SiC）など複数層のセラミックシェルで包んだ構造で、事実上のメルトダウン防止機能を備える。燃料自体が容器として機能するため、炉心が過熱しても炉外への放射性物質の漏洩が物理的に起きにくい設計。X-energy、Ultra Safe Nuclear Corporationも採用する次世代核燃料の標準的アプローチ。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">受動的安全性（Passive Safety）</div>
+        <div class="ind-desc">能動的な冷却ポンプや緊急システムに依存しない設計。炉心温度が上昇すると核反応率が自然低下する「負の温度係数」を持ち、電源喪失時でも自己制御的に安全停止する。福島型の事故シナリオが物理的に起きない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">ヘリウム冷却のメリット</div>
+        <div class="ind-desc">水冷却炉と異なり、冷却材（ヘリウム）は放射化されにくく漏洩時の汚染リスクが極小。水源のない砂漠・極地・宇宙空間にも展開可能で、軍の前方作戦基地や離島への適合性が高い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">プリズマティック黒鉛ブロック構造</div>
+        <div class="ind-desc">燃料をプリズム形の黒鉛ブロックに埋め込む構造を採用。熱容量が大きく、急激な温度変化を緩衝する。コンパクトでモジュール構造のため、量産・輸送・保守が従来の原子炉より格段に容易。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">サイバーセキュリティ対応</div>
+        <div class="ind-desc">米軍向け設計として、電力網（グリッド）から切り離された独立型運用を前提に設計。グリッド接続不要のため、外部サイバー攻撃による停電シナリオを原理的に排除できる「アイランドモード」動作が可能。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>従来のディーゼル発電との比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>項目</th><th>Kaleidos（核マイクロリアクター）</th><th>ディーゼル発電機</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>出力</td><td>1 MWe / 5年間無補給</td><td>通常0.1〜0.5 MWe / 日次補給要</td></tr>
+      <tr><td>CO₂排出</td><td>ゼロエミッション</td><td>大量排出（CO₂・NOx）</td></tr>
+      <tr><td>燃料輸送</td><td>5年に1回のみ（炉体ごと工場送還）</td><td>毎日または毎週の危険物輸送が必要</td></tr>
+      <tr><td>設置時間</td><td>48時間以内に電力供給開始</td><td>数時間で起動可能</td></tr>
+      <tr><td>水源</td><td>不要</td><td>冷却水は不要だが消火水は必要</td></tr>
+      <tr><td>前線展開</td><td>トラック・空輸対応／サイバー攻撃耐性</td><td>燃料ライン攻撃で即停止のリスク</td></tr>
+      <tr><td>運用コスト（長期）</td><td>燃料輸送コストがほぼゼロで低い</td><td>燃料費・輸送費・人件費で高コスト</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 03. BUSINESS ===================== -->
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル・収益構造</div>
+
+  <h3>主な収益モデル</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">リアクター販売（ハードウェア販売）</div>
+        <div class="ind-desc">Kaleidos本体をエンドカスタマーに販売するモデル。米軍（USAF・陸軍）が最優先ターゲット。防衛調達は長期・大口契約が見込める一方、政府調達プロセスに時間がかかる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">長期サービス契約（燃料交換・メンテナンス）</div>
+        <div class="ind-desc">Kaleidos稼働中の保守・監視・5年毎の燃料交換をRadiantが一括管理するサービス契約。ハードウェア販売後の長期安定収益源。使用済み燃料はRadiantの工場に返却され再処理される設計。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">電力供給サービス（PaaS的モデル）</div>
+        <div class="ind-desc">商業顧客（データセンター・離島コミュニティ等）に対しては、炉体をRadiantが所有した上で電力供給契約を結ぶモデルも検討。Equinixとの20基プレオーダーは長期電力供給契約を前提としたもの。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>量産化と目標生産能力</h3>
+  <p>Radiantは「核マイクロリアクターを工場で量産する」という構想を掲げている。Series Dのプレスリリースでは<strong>2030年までに10基以上の生産コミットメントを確保済み</strong>と発表。年間50基規模の製造ラインを目指す。1基を低コストかつ短期間で製造・展開できる量産設計が、従来の原子力産業との最大の差異。</p>
+
+  <div class="callout">
+    <strong>アンカー顧客戦略：</strong>米軍（U.S. Air Force）が最初の顧客として機能することで、技術の実証・規制のクリア・ブランド信頼性の確立を同時に達成する構想。防衛向けで実績を積んだ後、商業市場（データセンター・離島・鉱山等）への横展開を狙う。
+  </div>
+
+  <h3>ターゲット用途</h3>
+  <div class="pills">
+    <span class="pill s">米軍前方作戦基地</span>
+    <span class="pill s">米空軍・陸軍基地</span>
+    <span class="pill s">データセンター（AI電力需要）</span>
+    <span class="pill">離島・遠隔コミュニティ</span>
+    <span class="pill">災害復旧・緊急電源</span>
+    <span class="pill">遠隔地鉱山・石油プラント</span>
+    <span class="pill">宇宙拠点電源（将来構想）</span>
+  </div>
+</div>
+
+<!-- ===================== 04. FOUNDERS ===================== -->
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">DB</div>
+      <div>
+        <h3>Doug Bernauer（ダグ・バーナウアー）</h3>
+        <div class="p-role">Co-Founder & CEO — Radiant Nuclear</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">前職</div><div class="val">SpaceX — 約12年在籍。「脚のついた最初のロケット」（Falcon 9の着陸脚システム）の設計など中核エンジニアリングを担当。Hyperloopプロジェクトにも関与。</div></div>
+      <div class="p-row"><div class="lbl">創業動機</div><div class="val">SpaceX時代に核電力とロケット推進システムを比較する試算を行い、核マイクロリアクターの桁外れのエネルギー密度に気づく。「最も困難な場所に電力を届ける問題を解く」ことをミッションに設定。</div></div>
+      <div class="p-row"><div class="lbl">専門</div><div class="val">構造設計、熱流体工学、航空宇宙システムエンジニアリング</div></div>
+      <div class="p-row"><div class="lbl">スタイル</div><div class="val">SpaceX流のファーストプリンシプル思考と垂直統合型開発を核産業に持ち込む「SpaceXアプローチで原子炉を作る」を標榜</div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">BU</div>
+      <div>
+        <h3>Bob Urberger（ボブ・アーバーガー）</h3>
+        <div class="p-role">Co-Founder & CTO — Radiant Nuclear</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">前職</div><div class="val">SpaceX — Doug Bernauerと同僚。ロケット開発の高密度エンジニアリング経験を持つ。</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">技術・設計の最高責任者。Kaleidos炉のシステム設計・安全解析・NRC申請を統括。</div></div>
+      <div class="p-row"><div class="lbl">強み</div><div class="val">核工学者ではなく宇宙工学者の視点で原子炉設計に取り組む。アルゴンヌ・アイダホ国立研究所の核科学者たちとの学習・協力関係を早期に構築。</div></div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We want to do for nuclear what SpaceX did for rockets — take something that was too expensive and complex for most people and make it affordable, reliable, and mass-producible.</p>
+    <div class="attr">— Doug Bernauer, CEO & Co-Founder, Radiant Nuclear</div>
+  </div>
+
+  <p>創業チームはSpaceX出身者を中心に構成されており、核産業の慣習にとらわれない垂直統合型・短サイクル開発を実践する。アルゴンヌ国立研究所・アイダホ国立研究所の核科学者を技術アドバイザーとして迎え、工学的スピードと核安全の厳密性を両立させている。</p>
+</div>
+
+<!-- ===================== 05. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Pre-Seed / Seed</span>
+      <div class="f-amount">~$2M</div>
+      <div class="f-detail">
+        <div class="f-date">2020〜2021年</div>
+        <div class="f-desc">Y Combinator参加（W21バッチ）。初期プロトタイプと概念検証。DOEから約230万ドルの政府助成金（ARPA-E関連）も取得。</div>
+      </div>
+    </div>
+    <div class="f-card a">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$12M</div>
+      <div class="f-detail">
+        <div class="f-date">2022年頃</div>
+        <div class="f-desc">初期VCラウンド。核マイクロリアクターの設計フェーズ加速と規制対応のための資金調達。</div>
+      </div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$40M</div>
+      <div class="f-detail">
+        <div class="f-date">2023年4月</div>
+        <div class="f-desc">Andreessen Horowitz（a16z American Dynamics）がリード。Founders Fundが初参加。フルスケール炉体プロトタイプの製造資金。累計調達額5500万ドルに。</div>
+      </div>
+      <div class="f-val"><div class="vl">Lead</div><div class="vv">a16z</div></div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C</span>
+      <div class="f-amount">$165M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年11月〜2025年5月</div>
+        <div class="f-desc">DCVCがリード（$100M発表 → $165Mでクローズ）。USQ、Felicis、Chevron Technology Ventures、StepStone、Giant Ventures、ARK Venture Fund、Hanwha Asset Management等が参加。累計2億2500万ドルに。</div>
+      </div>
+      <div class="f-val"><div class="vl">Lead</div><div class="vv">DCVC</div></div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">Series D</span>
+      <div class="f-amount">$300M+</div>
+      <div class="f-detail">
+        <div class="f-date">2025年12月</div>
+        <div class="f-desc">Draper Associates・Boost VCがリード。Founders Fund、ARK Venture Fund、Chevron Technology Venturesが追加参加。量産化加速・DOME施設テスト準備・軍納入体制整備のための資金。</div>
+      </div>
+      <div class="f-val"><div class="vl">Post-Money</div><div class="vv">$1.8B</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>政府支援：</strong>民間VCに加え、DOE（米エネルギー省）の「Nuclear Reactor Pilot Program（原子炉パイロットプログラム）」に11社の1社として選定。DOE-NEのAdvanced Nuclear Pilot Programに採択され、INL（アイダホ国立研究所）のDOME施設でのテストを国の支援のもとで実施できる。
+  </div>
+</div>
+
+<!-- ===================== 06. INVESTORS ===================== -->
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.D</span>
+      <div class="vc-name">Draper Associates</div>
+      <div class="vc-role">Lead Investor, Series D</div>
+      <div class="vc-desc">Tim Draperが主宰する伝説的VCファンド。SpaceXやTeslaへの早期投資で知られる。Series Dのリードを務め、核マイクロリアクター量産化への強い確信を示した。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.C</span>
+      <div class="vc-name">DCVC（Data Collective）</div>
+      <div class="vc-role">Lead Investor, Series C</div>
+      <div class="vc-desc">ディープテック・科学技術系スタートアップに特化したVC。Palantir共同創業者のMatt Ockoらが在籍。Series CのリードとしてRadiantの核安全技術と軍事需要の可能性を高く評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Andreessen Horowitz (a16z)</div>
+      <div class="vc-role">Lead Investor, Series B / American Dynamism</div>
+      <div class="vc-desc">Series BをAmerican Dynamics部門がリード。国家安全保障・防衛技術への積極投資を掲げるa16zがRadiantの米軍向けポジショニングを高く評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Founders Fund</div>
+      <div class="vc-role">Series B〜D継続参加</div>
+      <div class="vc-desc">Peter Thiel設立のVC。Series Bから継続参加し、Series Dでも追加投資。破壊的な物理テクノロジーへの投資哲学に合致したポートフォリオ。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Chevron Technology Ventures</div>
+      <div class="vc-role">Series C・D参加 / 戦略的投資家</div>
+      <div class="vc-desc">エネルギーメジャーChevronのCVC部門。遠隔地石油ガス施設への電力供給という観点からRadiantの技術を戦略的に重視。Series C・D双方に参加する強いコミットメント。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">ARK Venture Fund</div>
+      <div class="vc-role">Series C・D参加</div>
+      <div class="vc-desc">Cathie Wood率いるARK Investのベンチャー部門。破壊的イノベーション銘柄を長期保有するスタイルで、核マイクロリアクターのエネルギー転換インパクトを高く評価。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Boost VC</div>
+      <div class="vc-role">Lead Co-Investor, Series D</div>
+      <div class="vc-desc">SF/ディープテック特化のアクセラレーター兼VC。「スペース・核・AI」分野への積極投資で知られ、Draper Associatesとともにシリーズ Dのリードを務めた。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Union Square Ventures（USV）</div>
+      <div class="vc-role">Series C参加</div>
+      <div class="vc-desc">Fred Wilsonらが率いる老舗VC。TwitterやEtsy等のネットワーク企業投資で知られるが、エネルギー転換領域にも積極展開。Series Cから参加。</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 07. MARKET ===================== -->
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">07</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — 分散型電源市場</div>
+      <div class="m-val">$300B+</div>
+      <div class="m-desc">世界の分散型・オフグリッド発電市場。ディーゼル代替需要だけでも巨大</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — SMR / マイクロリアクター</div>
+      <div class="m-val">$50B</div>
+      <div class="m-desc">SMR・マイクロリアクター市場の2035年予測規模。CAGR約24%で成長中</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — 軍・遠隔地・データセンター</div>
+      <div class="m-val">$10B+</div>
+      <div class="m-desc">2030年時点のRadiantが直接狙えるターゲット市場規模（軍事基地電力＋AI向け電力）</div>
+    </div>
+  </div>
+
+  <h3>なぜ今マイクロリアクターなのか</h3>
+  <table class="t">
+    <thead>
+      <tr><th>需要ドライバー</th><th>内容</th><th>Radiantへの影響</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>AI / データセンター電力危機</td><td>ChatGPT等の普及でデータセンターの電力需要が急増。2030年までに米国の電力需要の10%以上を占める見通し</td><td>Equinixが20基プレオーダー済み。データセンター向けは巨大市場</td></tr>
+      <tr><td>米軍の燃料依存脆弱性</td><td>前方作戦基地への燃料補給は最も攻撃されやすいロジスティクスの弱点。1ガロンの前線輸送コストは数十〜数百ドルにのぼる</td><td>USAFとの2028年納入合意が既存。米陸軍Janusプログラムとの連携も</td></tr>
+      <tr><td>脱炭素規制・カーボンコスト</td><td>各国の炭素税・排出規制強化でディーゼル発電のコストが上昇中。核電力の実質CO₂排出は最も低い電源の一つ</td><td>ESG対応・規制コスト回避の観点で民間採用が加速する可能性</td></tr>
+      <tr><td>電力網の脆弱性・サイバー攻撃</td><td>グリッド依存のインフラはサイバー攻撃・自然災害で停電リスク。独立型電源への需要増大</td><td>Kaleidos独立運用（アイランドモード）はグリッド停電の影響ゼロ</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>軍事向けの特殊性：</strong>米国防総省は2019年に「Project Pele」で可搬型マイクロリアクターの要件定義を実施。軍の前方基地では燃料補給ロジスティクスの脆弱性が長年の課題で、核マイクロリアクターは「燃料なしで5年間動く独立電源」として国家安全保障上の優先事項として浮上している。
+  </div>
+</div>
+
+<!-- ===================== 08. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">08</span>競合比較</div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">Oklo</div>
+      <div class="comp-tag">最大競合</div>
+      <div class="comp-desc">Sam Altman（OpenAI CEO）が会長を務める核マイクロリアクタースタートアップ。液体金属冷却高速炉「Aurora」を開発。2024年にNASDAQに上場（時価総額約30億ドル前後）。「電力サービス契約型（PaaS）」モデルを採用。</div>
+      <div class="comp-strong"><span>Radiantとの差異</span>Okloは液体金属冷却・ナトリウム炉でより大出力（最大75MWe版も計画）。Radiantは小型可搬性（コンテナ1個・1MWe）に特化し、軍事展開を優先している点が異なる。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">X-energy</div>
+      <div class="comp-tag">技術類似・異なる規模</div>
+      <div class="comp-desc">TRISOペブル燃料を使う高温ガス炉「Xe-100」を開発。出力80MWe（Radiantより80倍大）。Amazon・Dow Chemicalが顧客。Jeff Immeltが会長。規模が異なり直接競合はしないが同じTRISO燃料エコシステムを共有。</div>
+      <div class="comp-strong"><span>Radiantとの差異</span>X-energyは大型工場・データセンターキャンパス向けで、軍前方基地への可搬型展開はRadiantの独自ポジション。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">NANO Nuclear Energy</div>
+      <div class="comp-tag">直接競合</div>
+      <div class="comp-desc">可搬型マイクロリアクター「KRONOS」（高温ガス冷却炉）を開発する上場スタートアップ。NASDAQ上場済み（時価総額は小規模）。遠隔地・防衛向けというコンセプトはRadiantと酷似。</div>
+      <div class="comp-strong"><span>Radiantとの差異</span>NANOはまだ実証炉の完成には至っておらず、資金力・開発ステージともにRadiantが先行。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Ultra Safe Nuclear（USNC）</div>
+      <div class="comp-tag">競合候補</div>
+      <div class="comp-desc">カナダ系のマイクロリアクター開発社。MMR（Micro Modular Reactor）を開発中。TRISO燃料を採用。カナダ政府・米軍向けにピッチしているが、開発ステージはRadiantと同程度か遅れている。</div>
+      <div class="comp-strong"><span>Radiantとの差異</span>資金調達規模・米国政府との連携深度でRadiantが優位。</div>
+    </div>
+  </div>
+
+  <h3>主要指標比較</h3>
+  <table class="t">
+    <thead>
+      <tr><th>会社名</th><th>出力</th><th>炉型・冷却材</th><th>調達額</th><th>上場/非上場</th><th>特徴</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Radiant Nuclear</td><td>1 MWe</td><td>HTGR / ヘリウム</td><td>$518M+</td><td>非上場</td><td>可搬型・量産・軍事優先</td></tr>
+      <tr><td>Oklo</td><td>1.5〜75 MWe</td><td>液体金属冷却高速炉</td><td>上場資本</td><td>NASDAQ上場</td><td>PaaSモデル・データセンター向け</td></tr>
+      <tr><td>X-energy</td><td>80 MWe</td><td>HTGR / ヘリウム（ペブル）</td><td>$2B+</td><td>非上場</td><td>大型工場・電力会社向け</td></tr>
+      <tr><td>NANO Nuclear</td><td>1〜5 MWe</td><td>HTGR / ヘリウム</td><td>小規模</td><td>NASDAQ上場</td><td>開発初期、規模小</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ===================== 09. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">09</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">規制・認可リスク（NRC許認可）</div>
+        <div class="ind-desc">米国で核施設を運用するには原子力規制委員会（NRC）の許認可が必要。Radiantは現在NRCとの事前申請協議（Pre-Application）段階にある。新設計炉の商業認可取得には通常5〜15年を要し、コストも膨大。DOEのDOMEテストはNRC認可前の試験的枠組みにすぎず、商業展開への道筋は長い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">技術実証リスク（初の量産炉型）</div>
+        <div class="ind-desc">2026年のINL DOEMEテストは、この設計の「初の実証」。紙上設計が現実の核動作条件下で予想通りに機能するかは未知数。過去の核スタートアップが実証フェーズで想定外の問題に直面し、開発中断・コスト超過に陥ったケースは多い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">TRISO燃料の供給チェーン</div>
+        <div class="ind-desc">TRISO燃料の商業製造は現在世界でも限られた施設のみが対応。米国ではX-energyのTRISO-Xがほぼ唯一の商業製造ラインを持つ。Radiantが量産する場合、燃料の安定供給確保が独立したサプライチェーンリスクとなる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">量産・コスト削減の難しさ</div>
+        <div class="ind-desc">「核マイクロリアクターの量産」は史上例がない試み。「SpaceXがロケットをやったように」というアナロジーは魅力的だが、核産業は宇宙産業よりはるかに規制・品質要件が厳格。量産目標のコスト水準に本当に到達できるかは未証明。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">使用済み燃料・廃棄物処理</div>
+        <div class="ind-desc">5年ごとに炉体ごと工場に返却するモデルは、使用済み核燃料の輸送・管理・再処理を意味する。米国の核廃棄物処理インフラは長年の政治的デッドロックで整備が遅れており、大規模展開時には廃棄物処理の制度的ボトルネックが顕在化する可能性がある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">社会的受容性・パブリックパーセプション</div>
+        <div class="ind-desc">「可搬型核炉をトラックで輸送」「軍基地や市街地近くに設置」というユースケースは、一般市民・地域コミュニティの強い反対を受けるリスクがある。特に「核」という言葉への根深い忌避感は、規制対応とは別の社会的障壁として事業展開を制約し得る。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 10. NEWS / MILESTONES ===================== -->
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">10</span>最近のニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年12月</span>
+          <span class="tl-title">Series D — 3億ドル超調達、評価額18億ドル</span>
+        </div>
+        <div class="tl-body"><b>Draper Associates・Boost VCがリードで3億ドル超のSeries D</b>を完了。Founders Fund、ARK Venture Fund、Chevronが追加投資。累計調達額は5億1800万ドルを突破。Series C締結からわずか半年での大型追加調達。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年12月</span>
+          <span class="tl-title">Equinix — 20基プレオーダー確定</span>
+        </div>
+        <div class="tl-body">データセンター大手Equinixが<b>Kaleidos 20基のプレオーダー</b>を正式確認。AI需要に対応する電力供給の一環として、2029〜2035年の導入を想定。Oklo等とも並行して複数の核電源プロバイダーと協業。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年11月</span>
+          <span class="tl-title">DOE — 安全解析書（PDSA）承認</span>
+        </div>
+        <div class="tl-body">米エネルギー省がKaleidos炉の<b>Preliminary Documented Safety Analysis（PDSA）を承認</b>。DOEの新認可パスウェイにおける3つの安全文書提出のうち2番目を完了。2026年のフルパワーテストへの重要な前提条件をクリア。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年8月</span>
+          <span class="tl-title">USAF — 2028年軍事基地への納入合意</span>
+        </div>
+        <div class="tl-body">米空軍（USAF）と<b>Advanced Nuclear Power for Installationsプログラム</b>の下で史上初の「軍事基地向け量産型核マイクロリアクター納入合意」を締結。36ヶ月以内の納入目標、48時間以内の起動を契約条件に含む。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年8月</span>
+          <span class="tl-title">DOE — Nuclear Reactor Pilot Programに選定</span>
+        </div>
+        <div class="tl-body">米エネルギー省が発表した<b>Nuclear Reactor Pilot Program</b>で全米11社に選定。INLのDOMEテストベッドへの優先アクセスと政府サポートを確保。2026年のフルスケールテスト実施への公式スタート。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2025年5月</span>
+          <span class="tl-title">Series C — 1億6500万ドルでクローズ</span>
+        </div>
+        <div class="tl-body">2024年11月発表の$100M Series CをStepStone・Giant Ventures等の追加参加で$165Mに拡大してクローズ。累計調達額2億2500万ドルへ。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date">2026年（予定）</span>
+          <span class="tl-title">INL DOME — フルスケールフルパワーテスト</span>
+        </div>
+        <div class="tl-body"><b>米国で約50年ぶりとなる新設計核炉のフルスケールテスト</b>をアイダホ国立研究所のDOME施設で実施予定。2026年7月4日に臨界達成を目標とする。テストは約1年間継続し、商業展開の安全データを取得。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header">
+          <span class="tl-date muted">2028年（目標）</span>
+          <span class="tl-title">初号機 — 米軍基地への実導入</span>
+        </div>
+        <div class="tl-body">USAF合意に基づく最初の実導入目標。量産ラインの立ち上げと並行して軍の審査・認証プロセスを進行中。年間50基規模の製造能力構築も目標に含む。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== 11. KPI ===================== -->
+<div class="sec" id="kpi">
+  <div class="sec-label"><span class="num">11</span>財務指標・KPI（推定）</div>
+
+  <div class="callout">
+    <strong>注記：</strong>Radiantは未上場であり財務情報を公開していない。以下は公表情報・業界標準・類似事例から推定した指標。
+  </div>
+
+  <table class="t">
+    <thead>
+      <tr><th>指標</th><th>現状（2026年4月推定）</th><th>目標（2028〜2030年）</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>累計調達額</td><td>5億1800万ドル以上</td><td>追加ラウンド or IPO想定</td></tr>
+      <tr><td>バリュエーション</td><td>18億ドル（2025年12月）</td><td>商業開始後は大幅上昇期待</td></tr>
+      <tr><td>売上収益</td><td>ほぼゼロ（開発・テスト段階）</td><td>2028年以降の軍納入で初収益</td></tr>
+      <tr><td>受注残高（プレオーダー）</td><td>10基以上確約済み、Equinix 20基含む</td><td>2030年までに数十〜数百基目標</td></tr>
+      <tr><td>従業員数</td><td>推定200〜300名</td><td>量産開始時に500名超想定</td></tr>
+      <tr><td>生産能力</td><td>プロトタイプ1基（テスト用）</td><td>年間50基規模の量産ライン構築目標</td></tr>
+      <tr><td>1基あたり想定価格</td><td>非公開（類似案件から数百万〜数千万ドル推定）</td><td>量産スケールで価格低下見込み</td></tr>
+      <tr><td>政府補助金・助成金</td><td>約230万ドル（DOE/ARPA-E）</td><td>DOE Pilot Program追加支援を期待</td></tr>
+    </tbody>
+  </table>
+
+  <h3>資本効率の観点</h3>
+  <p>Radiantの総調達額5億ドル超は、核産業の標準的な開発費と比べると異常に少ない（従来型炉は数十〜数百億ドル規模）。これはSpaceX流の「リーンな開発哲学」の実践とも言えるが、一方で量産・認可・燃料供給まで見通したときに資金が十分かどうかは未知数。Series Dの3億ドルは「量産体制構築」に充てられるとされており、2028年の初号機納入後に大型追加調達またはIPOを行う可能性が高い。</p>
+</div>
+
+<!-- ===================== 12. WHY ===================== -->
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">「核をSpaceXのようにスケールさせる」唯一のチーム</div>
+        <div class="ind-desc">従来の核産業は大型炉・一品製作・数十年単位の開発が常識だった。Radiantは「コンテナサイズ・工場量産・48時間起動」という全く異なるパラダイムで核エネルギーに挑む。この発想自体がSpaceXのファルコン9再利用と同質の破壊的転換を核産業に持ち込む試み。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">米軍という最強のアンカー顧客</div>
+        <div class="ind-desc">USAFとの2028年納入合意は単なる商談ではなく、<strong>米国政府公認の実証・品質保証の役割</strong>を果たす。軍事基地での稼働実績は民間展開の際に最強の信頼性証明となる。国家安全保障の文脈に組み込まれることで政治的保護も得られる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">AIデータセンター電力危機という巨大な追い風</div>
+        <div class="ind-desc">ChatGPT以降のAI爆発的普及でデータセンターの電力需要が未曾有のスピードで増大。Equinixが20基プレオーダーしたように、データセンター事業者は「再エネだけでは補えない安定電源」の切り札として核マイクロリアクターに注目し始めている。2024〜2025年に急速に形成された新しい市場。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">2026年のフルパワーテストが全てを決める</div>
+        <div class="ind-desc">2026年のINL DOEMEテストは「米国で50年ぶりの新設計炉の実証」という歴史的イベント。テストが成功すれば技術リスクが劇的に低下し、大規模資本流入・顧客確定・規制前進が加速する。Radiantのバリュエーションは成功時に現在の数倍に跳ね上がる可能性がある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">ベストインクラスの投資家構成</div>
+        <div class="ind-desc">a16z・Founders Fund・Draper Associates・DCVC・ARK・Chevronという投資家陣は「防衛テック×エネルギー転換×量産製造」を評価できる最高峰の顔ぶれ。Y Combinatorアラムナイとしての裾野広いネットワークも持ち、採用・調達・顧客開拓のすべての面でシリコンバレーの資源を活用できる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">エネルギー密度という物理的優位性</div>
+        <div class="ind-desc">核燃料のエネルギー密度は石油の約200万倍、ディーゼルの160万倍。「5年間無補給で1MW」というスペックは物理法則上、核以外では絶対に達成できない。この物理的モート（堀）は競合他社が一朝一夕に覆せない根本的な競争優位。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>Nuclear power is the most energy-dense power source available. A Kaleidos unit the size of a shipping container can power 1,000 homes for five years without refueling. Nothing else can do that.</p>
+    <div class="attr">— Doug Bernauer, CEO & Co-Founder, Radiant Nuclear</div>
+  </div>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Radiant Nuclear 公式サイト（radiantnuclear.com）</li>
+    <li>Radiant — Series D Announcement（2025.12）</li>
+    <li>Radiant — Series C Announcement（2024.11）</li>
+    <li>Radiant — USAF / DIU 契約発表（2025.08）</li>
+    <li>Radiant — DOE PDSA承認発表（2025.11）</li>
+    <li>Radiant — DOE DOME選定発表</li>
+    <li>TechCrunch — "Radiant Nuclear raises $300M" (2025.12)</li>
+    <li>Neutron Bytes — Radiant Series D / USAF Deal記事</li>
+    <li>ANS Nuclear Newswire — Reactor Pilot Program記事（2025.11）</li>
+    <li>Andreessen Horowitz — "Investing in Radiant" a16z公式</li>
+    <li>The Defense Post — "Portable Nuclear Reactor to Power US Military Base" (2025.08)</li>
+    <li>Equinix — Advanced Nuclear Deals Press Release</li>
+    <li>Tracxn — Radiant Nuclear Funding Data</li>
+    <li>Contrary Research — Radiant Business Breakdown</li>
+    <li>Idaho National Laboratory — DOME testbed announcement (2026.04)</li>
+    <li>Washington Technology — "Radiant closes $300M Series C" (2025.12)</li>
+  </ul>
+</div>
+
+</div>
+<footer class="snav-footer"><div class="snav-footer-sns"><a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a><a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a></div></footer>
+</body>
+</html>
