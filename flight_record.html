@@ -371,25 +371,53 @@ function gcPoints(c1, c2, n = 60) {
 function renderMapFlights(flights) {
   mapLayers.forEach(l => MAP.removeLayer(l));
   mapLayers = [];
-  const airports = new Set();
+
+  // city name lookup from flight data
+  const cityOf = {};
   flights.forEach(f => {
-    const c1 = AIRPORTS[f.dep_iata], c2 = AIRPORTS[f.arr_iata];
-    if (!c1 || !c2) return;
-    airports.add(f.dep_iata); airports.add(f.arr_iata);
-    const pts = gcPoints(c1, c2);
-    const line = L.polyline(pts, { color: '#111', weight: 1.2, opacity: 0.4 })
-      .bindPopup(`<b>${f.flight_no || ''}</b><br>${f.dep_iata} → ${f.arr_iata}<br>${f.date}`);
-    line.addTo(MAP);
-    mapLayers.push(line);
+    if (f.dep_iata && f.dep_city) cityOf[f.dep_iata] = f.dep_city;
+    if (f.arr_iata && f.arr_city) cityOf[f.arr_iata] = f.arr_city;
   });
-  airports.forEach(iata => {
+
+  // group flights per airport
+  const apFlights = {};
+  flights.forEach(f => {
+    [f.dep_iata, f.arr_iata].forEach(iata => {
+      if (!iata || !AIRPORTS[iata]) return;
+      (apFlights[iata] = apFlights[iata] || []).push(f);
+    });
+  });
+
+  Object.entries(apFlights).forEach(([iata, aFlights]) => {
     const c = AIRPORTS[iata];
-    if (!c) return;
-    const dot = L.circleMarker(c, { radius: 3, color: '#111', fillColor: '#111', fillOpacity: 1, weight: 0 })
-      .bindPopup(`<b>${iata}</b>`);
+    const count = aFlights.length;
+    const sorted = aFlights.slice().sort((a, b) => (a.date || '').localeCompare(b.date || ''));
+    const city = cityOf[iata] || '';
+
+    const rows = sorted.map(f => {
+      const d = f.date ? f.date.slice(2).replace(/-/g, '') : '–';
+      const route = `${f.dep_iata || '?'} → ${f.arr_iata || '?'}`;
+      const airline = f.airline || '';
+      return `<tr>
+        <td style="color:#999;padding-right:10px;white-space:nowrap;vertical-align:top">${d}</td>
+        <td style="padding-right:10px;white-space:nowrap;vertical-align:top;font-weight:600">${route}</td>
+        <td style="color:#666;vertical-align:top">${airline}</td>
+      </tr>`;
+    }).join('');
+
+    const html = `<div style="font-family:'SF Mono','Courier New',monospace;min-width:240px;max-width:290px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:2px;font-family:sans-serif">${iata}${city ? '<span style="font-weight:400;color:#888"> · ' + city + '</span>' : ''}</div>
+      <div style="color:#aaa;font-size:10px;margin-bottom:8px;font-family:sans-serif">${count} flight${count !== 1 ? 's' : ''}</div>
+      <table style="border-collapse:collapse;font-size:11px;width:100%"><tbody>${rows}</tbody></table>
+    </div>`;
+
+    const dot = L.circleMarker(c, {
+      radius: 4.5, color: '#111', fillColor: '#111', fillOpacity: 1, weight: 0
+    }).bindPopup(html, { maxWidth: 300 });
     dot.addTo(MAP);
     mapLayers.push(dot);
   });
+
   document.getElementById('mapStat').textContent = `${flights.length} flights`;
 }
 
