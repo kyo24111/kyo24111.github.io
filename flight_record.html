@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>24111 — Flight Record</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #fff; --surface: #f5f5f5; --surface2: #ebebeb;
+      --border: #e0e0e0; --text: #111; --mid: #444; --muted: #888; --dim: #ccc;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 14px; }
+
+    /* ── HEADER ── */
+    .page-header { background: #111; color: #fff; padding: 32px 48px 28px; }
+    .breadcrumb { font-size: 10px; letter-spacing: .1em; color: rgba(255,255,255,.25); margin-bottom: 10px; }
+    .breadcrumb a { color: rgba(255,255,255,.45); text-decoration: none; }
+    .header-bottom { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+    .page-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; }
+    .tab-bar { display: flex; gap: 6px; flex-shrink: 0; }
+    .tab-btn { background: none; border: 1px solid rgba(255,255,255,.25); color: rgba(255,255,255,.45); font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; padding: 5px 14px; cursor: pointer; transition: all .15s; }
+    .tab-btn.active { background: rgba(255,255,255,.12); border-color: rgba(255,255,255,.65); color: #fff; }
+    .tab-btn:hover:not(.active) { border-color: rgba(255,255,255,.45); color: rgba(255,255,255,.8); }
+
+    /* ── TABS ── */
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── MAP TAB ── */
+    .map-controls { display: flex; align-items: center; gap: 16px; padding: 16px 48px; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+    .ctrl-group { display: flex; align-items: center; gap: 8px; }
+    .ctrl-label { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+    .ctrl-input { font-family: 'Poppins', sans-serif; font-size: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); padding: 5px 10px; outline: none; }
+    .ctrl-input:focus { border-color: var(--mid); }
+    .ctrl-btn { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--text); background: var(--text); color: #fff; padding: 6px 16px; cursor: pointer; transition: all .15s; }
+    .ctrl-btn.secondary { background: none; color: var(--text); }
+    .ctrl-btn:hover { opacity: .75; }
+    .map-stat { font-size: 11px; color: var(--muted); margin-left: auto; }
+    #map { height: calc(100vh - 220px); min-height: 400px; }
+
+    /* ── STATS TAB ── */
+    .stats-container { max-width: 900px; padding: 48px 48px 80px; }
+    .stat-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 48px; }
+    .stat-card { background: var(--bg); padding: 24px 28px; }
+    .stat-card .s-label { font-size: 9px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .stat-card .s-val { font-size: 28px; font-weight: 700; letter-spacing: -.02em; line-height: 1; }
+    .stat-card .s-unit { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    .stats-section { margin-bottom: 40px; }
+    .stats-section h3 { font-size: 10px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 16px; }
+    .rank-table { width: 100%; border-collapse: collapse; }
+    .rank-table td { padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; vertical-align: middle; }
+    .rank-table td:first-child { width: 28px; font-size: 10px; color: var(--dim); font-weight: 600; }
+    .rank-table td:last-child { text-align: right; font-weight: 600; color: var(--mid); font-size: 12px; }
+    .rank-bar-wrap { height: 4px; background: var(--surface2); margin-top: 5px; }
+    .rank-bar { height: 4px; background: #111; }
+
+    .year-chart { display: flex; flex-direction: column; gap: 10px; }
+    .year-row { display: grid; grid-template-columns: 48px 1fr 36px; align-items: center; gap: 12px; font-size: 12px; }
+    .year-bar-wrap { height: 18px; background: var(--surface2); }
+    .year-bar { height: 18px; background: #111; }
+    .year-count { text-align: right; font-weight: 600; font-size: 12px; color: var(--mid); }
+
+    .stats-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+
+    /* ── RAW DATA TAB ── */
+    .data-container { padding: 32px 48px 80px; }
+    .data-controls { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; flex-wrap: wrap; }
+    .filter-select { font-family: 'Poppins', sans-serif; font-size: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); padding: 6px 10px; outline: none; cursor: pointer; }
+    .data-count { font-size: 11px; color: var(--muted); margin-left: auto; }
+    .flight-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .flight-table th { text-align: left; padding: 10px 14px; background: var(--surface); font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); border-bottom: 2px solid var(--border); cursor: pointer; user-select: none; white-space: nowrap; }
+    .flight-table th:hover { color: var(--text); }
+    .flight-table th.sorted { color: var(--text); }
+    .flight-table th .sort-icon { margin-left: 4px; font-size: 9px; }
+    .flight-table td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .flight-table tr:hover td { background: var(--surface); }
+    .route { font-weight: 600; }
+    .cls-badge { display: inline-block; font-size: 9px; font-weight: 700; letter-spacing: .08em; padding: 2px 7px; border: 1px solid var(--border); color: var(--muted); }
+    .cls-C { border-color: #111; color: #111; }
+    .cls-F { border-color: #111; color: #111; background: #111; color: #fff; }
+
+    /* ── LOAD UI ── */
+    .load-ui { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; gap: 16px; }
+    .load-ui p { font-size: 13px; color: var(--muted); }
+    .load-btn { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--text); background: none; color: var(--text); padding: 10px 24px; cursor: pointer; }
+    .load-btn:hover { background: var(--text); color: #fff; }
+    #csv-file-input { display: none; }
+
+    @media (max-width: 640px) {
+      .page-header { padding: 24px 20px 20px; }
+      .map-controls { padding: 12px 20px; }
+      .stats-container, .data-container { padding: 28px 20px 60px; }
+      .stat-cards { grid-template-columns: 1fr 1fr; }
+      .stats-two-col { grid-template-columns: 1fr; gap: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="breadcrumb"><a href="/index.html">24111</a> / 040 / 044 / 0441</div>
+  <div class="header-bottom">
+    <h1>Flight Record</h1>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchTab(this,'map')">Map</button>
+      <button class="tab-btn" onclick="switchTab(this,'stats')">Stats</button>
+      <button class="tab-btn" onclick="switchTab(this,'data')">Raw Data</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MAP ══ -->
+<div id="panel-map" class="tab-panel active">
+  <div class="map-controls">
+    <div class="ctrl-group">
+      <span class="ctrl-label">From</span>
+      <input type="month" id="fromDate" class="ctrl-input">
+    </div>
+    <div class="ctrl-group">
+      <span class="ctrl-label">To</span>
+      <input type="month" id="toDate" class="ctrl-input">
+    </div>
+    <button class="ctrl-btn" onclick="applyFilter()">Apply</button>
+    <button class="ctrl-btn secondary" onclick="resetFilter()">All</button>
+    <span class="map-stat" id="mapStat">—</span>
+  </div>
+  <div id="map"></div>
+</div>
+
+<!-- ══ STATS ══ -->
+<div id="panel-stats" class="tab-panel">
+  <div class="stats-container">
+    <div class="stat-cards" id="statCards">
+      <div class="stat-card"><div class="s-label">Total Flights</div><div class="s-val" id="sTotalFlights">—</div></div>
+      <div class="stat-card"><div class="s-label">Total Distance</div><div class="s-val" id="sTotalDist">—</div><div class="s-unit">km</div></div>
+      <div class="stat-card"><div class="s-label">Countries</div><div class="s-val" id="sCountries">—</div></div>
+      <div class="stat-card"><div class="s-label">Airports</div><div class="s-val" id="sAirports">—</div></div>
+    </div>
+    <div class="stats-two-col">
+      <div class="stats-section">
+        <h3>Top Airports</h3>
+        <table class="rank-table" id="airportTable"></table>
+      </div>
+      <div class="stats-section">
+        <h3>Top Airlines</h3>
+        <table class="rank-table" id="airlineTable"></table>
+      </div>
+    </div>
+    <div class="stats-section" style="margin-top:40px;">
+      <h3>Flights by Year</h3>
+      <div class="year-chart" id="yearChart"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RAW DATA ══ -->
+<div id="panel-data" class="tab-panel">
+  <div class="data-container">
+    <div class="data-controls">
+      <select class="filter-select" id="yearFilter" onchange="renderTable()">
+        <option value="">All Years</option>
+      </select>
+      <select class="filter-select" id="classFilter" onchange="renderTable()">
+        <option value="">All Classes</option>
+        <option value="Economy">Economy</option>
+        <option value="Business">Business</option>
+        <option value="First">First</option>
+      </select>
+      <span class="data-count" id="dataCount"></span>
+    </div>
+    <table class="flight-table" id="flightTable">
+      <thead>
+        <tr>
+          <th onclick="sortTable('date')">Date <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('flight_no')">Flight <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('dep_iata')">From <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('arr_iata')">To <span class="sort-icon">↕</span></th>
+          <th>Dep</th>
+          <th>Arr</th>
+          <th onclick="sortTable('seat')">Seat <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('class')">Class <span class="sort-icon">↕</span></th>
+          <th onclick="sortTable('distance_km')">Dist <span class="sort-icon">↕</span></th>
+        </tr>
+      </thead>
+      <tbody id="flightTbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ══ NO DATA UI ══ -->
+<div id="noDataUi" class="load-ui" style="display:none;">
+  <p>flights.csv を読み込んでください</p>
+  <button class="load-btn" onclick="document.getElementById('csv-file-input').click()">Load CSV</button>
+  <input type="file" id="csv-file-input" accept=".csv" onchange="loadFromFile(event)">
+</div>
+
+<script>
+// ── Airport coordinates ─────────────────────────────────────────────────────
+const AIRPORTS = {
+  // Japan
+  HND:[35.5494,139.7798], NRT:[35.7647,140.3864], KIX:[34.4273,135.2440],
+  ITM:[34.7854,135.4380], FUK:[33.5858,130.4511], CTS:[42.7752,141.6920],
+  OKA:[26.1958,127.6460], NGO:[34.8583,136.8050],
+  // Korea
+  ICN:[37.4691,126.4510], GMP:[37.5583,126.7940],
+  // China
+  PEK:[40.0801,116.5846], PKX:[39.5096,116.4105], PVG:[31.1443,121.8083],
+  SHA:[31.1979,121.3362], CAN:[23.3924,113.2988], SZX:[22.6390,113.8103],
+  // SE Asia
+  PNH:[11.5466,104.8439], REP:[13.4107,103.8123],
+  HKG:[22.3080,113.9185], TPE:[25.0797,121.2342], TSA:[25.0699,121.5518],
+  SIN:[1.3644,103.9915], BKK:[13.6900,100.7501], DMK:[13.9126,100.6069],
+  KUL:[2.7456,101.7099], CGK:[-6.1256,106.6559], DPS:[-8.7479,115.1672],
+  MNL:[14.5086,121.0194], SGN:[10.8188,106.6520], HAN:[21.2212,105.8071],
+  RGN:[16.9073,96.1332], BKI:[5.9373,116.0507], KBV:[8.0999,98.9869],
+  // South Asia
+  BOM:[19.0896,72.8656], DEL:[28.5562,77.1000], BLR:[13.1986,77.7066],
+  MAA:[12.9900,80.1693], HYD:[17.2313,78.4298], CCU:[22.6549,88.4467],
+  CMB:[7.1801,79.8841], KTM:[27.6966,85.3591], DAC:[23.8433,90.3978],
+  // Central Asia / Russia
+  SVO:[55.9736,37.4146], DME:[55.4088,37.9063], LED:[59.8003,30.2625],
+  ALA:[43.3521,77.0405], TAS:[41.2579,69.2812], ULN:[47.8431,106.7664],
+  // Middle East
+  DXB:[25.2532,55.3657], AUH:[24.4330,54.6511], DOH:[25.2609,51.6138],
+  KWI:[29.2267,47.9689], BAH:[26.2708,50.6336], AMM:[31.7226,35.9933],
+  BEY:[33.8209,35.4884], TLV:[32.0114,34.8867], MCT:[23.5932,58.2844],
+  // Africa
+  CAI:[30.1219,31.4056], ADD:[8.9779,38.7993], NBO:[-1.3192,36.9275],
+  DAR:[-6.8781,39.2026], JNB:[-26.1392,28.2460], CPT:[-33.9648,18.6017],
+  LOS:[6.5774,3.3213], ABV:[9.0068,7.2632], ACC:[5.6052,-0.1669],
+  ABJ:[5.2593,-3.9263], DKR:[14.7397,-17.4902], RAK:[31.6069,-8.0363],
+  CMN:[33.3675,-7.5900], ALG:[36.6910,3.2154], TUN:[36.8510,10.2272],
+  HRE:[-17.9318,31.0928], KRT:[15.5895,32.5532], MBA:[-4.0348,39.5942],
+  EBB:[0.0424,32.4436], RWF:[-1.9683,30.1395], LUN:[-15.3308,28.4526],
+  LAD:[-8.8585,13.2312], MPM:[-25.9207,32.5726], TNR:[-18.7969,47.4788],
+  SEZ:[-4.6744,55.5218], MRU:[-20.4302,57.6836],
+  // Europe
+  LHR:[51.4700,-0.4543], LGW:[51.1537,-0.1821], LCY:[51.5053,0.0553],
+  STN:[51.8850,0.2350], MAN:[53.3537,-2.2750], EDI:[55.9500,-3.3725],
+  CDG:[49.0097,2.5479], ORY:[48.7233,2.3794], NCE:[43.6584,7.2159],
+  AMS:[52.3086,4.7639], FRA:[50.0379,8.5622], MUC:[48.3537,11.7750],
+  BER:[52.3660,13.5033], HAM:[53.6304,10.0060], DUS:[51.2895,6.7668],
+  ZRH:[47.4647,8.5492], GVA:[46.2380,6.1092], BSL:[47.5895,7.5299],
+  FCO:[41.8003,12.2388], MXP:[45.6306,8.7281], VCE:[45.5053,12.3519], BLQ:[44.5354,11.2887],
+  MLA:[35.8575,14.4775],
+  MAD:[40.4936,-3.5676], BCN:[41.2974,2.0834], LIS:[38.7756,-9.1354],
+  BRU:[50.9014,4.4844], VIE:[48.1103,16.5697], PRG:[50.1008,14.2600],
+  WAW:[52.1657,20.9671], BUD:[47.4298,19.2611], HEL:[60.3172,24.9633],
+  OSL:[60.1939,11.1004], ARN:[59.6519,17.9186], CPH:[55.6180,12.6561],
+  ATH:[37.9364,23.9445], SKG:[40.5197,22.9709],
+  IST:[41.2753,28.7519], SAW:[40.8983,29.3092], ADB:[38.2924,27.1567],
+  OTP:[44.5722,26.1020], SOF:[42.6967,23.4063], ZAG:[45.7429,16.0688],
+  LUX:[49.6233,6.2044], BEG:[44.8184,20.3091], TGD:[42.3597,19.2519],
+  // Americas
+  JFK:[40.6413,-73.7781], EWR:[40.6895,-74.1745], LGA:[40.7772,-73.8726],
+  BOS:[42.3656,-71.0096], ORD:[41.9742,-87.9073], LAX:[33.9425,-118.4081],
+  SFO:[37.6213,-122.3790], SEA:[47.4502,-122.3088], MIA:[25.7959,-80.2870],
+  DFW:[32.8998,-97.0403], ATL:[33.6407,-84.4277], LAS:[36.0840,-115.1537],
+  DEN:[39.8561,-104.6737], HNL:[21.3187,-157.9224], YYZ:[43.6772,-79.6306],
+  OAK:[37.7213,-122.2208],
+  YVR:[49.1967,-123.1815], MEX:[19.4363,-99.0721], CUN:[21.0365,-86.8770],
+  GRU:[-23.4356,-46.4731], GIG:[-22.8099,-43.2505], EZE:[-34.8222,-58.5358],
+  SCL:[-33.3930,-70.7858], BOG:[4.7016,-74.1469], LIM:[-12.0219,-77.1143],
+  UIO:[-0.1292,-78.5751], GYE:[-2.1574,-79.8836], CCS:[10.6031,-66.9906],
+  // Oceania
+  SYD:[-33.9461,151.1772], MEL:[-37.6690,144.8410], BNE:[-27.3842,153.1175],
+  PER:[-31.9403,115.9669], AKL:[-37.0082,174.7917], CHC:[-43.4894,172.5322],
+};
+
+// ── State ───────────────────────────────────────────────────────────────────
+let FLIGHTS = [];
+let MAP = null;
+let mapLayers = [];
+let sortKey = 'date';
+let sortAsc = false;
+
+// ── CSV Parse ────────────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim());
+  return lines.slice(1)
+    .filter(l => l.trim())
+    .map(line => {
+      const vals = line.split(',').map(v => v.trim());
+      const obj = {};
+      headers.forEach((h, i) => obj[h] = vals[i] || '');
+      return obj;
+    });
+}
+
+// ── Load CSV (fetch → file picker fallback) ──────────────────────────────────
+async function loadData() {
+  try {
+    const resp = await fetch('./flights.csv');
+    if (!resp.ok) throw new Error();
+    const text = await resp.text();
+    FLIGHTS = parseCSV(text);
+    init();
+  } catch {
+    document.getElementById('noDataUi').style.display = 'flex';
+    document.getElementById('panel-map').style.minHeight = '300px';
+  }
+}
+
+function loadFromFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    FLIGHTS = parseCSV(ev.target.result);
+    document.getElementById('noDataUi').style.display = 'none';
+    init();
+  };
+  reader.readAsText(file);
+}
+
+// ── Init ─────────────────────────────────────────────────────────────────────
+function init() {
+  populateYearFilter();
+  initMap();
+  renderMapFlights(FLIGHTS);
+  renderStats(FLIGHTS);
+  renderTable();
+}
+
+// ── Tab ──────────────────────────────────────────────────────────────────────
+function switchTab(btn, panel) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + panel).classList.add('active');
+  if (panel === 'map' && MAP) MAP.invalidateSize();
+}
+
+// ── Map ──────────────────────────────────────────────────────────────────────
+function initMap() {
+  if (MAP) return;
+  MAP = L.map('map', { worldCopyJump: true }).setView([25, 10], 2);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '© OpenStreetMap © CARTO',
+    subdomains: 'abcd', maxZoom: 19
+  }).addTo(MAP);
+}
+
+function gcPoints(c1, c2, n = 60) {
+  const [lat1, lon1] = c1, [lat2, lon2] = c2;
+  const R = Math.PI / 180;
+  const p1 = [lat1*R, lon1*R], p2 = [lat2*R, lon2*R];
+  const d = 2 * Math.asin(Math.sqrt(
+    Math.sin((p2[0]-p1[0])/2)**2 + Math.cos(p1[0])*Math.cos(p2[0])*Math.sin((p2[1]-p1[1])/2)**2
+  ));
+  if (d < 0.001) return [[lat1,lon1],[lat2,lon2]];
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const f = i / n;
+    const A = Math.sin((1-f)*d)/Math.sin(d), B = Math.sin(f*d)/Math.sin(d);
+    const x = A*Math.cos(p1[0])*Math.cos(p1[1]) + B*Math.cos(p2[0])*Math.cos(p2[1]);
+    const y = A*Math.cos(p1[0])*Math.sin(p1[1]) + B*Math.cos(p2[0])*Math.sin(p2[1]);
+    const z = A*Math.sin(p1[0]) + B*Math.sin(p2[0]);
+    pts.push([Math.atan2(z, Math.sqrt(x*x+y*y))/R, Math.atan2(y,x)/R]);
+  }
+  return pts;
+}
+
+function renderMapFlights(flights) {
+  mapLayers.forEach(l => MAP.removeLayer(l));
+  mapLayers = [];
+  const airports = new Set();
+  flights.forEach(f => {
+    const c1 = AIRPORTS[f.dep_iata], c2 = AIRPORTS[f.arr_iata];
+    if (!c1 || !c2) return;
+    airports.add(f.dep_iata); airports.add(f.arr_iata);
+    const pts = gcPoints(c1, c2);
+    const line = L.polyline(pts, { color: '#111', weight: 1.2, opacity: 0.4 })
+      .bindPopup(`<b>${f.flight_no || ''}</b><br>${f.dep_iata} → ${f.arr_iata}<br>${f.date}`);
+    line.addTo(MAP);
+    mapLayers.push(line);
+  });
+  airports.forEach(iata => {
+    const c = AIRPORTS[iata];
+    if (!c) return;
+    const dot = L.circleMarker(c, { radius: 3, color: '#111', fillColor: '#111', fillOpacity: 1, weight: 0 })
+      .bindPopup(`<b>${iata}</b>`);
+    dot.addTo(MAP);
+    mapLayers.push(dot);
+  });
+  document.getElementById('mapStat').textContent = `${flights.length} flights`;
+}
+
+function applyFilter() {
+  const from = document.getElementById('fromDate').value;
+  const to   = document.getElementById('toDate').value;
+  const filtered = FLIGHTS.filter(f => {
+    const ym = f.date ? f.date.slice(0,7) : '';
+    if (from && ym < from) return false;
+    if (to   && ym > to)   return false;
+    return true;
+  });
+  renderMapFlights(filtered);
+}
+
+function resetFilter() {
+  document.getElementById('fromDate').value = '';
+  document.getElementById('toDate').value   = '';
+  renderMapFlights(FLIGHTS);
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────────
+function haversine(c1, c2) {
+  const R = 6371;
+  const dLat = (c2[0]-c1[0]) * Math.PI/180;
+  const dLon = (c2[1]-c1[1]) * Math.PI/180;
+  const a = Math.sin(dLat/2)**2 + Math.cos(c1[0]*Math.PI/180)*Math.cos(c2[0]*Math.PI/180)*Math.sin(dLon/2)**2;
+  return Math.round(2*R*Math.asin(Math.sqrt(a)));
+}
+
+function renderStats(flights) {
+  // Summary
+  const countries = new Set(flights.flatMap(f => [f.dep_country, f.arr_country]).filter(Boolean));
+  const airports  = new Set(flights.flatMap(f => [f.dep_iata, f.arr_iata]).filter(Boolean));
+  let totalDist = 0;
+  flights.forEach(f => {
+    if (f.distance_km) {
+      totalDist += parseInt(f.distance_km) || 0;
+    } else if (AIRPORTS[f.dep_iata] && AIRPORTS[f.arr_iata]) {
+      totalDist += haversine(AIRPORTS[f.dep_iata], AIRPORTS[f.arr_iata]);
+    }
+  });
+  document.getElementById('sTotalFlights').textContent = flights.length;
+  document.getElementById('sTotalDist').textContent = totalDist ? totalDist.toLocaleString() : '—';
+  document.getElementById('sCountries').textContent = countries.size || '—';
+  document.getElementById('sAirports').textContent  = airports.size  || '—';
+
+  // Top airports
+  const apCount = {};
+  flights.forEach(f => {
+    if (f.dep_iata) apCount[f.dep_iata] = (apCount[f.dep_iata]||0) + 1;
+    if (f.arr_iata) apCount[f.arr_iata] = (apCount[f.arr_iata]||0) + 1;
+  });
+  const topAP = Object.entries(apCount).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxAP = topAP[0]?.[1] || 1;
+  document.getElementById('airportTable').innerHTML = topAP.map(([ap,n]) =>
+    `<tr><td>${topAP.indexOf([ap,n])+1||''}</td><td>${ap}<div class="rank-bar-wrap"><div class="rank-bar" style="width:${n/maxAP*100}%"></div></div></td><td>${n}</td></tr>`
+  ).join('');
+  // Fix indexOf issue
+  const apRows = topAP.map(([ap,n],i) =>
+    `<tr><td>${i+1}</td><td>${ap}<div class="rank-bar-wrap"><div class="rank-bar" style="width:${n/maxAP*100}%"></div></div></td><td>${n}</td></tr>`
+  ).join('');
+  document.getElementById('airportTable').innerHTML = apRows;
+
+  // Top airlines
+  const alCount = {};
+  flights.forEach(f => { if (f.airline) alCount[f.airline] = (alCount[f.airline]||0) + 1; });
+  const topAL = Object.entries(alCount).sort((a,b)=>b[1]-a[1]).slice(0,10);
+  const maxAL = topAL[0]?.[1] || 1;
+  document.getElementById('airlineTable').innerHTML = topAL.map(([al,n],i) =>
+    `<tr><td>${i+1}</td><td>${al}<div class="rank-bar-wrap"><div class="rank-bar" style="width:${n/maxAL*100}%"></div></div></td><td>${n}</td></tr>`
+  ).join('');
+
+  // Flights by year
+  const byYear = {};
+  flights.forEach(f => { const y = f.date?.slice(0,4); if (y) byYear[y] = (byYear[y]||0)+1; });
+  const years = Object.keys(byYear).sort();
+  const maxY = Math.max(...Object.values(byYear), 1);
+  document.getElementById('yearChart').innerHTML = years.map(y =>
+    `<div class="year-row"><span>${y}</span><div class="year-bar-wrap"><div class="year-bar" style="width:${byYear[y]/maxY*100}%"></div></div><span class="year-count">${byYear[y]}</span></div>`
+  ).join('');
+}
+
+// ── Raw Data Table ────────────────────────────────────────────────────────────
+function populateYearFilter() {
+  const years = [...new Set(FLIGHTS.map(f => f.date?.slice(0,4)).filter(Boolean))].sort().reverse();
+  const sel = document.getElementById('yearFilter');
+  years.forEach(y => { const o = document.createElement('option'); o.value = y; o.textContent = y; sel.appendChild(o); });
+}
+
+function sortTable(key) {
+  if (sortKey === key) { sortAsc = !sortAsc; } else { sortKey = key; sortAsc = false; }
+  renderTable();
+}
+
+function renderTable() {
+  const yearF  = document.getElementById('yearFilter').value;
+  const classF = document.getElementById('classFilter').value;
+  let rows = FLIGHTS.filter(f => {
+    if (yearF  && f.date?.slice(0,4) !== yearF) return false;
+    if (classF && f.class !== classF) return false;
+    return true;
+  });
+  rows.sort((a,b) => {
+    const va = a[sortKey]||'', vb = b[sortKey]||'';
+    const cmp = isNaN(va) ? va.localeCompare(vb) : parseFloat(va) - parseFloat(vb);
+    return sortAsc ? cmp : -cmp;
+  });
+  document.getElementById('dataCount').textContent = `${rows.length} flights`;
+  const depCity  = r => r.dep_city  ? `<span style="font-size:11px;color:#888;margin-left:4px;">${r.dep_city}</span>` : '';
+  const arrCity  = r => r.arr_city  ? `<span style="font-size:11px;color:#888;margin-left:4px;">${r.arr_city}</span>` : '';
+  const dist     = r => {
+    if (r.distance_km) return r.distance_km.toLocaleString();
+    if (AIRPORTS[r.dep_iata] && AIRPORTS[r.arr_iata]) return haversine(AIRPORTS[r.dep_iata], AIRPORTS[r.arr_iata]).toLocaleString();
+    return '—';
+  };
+  const clsBadge = cls => `<span class="cls-badge cls-${(cls||'Y')[0]}">${cls||'—'}</span>`;
+  document.getElementById('flightTbody').innerHTML = rows.map(r => `
+    <tr>
+      <td>${r.date||'—'}</td>
+      <td>${r.flight_no||'—'}</td>
+      <td class="route">${r.dep_iata||'—'}${depCity(r)}</td>
+      <td class="route">${r.arr_iata||'—'}${arrCity(r)}</td>
+      <td>${r.dep_time||'—'}</td>
+      <td>${r.arr_time||'—'}</td>
+      <td>${r.seat||'—'}</td>
+      <td>${clsBadge(r.class)}</td>
+      <td style="text-align:right;">${dist(r)}</td>
+    </tr>`).join('');
+}
+
+// ── Boot ─────────────────────────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
