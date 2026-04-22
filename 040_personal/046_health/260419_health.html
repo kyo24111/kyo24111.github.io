@@ -186,6 +186,24 @@ table.raw tr.goal-row td {
 }
 table.raw tr.goal-row td:first-child { background: var(--bg); }
 
+/* ── SUB-TABS ── */
+.subtabs-bar {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+}
+.subtab-btn {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 8px 18px;
+  border: none; background: none; cursor: pointer;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color .15s, border-color .15s;
+}
+.subtab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+
 /* ── MSG ── */
 .msg {
   text-align: center; padding: 32px;
@@ -358,12 +376,14 @@ body{padding-top:56px!important;padding-bottom:68px!important}
 
 <!-- TABLE PANEL -->
 <div id="panel-table" style="display:none">
-  <div class="tbl-section">
-    <div class="sec-label">体組成</div>
+  <div class="subtabs-bar">
+    <button class="subtab-btn active" onclick="switchSubTab('body')">体組成</button>
+    <button class="subtab-btn" onclick="switchSubTab('cal')">カロリー</button>
+  </div>
+  <div id="subpanel-body">
     <div class="table-wrap" id="tbl-body"><div class="msg">loading...</div></div>
   </div>
-  <div class="tbl-section">
-    <div class="sec-label">カロリー記録</div>
+  <div id="subpanel-cal" style="display:none">
     <div class="table-wrap" id="tbl-cal"><div class="msg">loading...</div></div>
   </div>
 </div>
@@ -745,6 +765,15 @@ function renderTable(containerId, data, cols) {
 function renderTables() {
   renderTable('tbl-body', bodyData, BODY_COLS);
   renderTable('tbl-cal',  calData,  CAL_COLS);
+}
+
+// ── SUB-TABS ────────────────────────────────────────────────
+function switchSubTab(name) {
+  document.getElementById('subpanel-body').style.display = name === 'body' ? '' : 'none';
+  document.getElementById('subpanel-cal').style.display  = name === 'cal'  ? '' : 'none';
+  document.querySelectorAll('.subtab-btn').forEach((b, i) => {
+    b.classList.toggle('active', (i === 0) === (name === 'body'));
+  });
 }
 
 // ── TABS ────────────────────────────────────────────────────
