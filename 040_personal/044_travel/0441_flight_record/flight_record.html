@@ -385,6 +385,15 @@ function switchTab(btn, panel) {
   btn.classList.add('active');
   document.getElementById('panel-' + panel).classList.add('active');
   if (panel === 'map' && MAP) MAP.invalidateSize();
+  location.hash = panel;
+}
+
+function restoreTab() {
+  const hash = location.hash.replace('#', '');
+  const valid = ['stats', 'map', 'data'];
+  const panel = valid.includes(hash) ? hash : 'stats';
+  const btn = document.querySelector(`.tab-btn[onclick*="'${panel}'"]`);
+  if (btn) switchTab(btn, panel);
 }
 
 // ── Map ──────────────────────────────────────────────────────────────────────
@@ -607,7 +616,8 @@ function renderTable() {
 }
 
 // ── Boot ─────────────────────────────────────────────────────────────────────
-loadData();
+loadData().then(() => restoreTab());
+window.addEventListener('hashchange', () => restoreTab());
 </script>
 
 <!-- snav:footer -->
