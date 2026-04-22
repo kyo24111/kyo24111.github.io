@@ -121,6 +121,29 @@ body {
   font-family: 'Poppins', sans-serif; margin-top: 8px;
 }
 
+/* ── RANGE FILTER ── */
+.range-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+.range-btn {
+  font-family: 'Poppins', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: .08em;
+  padding: 5px 14px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: none; cursor: pointer;
+  color: var(--muted);
+  transition: all .15s;
+}
+.range-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+.range-btn:hover:not(.active) { border-color: var(--mid); color: var(--mid); }
+
 /* ── TABLES ── */
 .tbl-section { margin-bottom: 40px; }
 .sec-label {
@@ -278,6 +301,12 @@ body{padding-top:56px!important;padding-bottom:68px!important}
 
 <!-- CHART PANEL -->
 <div id="panel-chart">
+  <div class="range-bar" id="range-bar">
+    <button class="range-btn active" onclick="setRange(7)">7D</button>
+    <button class="range-btn" onclick="setRange(30)">30D</button>
+    <button class="range-btn" onclick="setRange(90)">90D</button>
+    <button class="range-btn" onclick="setRange(0)">ALL</button>
+  </div>
   <div class="chart-grid">
     <div class="chart-box" onclick="openModal('c-weight')">
       <div class="chart-title">体重 (kg)</div>
@@ -461,8 +490,27 @@ function fmtLabels(dates) {
 
 // ── STATE ───────────────────────────────────────────────────
 let bodyData = [], calData = [];
+let currentRange = 7;
 const charts   = {};
 const chartDefs = {};   // { id: { config, title, note } }
+
+// ── RANGE FILTER ────────────────────────────────────────────
+function getFilteredData(data) {
+  if (currentRange === 0 || !data.length) return data;
+  const maxDate = new Date(data[data.length - 1].date);
+  const cutoff  = new Date(maxDate);
+  cutoff.setDate(cutoff.getDate() - currentRange + 1);
+  return data.filter(d => new Date(d.date) >= cutoff);
+}
+
+function setRange(days) {
+  currentRange = days;
+  document.querySelectorAll('.range-btn').forEach(b => {
+    const map = { '7D': 7, '30D': 30, '90D': 90, 'ALL': 0 };
+    b.classList.toggle('active', map[b.textContent] === days);
+  });
+  renderCharts();
+}
 
 // ── LOAD ────────────────────────────────────────────────────
 function loadData() {
@@ -635,19 +683,21 @@ function closeModal() {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
 function renderCharts() {
-  const bd = fmtLabels(bodyData.map(d => d.date));
-  mkLine('c-weight',   fv(bodyData,'weight'),      bd, GOALS.weight,      63, 82, '体重 (kg)',      '目標 69.5 kg');
-  mkLine('c-fat',      fv(bodyData,'body_fat'),     bd, GOALS.body_fat,    11, 25, '体脂肪率 (%)',   '目標 15.3 %');
-  mkLine('c-visceral', fv(bodyData,'visceral_fat'), bd, GOALS.visceral_fat, 0, 15, '内臓脂肪レベル', '目標 6');
-  mkLine('c-water',    fv(bodyData,'body_water'),   bd, GOALS.body_water,  52, 65, '体水分率 (%)',   '目標 60.2 %');
+  const fb = getFilteredData(bodyData);
+  const bd = fmtLabels(fb.map(d => d.date));
+  mkLine('c-weight',   fv(fb,'weight'),      bd, GOALS.weight,      63, 82, '体重 (kg)',      '目標 69.5 kg');
+  mkLine('c-fat',      fv(fb,'body_fat'),     bd, GOALS.body_fat,    11, 25, '体脂肪率 (%)',   '目標 15.3 %');
+  mkLine('c-visceral', fv(fb,'visceral_fat'), bd, GOALS.visceral_fat, 0, 15, '内臓脂肪レベル', '目標 6');
+  mkLine('c-water',    fv(fb,'body_water'),   bd, GOALS.body_water,  52, 65, '体水分率 (%)',   '目標 60.2 %');
 
-  if (calData.length) {
-    const cd = fmtLabels(calData.map(d => d.date));
-    mkBar('c-calories', fv(calData,'calories'), cd, 1500, '摂取カロリー (kcal)', '目標 1,500 kcal/day');
-    mkLine('c-protein',  fv(calData,'protein'), cd, 130,  0, 200, 'タンパク質 (g)', '目標 130 g');
-    mkLine('c-fat-cal',  fv(calData,'fat'),      cd, null, 0, 200, '脂質 (g)',       '');
-    mkLine('c-carbs',    fv(calData,'carbs'),    cd, null, 0, 350, '炭水化物 (g)',   '');
-    mkLine('c-fiber',    fv(calData,'fiber'),    cd, null, 0,  30, '食物繊維 (g)',   '');
+  const fc = getFilteredData(calData);
+  if (fc.length) {
+    const cd = fmtLabels(fc.map(d => d.date));
+    mkBar('c-calories', fv(fc,'calories'), cd, 1500, '摂取カロリー (kcal)', '目標 1,500 kcal/day');
+    mkLine('c-protein',  fv(fc,'protein'), cd, 130,  0, 200, 'タンパク質 (g)', '目標 130 g');
+    mkLine('c-fat-cal',  fv(fc,'fat'),      cd, null, 0, 200, '脂質 (g)',       '');
+    mkLine('c-carbs',    fv(fc,'carbs'),    cd, null, 0, 350, '炭水化物 (g)',   '');
+    mkLine('c-fiber',    fv(fc,'fiber'),    cd, null, 0,  30, '食物繊維 (g)',   '');
   } else {
     ['c-calories','c-protein','c-fat-cal','c-carbs','c-fiber'].forEach(id => {
       const box = document.getElementById(id)?.closest('.chart-box');
