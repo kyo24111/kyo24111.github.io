@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panthalassa — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; line-height: 1.8; }
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero { background: var(--accent); color: var(--white); border-radius: 16px; padding: 40px 40px 36px; margin-bottom: 24px; position: relative; overflow: hidden; }
+  .hero::after { content: ''; position: absolute; bottom: -40px; right: -40px; width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,.04); pointer-events: none; }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; display: inline-block; }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 { font-family: 'Poppins', sans-serif; font-size: 2.4rem; font-weight: 800; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 12px; }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 22px 28px; margin-bottom: 32px; }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc li { counter-increment: toc; font-size: 13px; color: var(--text); padding: 4px 0; }
+  .toc li::before { content: counter(toc, decimal-leading-zero) ' '; font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .05em; margin-right: 6px; }
+  .toc li a { color: var(--text); text-decoration: none; }
+  .toc li a:hover { color: var(--accent); text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .sec-label .num { background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; flex-shrink: 0; }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 { font-family: 'Poppins', sans-serif; font-size: .82rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin: 24px 0 10px; padding-left: 10px; border-left: 2px solid var(--accent); }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 16px; border-top: 3px solid var(--accent); }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar { width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800; }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.a .r-badge,.f-card.b .r-badge,.f-card.c .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  /* Peter Thiel special section */
+  .thiel-block { background: var(--card); border: 2px solid var(--accent); border-radius: 12px; padding: 22px 24px; margin: 16px 0; }
+  .thiel-block h4 { color: var(--text); font-size: 1rem; margin-top: 0; }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+  <a class="snav-a" href="/040_personal/047_books/books.html">books</a>
+  <a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">Wave Energy</span>
+    <span class="badge badge-white">Ocean AI Compute</span>
+    <span class="badge badge-solid">Series B · Thiel-Led</span>
+  </div>
+  <h1>Panthalassa</h1>
+  <p class="hero-sub">波力で動く自走式フローティングノードを外洋に展開し、洋上で再生可能電力を生成・そのままAI推論コンピュートを実行する Public Benefit Corporation。2026年5月にPeter Thiel個人が$140Mシリーズ Bをリード、バリュエーション$10億のユニコーンに到達。「太陽光・原子力・外洋」を地球上の3大テラワット級エネルギー源と位置づけ、AI時代の電力ボトルネックを海から解く。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$140M</div><div class="lbl">Series B (2026.05)</div></div>
+    <div class="kpi"><div class="val">$218M+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">$1B</div><div class="lbl">Valuation</div></div>
+    <div class="kpi"><div class="val">2016</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#technology">コアテクノロジー</a></li>
+    <li><a href="#business">ビジネスモデル</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#thiel">Peter Thielとの関係性（厚め）</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">ニュース・マイルストーン</a></li>
+    <li><a href="#why">なぜ注目か</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Panthalassa, Inc.</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2016年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Portland, Oregon, USA</div></div>
+    <div class="kv-item"><div class="k">法人形態</div><div class="v">Public Benefit Corporation（公益法人型企業）</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series B（未上場・ユニコーン）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">2億1,800万ドル以上</div></div>
+    <div class="kv-item"><div class="k">直近バリュエーション</div><div class="v">約10億ドル（2026年5月）</div></div>
+    <div class="kv-item"><div class="k">展開拠点</div><div class="v">Oregon・Washington・北太平洋（実証海域）</div></div>
+    <div class="kv-item"><div class="k">事業形態</div><div class="v">波力発電 + 洋上AI推論コンピュート（自社展開・サービス販売）</div></div>
+    <div class="kv-item"><div class="k">創業者・CEO</div><div class="v">Garth Sheldon-Coulson（元 Bridgewater Associates）</div></div>
+  </div>
+
+  <p>Panthalassaは、外洋の波エネルギーを巨大なフローティングオーブで捕捉し、その電力で<strong>陸を介さず洋上で直接AI推論を実行</strong>する自走式コンピュートノードを開発する Public Benefit Corporation。会社名は地質時代の超大陸パンゲアを取り囲んだ単一海洋「Panthalassa（パンサラッサ／全大洋）」に由来し、人類がこれまで産業利用してこなかった<strong>外洋を「次のエネルギーフロンティア」</strong>として位置づけている。</p>
+
+  <p>2016年にオレゴンで創業。約10年間ステルスに近い形で技術開発を継続し、2021年にOcean-1プロトタイプ、2024年にOcean-2プロトタイプを海上展開。2026年5月にPeter Thielが個人として$140Mシリーズ Bをリードする調達を完了し、バリュエーション$10億のユニコーンに到達した。2026年中に<strong>Ocean-3パイロットシリーズを北太平洋に展開、2027年からの商業展開</strong>を計画。ポートランド近郊のパイロット製造拠点立ち上げが今回の調達の主要使途。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>「AIコンピュートに必要な電力を、人間が住む土地から外洋へ"逃がす"」。AIデータセンターが直面する電力不足・冷却問題・送配電制約を、外洋ノードへの分散展開で解く。発電・コンピュート・冷却・通信が一体化したノードを大量配備することで、陸上送電網にも変電所建設にも依存しない<strong>「電源の場所そのものを動かす」アプローチ</strong>。
+  </div>
+</div>
+
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">02</span>コアテクノロジー</div>
+
+  <h3>巨大フローティングオーブによる波力捕捉</h3>
+  <p>外洋上に展開される自走式フローティング球体ノードが波の上下動を機械的に捕捉し、ゼロエミッション電力に変換する。CEOのGarth Sheldon-Coulsonは「地球上でテラワット級の新規容量ポテンシャルを持つエネルギー源は太陽光・原子力・外洋の3つしかない」と発言しており、外洋は地表で最も未開発のテラワット級電源と位置づけられている。</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">波力発電（Wave Energy Capture）</div>
+        <div class="ind-desc">フローティングオーブが波の上下動を機械的に捕捉し電力に変換。陸上の太陽光・風力と異なり<strong>24時間連続発電</strong>でき、間欠性が大幅に低い。波力エネルギーは外洋全域で常に存在し、太陽光・風力の補完を超える独立電源となる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">オンボードAI推論コンピュート</div>
+        <div class="ind-desc">捕捉した電力を陸へ送電せず、<strong>ノード内に搭載したGPU/ASIC上で学習済みAIモデルの推論を直接実行</strong>。学習（training）ではなく推論（inference）に特化することで、レイテンシ・帯域要件を緩和し、洋上展開の経済合理性を確保。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">海水による自然超低温冷却</div>
+        <div class="ind-desc">深海の冷水（数百〜数千m深度の温度はほぼ一定で低温）を取水し、AIコンピュートチップを<strong>陸上データセンターの数分の1の冷却コスト</strong>で動作させる。冷却で水を蒸発させる必要がない（淡水資源消費ゼロ）点が陸上DCに対する根本的優位。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">LEO衛星によるデータ伝送</div>
+        <div class="ind-desc">推論結果のデータは低軌道衛星コンステレーション（Starlink等のLEO）経由で陸上クラウドへ送信。海底ケーブル敷設が不要で展開時間が短い。LEO衛星の普及（Starlink・Kuiper・OneWeb）と並走して経済合理性が成立した。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">自走（Autonomous Propulsion）</div>
+        <div class="ind-desc">ノード自体が自走機能を持ち、波力・風況の良い海域へ自律移動する。係留型のオフショア発電と異なり、需要・気象に応じて<strong>艦隊全体を最適配置</strong>できる。これがPanthalassa固有の差別化ポイント。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>陸上データセンターとの構造的差異</h3>
+  <table class="t">
+    <thead><tr><th>項目</th><th>陸上AIデータセンター</th><th>Panthalassa洋上ノード</th></tr></thead>
+    <tbody>
+      <tr><td>電源</td><td>系統電力（化石・原子力・再エネMIX）</td><td>洋上波力（ゼロエミッション・24h）</td></tr>
+      <tr><td>送電網</td><td>大規模変電所・高圧線が必須</td><td>不要（オンサイト消費）</td></tr>
+      <tr><td>冷却</td><td>淡水蒸発・空冷（年間数百万トンの水消費）</td><td>海水自然冷却（淡水消費ゼロ）</td></tr>
+      <tr><td>用地</td><td>大規模用地取得・住民対応が必要</td><td>外洋（住民対応・土地代ゼロ）</td></tr>
+      <tr><td>展開速度</td><td>許認可・建設で3〜5年</td><td>製造完了後すぐ展開可能</td></tr>
+      <tr><td>主用途</td><td>学習・推論両方</td><td>推論特化（latency緩めの用途）</td></tr>
+      <tr><td>通信</td><td>光ファイバー</td><td>LEO衛星</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">03</span>ビジネスモデル</div>
+  <p>現時点での公式モデル詳細は限定的だが、想定される収益構造は次の通り：</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">AI推論コンピュート販売（Compute-as-a-Service）</div>
+        <div class="ind-desc">洋上ノードのGPU/ASIC計算リソースをAI企業・クラウド事業者にスポット〜長期契約で販売。陸上DCより<strong>低い電力単価と冷却コスト</strong>を活かして競争力ある $/token または $/GPU-hour で提供する想定。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">ノード販売・運用受託（B2B / 政府向け）</div>
+        <div class="ind-desc">ハイパースケーラー（AWS・Azure・Google）や政府機関（DoD・NOAA等）向けにノードを直接販売、あるいはオーナーシップ付き運用受託モデル。Anduril・Palantir的な防衛・政府市場との接続も想定。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">余剰電力売却（将来構想）</div>
+        <div class="ind-desc">将来的にAI推論需要を超える発電容量が出れば、海底ケーブル経由で陸へ送電する、または水素・アンモニア合成して液体エネルギーキャリアとして陸へ輸送するルートも理論的に可能。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>戦略上の本質：</strong>Panthalassaは「発電会社」ではなく「コンピュート提供会社」として自社を位置づけている可能性が高い。電力単価そのものではなく、<strong>$/AI inference</strong> 単位での経済合理性で陸上DCに勝つというKPI設計。これにより化石燃料発電や系統電力との価格競争を回避できる。
+  </div>
+</div>
+
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">04</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">GS</div>
+      <div>
+        <h3>Garth Sheldon-Coulson（ガース・シェルドン＝クールソン）</h3>
+        <div class="p-role">Co-Founder & CEO — Panthalassa</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">前職</div><div class="val">Bridgewater Associates シニア・インベストメント・アソシエイト（世界最大のヘッジファンドでマクロ経済・エネルギー分析を担当）</div></div>
+      <div class="p-row"><div class="lbl">創業</div><div class="val">2016年、波力 × AI コンピュートの構想でPanthalassaを設立</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">技術ロードマップ・対外発信・資金調達を統括。「太陽光・原子力・外洋」フレームの提唱者</div></div>
+      <div class="p-row"><div class="lbl">スタイル</div><div class="val">10年近くステルスに近い形で技術を磨き、商業化準備が整った段階で初めて大型調達に踏み切る長期視点</div></div>
+    </div>
+  </div>
+
+  <h3>チームのバックグラウンド</h3>
+  <p>Panthalassa公式によれば、チームは航空宇宙・テック・研究機関・防衛・専門エンジニアリングから構成されている：</p>
+  <ul class="blist">
+    <li><strong>航空宇宙：</strong>SpaceX、Blue Origin、Boeing</li>
+    <li><strong>テック：</strong>Google、Apple、Amazon、Tesla、Microsoft</li>
+    <li><strong>研究機関：</strong>Los Alamos国立研究所、NASA、University of Michigan</li>
+    <li><strong>防衛：</strong>米空軍、米陸軍</li>
+    <li><strong>専門エンジニアリング：</strong>Navatek（船舶・海洋工学）、Stoke Space（再使用ロケット）</li>
+  </ul>
+  <p>外洋環境で動く重機械（耐腐食・耐波浪）＋AIチップ＋自律航行＋衛星通信という<strong>マルチドメイン融合プロダクト</strong>を作るのに必要な人材を、ステルス期間中に丁寧にスクラッチで集めてきている。</p>
+</div>
+
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">05</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Early Rounds</span>
+      <div class="f-amount">~$78M</div>
+      <div class="f-detail">
+        <div class="f-date">2016〜2024年（複数ラウンド）</div>
+        <div class="f-desc">シード〜シリーズ Aを含む早期ラウンドの累計。Founders Fund、Gigascale Capital、Lowercarbon Capital、Unless、WovenEarthらが参加。約10年のステルス期間中の資金調達。<b>Founders Fundがこの段階から既に参加</b>している点が後のThielリードSeries Bの伏線。</div>
+      </div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$140M</div>
+      <div class="f-detail">
+        <div class="f-date">2026年5月4日</div>
+        <div class="f-desc"><b>Peter Thielが個人として正式にリード。</b>バリュエーション$10億のユニコーンに到達。ポートランド近郊のパイロット製造拠点完成と Ocean-3 シリーズ展開に充当。John Doerr・Marc Benioff（TIME Ventures）・Max Levchin（SciFi Ventures）・Dylan Field（Figma CEO）らシリコンバレーの著名起業家・投資家が新規参加。Founders Fund・Gigascale・Lowercarbon・Unless・WovenEarthが返り咲き出資。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>累計：</strong>$218M+（うちSeries Bだけで$140M）。Portland発スタートアップ史上最大級のラウンドの一つと地元紙Silicon Floristが報道。
+  </div>
+</div>
+
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">06</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.B</span>
+      <div class="vc-name">Peter Thiel（個人）</div>
+      <div class="vc-role">Lead Investor, Series B (May 2026)</div>
+      <div class="vc-desc">PayPal・Palantir 共同創業者。Founders Fund創業者。ファンド経由ではなく<strong>個人キャピタルで$140Mラウンドをリード</strong>した点が異例。詳細は次セクション参照。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Returning</span>
+      <div class="vc-name">Founders Fund</div>
+      <div class="vc-role">Early rounds → Series B 継続</div>
+      <div class="vc-desc">Peter Thiel共同創設のVC。Anduril・SpaceX・Palantir・Stripe・Anthropic等次世代インフラ系の代表的バッカー。Panthalassaには早期から参加し、Series Bでも継続。Thiel個人のリードと二重で関与する形に。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Lowercarbon Capital</div>
+      <div class="vc-role">Returning Investor</div>
+      <div class="vc-desc">Chris Sacca（元Lowercase Capital創業者）の気候テック特化VC。クライメート× ディープテック領域で最も影響力のあるVCの一つ。早期から継続。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Gigascale Capital</div>
+      <div class="vc-role">Returning Investor</div>
+      <div class="vc-desc">脱炭素・大規模気候ソリューションに特化したVC。GW級・テラワット級規模で動かせる技術への投資が方針。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Unless</div>
+      <div class="vc-role">Returning / Series A 主要</div>
+      <div class="vc-desc">地球システムの限界を超えるテクノロジーに投資するクライメートVC。PanthalassaのSeries Aで2番目に大きな出資者だったと公開情報あり。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">WovenEarth Ventures</div>
+      <div class="vc-role">Returning Investor</div>
+      <div class="vc-desc">クライメート・サステナビリティ系VC。継続出資で長期コミットメントを示す。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">John Doerr（Kleiner Perkins）</div>
+      <div class="vc-role">New — Series B</div>
+      <div class="vc-desc">Google・Amazon・Netscapeへの伝説的初期投資家。"Speed & Scale"気候フレームワークの提唱者。「Panthalassa's autonomous wave power system is a game changer」と称賛。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">TIME Ventures（Marc Benioff）</div>
+      <div class="vc-role">New — Series B</div>
+      <div class="vc-desc">Salesforce創業者Marc Benioffのファミリーオフィス。海洋環境保全に強い個人的関心を持つ。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">SciFi Ventures（Max Levchin）</div>
+      <div class="vc-role">New — Series B</div>
+      <div class="vc-desc">PayPalマフィアの中核Max LevchinのVC。<strong>Thielと同じPayPalマフィア人脈</strong>がここでも連動。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Dylan Field（Figma CEO）</div>
+      <div class="vc-role">New — Series B（個人）</div>
+      <div class="vc-desc">Figma共同創業者・CEO。個人投資家として若手シリコンバレーCEOの代表的存在。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Sozo Ventures</div>
+      <div class="vc-role">New — Series B</div>
+      <div class="vc-desc">日本拠点のクロスボーダーVC（中島健率）。米国トップティアの案件を日本に持ち込む役割で知られ、Twitter・Coinbase等への日本側からの出資で実績。Panthalassaを<strong>日本市場（沿海AI推論ノード）への展開チャネル</strong>とする可能性。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Susquehanna Sustainable Investments</div>
+      <div class="vc-role">New — Series B</div>
+      <div class="vc-desc">Susquehanna International Group（SIG）の持続可能性投資部門。HFT・グローバル金融機関の戦略的ベット。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Hanwha Asset Management（USA）</div>
+      <div class="vc-role">New — Series B</div>
+      <div class="vc-desc">韓国Hanwhaグループの米国ベンチャーファンド。<strong>韓国財閥のAIインフラ投資</strong>として戦略的意味あり。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Fortescue Ventures</div>
+      <div class="vc-role">New — Series B</div>
+      <div class="vc-desc">豪鉄鉱石メジャーFortescueのVC部門。CEO Andrew Forrestはグリーンエネルギー・グリーン水素への大規模投資で知られる。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Anthony Pratt（Pratt Industries）</div>
+      <div class="vc-role">New — Series B（個人）</div>
+      <div class="vc-desc">豪パッケージング王・億万長者。米国製造業・気候技術への個人投資で知られる。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Super Micro Computer</div>
+      <div class="vc-role">New — Series B（戦略投資）</div>
+      <div class="vc-desc">AIサーバー大手Supermicro（NASDAQ: SMCI）が戦略出資。<strong>洋上ノード搭載GPUサーバーの供給連携</strong>が想定される事業的シナジー。</div>
+    </div>
+  </div>
+
+  <p style="margin-top:14px">その他、Future Positive・WTI・Nimble Partners・Planetary VC・Leblon Capital・Resilience Reserve・Portland Seed Fund・Intrepid Oregon Fundが新規参加。</p>
+</div>
+
+<div class="sec" id="thiel">
+  <div class="sec-label"><span class="num">07</span>Peter Thielとの関係性</div>
+
+  <p>Panthalassaの最大の特徴の一つは、Peter Thielが<strong>個人として直接$140Mラウンドをリードした</strong>こと。これはThielのキャリア全体を見ても極めて稀なパターンであり、彼の投資哲学・現在の戦略思考を象徴する案件として注目に値する。以下、ファクトとKyo観点での読み解きを分けて整理する。</p>
+
+  <h3>ファクト：二層構造のコミットメント</h3>
+
+  <div class="thiel-block">
+    <h4>① Founders Fund（機関）— 早期からの長期コミット</h4>
+    <p>Peter Thielが2005年に共同創業したVC。Panthalassaには<strong>Series Bより前のラウンドから既に出資</strong>しており、2026年5月のSeries Bでは「returning investor」として再度参加した。Founders Fundのポートフォリオは<strong>「次世代インフラ × ディープテック」</strong>に偏っており、Panthalassaの位置づけはSpaceX・Anduril・Palantir・Anthropicと同じ系譜にある。</p>
+  </div>
+
+  <div class="thiel-block">
+    <h4>② Peter Thiel個人 — Series B Lead</h4>
+    <p>2026年5月のSeries B $140MをThielが<strong>個人キャピタルでリード</strong>。これはAndurilへの初期支援（2017年、個人として参加）以来の珍しいパターン。Thielは通常Founders Fund経由で投資するが、本当に確信のある案件には個人としても重ねて入る習性がある。<strong>Andurilと同じレベルの確信度</strong>を持って臨んでいることが推察される。</p>
+  </div>
+
+  <h3>Thielのコメント（公式）</h3>
+
+  <div class="quote">
+    <p>The future demands more compute than we can imagine. Extra-terrestrial solutions are no longer science fiction. Panthalassa has opened the ocean frontier.</p>
+    <div class="attr">— Peter Thiel, Series B 発表時（2026.05）</div>
+  </div>
+
+  <p>この一文には Thielの世界観が凝縮されている：</p>
+  <ul class="blist">
+    <li><strong>"more compute than we can imagine"</strong> — AIスケーリング仮説への完全な賛同。陸上電力では足りないという認識</li>
+    <li><strong>"Extra-terrestrial solutions"</strong> — 宇宙データセンター（StarCloud等）の文脈を意識した発言。地表・海洋・宇宙のフロンティア競争として捉えている</li>
+    <li><strong>"ocean frontier"</strong> — 「Frontier」はThielの著作・対談で頻出する語。彼の世界観の中心軸</li>
+  </ul>
+
+  <h3>Thiel投資哲学との整合性（Zero to One的読解）</h3>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">Monopoly思想：誰もやっていない外洋に張る</div>
+        <div class="ind-desc">『Zero to One』の中核「競争を避け独占を作れ」。陸上AIデータセンターは既に過密な競争市場だが、外洋AI推論ノードは事実上<strong>Panthalassa以外に競合なし</strong>。波力という再エネ領域も既存大手プレイヤーが手を引いた市場で、ここで先行する企業が長期独占を取りに行ける構造。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">Contrarian Bet：誰も信じないものに張る</div>
+        <div class="ind-desc">「波力発電」は過去20年に多くのスタートアップが挫折してきた領域で、<strong>業界コンセンサスは『波力は商業化できない』</strong>。それでも10年ステルスで技術を作り続け、AI推論コンピュートというユースケースを得て急に経済合理性が立つ構図 — まさにThielが好む"逆張りが正解だった"パターン。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">"Secret"の存在：隠れた真実の発見</div>
+        <div class="ind-desc">Thielの問い「What important truth do very few people agree with you on?」への答えとして、Panthalassaが体現する「外洋にAIを置けば全ての制約（電源・冷却・用地・送電）が一気に解ける」というインサイトは強い"Secret"を持つ。10年間ステルスで磨いてきたという事実がさらにこの読解を補強する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Founder-CEO Supremacy</div>
+        <div class="ind-desc">創業者Garth Sheldon-Coulsonが10年間ブレずに同じビジョンを追ったFounder-CEO型のリーダー。Thielは「Founder-CEOの長期権限集中こそが優れた企業を作る」と一貫して主張しており、PanthalassaのFounder-driven性とフィット。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">"Substance over politics"のAI infraベット</div>
+        <div class="ind-desc">Thielは2022年にMeta取締役を退任、2023年以降はOpenAI/Sam Altmanとの距離も広がっている。Anthropic（Founders Fund経由）・Cognition・Andurilなど<strong>「AIモデル本体ではなく、AIを動かすインフラ」</strong>側に張る傾向が強い。Panthalassaはこの「インフラ側ベット」の最新形と位置づけられる。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Thielの"Frontier系"ポートフォリオの中での位置づけ</h3>
+
+  <table class="t">
+    <thead><tr><th>会社</th><th>フロンティア</th><th>Thiel関与</th><th>Panthalassaとの並列性</th></tr></thead>
+    <tbody>
+      <tr><td>SpaceX</td><td>宇宙（地球外）</td><td>Founders Fund 早期出資</td><td>陸を離れたフロンティア展開</td></tr>
+      <tr><td>Anduril</td><td>防衛 × 自律</td><td>Founders Fund + 個人</td><td>個人で重ねて入る稀少パターンの先例</td></tr>
+      <tr><td>Palantir</td><td>政府・防衛データ</td><td>共同創業</td><td>Public Benefit的なミッション性</td></tr>
+      <tr><td>Anthropic</td><td>AIモデル本体</td><td>Founders Fund</td><td>AI側 vs インフラ側の対をなす</td></tr>
+      <tr><td>StarCloud</td><td>宇宙データセンター</td><td>未確認（業界注目領域）</td><td>「Extra-terrestrial solutions」発言で意識</td></tr>
+      <tr><td><b>Panthalassa</b></td><td><b>外洋（海洋フロンティア）</b></td><td><b>Founders Fund + 個人 Lead</b></td><td><b>Andurilと同等の二層コミット</b></td></tr>
+    </tbody>
+  </table>
+
+  <h3>Sam Altman / OpenAI 文脈との対比（推察）</h3>
+
+  <p>2024年以降、AIコンピュート供給を巡って<strong>Sam Altman陣営 vs Thiel陣営の構図</strong>が浮上している：</p>
+
+  <ul class="blist">
+    <li><strong>Altman陣営：</strong>Stargate（OpenAI × Oracle × SoftBank）、Helion Energy（核融合）、Oklo（小型原子炉）など<strong>陸上の集中型インフラ</strong>を志向</li>
+    <li><strong>Thiel陣営：</strong>Anduril（防衛AI）、Anthropic（OpenAIに距離を置く構図）、そしてPanthalassa（分散型・洋上）<strong>分散型・代替型インフラ</strong>を志向</li>
+  </ul>
+
+  <p>Thielは2023年以降、Altmanとの個人的距離が広がっているとも報じられており、Panthalassaへの個人リードは「<strong>Altman中心のAI集権化アジェンダへのカウンターベット</strong>」として読める。少なくともAIコンピュート供給のオプショナリティを増やす投資姿勢は明確。</p>
+
+  <div class="callout">
+    <strong>本質的読解：</strong>Thielにとって Panthalassa は単なるクライメートテック投資ではない。「<strong>AI時代の電力ボトルネックを"集中型 vs 分散型"の対決として捉え、分散型インフラに張る</strong>」という長期テーゼの実装。海洋という"untouched frontier"に逆張りで張る点、創業者の10年ステルス耐性、Founders Fundと個人の二層コミット、PayPalマフィア人脈（Levchin等）との連動 — すべての要素がThielの投資原則と一致している。
+  </div>
+
+  <h3>Kyoにとっての示唆</h3>
+
+  <p>Panthalassaは「Wanderlust売却後のハードインフラ系（$10B+ Val）」を考えるKyoにとって、構造的な学びが多い案件：</p>
+  <ul class="blist">
+    <li>ステルスで10年技術を磨いた後にAI需要の急増で一気に立つ — タイミングが命題ではなく前提条件</li>
+    <li>「AIのコンピュート飢餓」というメガトレンドに対して、誰も見ていなかった海洋を答えとして提示</li>
+    <li>Thielが個人で張る案件のシグナル：Founder-CEO型・10年スケール・Frontier・Monopoly性</li>
+    <li>Public Benefit Corporation形態でVC調達を成立させている — ミッション × 商業性の両立の参考例</li>
+  </ul>
+</div>
+
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">08</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — AIインフラ電力市場</div>
+      <div class="m-val">$1T+</div>
+      <div class="m-desc">2030年までのAIデータセンター電力 + 設備投資累計</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — 推論用途</div>
+      <div class="m-val">$300B+</div>
+      <div class="m-desc">推論（inference）特化のクラウドコンピュート市場。学習よりレイテンシ要件が緩い</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — 沿海展開可能領域</div>
+      <div class="m-val">$30B+</div>
+      <div class="m-desc">米西海岸・東海岸・日本沿海・北欧・地中海等、初期実展開が現実的なエリア</div>
+    </div>
+  </div>
+
+  <h3>需要を加速する3つのマクロ要因</h3>
+  <table class="t">
+    <thead><tr><th>マクロ要因</th><th>影響</th><th>Panthalassaへの寄与</th></tr></thead>
+    <tbody>
+      <tr><td>AIデータセンターの電力不足</td><td>北米で2030年に200GW不足とDOE推計</td><td>陸上系統の外で電源を生むPanthalassaが唯一解の一つに</td></tr>
+      <tr><td>淡水資源制約</td><td>DC冷却用淡水消費が地域コミュニティと摩擦</td><td>海水冷却で淡水消費ゼロ → 規制圧力を回避</td></tr>
+      <tr><td>LEO衛星帯域の急増</td><td>Starlink等で海洋接続コストが急落</td><td>洋上ノードの通信経済合理性が初めて成立</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">09</span>競合比較</div>
+
+  <div class="comp-grid">
+    <div class="comp-card mid">
+      <div class="comp-name">Crusoe Energy</div>
+      <div class="comp-tag">代替インフラ</div>
+      <div class="comp-desc">ガスフレア（焼却ガス）を電源にしたモバイルAIデータセンター。陸上版の"代替電源 × AIコンピュート"先行例。バリュエーション数十億ドル。</div>
+      <div class="comp-strong"><span>差異</span>陸上 vs 洋上。Crusoeはガス田併設、Panthalassaは外洋。電源種類も化石 vs 再エネで対照的。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">StarCloud / Lonestar / Axiom Space</div>
+      <div class="comp-tag">宇宙データセンター</div>
+      <div class="comp-desc">低軌道・月軌道へのデータセンター展開を狙うスタートアップ群。Thielの「Extra-terrestrial solutions」発言と直接対応。</div>
+      <div class="comp-strong"><span>差異</span>展開コスト・遅延・通信帯域で大差。海洋はもっと現実的・近距離・大容量。同じ"フロンティア系"ながら経済合理性で先行。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Eavor / Fervo（地熱）</div>
+      <div class="comp-tag">代替再エネ</div>
+      <div class="comp-desc">地熱AIデータセンター用電源。陸上で完結する代替再エネ。Fervoはチーフタウン規模の電源確保で先行。</div>
+      <div class="comp-strong"><span>差異</span>地下 vs 海洋。地熱は地理的制約大、波力は外洋なら世界中で展開可能。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">CorPower Ocean / Eco Wave Power</div>
+      <div class="comp-tag">純波力発電</div>
+      <div class="comp-desc">波力発電に特化した既存企業。電力売電ビジネスモデル。発電のみで AI コンピュート統合なし。</div>
+      <div class="comp-strong"><span>差異</span>Panthalassaは"波力 + コンピュート"の垂直統合で電力単価競争を回避。</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>競合構造の本質：</strong>真の競合は「陸上AIデータセンター + 新規電源（原子力・SMR・地熱）」のセット。Panthalassaは"陸を捨てて外洋に行く"という根本的な異質さで差別化される。直接比較できる競合は存在せず、ジャンル自体が新規。
+  </div>
+</div>
+
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">10</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">海洋環境の物理的過酷さ</div>
+        <div class="ind-desc">外洋は波・嵐・腐食・生物付着の極限環境。10年生き残るハードウェア設計は陸上機器の数倍難しく、信頼性実証の積み上げが商業展開の前提。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">通信コスト・帯域のLEO依存</div>
+        <div class="ind-desc">StarlinkなどLEO通信が前提。Starlinkの価格戦略変更・帯域制限・規制でビジネスモデルが崩れるリスク。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">国際海洋法・規制リスク</div>
+        <div class="ind-desc">公海展開は領海・EEZ・国際海洋法条約等の規制と接する。各国の規制当局・国連海洋法との交渉が長期化する可能性。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">大手ハイパースケーラー参入</div>
+        <div class="ind-desc">AWS・Google・Microsoftが類似モデルを内製する可能性。Microsoftは2018年からNatickプロジェクトで海中DC実証を進めていた前例あり。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">推論ユースケースに依存した経済モデル</div>
+        <div class="ind-desc">レイテンシ緩めの推論用途に限定される設計。リアルタイム推論や学習用途には不向き。AIワークロード構成の変化次第で市場が縮みうる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">製造スケールアップ</div>
+        <div class="ind-desc">ポートランド近郊のパイロット製造拠点はまだ立ち上げ中。Ocean-3展開 → 商業フェーズ移行で大規模製造能力が試される。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">11</span>ニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2016年</span><span class="tl-title">Panthalassa 創業</span></div>
+        <div class="tl-body">Garth Sheldon-Coulsonがオレゴンで創業。Public Benefit Corporationとして設立。約10年のステルス開発期間に入る。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2021年</span><span class="tl-title">Ocean-1 プロトタイプ海上展開</span></div>
+        <div class="tl-body">初の海上展開実証。波力捕捉と自走機能の基礎技術を検証。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2024年</span><span class="tl-title">Ocean-2 プロトタイプ海上展開</span></div>
+        <div class="tl-body">太平洋でOcean-2をテスト展開。発電量・コンピュート連携・通信の統合実証。専用YouTubeに展開映像が公開されている。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年5月4日</span><span class="tl-title">Series B $140M — Peter Thielがリード</span></div>
+        <div class="tl-body"><b>Peter Thiel個人がリード投資家として参加。バリュエーション$10億のユニコーンに到達。</b>Founders Fund・Lowercarbon・Gigascale・Unless・WovenEarthが返り咲き出資。John Doerr・Marc Benioff・Max Levchin・Dylan Field等のシリコンバレー著名人が新規参加。Sozo Venturesも参加し日本展開チャネルを示唆。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年（予定）</span><span class="tl-title">Ocean-3 パイロット展開（北太平洋）</span></div>
+        <div class="tl-body">Ocean-3シリーズを北太平洋に展開予定。AI推論能力の実証 + 製造プロセスのリファインが目的。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2027年（予定）</span><span class="tl-title">商業展開フェーズ移行</span></div>
+        <div class="tl-body">パイロットを経て商業ノード展開に移行予定。最初の顧客契約・規模出荷が始まる年。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">12</span>なぜ注目か</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">"AIコンピュート飢餓"という最大級メガトレンドへの逆張り解</div>
+        <div class="ind-desc">陸上電源逼迫・水資源制約・送電網限界というAIインフラ業界が直面する3つの構造制約を、外洋へ"逃がす"ことで一気に解く。誰も見ていなかった海洋を答えとして提示する点で完全な逆張り。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">10年ステルスで技術を磨いた創業者</div>
+        <div class="ind-desc">2016年創業から約10年、ハードテックを地道に磨き続けた。「タイミング × 技術の独自性 × ステルス耐性」の組み合わせがThielが好むFounder像と一致。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">Peter Thiel個人のリード — 最強のシグナル</div>
+        <div class="ind-desc">Founders Fund経由ではなく個人で$140Mラウンドをリードしたことは、Andurilへの個人参加と並ぶレベルの確信シグナル。投資家コミュニティ全体が"Thielが個人で張る案件"として注目する構図に。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">マルチドメイン人材の磁場</div>
+        <div class="ind-desc">SpaceX・Boeing・NASA・Tesla・米軍・Stoke Spaceなど他社では集まりにくいマルチドメイン人材を集めている。"Hard tech × AI × Ocean"という極めて狭い交差点で他社が真似できないチーム形成。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">日本市場との接点（Sozo Ventures参加）</div>
+        <div class="ind-desc">Sozo VenturesがSeries B新規投資家に入っており、日本（島国・電力課題・LEO接続性）へのクロスボーダー展開チャネルがすでに敷かれている。エネルギー輸入大国・海岸線が長い日本にとって戦略的シナジーが大きい。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>There are three sources of energy on the planet with tens of terawatts of new capacity potential: solar, nuclear, and the open ocean.</p>
+    <div class="attr">— Garth Sheldon-Coulson, Co-Founder & CEO</div>
+  </div>
+
+  <div class="quote">
+    <p>Panthalassa's autonomous wave power system is a game changer in addressing global energy needs and clean power generation.</p>
+    <div class="attr">— John Doerr, Kleiner Perkins</div>
+  </div>
+</div>
+
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Panthalassa 公式サイト（panthalassa.com）</li>
+    <li>BusinessWire — Panthalassa Raises $140M to Power AI at Sea (2026.05.04)</li>
+    <li>GeekWire — Data centers at sea: Panthalassa nets $140M led by Peter Thiel</li>
+    <li>ESG Today — Peter Thiel Leads $140M Capital Raise for Panthalassa</li>
+    <li>Tom's Hardware — Palantir co-founder Peter Thiel backs $140M wave-powered AI startup</li>
+    <li>ImpactAlpha — Climate investors team with Peter Thiel to back Panthalassa</li>
+    <li>Data Centre Magazine — Inside Panthalassa Ocean AI Floating Data Centres</li>
+    <li>Energy Digital — Panthalassa: The Floating, Wave-Powered Data Centre Unicorn</li>
+    <li>IT Pro — Panthalassa has opened the ocean frontier</li>
+    <li>TechRadar — A billion-dollar bet on floating data centers</li>
+    <li>Silicon Florist — One of the largest rounds in Portland startup history</li>
+    <li>PitchBook — Panthalassa company profile (544747-24)</li>
+    <li>Yahoo Finance / Benzinga — Peter Thiel-Backed Ocean Compute Coverage</li>
+    <li>Techloy — Peter Thiel Invests $140M Into Panthalassa</li>
+  </ul>
+</div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</footer>
+</body>
+</html>
