@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crusoe Energy — Startup Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; line-height: 1.8; }
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  .hero { background: var(--accent); color: var(--white); border-radius: 16px; padding: 40px 40px 36px; margin-bottom: 24px; position: relative; overflow: hidden; }
+  .hero::after { content: ''; position: absolute; bottom: -40px; right: -40px; width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,.04); pointer-events: none; }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; display: inline-block; }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 { font-family: 'Poppins', sans-serif; font-size: 2.4rem; font-weight: 800; line-height: 1.2; letter-spacing: -.02em; margin-bottom: 12px; }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 620px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  .toc { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 10px; padding: 22px 28px; margin-bottom: 32px; }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc li { counter-increment: toc; font-size: 13px; color: var(--text); padding: 4px 0; }
+  .toc li::before { content: counter(toc, decimal-leading-zero) ' '; font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .05em; margin-right: 6px; }
+  .toc li a { color: var(--text); text-decoration: none; }
+  .toc li a:hover { color: var(--accent); text-decoration: underline; }
+
+  .sec { margin-bottom: 48px; }
+  .sec-label { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+  .sec-label .num { background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; flex-shrink: 0; }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h3 { font-family: 'Poppins', sans-serif; font-size: .82rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; margin: 24px 0 10px; padding-left: 10px; border-left: 2px solid var(--accent); }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 22px; margin-bottom: 16px; border-top: 3px solid var(--accent); }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar { width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800; }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.seed  { border-left: 3px solid var(--dim); }
+  .f-card.a,.f-card.b,.f-card.c,.f-card.d,.f-card.e { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.d .r-badge, .f-card.e .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 80px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .market-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin: 12px 0; }
+  .market-box { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; }
+  .market-box.tam { border-top: 3px solid var(--accent); }
+  .market-box.sam { border-top: 3px solid var(--mid); }
+  .market-box.som { border-top: 3px solid var(--muted); }
+  .market-box .m-label { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+  .market-box .m-val { font-family: 'Poppins', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--text); line-height: 1; margin-bottom: 6px; }
+  .market-box .m-desc { font-size: 11.5px; color: var(--muted); line-height: 1.5; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.threat { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.threat .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+  .comp-strong { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text); }
+  .comp-strong span { color: var(--muted); font-size: 9.5px; font-family: 'Poppins', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: 3px; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  ul.blist { list-style: none; display: flex; flex-direction: column; gap: 6px; padding: 0; }
+  ul.blist li { padding-left: 14px; position: relative; font-size: 13.5px; color: var(--text); line-height: 1.7; }
+  ul.blist li::before { content: ''; position: absolute; left: 0; top: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  .pivot-block { background: var(--card); border: 2px solid var(--accent); border-radius: 12px; padding: 22px 24px; margin: 16px 0; }
+  .pivot-block h4 { color: var(--text); font-size: 1rem; margin-top: 0; }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid, .market-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+  <a class="snav-a" href="/040_personal/047_books/books.html">books</a>
+  <a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Startup Research</span>
+    <span class="badge badge-white">AI Factory</span>
+    <span class="badge badge-white">Vertically Integrated DC</span>
+    <span class="badge badge-solid">Series E · Pre-IPO</span>
+  </div>
+  <h1>Crusoe Energy</h1>
+  <p class="hero-sub">フレアガス（油田で焼却される廃棄ガス）でBitcoinマイニングを始めた会社が、2023〜2024年にAIインフラへフルピボットし、わずか2年で<strong>テキサス・アビリーンに1.2GW級のStargateフラッグシップDC</strong>を建設してOpenAI/Oracleに納品。"電源調達 → DC設計建設 → AIクラウド" を垂直統合する「AI Factory Company」として、Series E $1.375Bを$10B超バリュエーションで完了。NVIDIA・Mubadala・Founders Fund・Valor が連名で張る、現時点で<strong>世界最速ペースで電力 × AIコンピュートを束ねている会社</strong>。</p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$1.375B</div><div class="lbl">Series E (2025.10)</div></div>
+    <div class="kpi"><div class="val">~$2.77B</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">$10B+</div><div class="lbl">Valuation</div></div>
+    <div class="kpi"><div class="val">2.1 GW</div><div class="lbl">Abilene DC Pipeline</div></div>
+    <div class="kpi"><div class="val">2018</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#pivot">事業ピボット：マイニングからAIへ</a></li>
+    <li><a href="#technology">コアテクノロジー・垂直統合モデル</a></li>
+    <li><a href="#abilene">Abileneキャンパス（Stargate）</a></li>
+    <li><a href="#business">ビジネスモデル・収益構造</a></li>
+    <li><a href="#founders">創業者・経営チーム</a></li>
+    <li><a href="#funding">資金調達履歴</a></li>
+    <li><a href="#investors">主要投資家</a></li>
+    <li><a href="#customers">主要顧客・パートナー</a></li>
+    <li><a href="#market">市場規模・機会</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#risks">主要リスク</a></li>
+    <li><a href="#news">ニュース・マイルストーン</a></li>
+    <li><a href="#why">なぜ注目か（Kyo観点）</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">01</span>会社概要</div>
+  <div class="kv">
+    <div class="kv-item"><div class="k">正式名称</div><div class="v">Crusoe（旧 Crusoe Energy Systems, Inc.）</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2018年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Denver, Colorado, USA</div></div>
+    <div class="kv-item"><div class="k">ステージ</div><div class="v">Series E（未上場・Pre-IPO）</div></div>
+    <div class="kv-item"><div class="k">累計調達額</div><div class="v">約27.7億ドル（15ラウンド）</div></div>
+    <div class="kv-item"><div class="k">直近バリュエーション</div><div class="v">100億ドル超（Series E、2025年10月）</div></div>
+    <div class="kv-item"><div class="k">事業領域</div><div class="v">AI factory（電源調達 + DC設計建設 + AIクラウド）</div></div>
+    <div class="kv-item"><div class="k">主要拠点</div><div class="v">Abilene TX（1.2→2.1GW）、北米33サイト＋他</div></div>
+    <div class="kv-item"><div class="k">創業者</div><div class="v">Chase Lochmiller（CEO）、Cully Cavness（President & COO）</div></div>
+    <div class="kv-item"><div class="k">社名由来</div><div class="v">Daniel Defoe『Robinson Crusoe』— 孤島の"stranded resources"を活かす象徴</div></div>
+  </div>
+
+  <p>Crusoeは2018年、Chase Lochmiller（前職：Polychain Capital）と Cully Cavness（前職：Western Capital、エネルギー業界出身）がコロラドのハイキング中に着想した会社。「<strong>油田で焼却（フレア）されている廃棄ガスをモジュラー型データセンターで使えば、CO2排出を抑えつつ"stranded power"を価値化できる</strong>」という構想からスタート。当初は Bitcoin マイニング、続いて HPC/AI へとワークロードを移し、<strong>2023〜2024年にAIインフラへフルピボット</strong>。2024年にマイニング事業をNYDIGに売却して以降は、純粋なAIインフラ企業として「AI Factory Company」を標榜する。</p>
+
+  <p>2025年10月、Valor Equity Partners と Mubadala Capital が共同リードする<strong>Series E $1.375B</strong>を$10B超のバリュエーションで完了。NVIDIA、Founders Fund、Fidelity、T. Rowe Price、Tiger Global、Salesforce Ventures、Supermicro、Altimeter、Ribbit、Spark Capital など30社超が参加するオーバーサブスクライブ。2026年3月時点では、さらに$10B超を上回るステップアップでpre-IPOラウンドを募集中（Axios報道）。Crusoeは "Stargate"（OpenAI × Oracle × SoftBank の$500B AIインフラ JV）の<strong>テキサス・アビリーン拠点を設計建設した本人</strong>であり、現時点で「AIインフラの実装側」を象徴する企業に位置づけられる。</p>
+
+  <div class="callout">
+    <strong>コア命題：</strong>AI時代の電力ボトルネックを解く方法は「系統電力に並ぶ」ことではなく、<strong>「電源とDCを最初から一体設計する」</strong>こと。Crusoeは天然ガス焚き発電所、ガスタービン、GE Vernova LM2500XPRESS、Lancium Clean Campus（再エネ・系統需要応答）、自社AIクラウドまで<strong>垂直統合</strong>し、許認可〜稼働までの時間を従来の3〜5年から1〜2年に短縮する。
+  </div>
+</div>
+
+<div class="sec" id="pivot">
+  <div class="sec-label"><span class="num">02</span>事業ピボット：マイニングからAIへ</div>
+
+  <p>Crusoeの最大の特異点は、<strong>事業構造ごとピボットして成功した稀少例</strong>であること。ピボット前後で投資家・経営チーム・コア技術（フレアガス回収＋モジュラーDC）は引き継ぎつつ、ワークロードと顧客層を根本から入れ替えた。</p>
+
+  <div class="pivot-block">
+    <h4>① 2018〜2022：フレアガス × Bitcoinマイニング</h4>
+    <p>Permian盆地・Bakken等の油田に「Digital Flare Mitigation (DFM) システム」を設置し、本来焼却されるはずだったガスで発電 → モバイル型Bitcoinマイニングリグを稼働。<strong>2024年時点で33サイト超</strong>、年間68万トン超のGHG排出を回避したと公表。マイニング市場の競争激化＋AI需要の急増を見て移行を決断。</p>
+  </div>
+
+  <div class="pivot-block">
+    <h4>② 2023：HPC/AIワークロード（Crusoe Cloud）への移行</h4>
+    <p>2023年に「Crusoe Cloud」を立ち上げ、フレアガス由来電力でHPC/AIの推論・学習を実行するクラウド事業を開始。マイニングと並行してAI需要を取り込む二刀流期間。</p>
+  </div>
+
+  <div class="pivot-block">
+    <h4>③ 2024年4月：Bitcoinマイニング事業をNYDIGに売却</h4>
+    <p>2024年4月、Crusoeはマイニング事業を<strong>NYDIG（米国大手BTCマイナー/カストディアン）に売却</strong>し、AIインフラへフルピボット。この時点で会社のアイデンティティは「ガス × マイニング」から「ガス × AI Factory」へ完全移行。</p>
+  </div>
+
+  <div class="pivot-block">
+    <h4>④ 2024〜2026：AI Factory企業への変態</h4>
+    <p>Lancium Clean Campus（テキサス・アビリーン）にOracle Cloud Infrastructure (OCI)向け1.2GW級DC、続いて<strong>Microsoft向け900MW新キャンパス</strong>を増設し合計2.1GW規模に。NVIDIA GB200 Blackwellラック搭載。Engine No.1とのJVで<strong>4.5GW分の天然ガス発電容量を確保</strong>（GE Vernovaタービン7基使用）。系統電力をバイパスしてDC専用の電源を直接建てる「Behind-the-Meter」モデルが確立。</p>
+  </div>
+
+  <div class="callout">
+    <strong>ピボットの教訓：</strong>Crusoeのピボットは<strong>「コア・コンピタンスの言い換え」</strong>として理解すると本質が見える。"フレアガスでBitcoinを掘る会社" を "<strong>系統に頼らずモジュラーに発電とコンピュートを束ねる会社</strong>" と再定義した瞬間、AIワークロードが最大ユースケースとして自然に乗り換わった。技術はそのまま、顧客と単価が桁違いに上がった。
+  </div>
+</div>
+
+<div class="sec" id="technology">
+  <div class="sec-label"><span class="num">03</span>コアテクノロジー・垂直統合モデル</div>
+
+  <h3>"AI Factory" 垂直統合の5レイヤー</h3>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">電源レイヤー（Behind-the-Meter Power）</div>
+        <div class="ind-desc">系統に頼らず、データセンター直結で発電所を建てる「Behind-the-Meter」モデル。フレアガス回収、天然ガス焚き発電所、太陽光、Lancium Clean Campus等の再エネ・需要応答インフラを組み合わせる。<strong>4.5GW分の天然ガス発電容量</strong>をEngine No.1とのJVで確保済み（GE Vernova LM2500XPRESS×7基）。許認可・系統接続待ちの数年を回避できるのが本質的優位。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">用地・キャンパスレイヤー</div>
+        <div class="ind-desc">テキサス・アビリーンのLancium Clean Campus（1,000エーカー）に2.1GW級キャンパスを開発中。<strong>用地・電源・送変電・冷却を1サイトに集約した"AIファクトリー"</strong>。地元自治体・電力会社（ERCOT）との接続交渉も自社で完結。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">DC設計・建設レイヤー</div>
+        <div class="ind-desc">液冷対応の高密度DCを自社設計。NVIDIA GB200 Blackwellを含む最先端AIラックを実装。<strong>"普通のDCコロケーションとは別物"</strong>として、Tom's Hardware・Data Center Dynamicsが評する高密度・液冷モジュラー設計。DPR Constructionが施工パートナー（Series E参加投資家でもある）。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">クラウド/オペレーションレイヤー（Crusoe Cloud）</div>
+        <div class="ind-desc">自社AIクラウド「Crusoe Cloud」で、HPC/AI学習・推論をGPUインスタンスとして提供。同時に、Microsoft・Oracle・Meta向けには<strong>"Tenant"としてDCをホールセール提供</strong>するハイブリッドモデル。AIクラウド事業＋データセンター不動産＋電源運営の三層収益。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">クライアントレイヤー（Anchor Tenant）</div>
+        <div class="ind-desc">単独テナントの大規模アンカー契約モデル。<strong>Oracle/OpenAI（Stargate）、Microsoft</strong>がアンカー。10年単位の長期コミットで、CapExを投資家からのエクイティ＋デットで前倒し回収する構造。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>陸上の従来型ハイパースケールDCとの構造差異</h3>
+  <table class="t">
+    <thead><tr><th>項目</th><th>従来型ハイパースケールDC</th><th>Crusoe AI Factory</th></tr></thead>
+    <tbody>
+      <tr><td>電源調達</td><td>系統電力に依存・接続待ち3〜7年</td><td>Behind-the-Meter自社建設で1〜2年</td></tr>
+      <tr><td>用地</td><td>送配電網アクセスが制約</td><td>ガス田・遠隔地・stranded power立地でOK</td></tr>
+      <tr><td>事業形態</td><td>建てる会社／運営する会社／顧客が分業</td><td>1社で垂直統合</td></tr>
+      <tr><td>顧客</td><td>マルチテナント想定</td><td>シングルテナント大規模アンカー</td></tr>
+      <tr><td>展開速度</td><td>許認可・建設で3〜5年</td><td>12〜24か月で初期容量稼働</td></tr>
+      <tr><td>冷却</td><td>空冷中心・段階的に液冷</td><td>初期から液冷フル対応</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <strong>本質：</strong>Crusoeが提供しているのは「データセンター」ではなく、<strong>「電源とコンピュートが分離不可能にバンドルされた商品」</strong>。系統電力という外部依存を取り除いた瞬間に、AIインフラのスピード・ロケーション・コストの最適化点が大きく動く。これがNVIDIAが投資家として参加する論理的根拠。
+  </div>
+</div>
+
+<div class="sec" id="abilene">
+  <div class="sec-label"><span class="num">04</span>Abileneキャンパス（Stargate Project）</div>
+
+  <p>Crusoeを語るうえで最も具体的かつ重要なのが、テキサス州<strong>Abilene（アビリーン）</strong>に開発中のキャンパス。OpenAI/Oracle/SoftBankが2025年に発表した<strong>$500B規模の「Stargate」プロジェクトの第一号物件</strong>として位置付けられ、Crusoeが設計・建設・電源を担う。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">立地</div><div class="v">Texas, Abilene（Lancium Clean Campus内、1,000エーカー）</div></div>
+    <div class="kv-item"><div class="k">フェーズ1容量</div><div class="v">1.2 GW（8棟構成、2棟稼働中、残り6棟2026年中完成）</div></div>
+    <div class="kv-item"><div class="k">アンカー顧客（フェーズ1）</div><div class="v">Oracle Cloud Infrastructure（OCI） → OpenAI（Stargate）</div></div>
+    <div class="kv-item"><div class="k">フェーズ2拡張</div><div class="v">+900 MW（Microsoft専用キャンパス、2026年3月発表）</div></div>
+    <div class="kv-item"><div class="k">合計容量目標</div><div class="v">2.1 GW（フェーズ1 + Microsoftキャンパス）</div></div>
+    <div class="kv-item"><div class="k">搭載GPU</div><div class="v">NVIDIA GB200 Blackwellラック</div></div>
+    <div class="kv-item"><div class="k">発表</div><div class="v">2025年初〜2026年5月：段階的稼働開始</div></div>
+    <div class="kv-item"><div class="k">投資総額（事業者ベース）</div><div class="v">$11.6B（Crunchbase報道、OpenAI Texas拡張向け資金）</div></div>
+  </div>
+
+  <h3>Abileneキャンパスの戦略的意味</h3>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">Stargate第一号物件として実装役を獲得</div>
+        <div class="ind-desc">$500B規模のStargateで最初に「実物が動いた」のがAbilene。<strong>"AIインフラ史の最初の煉瓦"</strong>を積んだ会社という象徴的ポジション。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">2026年3月：Oracle/OpenAIの600MW追加拡張がキャンセル</div>
+        <div class="ind-desc">2026年3月、Oracle/OpenAIは2GW超への拡張計画を「ファイナンス問題＋OpenAIの需要見通し変化」を理由に中止。Stargate構想の脆弱性を露呈する事件。<strong>同月、Crusoeは即座にMicrosoftと新規900MWキャンパス建設を契約</strong>し、AIインフラ需要側の主役交代（OpenAI → Microsoft）を吸収。BloombergとFortuneが詳報。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">Meta も Nvidia 経由で Crusoeキャパシティの引受を交渉中</div>
+        <div class="ind-desc">2026年初頭、Metaがキャンセル分のCrusoeキャパシティをNVIDIAの仲介で引き受ける交渉中とDCD報道。<strong>Crusoeは"単一顧客リスク"を急速にハイパースケーラー間で分散</strong>している。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">10基のガスタービン（GE Vernova LM2500XPRESS）</div>
+        <div class="ind-desc">Engine No.1とのJV経由で取得した7基＋追加分の合計約10基のガスタービンをAbileneキャンパス専用に配置。Energy Intel・Substack Lanin等が「AIインフラで最も重要なストーリーはチップではなくこの10基のタービンだ」と論じる象徴的事象。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>Abileneが示すマクロ示唆：</strong>AIインフラのボトルネックは半導体ではなく<strong>「電源を持っているか／物理的に建てられる場所か」</strong>に明確に移った。Crusoeは"Power × Cooling × Location"という3制約に対し、3つすべてを自分で握る垂直統合プレイヤーとして優位。
+  </div>
+</div>
+
+<div class="sec" id="business">
+  <div class="sec-label"><span class="num">05</span>ビジネスモデル・収益構造</div>
+
+  <p>Crusoeの収益は2026年時点で3層構造：</p>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">DCホールセール（最大収益源、アンカーテナント契約）</div>
+        <div class="ind-desc">Microsoft・Oracle（OpenAI経由）等のハイパースケーラー向けに、Crusoeが建設・所有・運営するDCのホールスペースを<strong>10〜15年の長期リース</strong>で提供。固定収益＋電源コストパススルー。Sacra推計でCrusoeの2024年度推定売上は$276M、その後Abilene本格稼働で爆発的成長フェーズへ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">Crusoe Cloud（自社AIクラウド）</div>
+        <div class="ind-desc">中小規模AI企業・研究者向けにGPUインスタンスを直接提供する自社クラウド。CoreWeave・Lambda Labsとほぼ同じレイヤー。NVIDIA・Supermicroが投資家であり、最先端GPUへの<strong>アロケーション優先権</strong>を持つことが供給競争での優位。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">電源・モジュラーDC（旧フレアガス事業の派生）</div>
+        <div class="ind-desc">遠隔地・産業現場向けにモジュラーDC＋電源バンドルを提供。マイニング事業売却後も電源運営の知見が活きている領域。最近は「Grab-and-Go」モバイルAIモジュラーDC展開も発表（YouTube From Gigawatts To Grab-And-Go）。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>収益化の経済性</h3>
+
+  <p>1.2GWのDCを建設・運営できれば、テナントからのリース＋電源マージンで、年間数十億ドルの売上ポテンシャル。NVIDIA Blackwellラック1基あたりの粗利率と、電源原価（天然ガスは$5〜10/MWh台で内部調達可能）の組み合わせで、CoreWeaveよりさらに良いマージンが取れる可能性。Sacraが詳細分析。Pre-IPO段階での評価が$10〜15B付近で議論されているのは、「単に売上倍率」ではなく「将来の電源 × コンピュート在庫 × 立地」というオプション価値が乗っているため。</p>
+</div>
+
+<div class="sec" id="founders">
+  <div class="sec-label"><span class="num">06</span>創業者・経営チーム</div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">CL</div>
+      <div>
+        <h3>Chase Lochmiller（チェース・ロックミラー）</h3>
+        <div class="p-role">Co-Founder & CEO — Crusoe</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">前職</div><div class="val">Polychain Capital（仮想通貨ヘッジファンド）、Goldman Sachs、Galaxy Digital で量的トレーダー</div></div>
+      <div class="p-row"><div class="lbl">教育</div><div class="val">MIT（数学・物理）</div></div>
+      <div class="p-row"><div class="lbl">趣味</div><div class="val">高山登山家。エベレストを含む7大陸最高峰に挑む</div></div>
+      <div class="p-row"><div class="lbl">創業の発端</div><div class="val">2017年、Cully Cavnessとのコロラドハイキング中に、「フレアガス × 計算機」のアイデアを着想</div></div>
+      <div class="p-row"><div class="lbl">スタイル</div><div class="val">エンジニア出身で技術細部まで理解する。Stargate契約・Microsoft契約等の<strong>巨大アンカー契約の最終クロージングをCEO自ら主導</strong></div></div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">CC</div>
+      <div>
+        <h3>Cully Cavness（カリー・カヴネス）</h3>
+        <div class="p-role">Co-Founder, President & COO — Crusoe</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row"><div class="lbl">前職</div><div class="val">Western Capital（エネルギー業界のM&A・PEファンド）、油田・石油ガス会社でエネルギー投資・運営の経験</div></div>
+      <div class="p-row"><div class="lbl">教育</div><div class="val">Middlebury College（環境経済学）</div></div>
+      <div class="p-row"><div class="lbl">役割</div><div class="val">エネルギー業界ネットワーク・電源ディール構築・JV組成（Engine No.1等）を統括</div></div>
+      <div class="p-row"><div class="lbl">スタイル</div><div class="val">"AIインフラ × エネルギー" 領域のTwitter論客としても発信力あり。<strong>Chase（テック・金融）×Cully（エネルギー）の二人体制</strong>がCrusoeの根幹</div></div>
+    </div>
+  </div>
+
+  <h3>共同創業の構造的優位</h3>
+  <p>テック × エネルギーという<strong>本来交わらない2業界を、創業時から二人体制でブリッジしている</strong>のがCrusoeの根本的な競争優位。AI/クラウド事業はテック出身者が、電源・JV組成・規制対応はエネルギー出身者がそれぞれ担当できる。同じ"AIインフラ"を狙う多くのプレイヤーが片方の業界にしか足場を持たないなか、Crusoeの二人体制は10年〜20年構築困難な人的資本になっている。</p>
+</div>
+
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">07</span>資金調達履歴</div>
+
+  <div class="f-stack">
+    <div class="f-card seed">
+      <span class="r-badge">Seed</span>
+      <div class="f-amount">$4.5M</div>
+      <div class="f-detail">
+        <div class="f-date">2019年3月</div>
+        <div class="f-desc"><b>Founders Fundが最初の機関投資家として参加。</b>当時はフレアガス × Bitcoinマイニング構想。Bain Capital Ventures共同。</div>
+      </div>
+    </div>
+    <div class="f-card a">
+      <span class="r-badge">Series A</span>
+      <div class="f-amount">$30M</div>
+      <div class="f-detail">
+        <div class="f-date">2019年12月</div>
+        <div class="f-desc">Bain Capital Venturesがリード。商業展開資金。</div>
+      </div>
+    </div>
+    <div class="f-card b">
+      <span class="r-badge">Series B</span>
+      <div class="f-amount">$128M</div>
+      <div class="f-detail">
+        <div class="f-date">2021年4月</div>
+        <div class="f-desc"><b>Valor Equity Partnersがリード（以降長期パートナー化）。</b>サイト数を北米33サイトまで拡大、モジュラーDCを量産化。</div>
+      </div>
+    </div>
+    <div class="f-card c">
+      <span class="r-badge">Series C</span>
+      <div class="f-amount">$350M</div>
+      <div class="f-detail">
+        <div class="f-date">2022年4月</div>
+        <div class="f-desc">G2 Venture Partnersがリード、<strong>バリュエーション$1.75B</strong>でユニコーン入り。AIワークロード本格展開を見据えた拡張資金。</div>
+      </div>
+    </div>
+    <div class="f-card d">
+      <span class="r-badge">Series D</span>
+      <div class="f-amount">$600M</div>
+      <div class="f-detail">
+        <div class="f-date">2024年12月</div>
+        <div class="f-desc"><b>Founders Fundがリード、$2.8Bバリュエーション。</b>AI factoryへのフルピボット直後。Abileneキャンパス第一期建設資金。</div>
+      </div>
+    </div>
+    <div class="f-card e">
+      <span class="r-badge">Series E</span>
+      <div class="f-amount">$1.375B</div>
+      <div class="f-detail">
+        <div class="f-date">2025年10月（追加クローズ2026年も継続）</div>
+        <div class="f-desc"><b>Valor Equity Partners × Mubadala Capital が共同リード、$10B超バリュエーション。</b>オーバーサブスクライブ。NVIDIA・Founders Fund・Fidelity・T. Rowe Price・Tiger Global・Salesforce Ventures・Supermicro・Altimeter・Ribbit・Spark Capital・Winklevoss Capital・Lowercarbon Capital・DPR Construction・Saquon Barkley（NFL選手）等30社超参加。</div>
+      </div>
+    </div>
+    <div class="f-card e">
+      <span class="r-badge">Pre-IPO</span>
+      <div class="f-amount">TBD</div>
+      <div class="f-detail">
+        <div class="f-date">2026年3月（Axios報道）</div>
+        <div class="f-desc">$10B超バリュエーションからの<strong>step-up</strong>で追加調達を募集中。IPO前最後のラウンドとの観測。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>累計：</strong>15ラウンドで約27.7億ドル（≒4,000億円）。スタートアップ史でも極めて短期間で重量級の資金を吸い上げた事例。AIインフラ需要 × 巨大DC建設という資本集約型ビジネスで、エクイティに加えてデット・プロジェクトファイナンスも併用していると推察される。
+  </div>
+</div>
+
+<div class="sec" id="investors">
+  <div class="sec-label"><span class="num">08</span>主要投資家</div>
+
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.E</span>
+      <div class="vc-name">Valor Equity Partners</div>
+      <div class="vc-role">Series B Lead → Series E Co-Lead</div>
+      <div class="vc-desc">Antonio Gracias（イーロン・マスク親友）率いるシカゴ拠点のグロース投資家。Tesla・SpaceXの早期からの大株主。CrusoeにはSeries Bからリード継続、最も長期コミット。マスク経済圏との接点も。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Lead — Ser.E</span>
+      <div class="vc-name">Mubadala Capital</div>
+      <div class="vc-role">Series E Co-Lead</div>
+      <div class="vc-desc">UAEアブダビ政府系ファンド$300B運用。AIインフラ／半導体／クラウド領域への戦略投資が活発。<strong>G42・Microsoftとの中東AI連携</strong>とも関連する戦略的出資。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Returning</span>
+      <div class="vc-name">Founders Fund</div>
+      <div class="vc-role">Seed → Series D Lead → Series E</div>
+      <div class="vc-desc">Peter Thiel共同創業のVC。Crusoe初の機関出資者（2019）。Series Dでもリード。Anduril・SpaceX・Palantir・Anthropic等次世代インフラ系の代表的バッカー。</div>
+    </div>
+    <div class="vc-card lead">
+      <span class="lead-tag">Strategic</span>
+      <div class="vc-name">NVIDIA</div>
+      <div class="vc-role">Series E（戦略投資）</div>
+      <div class="vc-desc">GPUサプライヤーかつ投資家。<strong>Crusoeへの最先端GPUアロケーション</strong>に加え、Meta等他テナント誘致の仲介も担う。CoreWeaveに次ぐNVIDIA戦略的バックの代表例。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Supermicro</div>
+      <div class="vc-role">Series E（戦略投資）</div>
+      <div class="vc-desc">AIサーバー大手（NASDAQ: SMCI）。Crusoeの液冷サーバーラックの主要サプライヤーであり投資家。<strong>AI factoryの"中身"を供給する戦略連携</strong>。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Fidelity / T. Rowe Price / Tiger Global</div>
+      <div class="vc-role">Series E（クロスオーバー）</div>
+      <div class="vc-desc">パブリック市場プレIPOクロスオーバー組。<strong>IPO目前であることを強く示唆</strong>するシグナル。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Salesforce Ventures</div>
+      <div class="vc-role">Series E（戦略投資）</div>
+      <div class="vc-desc">Marc Benioff率いるSalesforceのVC部門。AI需要側エンタープライズ視点での出資。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Bain Capital Ventures</div>
+      <div class="vc-role">Series A Lead</div>
+      <div class="vc-desc">Series Aの初期リード。エネルギー × ディープテック銘柄を見るチームが評価。長期株主。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">G2 Venture Partners</div>
+      <div class="vc-role">Series C Lead</div>
+      <div class="vc-desc">クライメート・サステナビリティ × 産業ディープテック特化のVC。ユニコーン入りラウンドをリード。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Altimeter Capital</div>
+      <div class="vc-role">Series E</div>
+      <div class="vc-desc">Brad Gerstner率いるグロース・パブリック融合ファンド。AI関連投資で著名。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Ribbit Capital</div>
+      <div class="vc-role">Series E</div>
+      <div class="vc-desc">Fintech中心の超大型ファンド。AIインフラへの本格進出。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Spark Capital</div>
+      <div class="vc-role">Series E</div>
+      <div class="vc-desc">Twitter・Cruise・Wayve等を見るVC。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Lowercarbon Capital</div>
+      <div class="vc-role">Series E</div>
+      <div class="vc-desc">Chris Sacca率いる気候テック特化VC。<strong>Panthalassa・Antora・Form Energyらと並ぶクライメート × AIインフラの代表ベット</strong>。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Winklevoss Capital</div>
+      <div class="vc-role">Series E</div>
+      <div class="vc-desc">Winklevoss兄弟（Gemini）のファミリーオフィス。BTCマイニング時代からのつながりが推察される。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">DPR Construction</div>
+      <div class="vc-role">Series E（戦略投資）</div>
+      <div class="vc-desc">米大手ゼネコン。CrusoeのDC施工パートナーであり投資家。<strong>建設キャパシティを取り合うAIインフラ業界での競争優位を内製化</strong>。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Saquon Barkley</div>
+      <div class="vc-role">Series E（個人）</div>
+      <div class="vc-desc">NFLフィラデルフィア・イーグルスのスター選手。<strong>AIインフラへのスポーツ選手投資</strong>として象徴的。</div>
+    </div>
+  </div>
+
+  <p style="margin-top:14px">その他、137 Ventures、1789 Capital、Activate Capital、Atreides Management、BAM Elevate、Ora Global、Franklin Templeton、Galvanize、Long Journey Ventures、M37 Management、MCJ、Radical Ventures、StepStone Group、Upper90、Zigg Capital等が新規・追加参加。</p>
+</div>
+
+<div class="sec" id="customers">
+  <div class="sec-label"><span class="num">09</span>主要顧客・パートナー</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">Oracle Cloud Infrastructure（OCI） / OpenAI（Stargate）</div>
+        <div class="ind-desc">Abileneキャンパス フェーズ1（1.2GW）のアンカーテナント。<strong>Stargateの実装パートナー</strong>。2026年5月時点で2棟稼働中、残り6棟が2026年中完成予定。2026年3月に600MW追加拡張がキャンセルされたが、本契約は継続。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">Microsoft</div>
+        <div class="ind-desc">2026年3月発表の新規900MWキャンパスのアンカーテナント。Oracle/OpenAIキャンセル分の代替＋追加拡張。<strong>Bloombergは「OpenAIとMicrosoftがStargateで離反した先で、Crusoeは両陣営から受注した稀有な事業者」と解説</strong>。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">Meta（交渉中、NVIDIA仲介）</div>
+        <div class="ind-desc">2026年初頭、MetaがNVIDIA経由でCrusoeのキャパシティ引受を交渉中とDCD報道。<strong>3大ハイパースケーラーに分散</strong>する顧客ポートフォリオ形成中。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Engine No.1（電源JVパートナー）</div>
+        <div class="ind-desc">SF拠点の投資ファーム。Chevronと組んでGE Vernovaタービン7基を取得し、Crusoeとの<strong>4.5GW天然ガス発電JV</strong>を運営。「ハイパースケーラーが系統に頼らずDCを建てる」モデルの中核パートナー。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">Lancium（用地・電源最適化パートナー）</div>
+        <div class="ind-desc">Abilene Clean Campusを所有・運営する企業。<strong>需要応答型負荷（Controllable Load Resource）</strong>として系統と連携し、再エネ余剰を吸収するハイブリッド型設計を提供。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">GE Vernova（タービン供給）</div>
+        <div class="ind-desc">LM2500XPRESS型ガスタービンをCrusoe AI Factoryに供給。<strong>10基規模</strong>の調達は単一顧客としては米国最大級。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">7</div>
+      <div>
+        <div class="ind-title">DPR Construction（建設）</div>
+        <div class="ind-desc">大規模DCの施工。<strong>投資家でもある</strong>ことで建設キャパシティを優先確保。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="market">
+  <div class="sec-label"><span class="num">10</span>市場規模・機会</div>
+
+  <div class="market-grid">
+    <div class="market-box tam">
+      <div class="m-label">TAM — AIインフラCapEx累計</div>
+      <div class="m-val">$2T+</div>
+      <div class="m-desc">2025〜2030年のグローバルAIデータセンター + 関連電源CapEx累計</div>
+    </div>
+    <div class="market-box sam">
+      <div class="m-label">SAM — ハイパースケーラー向けDC</div>
+      <div class="m-val">$600B</div>
+      <div class="m-desc">10GW+規模で建設が必要な北米のAIファクトリー市場</div>
+    </div>
+    <div class="market-box som">
+      <div class="m-label">SOM — Crusoeアドレサブル</div>
+      <div class="m-val">$50B+</div>
+      <div class="m-desc">2030年までにCrusoeが現実的に運営しうるDC収益</div>
+    </div>
+  </div>
+
+  <h3>需要を加速する3つのマクロ要因</h3>
+  <table class="t">
+    <thead><tr><th>マクロ要因</th><th>影響</th><th>Crusoeへの寄与</th></tr></thead>
+    <tbody>
+      <tr><td>系統電力の構造的不足</td><td>北米で2030年に200GW不足とDOE推計、新規接続待ち5〜7年</td><td>Behind-the-Meterで系統バイパス → 唯一解の一つ</td></tr>
+      <tr><td>AIモデル学習・推論需要の爆発</td><td>NVIDIA H100→Blackwell→Rubinと容量需要は毎年2倍</td><td>NVIDIAアロケーション優先権で先行供給</td></tr>
+      <tr><td>ハイパースケーラーCapExの加速</td><td>MSFT・META・GOOG・AMZNのAI CapExは2025年で合計$300B超</td><td>アンカー長期契約として直接受注</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">11</span>競合比較</div>
+
+  <div class="comp-grid">
+    <div class="comp-card threat">
+      <div class="comp-name">CoreWeave（NASDAQ: CRWV）</div>
+      <div class="comp-tag">最大の直接競合</div>
+      <div class="comp-desc">元イーサリアム マイナーからAIクラウドに転身、2025年上場。Microsoft・OpenAIの大型契約も保有。NVIDIA出資の先行例。<strong>CrusoeとCoreWeaveは"クリプトマイナー→AI"という同パス</strong>を辿った双子。</div>
+      <div class="comp-strong"><span>差異</span>CoreWeaveは"DCを借りる側"、Crusoeは"電源含めて建てる側"。垂直統合の深さでCrusoeが優位、上場済み実績ではCoreWeaveが先行。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Equinix / Digital Realty</div>
+      <div class="comp-tag">既存大手DC</div>
+      <div class="comp-desc">レガシーマルチテナント大手。電源調達は系統依存。<strong>新規容量を素早く建てられない</strong>のが構造的弱点。AI factory型シングルテナント需要に追従しきれていない。</div>
+      <div class="comp-strong"><span>差異</span>Crusoeはスピード × Behind-the-Meterで構造的優位。レガシー大手のM&Aターゲットの可能性もある。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Lambda / Together AI / Nebius</div>
+      <div class="comp-tag">AI Cloud専業</div>
+      <div class="comp-desc">いずれもGPUクラウドの専業。DC・電源は外部依存（CoreWeave同様"借りる側"）。NVIDIA-backedで顧客重複あり。</div>
+      <div class="comp-strong"><span>差異</span>Crusoeは"電源 + DC + クラウド"の3点セットを束ねている点が差別化。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Stack Infrastructure / QTS / Vantage</div>
+      <div class="comp-tag">DCホールセール</div>
+      <div class="comp-desc">PE所有のDCホールセール事業者。電源調達能力で差。<strong>Blackstone系のQTSは買収・拡張で類似モデルを構築中</strong>。</div>
+      <div class="comp-strong"><span>差異</span>Crusoeはエクイティ調達ペースが速く、アンカー顧客との直接関係も強い。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Heron Power / Antora / Form Energy</div>
+      <div class="comp-tag">電源側スタートアップ</div>
+      <div class="comp-desc">SST・蓄熱・鉄空気電池等の電源側プレイヤー。<strong>DCを建てず、電源テクノロジーを売る</strong>。</div>
+      <div class="comp-strong"><span>差異</span>競合ではなく上流サプライヤー候補。将来的に提携・買収の対象になりうる。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Panthalassa</div>
+      <div class="comp-tag">代替フロンティア</div>
+      <div class="comp-desc">外洋AI推論ノード。同じ"代替電源 × AIコンピュート"思想だが、Crusoeは陸上で先行、Panthalassaは海洋で5〜10年後を狙う。</div>
+      <div class="comp-strong"><span>差異</span>時間軸が違うため直接競合ではない。<strong>「電源を陸の外で求める」</strong>共通テーマでThiel系投資家が両方に張る構図。</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>本質：</strong>Crusoeの真の競合はAIインフラ専業のCoreWeave。だが両社の差は<strong>「電源を持っているか」</strong>の一点に集約される。電源不足が深まるほどCrusoeの相対優位が増す構造。
+  </div>
+</div>
+
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">12</span>主要リスク</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">顧客集中リスク</div>
+        <div class="ind-desc">現状アンカー顧客はMicrosoft・Oracle/OpenAIに集中。Oracle/OpenAIは2026年3月に拡張を縮小しており、<strong>顧客のAI需要見通し変動が直接Crusoeの稼働率に響く</strong>。Meta交渉が進めば分散化進展。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">資本集約性とデット負担</div>
+        <div class="ind-desc">1.2GW級DC建設には数十億ドルのCapExが必要。エクイティ＋デット併用で前倒し投資しており、<strong>金利・需要急減のショックで負担が顕在化</strong>するリスク。AI需要のサイクル局面で資金繰り検証が必要。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">天然ガス・カーボン規制</div>
+        <div class="ind-desc">Behind-the-Meterの中心は天然ガス焚き発電。<strong>連邦/州レベルの炭素価格・規制強化</strong>でコスト構造が変化する可能性。気候テック投資家向けには「フレアガス削減でCO2純減」の物語を維持必須。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">ハイパースケーラー内製化</div>
+        <div class="ind-desc">Microsoft・Meta・Amazon等が独自で電源 × DCを内製する動き（例：Microsoft × Chevron 2.5GW JV）。<strong>Crusoeの中長期付加価値が「設計・建設・運営の専門性」にシフトする</strong>必要。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">GPU供給とNVIDIA関係</div>
+        <div class="ind-desc">NVIDIAアロケーション優先権は最大の優位だが、NVIDIA戦略がCoreWeave等他社へ移れば即座にCrusoeの差別化が削がれる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">IPO市場・バリュエーション</div>
+        <div class="ind-desc">$10B超バリュエーションでpre-IPO段階。CoreWeaveのIPO後株価ボラティリティが大きく、AIインフラセクター全体のバリュエーション環境次第でIPOタイミングや評価額がぶれるリスク。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="news">
+  <div class="sec-label"><span class="num">13</span>ニュース・マイルストーン</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2018年</span><span class="tl-title">Crusoe Energy Systems創業</span></div>
+        <div class="tl-body">Chase LochmillerとCully Cavnessがコロラドで創業。フレアガス × Bitcoinマイニング構想。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2019年3月</span><span class="tl-title">Seed $4.5M — Founders Fund初出資</span></div>
+        <div class="tl-body">Founders Fundが最初の機関投資家として参加。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2019年12月</span><span class="tl-title">Series A $30M — Bain Capital Ventures Lead</span></div>
+        <div class="tl-body">フレアガス由来発電 × モジュラーマイニングDCを北米で展開。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2021年4月</span><span class="tl-title">Series B $128M — Valor Equity Lead</span></div>
+        <div class="tl-body">北米33サイトに拡大、モジュラーDC量産化。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2022年4月</span><span class="tl-title">Series C $350M — G2 Lead、$1.75Bでユニコーン入り</span></div>
+        <div class="tl-body">AIワークロード本格展開を見据えた拡張。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2023年</span><span class="tl-title">Crusoe Cloud立ち上げ／AIピボット開始</span></div>
+        <div class="tl-body">マイニング → HPC/AIへワークロード転換。AI推論・学習向けクラウドサービス開始。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2024年4月</span><span class="tl-title">Bitcoinマイニング事業をNYDIGに売却</span></div>
+        <div class="tl-body">AIインフラへのフルピボット完了。アイデンティティが「AI Factory Company」に切り替わる。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2024年7月</span><span class="tl-title">Abilene 1.2GWキャンパス着工発表</span></div>
+        <div class="tl-body">Lancium Clean CampusでOracle向け200MW初期 → 1.2GW拡張の建設発表。"multibillion-dollar deal"。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2024年12月</span><span class="tl-title">Series D $600M — Founders Fund Lead、$2.8Bバリュエーション</span></div>
+        <div class="tl-body">AIピボット直後のシリーズD。Abilene建設資金を確保。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年1月</span><span class="tl-title">Stargate（OpenAI × Oracle × SoftBank）発表</span></div>
+        <div class="tl-body">$500BのAIインフラJV発表。<strong>Abileneキャンパスが第一号物件として位置付け</strong>。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年10月</span><span class="tl-title">Series E $1.375B — $10B超バリュエーション</span></div>
+        <div class="tl-body">Valor × Mubadalaが共同リード、NVIDIA・Founders Fund・30社超参加。オーバーサブスクライブ。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年初頭</span><span class="tl-title">4.5GW天然ガス発電容量を Engine No.1とのJVで確保</span></div>
+        <div class="tl-body">GE Vernova LM2500XPRESS × 7基。系統バイパス型電源を商業的に実装する米国初の大規模事例。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年3月</span><span class="tl-title">Oracle/OpenAI 600MW拡張キャンセル + Microsoft新規900MW契約</span></div>
+        <div class="tl-body">同月内に主要顧客の入れ替えを完了。Abilene合計2.1GWへ。Metaも交渉中。<strong>"Stargate破談を吸収して逆に成長"</strong>と Bloomberg／Fortune が詳報。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年3月</span><span class="tl-title">pre-IPO追加調達募集中（Axios）</span></div>
+        <div class="tl-body">$10B超からstep-upのバリュエーションでpre-IPO募集中。IPO目前のシグナル。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年中</span><span class="tl-title">Abilene 残り6棟完成</span></div>
+        <div class="tl-body">フェーズ1全8棟稼働 → 1.2GW容量フル稼働へ。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2027年</span><span class="tl-title">Engine No.1 JV経由の4.5GW電源稼働開始</span></div>
+        <div class="tl-body">天然ガス発電のDC専用供給が本格スタート予定。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="why">
+  <div class="sec-label"><span class="num">14</span>なぜ注目か（Kyo観点）</div>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">"Power × Cooling × Location" 3制約を一社で握る稀少例</div>
+        <div class="ind-desc">Kyoの仮説「AIインフラのボトルネックは Power / Cooling / Location」に対し、Crusoeは3つすべてに直接アプローチする<strong>世界で最も先行している垂直統合プレイヤー</strong>。AIインフラの3制約を抑えにいく次事業構想（$10B+ Val目標）と構造的に重なる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">ピボット成功事例の教科書</div>
+        <div class="ind-desc">"フレアガス × Bitcoin" → "フレアガス × AI Factory" への変態は、<strong>コア・コンピタンスを言い換えてユースケースを乗せ換えた</strong>成功パターン。Wanderlust事業売却→ハードインフラへのピボット構想にも示唆が大きい。「捨てる事業」と「残す技術」の見極め方が学べる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">投資家の顔ぶれが「未来の電力 × AI」インサイダー総取り</div>
+        <div class="ind-desc">Valor（マスク経済圏）、Mubadala（UAEソブリン）、Founders Fund（Thiel系）、NVIDIA（GPU独占）、Supermicro（サーバー）、DPR（建設）、Engine No.1（電源）。<strong>AIインフラの全レイヤーから戦略的株主が参加</strong>。これら投資家リストはそのまま「次のAIインフラベットを考えるときの俯瞰マップ」になる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">Founder二人体制の構造的優位（テック × エネルギー）</div>
+        <div class="ind-desc">Chase（テック/金融）× Cully（エネルギー業界）の二人体制が、本来交わらない2業界を最初からブリッジしている。<strong>同じく異領域ブリッジ型を狙う場合、共同創業者の選定原則として直接参照できる</strong>。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">Stargateの実装側に立つことの意味</div>
+        <div class="ind-desc">Stargateは構想・資金（OpenAI/Oracle/SoftBank）だけでは成立せず、<strong>"誰が物理的に建てるか" が本質</strong>であり、Crusoeはその答えそのものになった。AIインフラ事業を考えるとき、<strong>「巨大プロジェクトの実装パートナー側になる」</strong>のがレバレッジの効くポジションだという示唆。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">6</div>
+      <div>
+        <div class="ind-title">Panthalassaとの対比 — "陸の代替電源"と"海の代替電源"</div>
+        <div class="ind-desc">Crusoeは"陸でstranded powerをAIへ"、Panthalassaは"海で波力をAIへ"。<strong>「電源を陸の外で求める」共通テーマで、時間軸と地理が異なるだけの双子</strong>。気候テック × AIインフラのテーマ全体を把握する2つの軸。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quote">
+    <p>We're not a data center company. We're not an energy company. We're an AI factory company — the unit of production is intelligence per dollar.</p>
+    <div class="attr">— Chase Lochmiller, CEO（趣旨を要約した発言、各種インタビューより）</div>
+  </div>
+
+  <div class="callout">
+    <strong>Kyoへの示唆：</strong>Crusoeは「AIインフラの3制約（Power/Cooling/Location）を一社で吸収する」というKyo自身のテーゼを、現時点で最も具体的に実装している会社。Wanderlust売却後の事業構想を練るときの<strong>"参照すべき北極星"</strong>の一つ。同時に、ハードインフラ事業に共同創業者を探す際の人材構成原則（テック側 × エネルギー側のペア）の手本でもある。
+  </div>
+</div>
+
+<div class="sources">
+  <h2>参考情報</h2>
+  <ul>
+    <li>Crusoe 公式サイト（crusoe.ai）</li>
+    <li>Crusoe Newsroom — Series E Funding Announcement (2025.10)</li>
+    <li>Crusoe Newsroom — Abilene Microsoft 900MW Campus (2026.03)</li>
+    <li>PitchBook — Crusoe Company Profile (267230-08)</li>
+    <li>Crunchbase — Crusoe AI Data Center Funding Profile</li>
+    <li>Tracxn — Crusoe Funding & Investors</li>
+    <li>Sacra — Crusoe at $276M Revenue Analysis</li>
+    <li>Contrary Research — Crusoe Business Breakdown</li>
+    <li>Data Center Dynamics — Crusoe Pivots to Building AI Data Centers</li>
+    <li>Data Center Dynamics — Oracle/OpenAI Drop 600MW Abilene Expansion</li>
+    <li>Data Center Frontier — Crusoe 4.5GW Natural Gas / Abilene 1.2GW</li>
+    <li>Bloomberg — Microsoft Rents Texas DC Project (2026.03.27)</li>
+    <li>Fortune — Microsoft Picks Up Texas DC OpenAI Didn't Want</li>
+    <li>Tom's Hardware — Oracle/OpenAI Scrap Abilene 600MW Expansion</li>
+    <li>Axios Pro Climate Deals — Crusoe Pre-IPO Fundraising (2026.03.16)</li>
+    <li>SiliconANGLE — Crusoe $1.3B AI Data Centers (2025.10)</li>
+    <li>Crunchbase News — Crusoe $11.6B OpenAI Texas Financing</li>
+    <li>Energy Intelligence — Crusoe 4.5GW Gas-Fired Power</li>
+    <li>GE Vernova — LM2500XPRESS Crusoe AI Data Centers Case Study</li>
+    <li>Substack lanin — Ten Gas Turbines in Abilene</li>
+    <li>Crypto News — Crusoe Multibillion-Dollar AI DC Texas</li>
+    <li>BusinessDen — Crusoe $600M Pivot from Bitcoin to AI</li>
+    <li>Architect Partners — Crusoe Sells Bitcoin Mining Unit to NYDIG</li>
+    <li>Real Leaders — Q&A with Chase Lochmiller</li>
+    <li>MCJ Podcast — Episode 178: Chase Lochmiller</li>
+    <li>Bain Capital Ventures — Crusoe Climb Insight</li>
+    <li>Stargate LLC — Wikipedia</li>
+  </ul>
+</div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+</footer>
+</body>
+</html>
