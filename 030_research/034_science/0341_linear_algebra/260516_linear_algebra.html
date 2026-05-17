@@ -1,0 +1,2295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linear Algebra</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --surface: #f5f5f5;
+    --border: #e0e0e0;
+    --text: #111111;
+    --muted: #888888;
+    --accent: #111111;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.85;
+    font-size: 16px;
+  }
+  .page { max-width: 800px; margin: 0 auto; padding: 56px 32px 100px; }
+
+  /* ===== SIDE NAV (Wikipedia-style) ===== */
+  .side-nav {
+    position: fixed;
+    left: 24px;
+    top: 56px;
+    width: 220px;
+    max-height: calc(100vh - 80px);
+    overflow-y: auto;
+    padding: 16px 0 40px;
+    font-size: 12px;
+    z-index: 10;
+    scrollbar-width: thin;
+  }
+  .side-nav::-webkit-scrollbar { width: 4px; }
+  .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  @media (max-width: 1240px) { .side-nav { display: none; } }
+  .side-nav.hidden { display: none; }
+  .side-nav-chapter { margin-bottom: 18px; }
+  .side-nav-chapter-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: #cccccc;
+    margin-bottom: 4px;
+    padding-left: 12px;
+    line-height: 1.4;
+    transition: color .15s;
+  }
+  .side-nav-chapter.active .side-nav-chapter-title { color: var(--text); }
+  .side-nav-list { list-style: none; padding: 0; margin: 0; }
+  .side-nav-list li { margin: 1px 0; }
+  .side-nav-link {
+    display: block;
+    color: #bbbbbb;
+    text-decoration: none;
+    padding: 5px 8px 5px 12px;
+    border-left: 2px solid transparent;
+    font-size: 12px;
+    line-height: 1.45;
+    transition: all .15s;
+  }
+  .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+  .side-nav-link.active {
+    color: var(--text);
+    font-weight: 700;
+    border-left-color: var(--accent);
+    background: var(--surface);
+  }
+  /* Add scroll-margin to sections for better anchor positioning */
+  .section, .chapter { scroll-margin-top: 24px; }
+  html { scroll-behavior: smooth; }
+
+  /* ===== Learning status tags ===== */
+  .status-tag {
+    display: inline-block;
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 3px;
+    letter-spacing: .04em;
+    vertical-align: middle;
+    margin-left: 8px;
+    line-height: 1.5;
+  }
+  .tag-not-learned {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffe69a;
+  }
+  /* Subtle dim styling on subsections marked not-yet-learned */
+  .subsection-pending { opacity: .75; }
+  /* Sidebar link variant for not-learned sections */
+  .side-nav-link.not-learned::after {
+    content: '未';
+    display: inline-block;
+    background: #fff3cd;
+    color: #856404;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 4px;
+    border-radius: 2px;
+    margin-left: 6px;
+    border: 1px solid #ffe69a;
+  }
+
+  h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 32px; }
+
+  /* ===== TABS ===== */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+  }
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    background: transparent;
+    transition: all .15s;
+    margin-bottom: -1px;
+  }
+  .tab:hover:not(.active) { color: var(--text); }
+  .tab.active {
+    color: var(--text);
+    border-color: var(--border);
+    background: var(--bg);
+    border-bottom: 1px solid var(--bg);
+  }
+  .view { display: none; }
+  .view.active { display: block; }
+
+  .chapter { margin-bottom: 56px; }
+  .chapter-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .chapter-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -.01em;
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 10px;
+    margin-bottom: 28px;
+  }
+
+  .section { margin-bottom: 36px; padding-left: 14px; border-left: 2px solid var(--border); }
+  .section h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .section p { margin-bottom: 12px; font-size: 15px; }
+  .section p:last-child { margin-bottom: 0; }
+
+  .formula {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    margin: 14px 0;
+    font-family: 'Poppins', monospace;
+    font-size: 15px;
+  }
+
+  .matrix-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+  .matrix {
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+    position: relative;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+  }
+  .matrix::before, .matrix::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--text);
+  }
+  .matrix::before { left: 0; border-top: 2px solid var(--text); border-bottom: 2px solid var(--text); width: 8px; border-right: none; }
+  .matrix::after { right: 0; border-top: 2px solid var(--text); border-bottom: 2px solid var(--text); width: 8px; border-left: none; }
+  .matrix table { border-collapse: collapse; margin: 8px 6px; }
+  .matrix td { padding: 4px 12px; text-align: center; min-width: 24px; }
+  .op { font-size: 18px; font-weight: 600; }
+
+  /* ===== Colored basis-vector matrix ===== */
+  .matrix-labeled { display: inline-flex; flex-direction: column; align-items: center; }
+  .m-labels { display: flex; gap: 0; padding: 0 18px; margin-bottom: 2px; }
+  .m-labels .lbl {
+    flex: 1;
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 0 12px;
+    min-width: 24px;
+  }
+  .matrix-labeled-r { display: inline-flex; align-items: center; gap: 6px; }
+  .m-side-labels { display: flex; flex-direction: column; gap: 0; padding: 8px 0; }
+  .m-side-labels .lbl {
+    text-align: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 0;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  /* Color tokens — columns: x=赤, y=青, z=緑 / rows: X=オレンジ, Y=紫 */
+  .c-1, .lbl-1, .c-x, .lbl-x { color: #d62828; }
+  .c-2, .lbl-2, .c-y, .lbl-y { color: #1d4e89; }
+  .c-3, .lbl-3, .c-z, .lbl-z { color: #2a9d8f; }
+  .lbl-X { color: #e07b00; }
+  .lbl-Y { color: #7b2cbf; }
+  .lbl-Z { color: #c2185b; }
+  .matrix table.colored td.c-1, .matrix table.colored td.c-x { background: rgba(214, 40, 40, 0.12); }
+  .matrix table.colored td.c-2, .matrix table.colored td.c-y { background: rgba(29, 78, 137, 0.12); }
+  .matrix table.colored td.c-3, .matrix table.colored td.c-z { background: rgba(42, 157, 143, 0.12); }
+  .matrix table.colored td.r-X { color: #e07b00; }
+  .matrix table.colored td.r-Y { color: #7b2cbf; }
+  .matrix table.colored td.r-Z { color: #c2185b; }
+  .matrix table.colored td { font-weight: 700; }
+
+  /* Colored inline terms for formula breakdowns */
+  .term-x { background: rgba(214, 40, 40, 0.10); color: #d62828; padding: 1px 6px; border-radius: 3px; font-weight: 700; font-family: 'Poppins', sans-serif; }
+  .term-y { background: rgba(29, 78, 137, 0.10); color: #1d4e89; padding: 1px 6px; border-radius: 3px; font-weight: 700; font-family: 'Poppins', sans-serif; }
+  .term-z { background: rgba(42, 157, 143, 0.10); color: #2a9d8f; padding: 1px 6px; border-radius: 3px; font-weight: 700; font-family: 'Poppins', sans-serif; }
+
+  /* Dual-labeled matrix grid (rows X/Y + columns x/y/z) */
+  .dlm {
+    display: inline-grid;
+    grid-template-columns: 28px 52px 52px 52px;
+    grid-template-rows: 22px auto auto;
+    gap: 0;
+    position: relative;
+    padding-right: 14px;
+    font-family: 'Poppins', sans-serif;
+  }
+  .dlm-clbl, .dlm-rlbl {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .dlm-cell {
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 15px;
+    min-height: 38px;
+  }
+  .dlm-cell.c-x { background: rgba(214, 40, 40, 0.10); }
+  .dlm-cell.c-y { background: rgba(29, 78, 137, 0.10); }
+  .dlm-cell.c-z { background: rgba(42, 157, 143, 0.10); }
+  .dlm-cell.r-X { color: #e07b00; }
+  .dlm-cell.r-Y { color: #7b2cbf; }
+  .dlm-cell.r-Z { color: #c2185b; }
+  /* Size variants */
+  .dlm.dlm-3x2 {
+    grid-template-columns: 28px 52px 52px;
+    grid-template-rows: 22px auto auto auto;
+  }
+  /* term-Z for output-row breakdown coloring */
+  .term-X { background: rgba(224, 123, 0, 0.10); color: #e07b00; padding: 1px 6px; border-radius: 3px; font-weight: 700; font-family: 'Poppins', sans-serif; }
+  .term-Y { background: rgba(123, 44, 191, 0.10); color: #7b2cbf; padding: 1px 6px; border-radius: 3px; font-weight: 700; font-family: 'Poppins', sans-serif; }
+  .term-Z { background: rgba(194, 24, 91, 0.10); color: #c2185b; padding: 1px 6px; border-radius: 3px; font-weight: 700; font-family: 'Poppins', sans-serif; }
+  .dlm-bracket {
+    position: absolute;
+    top: 22px; bottom: 0;
+    width: 8px;
+  }
+  .dlm-bracket.l {
+    left: 28px;
+    border: 2px solid var(--text);
+    border-right: none;
+  }
+  .dlm-bracket.r {
+    right: 0;
+    border: 2px solid var(--text);
+    border-left: none;
+  }
+
+  .dim-tag {
+    display: inline-block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 2px 8px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 6px;
+    border-radius: 3px;
+  }
+
+  .hl { background: #fff3a0; padding: 0 4px; }
+  .key { font-weight: 700; }
+  .vt.vt-en { font-family: 'Poppins', sans-serif; font-weight: 600; }
+
+  /* ===== VOCABULARY ===== */
+  .vocab-header {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .vocab-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .vocab-stat {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .vocab-stat .muted { color: var(--muted); font-weight: 500; }
+  .sort-group { display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+  .sort-label {
+    font-size: 10px; color: var(--muted); letter-spacing: .12em;
+    text-transform: uppercase; margin-right: 4px;
+    font-family: 'Poppins', sans-serif; font-weight: 700;
+  }
+  .sort-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    color: var(--muted);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .sort-btn:hover:not(.active) { color: var(--text); }
+  .sort-btn.active {
+    background: var(--text); color: var(--bg); border-color: var(--text);
+  }
+
+  .vocab-group { margin-bottom: 32px; }
+  .vocab-group-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .vocab-list { list-style: none; }
+  .vocab-item {
+    display: grid;
+    grid-template-columns: 28px minmax(200px, 260px) 1fr;
+    gap: 16px;
+    align-items: start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    cursor: pointer;
+    transition: opacity .15s;
+  }
+  .vocab-item:last-child { border-bottom: none; }
+  .vocab-item:hover .vocab-check { border-color: var(--text); }
+  .vocab-item.checked { opacity: .45; }
+  .vocab-item.checked .vocab-term { text-decoration: line-through; text-decoration-thickness: 1px; }
+  .vocab-check {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    flex-shrink: 0;
+    background: var(--bg);
+    transition: all .15s;
+    margin-top: 2px;
+    user-select: none;
+  }
+  .vocab-item.checked .vocab-check {
+    background: var(--text); border-color: var(--text); color: #fff;
+  }
+  .vocab-term {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .vocab-term .ja {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: 500;
+    color: var(--muted);
+    font-size: 13px;
+    display: inline-block;
+    margin-left: 4px;
+  }
+  .vocab-desc { color: var(--text); line-height: 1.7; }
+
+  @media (max-width: 600px) {
+    .vocab-item { grid-template-columns: 28px 1fr; gap: 10px; }
+    .vocab-item .vocab-desc { grid-column: 2 / 3; }
+  }
+
+  /* ===== TOC ===== */
+  .toc-intro {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .toc-chapter { margin-bottom: 24px; }
+  .toc-chapter-link {
+    display: block;
+    font-family: 'Poppins', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+    text-decoration: none;
+    padding: 8px 0;
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 6px;
+    letter-spacing: -.01em;
+  }
+  .toc-chapter-link:hover { opacity: .6; }
+  .toc-chapter-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: block;
+    margin-top: 4px;
+  }
+  .toc-sections { list-style: none; padding-left: 0; }
+  .toc-section-link {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 4px 8px 14px;
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13.5px;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.5;
+    transition: background .12s;
+  }
+  .toc-section-link:hover { background: var(--surface); color: var(--accent); }
+  .toc-section-num {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: .04em;
+    min-width: 28px;
+    flex-shrink: 0;
+  }
+
+  /* ===== NOTATION ===== */
+  .notation-list { list-style: none; padding: 0; }
+  .notation-item {
+    display: grid;
+    grid-template-columns: minmax(80px, 120px) 1fr;
+    gap: 20px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 14px;
+    align-items: baseline;
+  }
+  .notation-item:last-child { border-bottom: none; }
+  .notation-symbol {
+    font-family: 'Poppins', 'Cambria Math', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .notation-desc { color: var(--text); line-height: 1.7; }
+  @media (max-width: 600px) {
+    .notation-item { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>
+</head>
+<body>
+<aside class="side-nav" id="sideNav"></aside>
+<div class="page">
+  <h1>Linear Algebra</h1>
+  <div class="subtitle">Kyo の線形代数 復習ノート</div>
+
+  <div class="tabs">
+    <div class="tab" data-tab="toc" onclick="switchTab('toc', this)">目次</div>
+    <div class="tab active" data-tab="notes" onclick="switchTab('notes', this)">Notes</div>
+    <div class="tab" data-tab="vocab" onclick="switchTab('vocab', this)">Vocabulary</div>
+    <div class="tab" data-tab="notation" onclick="switchTab('notation', this)">Notation</div>
+  </div>
+
+  <!-- ===== NOTES TAB ===== -->
+  <div class="view active" id="view-notes">
+
+    <div class="chapter" id="dim-ops">
+      <div class="chapter-label">Chapter</div>
+      <div class="chapter-title"><span class="vt" data-vocab="dimension" data-ja="次元">次元</span>操作・行と列数</div>
+
+      <div class="section" id="dim-match">
+        <h2>列数と行数を揃える</h2>
+        <p><span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の積 <span class="key">A × B</span> が定義されるためには、<span class="hl">左の <span class="key">列数</span> と 右の <span class="key">行数</span> が一致</span>している必要がある。</p>
+
+        <div class="formula">
+          A (m × <span class="key">n</span>) × B (<span class="key">n</span> × p) = C (m × p)
+        </div>
+
+        <p>内側の <code>n</code> が揃わなければ計算不能。外側の <code>m × p</code> が <span class="key">出力のサイズ</span>。</p>
+
+        <p style="margin-top:18px"><span class="key">例：</span></p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td>1</td><td>2</td></tr>
+              <tr><td>0</td><td>3</td></tr>
+              <tr><td>4</td><td>-1</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">3 × 2</span>
+          <span class="op">×</span>
+          <div class="matrix">
+            <table>
+              <tr><td>5</td></tr>
+              <tr><td>3</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">2 × 1</span>
+          <span class="op">=</span>
+          <span class="dim-tag" style="background:#fff3a0;color:var(--text);border-color:#e0c050">3 × 1</span>
+        </div>
+
+        <p>左の <span class="key">列数 = 2</span>、右の <span class="key">行数 = 2</span> なので一致 → 計算可能。<br>
+        出力<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>は <span class="key">左の行数（3）</span> × <span class="key">右の列数（1）</span> → <span class="hl">3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の縦<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span></span> になる。</p>
+      </div>
+
+      <div class="section" id="dim-as-transform">
+        <h2>サイズから「<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>変換の中身」が読める</h2>
+        <p>具体の数字を見る前に、<span class="hl"><span class="vt" data-vocab="matrix" data-ja="行列">行列</span>のサイズだけで「何<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>から何<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>への変換か」が決まる</span>。</p>
+
+        <div class="matrix-row">
+          <div class="dlm">
+            <div></div>
+            <div class="dlm-clbl lbl-x">x</div>
+            <div class="dlm-clbl lbl-y">y</div>
+            <div class="dlm-clbl lbl-z">z</div>
+
+            <div class="dlm-rlbl lbl-X">X</div>
+            <div class="dlm-cell c-x r-X">3</div>
+            <div class="dlm-cell c-y r-X">1</div>
+            <div class="dlm-cell c-z r-X">2</div>
+
+            <div class="dlm-rlbl lbl-Y">Y</div>
+            <div class="dlm-cell c-x r-Y">8</div>
+            <div class="dlm-cell c-y r-Y">5</div>
+            <div class="dlm-cell c-z r-Y">7</div>
+
+            <div class="dlm-bracket l"></div>
+            <div class="dlm-bracket r"></div>
+          </div>
+          <span class="dim-tag">2 × 3</span>
+          <span class="op">×</span>
+          <div class="matrix-labeled-r">
+            <div class="matrix">
+              <table class="colored">
+                <tr><td class="c-x">4</td></tr>
+                <tr><td class="c-y">1</td></tr>
+                <tr><td class="c-z">3</td></tr>
+              </table>
+            </div>
+            <div class="m-side-labels">
+              <span class="lbl lbl-x">x</span>
+              <span class="lbl lbl-y">y</span>
+              <span class="lbl lbl-z">z</span>
+            </div>
+          </div>
+          <span class="dim-tag">3 × 1</span>
+          <span class="op">=</span>
+          <div class="matrix-labeled-r">
+            <div class="matrix">
+              <table class="colored">
+                <tr><td class="r-X">19</td></tr>
+                <tr><td class="r-Y">58</td></tr>
+              </table>
+            </div>
+            <div class="m-side-labels">
+              <span class="lbl lbl-X">X</span>
+              <span class="lbl lbl-Y">Y</span>
+            </div>
+          </div>
+          <span class="dim-tag" style="background:#fff3a0;color:var(--text);border-color:#e0c050">2 × 1</span>
+        </div>
+
+        <div class="formula" style="background:#fafafa;border-left-color:var(--accent)">
+          <div style="margin-bottom:8px"><span class="term-X">X</span> =
+            <span class="term-x">3</span>·<span class="term-x">4</span> +
+            <span class="term-y">1</span>·<span class="term-y">1</span> +
+            <span class="term-z">2</span>·<span class="term-z">3</span>
+            = 12 + 1 + 6 = <span class="term-X">19</span>
+          </div>
+          <div><span class="term-Y">Y</span> =
+            <span class="term-x">8</span>·<span class="term-x">4</span> +
+            <span class="term-y">5</span>·<span class="term-y">1</span> +
+            <span class="term-z">7</span>·<span class="term-z">3</span>
+            = 32 + 5 + 21 = <span class="term-Y">58</span>
+          </div>
+        </div>
+
+        <p>左の<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>のサイズが <span class="key">2 × 3</span> である時点で、これは <span class="hl">3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>を 2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>に落とす操作</span> だと分かる。</p>
+
+        <p><span class="key">5色の意味：</span><br>
+        <span class="key"><span class="lbl-x">x</span> / <span class="lbl-y">y</span> / <span class="lbl-z">z</span>（赤・青・緑）</span> = 入力の3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span><span class="vt" data-vocab="basis" data-ja="基底">基底</span>（列方向） — vector側の <span class="c-x key">4(x)</span>・<span class="c-y key">1(y)</span>・<span class="c-z key">3(z)</span> と対応<br>
+        <span class="key"><span class="lbl-X">X</span> / <span class="lbl-Y">Y</span>（オレンジ・紫）</span> = 出力の2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>成分（行方向） — 結果<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>の上下と対応<br>
+        各セル <span class="key">A<sub>ij</sub></span> は「入力<span class="vt" data-vocab="basis" data-ja="基底">基底</span> <span class="key">j</span> が、出力成分 <span class="key">i</span> にどれだけ寄与するか」を表す係数。</p>
+
+        <p><span class="hl">列を縦に読めば</span> <span class="vt" data-vocab="basis" data-ja="基底">基底</span><span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span> <span class="c-x key">x</span>→(3,8), <span class="c-y key">y</span>→(1,5), <span class="c-z key">z</span>→(2,7) の行き先が一気に見え、<span class="hl">行を横に読めば</span> 出力 <span class="lbl-X key">X</span>=3x+1y+2z, <span class="lbl-Y key">Y</span>=8x+5y+7z の合成式が見える。</p>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">余談：</span>「<span class="vt" data-vocab="basis" data-ja="基底">基底</span>の行き先」を素直に縦に並べたいなら、<span class="key"><span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を転置（transpose）</span> した方が直感的に見える、という疑問が生まれる。<br>
+          が、それは <span class="hl"><span class="vt" data-vocab="matrix" data-ja="行列">行列</span>積の計算ルール（左の行 × 右の列）</span> がそう要請しているからで、慣習にひとまず従う方が良い。直感と書き方の不一致は、<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の世界でよくある。
+        </div>
+
+        <div class="formula">
+          (m × n) <span class="vt" data-vocab="matrix" data-ja="行列">行列</span> = <span class="key">n<span class="vt" data-vocab="dimension" data-ja="次元">次元</span> → m<span class="vt" data-vocab="dimension" data-ja="次元">次元</span></span> への線形変換
+        </div>
+
+        <p>つまり 数字の中身を見ずとも、<span class="key">行数 = 出力<span class="vt" data-vocab="dimension" data-ja="次元">次元</span></span>、<span class="key">列数 = 入力<span class="vt" data-vocab="dimension" data-ja="次元">次元</span></span>。<br>
+        この見方を覚えると、<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を「変換器」として直感的に読めるようになる。</p>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">アナロジー：カメラ</span><br>
+          3Dの被写体に光を当てて2Dの写真にする操作も、<span class="hl">3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span> → 2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の線形変換</span>。<br>
+          「2×3<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>をかける」は、ある意味カメラで世界を撮ることに近い。
+        </div>
+      </div>
+
+      <div class="section" id="dim-up-2d-to-3d">
+        <h2>対の例：2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span> → 3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>（<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>を増やす）</h2>
+        <p>逆向きの例。<span class="key">3×2 <span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span> なので入力2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>・出力3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の <span class="hl"><span class="vt" data-vocab="dimension" data-ja="次元">次元</span>を増やす変換</span>。列が2本（x, y）、行が3本（X, Y, Z）。</p>
+
+        <div class="matrix-row">
+          <div class="dlm dlm-3x2">
+            <div></div>
+            <div class="dlm-clbl lbl-x">x</div>
+            <div class="dlm-clbl lbl-y">y</div>
+
+            <div class="dlm-rlbl lbl-X">X</div>
+            <div class="dlm-cell c-x r-X">1</div>
+            <div class="dlm-cell c-y r-X">2</div>
+
+            <div class="dlm-rlbl lbl-Y">Y</div>
+            <div class="dlm-cell c-x r-Y">2</div>
+            <div class="dlm-cell c-y r-Y">3</div>
+
+            <div class="dlm-rlbl lbl-Z">Z</div>
+            <div class="dlm-cell c-x r-Z">4</div>
+            <div class="dlm-cell c-y r-Z">-1</div>
+
+            <div class="dlm-bracket l"></div>
+            <div class="dlm-bracket r"></div>
+          </div>
+          <span class="dim-tag">3 × 2</span>
+          <span class="op">×</span>
+          <div class="matrix-labeled-r">
+            <div class="matrix">
+              <table class="colored">
+                <tr><td class="c-x">5</td></tr>
+                <tr><td class="c-y">3</td></tr>
+              </table>
+            </div>
+            <div class="m-side-labels">
+              <span class="lbl lbl-x">x</span>
+              <span class="lbl lbl-y">y</span>
+            </div>
+          </div>
+          <span class="dim-tag">2 × 1</span>
+          <span class="op">=</span>
+          <div class="matrix-labeled-r">
+            <div class="matrix">
+              <table class="colored">
+                <tr><td class="r-X">11</td></tr>
+                <tr><td class="r-Y">19</td></tr>
+                <tr><td class="r-Z">17</td></tr>
+              </table>
+            </div>
+            <div class="m-side-labels">
+              <span class="lbl lbl-X">X</span>
+              <span class="lbl lbl-Y">Y</span>
+              <span class="lbl lbl-Z">Z</span>
+            </div>
+          </div>
+          <span class="dim-tag" style="background:#fff3a0;color:var(--text);border-color:#e0c050">3 × 1</span>
+        </div>
+
+        <div class="formula" style="background:#fafafa;border-left-color:var(--accent)">
+          <div style="margin-bottom:8px"><span class="term-X">X</span> =
+            <span class="term-x">1</span>·<span class="term-x">5</span> +
+            <span class="term-y">2</span>·<span class="term-y">3</span>
+            = 5 + 6 = <span class="term-X">11</span>
+          </div>
+          <div style="margin-bottom:8px"><span class="term-Y">Y</span> =
+            <span class="term-x">2</span>·<span class="term-x">5</span> +
+            <span class="term-y">3</span>·<span class="term-y">3</span>
+            = 10 + 9 = <span class="term-Y">19</span>
+          </div>
+          <div><span class="term-Z">Z</span> =
+            <span class="term-x">4</span>·<span class="term-x">5</span> +
+            <span class="term-y">-1</span>·<span class="term-y">3</span>
+            = 20 + (-3) = <span class="term-Z">17</span>
+          </div>
+        </div>
+
+        <p><span class="hl">縦に読む</span>: <span class="vt" data-vocab="basis" data-ja="基底">基底</span> <span class="c-x key">x</span> → (1, 2, 4), <span class="c-y key">y</span> → (2, 3, -1)。<br>
+        <span class="hl">横に読む</span>: <span class="lbl-X key">X</span>=1x+2y, <span class="lbl-Y key">Y</span>=2x+3y, <span class="lbl-Z key">Z</span>=4x−y。<br>
+        2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の世界（x, y）の情報を、3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の出力（X, Y, Z）に「広げる」変換になっている。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">深掘り：列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>の線形結合として見る</h3>
+
+        <p><span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の各列は、<span class="hl"><span class="vt" data-vocab="basis" data-ja="基底">基底</span><span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>が3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>のどこに行くか</span>を表している：</p>
+        <ul class="blist" style="list-style:none;padding:0;margin:8px 0">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.8"><span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の<span class="vt" data-vocab="basis" data-ja="基底">基底</span> <span class="term-x">x</span>=(1, 0) → 3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>上で <span class="term-x">(1, 2, 4)</span> に変換</li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.8"><span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の<span class="vt" data-vocab="basis" data-ja="基底">基底</span> <span class="term-y">y</span>=(0, 1) → 3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>上で <span class="term-y">(2, 3, -1)</span> に変換</li>
+        </ul>
+        <p>入力<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span> <span class="term-x">5</span><span class="term-y">3</span> は「<span class="term-x">x方向に5</span>、<span class="term-y">y方向に3</span>」という意味。出力は、それぞれの行き先<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>を<span class="hl"><span class="vt" data-vocab="scalar" data-ja="スカラー">スカラー</span>倍して足し合わせる</span>だけ：</p>
+
+        <div class="matrix-row" style="margin-top:12px">
+          <span class="term-x" style="font-size:18px">5</span>
+          <span class="op">·</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-x">1</td></tr>
+            <tr><td class="c-x">2</td></tr>
+            <tr><td class="c-x">4</td></tr>
+          </table></div>
+          <span class="op">+</span>
+          <span class="term-y" style="font-size:18px">3</span>
+          <span class="op">·</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-y">2</td></tr>
+            <tr><td class="c-y">3</td></tr>
+            <tr><td class="c-y">-1</td></tr>
+          </table></div>
+          <span class="op">=</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-x">5</td></tr>
+            <tr><td class="c-x">10</td></tr>
+            <tr><td class="c-x">20</td></tr>
+          </table></div>
+          <span class="op">+</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-y">6</td></tr>
+            <tr><td class="c-y">9</td></tr>
+            <tr><td class="c-y">-3</td></tr>
+          </table></div>
+          <span class="op">=</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="r-X">11</td></tr>
+            <tr><td class="r-Y">19</td></tr>
+            <tr><td class="r-Z">17</td></tr>
+          </table></div>
+        </div>
+
+        <p style="margin-top:14px">これが「<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> × <span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>」の <span class="hl">列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>の線形結合としての解釈</span>。<br>
+        一般化すると、<span class="key">3×2 <span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span> の場合：2列ある成分（赤・青）それぞれが3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>（X・Y・Z）の出力値を生み、最後に<span class="key">要素ごとに足し合わせ</span>て合成<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>として出力される。</p>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700;margin-top:16px">
+          <span class="key">大事な気づき：出力は3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>のうち"ある平面"にしか乗らない</span><br>
+          今回の操作で使っている「行き先<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>」（≒ マスターキー）は <span class="term-x">(1, 2, 4)</span> と <span class="term-y">(2, 3, -1)</span> の<span class="hl">2本だけ</span>。<br>
+          入力 (x, y) をどう変えても、出力は常にこの2本の線形結合 → <span class="hl">2本が張る平面（2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>部分空間）の上にしか写像されない</span>。<br>
+          つまり <span class="key">3×2 <span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の出力は、ℝ³ の中の "2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の薄い平面" に閉じ込められる</span>。3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>全部は埋め尽くせない。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">深掘り②：3×2 <span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の行の独立性で、出力空間はどう変わるか</h3>
+
+        <p>3×2 <span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の3つの行は、それぞれ ℝ² 上の<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>（要素2つ）。<span class="hl">行同士の<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>性</span>で出力の形（=像 / Image）の<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>が決まる。</p>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">前提：</span>3×2 <span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の rank は <span class="key">最大2</span>。行も列もどちらも本質的には同じ rank を共有する（行rank = 列rank の定理）。
+        </div>
+
+        <p style="margin-top:14px"><span class="key">ケース A：2行が独立、1行が他の線形結合（一般・rank = 2）</span></p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table class="colored">
+              <tr><td>1</td><td>2</td></tr>
+              <tr><td>2</td><td>3</td></tr>
+              <tr><td>4</td><td>-1</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">rank = 2</span>
+        </div>
+        <p>本セクションで扱った例。3つの行 (1,2), (2,3), (4,-1) のうち独立なのは2本。3本目は他の2本の線形結合になっている。<br>
+        → 出力は <span class="hl">ℝ³ の中の 2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>平面</span>。一番"健全な" 2D→3D。</p>
+
+        <p style="margin-top:14px"><span class="key">ケース B：全行が一次従属（退化・rank = 1）</span></p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table class="colored">
+              <tr><td>1</td><td>2</td></tr>
+              <tr><td>2</td><td>4</td></tr>
+              <tr><td>3</td><td>6</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">rank = 1</span>
+        </div>
+        <p>3つの行がすべて方向 (1, 2) のスカラー倍 → ℝ² 上で同一直線上。<br>
+        この場合は2つの列も比例 ((1,2,3) と (2,4,6) = 2倍) なので、列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>も互いに平行。<br>
+        → 出力は <span class="hl">ℝ³ の中の 1<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>直線</span>。2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の情報のうち1<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>分しか伝わらない（情報が潰れる）。</p>
+
+        <p style="margin-top:14px"><span class="key">ケース C：3行すべて一次独立 → 不可能</span></p>
+        <div class="formula" style="background:#fff5f5;border-left-color:#c2185b">
+          ℝ² の中では、独立な<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>は最大 <span class="key">2本</span>。3本以上を取ろうとした瞬間、必ずどれか1本は他2本の線形結合になる。<br>
+          つまり「3×2 <span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の3行が全部独立」という状況は<span class="hl">数学的に存在しない</span>。
+        </div>
+
+        <p style="margin-top:14px"><span class="key">まとめ：</span></p>
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;margin-top:4px">
+          <thead>
+            <tr style="background:var(--surface);text-align:left">
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">ケース</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">rank</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">出力空間</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">A：2行独立 + 1行従属</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">2</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">ℝ³ 中の <strong>2D 平面</strong>（健全）</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">B：全行従属</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">1</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">ℝ³ 中の <strong>1D 直線</strong>（情報が潰れる）</td></tr>
+            <tr><td style="padding:8px 12px">C：3行独立</td><td style="padding:8px 12px">—</td><td style="padding:8px 12px">不可能（ℝ²では最大2本まで）</td></tr>
+          </tbody>
+        </table>
+
+        <p style="margin-top:10px;color:var(--muted);font-size:13px">
+          → この「平面に閉じ込められる現象」には数学的な名前がある。次のChapter <a href="#span" style="color:var(--accent)">「Span」</a> で扱う。
+        </p>
+      </div>
+
+    </div>
+
+    <div class="chapter" id="matrix-types">
+      <div class="chapter-label">Chapter</div>
+      <div class="chapter-title">さまざまな<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の型</div>
+
+      <div class="section" id="diag-def">
+        <h2>定義</h2>
+        <p>正方<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>のうち、<span class="hl">対角成分（i=j の位置）以外がすべて 0</span> のもの。</p>
+
+        <div class="formula">
+          D = diag(d₁, d₂, …, dₙ) =
+          <span style="display:inline-block;vertical-align:middle;margin-left:8px">
+            <span style="border-left:2px solid var(--text);border-top:2px solid var(--text);border-bottom:2px solid var(--text);padding:6px 10px 6px 4px;display:inline-block;font-family:'Poppins',sans-serif;font-weight:700">
+              d₁ &nbsp; 0 &nbsp; &nbsp; 0<br>
+              0 &nbsp; d₂ &nbsp; &nbsp; 0<br>
+              0 &nbsp; 0 &nbsp; d₃
+            </span><span style="border-right:2px solid var(--text);border-top:2px solid var(--text);border-bottom:2px solid var(--text);padding:6px 4px 6px 0;display:inline-block;height:100%">&nbsp;</span>
+          </span>
+        </div>
+
+        <p>具体例（3×3）：</p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700;color:#d62828">3</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td style="font-weight:700;color:#1d4e89">-1</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700;color:#2a9d8f">2</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">diag(3, -1, 2)</span>
+        </div>
+      </div>
+
+      <div class="section" id="diag-meaning">
+        <h2>幾何学的意味：各軸を独立にスケーリングする変換</h2>
+        <p>対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>に掛けると、<span class="hl">各成分が独立に対角成分でスケーリング</span>されるだけ。</p>
+
+        <div class="formula">
+          D · (x, y, z) = (d₁·x, &nbsp; d₂·y, &nbsp; d₃·z)
+        </div>
+
+        <p>上の例で計算してみる：</p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700;color:#d62828">3</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td style="font-weight:700;color:#1d4e89">-1</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700;color:#2a9d8f">2</td></tr>
+            </table>
+          </div>
+          <span class="op">×</span>
+          <div class="matrix">
+            <table class="colored">
+              <tr><td class="c-x">1</td></tr>
+              <tr><td class="c-y">2</td></tr>
+              <tr><td class="c-z">3</td></tr>
+            </table>
+          </div>
+          <span class="op">=</span>
+          <div class="matrix">
+            <table class="colored">
+              <tr><td class="c-x">3</td></tr>
+              <tr><td class="c-y">-2</td></tr>
+              <tr><td class="c-z">6</td></tr>
+            </table>
+          </div>
+        </div>
+        <p><span class="term-x">x軸</span> が 3倍、<span class="term-y">y軸</span> が -1倍（向き反転）、<span class="term-z">z軸</span> が 2倍。<br>
+        <span class="hl">基底<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span> e₁, e₂, e₃ がそれぞれ単独に変換される</span> — 列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>視点で見れば、各列が「対応する軸方向のスカラー倍」になっているだけ。</p>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">直感：</span>対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> = "<span class="hl">座標軸を混ぜずに、各軸を独立に伸縮する変換</span>"。<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の中で最もシンプルな構造。
+        </div>
+      </div>
+
+      <div class="section" id="diag-why-nice">
+        <h2>なぜ嬉しいか（計算が極端に簡単）</h2>
+        <p>対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>は<span class="hl">あらゆる演算が成分ごとに独立</span>になるので、計算コストが激安。</p>
+
+        <ul style="list-style:none;padding:0;margin:8px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong><span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>との積：</strong>各成分を対角成分で倍するだけ
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>べき乗：</strong>D<sup>k</sup> = diag(d₁<sup>k</sup>, …, dₙ<sup>k</sup>) — 各対角成分を k 乗するだけ
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong><span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span>：</strong>det(D) = d₁ · d₂ · … · dₙ（対角成分の積）
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong><span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span>：</strong>D<sup>-1</sup> = diag(1/d₁, …, 1/dₙ)（すべての d ≠ 0 が条件）
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>固有値：</strong>対角成分そのものが固有値
+          </li>
+        </ul>
+
+        <p style="margin-top:10px">これが<span class="key">対角化（Diagonalization）</span>のモチベーション — 普通の<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を、適切な基底に乗り換えることで <span class="hl">対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>と同等な形に変えて、計算を激減させる</span>。</p>
+      </div>
+
+      <div class="section" id="diag-scalar">
+        <h2>スカラー<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（Scalar Matrix）</h2>
+        <p>対角成分が<span class="hl">すべて同じ値 c</span> の対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を <span class="key">スカラー<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span> と呼ぶ。表記は <span class="key">c·I</span>（c に単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を掛けたものと等しい）。</p>
+
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700">c</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td style="font-weight:700">c</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700">c</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">スカラー<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> = c·I</span>
+        </div>
+
+        <p><span class="key">幾何学的意味：</span><span class="hl">全方向に c 倍</span>するだけ。各軸の比率を保ったまま拡大／縮小する変換（等方的なスケーリング）。</p>
+
+        <p>具体例：<strong>2I</strong> = diag(2, 2, 2) を <span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span> (1, 2, 3) に掛けると：</p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700">2</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td style="font-weight:700">2</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700">2</td></tr>
+            </table>
+          </div>
+          <span class="op">×</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-x">1</td></tr><tr><td class="c-y">2</td></tr><tr><td class="c-z">3</td></tr>
+          </table></div>
+          <span class="op">=</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-x">2</td></tr><tr><td class="c-y">4</td></tr><tr><td class="c-z">6</td></tr>
+          </table></div>
+        </div>
+        <p>すべての成分が一律 2 倍 — 形は保たれたまま大きさだけ変わる。</p>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>との関係：</span>スカラー<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>で <strong>c = 1</strong> にしたものが <span class="key">単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> I</span>。スカラー<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>は I の自然な一般化、対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の中で「すべての軸が同じ役割」を持つ最も対称的な部分集合。
+        </div>
+      </div>
+
+      <div class="section" id="diag-identity">
+        <h2>単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（Identity Matrix）との関係</h2>
+        <p><span class="key">単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> I</span>（identity matrix）は <span class="hl">対角成分がすべて 1 の特別な対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span>。「対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>のうち、最も大人しい一例」と言える。</p>
+
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700">1</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td style="font-weight:700">1</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700">1</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">I₃ = diag(1, 1, 1)</span>
+        </div>
+
+        <p><span class="key">性質：</span></p>
+        <ul style="list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>恒等変換</strong>：I·v = v — どんな<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>も変えずにそのまま返す
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>掛け算の単位元</strong>：A·I = I·A = A — 数の「1」と同じ役割
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong><span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span>の定義に登場</strong>：A · A<sup>-1</sup> = I
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>は<span class="hl">標準基底 e₁, e₂, …, eₙ そのもの</span> — 基底の話と直結
+          </li>
+        </ul>
+
+        <p style="margin-top:10px"><span class="key">対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>族の階層：</span></p>
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px">
+          <thead>
+            <tr style="background:var(--surface);text-align:left">
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">タイプ</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">対角成分の条件</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">幾何的意味</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">対角以外 = 0、対角は任意</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">各軸を独立にスケーリング</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">スカラー<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">対角がすべて同じ値 c</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">全方向に c 倍（c·I に等しい）</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> I</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">対角がすべて 1</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">何もしない（恒等）</td></tr>
+            <tr><td style="padding:8px 12px">ゼロ<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></td><td style="padding:8px 12px">対角もすべて 0</td><td style="padding:8px 12px">すべてを潰す（→ 0<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>）</td></tr>
+          </tbody>
+        </table>
+
+        <div class="formula" style="border-left-color:#888;margin-top:14px">
+          <span class="key">関係性まとめ：</span>単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> ⊂ スカラー<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> ⊂ 対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> ⊂ 正方<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>。<br>
+          後の Chapter で<span class="key">対角化</span>を扱うときは、「与えられた<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を、対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>と同等の形に変換できるか？」を問う。それができれば、その<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の計算は対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>と同じくらい楽になる。
+        </div>
+      </div>
+
+      <div class="section" id="shift-nilpotent">
+        <h2>シフト<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>とニルポテント<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></h2>
+        <p>対角の<span class="hl">すぐ上に並ぶ 1</span> が引き起こす不思議な現象を、極端な例で見てみる。後の Jordan Chapter の伏線でもある。</p>
+
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td>0</td><td style="font-weight:700;color:#e07b00">1</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700;color:#e07b00">1</td></tr>
+              <tr><td>0</td><td>0</td><td>0</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">3 × 3</span>
+          <span class="op">×</span>
+          <div class="matrix">
+            <table class="colored">
+              <tr><td class="c-x">x</td></tr>
+              <tr><td class="c-y">y</td></tr>
+              <tr><td class="c-z">z</td></tr>
+            </table>
+          </div>
+          <span class="op">=</span>
+          <div class="matrix">
+            <table class="colored">
+              <tr><td class="c-y">y</td></tr>
+              <tr><td class="c-z">z</td></tr>
+              <tr><td>0</td></tr>
+            </table>
+          </div>
+        </div>
+
+        <p>計算してみると：</p>
+        <div class="formula" style="background:#fafafa;border-left-color:var(--accent)">
+          <div style="margin-bottom:4px">行1：0·x + 1·<span class="term-y">y</span> + 0·z = <span class="term-y">y</span></div>
+          <div style="margin-bottom:4px">行2：0·x + 0·y + 1·<span class="term-z">z</span> = <span class="term-z">z</span></div>
+          <div>行3：0·x + 0·y + 0·z = 0</div>
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:20px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">シフト<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（Shift Matrix）</h3>
+        <p>入力 (x, y, z) → 出力 (y, z, 0)。<span class="hl">成分が1つずつ上にスライド</span>し、一番下に 0 が押し込まれる。1ステップで情報が "前にずれる" のでシフト<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>。<br>
+        対角のすぐ上に並ぶ <span style="color:#e07b00;font-weight:700">1</span> たちが「次の成分を引っ張り上げる」役を担っている — まさに<span class="key">ジョルダンブロックの 1 と同じ構造</span>。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:20px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">ニルポテント<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（Nilpotent Matrix）<span class="status-tag tag-not-learned">未履修</span></h3>
+        <div class="subsection-pending">
+        <p>同じシフト<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> N を繰り返しかけてみる：</p>
+        <ul style="list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>N¹</strong>：(x, y, z) → <span class="term-y">y</span>, <span class="term-z">z</span>, 0
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>N²</strong>：N を再適用 → <span class="term-z">z</span>, 0, 0
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>N³</strong>：もう一度 → 0, 0, 0 = <span class="key">ゼロ<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span></span>
+          </li>
+        </ul>
+        <div class="formula">
+          ある自然数 k について <span class="hl">N<sup>k</sup> = O（ゼロ<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>）</span> となる<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を <span class="key">ニルポテント<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span>（nilpotent matrix）と呼ぶ。<br>
+          上の例は <span class="key">N³ = O</span>、すなわち 3 回かければ消える。
+        </div>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">ジョルダンブロックとの関係：</span><br>
+          ジョルダンブロック J(λ) = λI + N と分解できる。つまり <span class="hl">対角部分（λI、各軸 λ 倍）+ シフト/ニルポテント部分（N、対角化できない成分）</span> の足し算。<br>
+          ・λ がブロック全体の "スケーリング" を表す<br>
+          ・N が "<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span>に乗り切らない成分" をシフトで伝える役<br>
+          ジョルダン形に 1 が現れるのは、この<span class="key">ニルポテント部分</span>が顔を出しているから。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="permutation-matrix">
+        <h2>置換<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（Permutation Matrix）</h2>
+        <p><span class="hl">各行・各列にちょうど 1 つだけ 1 があり、それ以外がすべて 0</span> の正方<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を <span class="key">置換<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span> と呼ぶ。<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>の成分を<span class="key">並び替える（置換する）</span>だけの変換。</p>
+
+        <p><span class="key">例① 恒等置換（=単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>）</span></p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700">1</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td style="font-weight:700">1</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700">1</td></tr>
+            </table>
+          </div>
+          <span class="op">×</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-x">x</td></tr><tr><td class="c-y">y</td></tr><tr><td class="c-z">z</td></tr>
+          </table></div>
+          <span class="op">=</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-x">x</td></tr><tr><td class="c-y">y</td></tr><tr><td class="c-z">z</td></tr>
+          </table></div>
+          <span class="dim-tag">何もしない</span>
+        </div>
+
+        <p><span class="key">例② x と y を入れ替え（互換）</span></p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td>0</td><td style="font-weight:700">1</td><td>0</td></tr>
+              <tr><td style="font-weight:700">1</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700">1</td></tr>
+            </table>
+          </div>
+          <span class="op">×</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-x">x</td></tr><tr><td class="c-y">y</td></tr><tr><td class="c-z">z</td></tr>
+          </table></div>
+          <span class="op">=</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-y">y</td></tr><tr><td class="c-x">x</td></tr><tr><td class="c-z">z</td></tr>
+          </table></div>
+          <span class="dim-tag">(x, y) を交換</span>
+        </div>
+
+        <p><span class="key">例③ 巡回置換 (x, y, z) → (z, x, y)</span></p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td>0</td><td>0</td><td style="font-weight:700">1</td></tr>
+              <tr><td style="font-weight:700">1</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td style="font-weight:700">1</td><td>0</td></tr>
+            </table>
+          </div>
+          <span class="op">×</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-x">x</td></tr><tr><td class="c-y">y</td></tr><tr><td class="c-z">z</td></tr>
+          </table></div>
+          <span class="op">=</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-z">z</td></tr><tr><td class="c-x">x</td></tr><tr><td class="c-y">y</td></tr>
+          </table></div>
+          <span class="dim-tag">3つを巡回</span>
+        </div>
+
+        <p><span class="key">例④ もう一つの巡回置換 (x, y, z) → (y, z, x)</span></p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td>0</td><td style="font-weight:700">1</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700">1</td></tr>
+              <tr><td style="font-weight:700">1</td><td>0</td><td>0</td></tr>
+            </table>
+          </div>
+          <span class="op">×</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-x">x</td></tr><tr><td class="c-y">y</td></tr><tr><td class="c-z">z</td></tr>
+          </table></div>
+          <span class="op">=</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-y">y</td></tr><tr><td class="c-z">z</td></tr><tr><td class="c-x">x</td></tr>
+          </table></div>
+          <span class="dim-tag">逆向きに巡回</span>
+        </div>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700">
+          <span class="key">置換<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の本質：</span>情報を<span class="hl">一切失わずに並び替えるだけ</span>。<br>
+          ・<span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span> = ±1（偶数回の置換なら +1、奇数回なら -1）<br>
+          ・正則（フルランク）→ 必ず<span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span>が存在し、<span class="key">P<sup>-1</sup> = P<sup>T</sup>（転置）</span><br>
+          ・固有値の絶対値はすべて 1（直交<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の一種）
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:20px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">置換 vs シフト — 情報を失うか保つか</h3>
+
+        <p>シフト<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>と置換<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>は似ているが本質的に違う。下の例を見比べると一目瞭然。</p>
+
+        <p><span class="key">紛らわしい例（シフト系・置換ではない）</span></p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td style="font-weight:700">1</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td style="font-weight:700">1</td><td>0</td></tr>
+            </table>
+          </div>
+          <span class="op">×</span>
+          <div class="matrix"><table class="colored">
+            <tr><td class="c-x">x</td></tr><tr><td class="c-y">y</td></tr><tr><td class="c-z">z</td></tr>
+          </table></div>
+          <span class="op">=</span>
+          <div class="matrix"><table class="colored">
+            <tr><td>0</td></tr><tr><td class="c-x">x</td></tr><tr><td class="c-y">y</td></tr>
+          </table></div>
+          <span class="dim-tag">z が消える！</span>
+        </div>
+        <p>これは1行目がすべて 0 で、1列目（x）と2列目（y）にだけ 1 がある。<span class="hl">z は完全に切り捨てられる</span>ので置換<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>ではない（= 情報を失う = nilpotent系）。<br>
+        置換<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の条件「各行・各列に 1 がちょうど1個ずつ」を満たさないと、情報が破壊される。</p>
+
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;margin-top:14px">
+          <thead>
+            <tr style="background:var(--surface);text-align:left">
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">型</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">1 の配置</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">情報</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">rank</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">置換<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">各行・各列に 1 が <strong>ちょうど1個</strong></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">完全に保存（並び替え）</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">フルランク n</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">シフト<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（上シフト）</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">対角のすぐ上 (superdiagonal) のみ</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">端の1成分を失う</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">n-1</td></tr>
+            <tr><td style="padding:8px 12px">単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></td><td style="padding:8px 12px">対角だけ（置換の特殊例）</td><td style="padding:8px 12px">完全に保存（恒等）</td><td style="padding:8px 12px">フルランク n</td></tr>
+          </tbody>
+        </table>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">まとめ：</span><span class="hl">単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> ⊂ 置換<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span>。置換は「情報の入れ替え」だけを担当し、量も次元も保つ。シフト・ニルポテントは "情報を捨てて潰す" 系で、置換とは別系統。<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の中身を見るときは「各行・各列に 1 がいくつあるか」が分類の早道。
+        </div>
+      </div>
+
+    </div>
+
+    <div class="chapter" id="span">
+      <div class="chapter-label">Chapter</div>
+      <div class="chapter-title">Span（張られる空間）</div>
+
+      <div class="section" id="span-def">
+        <h2>定義</h2>
+        <p>いくつかの<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>を <span class="key"><span class="vt" data-vocab="scalar" data-ja="スカラー">スカラー</span>倍して足し合わせる</span> ことで到達できる、すべての点の集合のことを <span class="hl">Span</span>（スパン・張られる空間）と呼ぶ。</p>
+
+        <div class="formula">
+          Span(v₁, v₂, …, vₖ) = { c₁v₁ + c₂v₂ + … + cₖvₖ | c₁, …, cₖ ∈ ℝ }
+        </div>
+
+        <p>前のChapter「2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span> → 3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>」で見た例では、列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span> <span class="term-x">(1, 2, 4)</span> と <span class="term-y">(2, 3, -1)</span> の Span が、ℝ³ の中の<span class="hl">特定の2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>平面</span>。<br>
+        この平面が<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の <span class="key">像（Image / Range）</span>、その<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>（=平面の本数）が <span class="key">階数（Rank）= 2</span>。</p>
+      </div>
+
+      <div class="section" id="span-indep">
+        <h2>Span と<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span></h2>
+        <p>Span の「広がり（<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>）」は、<span class="hl">含まれる<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>が互いに本当に違う方向を向いているか</span> で決まる。これを <span class="key"><span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>（Linear Independence）</span> という。</p>
+
+        <p><span class="key"><span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span></span>：どの<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>も、他の<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>の線形結合では作れない関係。<br>
+        <span class="key">一次従属</span>：どれか1本が、他の線形結合で作れてしまう関係。「同じ方向の二度書き」が混ざっている状態。</p>
+
+        <div class="formula">
+          k本の<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>が<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span> ⇔ Span の<span class="vt" data-vocab="dimension" data-ja="次元">次元</span> = k<br>
+          一次従属が混ざる ⇔ Span は "潰れて" 小さくなる
+        </div>
+
+        <p style="margin-top:14px"><span class="key">例①：独立な2本</span>　<span class="term-x">v₁ = (1, 0)</span>、<span class="term-y">v₂ = (0, 1)</span><br>
+        どちらも独立 → <span class="hl">Span(v₁, v₂) = ℝ²（平面全体）</span></p>
+
+        <p><span class="key">例②：従属な2本</span>　<span class="term-x">v₁ = (1, 0)</span>、<span class="term-x">v₂ = (2, 0)</span><br>
+        v₂ = 2·v₁ なので同じ方向 → <span class="hl">Span(v₁, v₂) = x軸上の直線（1<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>）</span><br>
+        本数は2本だが、実質1方向しか張れない。</p>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">直感：</span>マスターキーが何本あっても、それぞれが同じドアを開ける鍵だったら、開けられる部屋は1つしか増えない。<br>
+          <span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span> = 「新しいドア」を開く鍵が増えること。
+        </div>
+      </div>
+
+      <div class="section" id="span-basis">
+        <h2><span class="vt" data-vocab="basis" data-ja="基底">基底</span>と<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span></h2>
+        <p>空間を表現するのに「ちょうど良い本数」の <span class="hl"><span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>な<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>の組</span> を選ぶと、それを <span class="key"><span class="vt" data-vocab="basis" data-ja="基底">基底</span>（Basis）</span> という。</p>
+
+        <div class="formula">
+          <span class="vt" data-vocab="basis" data-ja="基底">基底</span> = 「<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>」 ∧ 「空間全体を Span できる」<br>
+          = 最小の本数で空間を張り切れる<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>の組
+        </div>
+
+        <p style="margin-top:14px"><span class="key">特徴：</span></p>
+        <ul style="list-style:none;padding:0;margin:8px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            ℝⁿ の<span class="vt" data-vocab="basis" data-ja="基底">基底</span>は必ず <span class="key">n本</span>。1本多くても少なくてもダメ。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            空間内のどの点も、<span class="vt" data-vocab="basis" data-ja="基底">基底</span><span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>の <span class="hl">線形結合として一意に分解</span> できる。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <span class="vt" data-vocab="basis" data-ja="基底">基底</span>は1組ではなく、いくつでも選び方がある（<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>で n本なら何でも良い）。
+          </li>
+        </ul>
+
+        <p style="margin-top:14px"><span class="key">標準<span class="vt" data-vocab="basis" data-ja="基底">基底</span>（Standard Basis）</span>：ℝ² では <span class="term-x">e₁ = (1, 0)</span>, <span class="term-y">e₂ = (0, 1)</span>。最も「軸らしい」<span class="vt" data-vocab="basis" data-ja="基底">基底</span>。<br>
+        ℝ³ では <span class="term-x">e₁ = (1, 0, 0)</span>, <span class="term-y">e₂ = (0, 1, 0)</span>, <span class="term-z">e₃ = (0, 0, 1)</span>。</p>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">直感：</span>前Chapterで使った「マスターキー」表現で言うと、<span class="hl"><span class="vt" data-vocab="basis" data-ja="基底">基底</span> = 空間を全部開けられる最小本数のマスターキーの組</span>。<br>
+          ・1本足りない → 開けられない部屋（<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>）が残る<br>
+          ・1本余分 → 同じドアを開ける鍵が混ざっている（一次従属）
+        </div>
+      </div>
+
+      <div class="section" id="span-highdim">
+        <h2>4<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>以上の Span</h2>
+        <p>3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>までの Span（直線・平面・立体）は脳内で可視化できるが、<span class="hl">数学的には 4<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>・100<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>・1万<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の Span も同じように存在する</span>。</p>
+
+        <p>4<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>以上は人間の視覚では捉えられないが、計算ルールは変わらない。実世界の応用ではむしろ高<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の方が普通。</p>
+
+        <div class="formula" style="background:#f5f7fa">
+          <span class="key">直感：店舗データ × 4変数</span><br>
+          例えば店舗ごとに次の4つの<span class="hl">独立な変数</span>を持つとする：<br>
+          ・売上 (sales)　・顧客数 (visitors)　・在庫 (inventory)　・立地スコア (location)<br>
+          1店舗 = ℝ⁴ の中の1点。<br>
+          全店舗のデータ集合 = ℝ⁴ の中に分布する点群 → Span を考えれば<span class="hl">何<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の "本質的な広がり" を持つか</span> が分かる。
+        </div>
+
+        <p>「実は売上 ≒ 顧客数×単価」なら、その2変数は一次従属に近く、4変数のうち本質的には<span class="key">3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>の Span</span> しか張れていない可能性がある。<br>
+        → こうした考え方が <span class="key">主成分分析（PCA）</span> や <span class="key">階数（Rank）</span> の概念に直結する。</p>
+
+        <div class="formula" style="background:#fafafa;border-left-color:#888;margin-top:20px">
+          <span class="key" style="font-size:.95rem">コラム：主成分分析（PCA）とは、Spanとの関わり</span>
+
+          <div style="margin-top:10px"><span class="key">PCA（Principal Component Analysis）</span> は、高<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>データを<span class="hl">「本質的な広がりが大きい方向」から順に新しい<span class="vt" data-vocab="basis" data-ja="基底">基底</span></span>として並べ替える手法。</div>
+
+          <ul style="list-style:none;padding:0;margin:10px 0;display:flex;flex-direction:column;gap:6px">
+            <li style="padding-left:14px;position:relative;font-size:13.5px;line-height:1.75">
+              <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:#888;content:''"></span>
+              元の変数（売上・顧客数・在庫・立地）は<span class="key">独立に見えても</span>実際は相関があり、データ全体は ℝ⁴ の中の<span class="hl">"細長い雲" のような部分空間</span> に集まる。
+            </li>
+            <li style="padding-left:14px;position:relative;font-size:13.5px;line-height:1.75">
+              <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:#888;content:''"></span>
+              PCA はその雲を見て、<span class="key">最も広がっている方向</span> = 第1主成分、<span class="key">それに直交する次に広い方向</span> = 第2主成分、… と新しい<span class="vt" data-vocab="basis" data-ja="基底">基底</span>を取る。
+            </li>
+            <li style="padding-left:14px;position:relative;font-size:13.5px;line-height:1.75">
+              <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:#888;content:''"></span>
+              上位2〜3本でデータの分散の大半を説明できるなら、<span class="hl">本来 ℝ⁴ にあったデータを ℝ² や ℝ³ に圧縮</span> できる（= <span class="vt" data-vocab="dimension" data-ja="次元">次元</span>削減）。
+            </li>
+          </ul>
+
+          <div style="margin-top:10px"><span class="key">Span との関係：</span></div>
+          <ul style="list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px">
+            <li style="padding-left:14px;position:relative;font-size:13.5px;line-height:1.75">
+              <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:#888;content:''"></span>
+              PCA が選ぶ主成分の組は、<span class="key">データが実質的に張る部分空間（Span）の正規直交<span class="vt" data-vocab="basis" data-ja="基底">基底</span></span>。
+            </li>
+            <li style="padding-left:14px;position:relative;font-size:13.5px;line-height:1.75">
+              <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:#888;content:''"></span>
+              「ℝ⁴ の中で実は3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>しか張られていない」を見抜く道具。データの<span class="key">本質的な階数（Rank）</span> を推定するアプローチでもある。
+            </li>
+          </ul>
+
+          <div style="margin-top:10px;color:var(--muted);font-size:12.5px">数学的には、データの<strong>分散共分散<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の固有値・固有<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span></strong>を求めることに帰着する → 固有値の話につながる伏線。</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="chapter" id="rank">
+      <div class="chapter-label">Chapter</div>
+      <div class="chapter-title">Rank（階数）</div>
+
+      <div class="section" id="rank-def">
+        <h2>定義</h2>
+        <p><span class="hl"><span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>に分解したとき、<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>な<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>が実質何本入っているか</span> を表す数。それが <span class="key">Rank（階数）</span>。</p>
+
+        <div class="formula">
+          rank(A) = 列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>の<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>な本数 = Span(列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>) の<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>
+        </div>
+
+        <p>つまり <span class="key">rank = 出力空間の本当の<span class="vt" data-vocab="dimension" data-ja="次元">次元</span></span>。<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>のサイズが大きくても、列同士が比例していたりすれば rank は小さくなる。</p>
+
+        <p>列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>視点で数えても、行<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>視点で数えても結果は同じ（<span class="key">列rank = 行rank の定理</span>）。</p>
+      </div>
+
+      <div class="section" id="rank-full">
+        <h2>フルランク（Full Rank）</h2>
+        <p>rank が取りうる<span class="hl">最大値に達している状態</span>を <span class="key">フルランク</span> と呼ぶ。</p>
+
+        <div class="formula">
+          m×n <span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の最大 rank = min(m, n)<br>
+          rank(A) = min(m, n) ⇔ <span class="key">フルランク</span>
+        </div>
+
+        <p style="margin-top:14px"><span class="key">パターン別の意味：</span></p>
+        <ul style="list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>m ≤ n（横長 or 正方）</strong>：rank = m → 行が全部独立 = <span class="key">フル行ランク</span>
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>m ≥ n（縦長 or 正方）</strong>：rank = n → 列が全部独立 = <span class="key">フル列ランク</span>
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>正方（m = n）</strong>：rank = n → <span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span>を持つ・det ≠ 0（<span class="key">正則</span>）
+          </li>
+        </ul>
+
+        <p style="margin-top:14px">前Chapterの 3×2 <span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の場合、最大 rank = 2。<br>
+        ・<span class="key">ケースA（rank = 2）</span> = フルランク → 2列が独立、像は ℝ³ の 2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>平面（健全）<br>
+        ・<span class="key">ケースB（rank = 1）</span> = rank 不足 → 列が平行、像は 1<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>直線（情報が潰れる）</p>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">直感：</span>フルランク = <span class="vt" data-vocab="matrix" data-ja="行列">行列</span>が"本気を出している"状態。サイズで許される最大の情報量を運んでいる。<br>
+          rank 不足 = どこかで情報が潰れている（列同士が比例・行が同方向、など）。
+        </div>
+      </div>
+
+      <div class="section" id="rank-collapse-example">
+        <h2><span class="vt" data-vocab="dimension" data-ja="次元">次元</span>が潰れる例：3×3 だがフルランクでない<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></h2>
+
+        <p>サイズだけ見れば 3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span> → 3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span> の変換になるはずなのに、rank 不足のせいで出力が<span class="hl">2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>平面に潰れる</span>例。</p>
+
+        <div class="matrix-row">
+          <div class="matrix">
+            <table class="colored">
+              <tr><td class="c-x">4</td><td class="c-y">3</td><td class="c-z">8</td></tr>
+              <tr><td class="c-x">2</td><td class="c-y">1</td><td class="c-z">5</td></tr>
+              <tr><td class="c-x">0</td><td class="c-y">0</td><td class="c-z">0</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">3 × 3</span>
+          <span class="op">×</span>
+          <div class="matrix">
+            <table class="colored">
+              <tr><td class="c-x">1</td></tr>
+              <tr><td class="c-y">2</td></tr>
+              <tr><td class="c-z">4</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">3 × 1</span>
+          <span class="op">=</span>
+          <div class="matrix">
+            <table class="colored">
+              <tr><td class="r-X">42</td></tr>
+              <tr><td class="r-Y">24</td></tr>
+              <tr><td class="r-Z">0</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag" style="background:#fff3a0;color:var(--text);border-color:#e0c050">3 × 1</span>
+        </div>
+
+        <div class="formula" style="background:#fafafa;border-left-color:var(--accent)">
+          <div style="margin-bottom:6px"><span class="term-X">X</span> = 4·1 + 3·2 + 8·4 = 4 + 6 + 32 = <span class="term-X">42</span></div>
+          <div style="margin-bottom:6px"><span class="term-Y">Y</span> = 2·1 + 1·2 + 5·4 = 2 + 2 + 20 = <span class="term-Y">24</span></div>
+          <div><span class="term-Z">Z</span> = 0·1 + 0·2 + 0·4 = <span class="term-Z">0</span></div>
+        </div>
+
+        <p style="margin-top:14px"><span class="key">なぜ潰れるか：</span></p>
+        <ul style="list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            3行目が全部 0 → どんな入力でも Z = 0 で固定。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span> (4,2,0), (3,1,0), (8,5,0) はすべて<span class="hl">z = 0 の平面上に乗っている</span>。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            さらに 3列目 (8,5,0) = 3.5·(4,2,0) − 2·(3,1,0)、つまり1列目と2列目の線形結合 → 列の<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>な本数は <span class="key">2 本</span>。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            よって <span class="key">rank = 2</span>。最大値の3には届かない → フルランクでない（rank-deficient）。
+          </li>
+        </ul>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700">
+          <span class="key">結論：</span>入力は 3<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>空間 ℝ³ から自由に取れるのに、出力は <span class="hl">ℝ³ の中の "z=0" 平面（= 2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>部分空間）</span> にしか出てこない。<br>
+          サイズ上は 3D→3D だが、実質は <span class="key">3D→2D の写像</span>。これが「<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>が潰れる」という現象。
+        </div>
+
+        <div class="formula" style="border-left-color:#888;margin-top:14px">
+          <span class="key">補足①：ゼロ行がなくても rank は落ちる</span><br>
+          3行目を all zero にしたのは「目で見て分かりやすい」例にしただけ。rank が落ちる本質的な条件は <span class="hl">行または列が<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>でないこと</span>。<br>
+          例えば 3行目を「2行目の3倍 (6, 3, 15)」にしても、ゼロ行は一つもないけど rank は依然 2。<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の見た目に騙されないこと。
+        </div>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">補足②：もう一段深い感覚 — なぜ3列目は最初の2列で作れるのか</span><br>
+          3行目が all zero ということは、列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>たちが実質 ℝ² の中（2<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>）で動いていることを意味する。<br>
+          1, 2行目だけを取り出すと、各列は ℝ² の<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>：<span class="term-x">(4, 2)</span>, <span class="term-y">(3, 1)</span>, <span class="term-z">(8, 5)</span>。<br>
+          <span class="hl">2 本の<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>な<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>が ℝ² 上にあれば、平面上のあらゆる<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>を作れる</span>（= その2本で ℝ² 全体を Span できる）→ 3本目の <span class="term-z">(8, 5)</span> は<span class="hl">必ず</span> 最初の2本の線形結合で書ける。<br>
+          実際 <span class="term-z">(8, 5)</span> = 3.5 · <span class="term-x">(4, 2)</span> − 2 · <span class="term-y">(3, 1)</span>。<br>
+          「ℝ² の中で3本以上を独立に取ることはできない」という前Chapterの事実が、ここで rank-deficient の正体として顔を出している。
+        </div>
+      </div>
+
+      <div class="section" id="rank-collapse-example-2">
+        <h2><span class="vt" data-vocab="dimension" data-ja="次元">次元</span>が潰れる例 ②：列が無効化される場合</h2>
+
+        <p>前の例は「<span class="key">行</span>が潰れる」パターン。今度はニュアンスが少し違う「<span class="key">列</span>が無効化される」パターン。最終的に rank が落ちるという結論は同じだが、潰れる場所が違う。</p>
+
+        <div class="matrix-row">
+          <div class="matrix">
+            <table class="colored">
+              <tr><td class="c-x">0</td><td class="c-y">2</td><td class="c-z">5</td></tr>
+              <tr><td class="c-x">0</td><td class="c-y">1</td><td class="c-z">4</td></tr>
+              <tr><td class="c-x">0</td><td class="c-y">-3</td><td class="c-z">1</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">3 × 3</span>
+          <span class="op">×</span>
+          <div class="matrix">
+            <table class="colored">
+              <tr><td class="c-x">9</td></tr>
+              <tr><td class="c-y">5</td></tr>
+              <tr><td class="c-z">3</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">3 × 1</span>
+          <span class="op">=</span>
+          <div class="matrix">
+            <table class="colored">
+              <tr><td class="r-X">25</td></tr>
+              <tr><td class="r-Y">17</td></tr>
+              <tr><td class="r-Z">-12</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag" style="background:#fff3a0;color:var(--text);border-color:#e0c050">3 × 1</span>
+        </div>
+
+        <div class="formula" style="background:#fafafa;border-left-color:var(--accent)">
+          <div style="margin-bottom:6px"><span class="term-X">X</span> = <span class="term-x">0</span>·<span class="term-x">9</span> + <span class="term-y">2</span>·<span class="term-y">5</span> + <span class="term-z">5</span>·<span class="term-z">3</span> = 0 + 10 + 15 = <span class="term-X">25</span></div>
+          <div style="margin-bottom:6px"><span class="term-Y">Y</span> = <span class="term-x">0</span>·<span class="term-x">9</span> + <span class="term-y">1</span>·<span class="term-y">5</span> + <span class="term-z">4</span>·<span class="term-z">3</span> = 0 + 5 + 12 = <span class="term-Y">17</span></div>
+          <div><span class="term-Z">Z</span> = <span class="term-x">0</span>·<span class="term-x">9</span> + <span class="term-y">-3</span>·<span class="term-y">5</span> + <span class="term-z">1</span>·<span class="term-z">3</span> = 0 − 15 + 3 = <span class="term-Z">-12</span></div>
+        </div>
+
+        <p style="margin-top:14px"><span class="key">何が起きているか：</span></p>
+        <ul style="list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            1列目が全部 0 → 入力の <span class="term-x">x 成分</span>（今回は 9）は<span class="hl">どんな値であっても</span>結果に1ミリも寄与しない。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            x の<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>は計算過程で<span class="key">無効化（殺される）</span>。実質、入力は y, z の 2 軸だけが効いている。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>視点では：1列目 (0,0,0) はゼロ<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span> → <span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>には数えられない。2列目 (2,1,-3) と 3列目 (5,4,1) は独立 → <span class="key">rank = 2</span>。
+          </li>
+        </ul>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700">
+          <span class="key">2つの例の対比：</span><br>
+          ・<span class="key">前の例</span>（3行目 all zero）：<span class="hl">出力</span>の Z 軸が常に 0 になる → 出力空間が潰れる<br>
+          ・<span class="key">今回の例</span>（1列目 all zero）：<span class="hl">入力</span>の x 軸が常に無視される → 入力空間の方向が潰れる<br>
+          場所は違うが、どちらも結果 rank = 2 で <span class="key">フルランクでない</span>。線形変換の<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>を奪うパターンは、「出力側で潰す」と「入力側で潰す」の2方向あると押さえると見通しが良い。
+        </div>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">補足：</span>「ゼロ列があるから入力の x が殺される」という見た目も、ここまで来ると<span class="hl">一例にすぎない</span>。1列目を「2列目の3倍」みたいに <span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>でない列にしても、入力の x が "新しい方向" を生まないという意味で本質的には同じ。<br>
+          rank-deficient = 「<span class="hl">列の中に独立な情報が足りていない</span>」状態の総称。
+        </div>
+      </div>
+
+      <div class="section" id="rank-row-echelon">
+        <h2>行基本変形と階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（rank の計算手順）</h2>
+
+        <p>ここまでは rank を「列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>の<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>な本数」と概念的に定義してきたが、実際の計算では <span class="key">行基本変形</span> で <span class="key">階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span> に変形して数える方法が標準。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:20px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">行基本変形（Elementary Row Operations）</h3>
+
+        <p><span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を扱いやすい形に変形するために許される<span class="hl">3種類の操作</span>。これらは<span class="key">rank・<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>性・行が張る空間を一切変えない</span>のがポイント。</p>
+
+        <ul style="list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>① 行の入れ替え</strong>：Rᵢ ↔ Rⱼ（i 行目と j 行目を交換）
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>② 行のスカラー倍</strong>：Rᵢ → c·Rᵢ（c ≠ 0、ある行を 0 でない数で全体倍）
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>③ 行に他の行のスカラー倍を足す</strong>：Rᵢ → Rᵢ + c·Rⱼ
+          </li>
+        </ul>
+
+        <p style="margin-top:14px"><span class="key">なぜ rank を変えないか：</span>3つの操作はすべて「行 が張る Span」を保存する。各行を入れ替えても、倍しても、別の行の倍数を足しても、<span class="hl">3行が作る部分空間（Span）は不変</span>。よって rank も不変。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（Row Echelon Form）</h3>
+
+        <p>下記の3条件を満たす <span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を <span class="key">階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（row echelon form）</span> という。</p>
+
+        <ul style="list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            ゼロ行（全部 0 の行）がある場合、それは<strong>一番下にまとめられている</strong>。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            非ゼロ行の<span class="key">先頭の非ゼロ要素（pivot / 主成分）</span>が、上の行の pivot より<strong>必ず右にある</strong>。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            pivot の真下は全部ゼロになっている。
+          </li>
+        </ul>
+
+        <p style="margin-top:10px">見た目が左上から右下へ階段状に下がっているので「階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>」。下記のような形：</p>
+
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700;color:#d62828">2</td><td>1</td><td>5</td></tr>
+              <tr><td>0</td><td style="font-weight:700;color:#d62828">1</td><td>-2</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700;color:#d62828">3</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の例</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted)">赤字が pivot。各行の pivot が右下へ階段状にずれている。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">rank との関係</h3>
+
+        <div class="formula">
+          階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>に変形したときの <span class="hl">非ゼロ行の本数 = pivot の個数 = 元の<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の rank</span>
+        </div>
+
+        <p>これが rank を実際に求める標準的な手順：<br>
+        ① 行基本変形で階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>に変形 → ② 非ゼロ行（= pivot の数）を数える。</p>
+
+        <p style="margin-top:14px"><span class="key">例：前のChapterで使った rank-deficient な<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>に変形</span></p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td>4</td><td>3</td><td>8</td></tr>
+              <tr><td>2</td><td>1</td><td>5</td></tr>
+              <tr><td>0</td><td>0</td><td>0</td></tr>
+            </table>
+          </div>
+          <span class="op">→</span>
+          <span style="font-size:11px;color:var(--muted);font-family:'Poppins',sans-serif">R₁ ↔ R₂</span>
+          <span class="op">→</span>
+          <div class="matrix">
+            <table>
+              <tr><td>2</td><td>1</td><td>5</td></tr>
+              <tr><td>4</td><td>3</td><td>8</td></tr>
+              <tr><td>0</td><td>0</td><td>0</td></tr>
+            </table>
+          </div>
+          <span class="op">→</span>
+          <span style="font-size:11px;color:var(--muted);font-family:'Poppins',sans-serif">R₂ − 2R₁</span>
+          <span class="op">→</span>
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700;color:#d62828">2</td><td>1</td><td>5</td></tr>
+              <tr><td>0</td><td style="font-weight:700;color:#d62828">1</td><td>-2</td></tr>
+              <tr><td>0</td><td>0</td><td>0</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span>
+        </div>
+        <p>pivot は赤字の <strong>2</strong> と <strong>1</strong> の 2 個 → 非ゼロ行は 2 本 → <span class="key">rank = 2</span>。前回「列<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>を直接見て」計算した結果と一致する。</p>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">直感：</span>行基本変形 = <span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の中身を整理して、<span class="hl">独立な情報がいくつあるかを露わにする操作</span>。階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>に変形すると、各 pivot が「独立な1次元」を一つずつ表す形に整っているので、本数を数えるだけで rank が分かる。
+        </div>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">関連：簡約階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（Reduced Row Echelon Form, RREF）</span><br>
+          階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>からさらに ① pivot を 1 に揃え ② pivot の真上もゼロにすると <span class="key">RREF</span>。連立方程式の解を直接読み取れる最も整った形。<br>
+          rank の値は階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>でも RREF でも同じ。
+        </div>
+      </div>
+
+    </div>
+
+    <div class="chapter" id="jordan-normal-form">
+      <div class="chapter-label">Chapter — 終着点</div>
+      <div class="chapter-title">ジョルダン標準形（Jordan Normal Form）</div>
+
+      <div class="section" id="jordan-meta">
+        <h2>そもそも何のための話か</h2>
+        <p>このChapter全体は、<span class="hl">複雑な<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を「完璧に理解する」のではなく、「概要レベルで把握する」ための手法</span>の話。</p>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89">
+          対角化・ジョルダン標準形は、要するに <span class="key"><span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の "サマリー" を抽出する技</span>。<br>
+          ・<span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>という<span class="hl">最も本質的な情報</span>だけ残して、面倒な細部を視界から消す<br>
+          ・5×5・10×10 のような直感の効かない<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>でも、「これは何をする変換か」がざっくり掴める<br>
+          ・「<span class="key">完璧理解</span>」と「<span class="key">無知</span>」の間に置かれた、<span class="hl">"概要理解" のための共通言語</span>
+        </div>
+
+        <p>つまり「ジョルダン形にできるなら、その<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の本質はもう掴んだも同然」というのが、線形代数の山頂で見える景色。以下、その背景と仕組みを順に見ていく。</p>
+      </div>
+
+      <div class="section" id="jordan-motivation">
+        <h2>モチベーション — 対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>は理想、ジョルダン形は妥協</h2>
+        <p>対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>は計算が激安で<span class="hl">理想形</span>。しかし、すべての<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>がそこまで綺麗には整理できない。</p>
+
+        <ul style="list-style:none;padding:0;margin:8px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>に変形できる</strong>場合 → <span class="key">対角化（Diagonalization）</span>。最も美しい形。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>対角化できない<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>もある</strong> — でも諦めない。「あと一歩だけ崩した形」までは必ず行ける。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            その「妥協点・進捗形」が <span class="key">ジョルダン標準形</span>。
+          </li>
+        </ul>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700">
+          <span class="key">Kyo の直感（ほぼ正しい）：</span>対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（さらに言えば単位<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>）は理想だが、そんなに美しく整理することは難しい。<br>
+          とはいえ妥協点というか途中進捗として「<span class="hl">中心の階段（対角）より左下を全部ゼロにできれば、本質はだいたい掴める</span>」というのがジョルダン標準形。
+        </div>
+      </div>
+
+      <div class="section" id="jordan-shape">
+        <h2>形 — 対角＋すぐ上に 1、それ以外ゼロ</h2>
+        <p>ジョルダン標準形は<span class="hl">上三角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span>の特別な形。「<span class="key">左下＝ゼロ</span>」の進捗形に、もう一つ条件が乗る。</p>
+
+        <ul style="list-style:none;padding:0;margin:8px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <span class="key">対角</span>に <span class="hl">固有値 λ</span> が並ぶ
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <span class="key">対角のすぐ上（superdiagonal）</span>に、ところどころ <span class="hl">1</span> が入る（同じ固有値が連続する箇所のみ）
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            それ以外（左下含む対角以外）は<strong>すべて 0</strong>
+          </li>
+        </ul>
+
+        <p style="margin-top:10px">具体例（5×5 のジョルダン標準形）：</p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700;color:#d62828">λ₁</td><td style="font-weight:700;color:#e07b00">1</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td style="font-weight:700;color:#d62828">λ₁</td><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td style="font-weight:700;color:#1d4e89">λ₂</td><td style="font-weight:700;color:#e07b00">1</td><td>0</td></tr>
+              <tr><td>0</td><td>0</td><td>0</td><td style="font-weight:700;color:#1d4e89">λ₂</td><td style="font-weight:700;color:#e07b00">1</td></tr>
+              <tr><td>0</td><td>0</td><td>0</td><td>0</td><td style="font-weight:700;color:#1d4e89">λ₂</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">ジョルダンブロック構造</span>
+        </div>
+        <p style="font-size:13px;color:var(--muted)">赤・青の対角成分が <span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>、オレンジの 1 が「対角化できない部分」のしるし。同じ<span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>が連続するブロックを <span class="key">ジョルダンブロック</span> と呼ぶ（上の例は 2×2 ブロック + 3×3 ブロック）。</p>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">直感：</span>1 が入っている = 「<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span>の足りなさを表す印」。完璧に対角化できる<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>なら 1 は不要、対角だけで済む。1 の個数は「対角化できない度合い」のメーター。
+        </div>
+      </div>
+
+      <div class="section" id="jordan-vs-diag">
+        <h2>対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>との関係</h2>
+        <p><span class="key">対角化可能 = ジョルダン標準形に 1 が一切入らない特殊ケース</span>。つまり対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>はジョルダン標準形の中で最もお行儀の良い部分集合。</p>
+
+        <table style="width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px">
+          <thead>
+            <tr style="background:var(--surface);text-align:left">
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">形</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">構造</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">適用範囲</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">対角のみ非ゼロ、ほか全 0</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">対角化可能な<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>限定</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">ジョルダン標準形</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">対角 + 一部の superdiagonal に 1、左下含む他は 0</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="hl">すべての正方<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span>（複素数体上）</td></tr>
+            <tr><td style="padding:8px 12px">上三角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>一般</td><td style="padding:8px 12px">左下 = 0 だけ、上側は任意</td><td style="padding:8px 12px">ジョルダンより緩い、すべての正方<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></td></tr>
+          </tbody>
+        </table>
+
+        <p style="margin-top:14px">包含関係：<span class="hl">対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> ⊂ ジョルダン標準形 ⊂ 上三角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span></span>。<br>
+        対角に最も近づけた "<span class="key">汎用版</span>" がジョルダン標準形。</p>
+      </div>
+
+      <div class="section" id="jordan-why-nice">
+        <h2>何が嬉しいか</h2>
+        <p>対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>ほどではないが、ジョルダン形にしておくと多くの計算が劇的に楽になる。</p>
+
+        <ul style="list-style:none;padding:0;margin:8px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong><span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span>：</strong>上三角なので対角成分の積（=<span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>の積）
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>べき乗 A<sup>k</sup>：</strong>ジョルダンブロックごとに公式で書ける
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong><span class="vt" data-vocab="matrix" data-ja="行列">行列</span>指数関数 e<sup>A</sup>：</strong>線形微分方程式 ẋ = Ax の解析解に必須
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <strong>構造の見える化：</strong><span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>の重複度・<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span>の不足を一目で把握できる
+          </li>
+        </ul>
+
+        <div class="formula">
+          ジョルダン標準形の存在定理：<span class="hl">複素数体上のすべての正方<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> A は、ある正則<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> P によって P<sup>-1</sup>AP = J（ジョルダン標準形）の形にできる</span>。J は対角化が完璧にできるなら対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>に、できないなら 1 が入る。
+        </div>
+      </div>
+
+      <div class="section" id="jordan-roadmap">
+        <h2>ここまで到達するためのロードマップ</h2>
+        <p>ジョルダン標準形を本当に扱うには、以下が前提として必要：</p>
+
+        <ul style="list-style:none;padding:0;margin:8px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>・<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span>（Av = λv の意味と求め方）
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <span class="vt" data-vocab="characteristic-polynomial" data-ja="特性多項式 / 固有多項式">特性多項式</span>・<span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span>
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <span class="vt" data-vocab="diagonalization" data-ja="対角化">対角化</span>（PDP<sup>-1</sup> の形に変換できる場合）
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            広義<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span>（generalized eigenvector）— 対角化できない部分を埋める鍵
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            ジョルダンブロックの構成法
+          </li>
+        </ul>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">逆算のメッセージ：</span>今は「対角<span class="vt" data-vocab="matrix" data-ja="行列">行列</span> = 理想」「ジョルダン形 = 妥協の汎用版」のイメージを抱えていれば十分。Kernel・次元定理 → <span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span> → <span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span> → 内積 → <span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span> → <span class="vt" data-vocab="diagonalization" data-ja="対角化">対角化</span> → ジョルダン、と段階を踏めば自然にここに到達する。
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- ===== TOC TAB ===== -->
+  <div class="view" id="view-toc">
+    <div class="toc-intro">
+      章・節の目次。クリックすると Notes タブの該当箇所にジャンプします。
+    </div>
+    <div id="tocContent"></div>
+  </div>
+
+  <!-- ===== VOCABULARY TAB ===== -->
+  <div class="view" id="view-vocab">
+
+    <div class="vocab-header">
+      フォーマット：<strong>English（日本語）</strong>：説明<br>
+      範囲：大学1年生で習う線形代数（〜ジョルダン標準形）の重要語30語<br>
+      覚えた語をクリックすると ✅ が付き、状態はブラウザに保存されます。
+    </div>
+
+    <div class="vocab-controls">
+      <div class="vocab-stat"><span id="vocabCount">0</span><span class="muted"> / <span id="vocabTotal">30</span> 習得</span></div>
+      <div class="sort-group">
+        <span class="sort-label">Sort</span>
+        <button class="sort-btn active" data-sort="group" onclick="setSort('group', this)">Group</button>
+        <button class="sort-btn" data-sort="az" onclick="setSort('az', this)">A–Z</button>
+        <button class="sort-btn" data-sort="checked" onclick="setSort('checked', this)">✅ first</button>
+        <button class="sort-btn" data-sort="unchecked" onclick="setSort('unchecked', this)">☐ first</button>
+      </div>
+    </div>
+
+    <div id="vocabContent"></div>
+  </div>
+
+  <!-- ===== NOTATION TAB ===== -->
+  <div class="view" id="view-notation">
+
+    <div class="vocab-header">
+      数学的記法のリファレンス。数学初心者として表記でつまずいた箇所を蓄積する場所。
+    </div>
+
+    <ul class="notation-list">
+      <li class="notation-item">
+        <div class="notation-symbol">ℝⁿ</div>
+        <div class="notation-desc">
+          <span class="key">ℝ</span> = <strong>R</strong>eal number（実数）の頭文字。<br>
+          <span class="key">n</span>（指数） = <strong>次元の数</strong>。<br>
+          つまり ℝⁿ は「n次元の実数空間」。<br>
+          例：<span class="key">ℝ²</span> = 平面のすべての点 (x, y), x, y ∈ ℝ。<span class="key">ℝ³</span> = 3次元空間。
+        </div>
+      </li>
+      <li class="notation-item">
+        <div class="notation-symbol">det(A) &nbsp;/&nbsp; |A|</div>
+        <div class="notation-desc">
+          <span class="key">determinant</span>（<span class="key">行列式</span>）の略記。<strong>正方行列</strong>に対して定義されるスカラー値。<br>
+          <span class="key">語源：</span>ラテン語 <em>determinare</em>（決定する）から。<strong>行列が正則かどうかを "決定" する量</strong> という意味で名付けられた。<br>
+          <span class="key">読み方：</span><strong>det(A)</strong> = 「ディター（ミナント）オブ A」、<strong>|A|</strong> = 縦棒で挟むのも同じ意味（絶対値とは別物だが書き方が似ている）。<br>
+          <strong>性質：</strong><br>
+          ・det(A) = 0 ⇔ A は <span class="hl">rank 落ち</span>（列が一次従属、逆行列を持たない）<br>
+          ・det(A) ≠ 0 ⇔ A は<span class="hl">フルランク・正則</span>、逆行列が存在する<br>
+          ・三角行列・対角行列の場合：det = 対角成分の積<br>
+          ・det(AB) = det(A)·det(B)、det(A<sup>T</sup>) = det(A)
+        </div>
+      </li>
+    </ul>
+  </div>
+
+</div>
+
+<script>
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('view-' + name).classList.add('active');
+  const sideNav = document.getElementById('sideNav');
+  if (sideNav) sideNav.classList.toggle('hidden', name !== 'notes');
+}
+
+// ===== VOCABULARY =====
+const VOCAB_GROUPS = [
+  { name: 'Basics — 基礎', items: [
+    { id:'scalar', term:'Scalar', ja:'スカラー', desc:'大きさだけを持つ量。実数や複素数1つ。ベクトルや行列に対する係数として使う。' },
+    { id:'vector', term:'Vector', ja:'ベクトル', desc:'向きと大きさを持つ量。数値を縦・横に並べたもの。例：(1, 2, 3)。' },
+    { id:'matrix', term:'Matrix', ja:'行列', desc:'数値を長方形に並べたもの。m × n のサイズで表す（m行・n列）。' },
+    { id:'transpose', term:'Transpose', ja:'転置', desc:'行と列を入れ替える操作。A の転置を A<sup>T</sup> と書く。' },
+    { id:'identity-matrix', term:'Identity Matrix', ja:'単位行列', desc:'対角に1、それ以外0の正方行列。I で表す。A × I = A。' },
+    { id:'square-matrix', term:'Square Matrix', ja:'正方行列', desc:'行数と列数が同じ行列（n × n）。逆行列・固有値などはここで定義される。' },
+    { id:'diagonal-matrix', term:'Diagonal Matrix', ja:'対角行列', desc:'対角成分以外がすべて0の正方行列。計算が極めて簡単になる。' },
+    { id:'symmetric-matrix', term:'Symmetric Matrix', ja:'対称行列', desc:'A = A<sup>T</sup> を満たす行列。実対称行列は必ず実数固有値を持ち、直交対角化できる。' },
+    { id:'zero-matrix', term:'Zero Matrix', ja:'ゼロ行列', desc:'すべての成分が 0 の行列。どんなベクトルもゼロベクトルに潰す変換。記号は O。' },
+    { id:'scalar-matrix', term:'Scalar Matrix', ja:'スカラー行列', desc:'対角成分がすべて同じ値 c の対角行列（c·I）。全方向に c 倍するだけの変換。' },
+    { id:'upper-triangular-matrix', term:'Upper Triangular Matrix', ja:'上三角行列', desc:'対角より左下の成分がすべて 0 の正方行列。行列式は対角成分の積。ジョルダン標準形もこの仲間。' },
+    { id:'shift-matrix', term:'Shift Matrix', ja:'シフト行列', desc:'対角のすぐ上に 1 が並び、他がほぼ 0 の行列。ベクトルの成分を1つずらす。ジョルダンブロックの核。' },
+    { id:'nilpotent-matrix', term:'Nilpotent Matrix', ja:'ニルポテント行列', desc:'ある自然数 k で N<sup>k</sup> = O となる行列。シフト行列が典型例。' },
+    { id:'permutation-matrix', term:'Permutation Matrix', ja:'置換行列', desc:'各行・各列にちょうど 1 個の 1、他は 0 の正方行列。ベクトルの成分を並び替える（情報を失わない）。P<sup>-1</sup> = P<sup>T</sup>。' },
+  ]},
+  { name: 'Operations — 演算', items: [
+    { id:'inverse-matrix', term:'Inverse Matrix', ja:'逆行列', desc:'A × A<sup>-1</sup> = I を満たす行列。存在する条件は det(A) ≠ 0。' },
+    { id:'determinant', term:'Determinant', ja:'行列式', desc:'正方行列に対して定義されるスカラー。det(A) = 0 ⇔ A は正則でない(逆行列を持たない)。' },
+    { id:'trace', term:'Trace', ja:'トレース / 跡', desc:'正方行列の対角成分の和。固有値の総和に等しい。tr(A) と書く。' },
+    { id:'pivot', term:'Pivot', ja:'ピボット / 主成分', desc:'行基本変形で得た階段行列の各非ゼロ行の先頭にある非ゼロ要素。pivot の個数 = rank。連立方程式や rank の計算で要となる位置。' },
+  ]},
+  { name: 'Vector Spaces — ベクトル空間', items: [
+    { id:'vector-space', term:'Vector Space', ja:'ベクトル空間', desc:'加法とスカラー倍が定義され、8つの公理を満たす集合。R<sup>n</sup> が典型例。' },
+    { id:'subspace', term:'Subspace', ja:'部分空間', desc:'ベクトル空間の中で、再びベクトル空間になる部分集合。0 を含む。' },
+    { id:'linear-combination', term:'Linear Combination', ja:'線形結合', desc:'ベクトルにスカラーを掛けて足し合わせたもの。c₁v₁ + c₂v₂ + …。' },
+    { id:'linear-independence', term:'Linear Independence', ja:'線形独立', desc:'どのベクトルも他のベクトルの線形結合で表せない状態。基底の前提条件。' },
+    { id:'span', term:'Span', ja:'張る / スパン', desc:'いくつかのベクトルの線形結合すべての集合。それらが「張る」空間。' },
+    { id:'basis', term:'Basis', ja:'基底', desc:'線形独立かつ空間全体を張るベクトルの組。空間の「座標軸」のような役割。' },
+    { id:'standard-basis', term:'Standard Basis', ja:'標準基底', desc:'各座標軸方向に1、他が0の基底。例：ℝ³ では e₁=(1,0,0), e₂=(0,1,0), e₃=(0,0,1)。' },
+    { id:'dimension', term:'Dimension', short:'D', ja:'次元', desc:'ベクトル空間の基底の本数。空間の「広さ」を表す不変量。' },
+    { id:'linear-dependence', term:'Linear Dependence', ja:'一次従属', desc:'どれか1本のベクトルが他の線形結合で表せる関係。Span が「潰れる」原因。Linear Independence の反対。' },
+  ]},
+  { name: 'Linear Maps — 線形写像', items: [
+    { id:'linear-map', term:'Linear Map / Linear Transformation', ja:'線形写像 / 一次変換', desc:'和とスカラー倍を保つ写像 T: V → W。行列で表現できる。' },
+    { id:'kernel', term:'Kernel / Null Space', ja:'核 / 零空間', desc:'T(v) = 0 を満たす v の集合。Ker T。行列なら Ax = 0 の解空間。' },
+    { id:'image', term:'Image / Range', ja:'像 / 値域', desc:'T によって写された先のベクトルの集合。Im T。' },
+    { id:'rank', term:'Rank', ja:'階数 / ランク', desc:'Im T の次元。行列の線形独立な列(または行)の最大本数。' },
+    { id:'full-rank', term:'Full Rank', ja:'フルランク', desc:'rank(A) = min(m, n)。行列がサイズで許される最大の独立性を持つ状態。' },
+    { id:'elementary-row-operations', term:'Elementary Row Operations', ja:'行基本変形', desc:'①行の入れ替え ②行のスカラー倍 ③行に他の行のスカラー倍を足す。rank・Span を変えずに行列を簡約する道具。' },
+    { id:'row-echelon-form', term:'Row Echelon Form', ja:'階段行列', desc:'非ゼロ行の pivot が右下へ階段状に並んだ形。非ゼロ行の本数 = rank。' },
+    { id:'rref', term:'Reduced Row Echelon Form', short:'RREF', ja:'簡約階段行列', desc:'階段行列からさらに pivot を 1 にし、pivot の上もゼロにした最も整った形。連立方程式の解が直接読み取れる。' },
+  ]},
+  { name: 'Inner Product — 内積・直交', items: [
+    { id:'inner-product', term:'Inner Product', ja:'内積', desc:'2つのベクトルからスカラーを返す演算。〈u, v〉。長さや角度の概念を生む。' },
+    { id:'norm', term:'Norm', ja:'ノルム', desc:'ベクトルの「長さ」。‖v‖ = √〈v, v〉。' },
+    { id:'orthogonal', term:'Orthogonal', ja:'直交', desc:'内積が0であること。2本のベクトルが90度を成す関係。' },
+    { id:'orthonormal-basis', term:'Orthonormal Basis', ja:'正規直交基底', desc:'互いに直交し、各ノルムが1の基底。座標表現が最も扱いやすい基底。' },
+  ]},
+  { name: 'Eigenvalues — 固有値と対角化', items: [
+    { id:'eigenvalue', term:'Eigenvalue', ja:'固有値', desc:'Av = λv を満たすスカラー λ。行列の本質的な「伸縮率」。' },
+    { id:'eigenvector', term:'Eigenvector', ja:'固有ベクトル', desc:'Av = λv を満たす v(≠0)。A をかけても向きが変わらないベクトル。' },
+    { id:'characteristic-polynomial', term:'Characteristic Polynomial', ja:'特性多項式 / 固有多項式', desc:'det(A − λI) を λ の多項式と見たもの。根が固有値。' },
+    { id:'diagonalization', term:'Diagonalization', ja:'対角化', desc:'A = PDP<sup>-1</sup> の形に変形すること。固有ベクトルで基底を組む。' },
+    { id:'jordan-block', term:'Jordan Block', ja:'ジョルダンブロック', desc:'ジョルダン標準形を構成する基本単位。対角に固有値 λ、すぐ上に 1、他は 0 の正方ブロック。J(λ) = λI + N に分解できる。' },
+    { id:'jordan-normal-form', term:'Jordan Normal Form', ja:'ジョルダン標準形', desc:'対角化できない行列も、基底を選び直せばジョルダンブロックの直和に必ずできる標準形。' },
+  ]},
+];
+
+const VOCAB_STORAGE_KEY = 'linalg-vocab-checked-v1';
+const DEFAULT_CHECKED = ['scalar', 'vector', 'matrix', 'dimension', 'linear-map', 'linear-independence', 'pivot'];
+
+let _stored = localStorage.getItem(VOCAB_STORAGE_KEY);
+let checkedSet = new Set(_stored ? JSON.parse(_stored) : DEFAULT_CHECKED);
+let currentSort = 'group';
+
+function _persist() {
+  localStorage.setItem(VOCAB_STORAGE_KEY, JSON.stringify([...checkedSet]));
+}
+
+// One-time migrations: auto-check new terms for existing users.
+// Each migration runs only once (tracked by id). User can uncheck afterwards.
+const MIGRATIONS_KEY = 'linalg-vocab-migrations-v1';
+const MIGRATIONS = [
+  { id: 'add-pivot-checked-260517', terms: ['pivot'] },
+];
+(function applyMigrations() {
+  let applied = new Set(JSON.parse(localStorage.getItem(MIGRATIONS_KEY) || '[]'));
+  let changed = false;
+  MIGRATIONS.forEach(m => {
+    if (!applied.has(m.id)) {
+      m.terms.forEach(t => checkedSet.add(t));
+      applied.add(m.id);
+      changed = true;
+    }
+  });
+  if (changed) {
+    localStorage.setItem(MIGRATIONS_KEY, JSON.stringify([...applied]));
+    _persist();
+  }
+})();
+
+function _flatten() {
+  const all = [];
+  VOCAB_GROUPS.forEach(g => g.items.forEach(item => all.push({ ...item, group: g.name })));
+  return all;
+}
+
+function _renderGroup(name, items) {
+  let html = '<div class="vocab-group">';
+  if (name) html += '<div class="vocab-group-title">' + name + '</div>';
+  html += '<ul class="vocab-list">';
+  items.forEach(item => {
+    const isChecked = checkedSet.has(item.id);
+    html += '<li class="vocab-item' + (isChecked ? ' checked' : '') + '" onclick="toggleCheck(\'' + item.id + '\')">'
+      + '<div class="vocab-check">' + (isChecked ? '✓' : '') + '</div>'
+      + '<div class="vocab-term">' + item.term + '<span class="ja">（' + item.ja + '）</span></div>'
+      + '<div class="vocab-desc">' + item.desc + '</div>'
+      + '</li>';
+  });
+  html += '</ul></div>';
+  return html;
+}
+
+function renderVocab() {
+  const target = document.getElementById('vocabContent');
+  if (!target) return;
+  let html = '';
+  if (currentSort === 'group') {
+    VOCAB_GROUPS.forEach(g => { html += _renderGroup(g.name, g.items); });
+  } else {
+    let all = _flatten();
+    if (currentSort === 'az') {
+      all.sort((a, b) => a.term.localeCompare(b.term));
+    } else if (currentSort === 'checked') {
+      all.sort((a, b) =>
+        (checkedSet.has(b.id) ? 1 : 0) - (checkedSet.has(a.id) ? 1 : 0)
+        || a.term.localeCompare(b.term)
+      );
+    } else if (currentSort === 'unchecked') {
+      all.sort((a, b) =>
+        (checkedSet.has(a.id) ? 1 : 0) - (checkedSet.has(b.id) ? 1 : 0)
+        || a.term.localeCompare(b.term)
+      );
+    }
+    html += _renderGroup(null, all);
+  }
+  target.innerHTML = html;
+  document.getElementById('vocabCount').textContent = checkedSet.size;
+  document.getElementById('vocabTotal').textContent = _flatten().length;
+}
+
+function toggleCheck(id) {
+  if (checkedSet.has(id)) checkedSet.delete(id); else checkedSet.add(id);
+  _persist();
+  renderVocab();
+  updateMainContentVocab();
+}
+
+// Main-content vocab swap: when a term is checked, show English; otherwise Japanese.
+function updateMainContentVocab() {
+  const flat = _flatten();
+  document.querySelectorAll('.vt').forEach(el => {
+    const id = el.dataset.vocab;
+    const item = flat.find(i => i.id === id);
+    if (!item) return;
+    if (checkedSet.has(id)) {
+      // Use short form if defined, else primary English term (before " / " if multiple)
+      el.textContent = item.short || item.term.split(' / ')[0];
+      el.classList.add('vt-en');
+    } else {
+      el.textContent = el.dataset.ja || item.ja;
+      el.classList.remove('vt-en');
+    }
+  });
+}
+
+function setSort(name, btn) {
+  currentSort = name;
+  document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderVocab();
+}
+
+renderVocab();
+updateMainContentVocab();
+
+// ===== TOC =====
+function buildTOC() {
+  const target = document.getElementById('tocContent');
+  if (!target) return;
+
+  const chapters = document.querySelectorAll('#view-notes .chapter');
+  let html = '';
+
+  chapters.forEach((chapter, ci) => {
+    const titleEl = chapter.querySelector('.chapter-title');
+    const labelEl = chapter.querySelector('.chapter-label');
+    const chapterTitle = titleEl ? titleEl.textContent.trim() : '';
+    const chapterLabel = labelEl ? labelEl.textContent.trim() : 'Chapter';
+    const chapterId = chapter.id || '';
+
+    html += '<div class="toc-chapter">';
+    html += '<span class="toc-chapter-label">' + chapterLabel + ' ' + String(ci + 1).padStart(2, '0') + '</span>';
+    html += '<a class="toc-chapter-link" href="#' + chapterId + '" onclick="gotoSection(\'' + chapterId + '\'); return false;">' + chapterTitle + '</a>';
+
+    const sections = chapter.querySelectorAll(':scope > .section');
+    if (sections.length > 0) {
+      html += '<ul class="toc-sections">';
+      sections.forEach((section, si) => {
+        const h2 = section.querySelector('h2');
+        const sectionTitle = h2 ? h2.textContent.trim() : '(untitled)';
+        const sectionId = section.id || '';
+        html += '<li><a class="toc-section-link" href="#' + sectionId + '" onclick="gotoSection(\'' + sectionId + '\'); return false;">'
+          + '<span class="toc-section-num">' + String(ci + 1) + '.' + String(si + 1) + '</span>'
+          + '<span>' + sectionTitle + '</span></a></li>';
+      });
+      html += '</ul>';
+    }
+
+    html += '</div>';
+  });
+
+  target.innerHTML = html;
+}
+
+function gotoSection(id) {
+  // Switch to Notes tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const notesTab = document.querySelector('.tab[data-tab="notes"]');
+  if (notesTab) notesTab.classList.add('active');
+  const notesView = document.getElementById('view-notes');
+  if (notesView) notesView.classList.add('active');
+  // Scroll to target after the view is rendered
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 30);
+}
+
+buildTOC();
+
+// ===== SIDE NAV (Wikipedia-style sticky nav) =====
+function buildSideNav() {
+  const target = document.getElementById('sideNav');
+  if (!target) return;
+  let html = '';
+  document.querySelectorAll('#view-notes .chapter').forEach((chapter, ci) => {
+    const titleEl = chapter.querySelector('.chapter-title');
+    const cTitle = titleEl ? titleEl.textContent.trim() : '';
+    const cId = chapter.id;
+    html += '<div class="side-nav-chapter" data-chapter-id="' + cId + '">';
+    html += '<div class="side-nav-chapter-title">' + String(ci + 1).padStart(2, '0') + ' ' + cTitle + '</div>';
+    html += '<ul class="side-nav-list">';
+    chapter.querySelectorAll(':scope > .section').forEach(section => {
+      const h2 = section.querySelector('h2');
+      const sTitle = h2 ? h2.textContent.trim() : '';
+      const sId = section.id;
+      html += '<li><a class="side-nav-link" href="#' + sId + '" data-target="' + sId + '">' + sTitle + '</a></li>';
+    });
+    html += '</ul></div>';
+  });
+  target.innerHTML = html;
+  setupSectionObserver();
+}
+
+let _currentActiveSectionId = null;
+function setupSectionObserver() {
+  const sections = document.querySelectorAll('#view-notes .section');
+  if (!('IntersectionObserver' in window) || sections.length === 0) return;
+  const visible = new Set();
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) visible.add(e.target.id);
+      else visible.delete(e.target.id);
+    });
+    // Pick the first visible section in document order
+    let firstId = null;
+    sections.forEach(s => {
+      if (firstId === null && visible.has(s.id)) firstId = s.id;
+    });
+    if (firstId && firstId !== _currentActiveSectionId) {
+      updateActiveSection(firstId);
+    }
+  }, {
+    rootMargin: '-15% 0px -70% 0px',
+    threshold: 0
+  });
+  sections.forEach(s => observer.observe(s));
+}
+
+function updateActiveSection(id) {
+  _currentActiveSectionId = id;
+  document.querySelectorAll('.side-nav-link').forEach(link => {
+    link.classList.toggle('active', link.dataset.target === id);
+  });
+  // Highlight parent chapter
+  document.querySelectorAll('.side-nav-chapter').forEach(c => c.classList.remove('active'));
+  const link = document.querySelector('.side-nav-link[data-target="' + id + '"]');
+  if (link) {
+    const chap = link.closest('.side-nav-chapter');
+    if (chap) chap.classList.add('active');
+  }
+}
+
+buildSideNav();
+</script>
+</body>
+</html>
