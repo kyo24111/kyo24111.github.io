@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3元連立1次方程式 — 3枚の平面の交点</title>
+<style>
+  body { margin: 0; padding: 24px; font-family: system-ui, sans-serif; background: #fff; color: #1a1a18; }
+  .wrap { max-width: 680px; margin: 0 auto; }
+  #scene { width: 100%; height: 440px; border-radius: 12px; border: 1px solid rgba(0,0,0,0.12);
+           background: #f5f4ef; position: relative; touch-action: none; cursor: grab; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 12px; font-size: 14px; color: #5f5e5a; align-items: center; }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .sw { width: 12px; height: 12px; border-radius: 3px; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="scene"></div>
+  <div class="legend">
+    <span><span class="sw" style="background:#7F77DD;"></span>x + y + z = 6</span>
+    <span><span class="sw" style="background:#1D9E75;"></span>2x + y + z = 7</span>
+    <span><span class="sw" style="background:#D85A30;"></span>x + 2y + z = 8</span>
+    <span><span class="dot" style="background:#E24B4A;"></span>解 (1, 2, 3)</span>
+    <span style="color:#888780;">※ドラッグで回転</span>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  const host = document.getElementById('scene');
+  const W = host.clientWidth, H = host.clientHeight;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, W/H, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setSize(W, H);
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  host.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.55);
+  dl.position.set(6, 12, 8);
+  scene.add(dl);
+
+  // 数学座標 (x, y, z) -> three.js座標 (z を上方向に)
+  const P = (x, y, z) => new THREE.Vector3(x, z, y);
+  const X0 = 0, X1 = 2.5, Y0 = 0, Y1 = 2.5;
+
+  function plane(fz, hex, edgeHex){
+    const a = P(X0,Y0,fz(X0,Y0)), b = P(X1,Y0,fz(X1,Y0)),
+          c = P(X0,Y1,fz(X0,Y1)), d = P(X1,Y1,fz(X1,Y1));
+    const g = new THREE.BufferGeometry();
+    const verts = [a,b,c, c,b,d];
+    const pos = [];
+    verts.forEach(p => pos.push(p.x, p.y, p.z));
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.computeVertexNormals();
+    const m = new THREE.MeshStandardMaterial({ color:hex, transparent:true, opacity:0.42,
+              side:THREE.DoubleSide, roughness:0.85, depthWrite:false });
+    scene.add(new THREE.Mesh(g, m));
+    const eg = new THREE.BufferGeometry().setFromPoints([a,b,d,c,a]);
+    scene.add(new THREE.Line(eg, new THREE.LineBasicMaterial({ color:edgeHex })));
+  }
+  plane((x,y) => 6 - x - y,     0x7F77DD, 0x534AB7);  // x + y + z = 6
+  plane((x,y) => 7 - 2*x - y,   0x1D9E75, 0x0F6E56);  // 2x + y + z = 7
+  plane((x,y) => 8 - x - 2*y,   0xD85A30, 0x993C1D);  // x + 2y + z = 8
+
+  const sol = new THREE.Mesh(new THREE.SphereGeometry(0.13, 24, 24),
+                             new THREE.MeshBasicMaterial({ color:0xE24B4A }));
+  sol.position.copy(P(1, 2, 3));
+  scene.add(sol);
+
+  function axis(p1, p2){
+    scene.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([p1, p2]),
+              new THREE.LineBasicMaterial({ color:0x888780 })));
+  }
+  axis(P(0,0,0), P(3,0,0));
+  axis(P(0,0,0), P(0,3,0));
+  axis(P(0,0,0), P(0,0,8));
+
+  function label(text, posVec){
+    const cv = document.createElement('canvas');
+    cv.width = 80; cv.height = 44;
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = '#888780';
+    ctx.font = '28px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 40, 22);
+    const tx = new THREE.CanvasTexture(cv);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map:tx, transparent:true }));
+    sp.position.copy(posVec);
+    sp.scale.set(0.9, 0.5, 1);
+    scene.add(sp);
+  }
+  label('x', P(3.3, 0, 0));
+  label('y', P(0, 3.3, 0));
+  label('z', P(0, 0, 8.5));
+  label('(1, 2, 3)', P(1, 2, 3).add(new THREE.Vector3(0, 0.55, 0)));
+
+  const target = new THREE.Vector3(1.25, 3.6, 1.25);
+  let theta = 0.85, phi = 0.5, radius = 11, dragging = false, lx = 0, ly = 0;
+
+  function place(){
+    camera.position.set(
+      target.x + radius * Math.cos(phi) * Math.cos(theta),
+      target.y + radius * Math.sin(phi),
+      target.z + radius * Math.cos(phi) * Math.sin(theta)
+    );
+    camera.lookAt(target);
+  }
+
+  const el = renderer.domElement;
+  el.addEventListener('pointerdown', e => { dragging = true; lx = e.clientX; ly = e.clientY;
+    host.style.cursor = 'grabbing'; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', e => { if(!dragging) return;
+    theta -= (e.clientX - lx) * 0.008;
+    phi += (e.clientY - ly) * 0.008;
+    phi = Math.max(0.08, Math.min(1.45, phi));
+    lx = e.clientX; ly = e.clientY; });
+  el.addEventListener('pointerup', () => { dragging = false; host.style.cursor = 'grab'; });
+  el.addEventListener('pointercancel', () => { dragging = false; host.style.cursor = 'grab'; });
+
+  window.addEventListener('resize', () => {
+    const w = host.clientWidth, h = host.clientHeight;
+    camera.aspect = w / h; camera.updateProjectionMatrix(); renderer.setSize(w, h);
+  });
+
+  (function loop(){
+    requestAnimationFrame(loop);
+    if(!dragging) theta += 0.0026;
+    place();
+    renderer.render(scene, camera);
+  })();
+})();
+</script>
+</body>
+</html>
