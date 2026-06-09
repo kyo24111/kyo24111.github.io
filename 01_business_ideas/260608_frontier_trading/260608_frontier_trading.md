@@ -159,6 +159,74 @@ US側のポテンシャルあるDeepTech企業（メガ企業 + 注目スター�
 - **Verge Genomics**（AI創薬）
 - **Eikon Therapeutics**（次世代創薬）
 
+## 技術マッチング・ツリー（Industry × Technology × Company）
+
+「日本のどの会社のどの技術が、US側のどの会社に刺さるか」を **Industry → Technology → Supply / Demand** の3階層で整理する。網羅版ではなく、フォーマットのイメージ。
+
+### Industry 01: AI Data Center（AIデータセンター）
+
+> 現在、世界で最もCAPEX（設備投資）が集中している領域
+
+#### Technology A：Immersion & Liquid Cooling（液浸・水冷システム）
+
+- **Supply（日本）**
+  - AGC — 絶対に漏電しないフッ素系冷媒の供給
+  - ニデック — 超高耐久な水冷ポンプモジュールの供給
+  - ダイキン — 排熱・空調システムの統合設計
+- **Demand（US）**
+  - NVIDIA — GB200/Rubin世代の液冷必須化
+  - Crusoe Energy — モバイルDCの熱マネジメント
+  - Heron Power — 高密度ラック向け冷却統合
+
+#### Technology B：Power Distribution & Management（電力配電・管理）
+
+- **Supply（日本）**
+  - 富士電機 — 超高効率な変圧・受配電設備の供給
+- **Demand（US）**
+  - Heron Power — 高効率電力変換
+  - Crusoe Energy — 分散DCの電源
+
+### Industry 02: Defense & Aerospace（防衛・宇宙インフラ）
+
+> 「Phase 2」で狙う、政府の安全保障予算が投下される領域
+
+#### Technology C：Autonomous Precision Components（自律無人機・精密駆動）
+
+- **Supply（日本）**
+  - ファナック — ロボットアーム・自動化ラインの構築
+  - ニデック — ドローン用超小型モーターの供給
+- **Demand（US）**
+  - Anduril — 自律兵器・量産ライン
+  - Skydio — 自律ドローン駆動系
+  - Saronic — 無人艦艇の精密駆動
+
+#### Technology D：Advanced Structural Materials（次世代構造素材）
+
+- **Supply（日本）**
+  - 東レ — 極限環境に耐える炭素繊維（CFRP）の供給
+  - カネカ — 高機能ポリイミドフィルム
+- **Demand（US）**
+  - SpaceX — Starship構造材
+  - Hermeus — 極超音速機の機体素材
+  - Anduril — 無人機の軽量化
+
+### Industry 03: Fusion & Advanced Nuclear（核融合・先端核）
+
+> 長期ベット領域、政府グラントが集中
+
+#### Technology E：High-purity Specialty Materials（高純度特殊素材）
+
+- **Supply（日本）**
+  - 東レ — 超伝導磁石用CFRPサポート材
+  - 富士フイルム — 高純度フィルム・コーティング
+  - AGC — 耐放射線特殊ガラス
+- **Demand（US）**
+  - Commonwealth Fusion — トカマク磁石まわり
+  - Helion Energy — プラズマ閉じ込め部材
+  - TerraPower — 高温炉心材料
+
+※ これはフォーマットのデモ。実際は Industry × Technology のセル数を増やし、社内データベースとして運用するイメージ。
+
 ## 法人・拠点・株主
 
 - 法人：アメリカのデラウェア州で設立
