@@ -1249,7 +1249,7 @@ const FOODS_DB = {
       {
         title: 'Daily', titleJp: '常用プロテインシェイク',
         items: [
-          ['プロテイン1杯', null, 116, 30.0, null, null, '1日4杯 = 464kcal / 120g P'],
+          ['プロテイン1杯（X Plosion Whey）', null, 116, 21.0, 1.9, 4.4, '寝起き・昼・夕方は固定 / 夜は会食次第'],
         ]
       },
       {
@@ -1346,11 +1346,11 @@ function renderFoods() {
 const MAIN_CFG = {
   target: { kcal: 1500, p: 130, f: 46, c: 100 },
   fixed: [
-    { name: 'プロテイン × 4杯', kcal: 464, p: 120, f: 0,  c: 0 },
-    { name: 'サラダチキン',     kcal: 126, p: 15,  f: 6,  c: 3 },
+    { name: 'プロテイン × 4杯', kcal: 464, p: 84,  f: 7.6, c: 17.6 },
+    { name: 'サラダチキン',     kcal: 126, p: 15,  f: 6,   c: 3 },
   ],
   bestDay: [
-    { name: 'プロテイン × 4杯',                             kcal: 464, p: 120,  f: 0,    c: 0 },
+    { name: 'プロテイン × 4杯',                             kcal: 464, p: 84,   f: 7.6,  c: 17.6 },
     { name: 'バナナ（中1本・約100g）',                      kcal: 93,  p: 1.1,  f: 0.3,  c: 22.5 },
     { name: 'しんぱち厚切りシャケセット（半割+納豆+味噌汁+生卵）', kcal: 736, p: 54.6, f: 35.3, c: 54.4 },
     { name: 'サラダチキン × 1',                             kcal: 126, p: 15,   f: 6,    c: 3 },
@@ -1492,8 +1492,8 @@ function renderMain() {
       </tbody>
     </table></div>
     <div class="main-callout">
-      プロテイン4杯 + サラダチキンの時点で <strong>Protein は目標達成</strong>。残り <strong>${remain.kcal} kcal / F ${remain.f}g / C ${remain.c}g</strong> で自由に組める。
-      → しんぱち食堂「朝しゃけ + 半割 + 納豆 + 味噌汁 + 生卵」(561 kcal, P 36.6, F 23.4, C 54.3) を入れても残り余裕あり。
+      プロテイン4杯 + サラダチキンの時点で <strong>残り ${remain.kcal} kcal / P ${remain.p.toFixed(1)}g / F ${remain.f.toFixed(1)}g / C ${remain.c.toFixed(1)}g</strong>。
+      → しんぱち厚切りシャケセット(736 kcal, P 54.6, F 35.3, C 54.4) を追加すれば Protein 目標到達。
     </div>
   </div>`;
 
@@ -1526,7 +1526,7 @@ function renderMain() {
 
   // Footnote
   html += `<div class="main-note" style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
-    ※ Protein目標は既存ドキュメント（130 g/day）に揃えています。プロテイン4杯の脂質・糖質は微量（&lt; 1g 各）のため0換算。
+    ※ プロテインは X Plosion Whey（1杯: 116 kcal / P 21g / F 1.9g / C 4.4g）。1日3-4杯想定で、寝起き・昼・夕方は固定、夜は会食次第で調整。
   </div>`;
 
   root.innerHTML = html;
@@ -1542,28 +1542,84 @@ function renderDiet() {
       <div class="main-hero-tag">Diet</div>
       <div class="main-hero-title">食事習慣・好み</div>
     </div>
+
     <div class="main-callout">
-      自分の普段の食事スタイル・好み・避けたい食材・外食パターンなどを記録するページ。Foods（DB）・Main（目標）と組み合わせて使う。
+      <strong>朝食抜き + プロテイン中心 + 飲酒なし</strong>のシンプル設計。
+      1日 <strong>1,500 kcal</strong> 目標、水分 <strong>2L/日</strong>。
+      固定のプロテイン3-4杯で Protein のベースを作り、残りを定番店や補食で埋める。
     </div>
+
     <div class="main-block">
-      <div class="main-block-label">Routine<span class="main-block-label-jp">普段の食事リズム</span></div>
-      <div class="main-note">— 未記入 —</div>
+      <div class="main-block-label">Daily Targets<span class="main-block-label-jp">1日の目標</span></div>
+      <div class="table-wrap"><table class="foods">
+        <tbody>
+          <tr><td>カロリー</td><td style="text-align:left">1,500 kcal/日</td></tr>
+          <tr><td>水分</td><td style="text-align:left">2 L/日</td></tr>
+          <tr><td>PFC</td><td style="text-align:left">P 130g / F 46g / C 100g <span class="note">(詳細は Main タブ)</span></td></tr>
+        </tbody>
+      </table></div>
     </div>
+
     <div class="main-block">
-      <div class="main-block-label">Go-to Meals<span class="main-block-label-jp">よく行く店・定番メニュー</span></div>
-      <div class="main-note">しんぱち食堂（厚切り銀鮭セット）・ターリー屋（チキンケバブキーマカレー）が定番。詳細はFoodsタブ参照。</div>
+      <div class="main-block-label">Routine<span class="main-block-label-jp">食事リズム</span></div>
+      <div class="table-wrap"><table class="foods">
+        <thead><tr>
+          <th>時間帯</th><th style="text-align:left">内容</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>朝</td><td style="text-align:left">基本食べない（プロテイン1杯のみ）</td></tr>
+          <tr><td>昼</td><td style="text-align:left">プロテイン1杯 + 定番店（しんぱち / ターリー屋 等）</td></tr>
+          <tr><td>夕方</td><td style="text-align:left">プロテイン1杯（固定）</td></tr>
+          <tr><td>夜</td><td style="text-align:left">会食の有無で決定。会食なしの日はプロテイン4杯目 + 補食で締め</td></tr>
+        </tbody>
+      </table></div>
     </div>
+
     <div class="main-block">
-      <div class="main-block-label">Preferences<span class="main-block-label-jp">好き・苦手・アレルギー</span></div>
-      <div class="main-note">— 未記入 —</div>
+      <div class="main-block-label">Protein Protocol<span class="main-block-label-jp">プロテイン摂取設計</span></div>
+      <div class="table-wrap"><table class="foods">
+        <tbody>
+          <tr><td>銘柄</td><td style="text-align:left">X Plosion Whey</td></tr>
+          <tr><td>1杯あたり</td><td style="text-align:left">116 kcal / P 21g / F 1.9g / C 4.4g</td></tr>
+          <tr><td>1日杯数</td><td style="text-align:left">3〜4杯（寝起き・昼・夕方は固定、夜は会食次第）</td></tr>
+          <tr><td>4杯合計</td><td style="text-align:left">464 kcal / P 84g / F 7.6g / C 17.6g</td></tr>
+          <tr><td>役割</td><td style="text-align:left">Protein 目標130gのうち約65%をカバー。残りは食事のたんぱく源で埋める</td></tr>
+        </tbody>
+      </table></div>
     </div>
+
     <div class="main-block">
-      <div class="main-block-label">Hydration<span class="main-block-label-jp">水分・嗜好飲料</span></div>
-      <div class="main-note">— 未記入 —</div>
+      <div class="main-block-label">Drinks<span class="main-block-label-jp">飲み物・嗜好</span></div>
+      <div class="table-wrap"><table class="foods">
+        <tbody>
+          <tr><td>水</td><td style="text-align:left">2 L/日 目標</td></tr>
+          <tr><td>烏龍茶</td><td style="text-align:left">主要飲料の一つ。脂っこいメニューとの相性◎</td></tr>
+          <tr><td>飲酒</td><td style="text-align:left"><span class="delta-pos">ほぼなし</span></td></tr>
+        </tbody>
+      </table></div>
     </div>
+
     <div class="main-block">
-      <div class="main-block-label">Notes<span class="main-block-label-jp">その他メモ</span></div>
-      <div class="main-note">— 未記入 —</div>
+      <div class="main-block-label">Go-to Meals<span class="main-block-label-jp">定番店・メニュー</span></div>
+      <div class="table-wrap"><table class="foods">
+        <thead><tr>
+          <th>店</th><th style="text-align:left">メニュー</th><th>kcal</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>しんぱち食堂</td><td style="text-align:left">厚切り銀鮭セット（半割+納豆+味噌汁+生卵）</td><td>736</td></tr>
+          <tr><td>ターリー屋</td><td style="text-align:left">チキンケバブキーマカレー ライス中（ゆで卵込）</td><td>859</td></tr>
+        </tbody>
+      </table></div>
+      <div class="main-note">詳細パーツ・他組み合わせは <strong>Foods タブ</strong> 参照。</div>
+    </div>
+
+    <div class="main-block">
+      <div class="main-block-label">Best Day Pattern<span class="main-block-label-jp">理想の1日構成</span></div>
+      <div class="main-callout">
+        プロテイン×4 + バナナ + しんぱち厚切りシャケセット + サラダチキン×1
+        <br>= <strong>1,419 kcal / P 154.7 / F 49.2 / C 97.5</strong>
+        <br>→ 目標 1500/130/46/100 にほぼピッタリ。詳細試算は <strong>Main タブ</strong>。
+      </div>
     </div>
   `;
 }
@@ -1578,20 +1634,99 @@ function renderKine() {
       <div class="main-hero-tag">Kinesiology</div>
       <div class="main-hero-title">運動・トレーニング</div>
     </div>
+
     <div class="main-callout">
-      コンテンツ追加予定。掲載候補: 現行ルーチン（分割法・頻度）、Strength PRs（BIG3 等）、Mobility/可動域、Recovery（睡眠・心拍）、Cardio（VO2max・距離）など。
+      ジム未通いの自重ベース。<strong>大腿四頭筋に依存した動作パターン</strong>を改善し、
+      <strong>体幹・呼吸筋・股関節</strong>を主軸にした動作獲得を目指す。
+      神経制御型の運動タイプ — 筋力よりも反射・コントロールで動くため、
+      ベース筋力の弱さが持久・姿勢に出やすい。
     </div>
+
     <div class="main-block">
-      <div class="main-block-label">Routine<span class="main-block-label-jp">現行ルーチン</span></div>
-      <div class="main-note">— 未設定 —</div>
+      <div class="main-block-label">Status<span class="main-block-label-jp">現状</span></div>
+      <div class="table-wrap"><table class="foods">
+        <tbody>
+          <tr><td>ジム</td><td style="text-align:left">未通い（自重・日常動作ベース）</td></tr>
+          <tr><td>運動タイプ</td><td style="text-align:left">神経制御型 — 三半規管・視覚反応が高く、筋力ではなく反射でこなすタイプ</td></tr>
+          <tr><td>得意</td><td style="text-align:left">瞬発・反射・俊敏性</td></tr>
+          <tr><td>苦手</td><td style="text-align:left">持久系（呼吸筋・腹圧・フォーム由来）</td></tr>
+        </tbody>
+      </table></div>
     </div>
+
     <div class="main-block">
-      <div class="main-block-label">Strength PRs<span class="main-block-label-jp">主要種目の最大重量</span></div>
-      <div class="main-note">— 未設定 —</div>
+      <div class="main-block-label">Muscle Balance<span class="main-block-label-jp">筋力バランス（強い ↔ 弱い）</span></div>
+      <div class="table-wrap"><table class="foods">
+        <thead><tr>
+          <th>部位</th><th style="text-align:left">評価</th><th style="text-align:left">コメント</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>大腿四頭筋</td><td style="text-align:left"><span class="delta-pos">強い</span></td><td class="note">酷使気味。動作の主導役になりすぎている</td></tr>
+          <tr><td>横隔膜</td><td style="text-align:left"><span class="delta-neg">弱い</span></td><td class="note">呼吸の浅さ・酸素効率の低さに直結</td></tr>
+          <tr><td>腹横筋</td><td style="text-align:left"><span class="delta-neg">弱い</span></td><td class="note">体幹安定・腹圧の基礎</td></tr>
+          <tr><td>腸腰筋</td><td style="text-align:left"><span class="delta-neg">弱い</span></td><td class="note">股関節屈曲が使えない → 太もも主導の原因</td></tr>
+          <tr><td>ハムストリング</td><td style="text-align:left"><span class="delta-neg">弱い</span></td><td class="note">前後バランス崩れ → 反り腰促進</td></tr>
+        </tbody>
+      </table></div>
     </div>
+
     <div class="main-block">
-      <div class="main-block-label">Mobility &amp; Recovery<span class="main-block-label-jp">可動域・回復</span></div>
-      <div class="main-note">— 未設定 —</div>
+      <div class="main-block-label">Movement Habits<span class="main-block-label-jp">動作の癖（要改善ポイント）</span></div>
+      <div class="table-wrap"><table class="foods">
+        <thead><tr>
+          <th>領域</th><th style="text-align:left">現状</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>ランニング</td><td style="text-align:left">太ももでブレーキをかけながら走る → 踵が高く上がらないフォーム → 疲労が早い</td></tr>
+          <tr><td>姿勢</td><td style="text-align:left">骨盤が前傾しやすく、反り腰傾向。前屈の「締まり」「深さ」が出にくい</td></tr>
+          <tr><td>腹圧</td><td style="text-align:left">弱い → 持久力低下。胃が下垂気味でみぞおち〜下腹にぽっこり感</td></tr>
+          <tr><td>下半身バランス</td><td style="text-align:left">太もも・お尻が無駄に太い（大腿四頭筋酷使型）。細く強い出力を持つアスリート像が目標</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="main-block">
+      <div class="main-block-label">Goals<span class="main-block-label-jp">改善目標</span></div>
+      <div class="table-wrap"><table class="foods">
+        <thead><tr>
+          <th>目標</th><th style="text-align:left">狙い</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>腹横筋・体幹強化</td><td style="text-align:left">腹圧↑ → 姿勢安定・持久力↑・下腹ぽっこり改善</td></tr>
+          <tr><td>呼吸筋強化</td><td style="text-align:left">横隔膜活性化 → 酸素効率↑ → 持久パフォーマンス↑</td></tr>
+          <tr><td>股関節主導の動作獲得</td><td style="text-align:left">大腿四頭筋依存から脱却 → 太もも/お尻のサイズダウン</td></tr>
+          <tr><td>ランニングフォーム改善</td><td style="text-align:left">ブレーキ走法 → ヒップ駆動走法へ。踵が自然に上がる動作に</td></tr>
+          <tr><td>反り腰の解消</td><td style="text-align:left">骨盤前傾改善 → 前屈の深さ・「締まり」回復</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="main-block">
+      <div class="main-block-label">Training Priorities<span class="main-block-label-jp">重点トレ（4方向）</span></div>
+      <div class="table-wrap"><table class="foods">
+        <thead><tr>
+          <th>方向</th><th style="text-align:left">アプローチ候補（自重メイン）</th>
+        </tr></thead>
+        <tbody>
+          <tr><td>1. 体幹（腹横筋・骨盤底筋）</td><td style="text-align:left">ドローイン、デッドバグ、プランク（呼吸併用）、バードドッグ</td></tr>
+          <tr><td>2. 呼吸筋（横隔膜）</td><td style="text-align:left">横隔膜呼吸、ボックスブリージング、4-7-8呼吸、ストロー呼吸抵抗</td></tr>
+          <tr><td>3. 股関節（腸腰筋・グルート）</td><td style="text-align:left">グルートブリッジ、ヒップヒンジ、シングルレッグデッドリフト、レッグレイズ</td></tr>
+          <tr><td>4. ハム＆ポステリアチェーン</td><td style="text-align:left">グッドモーニング、ノルディックカール（補助あり）、ヒップスラスト</td></tr>
+        </tbody>
+      </table></div>
+      <div class="main-note">
+        ※ 大腿四頭筋を意図的に使わないエクササイズ選定が重要。ヒップヒンジ系で股関節主導の動作パターンを身体に刷り込む。
+      </div>
+    </div>
+
+    <div class="main-block">
+      <div class="main-block-label">Athletic Profile<span class="main-block-label-jp">運動タイプ</span></div>
+      <div class="main-callout">
+        <strong>神経制御型</strong> — 三半規管・視覚反応が高く、筋力ではなく神経制御で運動をこなすタイプ。
+        <br>→ <strong>有利</strong>: 反射・俊敏性・複雑な動作の習得
+        <br>→ <strong>不利</strong>: 持久系（呼吸筋・腹圧の弱さが顕在化）、ベース筋力に依存する種目
+        <br>→ <strong>戦略</strong>: 弱点である持久系の土台（呼吸・腹圧・ポステリアチェーン）を埋めれば、神経制御型の強みが全領域に展開できる
+      </div>
     </div>
   `;
 }
