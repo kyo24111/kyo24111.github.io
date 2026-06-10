@@ -365,6 +365,64 @@ table.foods td.col-num { font-variant-numeric: tabular-nums; }
   .main-target-row { grid-template-columns: repeat(2, 1fr); }
 }
 
+/* ── TOC ── */
+.toc-list { display: flex; flex-direction: column; gap: 12px; }
+.toc-item {
+  display: grid;
+  grid-template-columns: 48px 1fr 32px;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 22px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .15s;
+}
+.toc-item:hover {
+  background: var(--card);
+  border-color: var(--mid);
+  transform: translateX(2px);
+}
+.toc-item:hover .toc-arrow { color: var(--accent); transform: translateX(3px); }
+.toc-num {
+  font-family: 'Poppins', sans-serif;
+  font-size: 22px; font-weight: 800;
+  color: var(--dim);
+  line-height: 1;
+}
+.toc-title {
+  display: flex; align-items: baseline; gap: 12px;
+  margin-bottom: 4px;
+}
+.toc-en {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: -.01em;
+  color: var(--accent);
+}
+.toc-jp {
+  font-size: 11.5px; color: var(--muted);
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.toc-desc {
+  font-size: 12px;
+  color: var(--mid);
+  line-height: 1.55;
+  font-family: 'Noto Sans JP', sans-serif;
+}
+.toc-arrow {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  color: var(--muted);
+  transition: all .15s;
+  text-align: right;
+}
+@media (max-width: 640px) {
+  .toc-item { grid-template-columns: 36px 1fr 20px; padding: 14px 16px; gap: 12px; }
+  .toc-num { font-size: 18px; }
+  .toc-title { flex-direction: column; gap: 2px; align-items: flex-start; }
+}
+
 /* ── MODAL ── */
 .chart-box { cursor: pointer; transition: box-shadow .15s; }
 .chart-box:hover { box-shadow: 0 4px 16px rgba(0,0,0,.1); }
@@ -472,7 +530,9 @@ body{padding-top:56px!important;padding-bottom:68px!important}
   <button class="tab-btn" onclick="switchTab('table')">Raw Data</button>
   <button class="tab-btn" onclick="switchTab('foods')">Foods</button>
   <button class="tab-btn" onclick="switchTab('main')">Main</button>
+  <button class="tab-btn" onclick="switchTab('diet')">Diet</button>
   <button class="tab-btn" onclick="switchTab('kine')">Kinesiology</button>
+  <button class="tab-btn" onclick="switchTab('toc')">Contents</button>
 </div>
 
 <!-- CHART PANEL -->
@@ -564,9 +624,19 @@ body{padding-top:56px!important;padding-bottom:68px!important}
   <div id="main-render"></div>
 </div>
 
+<!-- DIET PANEL -->
+<div id="panel-diet" style="display:none">
+  <div id="diet-render"></div>
+</div>
+
 <!-- KINESIOLOGY PANEL -->
 <div id="panel-kine" style="display:none">
   <div id="kine-render"></div>
+</div>
+
+<!-- CONTENTS PANEL -->
+<div id="panel-toc" style="display:none">
+  <div id="toc-render"></div>
 </div>
 
 </div><!-- /.page -->
@@ -1077,7 +1147,7 @@ function switchSubTab(name) {
 }
 
 // ── TABS ────────────────────────────────────────────────────
-const TAB_ORDER = ['chart', 'table', 'foods', 'main', 'kine'];
+const TAB_ORDER = ['chart', 'table', 'foods', 'main', 'diet', 'kine', 'toc'];
 function switchTab(name, opts = {}) {
   if (!TAB_ORDER.includes(name)) name = 'chart';
   TAB_ORDER.forEach(t => {
@@ -1089,7 +1159,9 @@ function switchTab(name, opts = {}) {
   });
   if (name === 'foods') renderFoods();
   if (name === 'main')  renderMain();
+  if (name === 'diet')  renderDiet();
   if (name === 'kine')  renderKine();
+  if (name === 'toc')   renderToc();
   if (!opts.skipHash) {
     const newHash = '#' + name;
     if (window.location.hash !== newHash) {
@@ -1460,6 +1532,42 @@ function renderMain() {
   root.innerHTML = html;
 }
 
+// ── DIET PANEL ──────────────────────────────────────────────
+function renderDiet() {
+  const root = document.getElementById('diet-render');
+  if (root.dataset.rendered) return;
+  root.dataset.rendered = '1';
+  root.innerHTML = `
+    <div class="main-hero">
+      <div class="main-hero-tag">Diet</div>
+      <div class="main-hero-title">食事習慣・好み</div>
+    </div>
+    <div class="main-callout">
+      自分の普段の食事スタイル・好み・避けたい食材・外食パターンなどを記録するページ。Foods（DB）・Main（目標）と組み合わせて使う。
+    </div>
+    <div class="main-block">
+      <div class="main-block-label">Routine<span class="main-block-label-jp">普段の食事リズム</span></div>
+      <div class="main-note">— 未記入 —</div>
+    </div>
+    <div class="main-block">
+      <div class="main-block-label">Go-to Meals<span class="main-block-label-jp">よく行く店・定番メニュー</span></div>
+      <div class="main-note">しんぱち食堂（厚切り銀鮭セット）・ターリー屋（チキンケバブキーマカレー）が定番。詳細はFoodsタブ参照。</div>
+    </div>
+    <div class="main-block">
+      <div class="main-block-label">Preferences<span class="main-block-label-jp">好き・苦手・アレルギー</span></div>
+      <div class="main-note">— 未記入 —</div>
+    </div>
+    <div class="main-block">
+      <div class="main-block-label">Hydration<span class="main-block-label-jp">水分・嗜好飲料</span></div>
+      <div class="main-note">— 未記入 —</div>
+    </div>
+    <div class="main-block">
+      <div class="main-block-label">Notes<span class="main-block-label-jp">その他メモ</span></div>
+      <div class="main-note">— 未記入 —</div>
+    </div>
+  `;
+}
+
 // ── KINESIOLOGY PANEL ───────────────────────────────────────
 function renderKine() {
   const root = document.getElementById('kine-render');
@@ -1486,6 +1594,59 @@ function renderKine() {
       <div class="main-note">— 未設定 —</div>
     </div>
   `;
+}
+
+// ── CONTENTS TABLE PANEL ────────────────────────────────────
+const TOC_ENTRIES = [
+  { tab: 'chart', label: 'Charts',       jp: 'グラフ',
+    desc: '体組成（体重・体脂肪率・内臓脂肪・水分量）と栄養（カロリー・PFC・食物繊維）の日次推移グラフ。7D/30D/90D/ALLで期間切替、各カードクリックで拡大モーダル。'
+  },
+  { tab: 'table', label: 'Raw Data',     jp: '生データ',
+    desc: 'Body Composition と Calories の生データテーブル。各列に目標値（goal）行付き、最新行はハイライト表示。CSV由来のすべての記録を確認できる。'
+  },
+  { tab: 'foods', label: 'Foods',        jp: '食品DB',
+    desc: 'よく食べる店・品目のPFCデータベース。しんぱち食堂（小鉢/ご飯/鮭/セット）・ターリー屋（パーツ/セット）・サプリ&補食。セット試算は構成品目から自動計算。'
+  },
+  { tab: 'main',  label: 'Main',         jp: '目標・戦略',
+    desc: '1日の目標PFC（1500kcal / P130 / F46 / C100）、固定摂取（プロテイン4杯+サラダチキン）、残量計算、ベストPFC日のテンプレート、TDEE 2500基準の減量試算。'
+  },
+  { tab: 'diet',  label: 'Diet',         jp: '食事習慣',
+    desc: '普段の食事リズム・好み・苦手・水分摂取・定番メニューなど、個人の食生活スタイルを記録するページ。FoodsとMainを行動に落とし込む場所。'
+  },
+  { tab: 'kine',  label: 'Kinesiology',  jp: '運動・トレーニング',
+    desc: '現行ルーチン（分割法・頻度）、Strength PRs（BIG3等）、Mobility/可動域、Recovery（睡眠・心拍）、Cardio（VO2max・距離）等を記録予定。'
+  },
+  { tab: 'toc',   label: 'Contents',     jp: '目次',
+    desc: 'このページ。各タブが何を扱っているかの一覧と案内。'
+  },
+];
+
+function renderToc() {
+  const root = document.getElementById('toc-render');
+  if (root.dataset.rendered) return;
+  root.dataset.rendered = '1';
+  let html = `
+    <div class="main-hero">
+      <div class="main-hero-tag">Contents</div>
+      <div class="main-hero-title">目次・各タブの内容</div>
+    </div>
+    <div class="main-callout">
+      Health Dashboard の各タブが何を扱っているかをまとめたページ。タブ名をクリックすると該当タブにジャンプ。
+    </div>
+    <div class="toc-list">`;
+  TOC_ENTRIES.forEach((e, i) => {
+    html += `
+      <div class="toc-item" onclick="switchTab('${e.tab}')">
+        <div class="toc-num">${String(i + 1).padStart(2, '0')}</div>
+        <div class="toc-body">
+          <div class="toc-title"><span class="toc-en">${e.label}</span><span class="toc-jp">${e.jp}</span></div>
+          <div class="toc-desc">${e.desc}</div>
+        </div>
+        <div class="toc-arrow">→</div>
+      </div>`;
+  });
+  html += `</div>`;
+  root.innerHTML = html;
 }
 
 // ── INIT ────────────────────────────────────────────────────
