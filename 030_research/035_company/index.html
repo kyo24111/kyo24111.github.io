@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>24111 / startup</title>
+  <title>24111 / company</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
@@ -26,7 +26,38 @@
     .breadcrumb a:hover { color: rgba(255,255,255,.8); }
     .page-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; }
 
-    .main { max-width: 960px; padding: 48px 48px 80px; }
+    .main { max-width: 1100px; padding: 0 48px 80px; }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 2px solid #111;
+      margin: 40px 0 36px;
+    }
+    .tab {
+      appearance: none;
+      background: none;
+      border: none;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 12px 22px;
+      cursor: pointer;
+      position: relative;
+      bottom: -2px;
+      border-bottom: 2px solid transparent;
+      transition: color .12s, border-color .12s;
+    }
+    .tab:hover { color: var(--mid); }
+    .tab.active { color: #111; border-bottom-color: #111; }
+    .tab .t-count { font-size: 9px; font-weight: 500; color: var(--dim); margin-left: 6px; letter-spacing: .04em; }
+
+    .panel { display: none; }
+    .panel.active { display: block; }
 
     /* ── Category section ── */
     .cat-block { margin-bottom: 52px; }
@@ -125,6 +156,62 @@
       margin-left: 8px;
     }
 
+    /* ── Sortable table (All) ── */
+    .table-tools { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; }
+    .table-search {
+      flex: 1;
+      max-width: 320px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+    }
+    .table-search:focus { border-color: #111; }
+    .table-hint { font-size: 10px; color: var(--dim); letter-spacing: .04em; }
+
+    .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); }
+    table.co { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 880px; }
+    table.co thead th {
+      background: #111;
+      color: #fff;
+      font-weight: 600;
+      font-size: 9.5px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      text-align: left;
+      padding: 11px 14px;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+    table.co thead th:hover { background: #2a2a2a; }
+    table.co thead th .arr { color: rgba(255,255,255,.35); font-size: 8px; margin-left: 5px; }
+    table.co thead th.sorted .arr { color: #fff; }
+    table.co tbody td {
+      padding: 11px 14px;
+      border-top: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.5;
+      color: var(--mid);
+    }
+    table.co tbody tr:hover { background: var(--surface); }
+    table.co tbody tr:nth-child(even) { background: #fafafa; }
+    table.co tbody tr:nth-child(even):hover { background: var(--surface); }
+    table.co td.c-name { white-space: nowrap; }
+    table.co td.c-name a { color: #111; font-weight: 700; text-decoration: none; font-size: 12.5px; letter-spacing: -.01em; }
+    table.co td.c-name a:hover { text-decoration: underline; }
+    table.co td.c-people { color: var(--muted); font-size: 11px; min-width: 230px; }
+    table.co td.c-rev { white-space: nowrap; font-weight: 600; color: var(--text); }
+    table.co td.c-ind { white-space: nowrap; }
+    table.co .tier {
+      display: inline-block; font-size: 8px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; padding: 1px 5px; border: 1px solid var(--dim);
+      color: var(--muted); margin-left: 8px; vertical-align: middle;
+    }
+
     .snav-footer { justify-content: space-between !important; }
     .footer-stats {
       display: flex;
@@ -140,8 +227,10 @@
 
     @media (max-width: 600px) {
       .page-header { padding: 28px 24px 24px; }
-      .main { padding: 36px 24px 60px; }
+      .main { padding: 0 24px 60px; }
       .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+      .tabs { margin: 28px 0 28px; }
+      .tab { padding: 10px 14px; }
     }
   </style>
   <!-- snav -->
@@ -187,10 +276,324 @@
 
 <header class="page-header">
   <div class="breadcrumb"><a href="/index.html">24111</a></div>
-  <h1>startup</h1>
+  <h1>company</h1>
 </header>
 
 <main class="main">
+
+  <div class="tabs">
+    <button class="tab active" data-tab="all" onclick="switchTab('all')">All<span class="t-count">35</span></button>
+    <button class="tab" data-tab="startup" onclick="switchTab('startup')">Startup<span class="t-count">34</span></button>
+    <button class="tab" data-tab="company" onclick="switchTab('company')">Company<span class="t-count">1</span></button>
+  </div>
+
+  <!-- ===================== ALL (sortable list) ===================== -->
+  <section class="panel active" id="panel-all">
+    <div class="table-tools">
+      <input type="text" class="table-search" id="tblSearch" placeholder="検索（企業名・人物・業種…）" oninput="filterTable()">
+      <span class="table-hint">列見出しをクリックで並び替え</span>
+    </div>
+    <div class="tbl-wrap">
+      <table class="co" id="coTable">
+        <thead>
+          <tr>
+            <th data-type="str" onclick="sortTable(0,this)">Company<span class="arr">↕</span></th>
+            <th data-type="str" onclick="sortTable(1,this)">HQ<span class="arr">↕</span></th>
+            <th data-type="str" onclick="sortTable(2,this)">Founder / CEO<span class="arr">↕</span></th>
+            <th data-type="str" onclick="sortTable(3,this)">重要人物<span class="arr">↕</span></th>
+            <th data-type="num" onclick="sortTable(4,this)">売上<span class="arr">↕</span></th>
+            <th data-type="str" onclick="sortTable(5,this)">Industry<span class="arr">↕</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="c-name"><a href="260610_spacex_deep_research.html">SpaceX</a><span class="tier">Company</span></td>
+            <td>Hawthorne, CA, USA</td>
+            <td>Elon Musk</td>
+            <td class="c-people">Elon Musk, Gwynne Shotwell（社長兼COO）, Tom Mueller（初期）, Founders Fund, a16z, Sequoia</td>
+            <td class="c-rev" data-sort="18674">約$187億（2025連結）</td>
+            <td class="c-ind">宇宙打ち上げ・衛星通信</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260411_anduril_deep_research.html">Anduril</a></td>
+            <td>Costa Mesa, CA, USA</td>
+            <td>Brian Schimpf</td>
+            <td class="c-people">Palmer Luckey（会長）, Trae Stephens, Brian Schimpf, Peter Thiel / Founders Fund, a16z</td>
+            <td class="c-rev" data-sort="2100">推定$21億（2025）</td>
+            <td class="c-ind">防衛テック（自律システム）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_flexport_deep_research.html">Flexport</a></td>
+            <td>San Francisco, CA, USA</td>
+            <td>Ryan Petersen</td>
+            <td class="c-people">Ryan Petersen, Dave Clark（元CEO）, SoftBank Vision Fund, Founders Fund, Shopify, a16z</td>
+            <td class="c-rev" data-sort="2100">$21億（2024）</td>
+            <td class="c-ind">デジタル物流フォワーダー</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_skydio_deep_research.html">Skydio</a></td>
+            <td>San Mateo, CA, USA</td>
+            <td>Adam Bry</td>
+            <td class="c-people">Adam Bry, Abe Bachrach, Matt Donahoe</td>
+            <td class="c-rev" data-sort="295">約$2.95億（FY25推定）</td>
+            <td class="c-ind">自律ドローン</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260412_redwood_materials_deep_research.html">Redwood Materials</a></td>
+            <td>Carson City, NV, USA</td>
+            <td>JB Straubel</td>
+            <td class="c-people">JB Straubel, Jeff Bezos, Bill Gates（BEV）, Amazon, NVIDIA</td>
+            <td class="c-rev" data-sort="200">約$2億（2024 run-rate）</td>
+            <td class="c-ind">バッテリーリサイクル</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_saildrone_deep_research.html">Saildrone</a></td>
+            <td>Alameda, CA, USA</td>
+            <td>Richard Jenkins</td>
+            <td class="c-people">Richard Jenkins</td>
+            <td class="c-rev" data-sort="43">$0.43億（2024）</td>
+            <td class="c-ind">海洋USV・海洋情報</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260401_hadrian_deep_research.html">Hadrian</a></td>
+            <td>Torrance, CA, USA</td>
+            <td>Chris Power</td>
+            <td class="c-people">Chris Power, Peter Thiel / Founders Fund, Lux Capital, a16z, Altimeter</td>
+            <td class="c-rev" data-sort="30">推定~$0.3億（2024）</td>
+            <td class="c-ind">AI精密製造（宇宙・防衛部品）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260409_oklo_deep_research.html">Oklo</a></td>
+            <td>Santa Clara, CA, USA</td>
+            <td>Jacob DeWitte</td>
+            <td class="c-people">Jacob DeWitte, Caroline Cochran, Sam Altman（元会長）, Craig Bealmear（CFO）</td>
+            <td class="c-rev" data-sort="0">売上ゼロ（上場・時価総額~$85億）</td>
+            <td class="c-ind">マイクロ原子炉（Aurora高速炉）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260401_saronic_deep_research.html">Saronic</a></td>
+            <td>Austin, TX, USA</td>
+            <td>Dino Mavrookas</td>
+            <td class="c-people">Dino Mavrookas, Vibhav Altekar, Doug Lambert, Katherine Boyle（a16z）, Joe Lonsdale（8VC）</td>
+            <td class="c-rev" data-sort="0">非公開（評価$92.5億 / 調達$26億）</td>
+            <td class="c-ind">防衛（自律型水上艦 USV）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260406_astranis_deep_research.html">Astranis</a></td>
+            <td>San Francisco, CA, USA</td>
+            <td>John Gedmark</td>
+            <td class="c-people">John Gedmark, a16z, BAM Elevate（BlackRock）, Baillie Gifford, Fidelity</td>
+            <td class="c-rev" data-sort="0">非公開（評価$76億 / 調達$7.5億+）</td>
+            <td class="c-ind">宇宙通信（MicroGEO衛星）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260406_zipline_deep_research.html">Zipline</a></td>
+            <td>South San Francisco, CA, USA</td>
+            <td>Keller Rinaudo Cliffton</td>
+            <td class="c-people">Keller Rinaudo Cliffton, Fidelity, Baillie Gifford, Valor Equity, Tiger Global, a16z</td>
+            <td class="c-rev" data-sort="0">非公開（評価$76億 / 調達$20.3億）</td>
+            <td class="c-ind">自律ドローン配送</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_figure_deep_research.html">Figure</a></td>
+            <td>Sunnyvale, CA, USA</td>
+            <td>Brett Adcock</td>
+            <td class="c-people">Brett Adcock, Microsoft, OpenAI Startup Fund, NVIDIA, Jeff Bezos, Intel Capital</td>
+            <td class="c-rev" data-sort="0">非公開（評価$390億 / 調達~$19億）</td>
+            <td class="c-ind">ヒューマノイドロボット</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260406_helion_energy_deep_research.html">Helion Energy</a></td>
+            <td>Everett, WA, USA</td>
+            <td>David Kirtley</td>
+            <td class="c-people">David Kirtley, George Votroubek, Sam Altman（取締役）, OpenAI, Microsoft（PPA）, Dustin Moskovitz</td>
+            <td class="c-rev" data-sort="0">非公開（評価$54億 / 調達~$22億）</td>
+            <td class="c-ind">核融合（FRC）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260513_crusoe_energy_deep_research.html">Crusoe</a></td>
+            <td>Denver, CO, USA</td>
+            <td>Chase Lochmiller</td>
+            <td class="c-people">Chase Lochmiller, Cully Cavness</td>
+            <td class="c-rev" data-sort="0">非公開（評価$100億+ / 調達~$27.7億）</td>
+            <td class="c-ind">AIインフラ（AI Factory）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260417_kobold_metals_deep_research.html">KoBold Metals</a></td>
+            <td>Berkeley, CA, USA</td>
+            <td>Kurt House</td>
+            <td class="c-people">Kurt House, Josh Goldman, Jeff Jurinak, Bill Gates（BEV）, Jeff Bezos, a16z, BHP, 三菱商事</td>
+            <td class="c-rev" data-sort="0">非公開（評価$29.6億 / 調達$12.2億+）</td>
+            <td class="c-ind">AI×クリティカルミネラル探索</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260406_commonwealth_fusion_deep_research.html">Commonwealth Fusion</a></td>
+            <td>Devens, MA, USA</td>
+            <td>Bob Mumgaard</td>
+            <td class="c-people">Bob Mumgaard, Brandon Sorbom, Dennis Whyte, Bill Gates（BEV）, Vinod Khosla, Google, NVIDIA</td>
+            <td class="c-rev" data-sort="0">非公開（調達~$30億+）</td>
+            <td class="c-ind">核融合（高磁場トカマク）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260415_harmattan_ai_deep_research.html">Harmattan AI</a></td>
+            <td>Paris, France</td>
+            <td>Mouad M'Ghari</td>
+            <td class="c-people">Mouad M'Ghari, Martin de Gourcuff, Edouard Rosset, Dassault Aviation, FirstMark Capital</td>
+            <td class="c-rev" data-sort="0">非公開（評価€14億 / 調達~$2.42億）</td>
+            <td class="c-ind">防衛テック（自律ドローン・電子戦）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_fervo_energy_deep_research.html">Fervo Energy</a></td>
+            <td>Houston, TX, USA</td>
+            <td>Tim Latimer</td>
+            <td class="c-people">Tim Latimer, Jack Norbeck, Devon Energy, Google, BEV, JB Straubel</td>
+            <td class="c-rev" data-sort="0">非公開（評価~$28.6億 / 調達$15億+）</td>
+            <td class="c-ind">次世代地熱（EGS）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_radiant_nuclear_deep_research.html">Radiant Nuclear</a></td>
+            <td>El Segundo, CA, USA</td>
+            <td>Doug Bernauer</td>
+            <td class="c-people">Doug Bernauer, Bob Urberger</td>
+            <td class="c-rev" data-sort="0">非公開（評価$18億 / 調達$5.18億+）</td>
+            <td class="c-ind">可搬型マイクロ原子炉</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260406_terrapower_deep_research.html">TerraPower</a></td>
+            <td>Bellevue, WA, USA</td>
+            <td>Chris Levesque</td>
+            <td class="c-people">Bill Gates（会長）, Nathan Myhrvold, Chris Levesque, John Gilleland, SK Inc., NVIDIA, KHNP</td>
+            <td class="c-rev" data-sort="0">非公開（調達$6.5億+ / DOE $20億）</td>
+            <td class="c-ind">次世代原子力（Natrium高速炉）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260406_valar_atomics_deep_research.html">Valar Atomics</a></td>
+            <td>El Segundo, CA, USA</td>
+            <td>Isaiah Taylor</td>
+            <td class="c-people">Isaiah Taylor, Mark Mitchell, Palmer Luckey, Shyam Sankar, Doug Philippone</td>
+            <td class="c-rev" data-sort="0">非公開（評価$20億 / 調達$5.99億+）</td>
+            <td class="c-ind">核分裂マイクロ原子炉（HTGR）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260331_starcloud_deep_research.html">Starcloud</a></td>
+            <td>Redmond, WA, USA</td>
+            <td>Philip Johnston</td>
+            <td class="c-people">Philip Johnston, Adi Oltean, Ezra Feilden, Chetan Puttagunta（Benchmark）, Alexis Ohanian</td>
+            <td class="c-rev" data-sort="0">非公開（評価$11億 / 調達$2億）</td>
+            <td class="c-ind">宇宙データセンター</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_apex_deep_research.html">Apex</a></td>
+            <td>Los Angeles, CA, USA</td>
+            <td>Ian Cinnamon</td>
+            <td class="c-people">Ian Cinnamon, Max Benassi, a16z, Point72 Ventures, 8VC（Joe Lonsdale）, CRV</td>
+            <td class="c-rev" data-sort="0">非公開（評価$10億+ / 調達$5億+）</td>
+            <td class="c-ind">スペーステック（衛星バス量産）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260511_panthalassa_deep_research.html">Panthalassa</a></td>
+            <td>Portland, OR, USA</td>
+            <td>Garth Sheldon-Coulson</td>
+            <td class="c-people">Garth Sheldon-Coulson, Peter Thiel（Series Bリード）</td>
+            <td class="c-rev" data-sort="0">非公開（評価~$10億 / 調達$2.18億+）</td>
+            <td class="c-ind">波力発電＋洋上AIコンピュート</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260406_hermeus_deep_research.html">Hermeus</a></td>
+            <td>Atlanta, GA, USA</td>
+            <td>AJ Piplica</td>
+            <td class="c-people">AJ Piplica, a16z, Khosla Ventures, General Catalyst</td>
+            <td class="c-rev" data-sort="0">非公開（評価~$9.85億 / 調達~$3.58億）</td>
+            <td class="c-ind">極超音速機（Mach 5）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260415_general_matter_deep_research.html">General Matter</a></td>
+            <td>Paducah, KY, USA（予定）</td>
+            <td>Scott Nolan</td>
+            <td class="c-people">Scott Nolan, Peter Thiel（取締役）, Founders Fund</td>
+            <td class="c-rev" data-sort="0">非公開（$50M VC＋$900M DOE契約）</td>
+            <td class="c-ind">ウラン濃縮（LEU/HALEU）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260411_path_robotics_deep_research.html">Path Robotics</a></td>
+            <td>Columbus, OH, USA</td>
+            <td>Andy Lonsberry</td>
+            <td class="c-people">Andy Lonsberry, Alex Lonsberry, Matt Klein, Drive Capital, Tiger Global</td>
+            <td class="c-rev" data-sort="0">非公開（2025ブッキング$1億+）</td>
+            <td class="c-ind">AI溶接ロボティクス</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_form_energy_deep_research.html">Form Energy</a></td>
+            <td>Somerville, MA, USA</td>
+            <td>Mateo Jaramillo</td>
+            <td class="c-people">Mateo Jaramillo, Yet-Ming Chiang（MIT）, Ted Wiley, Marco Ferrara, BEV, TPG Rise, GIC</td>
+            <td class="c-rev" data-sort="0">非公開（評価~$34億 / 調達$12億+）</td>
+            <td class="c-ind">長期蓄電池（鉄空気電池）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260406_varda_space_deep_research.html">Varda Space</a></td>
+            <td>El Segundo, CA, USA</td>
+            <td>Will Bruey</td>
+            <td class="c-people">Will Bruey, Delian Asparouhov（Founders Fund）, Caffeinated Capital, General Catalyst, Khosla, Lux</td>
+            <td class="c-rev" data-sort="0">非公開（評価$10億+ / 調達~$3.29億）</td>
+            <td class="c-ind">宇宙微小重力製造</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_antora_energy_deep_research.html">Antora Energy</a></td>
+            <td>San Jose, CA, USA</td>
+            <td>Andrew Ponec</td>
+            <td class="c-people">Andrew Ponec, Justin Briggs, David Bierman, BEV, Lowercarbon（Chris Sacca）, BlackRock×Temasek</td>
+            <td class="c-rev" data-sort="0">非公開（調達$2.44億+）</td>
+            <td class="c-ind">産業用熱エネルギー貯蔵</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_type_one_energy_deep_research.html">Type One Energy</a></td>
+            <td>Knoxville, TN, USA</td>
+            <td>Christofer Mowry</td>
+            <td class="c-people">Christofer Mowry, John Canik, Thomas Sunn Pedersen, David Anderson</td>
+            <td class="c-rev" data-sort="0">非公開（調達$1.6億+）</td>
+            <td class="c-ind">核融合（ステラレータ）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260415_thinkorbital_deep_research.html">ThinkOrbital</a></td>
+            <td>Boulder, CO, USA</td>
+            <td>Sebastian Asprella</td>
+            <td class="c-people">Sebastian Asprella, Lee Rosen（元SpaceX VP）, Vojtech Holub, TFX Capital</td>
+            <td class="c-rev" data-sort="0">非公開（調達$819万＋政府契約）</td>
+            <td class="c-ind">宇宙インフラ（軌道上建設）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260420_heron_power_deep_research.html">Heron Power</a></td>
+            <td>Scotts Valley, CA, USA</td>
+            <td>Drew Baglino</td>
+            <td class="c-people">Drew Baglino, JB Straubel, Zach Kirkhorn</td>
+            <td class="c-rev" data-sort="0">非公開（調達$1.78億+）</td>
+            <td class="c-ind">電力インフラ（固体変圧器）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260406_helical_fusion_deep_research.html">Helical Fusion</a></td>
+            <td>Tokyo, Japan</td>
+            <td>田口昂哉</td>
+            <td class="c-people">田口昂哉, 宮澤順一（CTO）, 田中渓, SBIインベストメント, 慶應イノベーション・イニシアティブ</td>
+            <td class="c-rev" data-sort="0">非公開（調達~60億円）</td>
+            <td class="c-ind">核融合（ヘリカル型）</td>
+          </tr>
+          <tr>
+            <td class="c-name"><a href="260406_retro_biosciences_deep_research.html">Retro Biosciences</a></td>
+            <td>Redwood City, CA, USA</td>
+            <td>Joe Betts-LaCroix</td>
+            <td class="c-people">Joe Betts-LaCroix, Sam Altman（$180M個人投資）, David Sabatini</td>
+            <td class="c-rev" data-sort="0">非公開（目標$10億調達 / 評価$50億）</td>
+            <td class="c-ind">老化科学・長寿バイオ</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-hint" style="margin-top:12px">※ 多くが未上場のため売上は非公開。その場合は評価額・累計調達額を併記。売上列の並び替えは推定年間売上（USD）基準。<a href="260401_power_dc_startups.html" style="color:var(--muted)">Power × DC（複数社概説）</a>は個社データなしのため表から除外。</p>
+  </section>
+
+  <!-- ===================== STARTUP (category grid) ===================== -->
+  <section class="panel" id="panel-startup">
 
   <div class="cat-block">
     <div class="cat-header">
@@ -386,13 +789,31 @@
     </div>
   </div>
 
+  </section>
+
+  <!-- ===================== COMPANY (large/established) ===================== -->
+  <section class="panel" id="panel-company">
+  <div class="cat-block">
+    <div class="cat-header">
+      <span class="cat-title">Space &amp; Aerospace</span>
+      <span class="cat-count">1 company</span>
+    </div>
+    <div class="grid">
+      <a class="tile" href="260610_spacex_deep_research.html">
+        <div class="tile-top"><div class="tile-name">SpaceX</div><div class="tile-meta"><span class="m-year">2002</span> · Hawthorne, CA</div><div class="tile-desc">再使用ロケットFalconとStarship、Starlink衛星通信。火星移住を北極星に掲げる宇宙開発の巨人</div></div>
+        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Launch</span><span class="tile-tag">Starlink</span></div><span class="tile-arrow">→</span></div>
+      </a>
+    </div>
+  </div>
+  </section>
+
 </main>
 
 <footer class="snav-footer">
   <div class="footer-stats">
-    <span class="stat">34 companies</span><span class="sep">·</span>
-    <span class="stat">6 sectors</span><span class="sep">·</span>
-    <span class="stat">2026.05</span>
+    <span class="stat">35 companies</span><span class="sep">·</span>
+    <span class="stat">2 tracks</span><span class="sep">·</span>
+    <span class="stat">2026.06</span>
   </div>
   <div class="snav-footer-sns">
     <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
@@ -400,5 +821,47 @@
     <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
   </div>
 </footer>
+
+<script>
+function switchTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+name));
+}
+
+let sortState = { col: -1, dir: 1 };
+function sortTable(col, th){
+  const table = document.getElementById('coTable');
+  const tbody = table.tBodies[0];
+  const rows = Array.from(tbody.rows);
+  const type = th.dataset.type;
+  sortState.dir = (sortState.col === col) ? -sortState.dir : 1;
+  sortState.col = col;
+  rows.sort((a,b)=>{
+    let x, y;
+    if(type==='num'){
+      x = parseFloat(a.cells[col].dataset.sort||'0');
+      y = parseFloat(b.cells[col].dataset.sort||'0');
+      return (x-y)*sortState.dir;
+    } else {
+      x = (a.cells[col].dataset.sort||a.cells[col].innerText).trim();
+      y = (b.cells[col].dataset.sort||b.cells[col].innerText).trim();
+      return x.localeCompare(y,'ja')*sortState.dir;
+    }
+  });
+  rows.forEach(r=>tbody.appendChild(r));
+  document.querySelectorAll('#coTable thead th').forEach(h=>h.classList.remove('sorted'));
+  th.classList.add('sorted');
+  th.querySelector('.arr').textContent = sortState.dir>0 ? '↑' : '↓';
+  document.querySelectorAll('#coTable thead th').forEach(h=>{ if(h!==th) h.querySelector('.arr').textContent='↕'; });
+}
+
+function filterTable(){
+  const q = document.getElementById('tblSearch').value.trim().toLowerCase();
+  const rows = document.querySelectorAll('#coTable tbody tr');
+  rows.forEach(r=>{
+    r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+</script>
 </body>
 </html>
