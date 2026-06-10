@@ -153,6 +153,53 @@ SpaceXは2本柱＋AIの3セグメント構成。
 - SpaceXChart / mostlymetrics — Business metrics（Starship R&D）
 - Wikipedia — SpaceX Raptor（技術）
 
+---
+
+## 追補（260610 拡充 — HTML版に対応）
+
+> 以下は財務検証バッチ外の補強。製造・競合・Falcon9/Raptorは追加Web調査（確度付き）、その他は公開情報・ビジョン整理。
+
+### 主要マイルストーン
+2002創業 → 2008 Falcon 1軌道到達（民間初）→ 2012 Dragon ISS到達（民間初）→ 2015 Falcon 9第1段着陸（世界初）→ 2017 再使用ブースター再飛行（世界初）→ 2018 Falcon Heavy → 2020 Crew Dragon有人（民間初）→ 2021 Inspiration4（全民間人）→ 2024 Starship「箸キャッチ」（世界初）。
+
+### Falcon 9 & Raptor（技術の肝）
+- **Falcon 9**: 全長約70m・2段式、第1段 Merlin 1D×9（LOX/RP-1）。LEO 約17.5t（再使用）。公表価格約$7,400万、限界コスト$1,500〜2,800万。累計約648回・成功率約99.5%。単機最多35回再飛行（B1067）、最速ターンアラウンド約9日（B1088）。
+- **Raptor**: フルフロー二段燃焼（FFSC、飛行実機初）、methalox（液体メタン+液体酸素）。メタン採用理由＝①火星ISRU（サバティエ反応で現地生成）②再使用性（低コーキング）③コスト。R1→R2→R3で推力増・部品削減（年500基・$25万未満が目標）。Super Heavy 33基／Starship 6基。
+
+### 製造・サプライチェーン
+- 垂直統合。内製比率はFalcon 9で約70%、打ち上げハード全体で約80〜85%（二次情報、公式値は非公表）。狙いは生産レートの自社制御。
+- 確定サプライヤー: **STMicroelectronics**（Starlinkチップ、累計50億個超、SEC開示）、**東レ**（炭素繊維サプライヤーの一つ、SpaceX認める）。Pioneer Aerospace（パラシュート→2023買収で内製化）。それ以外（合金・複合材・推進剤・電池・ST以外半導体）は**非公表**＝社名断定せず。
+- Starlink衛星は「家電的」量産（Redmond 週約70機）、端末はBastrop（1日2.4万台規模）。
+
+### 拠点
+Hawthorne CA（本社・Falcon 9/Dragon製造・管制）／Starbase TX（Starship製造・打ち上げ）／McGregor TX（エンジン試験）／Cape Canaveral・KSC FL（東海岸主力射場）／Vandenberg CA（西海岸・極軌道）／Redmond WA（Starlink衛星製造）／Bastrop TX（端末製造）／Washington DC（渉外）。
+
+### 資金調達ヒストリー
+2002 自己資金$100M → 2008 Founders Fund初投資（約$0.5B）→ 2015 Google/Fidelity $10億（約$120億）→ 2021 約$740〜1,000億 → 2024/12 $3,500億【検証】→ 2025/12 約$8,000億【検証】→ 2026/2 xAI統合$1.25兆【検証】→ 2026/6 IPO $1.77兆【検証】。累計エクイティ約$120億。
+
+### IPOにおけるVCリターン（評価額ベース概算 = $1.77兆÷参入評価額）
+2008初期(約$0.5B)→約3,500x ／ 2015($120億)→約147x ／ 2021($1,000億)→約17.7x ／ 2024/12($3,500億)→約5.1x ／ 2025/12($8,000億)→約2.2x。最大の勝者はFounders Fund（Peter Thiel、2008から継続）・Gigafund（Luke Nosek）。後発・セカンダリ買い手はMorningstarフェアバリュー$7,800億が正なら含み損リスク。
+
+### 重要人物・SpaceXマフィア
+- 経営: Elon Musk（CEO/CTO・議決権85%）、Gwynne Shotwell（President&COO・執行トップ）、Bret Johnsen（CFO）、Mark Juncosa（VP Vehicle Eng）。
+- マフィア: Tom Mueller→Impulse Space ／ Will Bruey→Varda ／ Lee Rosen→ThinkOrbital ／ Jordan Noone→Relativity ／ Jim Cantrell→Phantom Space。
+
+### 日本との関わり
+- 打ち上げ: スカパーJSAT（JCSAT各機、Superbird-9はStarship契約）、ispace HAKUTO-R（M1/M2）、EarthCARE（ESA×JAXA）。※HTV-X・MMXはH3でSpaceX無関係。
+- 素材: 東レが炭素繊維サプライヤーの一つ（確定）。他の日本製部品は公表情報なし。
+- Starlink: KDDI（au）提携、2025/4「au Starlink Direct」（日本初Direct to Cell）。H3はFalcon 9対抗の低コスト設計。
+
+### カルダシェフ・スケールとエネルギー論（ビジョン）
+文明をエネルギー利用規模で分類。タイプI=惑星全エネルギー（地球は約0.7）、タイプII=恒星全エネルギー（ダイソン球）、タイプIII=銀河。Tesla＝地球の持続可能エネルギー（タイプIへ）、SpaceX＝多惑星化（タイプIIへの助走）。根底は「文明は増えるエネルギーを要し、惑星1個では上限とリスクに縛られる／意識の灯を宇宙へ」。
+
+### 火星100万人都市構想（ビジョン）
+自給自足できる100万人都市が目標。Starship（1機約100人）×約1,000機艦隊、26か月ごとの火星窓でarmada出発、完全再使用＋軌道燃料補給＋火星ISRU（メタン現地生成）が前提。実現性は不確実だが全意思決定を貫く北極星。
+
+### 上場で伸びる領域・関連企業
+打ち上げコスト破壊が上位レイヤーを解放。宇宙製造=Varda／軌道コンピュート=Starcloud, Panthalassa／衛星バス量産=Apex／GEO補完=Astranis／軌道建設=ThinkOrbital／防衛宇宙=Anduril, Hermeus／上場銘柄=Rocket Lab(RKLB), STMicroelectronics。
+
+---
+
 ### 棄却されたクレーム（参考: 投票で反証）
 - 「2025年売上187億ドル・前年比43%増（2024年131億ドルから）」→ 1-2 棄却（連結+33%が正）
 - 「打ち上げ事業41億ドル・165回打ち上げ・Falcon 9成功率99%超」→ 1-2 棄却
