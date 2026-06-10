@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>bestiee — M&A 事業壁打ち</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #fff;
+      --surface: #f7f7f7;
+      --border: #d4d4d4;
+      --border-light: #e8e8e8;
+      --text: #111;
+      --mid: #444;
+      --muted: #888;
+      --dim: #bbb;
+    }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .mono { font-family: 'Share Tech Mono', monospace; letter-spacing: .04em; }
+
+    .page-header {
+      background: #111;
+      color: #fff;
+      padding: 36px 48px 28px;
+    }
+    .breadcrumb {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .14em;
+      color: rgba(255,255,255,.35);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+    .breadcrumb a { color: rgba(255,255,255,.55); text-decoration: none; }
+    .breadcrumb a:hover { color: #fff; }
+    .header-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .page-header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+    .page-header .subtitle {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: rgba(255,255,255,.55);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .meta-bar {
+      margin-top: 18px;
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10.5px;
+      color: rgba(255,255,255,.55);
+      letter-spacing: .08em;
+    }
+    .meta-bar span strong { color: rgba(255,255,255,.9); font-weight: 400; }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 52px 48px 96px;
+    }
+
+    .section { margin-bottom: 56px; }
+    .sec-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .sec-label::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #111;
+    }
+
+    /* Company info table */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .info-cell {
+      background: var(--bg);
+      padding: 18px 22px;
+    }
+    .info-cell .key {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .info-cell .val {
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.65;
+    }
+    .info-cell.wide { grid-column: span 2; }
+
+    /* Service cards */
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .service-card {
+      background: var(--bg);
+      padding: 22px 24px;
+    }
+    .service-card .tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px;
+      letter-spacing: .14em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .service-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -.01em;
+    }
+    .service-card p {
+      font-size: 12.5px;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+
+    /* Mission block */
+    .mission-block {
+      border: 1px solid var(--border);
+      padding: 28px 32px;
+      background: var(--surface);
+    }
+    .mission-block .quote {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.6;
+      color: var(--text);
+      letter-spacing: -.005em;
+      margin-bottom: 14px;
+    }
+    .mission-block .quote::before { content: '〝'; color: var(--muted); }
+    .mission-block .quote::after { content: '〟'; color: var(--muted); }
+    .mission-block .note {
+      font-size: 12.5px;
+      color: var(--mid);
+      line-height: 1.75;
+    }
+
+    /* Topics list (sparring questions) */
+    .topic-list {
+      border-top: 1px solid var(--border);
+    }
+    .topic {
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      border-bottom: 1px solid var(--border-light);
+      padding: 18px 0;
+      gap: 18px;
+    }
+    .topic .idx {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      padding-top: 4px;
+      letter-spacing: .08em;
+    }
+    .topic .body .q {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: -.005em;
+    }
+    .topic .body .ctx {
+      font-size: 12.5px;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+    .topic .body .tags {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .topic .body .tags span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px;
+      letter-spacing: .12em;
+      color: var(--muted);
+      padding: 3px 9px;
+      border: 1px solid var(--border);
+      text-transform: uppercase;
+    }
+
+    /* Person card */
+    .person {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 24px;
+      padding: 22px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .person .name {
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: -.01em;
+    }
+    .person .role {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10.5px;
+      color: var(--muted);
+      letter-spacing: .12em;
+      margin-top: 4px;
+      text-transform: uppercase;
+    }
+    .person ul {
+      list-style: none;
+      font-size: 12.5px;
+      color: var(--mid);
+      line-height: 1.85;
+    }
+    .person ul li::before {
+      content: '— ';
+      color: var(--dim);
+    }
+
+    /* North Star block */
+    .north-star {
+      border: 1px solid #111;
+      padding: 28px 32px;
+      position: relative;
+      background: #fff;
+    }
+    .north-star::before {
+      content: 'NORTH STAR';
+      position: absolute;
+      top: -8px;
+      left: 24px;
+      background: #fff;
+      padding: 0 10px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .2em;
+      color: #111;
+    }
+    .ns-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .ns-item .ns-num {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 28px;
+      font-weight: 400;
+      color: #111;
+      letter-spacing: -.01em;
+      line-height: 1.1;
+    }
+    .ns-item .ns-unit {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: .1em;
+      margin-top: 2px;
+    }
+    .ns-item .ns-label {
+      font-size: 12.5px;
+      color: var(--mid);
+      margin-top: 10px;
+      line-height: 1.6;
+    }
+
+    /* Unit Economics table */
+    .ue-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .ue-table th,
+    .ue-table td {
+      padding: 13px 16px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    .ue-table thead th {
+      background: #111;
+      color: #fff;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      font-weight: 400;
+      text-transform: uppercase;
+    }
+    .ue-table tbody th {
+      background: var(--surface);
+      font-weight: 600;
+      width: 160px;
+    }
+    .ue-table td.mono {
+      font-family: 'Share Tech Mono', monospace;
+      letter-spacing: .03em;
+    }
+    .ue-summary {
+      margin-top: 14px;
+      padding: 16px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+    .ue-summary .cell .k {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 9.5px;
+      color: var(--muted);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .ue-summary .cell .v {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 16px;
+      color: #111;
+      letter-spacing: -.01em;
+    }
+
+    /* Hard side block */
+    .hard-side {
+      border: 2px solid #111;
+      padding: 0;
+      margin-bottom: 24px;
+    }
+    .hs-head {
+      background: #111;
+      color: #fff;
+      padding: 20px 28px;
+    }
+    .hs-head .hs-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .2em;
+      color: rgba(255,255,255,.55);
+      margin-bottom: 8px;
+    }
+    .hs-head .hs-title {
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: -.01em;
+    }
+    .hs-head .hs-title em {
+      font-style: normal;
+      background: #fff;
+      color: #111;
+      padding: 2px 8px;
+      margin: 0 2px;
+    }
+    .hs-examples {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border-top: 1px solid var(--border);
+    }
+    .hs-ex {
+      background: #fff;
+      padding: 20px 22px;
+    }
+    .hs-ex.featured {
+      background: #fafafa;
+      border-top: 4px solid #111;
+      margin-top: -4px;
+    }
+    .hs-ex .hs-co {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .hs-ex .hs-easy {
+      font-size: 12.5px;
+      color: var(--mid);
+      margin-bottom: 6px;
+    }
+    .hs-ex .hs-easy::before { content: 'EASY ／ '; font-family: 'Share Tech Mono', monospace; font-size: 9.5px; color: var(--dim); letter-spacing: .1em; }
+    .hs-ex .hs-hard {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .hs-ex .hs-hard::before { content: 'HARD ／ '; font-family: 'Share Tech Mono', monospace; font-size: 9.5px; color: #111; letter-spacing: .1em; display: block; margin-top: 2px; font-weight: 400; }
+    .hs-implications {
+      padding: 22px 28px;
+      background: #fff;
+      border-top: 1px solid var(--border);
+    }
+    .hs-implications .imp-h {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .hs-implications ol {
+      margin: 0;
+      padding-left: 20px;
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.85;
+    }
+    .hs-implications ol li strong { color: var(--text); }
+
+    /* Segment matrix */
+    .seg-premise {
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 20px 24px;
+      margin-bottom: 20px;
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.75;
+    }
+    .seg-premise strong { color: var(--text); }
+    .seg-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .seg-col {
+      border: 1px solid var(--border);
+      padding: 22px 24px;
+    }
+    .seg-col h4 {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10.5px;
+      letter-spacing: .16em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .seg-col .dim {
+      display: grid;
+      grid-template-columns: 110px 1fr;
+      padding: 9px 0;
+      border-bottom: 1px dashed var(--border-light);
+      gap: 14px;
+    }
+    .seg-col .dim:last-child { border-bottom: none; }
+    .seg-col .dim .dk {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      padding-top: 2px;
+    }
+    .seg-col .dim .dv {
+      font-size: 12px;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+    .seg-col .dim .dv span.tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border: 1px solid var(--border);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      margin: 2px 4px 2px 0;
+      letter-spacing: .04em;
+    }
+    .combo-list {
+      border-top: 1px solid var(--border);
+    }
+    .combo {
+      display: grid;
+      grid-template-columns: 36px 1fr 160px;
+      gap: 18px;
+      padding: 18px 0;
+      border-bottom: 1px solid var(--border-light);
+      align-items: start;
+    }
+    .combo .cnum {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: var(--dim);
+      padding-top: 3px;
+      letter-spacing: .08em;
+    }
+    .combo .cbody .ctitle {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -.005em;
+      margin-bottom: 4px;
+    }
+    .combo .cbody .cdesc {
+      font-size: 12.5px;
+      color: var(--mid);
+      line-height: 1.7;
+    }
+    .combo .cscore {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .06em;
+    }
+    .combo .cscore .sc {
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      text-align: center;
+      line-height: 1.3;
+    }
+    .combo .cscore .sc .lbl {
+      display: block;
+      color: var(--muted);
+      font-size: 8.5px;
+      letter-spacing: .12em;
+      margin-bottom: 2px;
+    }
+    .combo .cscore .sc .val {
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    /* Meta question block */
+    .meta-q {
+      border: 1px solid #111;
+      background: #111;
+      color: #fff;
+      padding: 28px 32px;
+      position: relative;
+    }
+    .meta-q .q-mark {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .2em;
+      color: rgba(255,255,255,.55);
+      margin-bottom: 10px;
+    }
+    .meta-q .q-text {
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 1.55;
+      letter-spacing: -.005em;
+      margin-bottom: 6px;
+    }
+    .meta-q .q-sub {
+      font-size: 12.5px;
+      color: rgba(255,255,255,.6);
+      line-height: 1.65;
+    }
+    .cv-table {
+      margin-top: 16px;
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+    .cv-table th,
+    .cv-table td {
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      text-align: left;
+      vertical-align: top;
+    }
+    .cv-table thead th {
+      background: var(--surface);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10.5px;
+      letter-spacing: .14em;
+      font-weight: 400;
+      text-transform: uppercase;
+      color: var(--mid);
+    }
+    .cv-table td.const {
+      width: 32%;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .cv-table td.now {
+      width: 22%;
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--muted);
+    }
+    .cv-table td.var {
+      color: var(--mid);
+      line-height: 1.65;
+    }
+
+    /* Issues / Kyo's POV */
+    .issue-list { border-top: 1px solid var(--border); }
+    .issue {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 18px;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .issue .mark {
+      width: 26px;
+      height: 26px;
+      border: 1px solid #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px;
+      color: #111;
+      margin-top: 2px;
+    }
+    .issue .ihead {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: -.005em;
+    }
+    .issue .ibody {
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 1.75;
+    }
+    .issue .iref {
+      margin-top: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: .1em;
+    }
+
+    /* Notes (open area for own thoughts) */
+    .notes-pad {
+      border: 1px dashed var(--border);
+      padding: 28px 32px;
+      min-height: 180px;
+      background: #fafafa;
+      font-size: 13px;
+      color: var(--mid);
+      line-height: 2;
+    }
+    .notes-pad .placeholder {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .14em;
+      color: var(--dim);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+
+    .footer {
+      margin-top: 56px;
+      padding-top: 22px;
+      border-top: 1px solid var(--border);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px;
+      letter-spacing: .12em;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      text-transform: uppercase;
+    }
+
+    a.ext {
+      color: var(--text);
+      text-decoration: none;
+      border-bottom: 1px solid var(--dim);
+      transition: border-color .15s;
+    }
+    a.ext:hover { border-bottom-color: var(--text); }
+
+    @media (max-width: 720px) {
+      .container { padding: 40px 24px 60px; }
+      .page-header { padding: 28px 24px 22px; }
+      .info-grid, .service-grid { grid-template-columns: 1fr; }
+      .info-cell.wide { grid-column: span 1; }
+      .person { grid-template-columns: 1fr; }
+      .ns-grid { grid-template-columns: 1fr; }
+      .ue-summary { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="page-header">
+    <div class="breadcrumb">
+      <a href="../../">ai-projects</a> / <a href="../">040_personal</a> / <a href="./">048_sparring</a> / bestiee
+    </div>
+    <div class="header-row">
+      <h1>bestiee — M&amp;A 事業壁打ち</h1>
+      <div class="subtitle">SPARRING / 260601</div>
+    </div>
+    <div class="meta-bar">
+      <span>SUBJECT <strong>株式会社bestiee</strong></span>
+      <span>SCOPE <strong>事業 / M&amp;A まで</strong></span>
+      <span>DATE <strong>2026-06-01</strong></span>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- Company Overview -->
+    <section class="section">
+      <div class="sec-label">Company</div>
+      <div class="info-grid">
+        <div class="info-cell">
+          <div class="key">商号</div>
+          <div class="val">株式会社 bestiee</div>
+        </div>
+        <div class="info-cell">
+          <div class="key">設立</div>
+          <div class="val">2024年3月6日</div>
+        </div>
+        <div class="info-cell">
+          <div class="key">代表</div>
+          <div class="val">後藤 弘（東大院 修士 / 元 東大王）</div>
+        </div>
+        <div class="info-cell">
+          <div class="key">所在地</div>
+          <div class="val">東京都渋谷区道玄坂1-10-8 渋谷道玄坂東急ビル 2F-C</div>
+        </div>
+        <div class="info-cell">
+          <div class="key">領域</div>
+          <div class="val">教育 / 新卒採用 / AI×HR</div>
+        </div>
+        <div class="info-cell">
+          <div class="key">Web</div>
+          <div class="val"><a class="ext" href="https://bestiee.co.jp/" target="_blank" rel="noopener">bestiee.co.jp</a></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services -->
+    <section class="section">
+      <div class="sec-label">Services</div>
+      <div class="service-grid">
+        <div class="service-card">
+          <div class="tag">EDU / B2C</div>
+          <h3>Best Teach</h3>
+          <p>東大・早慶・医学部生による90分単発の家庭教師サービス。対面／オンライン両対応。bestieeの原点事業。</p>
+        </div>
+        <div class="service-card">
+          <div class="tag">RECRUIT / EVENT</div>
+          <h3>AIチャレンジャーズフェス</h3>
+          <p>AI系理系学生150名規模の採用イベント。ハイクラス母集団を一気に形成。「選抜MEETUP」など派生イベントあり。</p>
+        </div>
+        <div class="service-card">
+          <div class="tag">AI / SAAS</div>
+          <h3>Telme</h3>
+          <p>AIアバターを用いた学生向け面接練習サービス。<strong>※ 売上転換に課題あり（無料利用→有料への壁が高い）</strong></p>
+        </div>
+      </div>
+    </section>
+
+    <!-- North Star -->
+    <section class="section">
+      <div class="sec-label">North Star</div>
+      <div class="north-star">
+        <div class="ns-grid">
+          <div class="ns-item">
+            <div class="ns-num">¥8M</div>
+            <div class="ns-unit">/ MONTH OP. PROFIT</div>
+            <div class="ns-label">月次営業利益 800万円の到達</div>
+          </div>
+          <div class="ns-item">
+            <div class="ns-num">5×</div>
+            <div class="ns-unit">OP. PROFIT MULTIPLE</div>
+            <div class="ns-label">営利マルチプル 5x で <strong>5億円 M&amp;A</strong></div>
+          </div>
+          <div class="ns-item">
+            <div class="ns-num">REPL.</div>
+            <div class="ns-unit">REPRODUCIBILITY</div>
+            <div class="ns-label">属人性を排し、再現性のある営業／オペ体制へ</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Unit Economics -->
+    <section class="section">
+      <div class="sec-label">Unit Economics</div>
+      <table class="ue-table">
+        <thead>
+          <tr>
+            <th>イベント</th>
+            <th>単価 / スポンサー</th>
+            <th>スポンサー数</th>
+            <th>1回売上</th>
+            <th>参加学生</th>
+            <th>開催頻度</th>
+            <th>月次換算売上</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>小規模イベント</th>
+            <td class="mono">¥400,000</td>
+            <td class="mono">4社</td>
+            <td class="mono">¥1.6M</td>
+            <td class="mono">10–20名</td>
+            <td class="mono">月 6回</td>
+            <td class="mono">¥9.6M / 月</td>
+          </tr>
+          <tr>
+            <th>大規模イベント</th>
+            <td class="mono">¥1,500,000</td>
+            <td class="mono">4社</td>
+            <td class="mono">¥6.0M</td>
+            <td class="mono">100名規模</td>
+            <td class="mono">四半期 1回</td>
+            <td class="mono">¥2.0M / 月</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="ue-summary">
+        <div class="cell">
+          <div class="k">Monthly Revenue</div>
+          <div class="v">¥11.6M</div>
+        </div>
+        <div class="cell">
+          <div class="k">Target OP Profit</div>
+          <div class="v">¥8.0M</div>
+        </div>
+        <div class="cell">
+          <div class="k">Implied OP Margin</div>
+          <div class="v">~69%</div>
+        </div>
+        <div class="cell">
+          <div class="k">M&amp;A Target (5×)</div>
+          <div class="v">¥500M</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Kyo POV / Issues -->
+    <section class="section">
+      <div class="sec-label">Kyo の所感 — 構造課題</div>
+      <div class="issue-list">
+
+        <div class="issue">
+          <div class="mark">!</div>
+          <div>
+            <div class="ihead">営業先の分散・Recurring 不在</div>
+            <div class="ibody">
+              スポット案件の積み上げで売上を作っているため、毎月新規開拓の営業負荷が累積する。学生は毎年入れ替わる前提のため、企業側から見れば <strong>同じスポンサーから継続発注</strong>（年次パッケージ / 半期契約 / プレミアムシート確保）を取れるはず。Recurring 化が利益率と再現性の両方を引き上げる。
+            </div>
+            <div class="iref">RECURRING / SALES EFFICIENCY</div>
+          </div>
+        </div>
+
+        <div class="issue">
+          <div class="mark">!</div>
+          <div>
+            <div class="ihead">顧客像：売上1,000億級メガベンに揃える</div>
+            <div class="ibody">
+              想定顧客は <strong>レバレジーズ・DeNA・サイバーエージェント</strong> クラスの「売上 1,000億前後・新卒採用に投資余力ありのメガベン」。ここを反復顧客として押さえれば、4社×継続契約の枠で売上の予測可能性が一気に上がる。
+            </div>
+            <div class="iref">ICP / TARGET ACCOUNT</div>
+          </div>
+        </div>
+
+        <div class="issue">
+          <div class="mark">!</div>
+          <div>
+            <div class="ihead">後藤代表の DM 営業に依存・属人性が高い</div>
+            <div class="ibody">
+              現状は後藤代表が自らDMで営業を回しており、 <strong>非効率かつ完全に属人化</strong>。CEOの時間が枯渇する構造で、North Star（月営利800万・再現性）と矛盾する。営業オペレーション（SDR / CSM / アカウント分担）の標準化が必要。
+            </div>
+            <div class="iref">SALES OPS / OWNER DEPENDENCY</div>
+          </div>
+        </div>
+
+        <div class="issue">
+          <div class="mark">★</div>
+          <div>
+            <div class="ihead">勝負は「戦略」ではなく「実行スピード × 脱属人化」</div>
+            <div class="ibody">
+              事業構造そのものはシンプルで、 <strong>真っ直ぐやり切れば月営利800万は到達可能</strong>。難所は何を売るかではなく、 <strong>どれだけ早く・どれだけ後藤代表に依存しない状態</strong> でそこに持っていくか。意思決定の論点は常に「Time-to-North-Star」と「Non-Founder Replicability」の2軸でしか評価しない方が良い。
+            </div>
+            <div class="iref">EXECUTION GAME / SPEED × REPL.</div>
+          </div>
+        </div>
+
+        <div class="issue">
+          <div class="mark">!</div>
+          <div>
+            <div class="ihead">Telme（学生向け面接練習AI）の収益化が詰まっている</div>
+            <div class="ibody">
+              学生向けに AI 面接練習サービス（Telme）を持つが、 <strong>売上への転換が難しい</strong>。学生は WTP（支払意欲）が低く、無料の代替（ChatGPT・YouTube等）も豊富。現状はマネタイズの主軸にできていない。論点：
+              <br>① そもそも <strong>B2C 課金で攻める価値があるか</strong>。学生課金は5億 M&amp;A シナリオの主役にはなり得ない
+              <br>② <strong>B2B転換</strong>：大学キャリアセンター／予備校／企業の内定者フォローツールへの卸が現実的
+              <br>③ <strong>採用イベントの "副産物" として無料配布</strong>し、データ取得・コミュニティ滞留の装置に位置付ける（収益ではなくアセット化として評価）
+              <br>④ もし主役にならないなら、 <strong>リソース投下を絞る判断</strong> も検討対象
+            </div>
+            <div class="iref">TELME / MONETIZATION</div>
+          </div>
+        </div>
+
+        <div class="issue">
+          <div class="mark">★</div>
+          <div>
+            <div class="ihead">想定とのズレ：実態は "ハイクラス" なのに、見え方が "その他大勢のイベント" になっている</div>
+            <div class="ibody">
+              <strong>実態：</strong>東大早慶を中心に良質な学生は確実に集められている（プロダクトとしては機能している）。<br>
+              <strong>見え方：</strong>ワンキャリア・サポーターズ・各種就活フェス等と同じカテゴリに並べられ、 <strong>「採用イベント会社」</strong> としてしか見られていない。<br>
+              <strong>ギャップが生む損失：</strong>
+              <br>① <strong>単価が下がる</strong> — コモディティ価格に引っ張られる（前述の「定数」化の根本原因）
+              <br>② <strong>反復契約に繋がらない</strong> — 差別化が伝わらないので "今期も1回スポット" で終わる
+              <br>③ <strong>M&amp;Aマルチプル</strong>が "イベント会社"（3〜5x）に収まり、 "ハイクラス人材プラットフォーム"（10〜20x）にならない
+              <br><br>
+              <strong>ズレの発生源（仮説）：</strong>
+              <br>・イベント名（フェス／MEETUP）が一般用語で記憶に残らない
+              <br>・"選抜" の基準・学生プロファイルが <strong>外部から見えない</strong>（数値・属性・学生個人の魅力が露出していない）
+              <br>・採用成果（実際に内定・入社につながった件数・年収レンジ）が <strong>開示されていない</strong>
+              <br>・東大王ブランドが "イベント集客" にのみ使われ、 <strong>プロダクト価値の証明</strong> に使われていない
+              <br><br>
+              <strong>打ち手の方向性：</strong>「イベント」というカテゴリから降りる。出方を変える（"招待制クラブ" / "選抜共同体" / "タレントレジストリ" 等の上位概念で語り直す）。
+            </div>
+            <div class="iref">POSITIONING GAP / PERCEPTION ≠ REALITY</div>
+          </div>
+        </div>
+
+        <div class="issue">
+          <div class="mark">★</div>
+          <div>
+            <div class="ihead">ランチ会のマッチング相手がズレている — 起業家×起業家 ではなく 起業家×優秀な学生</div>
+            <div class="ibody">
+              現在、ランチ会の場で <strong>起業家同士</strong> が出会う設計になっている。だが、参加企業（とくに採用に投資余力のあるメガベン・起業家）が <strong>本当に会いたいのは "優秀な学生"</strong> のはず。
+              <br><br>
+              <strong>ズレが起きている理由（仮説）：</strong>
+              <br>・後藤代表の人脈の "近さ" で起業家を呼ぶのが楽だから（属人ネットワークの再利用）
+              <br>・学生を集めるオペコストの方が高い／不確実
+              <br>・「起業家コミュニティ」っぽい絵面が見栄えする
+              <br><br>
+              <strong>これを是正すると効くこと：</strong>
+              <br>① <strong>顧客価値が跳ね上がる</strong> — 起業家からすれば "他の起業家と飯食う" 機会はいくらでもあるが、 "厳選された優秀学生と1時間" は希少
+              <br>② <strong>スポンサー単価の根拠</strong> ができる — 学生1人あたり◯円という明確な値付け
+              <br>③ <strong>bestiee 唯一の供給</strong> ＝ "優秀な学生のフロー" を毎回ステージに乗せられる
+              <br>④ <strong>アセットが厚くなる</strong> — 学生×企業の接点ログが残る（タレントグラフの素材）
+              <br><br>
+              <strong>論点：</strong>なぜ今、 "本来 売れる商品"（起業家×学生のマッチング）ではなく "売りやすい商品"（起業家×起業家の会）になっているのか？ ここに脱属人化と PMF の根本がある。
+            </div>
+            <div class="iref">PRODUCT MISMATCH / WHO MEETS WHOM</div>
+          </div>
+        </div>
+
+        <div class="issue">
+          <div class="mark">★</div>
+          <div>
+            <div class="ihead">M&amp;A をゴールに据えるなら「残るアセット」を逆算</div>
+            <div class="ibody">
+              5x マルチプル × 5億円の M&amp;A をゴールに置く以上、買い手から見て <strong>クロージング後も残り続けるアセット</strong> が必要。営利だけの「人で回した稼ぐ装置」は買い叩かれる。残せる候補：
+              <br>① <strong>東大早慶のタレントプール / コミュニティ会員DB</strong>（再販可能な母集団）
+              <br>② <strong>反復契約の年次スポンサー枠</strong>（売上の予測可能性）
+              <br>③ <strong>イベント運営オペレーションのSOP化</strong>（属人ノウハウの形式知化）
+              <br>④ <strong>Telme などのプロダクト資産</strong>（コード・モデル・データ）
+              <br>後藤代表の脳内にしか無いものは資産として残らない。 <strong>「持続可能な運営」=「アセット化された運営」</strong> として再定義。
+            </div>
+            <div class="iref">M&amp;A THESIS / ASSET RESIDUAL</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Meta Question: Constants vs Variables -->
+    <section class="section">
+      <div class="sec-label">Meta Q — 定数 / 変数</div>
+      <div class="meta-q">
+        <div class="q-mark">QUESTION</div>
+        <div class="q-text">今「定数」だと思っているもののうち、本当は「変数」になりうるものは何か？</div>
+        <div class="q-sub">いまの事業モデルが暗黙に固定しているパラメータを洗い出す。動かせるものを動かすと、月営利800万・5億M&Aの上限が変わる可能性。</div>
+      </div>
+      <table class="cv-table">
+        <thead>
+          <tr>
+            <th>定数（暗黙に固定しているもの）</th>
+            <th>現在値</th>
+            <th>変数化したら何が変わるか</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="const">スポンサー単価</td>
+            <td class="now">40万 / 150万</td>
+            <td class="var">プレミアム枠・優先送客・年次契約を束ねれば単価2〜3倍は可能か。価格は需要側の WTP に対して低い説。</td>
+          </tr>
+          <tr>
+            <td class="const">スポンサー社数 / イベント</td>
+            <td class="now">4社</td>
+            <td class="var">6〜8社にしたとき、企業側の "学生1人あたりの面談時間" が薄まり満足度が下がる閾値はどこか。</td>
+          </tr>
+          <tr>
+            <td class="const">開催頻度</td>
+            <td class="now">小 月6回 / 大 Q1回</td>
+            <td class="var">頻度を上げる＝学生の枯渇／オペの限界が先に来る。学生プールのサイズが本当の制約変数。</td>
+          </tr>
+          <tr>
+            <td class="const">学生の対象大学</td>
+            <td class="now">東大早慶</td>
+            <td class="var">医学部・海外大（NUS/HKUST/UCL）・地方旧帝に広げると母集団は数倍。ただしブランド希薄化リスク。</td>
+          </tr>
+          <tr>
+            <td class="const">収益源</td>
+            <td class="now">スポンサーフィーのみ</td>
+            <td class="var">成功報酬（リクルーティングフィー）／学生課金（Telme等）／データ販売を載せると同じ集客で売上が乗算化。</td>
+          </tr>
+          <tr>
+            <td class="const">営業チャネル</td>
+            <td class="now">後藤代表のDM</td>
+            <td class="var">SDR代行 / 紹介ネットワーク / イベントスポンサー営業会社との提携。CEO以外で売れる経路の構築。</td>
+          </tr>
+          <tr>
+            <td class="const">買い手の想定</td>
+            <td class="now">未定（5億M&A）</td>
+            <td class="var">レバ・DeNA・サイバーが買い手なのか、ベネフィット・パーソル・リクルートなのか。買い手次第でアセット要件が変わる。</td>
+          </tr>
+          <tr>
+            <td class="const">マルチプル</td>
+            <td class="now">5x（営利）</td>
+            <td class="var">"イベント会社" 評価＝3〜5x、"プラットフォーム / SaaS" 評価＝10〜20x。事業の見せ方で着地額が2〜4倍ぶれる。</td>
+          </tr>
+          <tr>
+            <td class="const">事業の本籍</td>
+            <td class="now">新卒採用イベント</td>
+            <td class="var">"ハイクラス若者コミュニティ" として捉え直すと、出口は新卒採用に限らない（VC人材紹介・スタートアップ採用・教育商材）。</td>
+          </tr>
+          <tr>
+            <td class="const">後藤代表の関与時間</td>
+            <td class="now">ほぼ100%</td>
+            <td class="var">変数化が最優先。50% → 20% に下げるロードマップ自体が "M&Aレディ" の定義になる。</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Hard Side -->
+    <section class="section">
+      <div class="sec-label">Hard Side — どちらが制約資源か</div>
+
+      <div class="hard-side">
+        <div class="hs-head">
+          <div class="hs-tag">MARKETPLACE THEORY</div>
+          <div class="hs-title">2サイドのうち、必ず片側が "ハードサイド"。<br>bestiee の制約資源は <em>優秀な学生</em>。</div>
+        </div>
+        <div class="hs-examples">
+          <div class="hs-ex">
+            <div class="hs-co">Tinder</div>
+            <div class="hs-easy">男性</div>
+            <div class="hs-hard">可愛い女性</div>
+          </div>
+          <div class="hs-ex">
+            <div class="hs-co">Uber</div>
+            <div class="hs-easy">乗客</div>
+            <div class="hs-hard">ドライバー</div>
+          </div>
+          <div class="hs-ex">
+            <div class="hs-co">Airbnb</div>
+            <div class="hs-easy">ゲスト</div>
+            <div class="hs-hard">良質なホスト／物件</div>
+          </div>
+          <div class="hs-ex featured">
+            <div class="hs-co">bestiee</div>
+            <div class="hs-easy">採用企業（メガベン・起業家）</div>
+            <div class="hs-hard">優秀な学生</div>
+          </div>
+        </div>
+        <div class="hs-implications">
+          <div class="imp-h">IMPLICATIONS — ハードサイドが学生だと認めると、すべてが反転する</div>
+          <ol>
+            <li><strong>経営リソース配分：</strong>後藤代表の時間の <strong>80%以上を "学生獲得・維持・コミュニティ化" に投下する</strong> のが本来の正解。企業営業は副次。</li>
+            <li><strong>北極星指標の置き換え：</strong>「スポンサー件数 / 月次売上」から <strong>「Active 学生数 / 学生 NPS / 学生 LTV（複数回参加率）」</strong> へ。売上は学生プールの厚みの関数として後からついてくる。</li>
+            <li><strong>Telmeの再定義：</strong>「収益化が詰まる SaaS」ではなく <strong>"優秀な学生を引きつけ・滞留させるフック"</strong>。無料で配って学生のデータ・行動ログを取り、ハードサイドを厚くする装置。</li>
+            <li><strong>ランチ会の組替え（★⑦と直結）：</strong>起業家×起業家のランチは "易しい側" 同士の社交。 <strong>毎回どんなに少人数でも "優秀な学生1人" をハブにする設計</strong> に変える。</li>
+            <li><strong>絞り込みの優先順位：</strong>後段の Variable Drill-down では、まず <strong>「どんな学生を集めるか」を1〜2象限に絞り切る</strong>。企業側の絞り込みはその後で連鎖的に決まる（ハードサイドが買い手を選ぶ構造）。</li>
+            <li><strong>M&amp;A時のアセット価値：</strong>買い手が払うのは "学生プールへの独占アクセス" であって、 "スポンサー契約のキャッシュフロー" ではない。 <strong>ハードサイドの厚み = 企業価値の本体</strong>。</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Segment Drill-down -->
+    <section class="section">
+      <div class="sec-label">Variable Drill-down — 学生属性 × 新卒入社先属性</div>
+
+      <div class="seg-premise">
+        現状「東大早慶」という大学だけのフィルタにとどまり、 <strong>学生属性</strong> と <strong>新卒入社先属性</strong> が広い。この2軸を絞り切ることが、ポジショニング・単価・反復契約・M&amp;Aマルチプル すべてに同時に効く最大レバー。
+        <br>絞ることで得られるもの：
+        <strong>①「⚪︎⚪︎なら bestiee」と単独想起されるブランド</strong>
+        <strong>② 希少性に基づく高単価の根拠</strong>
+        <strong>③ 学生を集める基準・コミュニティの一貫性</strong>
+        <strong>④ 特定セグメントで圧倒的なタレントグラフ＝M&amp;Aアセット</strong>
+      </div>
+
+      <div class="seg-grid">
+        <div class="seg-col">
+          <h4>① 学生属性の軸</h4>
+          <div class="dim">
+            <div class="dk">大学</div>
+            <div class="dv"><span class="tag">東大</span><span class="tag">京大</span><span class="tag">早稲田</span><span class="tag">慶應</span><span class="tag">一橋</span><span class="tag">東工大</span><span class="tag">海外大</span></div>
+          </div>
+          <div class="dim">
+            <div class="dk">学年・段階</div>
+            <div class="dv"><span class="tag">学部1-2</span><span class="tag">学部3-4</span><span class="tag">修士</span><span class="tag">博士</span></div>
+          </div>
+          <div class="dim">
+            <div class="dk">専攻</div>
+            <div class="dv"><span class="tag">AI/ML</span><span class="tag">理系全般</span><span class="tag">経済</span><span class="tag">法</span><span class="tag">医</span><span class="tag">文系</span></div>
+          </div>
+          <div class="dim">
+            <div class="dk">志向</div>
+            <div class="dv"><span class="tag">起業</span><span class="tag">外資</span><span class="tag">メガベン</span><span class="tag">大手</span><span class="tag">研究</span><span class="tag">公共</span></div>
+          </div>
+          <div class="dim">
+            <div class="dk">能力・経験</div>
+            <div class="dv"><span class="tag">国際オリンピック級</span><span class="tag">研究室トップ</span><span class="tag">起業経験</span><span class="tag">海外経験</span><span class="tag">体育会</span></div>
+          </div>
+          <div class="dim">
+            <div class="dk">人格</div>
+            <div class="dv"><span class="tag">成長志向</span><span class="tag">即戦力志向</span><span class="tag">尖り</span><span class="tag">バランス</span></div>
+          </div>
+        </div>
+
+        <div class="seg-col">
+          <h4>② 新卒入社先（買い手）の軸</h4>
+          <div class="dim">
+            <div class="dk">業種</div>
+            <div class="dv"><span class="tag">外資コンサル</span><span class="tag">投資銀行</span><span class="tag">PE/VC</span><span class="tag">メガベン</span><span class="tag">スタートアップ</span><span class="tag">外資テック</span><span class="tag">大手事業会社</span></div>
+          </div>
+          <div class="dim">
+            <div class="dk">フェーズ</div>
+            <div class="dv"><span class="tag">プレシード</span><span class="tag">シード</span><span class="tag">シリーズA-C</span><span class="tag">上場メガベン</span><span class="tag">伝統大企業</span></div>
+          </div>
+          <div class="dim">
+            <div class="dk">役割</div>
+            <div class="dv"><span class="tag">PM</span><span class="tag">ML/エンジニア</span><span class="tag">投資</span><span class="tag">戦略</span><span class="tag">セールス</span><span class="tag">創業者直下</span></div>
+          </div>
+          <div class="dim">
+            <div class="dk">報酬レンジ</div>
+            <div class="dv"><span class="tag">〜500万</span><span class="tag">500-800</span><span class="tag">800-1500</span><span class="tag">1500万+</span></div>
+          </div>
+          <div class="dim">
+            <div class="dk">ロケーション</div>
+            <div class="dv"><span class="tag">東京</span><span class="tag">大阪</span><span class="tag">SF</span><span class="tag">NY</span><span class="tag">SG</span><span class="tag">ロンドン</span></div>
+          </div>
+          <div class="dim">
+            <div class="dk">採用者属性</div>
+            <div class="dv"><span class="tag">東大OB起業家</span><span class="tag">外資出身創業者</span><span class="tag">伝統メガベンHR</span><span class="tag">CxO直接</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sec-label" style="margin-top: 8px;">絞り込み候補（強い順 / Kyo 仮説）</div>
+      <div class="combo-list">
+
+        <div class="combo">
+          <div class="cnum">A</div>
+          <div class="cbody">
+            <div class="ctitle">東大早慶 × AI/ML 系院生 × 創業者直下スタートアップ</div>
+            <div class="cdesc">最も希少・最も単価が立つ象限。「AIネイティブ世代の最高峰」を一気通貫で押さえる。bestieeの東大ブランド × Telmeの相性も最大。M&A時は "AI人材プラットフォーム" として 10x+ マルチプル狙える。</div>
+          </div>
+          <div class="cscore">
+            <div class="sc"><span class="lbl">SCARCITY</span><span class="val">★★★★★</span></div>
+            <div class="sc"><span class="lbl">M&amp;A MULT</span><span class="val">10-20x</span></div>
+            <div class="sc"><span class="lbl">単価</span><span class="val">高</span></div>
+            <div class="sc"><span class="lbl">オペ難度</span><span class="val">中</span></div>
+          </div>
+        </div>
+
+        <div class="combo">
+          <div class="cnum">B</div>
+          <div class="cbody">
+            <div class="ctitle">東大早慶 × 起業志向 × 上場前スタートアップ創業者直下</div>
+            <div class="cdesc">「将来の起業家・経営者」をターゲットに、シリーズA-Cの創業者に最短距離で繋ぐ。後藤代表のネットワークと最も親和性が高い。買い手は VC・メガベン・1982インパクトファンド 等の "次世代経営者発掘" 系。</div>
+          </div>
+          <div class="cscore">
+            <div class="sc"><span class="lbl">SCARCITY</span><span class="val">★★★★</span></div>
+            <div class="sc"><span class="lbl">M&amp;A MULT</span><span class="val">8-15x</span></div>
+            <div class="sc"><span class="lbl">単価</span><span class="val">高</span></div>
+            <div class="sc"><span class="lbl">オペ難度</span><span class="val">中</span></div>
+          </div>
+        </div>
+
+        <div class="combo">
+          <div class="cnum">C</div>
+          <div class="cbody">
+            <div class="ctitle">東大早慶 × 外資志向 × 外資コンサル/IB/テック</div>
+            <div class="cdesc">既存のONE CAREER・外資就活ドットコム等とガチンコ競合。報酬レンジは最も高いが、競合過密。bestieeが取りに行く理由は薄い。</div>
+          </div>
+          <div class="cscore">
+            <div class="sc"><span class="lbl">SCARCITY</span><span class="val">★★</span></div>
+            <div class="sc"><span class="lbl">M&amp;A MULT</span><span class="val">3-5x</span></div>
+            <div class="sc"><span class="lbl">単価</span><span class="val">中</span></div>
+            <div class="sc"><span class="lbl">オペ難度</span><span class="val">高（競合）</span></div>
+          </div>
+        </div>
+
+        <div class="combo">
+          <div class="cnum">D</div>
+          <div class="cbody">
+            <div class="ctitle">東大早慶 × 全方位 × 全方位（現状）</div>
+            <div class="cdesc">現状の暗黙ポジショニング。差別化が成立せず、ワンキャリア／サポーターズと同列のイベント会社に見える。M&Aマルチプル 3〜5x で天井。</div>
+          </div>
+          <div class="cscore">
+            <div class="sc"><span class="lbl">SCARCITY</span><span class="val">★</span></div>
+            <div class="sc"><span class="lbl">M&amp;A MULT</span><span class="val">3-5x</span></div>
+            <div class="sc"><span class="lbl">単価</span><span class="val">低</span></div>
+            <div class="sc"><span class="lbl">オペ難度</span><span class="val">高（分散）</span></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="seg-premise" style="margin-top: 24px; margin-bottom: 0;">
+        <strong>意思決定の問い：</strong> A〜C のどれを「bestiee の本籍」に据えるか？ 一度決めれば、 <strong>イベント設計／学生集客チャネル／スポンサー営業先／プロダクト（Telme機能）／買い手シミュレーション</strong> の全てが連鎖的に決まる。
+        逆に、今のように "全部" を維持すると、どの軸でも勝てない。 <strong>絞り切る = 全変数を同時にレバレッジする最大の意思決定</strong>。
+      </div>
+    </section>
+
+    <!-- Sparring Topics -->
+    <section class="section">
+      <div class="sec-label">Sparring Topics</div>
+      <div class="topic-list">
+
+        <div class="topic">
+          <div class="idx">01</div>
+          <div class="body">
+            <div class="q">Best Teach × 採用 × Telme の三事業の "幹" は何か？</div>
+            <div class="ctx">教育（B2C）と新卒採用（B2B）とAI SaaSの三本柱。学生データの蓄積を核とする「タレントグラフ」的なものが幹なのか、それともコミュニティ自体が資産なのか。今の自己認識を聞きたい。</div>
+            <div class="tags"><span>事業設計</span><span>moat</span></div>
+          </div>
+        </div>
+
+        <div class="topic">
+          <div class="idx">02</div>
+          <div class="body">
+            <div class="q">創業メンバー／東大王ブランドの活用と消費</div>
+            <div class="ctx">後藤・伊藤・大道のメディア露出は集客力としては最強カード。一方でフェーズが上がるとブランドが「タレント会社」に固定化されるリスクもある。意図的にどこで切り替える設計か。</div>
+            <div class="tags"><span>ブランド</span><span>HR</span></div>
+          </div>
+        </div>
+
+        <div class="topic">
+          <div class="idx">03</div>
+          <div class="body">
+            <div class="q">AI×採用の競合（HRBrain・YOUTRUST・ONE CAREER 等）との差別化</div>
+            <div class="ctx">「AIアバター面接」「選抜MEETUP」だけだと模倣されやすい。コミュニティ／タレントプールの独占でロックインを作るのか、それともプロダクトで戦うのか。</div>
+            <div class="tags"><span>競合</span><span>差別化</span></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Free Notes -->
+    <section class="section">
+      <div class="sec-label">Notes</div>
+      <div class="notes-pad">
+        <div class="placeholder">// 当日の気づき・印象・宿題をここに追記 //</div>
+      </div>
+    </section>
+
+    <div class="footer">
+      <span>// bestiee sparring notes</span>
+      <span>2026-06-01 / KYO × GOTO</span>
+    </div>
+
+  </div>
+
+</body>
+</html>

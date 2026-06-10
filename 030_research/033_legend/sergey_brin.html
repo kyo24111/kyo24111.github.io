@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sergey Brin — 人物リサーチ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:      #ffffff;
+      --surface: #f5f5f5;
+      --surface2: #ebebeb;
+      --accent:  #111111;
+      --accent2: #555555;
+      --text:    #111111;
+      --muted:   #888888;
+      --border:  #e0e0e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .hero {
+      background: var(--accent);
+      border-bottom: 1px solid var(--border);
+      padding: 64px 40px 48px;
+    }
+    .hero-inner { max-width: 860px; margin: 0 auto; }
+    .hero-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.5);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+      color: #fff;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.15);
+    }
+    .hero-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hero-meta-item .label { font-size: 11px; color: rgba(255,255,255,.45); letter-spacing: 0.1em; text-transform: uppercase; }
+    .hero-meta-item .value { font-size: 14px; font-weight: 600; color: #fff; }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 0 40px 80px; }
+
+    .summary {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--accent);
+      border-radius: 8px;
+      padding: 24px 28px;
+      margin: 40px 0;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .summary strong { color: var(--accent); font-weight: 700; }
+
+    section { margin-top: 48px; }
+    .section-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 6px; top: 8px; bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+    .tl-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .tl-item::before {
+      content: '';
+      position: absolute;
+      left: -24px; top: 8px;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+    .tl-year {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .tl-item p { font-size: 14px; line-height: 1.8; }
+    .tl-loc { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+
+    .card-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 600px) { .card-grid { grid-template-columns: 1fr; } }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 22px;
+    }
+    .card h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 10px; }
+    .card p, .card ul { font-size: 14px; line-height: 1.8; }
+    .card ul { padding-left: 18px; }
+    .card ul li { margin-bottom: 4px; }
+
+    .fact-list { list-style: none; }
+    .fact-list li {
+      display: flex;
+      gap: 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      align-items: flex-start;
+    }
+    .fact-list li:last-child { border-bottom: none; }
+    .fact-list .key {
+      min-width: 130px;
+      font-weight: 600;
+      color: var(--muted);
+      font-size: 13px;
+      padding-top: 1px;
+    }
+    .fact-list .val { flex: 1; }
+
+    .quote {
+      background: var(--surface2);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 24px 0;
+      font-style: italic;
+      font-size: 15px;
+      line-height: 1.9;
+    }
+    .quote cite {
+      display: block;
+      margin-top: 8px;
+      font-style: normal;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .episode {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin-bottom: 16px;
+    }
+    .episode h3 { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--text); }
+    .episode p { font-size: 14px; line-height: 1.8; }
+
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .tag {
+      background: var(--surface);
+      color: var(--accent);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th {
+      text-align: left;
+      padding: 10px 14px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.7;
+    }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 600; width: 160px; }
+
+    .japan-badge {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 4px;
+      margin-right: 8px;
+      letter-spacing: 0.05em;
+    }
+    .japan-badge.light {
+      background: var(--surface2);
+      color: var(--muted);
+    }
+
+    .networth {
+      display: inline-block;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      padding: 6px 20px;
+      border-radius: 8px;
+      margin-top: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 20px 32px; }
+      .container { padding: 0 20px 60px; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/047_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">人物リサーチ</div>
+    <h1>Sergey <span>Brin</span></h1>
+    <p style="color:var(--muted); font-size:14px; max-width:560px;">
+      モスクワ生まれの数学者一家からシリコンバレーへ。
+      Larry PageとStanford博士課程で出会いPageRankを発明、
+      <strong style="color:#fff;">Googleで世界の情報構造そのものを書き換えた共同創業者</strong>。
+      Alphabet President退任後はLTA airship・Gemini AIへ静かに再起動。
+    </p>
+    <div class="hero-meta">
+      <div class="hero-meta-item">
+        <span class="label">生年月日</span>
+        <span class="value">1973年8月21日（52歳）</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">出身</span>
+        <span class="value">ソ連・モスクワ → 米国メリーランド</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">純資産（推定）</span>
+        <span class="value">$170B前後（Forbes 2026）</span>
+      </div>
+      <div class="hero-meta-item">
+        <span class="label">主な肩書き</span>
+        <span class="value">Google共同創業者 / LTA Research創業者</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="summary">
+    <strong>一言で言うと？</strong><br>
+    ソ連のユダヤ系数学者の家に生まれ、6歳で家族と亡命してきた移民。Stanford CS博士課程でLarry Pageと出会い、
+    <strong>PageRankアルゴリズム</strong>で検索を再発明、Googleを世界最大の情報企業に育てた共同創業者。
+    Alphabet President（2015〜2019）を経て表舞台から離脱、飛行船・気候・パーキンソン病研究に投資。
+    <strong>2023年、生成AI戦争の最前線にCEOではない一個のエンジニアとして復帰</strong>し、
+    Gemini開発の主要プレイヤーとして再びコードを書いている。Larry Pageと並ぶ"創業者シェア"でAlphabetを支配する裏のキングメイカー。
+  </div>
+
+  <section>
+    <div class="section-label">Chronology</div>
+    <h2>人生史</h2>
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-year">1973年</div>
+        <div class="tl-loc">Moscow, USSR</div>
+        <p>ソビエト連邦モスクワ生まれ。父Michael Brinは数学者（モスクワ大学）、母Eugenia Brinはエンジニア。ユダヤ系ロシア人として体制下の差別・キャリア制限を受ける家庭で育つ。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1979年（6歳） — <span style="color:var(--accent2)">転換点①</span></div>
+        <div class="tl-loc">Moscow → USA</div>
+        <p>反ユダヤ主義からの脱出として家族で<strong>米国に亡命</strong>。父はメリーランド大学カレッジパーク校数学科教授、母はNASAゴダード宇宙飛行センターの研究者に。アメリカン・ドリームの典型的成功家系へ。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1990年</div>
+        <div class="tl-loc">Maryland</div>
+        <p>9歳で父からCommodore 64を贈られ、プログラミングに開眼。Eleanor Roosevelt高校で数学・コンピュータの才能を開花させる。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1993年</div>
+        <div class="tl-loc">College Park, MD</div>
+        <p>メリーランド大学カレッジパーク校で数学・コンピュータサイエンス学士（19歳・最優等）。父と同じ大学で数学を専攻するのは家族の伝統への敬意。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1993年 — <span style="color:var(--accent2)">転換点②</span></div>
+        <div class="tl-loc">Stanford, CA</div>
+        <p>Stanford大学CS博士課程にNSFフェローシップで進学。データマイニング・Webの構造を研究テーマに。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1995年</div>
+        <div class="tl-loc">Stanford, CA</div>
+        <p>StanfordキャンパスツアーでLarry Page（同じくCS博士課程進学を検討中）と出会う。最初は意見の不一致が多かったが、知的な議論を通じて急接近。共にWebのリンク構造の研究に没頭。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1996年</div>
+        <div class="tl-loc">Stanford, CA</div>
+        <p>Larryとともに検索エンジン「<strong>BackRub</strong>」を構築。後のPageRankアルゴリズムの原型。Stanford大学の回線を独占的に消費するほどクロール。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">1998年9月 — <span style="color:var(--accent2)">転換点③</span></div>
+        <div class="tl-loc">Menlo Park, CA</div>
+        <p>Susan Wojcickiのガレージで<strong>Google Inc.を共同創業</strong>。Andy Bechtolsheim（Sun共同創業者）から$100Kの小切手を「Google Inc.」宛で受け取り、銀行口座を作るために慌てて法人化。Stanford博士課程は<strong>休学のまま現在も復帰せず</strong>。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2001年</div>
+        <div class="tl-loc">Mountain View, CA</div>
+        <p>Eric Schmidtをアダルト・スーパービジョン（"adult supervision"）としてCEOに招聘、Sergeyは<strong>President of Technology</strong>に。Larryとの2人体制でテック領域を統率。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2004年</div>
+        <div class="tl-loc">Mountain View, CA</div>
+        <p>GoogleがNASDAQに上場。創業者株式の議決権を10倍化する<strong>デュアルクラス株式構造</strong>を採用、創業者の長期支配を確立。Sergey個人純資産は当時$15B超に。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2007年</div>
+        <div class="tl-loc">Bahamas / California</div>
+        <p>23andMe創業者<strong>Anne Wojcicki</strong>とバハマで結婚。Anneは初期Googleオフィスを貸したSusan Wojcicki（後のYouTube CEO）の妹。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2010年</div>
+        <div class="tl-loc">Mountain View, CA</div>
+        <p>遺伝子検査で自分が<strong>パーキンソン病のLRRK2変異キャリア</strong>であることを発見。生涯発症リスク50%。以降パーキンソン病研究に数億ドル規模の個人寄付を続けることに。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2011年</div>
+        <div class="tl-loc">Mountain View, CA</div>
+        <p>Larry PageがCEO復帰、Sergeyは<strong>Google X（後のX, the moonshot factory）</strong>の創設に注力。Google Glass・自動運転車（後のWaymo）・Loonなどムーンショット事業の生みの親に。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2013年</div>
+        <div class="tl-loc">Mountain View, CA</div>
+        <p>Google Glassのプロトタイプを公の場で着用。Glass部門のメンバーAmanda Rosenbergとの関係発覚、Anne Wojcickiと別居。プライベートな大スキャンダルに。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2015年</div>
+        <div class="tl-loc">Mountain View, CA</div>
+        <p>Alphabet設立に伴い<strong>Alphabet President</strong>に就任。Larry PageがAlphabet CEO、Sundar PichaiがGoogle CEOへの体制再編。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2015年</div>
+        <div class="tl-loc">California</div>
+        <p>Anne Wojcickiと正式離婚。23andMe・Google・Wojcicki家との複雑な関係を整理。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2017年</div>
+        <div class="tl-loc">Mountain View / Akron</div>
+        <p><strong>LTA Research</strong>を密かに創業。Pathfinder 1飛行船（世界最大級・全長124m）の開発に着手。気候災害時の物資輸送と再生可能エネルギー時代の運搬手段を構想。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2018年</div>
+        <div class="tl-loc">California</div>
+        <p>弁護士の<strong>Nicole Shanahan</strong>と結婚。AIエシックス・遺伝学・パーキンソン病研究の支援活動を共同で展開。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2019年12月 — <span style="color:var(--accent2)">転換点④</span></div>
+        <div class="tl-loc">Mountain View, CA</div>
+        <p>Larry Page・Sergey BrinともにAlphabet経営から正式に身を引く。<strong>Sundar PichaiがAlphabet CEOを兼任</strong>。Sergeyは取締役会と"controlling shareholder"の立場のみ維持。表舞台から完全撤退。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2022〜2023年</div>
+        <div class="tl-loc">Palo Alto, CA</div>
+        <p>Nicole Shanahanと離婚。報道ではElon MuskとShanahanの関係が原因と取り沙汰される（後にMusk・Shanahanともに否定）。MuskとSergeyの長年の友情に深い亀裂が入ったとされる。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2023年初頭 — <span style="color:var(--accent2)">転換点⑤</span></div>
+        <div class="tl-loc">Mountain View, CA</div>
+        <p>ChatGPTショックを受けて、<strong>Sergey自らがGoogleのオフィスに復帰してGeminiのコードを書く</strong>事態に。「Code Red」と呼ばれる社内危機モードでSundarがSergey・Larryに緊急協力要請。創業者2人の現場介入は通常モードに。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2024年12月</div>
+        <div class="tl-loc">Las Vegas / Mountain View</div>
+        <p>Pathfinder 1がアクロン格納庫で初テスト飛行に成功（社内的に成功と判断）。LTA Research事業が公開展開フェーズへ。</p>
+      </div>
+      <div class="tl-item">
+        <div class="tl-year">2025〜2026年</div>
+        <div class="tl-loc">Mountain View, CA</div>
+        <p>Gemini 3.0・Gemini Roboticsの開発で<strong>創業者Sergeyが社内的な技術判断のキープレイヤー</strong>として再認識される。Bloomberg・The Informationが「ChatGPT時代のGoogleはSundarではなくSergeyに動かされている」と報道。純資産推定<strong>$170B超</strong>。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Family</div>
+    <h2>家族 / ルーツ</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>父 — Michael Brin（数学者）</h3>
+        <ul>
+          <li>ソ連時代はガス工業計画経済の研究者として体制下のキャリア</li>
+          <li>米国移住後、メリーランド大学カレッジパーク校数学科教授</li>
+          <li>力学系・エルゴード理論の研究者</li>
+          <li>Sergeyの数学的思考の直接的な源泉</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>母 — Eugenia Brin</h3>
+        <ul>
+          <li>モスクワでは航空工学エンジニア</li>
+          <li>米国ではNASAゴダード宇宙飛行センター研究者</li>
+          <li>2008年にパーキンソン病を発症</li>
+          <li>SergeyのパーキンソンPursuitの直接の動機</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>元妻① — Anne Wojcicki（23andMe）</h3>
+        <ul>
+          <li>2007〜2015年。23andMe共同創業者・CEO</li>
+          <li>Susan Wojcicki（元YouTube CEO）の妹</li>
+          <li>Sergeyと2児（息子Benji・娘Chloe）をもうける</li>
+          <li>離婚後も「友好的な共同養育者」を公言</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>元妻② — Nicole Shanahan</h3>
+        <ul>
+          <li>2018〜2023年。特許訴訟・AIエシックスの弁護士</li>
+          <li>Bia-Echo Foundationを通じて生殖医療・刑事司法改革を支援</li>
+          <li>1児をもうける</li>
+          <li>2024年RFK Jr.の副大統領候補に。後にトランプ陣営へ</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="episode">
+        <h3>移民としてのアイデンティティ</h3>
+        <p>「<strong>もし父がアメリカに連れてきてくれていなかったら、Googleは存在しなかった</strong>」とSergey本人が繰り返し公言。父が経験したソ連の反ユダヤ主義キャリア差別と、米国の機会均等社会への移行は、SergeyのGoogleの企業文化（情報の自由・能力主義・反権威主義）の哲学的基盤になっている。2017年のトランプ移民令デモにマウンテンビュー空港で参加するなど、移民支援の発信は明確。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Childhood</div>
+    <h2>幼少期 / 学生時代</h2>
+    <ul class="fact-list">
+      <li>
+        <span class="key">ソビエト原体験</span>
+        <span class="val">モスクワで6歳まで過ごす。ユダヤ系として両親が大学・職業で制限を受ける現実を間近に観察。「<strong>権威に従わない</strong>」「<strong>自由なアクセス</strong>」への信念の原点。</span>
+      </li>
+      <li>
+        <span class="key">9歳でCommodore 64</span>
+        <span class="val">父からの誕生日プレゼントでプログラミングに目覚める。同時期、メリーランドの先進的なモンテッソーリ系小学校（Paint Branch Montessori）に通い、<strong>自己主導型学習</strong>のスタイルを身につける。</span>
+      </li>
+      <li>
+        <span class="key">高校時代</span>
+        <span class="val">Eleanor Roosevelt High Schoolで数学・コンピュータの英才教育プログラムへ。3年で卒業し、メリーランド大学に1989年入学（16歳）。</span>
+      </li>
+      <li>
+        <span class="key">メリーランド大学</span>
+        <span class="val">数学・CS二重専攻、19歳でhonorsで卒業。父の同僚たちに囲まれた環境で、<strong>学術的精緻さと商業的革新の両軸</strong>を肌で身につける。</span>
+      </li>
+      <li>
+        <span class="key">Stanford博士課程</span>
+        <span class="val">1993年進学、NSFフェローシップ。Hector Garcia-Molinaの下でデータマイニングを研究。趣味は体操・空中ブランコ・ローラーホッケーで、知的にも身体的にも"異色のCS博士学生"だった。</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="section-label">Career</div>
+    <h2>経歴 — Google → Alphabet → 復帰</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>BackRub → Google（1996〜2001）</h3>
+        <ul>
+          <li>Stanfordキャンパスで生まれた検索エンジン</li>
+          <li>Page-Brinの共同論文「Anatomy of a Large-Scale Hypertextual Web Search Engine」（1998）はCS史上の名論文</li>
+          <li>1998年9月Google Inc.として正式創業</li>
+          <li>2人とも博士課程は休学のまま卒業せず</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>President of Technology（2001〜2011）</h3>
+        <ul>
+          <li>Eric Schmidt CEO体制下でCTO的役割</li>
+          <li>AdWords / AdSenseの収益モデル設計に深く関与</li>
+          <li>Gmail・Maps・Booksなど初期プロダクトの方向性決定</li>
+          <li>2004年IPO時点で個人純資産$15B超</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Google X時代（2011〜2015）</h3>
+        <ul>
+          <li>"ムーンショット工場"の生みの親</li>
+          <li>Google Glass・自動運転（Waymo）・Loon・Wing</li>
+          <li>Glassを自分で日常的に着用するなど"狂気の起業家像"</li>
+          <li>失敗を恐れない実験文化を確立</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Alphabet President（2015〜2019）</h3>
+        <ul>
+          <li>Alphabet設立で持株会社President就任</li>
+          <li>ムーンショット系子会社の親方</li>
+          <li>2019年Larryとともに経営から完全撤退</li>
+          <li>取締役会・controlling shareholderの立場は維持</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>LTA Research（2017〜現在）</h3>
+        <ul>
+          <li>飛行船開発。アクロン（オハイオ州）の旧Goodyear格納庫</li>
+          <li>Pathfinder 1：全長124m、世界最大級の電動飛行船</li>
+          <li>気候災害時の人道支援物資輸送がミッション</li>
+          <li>Sergeyの個人資金で完全自己ファンディング</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Gemini復帰（2023〜現在）</h3>
+        <ul>
+          <li>ChatGPT「Code Red」で創業者として現場復帰</li>
+          <li>Sundar PichaiにGemini戦略について技術判断を提供</li>
+          <li>2024〜現在、Mountain Viewオフィスに通って週60時間以上勤務との報道</li>
+          <li>「<strong>I'm just an engineer now</strong>」と公言</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="episode">
+        <h3>PageRankという発明</h3>
+        <p>Webページの重要度を「他ページからリンクされているか」という再帰的な評価で測るアルゴリズム。<strong>固有ベクトル計算で世界中のWebをランク付け</strong>するという発想は、当時の検索エンジン（AltaVista・Yahoo!）の全く外側からの発明だった。Brin・Pageの共同論文はGoogle帝国全体の出発点であり、CS史において最も商業的成功を生んだ学術論文。</p>
+      </div>
+      <div class="episode">
+        <h3>Gemini危機への復帰</h3>
+        <p>2023年初頭、ChatGPTショック後にSundar PichaiがLarry・Sergeyに緊急協力を要請。Sergeyは「<strong>I'm coding pretty regularly</strong>」と公言、月数日以上Mountain Viewオフィスに通う。創業者がコーディングする企業文化はOpenAI・xAIに匹敵するアジリティをGoogleに与えた。Gemini 2.0以降の急速な追い上げの裏には、Sergeyの直接的なアーキテクチャ判断があるとされる。</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">LTA Research Deep Dive</div>
+    <h2>LTA Research — 飛行船帝国の再来</h2>
+    <ul class="fact-list">
+      <li>
+        <span class="key">創業の動機</span>
+        <span class="val">気候変動による災害時、橋・道路が破壊された地域への物資輸送。船・トラック・ヘリ・飛行機の全てが届かない場所に届く<strong>第5のロジスティクス手段</strong>。</span>
+      </li>
+      <li>
+        <span class="key">Pathfinder 1</span>
+        <span class="val">全長124m、12個の電動モーター、ヘリウム充填。Goodyear-Zeppelinの旧格納庫（オハイオ州アクロン・全長390m）で開発。<strong>2024年初飛行テスト成功</strong>。</span>
+      </li>
+      <li>
+        <span class="key">ファンディング</span>
+        <span class="val">Sergey個人資金で完全自己ファンディング。VC・外部投資家を一切入れない方針。「<strong>こんな実験をやれるのは私だけ</strong>」と本人発言。</span>
+      </li>
+      <li>
+        <span class="key">パートナーシップ</span>
+        <span class="val">Air Mobility Command（空軍）と早期協議。Vinod Khoslaなど他の長期視野投資家と非公式に情報交換。</span>
+      </li>
+      <li>
+        <span class="key">次のステップ</span>
+        <span class="val">Pathfinder 3を計画中（全長180m・水素燃料電池搭載構想あり）。商用輸送・人道支援フリート構想は2030年代。</span>
+      </li>
+    </ul>
+    <div class="quote">
+      "I had been interested in airships since I was a kid. They've had this incredible history but never really achieved their full potential. I want to see if we can do something with them in the modern era."
+      <cite>— Sergey Brin（2023年LTA関連インタビュー）</cite>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Personal Life</div>
+    <h2>私生活 / エピソード</h2>
+    <div class="episode">
+      <h3>運動狂的ライフスタイル</h3>
+      <p>体操・空中ブランコ・ローラーブレード・カイトサーフィン・スカイダイビングなど、<strong>身体性を伴うスリル系</strong>に偏執的。Stanford時代から「教室では靴を脱ぐ・倒立する」など奇行で知られた。Burning Manに毎年参加し続けるシリコンバレーの代表的"フリーク"。</p>
+    </div>
+    <div class="episode">
+      <h3>パーキンソン病へのコミット</h3>
+      <p>2010年に自身がLRRK2変異キャリアと判明、生涯発症リスク50%。母Eugeniaも罹患。<strong>The Michael J. Fox Foundationに$1B超の累積寄付</strong>とされる。Aligning Science Across Parkinson's（ASAP）の主要ファンダー。「自分が発症する前に治療を見つける」という個人的レースの自覚を公言。</p>
+    </div>
+    <div class="episode">
+      <h3>2014 Glass事件と離婚</h3>
+      <p>2013〜2014年、Google Glass部門のメンバーAmanda Rosenbergとの社内不倫が発覚。Anne Wojcickiとの離婚へ。Wojcicki家全体（YouTube CEO Susan・23andMe Anne・UCSF Janet）との関係性に微妙な影響。同時にGlass自体の商業失敗もあり、Sergey個人の暗黒期と評される時期。</p>
+    </div>
+    <div class="episode">
+      <h3>Elon Muskとの確執</h3>
+      <p>2000年代後半〜2010年代、Sergeyは<strong>Tesla初期の主要個人投資家</strong>で、Muskと"親友"レベルの関係だった。2014年Tesla資金難の際にSergeyが個人で数百万ドル融通した逸話も。だが2022〜2023年、Nicole Shanahanとの離婚スキャンダル報道で関係に決定的な亀裂。Muskは公式否定したが、両者の友情は事実上終了したとされる。</p>
+    </div>
+    <div class="episode">
+      <h3>シリコンバレー一の"アスペルガー的天才"像</h3>
+      <p>Brad Stoneら著者によると、Sergeyは「<strong>会話で突然立ち上がって部屋を出ていく</strong>」「ミーティング中に倒立する」など極めて非定型な行動で知られる。一方、その思考の速さ・数学的直観力はLarryと並ぶGoogle最強の頭脳。シリコンバレーで「Sergey-style」と呼ばれる即興的・抽象的な議論スタイルを生んだ。</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-label">Network</div>
+    <h2>交友関係</h2>
+    <table>
+      <tr><th>人物</th><th>関係</th></tr>
+      <tr>
+        <td>Larry Page</td>
+        <td>共同創業者・人生の盟友。Stanford以来30年以上のパートナーシップ。経営から退いた今もAlphabet議決権を共同で保有する事実上のキングメイカー。</td>
+      </tr>
+      <tr>
+        <td>Sundar Pichai</td>
+        <td>現Alphabet/Google CEO。SergeyからCEOに権限委譲した後輩。ChatGPT「Code Red」時に創業者復帰を要請した張本人。今もSergeyに最終的な技術判断を仰ぐとの報道。</td>
+      </tr>
+      <tr>
+        <td>Eric Schmidt</td>
+        <td>初代Google CEO（2001〜2011）。Sergey・Larryに「大人の監視」として招かれた。現在は独立してAI・防衛分野に投資。</td>
+      </tr>
+      <tr>
+        <td>Demis Hassabis</td>
+        <td>DeepMind共同創業者・現Google DeepMind CEO。2014年DeepMind買収を強く後押ししたのがSergey。AlphaGo・AlphaFold・Geminiの全てに思想的支援。</td>
+      </tr>
+      <tr>
+        <td>Anne Wojcicki</td>
+        <td>元妻・23andMe創業者。離婚後も友好的な共同養育者。23andMeの遺伝子データ分析はSergeyのパーキンソン研究の出発点。</td>
+      </tr>
+      <tr>
+        <td>Elon Musk</td>
+        <td>かつての盟友。Tesla初期投資家として支援。2022〜2023年に決裂。シリコンバレーで最も劇的な"友情破綻"とされる。</td>
+      </tr>
+      <tr>
+        <td>Sebastian Thrun</td>
+        <td>Stanford CS教授・Google X初期メンバー。自動運転車（Waymo前身）の生みの親としてSergeyとタッグ。</td>
+      </tr>
+      <tr>
+        <td>Yuri Milner</td>
+        <td>ロシア出身投資家。Sergeyの個人的友人・Breakthrough Prize共同出資者。同郷の絆。</td>
+      </tr>
+    </table>
+  </section>
+
+  <section>
+    <div class="section-label">Philosophy</div>
+    <h2>哲学・思考</h2>
+    <ul class="fact-list">
+      <li>
+        <span class="key">情報の自由 = 反全体主義</span>
+        <span class="val">ソ連からの亡命体験を根底に持つ「<strong>情報は自由であるべき</strong>」という信念。Google検索の理念、中国市場撤退（2010）、Glass・Loonでの情報アクセス民主化の全てに通底。</span>
+      </li>
+      <li>
+        <span class="key">10x思考 / ムーンショット</span>
+        <span class="val">「10%改善ではなく10倍改善を狙え」のGoogle X流ムーンショット哲学。SergeyがLarryとともに体現する文化的価値観。自動運転・Loon・LTA飛行船はすべてこの哲学の産物。</span>
+      </li>
+      <li>
+        <span class="key">創業者シェア</span>
+        <span class="val">デュアルクラス株式構造で創業者2人がAlphabetの議決権の過半数を保持。経営から退いても<strong>"いざという時は介入できる"</strong>体制を意図的に設計。ChatGPT危機での創業者復帰はその発動例。</span>
+      </li>
+      <li>
+        <span class="key">学術と商業の融合</span>
+        <span class="val">PageRankの共著論文がそのままGoogle帝国の出発点になったように、<strong>"博士論文と上場企業を同じ思考プロセスで作る"</strong>姿勢。GoogleがNature・Scienceに論文を出し続ける文化はSergeyの遺伝子。</span>
+      </li>
+      <li>
+        <span class="key">"I'm just an engineer"</span>
+        <span class="val">Alphabet President退任後の自己定義。CEO・経営者ではなく一個のエンジニアでありたいという欲求。Gemini復帰でこの哲学が現代的に蘇った。</span>
+      </li>
+      <li>
+        <span class="key">遺伝子・健康への科学的アプローチ</span>
+        <span class="val">パーキンソン病キャリア判明後、自身を被験者として運動・カフェイン・薬剤の効果を測定。<strong>個人を実験室にする"quantified self"の極北</strong>。</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="section-label">Hobbies</div>
+    <h2>趣味</h2>
+    <div class="tags">
+      <span class="tag">体操・空中ブランコ</span>
+      <span class="tag">カイトサーフィン</span>
+      <span class="tag">スカイダイビング</span>
+      <span class="tag">飛行船</span>
+      <span class="tag">ローラーホッケー</span>
+      <span class="tag">Burning Man</span>
+      <span class="tag">SF読書</span>
+    </div>
+    <ul class="fact-list" style="margin-top:20px;">
+      <li>
+        <span class="key">身体的スリル系</span>
+        <span class="val">Stanford時代から空中ブランコ・体操に没頭。Google本社にはトラペーズ施設が建設された時期も。50代になってもカイトサーフィン・スカイダイビングを継続。</span>
+      </li>
+      <li>
+        <span class="key">飛行船</span>
+        <span class="val">幼少期からのZeppelin・Hindenburg史への執着。LTA Researchは趣味と事業が完全融合したプロジェクト。</span>
+      </li>
+      <li>
+        <span class="key">Burning Man</span>
+        <span class="val">ほぼ毎年参加するシリコンバレー代表的"バーナー"。1998年Google創業時のロゴ初版（"Burning Man Doodle"）が今も伝統行事として残る。</span>
+      </li>
+      <li>
+        <span class="key">SF・歴史書</span>
+        <span class="val">Asimov・Stephenson・Vinge等の硬派SFと、ソ連・冷戦史・移民史の書籍を並行して読む。「未来と過去を同時に考える」とインタビューで発言。</span>
+      </li>
+      <li>
+        <span class="key">プライベート航空</span>
+        <span class="val">ボーイング767改造機を含む複数の自家用機を所有。NASAエイムズ空港の格納庫を長期契約。Larry Pageと航空機・航空インフラ趣味を共有。</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="section-label">Japan Connection</div>
+    <h2>日本との関係</h2>
+    <div style="margin-bottom:20px;">
+      <span class="japan-badge light">薄〜中</span>
+      <span style="color:var(--muted); font-size:13px;">ビジネス接点はあるが個人的なつながりは限定的</span>
+    </div>
+    <ul class="fact-list">
+      <li>
+        <span class="key">Google Japan</span>
+        <span class="val">2001年Google日本法人設立。Sergey本人は数回来日してKeynote等に登壇歴あり。ただし日本市場にLarryほど執着していたわけではない。</span>
+      </li>
+      <li>
+        <span class="key">SoftBank / Masayoshi Son</span>
+        <span class="val">直接の投資関係は限定的。SBがGoogleの早期投資家にはなれなかった経緯（Yahoo経由）あり。一方、後にArm買収などで間接接点。</span>
+      </li>
+      <li>
+        <span class="key">日本のAI研究</span>
+        <span class="val">2024年〜松尾研究室を含む日本の生成AI研究機関とDeepMind Tokyo経由で接点。Sergey個人としての来日は2026年現在は確認されず。</span>
+      </li>
+      <li>
+        <span class="key">文化的関心</span>
+        <span class="val">公的に強い日本文化趣味の発言はなし。Larry Pageの方が日本好きと業界では認識されている。</span>
+      </li>
+    </ul>
+  </section>
+
+  <section>
+    <div class="section-label">Why It Matters</div>
+    <h2>なぜ注目するか（Kyo観点）</h2>
+    <ul class="fact-list">
+      <li>
+        <span class="key">創業者の2回目の人生</span>
+        <span class="val">Wanderlust売却後に新事業を構想するKyoにとって、<strong>「上場企業の支配権を保ったまま経営から退き、ハードテックに再挑戦する」Sergeyの戦略は直接的な参考例</strong>。LTA飛行船は"$10B+ハードインフラ"の典型。</span>
+      </li>
+      <li>
+        <span class="key">創業者の現場復帰モデル</span>
+        <span class="val">ChatGPT危機でSergeyが現場復帰してコーディングする姿は、CEO椅子に縛られない<strong>"創業者として本当にやりたいことを選び続ける"</strong>姿勢。Kyoが目指す経営からの距離感の参考。</span>
+      </li>
+      <li>
+        <span class="key">移民起業家の原点回帰</span>
+        <span class="val">ソ連からの移民体験→米国でのアメリカン・ドリーム実現というSergeyの軌跡は、グローバル思考で日本市場の枠を超えるKyoの戦略と精神的に重なる。</span>
+      </li>
+      <li>
+        <span class="key">AIインフラ × 創業者支配</span>
+        <span class="val">デュアルクラス株式・controlling shareholderの設計でAlphabetを"創業者から守る"構造を作ったSergeyの企業設計手法は、<strong>[[project_wanderlust_exit]]</strong>後の次事業の株主構造設計で必須の参照例。</span>
+      </li>
+      <li>
+        <span class="key">遺伝子と個人のミッション</span>
+        <span class="val">パーキンソン病LRRK2キャリア判明後の<strong>"自分のためのサイエンス投資"</strong>は、起業家が個人的健康課題を社会的ミッションに昇華するロールモデル。Kyoの健康データ管理志向とも親和性。</span>
+      </li>
+    </ul>
+    <div class="quote">
+      "I think we may have created the most amazing time, but we should not assume that progress is automatic. We have to fight for it."
+      <cite>— Sergey Brin（2018 Founders' Letter）</cite>
+    </div>
+  </section>
+
+  <div style="margin-top:64px; padding-top:24px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; text-align:center;">
+    Research conducted via Claude — 2026年6月3日
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+</body>
+</html>
