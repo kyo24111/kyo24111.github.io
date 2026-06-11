@@ -1107,7 +1107,14 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 function renderCharts() {
   const fb = getFilteredData(bodyData);
   const bd = fmtLabels(fb.map(d => d.date));
-  mkLine('c-weight',   fv(fb,'weight'),      bd, GOALS.weight,      68, 78, 'Weight (kg)',   'Target: 69.5 kg');
+  const wv = fv(fb, 'weight').filter(v => v != null && !isNaN(v));
+  let wMin = 70, wMax = 78;
+  if (wv.length) {
+    const lo = Math.min(...wv), hi = Math.max(...wv), mid = (lo + hi) / 2;
+    wMin = Math.floor(Math.min(mid - 4, lo - 0.5) * 2) / 2;
+    wMax = Math.ceil(Math.max(mid + 4, hi + 0.5) * 2) / 2;
+  }
+  mkLine('c-weight',   fv(fb,'weight'),      bd, GOALS.weight,      wMin, wMax, 'Weight (kg)',   'Target: 69.5 kg');
   mkLine('c-fat',      fv(fb,'body_fat'),     bd, GOALS.body_fat,    14, 21, 'Body Fat (%)',  'Target: 15.3 %');
   mkLine('c-visceral', fv(fb,'visceral_fat'), bd, GOALS.visceral_fat, 5, 10, 'Visceral Fat',  'Target: 6');
   mkLine('c-water',    fv(fb,'body_water'),   bd, GOALS.body_water,  56, 62, 'Body Water (%)', 'Target: 60.2 %');
