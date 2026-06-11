@@ -14,15 +14,15 @@
 
 それが「商社」。
 
-## ターゲット産業
+## ターゲット産業（Target Industries）
 
-- 宇宙
-- 核融合
-- 半導体
-- データセンター
-- 造船
-- 溶接
-- バイオ（可能性）
+- Space（宇宙）
+- Fusion（核融合）
+- Semiconductor（半導体）
+- Data Center
+- Shipbuilding（造船）
+- Welding（溶接）
+- Bio（可能性）
 
 ## 入り方：まず「宇宙の商社」
 
@@ -42,15 +42,15 @@
 
 宇宙以外の最初の候補としては、冷却技術と防衛製造。これら2つに宇宙を合わせた3つが、最初の戦略として考えられる候補。
 
-### 1. 宇宙
+### 1. Space
 
 （前述の通り。長期的な未来は確実だが、サイクルが長い可能性あり）
 
-### 2. 冷却技術
+### 2. Cooling Tech
 
 熱とエネルギーに密接に関わっており、現在のLLMの発展にともなう熱・エネルギー問題に直結している。
 
-### 3. 防衛製造
+### 3. Defense Manufacturing
 
 ドローンや戦車の製造において、日本の精密機器は欠かせない。
 
@@ -96,96 +96,96 @@
 
 **示唆：** Foxconnと同じく台湾系の巨大ODM。地政学リスク（中国・台湾依存）を米政府が嫌う文脈で、自社が「US Soil代替」として刺さる余地がある。
 
-## パートナー候補（日本企業）
+## Partner Candidates (Japan)
 
-### ガラス
+### Glass
 
-- **AGC**：ガラスの技術で非常に高いものを持っており、世界トップシェア。
+- **AGC**: World top share in advanced glass technology.
 
-### 空調・冷却
+### HVAC & Cooling
 
-- **ダイキン**：技術力が非常に高い。
-- **富士電機**：技術力が非常に高い。
+- **Daikin**: World-class HVAC and refrigerant systems.
+- **Fuji Electric**: High-efficiency power conversion and cooling.
 
-### ロボット・防衛・精密加工
+### Robotics / Defense / Precision Engineering
 
-- **ファナック**
-- **ニデック**（旧日本電産）
+- **Fanuc**: Industrial robots, CNC, servos.
+- **Nidec** (formerly Nihon Densan): Precision motors.
 
-### 次世代コンピューティング（新世代通信半導体など）
+### Next-gen Computing (Advanced Comms Semiconductor etc.)
 
-- **イビデン**
-- **東京エレクトロン**
+- **Ibiden**: Advanced semiconductor packaging substrates.
+- **Tokyo Electron**: Semiconductor manufacturing equipment.
 
-### 最先端フロンティア・バイオマテリアル・新素材
+### Frontier Biomaterials & Advanced Materials
 
-- **東レ**
-- **富士フイルム**
-- **カネカ**
+- **Toray**: Carbon fiber & composites.
+- **Fujifilm**: High-purity films, photoresists, bio.
+- **Kaneka**: High-performance polymers and bio.
 
-## ターゲット顧客候補（US企業群）
+## Target Customers (US DeepTech)
 
-US側のポテンシャルあるDeepTech企業（メガ企業 + 注目スタートアップ）。
+Potential US Frontier / DeepTech buyers (megacaps + key startups).
 
-### 宇宙
+### Space
 
-- **SpaceX**（ロケット・衛星）
-- **Blue Origin**（ロケット）
-- **Anduril**（防衛系・宇宙応用）
-- **Starcloud**（軌道上データセンター）
-- **Astranis**（小型通信衛星）
-- **Varda Space**（軌道製造）
-- **ThinkOrbital**（軌道インフラ）
-- **Apex**（衛星バス）
-- **Hermeus**（極超音速）
-- **Stoke Space**（再使用ロケット）
+- **SpaceX** (rockets & satellites)
+- **Blue Origin** (rockets)
+- **Anduril** (defense / space)
+- **Starcloud** (orbital data center)
+- **Astranis** (small comm satellites)
+- **Varda Space** (orbital manufacturing)
+- **ThinkOrbital** (orbital infrastructure)
+- **Apex** (satellite bus)
+- **Hermeus** (hypersonic)
+- **Stoke Space** (reusable rockets)
 
-### 半導体
+### Semiconductor
 
-- **NVIDIA**（GPU・AI半導体）
-- **AMD**（GPU・CPU）
-- **Intel**（CPU・ファウンドリ）
-- **Broadcom**（ネットワーク半導体）
-- **Cerebras**（AIチップ）
-- **Groq**（推論チップ）
-- **Tenstorrent**（AIチップ）
-- **Lightmatter**（光半導体）
-- **Etched**（Transformer専用ASIC）
-- **SambaNova**（AIチップ）
+- **NVIDIA** (GPUs / AI chips)
+- **AMD** (GPUs / CPUs)
+- **Intel** (CPUs / foundry)
+- **Broadcom** (networking silicon)
+- **Cerebras** (AI chips)
+- **Groq** (inference chips)
+- **Tenstorrent** (AI chips)
+- **Lightmatter** (photonic compute)
+- **Etched** (Transformer ASIC)
+- **SambaNova** (AI chips)
 
-### ロボット
+### Robotics
 
-- **Boston Dynamics**（汎用ロボット）
-- **Tesla（Optimus）**（ヒューマノイド）
-- **Figure**（ヒューマノイド）
-- **1X**（ヒューマノイド）
-- **Apptronik**（ヒューマノイド）
-- **Path Robotics**（溶接ロボット）
-- **Skydio**（自律ドローン）
-- **Saildrone**（海洋自律ドローン）
+- **Boston Dynamics** (general robotics)
+- **Tesla (Optimus)** (humanoid)
+- **Figure** (humanoid)
+- **1X** (humanoid)
+- **Apptronik** (humanoid)
+- **Path Robotics** (welding robotics)
+- **Skydio** (autonomous drones)
+- **Saildrone** (autonomous ocean drones)
 
-### 核融合・先端核
+### Fusion & Advanced Nuclear
 
-- **Commonwealth Fusion Systems**（トカマク型核融合）
-- **Helion Energy**（直接電気変換核融合）
-- **TerraPower**（次世代核分裂・ナトリウム冷却）
-- **Type One Energy**（ステラレータ型核融合）
-- **Oklo**（小型モジュール炉）
-- **Radiant Nuclear**（マイクロ原子炉）
-- **Valar Atomics**（高温ガス炉）
+- **Commonwealth Fusion Systems** (tokamak fusion)
+- **Helion Energy** (direct electric fusion)
+- **TerraPower** (next-gen fission, Na-cooled)
+- **Type One Energy** (stellarator fusion)
+- **Oklo** (small modular reactor)
+- **Radiant Nuclear** (micro reactor)
+- **Valar Atomics** (high-temp gas reactor)
 
-### データセンター
+### Data Center
 
-- **Heron Power**（電力変換）
-- **Crusoe Energy**（モバイルデータセンター）
+- **Heron Power** (power conversion)
+- **Crusoe Energy** (mobile data centers)
 
-### バイオ
+### Bio
 
-- **Moderna**（mRNA）
+- **Moderna** (mRNA)
 - **Vertex Pharmaceuticals**
-- **Retro Biosciences**（長寿研究）
-- **Verge Genomics**（AI創薬）
-- **Eikon Therapeutics**（次世代創薬）
+- **Retro Biosciences** (longevity)
+- **Verge Genomics** (AI drug discovery)
+- **Eikon Therapeutics** (next-gen drug discovery)
 
 ## 技術マッチング・ツリー（Industry × Technology × Company）
 
@@ -746,70 +746,70 @@ $10B+ Company への最短ルートを進むなら、今まさにアメリカで
 
 > **OPEN QUESTION**：この問いは保留。今後のリサーチで深掘りする論点として置いておく。
 
-# 熟知すべき日本の大企業 / メーカー ランキング
+# Japanese Major Manufacturers — Ranking (must-know)
 
-この事業を進める上で「どこの誰のどの技術を握っているか」を最低限知っておくべき日本企業。事業との関連度（半導体・DC・防衛・宇宙・ロボット領域での代替不可能性）でランク付け。
+This trading-company business demands deep knowledge of "who holds which irreplaceable tech" at the major Japanese manufacturers. Ranked by relevance to Semi / DC / Defense / Space / Robotics.
 
-## Tier S：絶対必須（5社）
+## Tier S: Absolute Must-Know (5)
 
-これら5社は「現役の技術担当役員の名前と肩書」までは即答できるレベルで把握すべき。
+For these five, know the current head of technology + their title cold.
 
-| 順位 | 企業 | 強み | なぜ熟知必須か |
+| # | Company | Strength | Why must-know |
 |---|---|---|---|
-| 1 | **AGC** | フッ素冷媒・特殊ガラス・フォトレジスト原料 | 液冷DC・半導体プロセスの「絶対に代替できない」中核素材 |
-| 2 | **東京エレクトロン** | 半導体製造装置 | 世界半導体製造のチョークポイント。中韓も依存 |
-| 3 | **信越化学** | シリコンウェハ・フォトレジスト・希土類磁石 | 半導体素材世界シェアトップ、磁石は防衛/EV/ロボに直結 |
-| 4 | **東レ** | 炭素繊維（CFRP）・先進複合材 | SpaceX Starship・Anduril無人機・核融合容器の構造材 |
-| 5 | **三菱商事** | 総合商社 / ディープテックVC網 | 競合 兼 パートナー候補 兼 既存サプライチェーンのハブ |
+| 1 | **AGC** | Fluorinated coolants, specialty glass, photoresist precursors | Irreplaceable materials for liquid-cooled DC & semi process |
+| 2 | **Tokyo Electron** | Semi mfg equipment | Choke point of global semi mfg — even China & Korea depend on it |
+| 3 | **Shin-Etsu Chemical** | Silicon wafers, photoresists, rare-earth magnets | World #1 in semi materials; magnets central to Defense/EV/Robotics |
+| 4 | **Toray** | Carbon fiber (CFRP), advanced composites | Structure of SpaceX Starship, Anduril UAVs, fusion vessels |
+| 5 | **Mitsubishi Corporation** | Trading house / DeepTech VC network | Competitor, partner candidate, supply-chain hub all-in-one |
 
-## Tier A：必須（10社）
+## Tier A: Essential (10)
 
-| 順位 | 企業 | 強み | 関連領域 |
+| # | Company | Strength | Related Industry |
 |---|---|---|---|
-| 6 | **富士フイルム** | フォトレジスト・高純度フィルム | 半導体・バイオ |
-| 7 | **JSR** | フォトレジスト（EUV/ArF） | 半導体 |
-| 8 | **イビデン** | FC-BGA基板 | NVIDIA GB200の中核基板 |
-| 9 | **ファナック** | 産業ロボット・CNC・サーボ | 防衛量産・自動化 |
-| 10 | **ニデック** | 精密モーター（HDD/EV/ドローン） | ロボット・ドローン・DC冷却 |
-| 11 | **ダイキン** | 冷却・空調・フッ素化学 | DC液冷・空調統合 |
-| 12 | **富士電機** | 高効率変圧・パワー半導体 | DC電力インフラ |
-| 13 | **村田製作所** | MLCC・通信モジュール | 電子機器の必須部品 |
-| 14 | **SUMCO** | シリコンウェハ（300mm） | 半導体（信越と世界2強） |
-| 15 | **三菱重工** | 防衛・宇宙・原子力 | 政府契約・防衛サプライチェーン |
+| 6 | **Fujifilm** | Photoresists, high-purity films | Semi, Bio |
+| 7 | **JSR** | Photoresists (EUV/ArF) | Semi |
+| 8 | **Ibiden** | FC-BGA substrates | Core substrate of NVIDIA GB200 |
+| 9 | **Fanuc** | Industrial robots, CNC, servos | Defense mass production, automation |
+| 10 | **Nidec** | Precision motors (HDD/EV/drone) | Robotics, drones, DC cooling |
+| 11 | **Daikin** | Cooling, HVAC, fluorochemistry | DC liquid cooling, HVAC |
+| 12 | **Fuji Electric** | High-efficiency transformers, power semi | DC power infrastructure |
+| 13 | **Murata** | MLCC, RF & comm modules | Mandatory parts across electronics |
+| 14 | **SUMCO** | Silicon wafers (300mm) | Semi (Shin-Etsu duopoly) |
+| 15 | **Mitsubishi Heavy Industries** | Defense, space, nuclear | Gov contracts, defense supply chain core |
 
-## Tier B：重要（15社）
+## Tier B: Important (15)
 
-| 順位 | 企業 | 強み | 関連領域 |
+| # | Company | Strength | Related Industry |
 |---|---|---|---|
-| 16 | **京セラ** | セラミック電子部品 | 半導体・通信 |
-| 17 | **TDK** | 電子部品・センサー・電池 | EV・防衛・ロボ |
-| 18 | **IHI** | 航空エンジン・ロケットエンジン | 宇宙・防衛 |
-| 19 | **川崎重工** | 防衛装備・水素 | 防衛・水素 |
-| 20 | **三菱電機** | パワー半導体・衛星 | 防衛・宇宙・電力 |
-| 21 | **日立製作所** | 重電・原子力 | 電力 |
-| 22 | **安川電機** | サーボ・ロボット | ロボット |
-| 23 | **ルネサス** | 車載・産業マイコン | 半導体・防衛 |
-| 24 | **ローム** | SiC パワー半導体 | 電力変換 |
-| 25 | **キャノン / ニコン** | 半導体露光装置 | 半導体 |
-| 26 | **レーザーテック** | EUVマスク検査装置 | 半導体（独占） |
-| 27 | **ディスコ** | ウェハ切断・研削 | 半導体後工程 |
-| 28 | **東京応化工業** | フォトレジスト | 半導体素材 |
-| 29 | **アドバンテスト** | 半導体テスター | 半導体検査 |
-| 30 | **SCREEN** | 半導体洗浄装置 | 半導体プロセス |
+| 16 | **Kyocera** | Ceramic electronic components | Semi, Comms |
+| 17 | **TDK** | Electronic components, sensors, batteries | EV, Defense, Robotics |
+| 18 | **IHI** | Aero engines, rocket engines | Space, Defense |
+| 19 | **Kawasaki Heavy Industries** | Defense equipment, hydrogen | Defense, Hydrogen energy |
+| 20 | **Mitsubishi Electric** | Power semi, satellites | Defense, Space, Power |
+| 21 | **Hitachi** | Heavy electric, nuclear | Power |
+| 22 | **Yaskawa Electric** | Servos, robots | Robotics |
+| 23 | **Renesas** | Automotive & industrial MCU | Semi, Defense |
+| 24 | **Rohm** | SiC power semiconductors | Power conversion |
+| 25 | **Canon / Nikon** | Semi lithography | Semi |
+| 26 | **Lasertec** | EUV mask inspection | Semi (monopoly) |
+| 27 | **Disco** | Wafer dicing & grinding | Semi back-end |
+| 28 | **Tokyo Ohka Kogyo (TOK)** | Photoresists | Semi materials |
+| 29 | **Advantest** | Semi testers | Semi inspection |
+| 30 | **SCREEN** | Semi cleaning equipment | Semi process |
 
-## Tier C：周辺・将来検討（10社）
+## Tier C: Peripheral / Future (10)
 
-| 順位 | 企業 | 強み | 関連領域 |
+| # | Company | Strength | Related Industry |
 |---|---|---|---|
-| 31 | **カネカ** | 高機能ポリイミド・バイオ | 素材・バイオ |
-| 32 | **旭化成** | 電子材料・繊維 | 素材 |
-| 33 | **住友化学** | 化学・電子材料 | 素材 |
-| 34 | **三菱ケミカル** | 炭素繊維・機能化学 | 素材 |
-| 35 | **古河電工** | 特殊電線・希土類加工 | 磁石・電力 |
-| 36 | **住友金属鉱山** | 電池材料（NCA正極材） | EV・蓄電 |
-| 37 | **神戸製鋼** | 特殊鋼・チタン | 航空宇宙 |
-| 38 | **三井物産 / 伊藤忠 / 住友商事** | 総合商社 | 三菱商事の対抗 兼 パートナー |
-| 39 | **SUBARU** | 航空機中央翼 | 宇宙・防衛 |
-| 40 | **太陽誘電** | MLCC | 村田の対抗軸 |
+| 31 | **Kaneka** | High-performance polyimide, bio | Materials, Bio |
+| 32 | **Asahi Kasei** | Electronic materials, fibers | Materials |
+| 33 | **Sumitomo Chemical** | Chemicals, electronic materials | Materials |
+| 34 | **Mitsubishi Chemical** | Carbon fiber, functional chemistry | Materials |
+| 35 | **Furukawa Electric** | Specialty cables, rare-earth processing | Magnets, Power |
+| 36 | **Sumitomo Metal Mining** | Battery materials (NCA cathode) | EV, Energy Storage |
+| 37 | **Kobe Steel** | Specialty steel, titanium | Aerospace |
+| 38 | **Mitsui & Co / Itochu / Sumitomo Corp** | Trading houses | Rivals to Mitsubishi Corp, also partners |
+| 39 | **Subaru** | Aircraft center wing | Space, Defense |
+| 40 | **Taiyo Yuden** | MLCC | Rival of Murata |
 
-**使い方：** Tier S・Aは「現役の技術担当役員 + 直近5年の海外提携実績」までを暗唱できるレベルで把握。Tier B以下は「どの分野で世界何位か」を即答できればOK。Tier C は注目案件が出た時に深掘りする予備枠。
+**How to use:** Tier S・A: be able to recite the current head of technology + their last 5 years of overseas partnerships. Tier B: know their world ranking by domain. Tier C: deep-dive when a deal triggers it.
