@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TSMC — 半導体ファウンドリ・AI時代の心臓 ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  h3{font-family:'Poppins',sans-serif;font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:24px 0 10px;padding-left:10px;border-left:2px solid var(--accent)}
+  h3:first-child{margin-top:0}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .note-unverified{background:#fafafa;border:1px dashed var(--dim);border-radius:8px;padding:11px 16px;margin:12px 0;font-size:12px;color:var(--muted);line-height:1.6}
+  .note-unverified b{color:var(--mid)}
+  .linkbox{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:14px 18px;margin:14px 0;font-size:13.5px;color:var(--mid)}
+  .linkbox a{font-weight:700}
+  .quote{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin:10px 0}
+  .quote p{font-size:13.5px;font-style:italic;color:var(--mid);margin-bottom:8px;line-height:1.7}
+  .quote .attr{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+  .comp-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px}
+  .comp-card.strong{border-left:3px solid var(--accent)}
+  .comp-card.mid{border-left:3px solid var(--mid)}
+  .comp-card.weak{border-left:3px solid var(--dim)}
+  .comp-name{font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:3px}
+  .comp-tag{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:8px;background:var(--card2);color:var(--muted);border:1px solid var(--border)}
+  .comp-card.strong .comp-tag{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .comp-desc{font-size:12.5px;color:var(--mid);line-height:1.6}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  /* QA */
+  .qa-zone{margin:48px 0 8px}
+  .qa-zone .qa-head{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .qa-zone .qa-head .num{background:#111;color:#fff;font-size:11px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .qa-zone .qa-head::after{content:'';flex:1;height:1px;background:#d8d8d8}
+  .qa-zone h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:#111;margin:0 0 6px}
+  .qa-zone .qa-sub{font-size:12.5px;color:#888;margin-bottom:16px;line-height:1.7}
+  .qa-list{display:flex;flex-direction:column;gap:10px}
+  .qa-item{background:#f7f7f7;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden}
+  .qa-item[open]{border-color:#111;background:#fff}
+  .qa-q{list-style:none;cursor:pointer;padding:14px 18px;font-size:14px;font-weight:700;color:#111;display:flex;gap:12px;align-items:flex-start;line-height:1.6}
+  .qa-q::-webkit-details-marker{display:none}
+  .qa-q:hover{background:#f0f0f0}
+  .qa-item[open] .qa-q:hover{background:#fafafa}
+  .qa-mark{font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#111;color:#fff;margin-top:1px}
+  .qa-mark.a{background:#fff;color:#111;border:1px solid #111}
+  .qa-a{display:flex;gap:12px;padding:2px 18px 16px 18px;font-size:13.5px;color:#444;line-height:1.85}
+  .qa-a>div{flex:1} .qa-a b{color:#111}
+  .qa-a ul{margin:6px 0 0;padding-left:18px} .qa-a li{margin-bottom:3px}
+  .qa-empty{background:#fafafa;border:1px dashed #bbb;border-radius:10px;padding:20px;font-size:13px;color:#999;text-align:center;line-height:1.7}
+  @media (max-width:640px){.toc ol{column-count:1}.comp-grid{grid-template-columns:1fr}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">半導体ファウンドリ</span>
+    <span class="badge badge-white">TWSE 2330 / NYSE: TSM</span>
+    <span class="badge badge-solid">AI時代の心臓 / シェア約70%</span>
+  </div>
+  <h1>TSMC</h1>
+  <p class="hero-sub">
+    台湾積体電路製造（Taiwan Semiconductor Manufacturing Company）。<br>
+    1987年にMorris Changが「設計せず製造に専念する」純粋ファウンドリとして創業。いまや<strong>世界の半導体受託製造の約70%</strong>、先端ノードは実質独占。NVIDIA・Apple・AMDのチップを一手に製造し、生成AIブームの最大の供給インフラとなった。2025年に売上は史上最高を更新、時価総額は世界トップ級へ。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$1,224億</div><div class="lbl">売上（2025・+36%）</div></div>
+    <div class="kpi"><div class="val">$552億</div><div class="lbl">純利益（2025）</div></div>
+    <div class="kpi"><div class="val">~70%</div><div class="lbl">ファウンドリシェア</div></div>
+    <div class="kpi"><div class="val">~$2.1兆</div><div class="lbl">時価総額</div></div>
+    <div class="kpi"><div class="val">1987</div><div class="lbl">創業（Morris Chang）</div></div>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#model">事業構造 — 純粋ファウンドリ</a></li>
+    <li><a href="#finance">財務</a></li>
+    <li><a href="#tech">技術の肝 — プロセスノード</a></li>
+    <li><a href="#packaging">先端パッケージング（CoWoS）</a></li>
+    <li><a href="#ai">AIアクセラレータ製造の独占</a></li>
+    <li><a href="#customers">顧客・売上構成</a></li>
+    <li><a href="#fabs">製造拠点（グローバル展開）</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#moat">堀（Moat）</a></li>
+    <li><a href="#geopolitics">地政学・シリコンの盾</a></li>
+    <li><a href="#japan">日本との関わり（vs ラピダス）</a></li>
+    <li><a href="#milestones">主要マイルストーン</a></li>
+    <li><a href="#risks">リスクと投資妙味</a></li>
+    <li><a href="#founder">創業者</a></li>
+  </ol>
+</div>
+
+<!-- 1 OVERVIEW -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Taiwan Semiconductor Manufacturing Company（台湾積体電路製造）</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">1987年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">台湾・新竹（Hsinchu）</div></div>
+    <div class="kv-item"><div class="k">創業者</div><div class="v"><a href="/030_research/033_legend/morris_chang.html">Morris Chang（張忠謀）→ legend</a></div></div>
+    <div class="kv-item"><div class="k">会長兼CEO</div><div class="v">C.C. Wei（魏哲家）</div></div>
+    <div class="kv-item"><div class="k">上場</div><div class="v">TWSE 2330 / NYSE ADR: TSM</div></div>
+    <div class="kv-item"><div class="k">売上（2025）</div><div class="v">$1,224億（NT$3.81兆、前年比+36%）</div></div>
+    <div class="kv-item"><div class="k">ファウンドリシェア</div><div class="v">約70%（先端ノードは実質独占）</div></div>
+    <div class="kv-item"><div class="k">事業</div><div class="v">純粋ファウンドリ（半導体の受託製造専業）</div></div>
+  </div>
+  <p>TSMCは世界最大の<strong>ピュアプレイ・ファウンドリ</strong>（半導体の受託製造専業企業）。自社ブランドのチップは作らず、ファブレス企業（Apple・NVIDIA・AMD・Qualcomm等）が設計したチップの製造に特化する。1987年にMorris Changがこのビジネスモデルそのものを発明し、現代の半導体産業の構造を作った。</p>
+  <p>2020年代の生成AIブームで、AIアクセラレータの製造がTSMCに集中。<strong>先端ロジックチップの世界の大半をTSMCが製造する</strong>構図となり、「AI時代の心臓」かつ世界経済の最重要ボトルネックになった。</p>
+</div>
+
+<!-- 2 MODEL -->
+<div class="sec" id="model">
+  <div class="sec-label"><span class="num">2</span> Business Model</div>
+  <h2>事業構造 — 純粋ファウンドリという発明</h2>
+  <p>半導体はかつて、IntelやTexas Instromentsのように設計から製造まで自前で行う<strong>IDM（垂直統合型）</strong>が当然だった。TSMCは「製造だけを請け負う」モデルを切り出した。これにより、巨額の工場投資ができない設計者でも先端チップを世に出せるようになり、<strong>ファブレス企業の勃興</strong>（NVIDIA・Qualcomm・AMD・Apple等）を可能にした。</p>
+  <div class="callout">
+    <strong>「顧客と競合しない」中立性が最大の堀：</strong>TSMCは自社製品を持たないため、顧客の設計を奪う懸念がなく、IP（設計資産）を守れる「信頼される製造パートナー」になれる。自社チップも作るSamsungや、自社CPUを持つIntelに対する、技術以前の構造的優位。
+  </div>
+</div>
+
+<!-- 3 FINANCE -->
+<div class="sec" id="finance">
+  <div class="sec-label"><span class="num">3</span> Financials</div>
+  <h2>財務 — AI需要で過去最高</h2>
+  <table class="t">
+    <thead><tr><th>指標</th><th>2025年通期</th><th>前年比</th></tr></thead>
+    <tbody>
+      <tr><td>売上高</td><td>$1,224億（NT$3.81兆）</td><td>+36%（US$ベース）</td></tr>
+      <tr><td>純利益</td><td>$552億（NT$1.72兆）</td><td>+51%</td></tr>
+      <tr><td>粗利率</td><td>59.9%</td><td>+3.8pt</td></tr>
+      <tr><td>営業利益率</td><td>50.8%</td><td>+5.1pt</td></tr>
+      <tr><td>純利益率</td><td>45.1%</td><td>+4.6pt</td></tr>
+      <tr><td>設備投資（capex）</td><td>約$409億（2025）→ 2026計画 $520〜560億</td><td>—</td></tr>
+      <tr><td>時価総額</td><td>約$2.1兆（2026年時点・世界トップ級）</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <p>粗利率約60%・営業利益率50%超は、製造業として驚異的な水準。先端ノードの価格決定力とAI需要が牽引。2026年は売上「+30%近い成長」をガイダンスし、過去最大の設備投資を計画。</p>
+  <p style="font-size:12px;color:var(--muted)">出典: TSMC 2025通期決算 / SEC 6-K / TrendForce / Morningstar 等。確度: 通期数値=高、時価総額=中（日々変動）。</p>
+</div>
+
+<!-- 4 TECH -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">4</span> Technology</div>
+  <h2>技術の肝 — プロセスノードのロードマップ</h2>
+  <p>半導体の性能は<strong>プロセスノード（nm）</strong>の微細化で決まる。TSMCは微細化で世界トップを走り続けている。</p>
+  <table class="t">
+    <thead><tr><th>ノード</th><th>状況</th><th>特徴</th></tr></thead>
+    <tbody>
+      <tr><td>N3（3nm）</td><td>成熟・量産中</td><td>FinFET。Apple・NVIDIA・AMD等が採用。歩留まり80%超</td></tr>
+      <tr><td>N2（2nm）</td><td>2025年Q4 量産開始</td><td>TSMC初の<strong>GAA（ナノシート）</strong>。N3比で電力25〜30%削減。能力は2026年まで実質完売</td></tr>
+      <tr><td>A16（1.6nm）</td><td>2027年 量産（後ろ倒し）</td><td><strong>裏面電源供給（Super Power Rail）</strong>を初搭載。初顧客はNVIDIA</td></tr>
+      <tr><td>A14 / A13 / A12</td><td>2027〜2029</td><td>さらなる微細化。High-NA EUVは2029年でも「不要」の方針（コスト重視）</td></tr>
+    </tbody>
+  </table>
+  <h3>なぜ微細化で世界トップなのか</h3>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">歩留まりと量産実行力</div><div class="ind-desc">先端ノードを「計画通り、高い歩留まりで量産に乗せる」実行力が最大の差。N2は量産時点で良好な歩留まりとされ、Samsung（2nm歩留まり推計55〜60%）を大きく上回る。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">設計エコシステム（OIP）と顧客ロックイン</div><div class="ind-desc">EDA・IP・設計支援を含む巨大なエコシステム。顧客はPDK初期段階から共同最適化し、一度TSMCで設計したチップは他社へ移すのに数年・巨額のコストがかかる（高いスイッチングコスト）。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">EUVと装置サプライヤー</div><div class="ind-desc">最先端に必須のEUV露光装置は<strong>ASML（オランダ）が独占供給</strong>。TSMCは構造的にASMLに依存するが、High-NA EUV（1台約$4億）の量産導入には慎重で「コスト効率を待つ」姿勢。Applied Materials・Lam・東京エレクトロンも主要装置サプライヤー。</div></div></div>
+  </div>
+  <p style="font-size:12px;color:var(--muted)">出典: Tom's Hardware / TrendForce / TSMC技術ページ / SemiWiki。確度: ノードのタイムライン=高、競合歩留まり数値=中（業界推計）。</p>
+</div>
+
+<!-- 5 PACKAGING -->
+<div class="sec" id="packaging">
+  <div class="sec-label"><span class="num">5</span> Advanced Packaging</div>
+  <h2>先端パッケージング（CoWoS）— AIチップの隠れたボトルネック</h2>
+  <p>AI GPUは1個のダイ（チップ）が大きすぎて、1回の露光で焼ける最大面積（<strong>レチクル限界</strong>）を超える。そこで複数のチップレットと<strong>HBM（広帯域メモリ）</strong>を1パッケージに統合する<strong>先端パッケージング</strong>が必須になる。TSMCの<strong>CoWoS</strong>がその事実上の標準。</p>
+  <div class="callout">
+    <strong>AI供給の真のボトルネックはパッケージだった：</strong>2023〜2025年、AIアクセラレータ供給の制約は、ダイ製造そのものより<strong>CoWoSの能力不足</strong>だった。TSMCはCoWoS月産を2024年末の約3.5万枚から<strong>2026年末に約13万枚</strong>へ急拡大。<strong>NVIDIAだけでCoWoS能力の60%超</strong>を確保し、数年先まで予約済み。
+  </div>
+  <table class="t">
+    <thead><tr><th>技術</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>CoWoS-S / -L</td><td>複数チップとHBMをインターポーザ（またはLSIブリッジ）上に並べる2.5D実装。-LはNVIDIA Blackwell/Rubin世代向け</td></tr>
+      <tr><td>SoIC</td><td>チップを垂直に積層する3D実装</td></tr>
+      <tr><td>InFO</td><td>再配線で接続するファンアウト型（モバイルSoC等）</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--muted)">出典: Digitimes / TrendForce / CNBC / wccftech。確度: 中〜高（能力到達値はソース間でやや幅）。</p>
+</div>
+
+<!-- 6 AI -->
+<div class="sec" id="ai">
+  <div class="sec-label"><span class="num">6</span> AI Silicon</div>
+  <h2>AIアクセラレータ製造の事実上の独占</h2>
+  <p>生成AIの計算を担うチップは、ほぼ全てTSMCで作られる。<strong>7nm以下の先端AIチップの約92%をTSMCが製造</strong>しているとされる。</p>
+  <table class="t">
+    <thead><tr><th>顧客</th><th>製品</th></tr></thead>
+    <tbody>
+      <tr><td>NVIDIA</td><td>GPU（Blackwell / Rubin）。N3/N2＋CoWoS-L＋SoIC。2025年にAppleを抜きTSMC最大顧客に</td></tr>
+      <tr><td>AMD</td><td>Instinct MI系AIアクセラレータ</td></tr>
+      <tr><td>Google / AWS / Microsoft / Meta</td><td>自社AI ASIC（TPU / Trainium / Maia / MTIA）。設計支援はBroadcom・Marvell、製造はTSMC</td></tr>
+      <tr><td>Apple</td><td>A/M系チップ（最先端ノードの主要顧客）</td></tr>
+    </tbody>
+  </table>
+  <div class="callout"><strong>構図：</strong>ハイパースケーラー各社が自社AIチップを「設計」しても、その<strong>製造はTSMCに集中</strong>する。設計の内製化はNVIDIAにとっての脅威だが、TSMCにとってはむしろ顧客の多様化。AIの計算需要が増えるほどTSMCに流れ込む。</div>
+  <p style="font-size:12px;color:var(--muted)">出典: CNBC / Tom's Hardware / NextPlatform。確度: 高。</p>
+</div>
+
+<!-- 7 CUSTOMERS -->
+<div class="sec" id="customers">
+  <div class="sec-label"><span class="num">7</span> Customers &amp; Mix</div>
+  <h2>顧客・売上構成</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">最大顧客（2025）</div><div class="v">NVIDIA 約19%（Appleを逆転）</div></div>
+    <div class="kv-item"><div class="k">第2顧客</div><div class="v">Apple 約17%</div></div>
+    <div class="kv-item"><div class="k">上位10社</div><div class="v">総売上の約76%（高い集中度）</div></div>
+    <div class="kv-item"><div class="k">用途別トップ</div><div class="v">HPC（AI/データセンター）58%</div></div>
+    <div class="kv-item"><div class="k">スマホ</div><div class="v">29%</div></div>
+    <div class="kv-item"><div class="k">地域別</div><div class="v">北米 約75%</div></div>
+  </div>
+  <p>2025年に<strong>NVIDIAがAppleを抜いて最大顧客に</strong>。用途別では<strong>HPC（AI中心）がスマホを抜いて最大セグメント</strong>へ。AIがTSMCの成長と利益率改善の最大ドライバー。一方、上位10社で76%・北米75%という高い集中度はリスク要因でもある。</p>
+  <p style="font-size:12px;color:var(--muted)">出典: TSMC SEC開示 / CNBC / Notebookcheck。確度: NVIDIA/Apple比率・上位10社76%=高、個社別シェア=中。</p>
+</div>
+
+<!-- 8 FABS -->
+<div class="sec" id="fabs">
+  <div class="sec-label"><span class="num">8</span> Fabs</div>
+  <h2>製造拠点 — 最先端は台湾、海外はリスク分散</h2>
+  <p>役割分担は明確：<strong>最先端ノードとR&Dは台湾に集中</strong>。海外拠点は顧客近接と地政学リスク分散のためで、基本的に台湾より1〜2世代後ろ。</p>
+  <table class="t">
+    <thead><tr><th>拠点</th><th>役割・状況</th></tr></thead>
+    <tbody>
+      <tr><td>台湾（新竹・台南・台中・高雄）</td><td><strong>先端ノードとR&Dの中枢</strong>。N3/N2/A16はすべて台湾。N2量産は高雄/新竹で2025年Q4開始</td></tr>
+      <tr><td>米アリゾナ（Phoenix）</td><td>総投資<strong>$1,650億</strong>（CHIPS法補助$66億＋融資$50億）。6ファブ計画。Fab1（4nm）稼働中、Fab2（3nm）2027年下期、Fab3（2nm/A16）2028-29</td></tr>
+      <tr><td>日本・熊本（JASM）</td><td>ソニー・デンソー・トヨタ出資。第1工場（12〜28nm）2024年量産、第2工場（6/7nm、$139億）2027年末稼働予定。日本政府が約1.2兆円補助</td></tr>
+      <tr><td>独・ドレスデン（ESMC）</td><td>欧州初。Bosch/Infineon/NXPと合弁、100億ユーロ超。22/28・12/16nm、車載・産業向け。2027年末量産予定</td></tr>
+      <tr><td>中国（南京・上海）</td><td>16/28nm中心、世界能力の約3%。米輸出規制で先端化は事実上凍結（年次許可制）</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--muted)">出典: TSMC公式PR / SEC / 各社ニュースルーム / Wikipedia。確度: 投資額・出資比率・稼働時期=高。</p>
+</div>
+
+<!-- 9 COMPETITION -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">9</span> Competition</div>
+  <h2>競合比較 — シェア約70%、2位と約10倍差</h2>
+  <p>TSMCの世界ファウンドリシェアは<strong>約70%</strong>。先端ノードでは実質独占で、2位以下を圧倒する。</p>
+  <div class="comp-grid">
+    <div class="comp-card mid">
+      <div class="comp-name">Samsung Foundry（韓国）</div><span class="comp-tag">2位・シェア約7%</span>
+      <div class="comp-desc">2nm（SF2）歩留まりは推計55〜60%へ改善中だがTSMC（80%超）に劣後。自社チップも作るため「顧客と競合」する不利。TeslaのAIチップ受注等で前進。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">Intel Foundry（米）</div><span class="comp-tag">巨額赤字・賭けの14A</span>
+      <div class="comp-desc">18Aは事実上「自社向け」ノードで外部顧客未確定。本命14Aは大口顧客を取れなければ存続が危うい賭け。ファウンドリ事業は2024年に約$70億の営業損失。米政府が株主に。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">SMIC（中国）</div><span class="comp-tag">7nm止まり・規制下</span>
+      <div class="comp-desc">EUVなしのDUV多重露光で7nm相当を量産も、米規制で能力は月数万枚に制限。先端での拡張・コストが構造的に不利。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">GlobalFoundries / UMC</div><span class="comp-tag">成熟特化・棲み分け</span>
+      <div class="comp-desc">先端競争から撤退し、自動車・産業・RF等の成熟/特殊プロセスに特化。TSMCと直接競合しない領域。</div>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--muted)">出典: TrendForce / Tom's Hardware / SemiWiki / Mark Lapedus。確度: シェア=高、歩留まり数値=中（業界推計）。</p>
+</div>
+
+<!-- 10 MOAT -->
+<div class="sec" id="moat">
+  <div class="sec-label"><span class="num">10</span> Moat</div>
+  <h2>堀（Moat）の本質</h2>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">中立性 — 顧客と競合しない</div><div class="ind-desc">自社製品を持たないため、Apple・NVIDIA等の設計を奪わない。Intel（自社CPU）・Samsung（自社Exynos/メモリ）は構造的に不利。最大の非技術的堀。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">規模と歩留まり</div><div class="ind-desc">先端ノードの歩留まりが競合を圧倒。歩留まり優位はそのままコスト・供給安定性の優位になる。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">CoWoS（先端パッケージ）の独占</div><div class="ind-desc">AIアクセラレータに必須のCoWoSを事実上独占。NVIDIAが能力の過半を確保し、競合の枠が乏しい。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">エコシステムと巨額capex</div><div class="ind-desc">設計ロックイン（移行コストが高い）＋年$400〜560億の設備投資が、新規・追随勢の参入を阻む壁。</div></div></div>
+  </div>
+</div>
+
+<!-- 11 GEOPOLITICS -->
+<div class="sec" id="geopolitics">
+  <div class="sec-label"><span class="num">11</span> Geopolitics</div>
+  <h2>地政学・シリコンの盾</h2>
+  <p>台湾は世界の半導体の約60%、<strong>最先端チップの90%超</strong>を生産する。この集中が「<strong>シリコンの盾（Silicon Shield）</strong>」を生む。</p>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">シリコンの盾</div><div class="ind-desc">台湾の半導体が世界経済に不可欠であるため、(1)中国の武力併合を抑止し、(2)米国等が供給網安定のため台湾防衛に動機づけられる、という地政学的命題。一企業の存在が国家安全保障を左右する。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">台湾集中という脆弱性</div><div class="ind-desc">先端ロジックが政治的に脆弱な一地点に集中する構造的リスク。台湾有事が起きれば、銀行・通信・医療・防衛まで全産業を同時に直撃するとの試算（被害$2.5兆〜$5兆との分析）。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">米中対立と海外分散</div><div class="ind-desc">米CHIPS法・対中輸出規制の中で、TSMCはアリゾナ・日本・ドイツへ分散。ただし<strong>最先端は台湾に残す</strong>方針で、「盾」と「分散」のバランスを取る。海外は建設・人件費が高くコストが課題。</div></div></div>
+  </div>
+  <p style="font-size:12px;color:var(--muted)">出典: Wikipedia(Silicon shield) / MIT Tech Review / Foreign Policy / Stimson。確度: 集中度=高、有事被害試算=中〜低（予測）。</p>
+</div>
+
+<!-- 12 JAPAN -->
+<div class="sec" id="japan">
+  <div class="sec-label"><span class="num">12</span> Japan</div>
+  <h2>日本との関わり — 熊本JASMとラピダス</h2>
+  <h3>熊本（JASM）</h3>
+  <p>TSMC主導の合弁<strong>JASM</strong>（出資: TSMC 約86.5%、ソニー 6.0%、デンソー 5.5%、トヨタ 2.0%）。第1工場（12〜28nm）が2024年に量産開始しイメージセンサー・車載向けを生産、<strong>2026年初に初の黒字化</strong>。第2工場（6/7nm、$139億）は2027年末稼働予定。日本政府が両工場で<strong>約1.2兆円</strong>を補助。</p>
+  <h3>ラピダス（Rapidus）との対比</h3>
+  <table class="t">
+    <thead><tr><th>観点</th><th>TSMC（熊本）</th><th>ラピダス</th></tr></thead>
+    <tbody>
+      <tr><td>位置づけ</td><td>世界最大ファウンドリの日本進出（リスク分散）</td><td>日本国産の先端ロジック自立を狙う国策</td></tr>
+      <tr><td>ノード</td><td>熊本は成熟〜中堅（6〜28nm、第2は3nm承認も）</td><td>2nm（IBM技術）を2027年商用目標</td></tr>
+      <tr><td>規模</td><td>月産10万枚超</td><td>月産約7,000枚（少量・短納期・カスタム特化）</td></tr>
+      <tr><td>戦略</td><td>超大量生産</td><td>「TSMCと大量生産で直接競合しない」と明言、短納期ニッチ</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--muted)">出典: TSMC公式PR / ソニー・トヨタ発表 / Asia Times / The Register。確度: 高。</p>
+</div>
+
+<!-- 13 MILESTONES -->
+<div class="sec" id="milestones">
+  <div class="sec-label"><span class="num">13</span> Milestones</div>
+  <h2>主要マイルストーン</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1987</span><span class="tl-title">Morris ChangがTSMC創業</span></div><div class="tl-body">Philips・台湾政府の出資で、世界初の純粋ファウンドリとして設立。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1993 / 1997</span><span class="tl-title">TWSE上場 / NYSE ADR上場</span></div><div class="tl-body">1997年に台湾企業初のNYSE ADR（TSM）。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2018</span><span class="tl-title">7nm量産（ファウンドリ初）</span></div><div class="tl-body">翌2019年にEUV適用。SamsungからApple Aチップを獲得。Morris Chang会長退任。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2020</span><span class="tl-title">5nm量産（世界初の商用化）</span></div><div class="tl-body">Apple A14/M1搭載。微細化リードを決定づける。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2022</span><span class="tl-title">3nm量産開始</span></div><div class="tl-body">AIブーム前夜、先端能力を積み上げ。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2024</span><span class="tl-title">熊本JASM量産 / アリゾナ4nm</span></div><div class="tl-body">海外展開が本格化。AI需要で売上が急拡大。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025</span><span class="tl-title">N2（2nm）量産開始・売上過去最高</span></div><div class="tl-body">TSMC初のGAA。売上$1,224億（+36%）、NVIDIAが最大顧客に。2018→2025で売上はNT$1.0兆→3.8兆へ。</div></div></div>
+  </div>
+</div>
+
+<!-- 14 RISKS -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">14</span> Risks &amp; Thesis</div>
+  <h2>リスクと投資妙味</h2>
+  <div class="warn-box">
+    <div class="w-title">主要リスク</div>
+    <ul>
+      <li><b>地政学（最大リスク）</b>：製造能力が台湾に集中。台湾有事・米中対立・米関税が構造的圧力。海外分散で緩和も最先端は台湾依存。</li>
+      <li><b>顧客集中</b>：上位10社で76%、北米75%、NVIDIA単独で約19%。特定顧客・AI需要への依存。</li>
+      <li><b>AI需要の変動</b>：巨額capexの固定費を負う中、AI需要が腰折れすれば過剰投資リスク。</li>
+      <li><b>ASML依存</b>：EUVはASMLの独占供給。装置の供給・価格に構造的に依存。</li>
+    </ul>
+  </div>
+  <div class="callout"><strong>投資妙味：</strong>シェア約70%・先端実質独占・粗利60%という稀有な構造的優位。AI計算需要が増えるほどTSMCに資金が流れ込む「AIインフラの大家」。最大リスクは技術ではなく<strong>地政学</strong>であり、TSMCのバリュエーションは「台湾リスクをどう織り込むか」に帰着する。</div>
+</div>
+
+<!-- 15 FOUNDER -->
+<div class="sec" id="founder">
+  <div class="sec-label"><span class="num">15</span> Founder</div>
+  <h2>創業者</h2>
+  <div class="linkbox">
+    👤 創業者 <strong>Morris Chang（張忠謀）</strong>の生い立ち・Texas Instruments時代・ファウンドリモデル発明の思想・哲学は、人物リサーチ（legend）に独立ページとしてまとめています。<br>
+    → <a href="/030_research/033_legend/morris_chang.html">legend › Morris Chang（張忠謀）</a>
+  </div>
+  <p>要点だけ：<strong>55歳の1987年に起業</strong>し<strong>87歳まで会長</strong>を務めた遅咲きの巨人。新製品ではなく「純粋ファウンドリ」という<strong>産業の形そのものを発明</strong>し、現代の半導体・AI産業の土台を作った。「ファウンドリの父」。</p>
+</div>
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li>TSMC 2025通期決算 / 投資家向け資料</li>
+    <li>SEC EDGAR — TSMC 6-K / 20-F（CIK 1046179）</li>
+    <li>TrendForce — ファウンドリ市場シェア</li>
+    <li>Tom's Hardware — プロセスノード・ロードマップ</li>
+    <li>CNBC — NVIDIAが最大顧客に / CoWoS</li>
+    <li>Morningstar — S-1財務分析</li>
+    <li>Digitimes — CoWoS能力</li>
+    <li>TSMC公式PR — アリゾナ$1,650億 / JASM / ESMC</li>
+    <li>Wikipedia — TSMC / Morris Chang / Silicon shield / JASM</li>
+    <li>SemiWiki / Mark Lapedus — 競合分析</li>
+    <li>MIT Tech Review / Foreign Policy — 地政学</li>
+    <li>Asia Times / The Register — ラピダス対比</li>
+  </ul>
+</div>
+
+<p style="font-size:11px;color:var(--dim);margin-top:24px;text-align:center">
+  Researched 2026-06-10 &nbsp;·&nbsp; 並列Web調査（財務・技術・拠点・競合・地政学の5アングル、確度付き） &nbsp;·&nbsp; 030_research/035_company/260610_tsmc_deep_research.html
+</p>
+
+<!-- ===================== Q&A ZONE ===================== -->
+<div class="sec qa-zone" id="qa">
+  <div class="qa-head"><span class="num">Q</span> Q&amp;A Zone</div>
+  <h2>Q&amp;A &mdash; 事業理解のための問答</h2>
+  <p class="qa-sub">事業構造を自分の言葉で理解するために、疑問と答えを貯めていくゾーン。Qをクリックで回答を開閉。</p>
+  <div class="qa-list">
+    <div class="qa-empty">まだQ&amp;Aはありません。事業理解を深める疑問を、ここに貯めていく。</div>
+  </div>
+</div>
+
+<!-- ===================== GLOSSARY (right gutter) ===================== -->
+<style>
+.gloss{position:fixed;top:64px;right:10px;width:230px;max-height:calc(100vh - 134px);overflow-y:auto;z-index:500;font-family:'Noto Sans JP',sans-serif;display:none;padding-right:2px}
+.gloss-hd{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888;margin:0 0 8px 4px}
+.gloss details{border:1px solid #d8d8d8;border-radius:7px;margin-bottom:5px;background:#fafafa}
+.gloss details[open]{background:#fff;border-color:#111}
+.gloss summary{cursor:pointer;list-style:none;padding:6px 9px;font-size:11.5px;font-weight:700;color:#111;line-height:1.4}
+.gloss summary::-webkit-details-marker{display:none}
+.gloss summary::before{content:'＋';color:#aaa;font-weight:700;margin-right:5px}
+.gloss details[open] summary::before{content:'−';color:#111}
+.gloss .g-b{padding:0 10px 9px 24px;font-size:11px;line-height:1.65;color:#444}
+.gloss .g-b b{color:#111}
+.gloss-fab{position:fixed;bottom:80px;right:16px;z-index:600;background:#111;color:#fff;border:none;border-radius:22px;padding:9px 15px;font-size:12px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif;box-shadow:0 2px 10px rgba(0,0,0,.25)}
+@media (min-width:1400px){.gloss{display:block}.gloss-fab{display:none}}
+@media (max-width:1399px){.gloss{top:0;bottom:0;right:0;width:290px;max-height:none;background:#fff;border-left:1px solid #d8d8d8;box-shadow:-6px 0 24px rgba(0,0,0,.18);padding:66px 14px 80px;overflow-y:auto}.gloss.open{display:block}}
+</style>
+<button class="gloss-fab" onclick="document.getElementById('gloss').classList.toggle('open')">📖 用語集</button>
+<aside class="gloss" id="gloss">
+  <div class="gloss-hd">Glossary — タップで開く</div>
+  <details><summary>ファウンドリ</summary><div class="g-b">半導体の製造を請け負う企業。設計は顧客が行い、製造（前工程）を受託する。</div></details>
+  <details><summary>ピュアプレイ・ファウンドリ</summary><div class="g-b">自社製品を持たず製造受託だけに専念するファウンドリ。TSMCが発明したモデル。</div></details>
+  <details><summary>ファブレス</summary><div class="g-b">工場（fab）を持たず設計に専念する企業。NVIDIA・Apple・Qualcomm等。製造はファウンドリに委託。</div></details>
+  <details><summary>IDM</summary><div class="g-b">Integrated Device Manufacturer。設計から製造まで自前で行う垂直統合型。Intel・Samsung・旧来のTI等。</div></details>
+  <details><summary>プロセスノード（nm）</summary><div class="g-b">半導体の微細化世代。数字が小さいほど高性能・低消費電力。3nm→2nm→1.6nmと進む。</div></details>
+  <details><summary>FinFET</summary><div class="g-b">ヒレ状の立体トランジスタ構造。〜3nm世代で使われた。N2でGAAに移行。</div></details>
+  <details><summary>GAA / ナノシート</summary><div class="g-b">Gate-All-Around。チャネルを四方から囲む次世代トランジスタ。TSMCはN2（2nm）で初採用。</div></details>
+  <details><summary>EUV</summary><div class="g-b">極端紫外線リソグラフィ。微細回路を焼く最先端の露光技術。ASMLが世界唯一の供給元。</div></details>
+  <details><summary>High-NA EUV</summary><div class="g-b">開口数を高めた次世代EUV。1台約$4億と高価で、TSMCは導入に慎重（2029年でも不要の方針）。</div></details>
+  <details><summary>ASML</summary><div class="g-b">オランダの露光装置メーカー。EUVを独占供給し、先端半導体の生殺与奪を握る。</div></details>
+  <details><summary>歩留まり（yield）</summary><div class="g-b">製造した中で良品となる割合。高いほどコスト・供給安定で有利。TSMCの最大の実力差。</div></details>
+  <details><summary>CoWoS</summary><div class="g-b">Chip-on-Wafer-on-Substrate。複数チップとHBMを並べる先端パッケージ。AI GPUに必須で、TSMCがほぼ独占。</div></details>
+  <details><summary>SoIC</summary><div class="g-b">チップを垂直に積層する3D実装。CoWoSと組み合わせて使う。</div></details>
+  <details><summary>HBM</summary><div class="g-b">High Bandwidth Memory。広帯域メモリ。AIチップの隣に積んで大量データを高速供給する。</div></details>
+  <details><summary>チップレット</summary><div class="g-b">大きな1枚のダイの代わりに、小さなチップを複数つなぎ合わせて1つのプロセッサにする設計。</div></details>
+  <details><summary>レチクル限界</summary><div class="g-b">1回の露光で焼ける最大チップ面積。AI GPUはこれを超えるため複数チップを束ねる必要がある。</div></details>
+  <details><summary>ダイ</summary><div class="g-b">ウェハから切り出した1個のチップ（半導体の本体）。</div></details>
+  <details><summary>ウェハ</summary><div class="g-b">シリコンの円盤。この上に多数のチップを一括製造する。12インチ（300mm）が主流。</div></details>
+  <details><summary>PDK</summary><div class="g-b">Process Design Kit。そのプロセス向けに設計するための設計キット。顧客ロックインの源。</div></details>
+  <details><summary>EDA</summary><div class="g-b">半導体設計の自動化ソフト（Synopsys/Cadence等）。TSMCのプロセスに最適化されている。</div></details>
+  <details><summary>OIP</summary><div class="g-b">TSMCのOpen Innovation Platform。EDA/IP/設計支援を含む巨大エコシステム。移行コストを高める堀。</div></details>
+  <details><summary>HPC</summary><div class="g-b">High Performance Computing。AI・データセンター向け高性能計算。TSMC売上の最大セグメント（58%）。</div></details>
+  <details><summary>ASIC</summary><div class="g-b">特定用途向け集積回路。Google TPU・AWS Trainium等のカスタムAIチップ。製造はTSMC。</div></details>
+  <details><summary>裏面電源供給（SPR）</summary><div class="g-b">Super Power Rail。チップ裏面から電源を供給し性能・電力効率を上げる技術。A16で初搭載。</div></details>
+  <details><summary>シリコンの盾</summary><div class="g-b">台湾の半導体が世界に不可欠なため、中国の侵攻を抑止し各国が台湾防衛に動機づけられるという地政学命題。</div></details>
+  <details><summary>CHIPS法</summary><div class="g-b">米国の半導体国内生産支援法。TSMCアリゾナに補助$66億＋融資$50億。</div></details>
+  <details><summary>capex</summary><div class="g-b">設備投資。TSMCは年$400〜560億規模を投じ、これ自体が巨大な参入障壁になる。</div></details>
+  <details><summary>粗利率</summary><div class="g-b">売上から原価を引いた粗利の割合。TSMCは約60%で製造業として驚異的。</div></details>
+  <details><summary>ADR</summary><div class="g-b">米国市場で外国株を売買できる預託証券。TSMCはNYSEにADR（TSM）として上場。</div></details>
+  <details><summary>ラピダス</summary><div class="g-b">日本の国策半導体企業。IBM技術で2nmを2027年商用目標。少量・短納期ニッチでTSMCと棲み分け。</div></details>
+</aside>
+
+<!-- ===================== INLINE TOOLTIPS ===================== -->
+<style>
+.tip{border-bottom:1px dotted #999;cursor:help;position:relative}
+.tip:focus{outline:none;background:#f0f0f0}
+.tip-bub{position:absolute;left:0;top:150%;z-index:700;width:250px;max-width:74vw;background:#111;color:#fff;font-size:11.5px;line-height:1.65;font-weight:400;font-style:normal;letter-spacing:0;text-align:left;padding:9px 12px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.28);display:none}
+.tip-bub::before{content:'';position:absolute;left:14px;top:-5px;border:5px solid transparent;border-bottom-color:#111;border-top:none}
+.tip-bub b{color:#fff;font-weight:700}
+.tip.tip-open .tip-bub,.tip:hover .tip-bub{display:block}
+</style>
+<script>
+(function(){
+  var DICT={
+    "ピュアプレイ・ファウンドリ":"自社製品を持たず製造受託だけに専念するファウンドリ。TSMCが発明したモデル。",
+    "ファウンドリ":"半導体の製造を請け負う企業。設計は顧客が行い、製造（前工程）を受託する。",
+    "ファブレス":"工場を持たず設計に専念する企業（NVIDIA・Apple等）。製造はファウンドリに委託。",
+    "IDM":"設計から製造まで自前で行う垂直統合型（Intel・Samsung等）。",
+    "プロセスノード":"半導体の微細化世代。数字が小さいほど高性能・低消費電力。",
+    "FinFET":"ヒレ状の立体トランジスタ構造。〜3nm世代で使用。N2でGAAへ移行。",
+    "GAA":"Gate-All-Around。チャネルを四方から囲む次世代トランジスタ。TSMCはN2で初採用。",
+    "ナノシート":"GAAで使う積層シート状チャネル。",
+    "EUV":"極端紫外線リソグラフィ。最先端の露光技術。ASMLが世界唯一の供給元。",
+    "High-NA EUV":"開口数を高めた次世代EUV。1台約$4億で、TSMCは導入に慎重。",
+    "ASML":"オランダの露光装置メーカー。EUVを独占供給し先端半導体の生殺与奪を握る。",
+    "歩留まり":"製造した中で良品となる割合。高いほどコスト・供給で有利。TSMC最大の実力差。",
+    "CoWoS":"複数チップとHBMを並べる先端パッケージ。AI GPUに必須で、TSMCがほぼ独占。",
+    "SoIC":"チップを垂直に積層する3D実装。",
+    "InFO":"再配線で接続するファンアウト型パッケージ（モバイルSoC等）。",
+    "HBM":"広帯域メモリ。AIチップの隣に積んで大量データを高速供給する。",
+    "チップレット":"小さなチップを複数つなぎ合わせて1つのプロセッサにする設計。",
+    "レチクル限界":"1回の露光で焼ける最大チップ面積。AI GPUはこれを超えるため複数チップを束ねる。",
+    "インターポーザ":"チップ同士を高密度に配線する中間基板。CoWoSの土台。",
+    "ウェハ":"シリコンの円盤。この上に多数のチップを一括製造する。",
+    "PDK":"Process Design Kit。そのプロセス向けの設計キット。顧客ロックインの源。",
+    "EDA":"半導体設計の自動化ソフト。TSMCのプロセスに最適化される。",
+    "OIP":"TSMCのOpen Innovation Platform。設計エコシステムで移行コストを高める堀。",
+    "HPC":"High Performance Computing。AI・データセンター向け高性能計算。TSMC売上の最大セグメント。",
+    "ASIC":"特定用途向け集積回路。Google TPU・AWS Trainium等のカスタムAIチップ。",
+    "裏面電源供給":"チップ裏面から電源を供給し性能・効率を上げる技術。A16で初搭載。",
+    "Super Power Rail":"TSMCの裏面電源供給技術。A16で初搭載。",
+    "シリコンの盾":"台湾の半導体が世界に不可欠なため、中国の侵攻を抑止し各国が台湾防衛に動機づけられるという地政学命題。",
+    "CHIPS法":"米国の半導体国内生産支援法。TSMCアリゾナに補助$66億＋融資$50億。",
+    "capex":"設備投資。TSMCは年$400〜560億規模を投じ、これ自体が参入障壁になる。",
+    "粗利率":"売上から原価を引いた粗利の割合。TSMCは約60%で製造業として驚異的。",
+    "ADR":"米国市場で外国株を売買できる預託証券。TSMCはNYSEにADR（TSM）として上場。",
+    "ラピダス":"日本の国策半導体企業。IBM技術で2nmを2027年商用目標。短納期ニッチでTSMCと棲み分け。",
+    "JASM":"TSMC主導の熊本の合弁。ソニー・デンソー・トヨタ出資。車載・イメージセンサー向け。",
+    "ESMC":"TSMCの欧州（ドレスデン）合弁。Bosch/Infineon/NXPと。車載・産業向け。",
+    "SMIC":"中国最大のファウンドリ。米規制下でEUVなしの7nm止まり。",
+    "Texas Instruments":"米半導体大手。Morris Changが創業前に25年在籍した会社。",
+    "Morris Chang":"TSMC創業者。55歳でファウンドリモデルを発明。詳細はlegendページ参照。"
+  };
+  var terms=Object.keys(DICT).sort(function(a,b){return b.length-a.length});
+  var used={},SKIP={A:1,SUMMARY:1,SCRIPT:1,STYLE:1,CODE:1,BUTTON:1,H1:1};
+  function inSkip(node){var el=node.parentNode;while(el&&el!==document.body){if(el.classList&&(el.classList.contains('gloss')||el.classList.contains('toc')||el.classList.contains('tip')||el.classList.contains('sec-label')||el.classList.contains('hero')||el.classList.contains('sources')))return true;if(el.tagName&&SKIP[el.tagName])return true;el=el.parentNode;}return false;}
+  var root=document.querySelector('.page');
+  var walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+  var nodes=[],n;while(n=walker.nextNode()){if(n.nodeValue&&n.nodeValue.trim()&&!inSkip(n))nodes.push(n);}
+  nodes.forEach(function(node){
+    var text=node.nodeValue,matches=[];
+    terms.forEach(function(t){if(used[t])return;var idx=text.indexOf(t);if(idx>=0)matches.push({t:t,idx:idx});});
+    if(!matches.length)return;
+    matches.sort(function(a,b){return a.idx-b.idx||b.t.length-a.t.length;});
+    var picks=[],lastEnd=-1;
+    matches.forEach(function(m){if(m.idx>=lastEnd){picks.push(m);lastEnd=m.idx+m.t.length;}});
+    var frag=document.createDocumentFragment(),cursor=0;
+    picks.forEach(function(m){
+      if(m.idx>cursor)frag.appendChild(document.createTextNode(text.slice(cursor,m.idx)));
+      var span=document.createElement('span');span.className='tip';span.setAttribute('tabindex','0');span.textContent=m.t;
+      var bub=document.createElement('span');bub.className='tip-bub';bub.innerHTML=DICT[m.t];span.appendChild(bub);
+      frag.appendChild(span);used[m.t]=1;cursor=m.idx+m.t.length;
+    });
+    if(cursor<text.length)frag.appendChild(document.createTextNode(text.slice(cursor)));
+    node.parentNode.replaceChild(frag,node);
+  });
+  document.addEventListener('click',function(e){
+    var tip=e.target.closest?e.target.closest('.tip'):null;
+    document.querySelectorAll('.tip.tip-open').forEach(function(x){if(x!==tip)x.classList.remove('tip-open');});
+    if(tip){e.stopPropagation();tip.classList.toggle('tip-open');}
+  });
+})();
+</script>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+</body>
+</html>
