@@ -699,11 +699,28 @@ const BODY_COLS = [
   { key: 'metabolic_age',    label: 'MetabAge',        goal: GOALS.metabolic_age },
 ];
 
+// ── CELL COLORING (Raw Data → Calories) ─────────────────────
+// 緑(良)→赤(悪) 7段グラデーション
+const CAL_RAMP = ['#c8e6c9', '#dcedc8', '#f0f4c3', '#fff9c4', '#ffe0b2', '#ffccbc', '#ffcdd2'];
+function rampColor(i) { return CAL_RAMP[Math.max(0, Math.min(CAL_RAMP.length - 1, i))]; }
+// 昇順しきい値で 0..th.length のバケットを返す（値が小さいほど 0）
+function bucketAsc(v, th) { if (isNaN(v)) return 0; let i = 0; for (const t of th) { if (v >= t) i++; else break; } return i; }
+// PFCをカロリー比%でバケット化して色を返す。higherIsBetter=true は高%ほど緑
+function pctColor(v, cal, mult, th, higherIsBetter) {
+  if (!cal || isNaN(v) || isNaN(cal)) return '';
+  const b = bucketAsc(v * mult / cal * 100, th);
+  return rampColor(higherIsBetter ? th.length - b : b);
+}
+
 const CAL_COLS = [
-  { key: 'calories', label: 'Calories (kcal)', goal: 1500 },
-  { key: 'protein',  label: 'Protein (g)',     goal: 130 },
-  { key: 'fat',      label: 'Fat (g)',         goal: null },
-  { key: 'carbs',    label: 'Carbs (g)',       goal: null },
+  // カロリー: <1500=最緑 … >=3000=最赤
+  { key: 'calories', label: 'Calories (kcal)', goal: 1500, bg: v => rampColor(bucketAsc(+v, [1500, 1750, 2000, 2250, 2500, 3000])) },
+  // Protein%(×4/cal): 高いほど緑 [15,20,25,30,35,40]
+  { key: 'protein',  label: 'Protein (g)',     goal: 130,  bg: (v, r) => pctColor(+v, +r.calories, 4, [15, 20, 25, 30, 35, 40], true) },
+  // Fat%(×9/cal): 低いほど緑 [20,25,30,35,40,50]
+  { key: 'fat',      label: 'Fat (g)',         goal: null, bg: (v, r) => pctColor(+v, +r.calories, 9, [20, 25, 30, 35, 40, 50], false) },
+  // Carbs%(×4/cal): 低いほど緑 [20,30,40,50,60,70]
+  { key: 'carbs',    label: 'Carbs (g)',       goal: null, bg: (v, r) => pctColor(+v, +r.calories, 4, [20, 30, 40, 50, 60, 70], false) },
   { key: 'sugar',    label: 'Sugar (g)',       goal: null },
   { key: 'fiber',    label: 'Fiber (g)',       goal: null },
   { key: 'salt',     label: 'Salt (g)',        goal: null },
@@ -1162,7 +1179,10 @@ function renderTable(containerId, data, cols) {
       <td>${row.date}</td>
       ${cols.map(c => {
         const v = row[c.key];
-        return `<td>${v !== undefined && v !== '' ? v : '—'}</td>`;
+        const has = v !== undefined && v !== '';
+        const bg = has && c.bg ? c.bg(v, row) : '';
+        const style = bg ? ` style="background:${bg};color:#1a1a1a"` : '';
+        return `<td${style}>${has ? v : '—'}</td>`;
       }).join('')}
     </tr>
   `).join('');
