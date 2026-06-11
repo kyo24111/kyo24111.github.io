@@ -1205,22 +1205,28 @@ function renderTable(containerId, data, cols) {
   const goalRow  = hasGoals
     ? `<tr class="goal-row">
         <td>Target</td>
-        ${cols.map(c => `<td>${c.goal !== null && c.goal !== undefined ? c.goal : '—'}</td>`).join('')}
+        ${cols.map(c => `<td>${c.goal !== null && c.goal !== undefined ? commafy(c.goal) : '—'}</td>`).join('')}
        </tr>`
     : '';
 
-  const rows = [...data].reverse().map((row, i) => `
+  const rows = [...data].reverse().map((row, i) => {
+    const wd = new Date(row.date + 'T00:00:00Z').getUTCDay(); // 0=日 6=土
+    const dcolor = wd === 6 ? '#2563eb' : wd === 0 ? '#dc2626' : '';
+    const dstyle = dcolor ? ` style="color:${dcolor};font-weight:700"` : '';
+    const md = row.date.slice(5); // strip yyyy → MM-DD
+    return `
     <tr class="${i === 0 ? 'latest' : ''}">
-      <td>${row.date}</td>
+      <td${dstyle}>${md}</td>
       ${cols.map(c => {
         const v = row[c.key];
         const has = v !== undefined && v !== '';
         const bg = has && c.bg ? c.bg(v, row) : '';
         const style = bg ? ` style="background:${bg};color:#1a1a1a"` : '';
-        return `<td${style}>${has ? v : '—'}</td>`;
+        return `<td${style}>${has ? commafy(v) : '—'}</td>`;
       }).join('')}
     </tr>
-  `).join('');
+  `;
+  }).join('');
 
   el.innerHTML = `<table class="raw">
     <thead>
@@ -1428,6 +1434,16 @@ const FOODS_DB = {
     ]
   }
 };
+
+// 4桁以上の整数部にカンマを付ける（小数部は保持）。非数値はそのまま返す
+function commafy(v) {
+  if (v === null || v === undefined || v === '') return v;
+  const s = String(v);
+  if (!isFinite(Number(s))) return s;
+  const parts = s.split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.join('.');
+}
 
 function fmtNum(n, digits = 1) {
   if (n === null || n === undefined) return '—';
