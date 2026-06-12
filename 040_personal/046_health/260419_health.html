@@ -305,6 +305,58 @@ table.foods tr.set-row td:first-child {
 }
 table.foods tr:last-child td { border-bottom: none; }
 
+/* ── KNOWLEDGE PANEL ── */
+.kn-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+.kn-search {
+  flex: 1; min-width: 180px;
+  font-family: 'Noto Sans JP', sans-serif; font-size: 13px;
+  padding: 9px 13px; border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg); color: var(--text);
+}
+.kn-search:focus { outline: none; border-color: var(--accent); }
+.kn-filter {
+  font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  padding: 7px 11px; border: 1px solid var(--border); border-radius: 999px;
+  background: var(--bg); color: var(--muted); cursor: pointer;
+}
+.kn-filter.active { background: var(--accent); border-color: var(--accent); color: var(--white); }
+table.kn { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 760px; }
+table.kn th {
+  background: var(--card2); color: var(--mid);
+  font-family: 'Poppins', sans-serif;
+  font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+  padding: 9px 12px; text-align: left; border-bottom: 2px solid var(--accent);
+  white-space: nowrap; cursor: pointer; user-select: none;
+}
+table.kn th:hover { color: var(--accent); }
+table.kn th .kn-arrow { color: var(--accent); font-size: 9px; }
+table.kn td {
+  padding: 10px 12px; border-bottom: 1px solid var(--border);
+  text-align: left; vertical-align: top;
+  font-family: 'Noto Sans JP', sans-serif; color: var(--text);
+}
+table.kn tr:hover td { background: var(--surface); }
+table.kn .kn-ja { font-weight: 700; white-space: nowrap; }
+table.kn .kn-en {
+  font-family: 'Poppins', sans-serif; font-size: 11px; color: var(--muted);
+  white-space: nowrap;
+}
+table.kn .kn-desc { font-size: 12px; line-height: 1.55; min-width: 220px; }
+table.kn .kn-rel { font-size: 11.5px; line-height: 1.5; color: var(--mid); min-width: 200px; }
+.kn-chip {
+  display: inline-block; font-family: 'Poppins', sans-serif;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .03em;
+  padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+}
+.kn-cat-macro   { background: #e2e8f0; color: #334155; }
+.kn-cat-fiber   { background: #dcfce7; color: #166534; }
+.kn-cat-fat     { background: #fef3c7; color: #92400e; }
+.kn-cat-vitamin { background: #dbeafe; color: #1e40af; }
+.kn-cat-mineral { background: #ede9fe; color: #6d28d9; }
+.kn-cat-metric  { background: #f1f5f9; color: #475569; }
+.kn-count { font-family: 'Poppins', sans-serif; font-size: 11px; color: var(--muted); margin-left: auto; }
+
 /* ── MAIN PANEL ── */
 .main-hero {
   background: var(--accent);
@@ -545,6 +597,7 @@ body{padding-top:56px!important;padding-bottom:68px!important}
   <button class="tab-btn" onclick="switchTab('foods')">Foods</button>
   <button class="tab-btn" onclick="switchTab('main')">Main</button>
   <button class="tab-btn" onclick="switchTab('diet')">Diet</button>
+  <button class="tab-btn" onclick="switchTab('knowledge')">Knowledge</button>
   <button class="tab-btn" onclick="switchTab('kine')">Kinesiology</button>
   <button class="tab-btn" onclick="switchTab('toc')">Contents</button>
 </div>
@@ -654,6 +707,11 @@ body{padding-top:56px!important;padding-bottom:68px!important}
 <!-- DIET PANEL -->
 <div id="panel-diet" style="display:none">
   <div id="diet-render"></div>
+</div>
+
+<!-- KNOWLEDGE PANEL -->
+<div id="panel-knowledge" style="display:none">
+  <div id="knowledge-render"></div>
 </div>
 
 <!-- KINESIOLOGY PANEL -->
@@ -1294,7 +1352,7 @@ function switchSubTab(name) {
 }
 
 // ── TABS ────────────────────────────────────────────────────
-const TAB_ORDER = ['chart', 'table', 'status', 'foods', 'main', 'diet', 'kine', 'toc'];
+const TAB_ORDER = ['chart', 'table', 'status', 'foods', 'main', 'diet', 'knowledge', 'kine', 'toc'];
 function switchTab(name, opts = {}) {
   if (!TAB_ORDER.includes(name)) name = 'chart';
   TAB_ORDER.forEach(t => {
@@ -1308,6 +1366,7 @@ function switchTab(name, opts = {}) {
   if (name === 'foods') renderFoods();
   if (name === 'main')  renderMain();
   if (name === 'diet')  renderDiet();
+  if (name === 'knowledge') renderKnowledge();
   if (name === 'kine')  renderKine();
   if (name === 'toc')   renderToc();
   if (!opts.skipHash) {
@@ -1950,6 +2009,122 @@ function renderDiet() {
   `;
 }
 
+// ── KNOWLEDGE PANEL (栄養用語グロッサリー) ──────────────────
+const KN_CAT = {
+  macro:   { label: 'Macro',   cls: 'kn-cat-macro',   order: 0 },
+  fiber:   { label: 'Fiber',   cls: 'kn-cat-fiber',   order: 1 },
+  fat:     { label: 'Fat',     cls: 'kn-cat-fat',     order: 2 },
+  vitamin: { label: 'Vitamin', cls: 'kn-cat-vitamin', order: 3 },
+  mineral: { label: 'Mineral', cls: 'kn-cat-mineral', order: 4 },
+  metric:  { label: 'Metric',  cls: 'kn-cat-metric',  order: 5 },
+};
+const KNOWLEDGE = [
+  { cat:'macro', ja:'カロリー', en:'Energy (kcal)', desc:'摂取エネルギーの総量。P・Cは4、Fは9 kcal/g。体重はこの収支（摂取−消費）で決まる。', rel:'PFCの量の合計で算出。消費(TDEE)を下回れば減量する。' },
+  { cat:'macro', ja:'タンパク質 (P)', en:'Protein', desc:'筋肉・臓器・酵素・ホルモンの材料。4 kcal/g。1日130g目標。', rel:'Cと同熱量だが筋維持に必須。代謝にビタミンB6が必要。プロテインで約65%確保。' },
+  { cat:'macro', ja:'脂質 (F)', en:'Fat', desc:'最も高密度なエネルギー源（9 kcal/g）。ホルモン・細胞膜の材料。1日46g目標。', rel:'「量」より「質」が重要 → 飽和より不飽和（オメガ3）を増やす。' },
+  { cat:'macro', ja:'炭水化物 (C)', en:'Carbohydrate', desc:'主エネルギー源（4 kcal/g）。糖質＋食物繊維の総称。', rel:'糖質=吸収される / 食物繊維=されない。両者を分けて考える。' },
+  { cat:'macro', ja:'糖質', en:'Sugars (net carbs)', desc:'炭水化物から食物繊維を除いた、実際に吸収され血糖を上げる分。', rel:'食物繊維と対。低GI・水溶性食物繊維で吸収が緩やかになる。' },
+
+  { cat:'fiber', ja:'食物繊維', en:'Dietary Fiber', desc:'ヒトの消化酵素で分解されない炭水化物。血糖の緩和・腸内環境・満腹感。目標20g/日。', rel:'水溶性＋不溶性の総称。糖質と対（吸収されない）。1日1食設計で最も不足しやすい。' },
+  { cat:'fiber', ja:'水溶性食物繊維', en:'Soluble Fiber', desc:'水に溶けてゲル化。糖の吸収を緩やかに・コレステロール↓・腸内細菌のエサ（短鎖脂肪酸）。', rel:'↔不溶性（かさ増し）。目安は全体の約1/3（6〜8g）。海藻・オーツ・納豆。' },
+  { cat:'fiber', ja:'不溶性食物繊維', en:'Insoluble Fiber', desc:'水を吸って便のかさを増し、腸の蠕動を促進・排出。', rel:'↔水溶性（ゲル化）。約2/3（12〜14g）。水分とセットでないと逆に詰まる。玄米・きのこ。' },
+
+  { cat:'fat', ja:'オメガ3', en:'Omega-3', desc:'多価不飽和脂肪酸の一群（EPA・DHA・ALA）。抗炎症・中性脂肪↓・心血管・脳。', rel:'↔オメガ6（過剰だと炎症寄り）。現代食はO6過多 → O3を増やしバランスを取る。' },
+  { cat:'fat', ja:'EPA', en:'Eicosapentaenoic Acid', desc:'オメガ3（動物性）。血流改善・抗炎症・中性脂肪低下。', rel:'DHAと対：EPA=血流/炎症、DHA=脳。青魚から直接摂取。' },
+  { cat:'fat', ja:'DHA', en:'Docosahexaenoic Acid', desc:'オメガ3（動物性）。脳・網膜・神経機能。', rel:'EPAと対：DHA=脳、EPA=血流。両者まとめてEPA+DHA 1〜2g/日。鮭・サバ。' },
+  { cat:'fat', ja:'ALA（α-リノレン酸）', en:'Alpha-Linolenic Acid', desc:'植物性オメガ3。体内で一部がEPA/DHAに変換される。', rel:'変換率は低い（5〜10%）→ 魚を食べない日の保険。えごま・亜麻仁油（生で）・くるみ。' },
+
+  { cat:'vitamin', ja:'ビタミンA', en:'Vitamin A (Retinol)', desc:'脂溶性。視覚・皮膚と粘膜・免疫。', rel:'脂溶性（A・Dは体に蓄積→過剰注意）。βカロテン（緑黄色野菜）から体内変換も。' },
+  { cat:'vitamin', ja:'ビタミンB1', en:'Thiamine', desc:'水溶性。糖質をエネルギーに変える。不足で疲労・神経症状。', rel:'B2と対：B1=糖質代謝、B2=脂質代謝。豚肉・玄米・大豆。' },
+  { cat:'vitamin', ja:'ビタミンB2', en:'Riboflavin', desc:'水溶性。脂質代謝・皮膚と粘膜の健康。', rel:'B1と対：B2=脂質代謝。卵・納豆・レバー。' },
+  { cat:'vitamin', ja:'ビタミンB6', en:'Pyridoxine', desc:'水溶性。タンパク質（アミノ酸）代謝の主役・神経伝達物質の合成。', rel:'高タンパク食（P130g）ほど必要量↑ → Pと連動。鮭・カツオ・バナナ。' },
+  { cat:'vitamin', ja:'ビタミンC', en:'Vitamin C (Ascorbic Acid)', desc:'水溶性。抗酸化・コラーゲン合成・鉄の吸収促進・免疫。', rel:'水溶性で蓄積されない→毎日必要。脂溶性（A/D）と対照的。果物・野菜。' },
+  { cat:'vitamin', ja:'ビタミンD', en:'Vitamin D (Calciferol)', desc:'脂溶性。カルシウム吸収・骨・免疫・筋力・テストステロン。日光で皮膚合成。', rel:'Aと同じ脂溶性。出張/室内中心だと不足 → サプリ推奨。鮭・きのこ。' },
+
+  { cat:'mineral', ja:'マグネシウム', en:'Magnesium (Mg)', desc:'300超の酵素反応・睡眠の質・筋弛緩・神経・エネルギー産生。', rel:'現代人は慢性的に不足。カルシウムと拮抗的に働く。海藻・ナッツ・玄米。' },
+  { cat:'mineral', ja:'亜鉛', en:'Zinc (Zn)', desc:'テストステロン合成・免疫・タンパク質合成と筋・味覚・傷の治癒。', rel:'高タンパク/運動で消耗↑ → Pを攻める人ほど重要。牡蠣・赤身肉・卵。' },
+  { cat:'mineral', ja:'カリウム', en:'Potassium (K)', desc:'ナトリウムを排出し血圧を下げる・むくみ解消・筋収縮。', rel:'↔ナトリウム（拮抗）。塩分過多をKで相殺。バナナ・ほうれん草・アボカド。' },
+  { cat:'mineral', ja:'ナトリウム（塩分）', en:'Sodium (Na)', desc:'体液量・血圧の調整。必須だが過多で高血圧・むくみ。', rel:'↔カリウム。記録上は目標7.5g超の日が多く過多傾向 → 減らす方向。' },
+
+  { cat:'metric', ja:'GI（グリセミック指数）', en:'Glycemic Index', desc:'食後血糖の上がりやすさの指標。低いほど緩やか。', rel:'玄米=低GI、白米/糖質=高め。水溶性食物繊維で低下。脂肪蓄積に関与。' },
+  { cat:'metric', ja:'VO2max', en:'Maximal Oxygen Uptake', desc:'運動中に取り込める酸素量の最大値＝有酸素能力（心肺機能）の指標。', rel:'腹式呼吸/換気効率と関連。CPX・Apple Watchで測定。早歩き/ジョギングで向上。' },
+];
+let knSort = { key: 'cat', dir: 1 };
+let knFilter = 'all';
+
+function renderKnowledge() {
+  const root = document.getElementById('knowledge-render');
+  if (root.dataset.rendered) { knApply(); return; }
+  root.dataset.rendered = '1';
+  const cats = ['all', ...Object.keys(KN_CAT)];
+  const filters = cats.map(c =>
+    `<button class="kn-filter${c === 'all' ? ' active' : ''}" data-cat="${c}" onclick="knFilterBy('${c}')">${c === 'all' ? 'All' : KN_CAT[c].label}</button>`
+  ).join('');
+  root.innerHTML = `
+    <div class="main-hero">
+      <div class="main-hero-tag">Knowledge</div>
+      <div class="main-hero-title">栄養用語グロッサリー</div>
+    </div>
+    <div class="main-callout">PFC以外で意識する「微量・質」の用語集。カテゴリで絞り込み、見出しクリックで並べ替え（▲▼）。</div>
+    <div class="kn-toolbar">
+      <input class="kn-search" type="text" placeholder="検索（日本語・英語・説明）" oninput="knApply()">
+      ${filters}
+      <span class="kn-count" id="kn-count"></span>
+    </div>
+    <div class="table-wrap"><table class="kn">
+      <thead><tr>
+        <th onclick="knSortBy('cat')">Category<span class="kn-arrow" data-k="cat"></span></th>
+        <th onclick="knSortBy('ja')">用語 (日)<span class="kn-arrow" data-k="ja"></span></th>
+        <th onclick="knSortBy('en')">Term (EN)<span class="kn-arrow" data-k="en"></span></th>
+        <th>説明</th>
+        <th>関係・対比</th>
+      </tr></thead>
+      <tbody id="kn-body"></tbody>
+    </table></div>
+  `;
+  knApply();
+}
+
+function knSortBy(key) {
+  if (knSort.key === key) knSort.dir *= -1;
+  else knSort = { key, dir: 1 };
+  knApply();
+}
+
+function knFilterBy(cat) {
+  knFilter = cat;
+  document.querySelectorAll('.kn-filter').forEach(b => b.classList.toggle('active', b.dataset.cat === cat));
+  knApply();
+}
+
+function knApply() {
+  const q = (document.querySelector('.kn-search')?.value || '').trim().toLowerCase();
+  let rows = KNOWLEDGE.filter(r => knFilter === 'all' || r.cat === knFilter);
+  if (q) rows = rows.filter(r => (r.ja + ' ' + r.en + ' ' + r.desc + ' ' + r.rel).toLowerCase().includes(q));
+  const { key, dir } = knSort;
+  rows = rows.slice().sort((a, b) => {
+    if (key === 'cat') {
+      const d = KN_CAT[a.cat].order - KN_CAT[b.cat].order;
+      return (d !== 0 ? d : a.ja.localeCompare(b.ja, 'ja')) * dir;
+    }
+    return a[key].localeCompare(b[key], key === 'ja' ? 'ja' : 'en') * dir;
+  });
+  const body = document.getElementById('kn-body');
+  body.innerHTML = rows.map(r => `
+    <tr>
+      <td><span class="kn-chip ${KN_CAT[r.cat].cls}">${KN_CAT[r.cat].label}</span></td>
+      <td class="kn-ja">${r.ja}</td>
+      <td class="kn-en">${r.en}</td>
+      <td class="kn-desc">${r.desc}</td>
+      <td class="kn-rel">${r.rel}</td>
+    </tr>
+  `).join('') || `<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:24px">該当なし</td></tr>`;
+  document.getElementById('kn-count').textContent = rows.length + ' terms';
+  document.querySelectorAll('.kn-arrow').forEach(s => {
+    s.textContent = (s.dataset.k === key) ? (dir === 1 ? ' ▲' : ' ▼') : '';
+  });
+}
+
 // ── KINESIOLOGY PANEL ───────────────────────────────────────
 function renderKine() {
   const root = document.getElementById('kine-render');
@@ -2073,6 +2248,9 @@ const TOC_ENTRIES = [
   },
   { tab: 'diet',  label: 'Diet',         jp: '食事習慣',
     desc: '普段の食事リズム・好み・苦手・水分摂取・定番メニューなど、個人の食生活スタイルを記録するページ。FoodsとMainを行動に落とし込む場所。'
+  },
+  { tab: 'knowledge', label: 'Knowledge', jp: '栄養用語グロッサリー',
+    desc: 'PFC以外で意識する微量・質の栄養用語集（食物繊維・オメガ3・ビタミン・ミネラル等）。日/英・説明・他用語との関係を、カテゴリ別ラベル＋ソート可能なテーブルで一覧。'
   },
   { tab: 'kine',  label: 'Kinesiology',  jp: '運動・トレーニング',
     desc: '現行ルーチン（分割法・頻度）、Strength PRs（BIG3等）、Mobility/可動域、Recovery（睡眠・心拍）、Cardio（VO2max・距離）等を記録予定。'
