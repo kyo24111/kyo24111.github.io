@@ -746,6 +746,33 @@ $10B+ Company への最短ルートを進むなら、今まさにアメリカで
 
 > **OPEN QUESTION**：この問いは保留。今後のリサーチで深掘りする論点として置いておく。
 
+## Kioxia 関連の検証ポイント
+
+NAND メモリ世界2位（Toshiba メモリ事業部から独立、2024年IPO）。AIサーバー / DCストレージの中核プレイヤー。事業を組む前に検証しておきたい論点：
+
+### Q. Kioxia の主要クライアントはどこか？
+
+> **OPEN QUESTION**
+
+初期仮説：Hyperscalers（AWS / Microsoft / Google / Meta）、Server OEM（Dell / HPE / Supermicro）、Apple、SSDコントローラ企業（Phison / Silicon Motion）あたり。**NVIDIAのAIサーバー向け SSD 需要も急成長中**。実際の売上構成（地域別 / 顧客別）を Annual Report / 決算資料で要確認。
+
+### Q. それらに対してセールス活動をしている部隊がいるか？
+
+> **OPEN QUESTION**
+
+Kioxia America Inc.（San Jose 拠点）が北米営業を担当しているはず。Hyperscalers 向けに直販 + Server OEM経由の間接販売の両輪と思われる。**「日本本社の営業企画」と「Kioxia America の現地営業」のレポートライン、人員規模、決裁権の所在** が要確認ポイント。
+
+### Q. 本プロジェクトがヘルプしようとした時、Kioxia はニーズを感じるか？
+
+> **OPEN QUESTION**
+
+仮説：YES、ただし条件付き。
+
+- **正：** Samsung / SK Hynix との価格競争で米国シェアを取り戻したい。Hyperscalers との直接交渉力、CFIUS 完全準拠の US Soil 製造、政府グラント獲得が魅力。
+- **負：** すでに自社で米国営業組織を持っており、商社的な仲介に高い手数料を払う動機が薄い可能性。
+
+**検証アプローチ：** Kioxia America の元幹部 / 退任者へのヒアリング、ベイン・キャピタル（株主）経由でのアプローチ、IR 開示の「課題」セクション精読。
+
 # Japanese Major Manufacturers — Ranking (must-know)
 
 This trading-company business demands deep knowledge of "who holds which irreplaceable tech" at the major Japanese manufacturers. Ranked by relevance to Semi / DC / Defense / Space / Robotics.
