@@ -923,6 +923,58 @@ AWS / Meta / Google などのハイパースケーラーは **OEMをスキップ
 - **核融合・特殊冷却**：Mayekawa（極低温）、Toshiba ESS — 超伝導磁石用ヘリウム冷凍機
 - **宇宙機サーマル制御**：JAXA協力企業（IHI Aerospace 等）、Mitsubishi Electric — 衛星熱制御
 
+## Q. どの Industry から攻めるか？ — 3軸フレームワーク（Geminiの示唆）
+
+この問いは常に持っておきたい。Geminiから受けた切り口：**3つの軸でハードウェア市場を分類** すれば、必要な素材・技術・営業ルートが明確になる。
+
+### 軸 ①：Physics Bound（物理的な制約）
+
+ハードウェアは「物理の壁」で分類すると、必要な素材と技術が明確になる。
+
+| 分類 | 該当領域 | 核心課題 |
+|---|---|---|
+| **Stationary & Thermal-bound**（固定式・熱が限界） | Data Center、Fusion、SMR | 重くても動かなくていい。**「熱」をどう逃すか** |
+| **Mobile & Weight-bound**（移動式・重さと電力が限界） | Robot、Drone、EV | バッテリー駆動。モーターの **「小型化・軽量化・省電力化」** |
+| **Extreme Environment**（極限環境） | Space、Deep Sea | 熱・電力に加え、**真空・放射線・絶対零度に耐える「異常な耐久性」** |
+
+### 軸 ②：Geopolitical Trust（顧客の機密レベル）
+
+日本の独占技術をUSで組み立てるFoundryにおいて、最も意識すべき「顧客の性質」による切り方。
+
+| 分類 | 代表顧客 | 特性 |
+|---|---|---|
+| **Commercial**（純・民間） | AWS、Google、Apple | 利益率と性能が最優先 |
+| **Dual-Use**（軍民両用） | SpaceX、Anduril、Figure | 表向き民間だが防衛転用。**今USで最もお金が集まっているHotな領域** |
+| **Classified**（国家機密） | DoD、Lockheed Martin | 最高度クリアランス必要。**一度入れば絶対にひっくり返らない最強の市場** |
+
+### 軸 ③：Integration Layer（統合の深さ）
+
+「何をどこまで組み合わせて売るか」というバリューチェーンの切り方。
+
+| Layer | 内容 | 例 |
+|---|---|---|
+| **Layer 1: Material**（素材） | 原料・化学素材を売る | AGCのフッ素冷媒、Torayのカーボン |
+| **Layer 2: Component & Module**（部品・モジュール） | 機能を持った部品単位 | Nidecのモーター、冷却ポンプ、ロボット関節ユニット |
+| **Layer 3: System Architecture**（システム全体） | 完成済みの統合システム | 「完成済みAIラック」「ロボットアーム全体」 |
+
+### Geminiの最終問い：AWSに Layer 3 (System) でパッケージ売りが最大利益か？
+
+**仮説：YES（条件付き）。**
+
+- **Phase 1（Broker）では Layer 1 〜 2**：AGCのフッ素冷媒、Nidecのポンプを単体でAWSに紹介。マージン3〜10%、まずは取引実績作り
+- **Phase 2（独占代理）でも Layer 2 まで**：「日本部品の独占供給」がMoat、Layer 3はまだ他社（Foxconn等）が組み立てる
+- **Phase 3（自社Foundry）で Layer 3 へ昇格**：LA/Texasの自社工場で「AGC冷媒 + Nidec ポンプ + Daikin HVAC + Murata 電源」を統合した「完成済み AI冷却ラック」をAWSに納品。マージン 25-30%
+
+**結論：Geminiの仮説は正しいが、最初からLayer 3はNG。3年かけて Layer 1→2→3 と段階的に昇格するのが現実解。**
+
+### 3軸マッピング：本事業のフェーズ別ターゲット
+
+| フェーズ | Physics | Trust | Layer |
+|---|---|---|---|
+| **Phase 1（Year 1〜3）** | Stationary（DC冷却） | Commercial（AWS / Google） | L1〜L2 |
+| **Phase 2（Year 3〜5）** | + Mobile（Robot / Drone） | + Dual-Use（SpaceX / Anduril / Figure） | L2 中心、L3 試作 |
+| **Phase 3（Year 5〜10）** | + Extreme（Space / Fusion） | + Classified（DoD / Lockheed） | L3 主軸（Pure-play Foundry） |
+
 ## Q. プロジェクト単位の収益イメージ（そろばん）
 
 各社の素材・部品を「バラ売りの個数」ではなく、**USハイパースケーラーが1回に発注する「プロジェクト単位のパッケージ」** として収益を試算したケース。
