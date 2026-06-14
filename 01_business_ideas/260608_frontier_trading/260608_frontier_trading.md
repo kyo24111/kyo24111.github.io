@@ -878,6 +878,41 @@ AWS / Meta / Google などのハイパースケーラーは **OEMをスキップ
 - **中期（3-5年）**：Tesla 内製化リスクがある一方、量産ヒューマノイドの指数関数的増加で Harmonic Drive の絶対需要は急拡大
 - **長期（5-10年）**：中国 Leader Drive 等の追い上げ、US内製化の進展に注意。Phase 3 で **「日本素材 + US Soil 製造」** で内製化代替の地位を確保
 
+## Q. 日本で冷却技術が強いのはどの会社？どの領域が強いか？
+
+冷却は **「流体（冷媒）」「機械（HVAC・チラー）」「ファン・ポンプ」「熱交換器」「電力統合」** の5レイヤーに分かれ、それぞれに日本企業のチャンピオンがいる。
+
+### レイヤー別 日本チャンピオン
+
+| レイヤー | 日本企業 | 強み / 製品 | 事業との関連 |
+|---|---|---|---|
+| **① 冷媒・流体** | **AGC** | フッ素系液浸冷媒（Asahiklin AE3000）、絶縁・不燃 | **DC液浸冷却の中核**、代替不可 |
+| | **Daikin** | HFO系冷媒（R32等）、世界一のIPポートフォリオ | HVAC・産業冷凍の標準 |
+| **② 空調・HVAC** | **Daikin** | 世界シェア1位、VRV/VRF | DC施設HVAC |
+| | **Mitsubishi Electric** | 業務用HVAC、Mr. Slim | 商業・DC |
+| | **Hitachi** | 大型空調、産業冷凍 | 大規模施設 |
+| **③ 産業冷却・チラー** | **Mayekawa（前川製作所）** | 産業冷凍世界トップ、自然冷媒 | 食品・半導体ライン |
+| | **Mitsubishi Heavy Industries** | 大型遠心冷凍機、ターボチラー | 大型DC・産業 |
+| **④ ファン・ポンプ** | **Nidec** | サーバー冷却ファン世界1位、液冷ポンプ | **AIサーバー液冷の絶対部品** |
+| | **Sanyo Denki** | San Ace ファン、信頼性で標準 | サーバー・通信機器 |
+| | **Minebea Mitsumi** | 精密ベアリング + ファン | 小型機器・ドローン |
+| **⑤ 熱交換器・素材** | **Resonac（旧昭和電工）** | アルミ熱交換器材世界1位 | サーバー・EV |
+| | **UACJ** | サーモテック™、空調用アルミ | EV・HVAC |
+| **⑥ 電力統合** | **Fuji Electric** | SiCパワー半導体 + 電力変換 | DC電力・冷却統合 |
+
+### 本事業（DC冷却 Wedge）に必要な「黄金トリオ」
+
+- **AGC**（液浸冷媒）+ **Nidec**（液冷ポンプ・ファン）+ **Daikin**（HVAC統合）
+- この3社の独占代理権を握れば、AI Data Center 冷却の「全レイヤー」を抑えられる
+- NVIDIA GB200 / Rubin 世代の液冷必須化、Crusoe Energy / Heron Power のモバイル/分散DC、Hyperscalers の超大規模DCすべてに刺さる
+
+### 補足：DC冷却以外で強い領域
+
+- **EV・電池冷却**：Resonac（アルミ熱交）、Daikin、Fuji Electric — Tesla Megapack や CATL に納入
+- **半導体プロセス冷却**：AGC、Mayekawa — Tokyo Electron や Applied Materials の装置内部冷却
+- **核融合・特殊冷却**：Mayekawa（極低温）、Toshiba ESS — 超伝導磁石用ヘリウム冷凍機
+- **宇宙機サーマル制御**：JAXA協力企業（IHI Aerospace 等）、Mitsubishi Electric — 衛星熱制御
+
 ## Kioxia 関連の検証ポイント
 
 NAND メモリ世界2位（Toshiba メモリ事業部から独立、2024年IPO）。AIサーバー / DCストレージの中核プレイヤー。事業を組む前に検証しておきたい論点：
