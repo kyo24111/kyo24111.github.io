@@ -752,9 +752,17 @@ NAND メモリ世界2位（Toshiba メモリ事業部から独立、2024年IPO�
 
 ### Q. Kioxia の主要クライアントはどこか？
 
-> **OPEN QUESTION**
+Kioxia は **「NANDフラッシュメモリ」の専業**。売却先は3つに綺麗に分かれる：
 
-初期仮説：Hyperscalers（AWS / Microsoft / Google / Meta）、Server OEM（Dell / HPE / Supermicro）、Apple、SSDコントローラ企業（Phison / Silicon Motion）あたり。**NVIDIAのAIサーバー向け SSD 需要も急成長中**。実際の売上構成（地域別 / 顧客別）を Annual Report / 決算資料で要確認。
+| セグメント | 比率（目安） | 顧客例 |
+|---|---|---|
+| **データセンター向け** | **約45%** | Hyperscalers (AWS / Azure / GCP / Meta)、Server OEM (Dell / HPE / Supermicro)、NVIDIA AIサーバー向け |
+| **スマホ向け** | 約35% | Apple、Samsung、中華スマホ各社 |
+| **PC・コンシューマ向け** | 約20% | PC OEM、リテール SSD |
+
+**現在はAIブームで、最も利益率の高いデータセンター向け比率が急拡大中。** NVIDIAのAIサーバー向けSSD需要が牽引。
+
+この事業にとって：**狙うべきは45%のDC向け**。ハイパースケーラーとの関係構築・US Soil 製造の文脈と完全に重なる。スマホ向けは Apple 直営業が確立しており参入余地が薄い。
 
 ### Q. それらに対してセールス活動をしている部隊がいるか？
 
