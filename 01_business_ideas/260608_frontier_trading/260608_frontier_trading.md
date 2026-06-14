@@ -849,6 +849,35 @@ AWS / Meta / Google などのハイパースケーラーは **OEMをスキップ
 - 移行のタイミングは **「3つのトリガー」**（PoC→Rollout、DoD要件、メーカー内製限界）に従う。
 - 逆方向（ODM → Broker）は事実上不可。一度製造を始めたら、CAPEX回収のため後戻りできない。
 
+## Q. Figure / Boston Dynamics などUSのロボット企業も日本のパーツを必要とするか？
+
+**結論：現状ほぼ全社が日本依存。特に「精密減速機」は事実上の日本独占。** ただしTesla / Apptronik などは内製化を進めており、5〜10年で構造変化の可能性あり。
+
+### ヒューマノイド／ロボットの「絶対に日本」な部品
+
+| 部品 | 日本企業 | 世界シェア | なぜ代替不可 |
+|---|---|---|---|
+| **Harmonic Drive**（波動歯車） | Harmonic Drive Systems（ニデック傘下） | 70%+ | バックラッシゼロ、関節の高精度・コンパクト化に不可欠 |
+| **RV減速機**（サイクロイド） | Nabtesco | 60%+ | 大トルク・耐久性、産業用ロボット関節の標準 |
+| **精密サーボ** | Yaskawa / Mitsubishi Electric / Nidec | 60%+ | 高速応答 + 高精度、産業用は日本独壇場 |
+| **力センサー** | Wacoh-Tech / Nidec / Murata | 40-50% | ヒューマノイド「触覚」の核心 |
+| **イメージセンサー** | Sony | 50%+ | Apple/Tesla も Sony 製採用 |
+| **軽量構造材** | Toray (CFRP) | 1位 | ヒューマノイド軽量化 |
+
+### 主要US企業の依存状況
+
+- **Figure**：Harmonic Drive依存度高。BMWラインの量産機にも日本製減速機が入っている可能性大
+- **Boston Dynamics**：油圧→電動化で日本製減速機・サーボ採用拡大。現代自動車傘下、韓国部品も併用へ
+- **Tesla（Optimus）**：**アクチュエータの内製化に注力中**。Harmonic Driveから「Planetary Roller Screw」独自設計で脱却を狙う
+- **1X / Apptronik**：独自設計を進めつつ、初期量産品では日本部品を使う見込み
+- **Skydio / Saildrone**：Nidec の超小型モーターに強く依存
+
+### 本事業への示唆
+
+- **短期（〜3年）**：Figure / Boston Dynamics / 1X / Apptronik への **Harmonic Drive Systems + Nabtesco + Yaskawa の独占代理権** 取得が最強の Wedge
+- **中期（3-5年）**：Tesla 内製化リスクがある一方、量産ヒューマノイドの指数関数的増加で Harmonic Drive の絶対需要は急拡大
+- **長期（5-10年）**：中国 Leader Drive 等の追い上げ、US内製化の進展に注意。Phase 3 で **「日本素材 + US Soil 製造」** で内製化代替の地位を確保
+
 ## Kioxia 関連の検証ポイント
 
 NAND メモリ世界2位（Toshiba メモリ事業部から独立、2024年IPO）。AIサーバー / DCストレージの中核プレイヤー。事業を組む前に検証しておきたい論点：
