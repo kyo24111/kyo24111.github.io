@@ -746,6 +746,44 @@ $10B+ Company への最短ルートを進むなら、今まさにアメリカで
 
 > **OPEN QUESTION**：この問いは保留。今後のリサーチで深掘りする論点として置いておく。
 
+## OEM / ODM / EMS の違い（前提知識）
+
+「製造業の商社」を設計する上で、サプライチェーンの階層を正確に理解しておく必要がある。3つの専門用語は混同されがちだが、**価値・利益率・ポジショニング** がまったく違う。
+
+| 用語 | 正式名 | 役割 | 価値構造 | 代表例（DC領域） |
+|---|---|---|---|---|
+| **OEM** | Original Equipment Manufacturer | **ブランドを持ち、完成品を売る企業**。仕様・設計を主導し、必要に応じて自社製造 or 外注。最終ユーザーとの直接接点を持つ。 | 営業利益率 高（ブランド・知財・サポート） | Dell, HPE, Lenovo, Supermicro, Cisco, NetApp |
+| **ODM** | Original Design Manufacturer | **設計と製造の両方を引き受ける**。OEMから「こんなサーバー作って」と仕様だけ受け、設計から部品調達・組立までフルで実行。OEMブランドで出荷。 | 営業利益率 中（設計・量産技術で差別化） | Quanta, Wiwynn, Inventec, Compal, Pegatron |
+| **EMS** | Electronics Manufacturing Services | **顧客が用意した設計図通りに製造のみ請け負う**。設計はOEM側、EMSはひたすら組立・テスト。コモディティ化しやすい。 | 営業利益率 低（量とコスト勝負） | Foxconn, Flex, Jabil, Sanmina, Celestica |
+
+### 階層イメージ（DCサプライチェーン）
+
+```
+Component Supplier  (Kioxia / NVIDIA / Intel / AGC / Toray など)
+    ↓ 部品・素材
+EMS / ODM           (Foxconn / Quanta / Wiwynn など)
+    ↓ 組立済みサーバー / ラック
+OEM                 (Dell / HPE / Lenovo / Supermicro)
+    ↓ ブランド完成品
+End User / Hyperscaler (AWS / Azure / GCP / Meta)
+```
+
+### 最近の構造変化：Hyperscaler の ODM 直販
+
+AWS / Meta / Google などのハイパースケーラーは **OEMをスキップし、Quanta などのODMから直接買う** 動きが主流化。「White Box Server」と呼ばれる。理由：
+
+- Dell/HPEのブランドマージン（10〜20%）を払う価値がない
+- 自社で運用ノウハウがあるためサポートも不要
+- カスタム設計を ODM に直注文した方が要件にフィット
+
+結果、**OEMは「中間業者」として圧迫されつつあり、ODMが力をつけている**。NVIDIAのGB200ラックも、Foxconn / Quanta が主要組立パートナー。
+
+### 本事業のポジショニング示唆
+
+- **Phase 1〜2 では Component Supplier の上に立つ「Tier 0.5」**：日本素材・部品を US 顧客（OEM/ODM/Hyperscaler）に届けるブローカー。価値層は Component よりやや上。
+- **Phase 3 では ODM ポジションを狙う**：自社製造（LA/Texas）で、ハイパースケーラー直販。Foxconn / Quanta と直接競合するが、**「日本素材独占 × US Soil × CFIUSセキュア」** で差別化。
+- **OEM になるのは避ける**：自社ブランドのサーバーを作ると Dell/HPE と顧客競合する。TSMC ルール（"We do not compete with our customers"）に従う。
+
 ## Kioxia 関連の検証ポイント
 
 NAND メモリ世界2位（Toshiba メモリ事業部から独立、2024年IPO）。AIサーバー / DCストレージの中核プレイヤー。事業を組む前に検証しておきたい論点：
