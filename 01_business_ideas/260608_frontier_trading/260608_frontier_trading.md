@@ -923,6 +923,44 @@ AWS / Meta / Google などのハイパースケーラーは **OEMをスキップ
 - **核融合・特殊冷却**：Mayekawa（極低温）、Toshiba ESS — 超伝導磁石用ヘリウム冷凍機
 - **宇宙機サーマル制御**：JAXA協力企業（IHI Aerospace 等）、Mitsubishi Electric — 衛星熱制御
 
+## Q. Foundry はどこに作るべきか？ — Texas / LA / Chicago
+
+**結論：LA（El Segundo / Gundo）でスタート、Phase 3 のスケール時に Texas（Austin or Houston）に拡張。Chicago は戦略的に外れ。**
+
+| 候補地 | Pros | Cons | 判定 |
+|---|---|---|---|
+| **LA（El Segundo / Gundo）** | Gundo = 防衛テックの聖地（Anduril, Mach, Apex）/ SpaceX HQ / Aerospace / 港湾アクセス / VC近接 / 名門大学人材 | CA高税率、厳しい規制、人件費トップクラス、地震リスク | ◎ **Phase 1 スタート** |
+| **Texas（Austin / Houston）** | 州法人税ゼロ / Pro-business / Samsung・TI・Tesla・SpaceX / 安価電力 / CHIPS Act恩恵 / 労働力・土地が LA の1/3 | 電力グリッド信頼性、暑い気候、西海岸VCから遠い | ◎ **Phase 3 拡張** |
+| **Chicago（IL）** | 中央立地、Argonne国立研究所、工業ヘリテージ、寒冷気候はDC冷却有利 | フロンティアテック集積なし、IL税重い、VC・顧客遠い | ✗ **外す** |
+
+### 推し戦略：LA → Texas の2拠点ロールアウト
+
+**Phase 1〜2（Year 1〜5）：LA El Segundo**
+
+- 初期は小規模アセンブリ + R&D拠点（5〜20億円規模の CapEx）
+- Anduril、SpaceX、Mach、Apex などの Gundo defense ecosystem と物理近接
+- Founders Fund / Thiel系VCリレーション構築に有利
+- 港湾アクセスで AGC / Toray / Nidec の日本素材を即時輸入
+
+**Phase 3（Year 5〜）：Texas Austin（or Houston）拡張**
+
+- 本格 Black Box Factory（数億〜数十億ドル規模 CapEx）
+- 州税ゼロ + 低人件費 + CHIPS Act補助金で利益率最大化
+- Tesla / Samsung / TI が築いた製造エコシステム活用
+- Hyperscaler（AWS Texas Region、Meta DC）への直送圏
+
+### 補足：他の候補
+
+- **Phoenix, Arizona**：TSMC Fab、Intel Ocotillo。半導体特化なら最強
+- **Columbus, Ohio**：Intel Mega Fab、CHIPS Act の中心地
+- **Atlanta, Georgia**：NVIDIA / Hyundai EV、CFIUS親和的
+- **Boise, Idaho**：Micron HQ、メモリ特化なら検討
+- **Bay Area**：人件費高すぎ、R&Dオフィス限定
+
+### 最終 Phase（Year 15+）：3拠点グローバル展開
+
+LA（米西海岸）+ Texas（米中南部）+ **Germany（欧州）** の3拠点で、TSMC Arizona / Japan / Europe と同じグローバル分散モデル。Germany 拠点は Phase 2 後半に Bosch / Siemens / Anduril Europe との連携で検討。
+
 ## Q. どの Industry から攻めるか？ — 3軸フレームワーク（Geminiの示唆）
 
 この問いは常に持っておきたい。Geminiから受けた切り口：**3つの軸でハードウェア市場を分類** すれば、必要な素材・技術・営業ルートが明確になる。
