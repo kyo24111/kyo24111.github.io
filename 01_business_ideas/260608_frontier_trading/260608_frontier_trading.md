@@ -982,6 +982,88 @@ AWS / Meta / Google などのハイパースケーラーは **OEMをスキップ
 - **核融合・特殊冷却**：Mayekawa（極低温）、Toshiba ESS — 超伝導磁石用ヘリウム冷凍機
 - **宇宙機サーマル制御**：JAXA協力企業（IHI Aerospace 等）、Mitsubishi Electric — 衛星熱制御
 
+## Q. 商社って fee 取り続けられてるのなんで？ 直契約したいインセンティブが途中で働かない？
+
+**結論：商社が fee を維持できる理由は 5つの "Stickiness（粘着性）"。これらが本事業の Moat 設計にも直結する。**
+
+| Stickiness | 商社が提供する価値 | 直契約を阻む理由 |
+|---|---|---|
+| **① Information Asymmetry** | 両側の社内事情・キーマン・タイミングを唯一知っている | 商社を外すと「適切な相手・量・タイミング」がわからない |
+| **② Risk Absorption** | 信用・為替・在庫・物流リスクを引き受ける | 直契約だと両社が新たにリスク管理組織を作る必要 |
+| **③ Embedded Financing** | 商社が前払い（DSO 90日） | 三菱商事の信用力で銀行から引いた資金が回している |
+| **④ Aggregation** | n社の顧客 × n社のメーカーを束ねる | 1対1直契約だとスケールメリット取れない |
+| **⑤ Operational Infra** | 通関・規制・物流・QC・現地サポートの統合 | 内製化に数年・数十億円必要 |
+
+### 本事業の Stickiness 設計
+
+- **Phase 1（Broker）**：LoI / JDA、通関 + QC のオペ基盤、US現地法人による信用・金融
+- **Phase 2（Margin + Tolling）**：Tolling工程の組み込み、JIT在庫、複数メーカー集約
+- **Phase 3（Pure-play Foundry ODM）**：**工場そのものが Moat**。US Soil・CFIUS準拠の物理工場が代替不可能
+
+**Phase 3 で物理工場を持つことで、「直契約したいインセンティブ」自体が消える。** 顧客から見て「我々がいなければそもそも作れない」状態を作るのが究極のMoat。
+
+## Q. Anduril や Astera Labs みたいな「小さいけど技術力のある」会社を探したい
+
+本事業の **顧客 / M&A 対象** として、Anduril（防衛・$30B+）や Astera Labs（AI 接続半導体・$10B+）級の「ハードウェア × Deep Tech × 技術力突出」スタートアップは多数存在する。
+
+### 領域別：Aster級の小型技術突出企業リスト
+
+| 領域 | 企業 | 強み | 規模 |
+|---|---|---|---|
+| **DC / Compute** | Astera Labs | AIサーバー接続半導体（CXL/PCIe/Retimer） | $10B+ (IPO済) |
+| | Heron Power | 高効率電力変換、DC専用 | $100M+ |
+| | Crusoe Energy | モバイル DC（フレア活用） | $3B+ |
+| **Defense** | Saronic | 無人艦艇（ASV） | $1B+ |
+| | Mach Industries | 水素推進ミサイル・ドローン | $300M+ |
+| | Hadrian | 防衛向け精密加工工場の自動化 | $500M+ |
+| | Castelion | 長距離精密兵器（極超音速） | Early |
+| **Space** | Apex | 衛星バス（モジュラー宇宙機） | $1B+ |
+| | Astranis | 小型通信衛星 | $1.5B+ |
+| | Stoke Space | 完全再使用ロケット | $1B+ |
+| | ThinkOrbital | 軌道上製造インフラ | Early |
+| **Fusion** | Helion Energy | 直接電気変換核融合 | $5B+ |
+| | Radiant Nuclear | マイクロ原子炉 | $400M+ |
+| | Valar Atomics | 高温ガス炉 | Early |
+| **Robotics** | Figure | ヒューマノイド | $2.6B+ |
+| | Apptronik | ヒューマノイド | $500M+ |
+
+### スクリーニング基準
+
+- **技術突出性**：1〜2の領域で世界トップ・代替不可能な技術
+- **サイズ**：Series B〜C、$100M〜$3B 規模（Anduril 級 $30B+ はもう買えない）
+- **サプライチェーン依存**：日本部品・素材を必要としている
+- **政府契約有無**：DoD / DOE / NASA の発注がある or 視野
+
+**本事業との関係性**：Phase 1 の顧客 / Phase 2 の Tolling 共同開発相手 / Phase 3 の M&A 候補となる重要ターゲット。
+
+## Q. 小型技術企業への出資スキーム — みずほの M&A Debt は使えるか？
+
+**結論：YES、ただし「日本親会社経由」のストラクチャが鍵。** みずほ / MUFG / SMBC は **日本ブルーチップに対する US M&A Debt** を大量に供給した実績（武田・Shire 買収、Renesas・Dialog 買収など）。
+
+### 3つのスキーム案
+
+| スキーム | 構造 | Pros | Cons |
+|---|---|---|---|
+| **① 戦略 M&A（買収）** | DJM親会社が100%買収、M&A Debtは親会社債務 | 事業統合で歩留まり最大、Foundryに直接組込 | 大型は時期尚早、Phase 2-3で実行 |
+| **② CVC + Commercial Agreement** | マイノリティ出資（5-20%）+ 独占供給契約 | 柔軟、リスク低、関係性構築 | M&A Debt使いにくい（純粋エクイティ） |
+| **③ Roll-up（連続買収）** | 精密加工系中堅を3-5社連続買収 | みずほ系が好む構造、PEファンドと組める | PMI負荷大 |
+
+### みずほ M&A Debt の現実性
+
+- **金利**：USD建てで SOFR + 200-400bp（現状 6〜8%）、JPY建てなら 1〜2%
+- **調達規模**：Phase 2 で $50-200M、Phase 3 で $500M-2B
+- **借り手要件**：日本親会社の信用力 + 三菱商事等のメガクライアント保証 or 後ろ盾
+- **CFIUS リスク**：日本銀行債務での US 買収は CFIUS 通過実績豊富、ブロックされにくい
+- **ベスト相手**：みずほ コーポレートバンキング + Mizuho Securities USA + 三菱UFJ M&A Advisory
+
+### 推し戦略
+
+- **Year 1〜3**：CVCマイノリティ出資（スキーム②）— Aster級の3-5社にチェック書いて関係構築
+- **Year 5〜**：みずほ M&A Debt でロールアップ開始（スキーム③）— 日本側精密加工中堅 + US側小型 Deep Tech
+- **Year 7〜**：戦略 M&A（スキーム①）— Foundry に直接組み込める Aster / Heron Power 級を $500M-1B で買収
+
+**これは Mitsubishi Corp が Breakthrough Energy で日本資金を US Deep Tech に流したのと同じ構造。我々はそれを「Trading Foundry」という事業母体で行う。**
+
 ## Q. Foundry はどこに作るべきか？ — Texas / LA / Chicago
 
 **結論：LA（El Segundo / Gundo）でスタート、Phase 3 のスケール時に Texas（Austin or Houston）に拡張。Chicago は戦略的に外れ。**
