@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prometheus — Bezosの「汎用エンジニアAI」 ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  h3{font-family:'Poppins',sans-serif;font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin:24px 0 10px;padding-left:10px;border-left:2px solid var(--accent)}
+  h3:first-child{margin-top:0}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .note-unverified{background:#fafafa;border:1px dashed var(--dim);border-radius:8px;padding:11px 16px;margin:12px 0;font-size:12px;color:var(--muted);line-height:1.6}
+  .note-unverified b{color:var(--mid)}
+  .quote{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin:10px 0}
+  .quote p{font-size:13.5px;font-style:italic;color:var(--mid);margin-bottom:8px;line-height:1.7}
+  .quote .attr{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .comp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+  .comp-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px}
+  .comp-card.strong{border-left:3px solid var(--accent)}
+  .comp-card.mid{border-left:3px solid var(--mid)}
+  .comp-card.weak{border-left:3px solid var(--dim)}
+  .comp-name{font-family:'Poppins',sans-serif;font-size:.9rem;font-weight:700;color:var(--text);margin-bottom:3px}
+  .comp-tag{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:2px 8px;border-radius:3px;display:inline-block;margin-bottom:8px;background:var(--card2);color:var(--muted);border:1px solid var(--border)}
+  .comp-card.strong .comp-tag{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .comp-desc{font-size:12.5px;color:var(--mid);line-height:1.6}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .qa-zone{margin:48px 0 8px}
+  .qa-zone .qa-head{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .qa-zone .qa-head .num{background:#111;color:#fff;font-size:11px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .qa-zone .qa-head::after{content:'';flex:1;height:1px;background:#d8d8d8}
+  .qa-zone h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:#111;margin:0 0 6px}
+  .qa-zone .qa-sub{font-size:12.5px;color:#888;margin-bottom:16px;line-height:1.7}
+  .qa-list{display:flex;flex-direction:column;gap:10px}
+  .qa-empty{background:#fafafa;border:1px dashed #bbb;border-radius:10px;padding:20px;font-size:13px;color:#999;text-align:center;line-height:1.7}
+  @media (max-width:640px){.toc ol{column-count:1}.comp-grid{grid-template-columns:1fr}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">物理AI / Industrial AI</span>
+    <span class="badge badge-white">Stealth (2025–)</span>
+    <span class="badge badge-solid">Jeff Bezos / $41B valuation</span>
+  </div>
+  <h1>Prometheus</h1>
+  <p class="hero-sub">
+    Jeff Bezos が2025年11月に共同創業した「物理経済のためのAI」スタートアップ。<br>
+    チャットボットではなく、航空宇宙・半導体・自動車・創薬といった<strong>物理製品の設計・製造を自動化する「汎用エンジニアAI（artificial general engineer）」</strong>を作る。Amazon CEO退任（2021）以来、Bezosが初めて<strong>共同CEOとして経営の現場に復帰</strong>した案件として注目。設立半年で評価額$41Bに達した。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$41B</div><div class="lbl">Valuation (Jun 2026)</div></div>
+    <div class="kpi"><div class="val">~$18B</div><div class="lbl">Total raised</div></div>
+    <div class="kpi"><div class="val">~150</div><div class="lbl">Employees</div></div>
+    <div class="kpi"><div class="val">2025/11</div><div class="lbl">Founded</div></div>
+    <div class="kpi"><div class="val">SF</div><div class="lbl">HQ (+London, Zurich)</div></div>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#what">What It Builds</a></li>
+    <li><a href="#funding">Funding &amp; Valuation</a></li>
+    <li><a href="#people">People</a></li>
+    <li><a href="#why-now">Why Now — Physical AI</a></li>
+    <li><a href="#competition">Competition</a></li>
+    <li><a href="#bezos-bets">Bezos's Other AI Bets</a></li>
+    <li><a href="#blue-origin">Blue Origin Relationship</a></li>
+    <li><a href="#risks">Risks &amp; Thesis</a></li>
+  </ol>
+</div>
+
+<div class="note-unverified">
+  <b>※全面的に報道ベース：</b>Prometheusは製品・公式技術文書のないステルス段階で、本資料の大半はメディア報道とBezos本人の2026年6月の発言に依存する。技術中身・実性能は第三者検証ができない（確度は各所に明記）。金額は時系列で変化（$6.2B＝設立時、$41B＝2026/6）。
+</div>
+
+<!-- 1 OVERVIEW -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Overview</div>
+  <h2>会社概要</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Prometheus（旧 Project Prometheus）</div></div>
+    <div class="kv-item"><div class="k">Founded</div><div class="v">2025年11月</div></div>
+    <div class="kv-item"><div class="k">HQ</div><div class="v">San Francisco（+ London, Zurich）</div></div>
+    <div class="kv-item"><div class="k">Co-CEOs</div><div class="v">Jeff Bezos / Vik Bajaj</div></div>
+    <div class="kv-item"><div class="k">Valuation</div><div class="v">$41B（2026/6）</div></div>
+    <div class="kv-item"><div class="k">Total raised</div><div class="v">~$18B（累計）</div></div>
+    <div class="kv-item"><div class="k">Employees</div><div class="v">~150（Meta/OpenAI/DeepMind等出身）</div></div>
+    <div class="kv-item"><div class="k">ミッション</div><div class="v">物理経済のためのAI＝汎用エンジニアAI</div></div>
+  </div>
+  <p>Prometheusは「<strong>artificial general engineer（汎用エンジニアAI）</strong>」を掲げ、複雑な物理製品の設計・製造を自動化するAIソフトを開発する。テキスト・画像を扱う生成AIではなく、<strong>物理世界のデータ（実験・実世界の試行錯誤）</strong>から学ぶ点が特徴。社名はギリシャ神話で人類に火を与えた巨神プロメテウス（＝先見・Forethought）に由来するとされる（命名理由の公式説明は未確認）。</p>
+  <div class="callout"><strong>ニュース性の核：</strong>Bezosが2021年のAmazon CEO退任以来、初めて<strong>共同CEOとして毎日の経営</strong>に戻ったこと。本人は「傍観者でいられず<em>両足で飛び込む（jump in with both feet）</em>と決めた」「自分の時間の大半を割いている」と語る。</div>
+</div>
+
+<!-- 2 WHAT -->
+<div class="sec" id="what">
+  <div class="sec-label"><span class="num">2</span> Product</div>
+  <h2>何を作るのか — 汎用エンジニアAI</h2>
+  <p>狙いは「ジェットエンジンから医薬品まで」幅広い物理製品の設計を加速するツール。まずは<strong>エンジニアリング・シミュレーション／設計のソフトウェア</strong>として提供する方針と報じられる。中核概念は <strong>world model（世界モデル）</strong>＝物理環境を知覚・シミュレーションし、「作る前に」製品・工場・生物系の挙動を予測するAI。</p>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">物理データから学ぶ</div><div class="ind-desc">ネット上のテキストではなく、実際の実験・科学データ・実世界の試行錯誤から学習。「LLMは重力を一日中語れるが、地面に叩きつけられる意味は理解しない」（報道の比喩）という弱点を埋める狙い。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">対象産業</div><div class="ind-desc">半導体（chips）・航空宇宙・自動車・創薬・製造業全般。資本集約で開発サイクルの長い産業ほど効果が大きいという主張。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">「ロボットではない」</div><div class="ind-desc">Bezosは「nothing to do with robotics」と明言。身体（ロボット）を動かすのではなく、エンジニアの設計作業を助ける次世代ツールという位置づけ。</div></div></div>
+  </div>
+  <div class="quote"><p>100人のエンジニアが10年かかる仕事を、10人で1年に圧縮する。</p><div class="attr">— Bezosのピッチ（趣旨・報道ベース）</div></div>
+  <p style="font-size:12px;color:var(--muted)">出典: TechCrunch / Built In / GeekWire / Axios。確度: ミッション=高、技術中身（world model）=中（未検証）。</p>
+</div>
+
+<!-- 3 FUNDING -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">3</span> Funding</div>
+  <h2>資金調達・バリュエーション</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025/11</span><span class="tl-title">設立・$6.2B 調達</span></div><div class="tl-body">「Project Prometheus」として立ち上げ。一部はBezos自身の出資。早期AI企業として最大級の初期調達。同月、agentic AIの <b>General Agents</b>（元DeepMindのSherjil Ozair共同創業、VLAモデル）を買収。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2026 商標</span><span class="tl-title">「Prometheus」へ改称</span></div><div class="tl-body">他社との商標衝突を経て「Project」を外し Prometheus に。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2026/6</span><span class="tl-title">Series B $12B・評価額 $41B</span></div><div class="tl-body">ステルスから公の場へ。累計調達は約$18B規模。投資家は <b>JPMorgan / Goldman Sachs / BlackRock / DST Global / Arch Venture Partners</b> ＋ Bezos本人。</div></div></div>
+  </div>
+  <div class="note-unverified"><b>※</b>評価額は媒体により$38B〜$41Bと幅（最新多数派$41B）。別途、対象産業の企業を買収してモデルを適用する<b>$100B規模ファンド構想</b>の報道があるが確度・低（匿名筋・未確定）。</div>
+</div>
+
+<!-- 4 PEOPLE -->
+<div class="sec" id="people">
+  <div class="sec-label"><span class="num">4</span> People</div>
+  <h2>重要人物</h2>
+  <table class="t">
+    <thead><tr><th>人物</th><th>役割・背景</th></tr></thead>
+    <tbody>
+      <tr><td>Jeff Bezos</td><td>Co-founder &amp; Co-CEO。Amazon創業者・会長。2021年退任以来初の本格的な経営復帰。Prometheusに「自分の時間の大半」を投下</td></tr>
+      <tr><td>Vik Bajaj</td><td>Co-founder &amp; Co-CEO。化学者・物理学者。元 Google X / Verily（Google Life Sciences）共同創業・CSO、元GRAIL CSO、Foresite Labs CEO、Stanford医学部adjunct</td></tr>
+      <tr><td>General Agents（買収）</td><td>2025/11買収。元DeepMind Sherjil Ozair 共同創業の agentic AI。VLA（video-language-action）モデルを取り込む</td></tr>
+      <tr><td>アドバイザー（報道）</td><td>Transformer論文の著者 Ashish Vaswani / Jakob Uszkoreit が創業アドバイザーとの報道（確度・中、公式確認なし）</td></tr>
+    </tbody>
+  </table>
+  <p>BezosとBajajは明確な分業をせず、重要な意思決定すべてに密接に関与する協働型と報じられる。Meta / OpenAI / DeepMind / Anthropic / xAI / Nvidia 出身の研究者を採用。</p>
+</div>
+
+<!-- 5 WHY NOW -->
+<div class="sec" id="why-now">
+  <div class="sec-label"><span class="num">5</span> Why Now</div>
+  <h2>なぜ今 — 物理AIへのフロンティア移動</h2>
+  <p>LLM／生成AIがテキスト・コードで成熟する一方、次の主戦場は<strong>「現実世界を理解し、推論し、行動するAI」＝物理AI（physical AI）</strong>とされる。NVIDIAのJensen Huangは2026年CESで「<em>The ChatGPT moment for physical AI is here</em>」と宣言。Prometheusはその波の中で「設計・製造」に的を絞る。</p>
+  <div class="callout"><strong>論理：</strong>物理データ・製造データでAIを鍛えれば、設計→試作→検証のサイクルを劇的に圧縮できる、というのが推進派の主張。市場も過熱気味で、2026年Q1に物理AI系27社が単一四半期で$6B超を調達したとの集計もある（メディア集計・定義曖昧）。</p></div>
+</div>
+
+<!-- 6 COMPETITION -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">6</span> Competition</div>
+  <h2>競合 — 「物理AI」は3層に分かれる</h2>
+  <div class="note-unverified"><b>※</b>報道・推測ベース。Prometheusは設計ツール層（C）に位置し、ロボット層（A）とは「ロボットではない」と一線を画す。</div>
+  <div class="comp-grid">
+    <div class="comp-card weak">
+      <div class="comp-name">(A) ロボット・身体性</div><span class="comp-tag">VLAでロボットを動かす</span>
+      <div class="comp-desc">Physical Intelligence（評価$2.4B、Bezos出資）, Figure（ヒューマノイド、Bezos出資）, Skild AI。Prometheusは「ロボットではない」とここを避ける。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">(B) エンジニアリング・シミュレーションAI</div><span class="comp-tag">設計の物理計算を高速化</span>
+      <div class="comp-desc">PhysicsX（ロンドン、累計$489M、Siemens提携）, Luminary Cloud, BeyondMath, Neural Concept。既存大手 Ansys / Siemens / Dassault（NVIDIA提携）。Prometheusに最も近い既存領域。</div>
+    </div>
+    <div class="comp-card strong">
+      <div class="comp-name">(C) 世界モデル・科学発見（本命の主戦場）</div><span class="comp-tag">産業横断の汎用エンジニアAI</span>
+      <div class="comp-desc">World Labs（Fei-Fei Li）, AMI Labs（Yann LeCun）, Periodic Labs（元OpenAI/DeepMind、$300Mシード、AI科学者）。Prometheusは産業横断の統合と資金規模で突出。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">NVIDIA</div><span class="comp-tag">基盤供給側</span>
+      <div class="comp-desc">物理AIモデル・world model・計算基盤を供給。競合というより、Prometheusも乗るエコシステムの親玉。</div>
+    </div>
+  </div>
+  <div class="callout"><strong>差別化：</strong>PhysicsXやPeriodicが特定の設計・材料に特化するのに対し、Prometheusは<strong>航空宇宙・半導体・自動車・創薬を横断する汎用エンジニアAI</strong>を標榜。さらに「実産業企業を買収してデータを取り込むBerkshire Hathaway型持株会社」構想（$100B）まで報じられ、野心の規模が桁違い（ただし未確定）。</div>
+  <p style="font-size:12px;color:var(--muted)">出典: Built In / Axios / SiliconANGLE / Tracxn / NVIDIA。確度: 競合の存在=高、Prometheusの差別化=中（報道ベース）。</p>
+</div>
+
+<!-- 7 BEZOS BETS -->
+<div class="sec" id="bezos-bets">
+  <div class="sec-label"><span class="num">7</span> Bezos's AI Bets</div>
+  <h2>ベゾスの他のAI投資との関係</h2>
+  <p>Bezosは family office「<strong>Bezos Expeditions</strong>」経由で物理AI／AIに集中投資してきた（2024年の投資は合計$1B超、ほぼ全てAI）。Prometheusはその延長で、初めて<strong>「投資家」から「自ら経営する事業」へ</strong>踏み込んだ本命。</p>
+  <table class="t">
+    <thead><tr><th>投資先</th><th>領域・関係</th></tr></thead>
+    <tbody>
+      <tr><td>Physical Intelligence</td><td>物理AIロボット（評価$2.4B）。Bezos出資。Prometheus（設計ツール）とは層が違い棲み分け</td></tr>
+      <tr><td>Figure AI / Skild AI</td><td>ヒューマノイド／機械AI。Bezos出資</td></tr>
+      <tr><td>Periodic Labs</td><td>AI科学者・新材料発見。Bezosがエンジェル出資（Schmidt/Dean/Gil等と並んで）</td></tr>
+      <tr><td>Perplexity AI</td><td>AI検索。Bezos出資（物理AIではないが代表的なAIベット）</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:12px;color:var(--muted)">出典: CNBC / SiliconANGLE / Yahoo Finance。確度: 高（投資の事実）。</p>
+</div>
+
+<!-- 8 BLUE ORIGIN -->
+<div class="sec" id="blue-origin">
+  <div class="sec-label"><span class="num">8</span> Blue Origin</div>
+  <h2>Blue Originとの関係</h2>
+  <p>資本・コーポレートの結びつきは<strong>「ない」</strong>——Bezosは Prometheus が Amazon とも Blue Origin とも独立だと明言。ただし<strong>「顧客」としては念頭にある</strong>：本人が「Blue（Origin）のような会社を大いに助ける」「Prometheusの顧客のケーススタディになりうる」と発言。航空宇宙（ロケット設計・製造）は汎用エンジニアAIの格好の適用先で、Blue Originがアーリーアダプターになる蓋然性は高い（正式提携の発表は未確認）。</p>
+</div>
+
+<!-- 9 RISKS -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">9</span> Risks &amp; Thesis</div>
+  <h2>リスクと投資妙味</h2>
+  <div class="warn-box">
+    <div class="w-title">主要リスク</div>
+    <ul>
+      <li><b>未実証・ステルス</b>：製品なし。技術的中身は報道ベースで第三者検証不能。「world model」が宣伝通り物理を理解するかは未検証。</li>
+      <li><b>評価額の過熱</b>：製品出荷前に$41B。生成AI過熱局面のプレマネー的バリュエーションで調整リスク大。</li>
+      <li><b>人材獲得競争・キャッシュバーン</b>：OpenAI/Meta/DeepMind/Anthropic/xAIとの採用合戦のただ中。物理AIは計算資源・実験設備も重い。</li>
+      <li><b>「ロボットではない」の両刃</b>：設計ツールに限ると、最終的な物理価値の実現には既存メーカー／ロボット側との統合が必要 → $100B買収構想に依存しうる。</li>
+    </ul>
+  </div>
+  <div class="callout"><strong>投資妙味：</strong>Bezosという実績・資本・人脈の最上位プレイヤーが、AI×物理産業という巨大未開拓領域に「本命」として全力投下。成功すれば資本集約産業の開発速度を非連続に上げ、ツール供給＋実産業保有の垂直統合（$100B構想）という堀を築きうる。ただし<strong>現時点は「Bezosと資金と人材」だけが確かで、プロダクトは未知数</strong>。賭けの対象はチームと領域であり、製品ではない。</div>
+</div>
+
+<!-- SOURCES -->
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li>TechCrunch — Prometheus raises $12B (2026/6/11)</li>
+    <li>Axios — Prometheus / industrial AI (2026/6/11)</li>
+    <li>GeekWire — Bezos describes $41B startup / co-CEO role</li>
+    <li>CNBC — Bezos embraces being CEO again</li>
+    <li>Wikipedia — Project Prometheus (company)</li>
+    <li>Built In — What is Project Prometheus</li>
+    <li>New Atlas — Bezos AI manufacturing startup</li>
+    <li>SiliconANGLE — Periodic Labs / 物理AI competition</li>
+    <li>CNBC — Bezos family office AI investments</li>
+    <li>Wikipedia / 各種 — Vik Bajaj 経歴</li>
+  </ul>
+</div>
+
+<p style="font-size:11px;color:var(--dim);margin-top:24px;text-align:center">
+  Researched 2026-06-16 &nbsp;·&nbsp; 並列Web調査（報道ベース・確度付き、ステルス段階のため一次情報乏しい） &nbsp;·&nbsp; 030_research/035_company/260616_prometheus_deep_research.html
+</p>
+
+<!-- Q&A ZONE -->
+<div class="sec qa-zone" id="qa">
+  <div class="qa-head"><span class="num">Q</span> Q&amp;A Zone</div>
+  <h2>Q&amp;A &mdash; 事業理解のための問答</h2>
+  <p class="qa-sub">事業構造を自分の言葉で理解するために、疑問と答えを貯めていくゾーン。Qをクリックで回答を開閉。</p>
+  <div class="qa-list">
+    <div class="qa-empty">まだQ&amp;Aはありません。事業理解を深める疑問を、ここに貯めていく。</div>
+  </div>
+</div>
+
+<!-- INLINE TOOLTIPS -->
+<style>
+.tip{border-bottom:1px dotted #999;cursor:help;position:relative}
+.tip:focus{outline:none;background:#f0f0f0}
+.tip-bub{position:absolute;left:0;top:150%;z-index:700;width:250px;max-width:74vw;background:#111;color:#fff;font-size:11.5px;line-height:1.65;font-weight:400;font-style:normal;letter-spacing:0;text-align:left;padding:9px 12px;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.28);display:none}
+.tip-bub::before{content:'';position:absolute;left:14px;top:-5px;border:5px solid transparent;border-bottom-color:#111;border-top:none}
+.tip-bub b{color:#fff;font-weight:700}
+.tip.tip-open .tip-bub,.tip:hover .tip-bub{display:block}
+</style>
+<script>
+(function(){
+  var DICT={
+    "artificial general engineer":"汎用エンジニアAI。あらゆる物理製品の設計・製造を担えることを目指すAIという、Prometheusの掲げる概念。",
+    "world model":"世界モデル。物理環境を知覚・シミュレーションし、作る前に挙動を予測するAI。物理AIの中核概念。",
+    "physical AI":"物理AI。テキストではなく現実世界を理解・推論・行動するAIの総称。AIの次のフロンティアとされる。",
+    "VLA":"Video-Language-Action モデル。映像・言語・行動を結ぶAIで、ロボットや物理タスクの基盤。General Agentsの技術。",
+    "Vik Bajaj":"Prometheus共同CEO。化学者・物理学者。元Google X / Verily共同創業・CSO、元GRAIL CSO。",
+    "General Agents":"2025/11にPrometheusが買収したagentic AIスタートアップ。元DeepMindのSherjil Ozair共同創業、VLAモデルを保有。",
+    "Bezos Expeditions":"ベゾスのfamily office（個人投資会社）。物理AI/AIに集中投資してきた。",
+    "Physical Intelligence":"汎用AIを物理世界（ロボット）へ適用するスタートアップ。評価$2.4B、ベゾスも出資。",
+    "Periodic Labs":"元OpenAI/DeepMind創業の『AI科学者』。新材料・超電導体発見。$300Mシード、ベゾスもエンジェル出資。",
+    "PhysicsX":"ロンドンのエンジニアリング・シミュレーションAI。累計$489M、Siemens提携。Prometheusに近い既存領域。",
+    "Series B":"スタートアップの成長段階の資金調達ラウンド。Prometheusは2026/6にSeries B $12Bを調達。",
+    "Valuation":"企業の評価額。Prometheusは設立半年で$41Bに到達。",
+    "stealth":"ステルス。製品や詳細を伏せて開発する段階。Prometheusは2026/6まで内容をほぼ公にしなかった。",
+    "Berkshire Hathaway型":"事業会社を買収・保有して統合する持株会社モデル。Prometheusが$100Bで実産業を買う構想の比喩。",
+    "agentic AI":"自律的に計画・行動するAIエージェント。General Agentsが手がける領域。"
+  };
+  var terms=Object.keys(DICT).sort(function(a,b){return b.length-a.length});
+  var used={},SKIP={A:1,SUMMARY:1,SCRIPT:1,STYLE:1,CODE:1,BUTTON:1,H1:1};
+  function inSkip(node){var el=node.parentNode;while(el&&el!==document.body){if(el.classList&&(el.classList.contains('toc')||el.classList.contains('tip')||el.classList.contains('sec-label')||el.classList.contains('hero')||el.classList.contains('sources')))return true;if(el.tagName&&SKIP[el.tagName])return true;el=el.parentNode;}return false;}
+  var root=document.querySelector('.page');
+  var walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,null);
+  var nodes=[],n;while(n=walker.nextNode()){if(n.nodeValue&&n.nodeValue.trim()&&!inSkip(n))nodes.push(n);}
+  nodes.forEach(function(node){
+    var text=node.nodeValue,matches=[];
+    terms.forEach(function(t){if(used[t])return;var idx=text.indexOf(t);if(idx>=0)matches.push({t:t,idx:idx});});
+    if(!matches.length)return;
+    matches.sort(function(a,b){return a.idx-b.idx||b.t.length-a.t.length;});
+    var picks=[],lastEnd=-1;
+    matches.forEach(function(m){if(m.idx>=lastEnd){picks.push(m);lastEnd=m.idx+m.t.length;}});
+    var frag=document.createDocumentFragment(),cursor=0;
+    picks.forEach(function(m){
+      if(m.idx>cursor)frag.appendChild(document.createTextNode(text.slice(cursor,m.idx)));
+      var span=document.createElement('span');span.className='tip';span.setAttribute('tabindex','0');span.textContent=m.t;
+      var bub=document.createElement('span');bub.className='tip-bub';bub.innerHTML=DICT[m.t];span.appendChild(bub);
+      frag.appendChild(span);used[m.t]=1;cursor=m.idx+m.t.length;
+    });
+    if(cursor<text.length)frag.appendChild(document.createTextNode(text.slice(cursor)));
+    node.parentNode.replaceChild(frag,node);
+  });
+  document.addEventListener('click',function(e){
+    var tip=e.target.closest?e.target.closest('.tip'):null;
+    document.querySelectorAll('.tip.tip-open').forEach(function(x){if(x!==tip)x.classList.remove('tip-open');});
+    if(tip){e.stopPropagation();tip.classList.toggle('tip-open');}
+  });
+})();
+</script>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+</body>
+</html>
