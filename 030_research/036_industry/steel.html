@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>24111 / industry / steel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --bg:#ffffff; --surface:#f5f5f5; --border:#e0e0e0; --text:#111111; --mid:#444444; --muted:#888888; --dim:#cccccc; }
+    body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; min-height: 100vh; padding-top: 56px !important; padding-bottom: 68px !important; }
+    .page-header { background: #111; color: #fff; padding: 36px 48px 32px; }
+    .breadcrumb { font-size: 10px; letter-spacing: .1em; color: rgba(255,255,255,.2); margin-bottom: 10px; }
+    .breadcrumb a { color: rgba(255,255,255,.45); text-decoration: none; }
+    .breadcrumb a:hover { color: rgba(255,255,255,.8); }
+    .page-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; }
+    .main { max-width: 1100px; padding: 0 48px 80px; }
+
+    /* ── Content section ── */
+    .sec { margin-top: 48px; }
+    .sec-head { display: flex; align-items: baseline; gap: 12px; padding-bottom: 12px; margin-bottom: 22px; border-bottom: 2px solid #111; }
+    .sec-label { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: #111; }
+    .sec-en { font-size: 9px; font-weight: 500; letter-spacing: .06em; color: var(--dim); margin-left: auto; }
+
+    .card-lead { font-size: 12.5px; color: var(--mid); line-height: 1.85; margin-bottom: 24px; }
+    .card-lead b { color: var(--text); font-weight: 700; }
+
+    /* ── Chaos map ── */
+    .cmap { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; margin-top: 6px; }
+    .cmap-cell { border: 1px solid var(--border); background: var(--surface); padding: 0 0 14px; display: flex; flex-direction: column; }
+    .cmap-head { background: #111; color: #fff; padding: 9px 14px; display: flex; align-items: baseline; gap: 8px; }
+    .cmap-stage { font-size: 8px; font-weight: 700; letter-spacing: .1em; color: rgba(255,255,255,.4); }
+    .cmap-name { font-size: 11px; font-weight: 700; letter-spacing: .04em; }
+    .cmap-en { font-size: 8px; font-weight: 500; letter-spacing: .06em; color: rgba(255,255,255,.4); margin-left: auto; }
+    .chips { display: flex; flex-wrap: wrap; gap: 5px; padding: 14px 14px 0; }
+    .chip { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: var(--text); background: var(--bg); border: 1px solid var(--border); padding: 4px 8px; letter-spacing: -.01em; }
+    .chip .cc { font-size: 7.5px; font-weight: 700; letter-spacing: .06em; color: var(--muted); border-left: 1px solid var(--border); padding-left: 5px; }
+    .chip.star { border-color: #111; }
+    .chip.star .cc { color: #111; }
+    .cmap-note { font-size: 10px; color: var(--dim); line-height: 1.7; margin-top: 16px; letter-spacing: .02em; }
+    .cmap-note b { color: var(--muted); font-weight: 600; }
+
+    /* ── Process flow ── */
+    .proc-phase { display: flex; align-items: baseline; gap: 10px; margin: 28px 0 4px; padding: 8px 14px; background: #111; color: #fff; }
+    .proc-phase:first-of-type { margin-top: 6px; }
+    .proc-phase .pp-name { font-size: 12px; font-weight: 700; letter-spacing: .08em; }
+    .proc-phase .pp-en { font-size: 8.5px; font-weight: 500; letter-spacing: .06em; color: rgba(255,255,255,.45); }
+    .proc-phase .pp-tail { font-size: 9px; font-weight: 500; color: rgba(255,255,255,.4); margin-left: auto; letter-spacing: .04em; }
+    .step { display: flex; gap: 16px; padding: 16px 4px; border-bottom: 1px solid var(--border); }
+    .step:last-child { border-bottom: none; }
+    .step-no { flex-shrink: 0; width: 30px; font-size: 17px; font-weight: 700; color: var(--dim); letter-spacing: -.02em; line-height: 1.2; }
+    .step-body { flex: 1; }
+    .step-title { font-size: 13.5px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 5px; }
+    .step-title .en { font-size: 10px; font-weight: 500; color: var(--muted); margin-left: 8px; letter-spacing: .02em; }
+    .step-desc { font-size: 11.5px; color: var(--mid); line-height: 1.8; }
+    .step-desc b { color: var(--text); font-weight: 700; }
+    .step-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 9px; }
+    .step-tag { font-size: 8px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--dim); padding: 2px 6px; }
+
+    /* ── Route cards ── */
+    .routes { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 10px; margin-top: 6px; }
+    .route { border: 1px solid var(--border); background: var(--surface); padding: 18px 20px 16px; }
+    .route.green { border-left: 3px solid #111; }
+    .route-name { font-size: 13px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 3px; }
+    .route-en { font-size: 9px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .route-desc { font-size: 11px; color: var(--mid); line-height: 1.75; }
+    .route-desc b { color: var(--text); font-weight: 700; }
+
+    /* ── Timeline ── */
+    .tl { position: relative; margin-top: 8px; padding-left: 26px; }
+    .tl::before { content: ""; position: absolute; left: 6px; top: 4px; bottom: 4px; width: 1px; background: var(--border); }
+    .tl-item { position: relative; padding: 0 0 30px 0; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-item::before { content: ""; position: absolute; left: -23px; top: 5px; width: 9px; height: 9px; border-radius: 50%; background: var(--bg); border: 2px solid var(--dim); }
+    .tl-item.key::before { background: #111; border-color: #111; width: 11px; height: 11px; left: -24px; }
+    .tl-year { font-size: 11px; font-weight: 700; letter-spacing: .04em; color: var(--muted); margin-bottom: 4px; }
+    .tl-item.key .tl-year { color: #111; }
+    .tl-title { font-size: 13.5px; font-weight: 700; letter-spacing: -.01em; color: var(--text); margin-bottom: 5px; }
+    .tl-desc { font-size: 11.5px; color: var(--mid); line-height: 1.75; }
+    .tl-desc b { color: var(--text); font-weight: 700; }
+
+    /* ── Rank tables ── */
+    .rank-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+    .rank-wrap h4 { font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .rank { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+    .rank th { background: #111; color: #fff; font-size: 8.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; text-align: left; padding: 8px 12px; }
+    .rank th.r { text-align: right; }
+    .rank td { padding: 8px 12px; border-bottom: 1px solid var(--border); color: var(--mid); }
+    .rank tr:last-child td { border-bottom: none; }
+    .rank td.rk { font-weight: 700; color: var(--muted); width: 30px; }
+    .rank td.nm { font-weight: 700; color: var(--text); }
+    .rank td.nm small { font-weight: 400; color: var(--muted); }
+    .rank td.num { text-align: right; font-weight: 600; color: var(--text); white-space: nowrap; }
+    .rank td.sh { text-align: right; color: var(--muted); white-space: nowrap; }
+    .rank tr.hl td { background: var(--surface); }
+    .rank tr.tot td { border-top: 2px solid #111; font-weight: 700; color: #111; }
+
+    /* ── Supply chain flow ── */
+    .flow { display: flex; flex-wrap: wrap; margin-top: 6px; }
+    .flow-step { flex: 1; min-width: 150px; border: 1px solid var(--border); background: var(--surface); padding: 14px 14px 12px; }
+    .flow-step + .flow-step { border-left: none; }
+    .flow-no { font-size: 8.5px; font-weight: 700; letter-spacing: .1em; color: var(--muted); margin-bottom: 6px; }
+    .flow-name { font-size: 12px; font-weight: 700; letter-spacing: -.01em; margin-bottom: 5px; }
+    .flow-desc { font-size: 10px; color: var(--muted); line-height: 1.6; }
+    .callout { border: 1px solid var(--border); border-left: 3px solid #111; background: var(--surface); padding: 14px 18px; margin-top: 16px; font-size: 11px; color: var(--mid); line-height: 1.8; }
+    .callout b { color: var(--text); font-weight: 700; }
+
+    @media (max-width: 760px) { .rank-wrap { grid-template-columns: 1fr; } }
+    @media (max-width: 680px) { .flow-step { flex: 1 1 100%; border-left: 1px solid var(--border) !important; border-top: none; } .flow-step:first-child { border-top: 1px solid var(--border); } }
+    @media (max-width: 600px) { .cmap { grid-template-columns: 1fr; } }
+    .snav-footer { justify-content: space-between !important; }
+    .footer-stats { display:flex; align-items:center; font-size:10px; font-weight:500; color:rgba(255,255,255,.35); letter-spacing:.06em; }
+    .footer-stats .sep { margin: 0 9px; color: rgba(255,255,255,.15); }
+    @media (max-width: 600px) { .page-header { padding: 28px 24px 24px; } .main { padding: 0 24px 60px; } }
+  </style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Industry</div>
+    <a class="snav-a" href="/030_research/036_industry/index.html">overview</a>
+    <a class="snav-a" href="/030_research/036_industry/semiconductor.html">semiconductor</a>
+    <a class="snav-a" href="/030_research/036_industry/steel.html">steel</a>
+    <a class="snav-a" href="/030_research/036_industry/data_center.html">data center</a>
+    <a class="snav-a" href="/030_research/036_industry/space.html">space</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<header class="page-header">
+  <div class="breadcrumb"><a href="/index.html">24111</a> / <a href="/030_research/036_industry/index.html">industry</a></div>
+  <h1>steel</h1>
+</header>
+
+<main class="main">
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-label">製鉄カオスマップ</span>
+      <span class="sec-en">Chaos Map / Players by Value Chain</span>
+    </div>
+
+    <div class="cmap">
+
+      <div class="cmap-cell">
+        <div class="cmap-head"><span class="cmap-stage">01</span><span class="cmap-name">原料（鉄鉱石・原料炭）</span><span class="cmap-en">Raw Materials</span></div>
+        <div class="chips">
+          <span class="chip">Vale<span class="cc">BR</span></span>
+          <span class="chip">Rio Tinto<span class="cc">AU</span></span>
+          <span class="chip">BHP<span class="cc">AU</span></span>
+          <span class="chip">Fortescue<span class="cc">AU</span></span>
+          <span class="chip">Teck（原料炭）<span class="cc">CA</span></span>
+        </div>
+      </div>
+
+      <div class="cmap-cell">
+        <div class="cmap-head"><span class="cmap-stage">02</span><span class="cmap-name">高炉メーカー（日本）</span><span class="cmap-en">Integrated / BF · JP</span></div>
+        <div class="chips">
+          <a class="chip star" href="/030_research/035_company/260617_nippon_steel_deep_research.html" style="text-decoration:none">日本製鉄<span class="cc">JP</span></a>
+          <span class="chip">JFEスチール<span class="cc">JP</span></span>
+          <span class="chip">神戸製鋼所<span class="cc">JP</span></span>
+        </div>
+      </div>
+
+      <div class="cmap-cell">
+        <div class="cmap-head"><span class="cmap-stage">03</span><span class="cmap-name">電炉メーカー（日本）</span><span class="cmap-en">EAF · JP</span></div>
+        <div class="chips">
+          <span class="chip">東京製鐵<span class="cc">JP</span></span>
+          <span class="chip">大和工業<span class="cc">JP</span></span>
+          <span class="chip">共英製鋼<span class="cc">JP</span></span>
+          <span class="chip">合同製鐵<span class="cc">JP</span></span>
+        </div>
+      </div>
+
+      <div class="cmap-cell">
+        <div class="cmap-head"><span class="cmap-stage">04</span><span class="cmap-name">グローバル高炉大手</span><span class="cmap-en">Global Majors</span></div>
+        <div class="chips">
+          <span class="chip star">China Baowu<span class="cc">CN</span></span>
+          <span class="chip">ArcelorMittal<span class="cc">LU</span></span>
+          <span class="chip">鞍鋼 Ansteel<span class="cc">CN</span></span>
+          <span class="chip">沙鋼 Shagang<span class="cc">CN</span></span>
+          <span class="chip">HBIS 河鋼<span class="cc">CN</span></span>
+          <span class="chip">POSCO<span class="cc">KR</span></span>
+          <span class="chip">現代製鉄<span class="cc">KR</span></span>
+          <span class="chip">Tata Steel<span class="cc">IN</span></span>
+          <span class="chip">JSW Steel<span class="cc">IN</span></span>
+        </div>
+      </div>
+
+      <div class="cmap-cell">
+        <div class="cmap-head"><span class="cmap-stage">05</span><span class="cmap-name">北米</span><span class="cmap-en">North America</span></div>
+        <div class="chips">
+          <span class="chip">Nucor（電炉#1）<span class="cc">US</span></span>
+          <span class="chip">Cleveland-Cliffs<span class="cc">US</span></span>
+          <span class="chip">Steel Dynamics<span class="cc">US</span></span>
+          <span class="chip">U.S. Steel（→日本製鉄傘下）<span class="cc">US</span></span>
+        </div>
+      </div>
+
+      <div class="cmap-cell">
+        <div class="cmap-head"><span class="cmap-stage">06</span><span class="cmap-name">欧州・特殊鋼</span><span class="cmap-en">Europe / Specialty</span></div>
+        <div class="chips">
+          <span class="chip">thyssenkrupp<span class="cc">DE</span></span>
+          <span class="chip">Salzgitter<span class="cc">DE</span></span>
+          <span class="chip">Sandvik（特殊鋼）<span class="cc">SE</span></span>
+          <span class="chip">大同特殊鋼<span class="cc">JP</span></span>
+          <span class="chip">日立金属系 Proterial<span class="cc">JP</span></span>
+        </div>
+      </div>
+
+      <div class="cmap-cell">
+        <div class="cmap-head"><span class="cmap-stage">07</span><span class="cmap-name">鉄鋼商社</span><span class="cmap-en">Trading</span></div>
+        <div class="chips">
+          <span class="chip">メタルワン<span class="cc">JP</span></span>
+          <span class="chip">伊藤忠丸紅鉄鋼<span class="cc">JP</span></span>
+          <span class="chip">阪和興業<span class="cc">JP</span></span>
+          <span class="chip">JFE商事<span class="cc">JP</span></span>
+        </div>
+      </div>
+
+      <div class="cmap-cell">
+        <div class="cmap-head"><span class="cmap-stage">08</span><span class="cmap-name">設備・エンジニアリング</span><span class="cmap-en">Plant Equipment</span></div>
+        <div class="chips">
+          <span class="chip">Primetals<span class="cc">JP/UK</span></span>
+          <span class="chip">SMS group<span class="cc">DE</span></span>
+          <span class="chip">Danieli<span class="cc">IT</span></span>
+        </div>
+      </div>
+
+    </div>
+    <div class="cmap-note">★ = 業界の中核プレイヤー。<b>中国が世界粗鋼生産の約半分</b>を占め、China Baowuが単独で世界最大。日本勢では<b>日本製鉄</b>が世界トップクラスで、U.S. Steel買収により北米へ本格進出。原料は鉄鉱石・原料炭とも<b>豪・ブラジルの資源メジャー（Vale・Rio Tinto・BHP）に集中</b>するため、メーカーは原料価格の変動に強くさらされる。高炉法（統合製鉄）とスクラップを使う電炉法の二系統が併存する。</div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-label">鉄ができるまで（高炉法）</span>
+      <span class="sec-en">Manufacturing Process / BF–BOF Route</span>
+    </div>
+
+    <p class="card-lead">鉄鋼の作り方は大きく2系統。鉄鉱石から作る <b>高炉法（BF–BOF）</b>と、鉄スクラップを溶かす <b>電炉法（EAF）</b>だ。下記は世界生産の約7割を占める高炉法。工程は <b>製銑（鉄をつくる）→ 製鋼（鋼にする）→ 圧延（形にする）</b>の3段階に大別される。鉄鉱石（酸化鉄）から酸素を奪う「<b>還元</b>」が本質で、その還元剤に石炭由来のコークスを使うため、製鉄は <b>世界のCO2排出の約7〜8%</b>を占める大排出源でもある。</p>
+
+    <div class="proc-phase"><span class="pp-name">製銑</span><span class="pp-en">Ironmaking</span><span class="pp-tail">鉄鉱石 → 銑鉄</span></div>
+
+    <div class="step">
+      <div class="step-no">01</div>
+      <div class="step-body">
+        <div class="step-title">原料準備<span class="en">Raw Materials</span></div>
+        <div class="step-desc">主原料は <b>鉄鉱石</b>（酸化鉄）、<b>原料炭</b>（コークス用の石炭）、<b>石灰石</b>（不純物除去用）。鉄鉱石・原料炭の大半を豪州・ブラジルからの輸入に依存する。</div>
+        <div class="step-tags"><span class="step-tag">Vale</span><span class="step-tag">Rio Tinto</span><span class="step-tag">BHP</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-no">02</div>
+      <div class="step-body">
+        <div class="step-title">コークス製造<span class="en">Coke Oven</span></div>
+        <div class="step-desc">原料炭を <b>1,000℃超で蒸し焼き（乾留）</b>して <b>コークス</b>を作る。コークスは高炉内で①燃えて熱を出す、②鉄鉱石から酸素を奪う還元剤になる、③炉内の通気性を保つ支柱になる、の三役を担う。</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-no">03</div>
+      <div class="step-body">
+        <div class="step-title">焼結<span class="en">Sintering</span></div>
+        <div class="step-desc">粉状の鉄鉱石に石灰石を混ぜて焼き固め、高炉に入れやすい塊状の <b>焼結鉱</b>にする。通気性と還元効率を高める前処理。</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-no">04</div>
+      <div class="step-body">
+        <div class="step-title">高炉<span class="en">Blast Furnace</span></div>
+        <div class="step-desc">炉の上から焼結鉱とコークスを交互に装入し、下から <b>1,200℃の熱風</b>を吹き込む。コークスが鉄鉱石を還元し、溶けた鉄＝<b>銑鉄（溶銑）</b>が炉底に溜まる（約1,500℃）。ただし炭素を4〜5%含み硬くてもろい。製鉄所の心臓部。</div>
+        <div class="step-tags"><span class="step-tag">Primetals</span><span class="step-tag">SMS group</span></div>
+      </div>
+    </div>
+
+    <div class="proc-phase"><span class="pp-name">製鋼</span><span class="pp-en">Steelmaking</span><span class="pp-tail">銑鉄 → 鋼</span></div>
+
+    <div class="step">
+      <div class="step-no">05</div>
+      <div class="step-body">
+        <div class="step-title">転炉<span class="en">BOF / 純酸素転炉</span></div>
+        <div class="step-desc">銑鉄に <b>高純度の酸素を吹き込み</b>、余分な炭素を燃やして抜く。炭素が2%以下になると、粘り強い「<b>鋼（はがね）</b>」になる。不純物はスラグとして分離。LD転炉法が世界標準。</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-no">06</div>
+      <div class="step-body">
+        <div class="step-title">二次精錬<span class="en">Secondary Refining</span></div>
+        <div class="step-desc">取鍋（レードル）の中で <b>成分を微調整</b>し、水素・酸素などのガスを抜く（脱ガス）。自動車用・高張力鋼など用途ごとの品質をここで作り込む。</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-no">07</div>
+      <div class="step-body">
+        <div class="step-title">連続鋳造<span class="en">Continuous Casting</span></div>
+        <div class="step-desc">溶けた鋼を連続的に冷やし固め、<b>スラブ（板状）・ブルーム/ビレット（棒状）</b>などの中間素材（半製品）にする。鋳型に流して固める旧来の造塊法を置き換え、歩留まりを劇的に改善した。</div>
+      </div>
+    </div>
+
+    <div class="proc-phase"><span class="pp-name">圧延・仕上げ</span><span class="pp-en">Rolling &amp; Finishing</span><span class="pp-tail">鋼 → 製品</span></div>
+
+    <div class="step">
+      <div class="step-no">08</div>
+      <div class="step-body">
+        <div class="step-title">圧延<span class="en">Hot / Cold Rolling</span></div>
+        <div class="step-desc">スラブを再加熱してロールで延ばす <b>熱間圧延</b>、さらに常温で薄く延ばす <b>冷間圧延</b>。これで <b>厚板・熱延／冷延コイル・形鋼・線材・鋼管</b>など最終形状になる。</div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-no">09</div>
+      <div class="step-body">
+        <div class="step-title">表面処理・仕上げ<span class="en">Coating / Finishing</span></div>
+        <div class="step-desc">防錆のための <b>亜鉛めっき（ガルバ）・塗装</b>などを施し、検査して出荷。自動車・家電・建材向けの高機能鋼板はこの後工程が付加価値の源泉。</div>
+      </div>
+    </div>
+
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-label">2つの製法と脱炭素</span>
+      <span class="sec-en">Production Routes &amp; Decarbonization</span>
+    </div>
+    <div class="routes">
+      <div class="route">
+        <div class="route-name">高炉法（BF–BOF）</div>
+        <div class="route-en">Blast Furnace</div>
+        <div class="route-desc">鉄鉱石をコークスで還元。<b>大量・高品質</b>に作れるが、原理上 <b>大量のCO2を排出</b>。自動車用鋼板など高級鋼に強い。世界生産の約7割。</div>
+      </div>
+      <div class="route">
+        <div class="route-name">電炉法（EAF）</div>
+        <div class="route-en">Electric Arc Furnace</div>
+        <div class="route-desc"><b>鉄スクラップ</b>を電気アークで溶かして再生。CO2は高炉法の <b>約1/4</b>。Nucor（米）が代表で、米国は電炉比率が高い。電力と良質スクラップの確保が鍵。</div>
+      </div>
+      <div class="route green">
+        <div class="route-name">水素還元製鉄（H2-DRI）</div>
+        <div class="route-en">Green Steel</div>
+        <div class="route-desc">コークスの代わりに <b>水素</b>で還元し、排出をCO2ではなく <b>水（H2O）</b>にする次世代製法。脱炭素の本命。MIDREX（神戸製鋼系）、欧Stegra（旧H2 Green Steel）、日本製鉄・JFEのCN戦略やCOURSE50が先行。</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-label">製鉄産業の重要イベント</span>
+      <span class="sec-en">Key Events</span>
+    </div>
+
+    <div class="tl">
+
+      <div class="tl-item">
+        <div class="tl-year">1709</div>
+        <div class="tl-title">コークス製鉄の発明（英）</div>
+        <div class="tl-desc"><b>Abraham Darby</b> が木炭に代えてコークスで鉄を製造。森林資源の制約を外し、<b>産業革命</b>の素材的基盤を築いた。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-year">1856</div>
+        <div class="tl-title">ベッセマー転炉法</div>
+        <div class="tl-desc"><b>Henry Bessemer</b> が溶けた銑鉄に空気を吹き込み一気に鋼を作る方法を発明。鋼の <b>大量・安価生産</b>が始まり、鉄道・建築の時代を開いた。</div>
+      </div>
+
+      <div class="tl-item key">
+        <div class="tl-year">1901</div>
+        <div class="tl-title">八幡製鐵所 操業開始（日本）／U.S. Steel 設立（米）</div>
+        <div class="tl-desc">官営 <b>八幡製鐵所</b>が操業を開始し、日本の近代製鉄が本格始動。同年、米国では Carnegie と J.P. Morgan が <b>U.S. Steel</b> を設立（史上初の10億ドル企業）。</div>
+      </div>
+
+      <div class="tl-item key">
+        <div class="tl-year">1952</div>
+        <div class="tl-title">LD転炉（純酸素上吹転炉）の実用化</div>
+        <div class="tl-desc">オーストリアの Linz・Donawitz で実用化。空気でなく <b>純酸素</b>を使い品質と速度を飛躍させ、戦後の <b>世界標準の製鋼法</b>に。連続鋳造とともに日本の高度成長期の鉄鋼躍進を支えた。</div>
+      </div>
+
+      <div class="tl-item key">
+        <div class="tl-year">1970</div>
+        <div class="tl-title">新日本製鐵 発足</div>
+        <div class="tl-desc">八幡製鐵と富士製鐵が合併し <b>新日本製鐵</b>誕生。日本は1980年前後に <b>粗鋼生産で世界トップ級</b>となり、高品質鋼で自動車・造船の輸出競争力を支えた。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-year">2006</div>
+        <div class="tl-title">ArcelorMittal 誕生</div>
+        <div class="tl-desc">Mittal Steel が Arcelor を買収し、<b>世界最大の鉄鋼会社</b>が誕生。鉄鋼業のグローバル再編・寡占化の象徴となった。</div>
+      </div>
+
+      <div class="tl-item key">
+        <div class="tl-year">2012</div>
+        <div class="tl-title">新日鐵住金（現・日本製鉄）発足</div>
+        <div class="tl-desc">新日本製鐵と住友金属工業が合併。2019年に <b>日本製鉄</b>へ商号変更。国内首位・世界トップクラスの一貫メーカーに。</div>
+      </div>
+
+      <div class="tl-item">
+        <div class="tl-year">2016</div>
+        <div class="tl-title">China Baowu 発足／中国が世界の過半に</div>
+        <div class="tl-desc">宝鋼集団と武漢鋼鉄が統合し <b>China Baowu（中国宝武鋼鉄）</b>誕生。中国は <b>世界粗鋼生産の約半分</b>を占めるまでに拡大し、供給過剰と価格を左右する存在に。</div>
+      </div>
+
+      <div class="tl-item key">
+        <div class="tl-year">2020s</div>
+        <div class="tl-title">脱炭素・グリーンスチール競争</div>
+        <div class="tl-desc">製鉄はCO2の大排出源ゆえ、<b>水素還元・電炉転換</b>が世界的な競争軸に。各国が補助金を投入し、鉄鋼の脱炭素が産業政策の焦点となる。</div>
+      </div>
+
+      <div class="tl-item key">
+        <div class="tl-year">2025</div>
+        <div class="tl-title">日本製鉄が U.S. Steel を買収完了</div>
+        <div class="tl-desc">約 <b>$14.9B（約2兆円）</b>での買収が、政治的攻防（一度は大統領が阻止）を経て成立。米政府の「黄金株」を伴う異例の形で、<b>日本製鉄が北米へ本格進出</b>。</div>
+      </div>
+
+    </div>
+    <div class="cmap-note">※ 年代・金額は概数。U.S. Steel買収額（約$14.9B）や中国の世界シェア（約5割）は時点により変動。確度: 沿革=高、最新の買収条件=中。<b>日本製鉄の詳しい歴史・US Steel買収・POSCO関係</b>は <a href="/030_research/035_company/260617_nippon_steel_deep_research.html" style="color:var(--muted)">企業ページ →</a></div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-label">粗鋼生産ランキング</span>
+      <span class="sec-en">Crude Steel Output / 2024</span>
+    </div>
+    <p class="card-lead">2024年の世界粗鋼生産は <b>約1,883 Mt（百万トン）</b>。うち <b>中国が単独で約53%</b>を占める圧倒的な一強構造。企業別でも上位10社中6社が中国勢で、China Baowuが2位の約2倍という規模だ。</p>
+    <div class="rank-wrap">
+      <div>
+        <h4>国別 Top 10（Mt / 世界シェア）</h4>
+        <table class="rank">
+          <thead><tr><th>#</th><th>国</th><th class="r">Mt</th><th class="r">Share</th></tr></thead>
+          <tbody>
+            <tr class="hl"><td class="rk">1</td><td class="nm">中国</td><td class="num">1,005.1</td><td class="sh">53.4%</td></tr>
+            <tr><td class="rk">2</td><td class="nm">インド</td><td class="num">149.4</td><td class="sh">7.9%</td></tr>
+            <tr class="hl"><td class="rk">3</td><td class="nm">日本</td><td class="num">84.0</td><td class="sh">4.5%</td></tr>
+            <tr><td class="rk">4</td><td class="nm">米国</td><td class="num">79.5</td><td class="sh">4.2%</td></tr>
+            <tr><td class="rk">5</td><td class="nm">ロシア</td><td class="num">~71.0</td><td class="sh">3.8%</td></tr>
+            <tr><td class="rk">6</td><td class="nm">韓国</td><td class="num">63.6</td><td class="sh">3.4%</td></tr>
+            <tr><td class="rk">7</td><td class="nm">ドイツ</td><td class="num">37.3</td><td class="sh">2.0%</td></tr>
+            <tr><td class="rk">8</td><td class="nm">トルコ</td><td class="num">36.9</td><td class="sh">2.0%</td></tr>
+            <tr><td class="rk">9</td><td class="nm">ブラジル</td><td class="num">33.9</td><td class="sh">1.8%</td></tr>
+            <tr><td class="rk">10</td><td class="nm">イラン</td><td class="num">31.4</td><td class="sh">1.7%</td></tr>
+            <tr class="tot"><td class="rk"></td><td class="nm">世界合計</td><td class="num">1,882.6</td><td class="sh">100%</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4>企業別 Top 10（Mt）</h4>
+        <table class="rank">
+          <thead><tr><th>#</th><th>会社</th><th class="r">Mt</th></tr></thead>
+          <tbody>
+            <tr class="hl"><td class="rk">1</td><td class="nm">China Baowu <small>中国</small></td><td class="num">130.1</td></tr>
+            <tr><td class="rk">2</td><td class="nm">ArcelorMittal <small>LU</small></td><td class="num">65.0</td></tr>
+            <tr class="hl"><td class="rk">3</td><td class="nm">Ansteel 鞍鋼 <small>中国</small></td><td class="num">59.6</td></tr>
+            <tr><td class="rk">4</td><td class="nm">日本製鉄 <small>日本</small></td><td class="num">43.7</td></tr>
+            <tr class="hl"><td class="rk">5</td><td class="nm">HBIS 河鋼 <small>中国</small></td><td class="num">42.3</td></tr>
+            <tr class="hl"><td class="rk">6</td><td class="nm">Shagang 沙鋼 <small>中国</small></td><td class="num">40.2</td></tr>
+            <tr class="hl"><td class="rk">7</td><td class="nm">Jianlong 建龍 <small>中国</small></td><td class="num">39.4</td></tr>
+            <tr><td class="rk">8</td><td class="nm">POSCO <small>韓国</small></td><td class="num">~38.0</td></tr>
+            <tr class="hl"><td class="rk">9</td><td class="nm">Shougang 首鋼 <small>中国</small></td><td class="num">31.6</td></tr>
+            <tr><td class="rk">10</td><td class="nm">Tata Steel <small>インド</small></td><td class="num">31.0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="callout"><b>都市別では「唐山」が異常値：</b>中国・河北省の <b>唐山（Tangshan）</b>は一都市で <b>約121 Mt（2023）</b>を生産し、<b>日本一国（84 Mt）を上回る</b>。河北省全体では約210 Mtと中国の約2割。次いで韓国・浦項＋光陽（POSCO）、インド・ジャムシェドプル（Tata）、日本の主力立地（君津・鹿島・福山・倉敷・和歌山・大分）。<br>確度: 国別・世界合計＝高（worldsteel）。企業別8〜15位の順位は集計元で前後（中）。唐山の規模＝高（CRU/Mysteel）。</div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-label">鉄鉱石の生産地図</span>
+      <span class="sec-en">Iron Ore / Country &amp; Company</span>
+    </div>
+    <p class="card-lead">鉄の出発点である鉄鉱石は、<b>豪州・ブラジル・中国・インドの4カ国で世界の約8割</b>。海上貿易（seaborne）に限れば <b>豪州・ブラジルの2強</b>で、企業では <b>Vale・Rio Tinto・BHP・FMGの4社</b>が市場を支配する。日本の高炉メーカーはこの原料の大半を輸入に頼るため、価格交渉力で資源メジャーに強くさらされる。</p>
+    <div class="rank-wrap">
+      <div>
+        <h4>国別生産 Top 8（Mt・usable ore / 2024）</h4>
+        <table class="rank">
+          <thead><tr><th>#</th><th>国</th><th class="r">Mt</th></tr></thead>
+          <tbody>
+            <tr class="hl"><td class="rk">1</td><td class="nm">オーストラリア</td><td class="num">930</td></tr>
+            <tr class="hl"><td class="rk">2</td><td class="nm">ブラジル</td><td class="num">440</td></tr>
+            <tr><td class="rk">3</td><td class="nm">中国</td><td class="num">270</td></tr>
+            <tr><td class="rk">4</td><td class="nm">インド</td><td class="num">270</td></tr>
+            <tr><td class="rk">5</td><td class="nm">ロシア</td><td class="num">91</td></tr>
+            <tr><td class="rk">6</td><td class="nm">イラン</td><td class="num">90</td></tr>
+            <tr><td class="rk">7</td><td class="nm">南アフリカ</td><td class="num">66</td></tr>
+            <tr><td class="rk">8</td><td class="nm">カナダ</td><td class="num">54</td></tr>
+            <tr class="tot"><td class="rk"></td><td class="nm">世界合計</td><td class="num">~2,500</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h4>企業別と主要産地（Mt）</h4>
+        <table class="rank">
+          <thead><tr><th>会社</th><th class="r">Mt</th><th>主要産地</th></tr></thead>
+          <tbody>
+            <tr class="hl"><td class="nm">Vale <small>BR</small></td><td class="num">~328</td><td>Carajás・Minas Gerais</td></tr>
+            <tr class="hl"><td class="nm">Rio Tinto <small>豪</small></td><td class="num">328.6</td><td>Pilbara（西豪州）</td></tr>
+            <tr class="hl"><td class="nm">BHP <small>豪</small></td><td class="num">255</td><td>WAIO / Pilbara</td></tr>
+            <tr class="hl"><td class="nm">FMG <small>豪</small></td><td class="num">191.6</td><td>Pilbara</td></tr>
+          </tbody>
+        </table>
+        <div class="callout" style="margin-top:14px"><b>原料炭（コークス用）</b>も豪州が海上輸送の過半を供給し、米国の約3倍。最大の供給者は <b>BMA（BHP×三菱商事の折半JV）</b>。鉄鉱石・原料炭ともに豪・ブラジルへの集中が、製鉄業の地政学リスクの核心。</div>
+      </div>
+    </div>
+    <p class="cmap-note" style="margin-top:16px">確度: 国別＝高（USGS 2024 usable ore）。企業別は集計期間が異なる（Vale/Rio＝暦年、BHP/FMG＝6月期）点に注意。</p>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-label">鉄鋼サプライチェーン</span>
+      <span class="sec-en">Supply Chain</span>
+    </div>
+    <div class="flow">
+      <div class="flow-step"><div class="flow-no">01 上流</div><div class="flow-name">原料</div><div class="flow-desc">鉄鉱石・原料炭の採掘。資源メジャー（Vale・Rio・BHP・FMG）が寡占</div></div>
+      <div class="flow-step"><div class="flow-no">02</div><div class="flow-name">製鉄所</div><div class="flow-desc">高炉一貫（鉄鉱石→銑鉄→鋼）／電炉（スクラップ溶解）</div></div>
+      <div class="flow-step"><div class="flow-no">03</div><div class="flow-name">圧延・加工</div><div class="flow-desc">熱延・冷延・厚板・鋼管・表面処理に成形</div></div>
+      <div class="flow-step"><div class="flow-no">04</div><div class="flow-name">流通</div><div class="flow-desc">鉄鋼商社・コイルセンター（在庫・加工・物流・与信）</div></div>
+      <div class="flow-step"><div class="flow-no">05 下流</div><div class="flow-name">需要家</div><div class="flow-desc">自動車・建設・造船・家電・エネルギー／インフラ</div></div>
+    </div>
+    <div class="callout"><b>チョークポイント：</b>日本は <b>原料炭をほぼ100%輸入</b>（うち豪州 約55%）、鉄鉱石も大半を輸入（豪州 約64%）。電炉は <b>良質スクラップの確保</b>が制約に。原料炭は豪州寡占ゆえ、サイクロンや洪水など <b>災害・地政学リスク</b>に供給が左右される。</div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-label">国営製鉄企業</span>
+      <span class="sec-en">State-owned Producers</span>
+    </div>
+    <p class="card-lead">鉄鋼は「産業のコメ」と呼ばれる戦略素材であり、多くの国が <b>国有・国策企業</b>として育ててきた。世界トップ10の過半を占める中国勢は大半が国有で、インドのSAILも政府系。規模と安全保障を担う一方、<b>補助金・過剰能力・ダンピング・再編困難</b>という構造課題を抱える。</p>
+    <div class="routes">
+      <div class="route">
+        <div class="route-name">China Baowu（中国宝武鋼鉄）</div>
+        <div class="route-en">中央政府100% · 世界1位</div>
+        <div class="route-desc">2016年に宝鋼＋武漢鋼鉄で誕生。粗鋼 <b>約130 Mt</b>で単独世界首位。中国の鉄鋼政策の中核。</div>
+      </div>
+      <div class="route">
+        <div class="route-name">Ansteel / Shougang / HBIS</div>
+        <div class="route-en">中国 国有・地方国有</div>
+        <div class="route-desc">鞍鋼（国有）、首鋼・河鋼（地方国有）。<b>世界トップ10に中国勢6社</b>。地方政府の雇用・税収とも結びつく。</div>
+      </div>
+      <div class="route">
+        <div class="route-name">SAIL（Steel Authority of India）</div>
+        <div class="route-en">インド政府系 Maharatna</div>
+        <div class="route-desc">能力 約20 Mt/年、2030年代に35 Mtへ拡張計画。国家の重点産業として政府が直接関与。</div>
+      </div>
+    </div>
+    <div class="callout"><b>国営製鉄の特徴：</b>①戦略産業・経済安全保障の柱、②補助金・優遇融資による下支え（→「市場歪曲」と国際批判）、③過剰生産能力と鋼材ダンピング、④雇用・地域政策の手段ゆえ <b>不採算設備の閉鎖が政治的に難しい</b>。中国の過剰能力が世界の市況を慢性的に圧迫する構図の根にある。</div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-label">鉄鋼商社と成り立ち</span>
+      <span class="sec-en">Steel Trading Houses</span>
+    </div>
+    <p class="card-lead">鉄は <b>重量物で在庫・物流コストが大きく</b>、需要家は多品種・小ロット・短納期を求める。メーカーは大量生産に特化するため、<b>在庫保有・物流・与信・コイルセンターでの切断加工・国内外のトレーディング</b>を担う商社が緩衝機能として発達した。結果、鉄はメーカー直販でなく <b>商社経由の比率が高い</b>独特の流通構造を持つ。</p>
+    <div class="routes">
+      <div class="route">
+        <div class="route-name">メタルワン</div>
+        <div class="route-en">2003 · 三菱商事＋日商岩井(双日)</div>
+        <div class="route-desc">両社の鉄鋼事業を統合して発足した最大手級の鉄鋼商社。</div>
+      </div>
+      <div class="route">
+        <div class="route-name">伊藤忠丸紅鉄鋼（MISI）</div>
+        <div class="route-en">2001 · 伊藤忠＋丸紅</div>
+        <div class="route-desc">丸紅の鉄鋼部門と伊藤忠の金属部門を統合。総合商社系の双璧。</div>
+      </div>
+      <div class="route">
+        <div class="route-name">阪和興業</div>
+        <div class="route-en">1947 · 独立系</div>
+        <div class="route-desc">大阪発の独立系トレーダー。系列に縛られない機動力が強み。</div>
+      </div>
+      <div class="route">
+        <div class="route-name">日鉄物産 / JFE商事</div>
+        <div class="route-en">メーカー系列</div>
+        <div class="route-desc">日本製鉄系・JFE系。メーカーの販売網として加工・流通を担う（日鉄物産は近年グループ内再編）。</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head">
+      <span class="sec-label">鉄の需要とアルミ代替</span>
+      <span class="sec-en">Demand Shift &amp; Substitution</span>
+    </div>
+    <p class="card-lead">金属生産は依然 <b>鉄が圧倒的</b>。2024年の粗鋼 約1,883 Mt に対し、一次アルミは約73 Mt——<b>トン数で鉄はアルミの13〜14倍</b>。それでも、自動車の軽量化（特にEVの重いバッテリーを補う燃費・航続対策）で <b>アルミ採用が拡大</b>し、飲料缶や航空機（アルミ／CFRP）でも代替が進む。鉄側は <b>高張力鋼（AHSS）・ホットスタンプ</b>で「薄く・軽く・強く」対抗している。</p>
+    <div class="routes">
+      <div class="route">
+        <div class="route-name">アルミの強み／弱み</div>
+        <div class="route-en">Aluminum</div>
+        <div class="route-desc"><b>軽量・耐食</b>でEVボディ・缶・航空機に拡大。一方 <b>素材コスト高・製錬の電力消費が大きい</b>のが弱み。</div>
+      </div>
+      <div class="route green">
+        <div class="route-name">鉄の対抗策</div>
+        <div class="route-en">AHSS / Hot Stamp</div>
+        <div class="route-desc"><b>高張力鋼</b>で車体を35〜40%軽量化可能。コスト優位を武器に、軽量化ニーズに応えて防衛。</div>
+      </div>
+      <div class="route">
+        <div class="route-name">長期トレンド</div>
+        <div class="route-en">Demand Outlook</div>
+        <div class="route-desc"><b>先進国は需要頭打ち</b>、インド・東南アジアが成長エンジン。最大の中国は <b>ピークアウト論</b>が強まる。</div>
+      </div>
+    </div>
+    <p class="cmap-note" style="margin-top:16px">確度: 生産規模の桁＝高、軽量化率・市場予測＝中（推計）。</p>
+  </section>
+
+</main>
+
+<footer class="snav-footer">
+  <div class="footer-stats">
+    <span class="stat">steel</span><span class="sep">·</span>
+    <span class="stat">industry</span><span class="sep">·</span>
+    <span class="stat">2026.06</span>
+  </div>
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+</body>
+</html>
