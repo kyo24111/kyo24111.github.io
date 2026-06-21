@@ -78,25 +78,26 @@ h3.collapsible {
   user-select: none;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
-h3.collapsible::before {
-  content: '▼';
+h3.collapsible .check-mark {
+  display: none;
+  font-size: 14px;
+  width: 18px;
+  text-align: center;
+}
+h3.collapsible.understood .check-mark { display: inline-block; }
+h3.collapsible .toggle-arrow {
   font-family: 'Share Tech Mono', monospace;
   font-size: 11px;
   color: var(--muted);
   transition: transform 0.15s ease;
   display: inline-block;
   width: 14px;
+  text-align: center;
 }
-h3.collapsible.collapsed::before { transform: rotate(-90deg); }
-h3.collapsible:hover::before { color: var(--text); }
-h3.collapsible.understood::after {
-  content: '✅';
-  margin-left: auto;
-  font-size: 14px;
-  opacity: 0.85;
-}
+h3.collapsible.collapsed .toggle-arrow { transform: rotate(-90deg); }
+h3.collapsible:hover .toggle-arrow { color: var(--text); }
 .section-body[data-collapsed="true"] { display: none; }
 .section-body.collapsed-hint {
   padding: 10px 16px;
@@ -3366,6 +3367,20 @@ if (window.location.protocol === 'file:') {
 
 // ── Section toggle (collapsible h3) ──
 document.querySelectorAll('h3.collapsible').forEach(h => {
+  // Inject toggle-arrow and check-mark spans on the LEFT of the title
+  if (!h.querySelector('.toggle-arrow')) {
+    const arrow = document.createElement('span');
+    arrow.className = 'toggle-arrow';
+    arrow.textContent = '▼';
+    h.prepend(arrow);
+  }
+  if (!h.querySelector('.check-mark')) {
+    const check = document.createElement('span');
+    check.className = 'check-mark';
+    check.textContent = '✅';
+    h.prepend(check); // prepend after arrow → final DOM order: check, arrow, text
+  }
+
   h.addEventListener('click', () => {
     const targetId = h.dataset.target;
     const target = targetId ? document.getElementById(targetId) : h.nextElementSibling;
