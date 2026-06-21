@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Term Study — 新フロンティア技術の商社</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --mid: #444444;
+  --muted: #888888;
+  --border: #d8d8d8;
+  --surface: #f5f5f5;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.page { max-width: 1280px; margin: 0 auto; padding: 60px 28px 120px; }
+
+.local-banner {
+  background: #fff4e6;
+  border: 1px solid #f5a623;
+  color: #8a4b00;
+  padding: 12px 18px;
+  border-radius: 4px;
+  margin-bottom: 32px;
+  font-size: 13px;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: .04em;
+}
+
+.tag {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: .12em;
+  margin-bottom: 12px;
+}
+h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  margin-bottom: 8px;
+  line-height: 1.3;
+}
+.subtitle {
+  color: var(--mid);
+  font-size: 14px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--border);
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.progress {
+  font-family: 'Share Tech Mono', monospace;
+  color: var(--text);
+}
+
+table.term-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  table-layout: fixed;
+}
+table.term-table th {
+  text-align: left;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: .04em;
+  color: var(--muted);
+  text-transform: uppercase;
+  padding: 12px 10px;
+  border-bottom: 2px solid var(--border);
+  background: var(--bg);
+  cursor: pointer;
+  user-select: none;
+  position: sticky;
+  top: 0;
+}
+table.term-table th:hover { color: var(--text); }
+table.term-table th::after {
+  content: ' ↕';
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  color: var(--border);
+}
+table.term-table th.sort-asc::after { content: ' ↑'; color: var(--text); }
+table.term-table th.sort-desc::after { content: ' ↓'; color: var(--text); }
+table.term-table td {
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+  word-break: break-word;
+}
+table.term-table tr:hover td { background: #fafafa; }
+table.term-table tr.checked td { color: var(--muted); }
+table.term-table tr.checked .col-en strong { color: var(--mid); }
+
+.col-idx { width: 40px; }
+.col-check { width: 48px; text-align: center; }
+.col-en { width: 180px; }
+.col-jp { width: 180px; }
+.col-genre { width: 110px; }
+.col-desc { width: auto; }
+
+.col-en strong { color: var(--text); font-size: 13.5px; }
+.col-jp { color: var(--mid); }
+.col-desc { color: var(--mid); font-size: 12.5px; line-height: 1.55; }
+
+.tag-pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+.tg-finance { background: #dfeaf9; color: #1e4380; }
+.tg-mfg     { background: #fbecc6; color: #785a14; }
+.tg-science { background: #d8ecdf; color: #0e5132; }
+.tg-politics { background: #f5d8dc; color: #7d2435; }
+.tg-strategy { background: #e3d4f0; color: #4a2078; }
+
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--text);
+}
+
+.filter-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filter-bar .filter-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: .12em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-right: 4px;
+}
+.filter-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  padding: 4px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 11.5px;
+  font-family: 'Noto Sans JP', sans-serif;
+  font-weight: 600;
+  color: var(--mid);
+}
+.filter-btn:hover { background: var(--surface); }
+.filter-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="local-banner">📖 TERM STUDY — 英語ピッチ向けの用語学習帳。チェック状態はブラウザにローカル保存されます。</div>
+
+<div class="tag">TERM STUDY / 260608</div>
+<h1>Term Study</h1>
+<div class="subtitle">英語ピッチに向けた専門用語学習帳 — クリックでソート、チェックで理解済み記録（ローカル保存）</div>
+
+<div class="filter-bar">
+  <span class="filter-label">Genre Filter:</span>
+  <button class="filter-btn active" data-genre="all">All</button>
+  <button class="filter-btn" data-genre="finance">Finance / VC</button>
+  <button class="filter-btn" data-genre="mfg">Manufacturing</button>
+  <button class="filter-btn" data-genre="science">Science / Tech</button>
+  <button class="filter-btn" data-genre="politics">Politics</button>
+  <button class="filter-btn" data-genre="strategy">Strategy</button>
+  <button class="filter-btn" data-show="unchecked">未習得のみ</button>
+  <button class="filter-btn" data-reset>Reset Check</button>
+</div>
+
+<div class="toolbar">
+  <div class="progress" id="progress">0 / 30 mastered</div>
+  <div style="font-size: 12px;">クリックでソート / チェックでlocalStorageに保存</div>
+</div>
+
+<table class="term-table" id="term-table">
+  <colgroup>
+    <col class="col-idx">
+    <col class="col-check">
+    <col class="col-en">
+    <col class="col-jp">
+    <col class="col-genre">
+    <col class="col-desc">
+  </colgroup>
+  <thead>
+    <tr>
+      <th data-sort="idx" data-type="num">#</th>
+      <th data-sort="check" data-type="check">✓</th>
+      <th data-sort="en" data-type="text">English</th>
+      <th data-sort="jp" data-type="text">日本語</th>
+      <th data-sort="genre" data-type="text">Genre</th>
+      <th data-sort="desc" data-type="text">説明</th>
+    </tr>
+  </thead>
+  <tbody id="term-body"></tbody>
+</table>
+
+<script>
+const TERMS = [
+  // Finance / VC
+  { en: "Pre-money Valuation", jp: "プレマネー評価額", genre: "finance", desc: "出資前の企業価値。Pre + 調達額 = Post-money。Seed $300M Pre, $30M Raise なら Post = $330M" },
+  { en: "Term Sheet", jp: "タームシート", genre: "finance", desc: "投資条件合意書。VC との交渉でこれを取れるかが勝負どころ。複数 VC が出すと Friction = Valuation 上昇" },
+  { en: "CAPEX", jp: "設備投資", genre: "finance", desc: "Capital Expenditure。Phase 3 で LA/Texas 工場建設に数億〜数十億ドル必要。対比は OpEx" },
+  { en: "OPEX", jp: "運営費・経費", genre: "finance", desc: "Operating Expenditure。CapEx（一括設備投資）の対比、人件費・賃料・電気代など日々の運営コスト。クラウド時代は「CapEx → OpEx シフト」（資産買い切り → サブスク）が業界ワード" },
+  { en: "Depreciation", jp: "減価償却", genre: "finance", desc: "CapExで取得した固定資産を耐用年数で按分して費用化する会計処理。例：$1B 工場を10年で償却すると年間 $100M がP&Lの費用に乗る。キャッシュアウトは伴わない（CapEx 時点で支出済み）。本事業のPhase 3 自社工場は重い償却負担になるため、EBITDA / 営業利益 / 純利益のギャップを理解する必要" },
+  { en: "EBITDA", jp: "イービッダー（利払前・税引前・償却前利益）", genre: "finance", desc: "Earnings Before Interest, Taxes, Depreciation & Amortization。減価償却の影響を除いた本業の現金創出力。CapEx重い事業（Foundry）では営業利益より EBITDA で評価されやすい" },
+  { en: "Gundo", jp: "グンド（El Segundo愛称）", genre: "strategy", desc: "El Segundo, CA の防衛テック・フロンティア集積地ニックネーム。Anduril / Mach Industries / Apex / Hadrian など defense startup が集中。本事業の Phase 1 拠点最有力候補" },
+  { en: "CHIPS Act", jp: "チップス法", genre: "politics", desc: "2022年成立の米国半導体法。$52B の補助金で米国本土への半導体製造回帰を促進。本事業の Phase 3 Texas / Arizona 拠点で活用すべき政府支援" },
+  { en: "Neoliberalism", jp: "新自由主義", genre: "politics", desc: "1980年代以降のレーガン/サッチャー的「市場万能・小さな政府・グローバリゼーション」思想。今2020年代に終焉に向かい、国家主導・地政学考慮の時代へ。本事業のマクロ前提" },
+  { en: "New Deal", jp: "ニューディール政策", genre: "politics", desc: "1930年代の米ルーズベルト政権による国家インフラ投資・公共事業政策。CHIPS Act / IRA は「現代版ニューディール」と位置づけられる" },
+  { en: "Bloc Economy", jp: "ブロック経済", genre: "politics", desc: "1930年代に世界恐慌後に出現した、関税・通商で経済圏を閉じる構造。2020年代の中国デカップリング・Friend-shoring に類似" },
+  { en: "Friend-shoring", jp: "フレンドショアリング", genre: "politics", desc: "サプライチェーンを地政学的に信頼できる同盟国に限定する政策トレンド。Reshoring（自国回帰）と Off-shoring（海外移転）の中間。日米同盟インサイダーの戦略と合致" },
+  { en: "IRA", jp: "インフレ抑制法", genre: "politics", desc: "Inflation Reduction Act (2022)。$369B規模の気候・エネルギー投資。EV / 蓄電 / 再エネ / 水素サプライチェーンの補助金を含む" },
+  { en: "PER", jp: "株価収益率", genre: "finance", desc: "Price Earnings Ratio。本事業の Year 30 想定は PER 25x、ASML/TSMC帯。Seedからの語り直しが必要" },
+  { en: "TAM", jp: "獲得可能市場規模", genre: "finance", desc: "Total Addressable Market。本事業のコンポーネント・素材市場は $100B+" },
+  { en: "NRE", jp: "初期開発費", genre: "finance", desc: "Non-Recurring Engineering. 米スタートアップから初期開発費として徴収、Phase 1 の主要収入源" },
+  { en: "Tolling Fee", jp: "加工代", genre: "finance", desc: "他社の素材を預かり自社で加工するときに取る fee。Phase 3 Foundry の主要収益源" },
+  { en: "LoI", jp: "意向表明書", genre: "finance", desc: "Letter of Intent。法的拘束なし、しかし「日本サプライチェーンを握った証」として VC に提示" },
+
+  // Manufacturing
+  { en: "OEM", jp: "オリジナル機器製造業者", genre: "mfg", desc: "Original Equipment Manufacturer。Dell/HPE など、ブランドと完成品を持つ。本事業は OEM 化を避ける" },
+  { en: "ODM", jp: "設計製造受託業者", genre: "mfg", desc: "Original Design Manufacturer。Quanta/Foxconn など。設計+製造を一括で請け負う。Phase 3 のターゲットポジション" },
+  { en: "EMS", jp: "電子機器受託製造", genre: "mfg", desc: "Electronics Manufacturing Services。Foxconn/Flex など。顧客設計の組立のみ、コモディティ" },
+  { en: "Pure-play Foundry", jp: "専業ファウンドリ", genre: "mfg", desc: "TSMC モデル。顧客と絶対競合しない製造専業。本事業 Phase 3 の到達目標" },
+  { en: "Choke Point", jp: "戦略的要衝", genre: "mfg", desc: "代替不可能な供給拠点。AGC フッ素冷媒、Tokyo Electron 半導体装置などが該当" },
+  { en: "Reshoring", jp: "製造回帰", genre: "mfg", desc: "米国本土への製造回帰。本事業のマクロ環境を支える米政策トレンド" },
+  { en: "Black Box Factory", jp: "ブラックボックス工場", genre: "mfg", desc: "セキュリティ完備の最新鋭工場。Phase 3 で LA/Texas に建設、CFIUS 準拠" },
+  { en: "FDE", jp: "顧客先派遣エンジニア", genre: "mfg", desc: "Forward Deployed Engineer。Tokyo Electron など装置メーカーが顧客に常駐させる技術者" },
+
+  // Science / Tech
+  { en: "Immersion Cooling", jp: "液浸冷却", genre: "science", desc: "サーバーを液体に沈める高効率冷却。AGC のフッ素冷媒 + Nidec のポンプが必須" },
+  { en: "Photoresist", jp: "フォトレジスト", genre: "science", desc: "半導体露光に使う感光性樹脂。JSR / Tokyo Ohka が世界シェアトップ、フッ素化合物が必須" },
+  { en: "CFRP", jp: "炭素繊維強化プラスチック", genre: "science", desc: "Carbon Fiber Reinforced Plastic。Toray が世界1位、SpaceX Starship・Anduril UAV の構造材" },
+  { en: "MLCC", jp: "積層セラミックコンデンサ", genre: "science", desc: "Multi-Layer Ceramic Capacitor。Murata が世界1位、AI サーバー・EV に必須" },
+  { en: "HBM", jp: "広帯域メモリ", genre: "science", desc: "High Bandwidth Memory。AI GPU 必須メモリ、Samsung/SK Hynix が独占、製造には日本素材必須" },
+  { en: "EUV", jp: "極端紫外線露光", genre: "science", desc: "Extreme Ultraviolet。最先端半導体露光技術、ASML 独占、Lasertec のマスク検査も必須" },
+  { en: "Harmonic Drive", jp: "波動歯車", genre: "science", desc: "ヒューマノイドロボット関節の核心部品。Harmonic Drive Systems（ニデック傘下）が世界70%+" },
+  { en: "SiC", jp: "炭化ケイ素", genre: "science", desc: "Silicon Carbide。次世代パワー半導体素材。Fuji Electric / Rohm が強い" },
+  { en: "VLSI", jp: "超LSI（超大規模集積回路）", genre: "science", desc: "Very Large Scale Integration。集積度の段階 SSI→MSI→LSI→VLSI→ULSI の一つ（1チップ1万〜100万素子級）。語源以上に重要なのは『超LSI技術研究組合』(1976-80, 通産省主導で富士通/日立/NEC/三菱/東芝が結集、予算700億円)。製造装置の国産化率を20%→70%超へ引き上げ、1980年代DRAM世界首位の技術基盤に。米国が発明し日本が量産品質で逆転した産業政策の代表的成功例" },
+
+  // Politics
+  { en: "CFIUS", jp: "対米外国投資委員会", genre: "politics", desc: "Committee on Foreign Investment in the US。中国系の技術・資本を排除、本事業はこれに完全準拠" },
+  { en: "DoD", jp: "米国防総省", genre: "politics", desc: "Department of Defense。Phase 2 以降の Classified 市場の核となる発注元" },
+  { en: "Decoupling", jp: "デカップリング", genre: "politics", desc: "中国経済圏との切り離し。本事業の地政学的前提" },
+
+  // Strategy
+  { en: "Moat", jp: "競争優位の堀", genre: "strategy", desc: "Phase 1〜2 は営業力×政治力、Phase 3 は技術力が Moat" },
+  { en: "Wedge", jp: "突破口", genre: "strategy", desc: "市場参入の最初の楔。本事業は DC 冷却（AGC×Nidec×Daikin）が Wedge" },
+  { en: "Hyperscaler", jp: "ハイパースケーラー", genre: "strategy", desc: "AWS / Azure / GCP / Meta。年間 $33-53B の DC CAPEX を投下、本事業の最重要顧客層" }
+];
+
+const GENRE_LABELS = {
+  finance: "Finance / VC",
+  mfg: "Manufacturing",
+  science: "Science / Tech",
+  politics: "Politics",
+  strategy: "Strategy"
+};
+
+const STORAGE_KEY = "frontier-trading-term-checks";
+let state = {
+  data: TERMS.map((t, i) => ({ ...t, idx: i + 1 })),
+  sortKey: "idx",
+  sortDir: "asc",
+  genreFilter: "all",
+  showUncheckedOnly: false,
+  checks: JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}")
+};
+
+function render() {
+  const tbody = document.getElementById("term-body");
+  tbody.innerHTML = "";
+
+  let filtered = state.data;
+  if (state.genreFilter !== "all") {
+    filtered = filtered.filter(t => t.genre === state.genreFilter);
+  }
+  if (state.showUncheckedOnly) {
+    filtered = filtered.filter(t => !state.checks[t.en]);
+  }
+
+  const sorted = [...filtered].sort((a, b) => {
+    let aVal, bVal;
+    if (state.sortKey === "check") {
+      aVal = state.checks[a.en] ? 1 : 0;
+      bVal = state.checks[b.en] ? 1 : 0;
+    } else {
+      aVal = a[state.sortKey];
+      bVal = b[state.sortKey];
+    }
+    if (typeof aVal === "string") {
+      return state.sortDir === "asc" ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    }
+    return state.sortDir === "asc" ? aVal - bVal : bVal - aVal;
+  });
+
+  sorted.forEach(t => {
+    const tr = document.createElement("tr");
+    if (state.checks[t.en]) tr.classList.add("checked");
+    tr.innerHTML = `
+      <td>${t.idx}</td>
+      <td class="col-check"><input type="checkbox" data-en="${t.en}" ${state.checks[t.en] ? "checked" : ""}></td>
+      <td class="col-en"><strong>${t.en}</strong></td>
+      <td class="col-jp">${t.jp}</td>
+      <td class="col-genre"><span class="tag-pill tg-${t.genre}">${GENRE_LABELS[t.genre]}</span></td>
+      <td class="col-desc">${t.desc}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  document.querySelectorAll(".col-check input").forEach(cb => {
+    cb.addEventListener("change", e => {
+      const en = e.target.dataset.en;
+      state.checks[en] = e.target.checked;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.checks));
+      updateProgress();
+      e.target.closest("tr").classList.toggle("checked", e.target.checked);
+    });
+  });
+
+  updateSortIndicators();
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = TERMS.length;
+  const mastered = Object.values(state.checks).filter(v => v).length;
+  document.getElementById("progress").textContent = `${mastered} / ${total} mastered`;
+}
+
+function updateSortIndicators() {
+  document.querySelectorAll("th").forEach(th => {
+    th.classList.remove("sort-asc", "sort-desc");
+    if (th.dataset.sort === state.sortKey) {
+      th.classList.add(state.sortDir === "asc" ? "sort-asc" : "sort-desc");
+    }
+  });
+}
+
+document.querySelectorAll("th[data-sort]").forEach(th => {
+  th.addEventListener("click", () => {
+    const key = th.dataset.sort;
+    if (state.sortKey === key) {
+      state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
+    } else {
+      state.sortKey = key;
+      state.sortDir = "asc";
+    }
+    render();
+  });
+});
+
+document.querySelectorAll(".filter-btn[data-genre]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".filter-btn[data-genre]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    state.genreFilter = btn.dataset.genre;
+    render();
+  });
+});
+
+document.querySelector(".filter-btn[data-show]").addEventListener("click", e => {
+  state.showUncheckedOnly = !state.showUncheckedOnly;
+  e.target.classList.toggle("active", state.showUncheckedOnly);
+  render();
+});
+
+document.querySelector(".filter-btn[data-reset]").addEventListener("click", () => {
+  if (confirm("理解度チェックを全リセットしますか？")) {
+    state.checks = {};
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state.checks));
+    render();
+  }
+});
+
+render();
+</script>
+
+</div>
+</body>
+</html>
