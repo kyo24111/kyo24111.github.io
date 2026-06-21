@@ -72,6 +72,36 @@ body {
 .local-only { display: none; }
 .local-mode .local-only { display: inline-flex; }
 
+/* Section toggle (collapsible h3 sections) */
+h3.collapsible {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+h3.collapsible::before {
+  content: '▼';
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+  display: inline-block;
+  width: 14px;
+}
+h3.collapsible.collapsed::before { transform: rotate(-90deg); }
+h3.collapsible:hover::before { color: var(--text); }
+.section-body[data-collapsed="true"] { display: none; }
+.section-body.collapsed-hint {
+  padding: 10px 16px;
+  background: var(--surface);
+  border-radius: 4px;
+  margin: 8px 0;
+  font-size: 12px;
+  color: var(--muted);
+  font-style: italic;
+}
+
 /* 4-Frame Summary */
 .frame-grid {
   display: flex;
@@ -713,7 +743,8 @@ li { margin-bottom: 4px; }
 <p>相手の戦略を逆手に取った点が参考になる。</p>
 <p>当時、IPや発明はインテルやヒューレット・パッカードが担っていた。ファブレスを好むトレンドに逆らって、TSMCは台湾で1980年代後半に製造をすべて引き受けるという、あえて逆の動きをすることでものにしていった。</p>
 
-<h3>加賀電子（Kaga Electronics）</h3>
+<h3 class="collapsible collapsed" data-target="kaga-section">加賀電子（Kaga Electronics）</h3>
+<div class="section-body" data-collapsed="true" id="kaga-section">
 <p>本事業に最も近い <strong>日本国内の "商社 → EMS 転身" の成功事例</strong>。Phase 1→3 の進化を実証済み。</p>
 <ul>
   <li><strong>もともと電子部品の商社</strong>（1968年創業）。全国の販売ネットワークと幅広いメーカーとの取引関係を武器に成長</li>
@@ -739,6 +770,7 @@ li { margin-bottom: 4px; }
     <li><strong>本事業の示唆：</strong>Phase 1〜2 の Broker 期にあらゆる SU・メーカーに分散せず、<strong>「DC冷却の Top 10 Hyperscaler/SU + 防衛 Top 5」</strong> に集中する。クライアント数 = 利益率の上限を決める</li>
     <li>採用・営業リソースも分散させない。<strong>「数より深さ」</strong> が Foundry 化への正しい道</li>
   </ul>
+</div>
 </div>
 
 <h2>競合プレイヤー（既存の参考企業）</h2>
@@ -3325,6 +3357,18 @@ li { margin-bottom: 4px; }
 if (window.location.protocol === 'file:') {
   document.body.classList.add('local-mode');
 }
+
+// ── Section toggle (collapsible h3) ──
+document.querySelectorAll('h3.collapsible').forEach(h => {
+  h.addEventListener('click', () => {
+    const targetId = h.dataset.target;
+    const target = targetId ? document.getElementById(targetId) : h.nextElementSibling;
+    if (!target) return;
+    const isCollapsed = target.dataset.collapsed === 'true';
+    target.dataset.collapsed = isCollapsed ? 'false' : 'true';
+    h.classList.toggle('collapsed', !isCollapsed);
+  });
+});
 
 // ── Move all knowledge-cards from #tab-knowledge to #qa-cards ──
 (function migrateQACards() {
