@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>半導体戦争 — 章ごと理解チェック</title>
+  <style>
+    :root {
+      --bg:     #ffffff;
+      --line:   #e8e8e8;
+      --text:   #111111;
+      --muted:  #888888;
+      --light:  #cccccc;
+      --fill:   #f5f5f3;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .page { max-width: 880px; margin: 0 auto; padding: 40px 24px 100px; }
+
+    /* ── HEADER ── */
+    .header {
+      display: flex; align-items: baseline; justify-content: space-between;
+      margin-bottom: 8px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--text);
+    }
+    .header h1 { font-size: 22px; font-weight: 800; letter-spacing: -.3px; }
+    .header .sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .back-link { font-size: 12px; color: var(--muted); text-decoration: none; white-space: nowrap; }
+    .back-link:hover { color: var(--text); }
+
+    /* ── PROGRESS ── */
+    .progress-wrap {
+      display: flex; align-items: center; gap: 14px;
+      margin: 22px 0 8px;
+    }
+    .progress-bar {
+      flex: 1; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden;
+    }
+    .progress-fill { height: 100%; width: 0%; background: var(--text); transition: width .3s ease; }
+    .progress-num { font-size: 12px; color: var(--muted); white-space: nowrap; font-weight: 600; }
+    .progress-num b { color: var(--text); }
+
+    .tips { font-size: 12px; color: var(--muted); margin-bottom: 32px; }
+    .tips b { color: var(--text); }
+    .reset { background: none; border: none; color: var(--light); font-size: 11px; cursor: pointer; text-decoration: underline; padding: 0; }
+    .reset:hover { color: var(--muted); }
+
+    /* ── PART ── */
+    .part {
+      font-size: 11px; font-weight: 700; letter-spacing: .8px;
+      color: var(--muted); text-transform: uppercase;
+      margin: 36px 0 4px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .part .part-jp { color: var(--text); text-transform: none; letter-spacing: 0; font-size: 14px; }
+    .part::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+
+    /* ── CHAPTER ROW ── */
+    .row {
+      display: grid;
+      grid-template-columns: 40px 1fr 230px;
+      gap: 0 16px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: start;
+    }
+    .row.done { background: var(--fill); }
+    .row.done .ch-title { color: var(--muted); }
+
+    .ch-check { padding-top: 1px; }
+    .ch-check input {
+      appearance: none; -webkit-appearance: none;
+      width: 20px; height: 20px; border: 1.5px solid var(--light);
+      border-radius: 4px; cursor: pointer; position: relative;
+      transition: border-color .15s, background .15s;
+    }
+    .ch-check input:hover { border-color: var(--muted); }
+    .ch-check input:checked { background: var(--text); border-color: var(--text); }
+    .ch-check input:checked::after {
+      content: ''; position: absolute; left: 6px; top: 2px;
+      width: 5px; height: 10px; border: solid #fff;
+      border-width: 0 2px 2px 0; transform: rotate(45deg);
+    }
+
+    .ch-num { font-size: 11px; font-weight: 700; color: var(--light); }
+    .ch-title { font-size: 14.5px; font-weight: 600; line-height: 1.45; }
+
+    .ch-memo {
+      width: 100%; border: 1px solid var(--line); border-radius: 6px;
+      padding: 7px 9px; font-family: inherit; font-size: 12.5px; color: var(--text);
+      line-height: 1.55; resize: vertical; min-height: 38px; background: #fff;
+      transition: border-color .15s;
+    }
+    .ch-memo::placeholder { color: var(--light); }
+    .ch-memo:focus { outline: none; border-color: var(--muted); }
+
+    @media (max-width: 640px) {
+      .row { grid-template-columns: 34px 1fr; gap: 6px 12px; }
+      .ch-memo { grid-column: 1 / -1; margin-top: 4px; }
+    }
+
+    /* ── SITE NAV (snav) ── */
+    body { padding-top: 56px; padding-bottom: 68px; }
+    .snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+    .snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+    .snav-logo:hover{opacity:.6}
+    .snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+    .snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+    .snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+    .snav-btn.open span:nth-child(2){opacity:0}
+    .snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+    .snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+    .snav-overlay.open{display:block}
+    .snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+    .snav-panel.open{transform:translateX(0)}
+    .snav-sec{margin-bottom:28px}
+    .snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+    .snav-a:hover{color:#fff}
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/047_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<div class="page">
+
+  <div class="header">
+    <div>
+      <h1>半導体戦争</h1>
+      <div class="sub">クリス・ミラー &nbsp;·&nbsp; Chip War &nbsp;·&nbsp; 序章 + 全54章</div>
+    </div>
+    <a class="back-link" href="books.html">← 本棚</a>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progFill"></div></div>
+    <div class="progress-num"><b id="progDone">0</b> / <span id="progTotal">0</span> 章 理解OK</div>
+  </div>
+  <div class="tips">
+    <b>使い方</b> ── 章を読んだら ✓ をチェック。右のメモ欄に要点・問い・疑問を自由に記入（入力は自動保存）。
+    &nbsp;·&nbsp; <button class="reset" onclick="resetAll()">全リセット</button>
+  </div>
+
+  <div id="toc"></div>
+
+</div>
+
+<script>
+const CHAPTERS = [
+  { part: "", partJp: "", num: "序", title: "原油を超える世界最重要資源" },
+
+  { part: "Part I", partJp: "半導体の黎明期", num: "1",  title: "戦後の技術者たち" },
+  { num: "2",  title: "トランジスタの誕生" },
+  { num: "3",  title: "シリコンバレーの始祖と集積回路" },
+  { num: "4",  title: "軍に半導体を売りつける" },
+  { num: "5",  title: "半導体を量産せよ" },
+  { num: "6",  title: "民間市場は存在するか" },
+
+  { part: "Part II", partJp: "半導体産業の基軸になるアメリカ", num: "7",  title: "ソ連版シリコンバレー" },
+  { num: "8",  title: "コピー戦略" },
+  { num: "9",  title: "日本の経済復興" },
+  { num: "10", title: "どこで半導体を組み立てるか" },
+  { num: "11", title: "ベトナム戦争の誘導爆弾" },
+  { num: "12", title: "太平洋を超えたサプライ・チェーン" },
+  { num: "13", title: "インテルの革命" },
+  { num: "14", title: "チップを載せたスマート兵器" },
+
+  { part: "Part III", partJp: "日本の台頭", num: "15", title: "成功しすぎた日本" },
+  { num: "16", title: "日米経済戦争" },
+  { num: "17", title: "「最高に熱いハイテク企業」、日本に敗れる" },
+  { num: "18", title: "「1980年代の原油」と化した半導体" },
+  { num: "19", title: "シリコンバレーとロビイング" },
+  { num: "20", title: "パックス・ニッポニカ" },
+
+  { part: "Part IV", partJp: "アメリカの復活", num: "21", title: "アイダホ州のハイテク企業" },
+  { num: "22", title: "インテル再興" },
+  { num: "23", title: "敵の敵は友 ── 韓国の台頭" },
+  { num: "24", title: "ミードとコンウェイの革命" },
+  { num: "25", title: "コピー戦略の末路" },
+  { num: "26", title: "思考する兵器VS無能" },
+  { num: "27", title: "湾岸戦争の英雄" },
+  { num: "28", title: "日本経済の奇跡が止まる" },
+
+  { part: "Part V", partJp: "集積回路が世界をひとつにする", num: "29", title: "TSMCの隆盛" },
+  { num: "30", title: "全員で半導体をつくるべし" },
+  { num: "31", title: "中国に半導体を届ける" },
+  { num: "32", title: "リソグラフィ戦争" },
+  { num: "33", title: "携帯機器の市場規模" },
+  { num: "34", title: "アメリカの驕り" },
+
+  { part: "Part VI", partJp: "イノベーションは海外へ", num: "35", title: "工場を持つべきか" },
+  { num: "36", title: "ファブレス革命" },
+  { num: "37", title: "モリス・チャンの大同盟" },
+  { num: "38", title: "アップルの半導体" },
+  { num: "39", title: "EUVリソグラフィ" },
+  { num: "40", title: "７ナノメートル・プロセス" },
+  { num: "41", title: "イノベーションを忘れたインテル" },
+
+  { part: "Part VII", partJp: "中国の挑戦", num: "42", title: "中国指導部の方針転換" },
+  { num: "43", title: "半導体の自給自足" },
+  { num: "44", title: "サーバ向けチップを攻略せよ" },
+  { num: "45", title: "台湾の秘宝" },
+  { num: "46", title: "ファーウェイの隆盛" },
+  { num: "47", title: "５Ｇの未来" },
+  { num: "48", title: "「知能化」する戦争" },
+
+  { part: "Part VIII", partJp: "武器化する半導体", num: "49", title: "半導体の支配という土台" },
+  { num: "50", title: "福建省晋華集積回路" },
+  { num: "51", title: "ファーウェイ排除" },
+  { num: "52", title: "中国版スプートニク・ショック" },
+  { num: "53", title: "半導体不足とサプライ・チェーン" },
+  { num: "54", title: "台湾のジレンマ" },
+];
+
+const LS_KEY = "chipwar_notes_v1";
+const state = JSON.parse(localStorage.getItem(LS_KEY) || "{}");
+
+function save() { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+function updateProgress() {
+  const total = CHAPTERS.length;
+  let done = 0;
+  CHAPTERS.forEach(c => { if (state[c.num] && state[c.num].done) done++; });
+  document.getElementById("progDone").textContent = done;
+  document.getElementById("progTotal").textContent = total;
+  document.getElementById("progFill").style.width = (done / total * 100) + "%";
+}
+
+function render() {
+  const toc = document.getElementById("toc");
+  toc.innerHTML = "";
+  CHAPTERS.forEach(c => {
+    if (c.part) {
+      const p = document.createElement("div");
+      p.className = "part";
+      p.innerHTML = c.part + ' <span class="part-jp">' + c.partJp + '</span>';
+      toc.appendChild(p);
+    }
+    const st = state[c.num] || {};
+    const row = document.createElement("div");
+    row.className = "row" + (st.done ? " done" : "");
+    row.dataset.num = c.num;
+
+    const chk = document.createElement("div");
+    chk.className = "ch-check";
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.checked = !!st.done;
+    box.addEventListener("change", () => {
+      state[c.num] = state[c.num] || {};
+      state[c.num].done = box.checked;
+      row.classList.toggle("done", box.checked);
+      save(); updateProgress();
+    });
+    chk.appendChild(box);
+
+    const mid = document.createElement("div");
+    mid.innerHTML = '<div class="ch-num">' + (c.num === "序" ? "序章" : "Ch. " + c.num) + '</div>' +
+                    '<div class="ch-title">' + c.title + '</div>';
+
+    const memo = document.createElement("textarea");
+    memo.className = "ch-memo";
+    memo.placeholder = "要点・問い・疑問…";
+    memo.value = st.memo || "";
+    const autosize = () => { memo.style.height = "auto"; memo.style.height = memo.scrollHeight + "px"; };
+    memo.addEventListener("input", () => {
+      state[c.num] = state[c.num] || {};
+      state[c.num].memo = memo.value;
+      save(); autosize();
+    });
+
+    row.appendChild(chk);
+    row.appendChild(mid);
+    row.appendChild(memo);
+    toc.appendChild(row);
+    autosize();
+  });
+  updateProgress();
+}
+
+function resetAll() {
+  if (!confirm("チェックとメモを全て消去します。よろしいですか？")) return;
+  for (const k in state) delete state[k];
+  save();
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
