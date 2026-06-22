@@ -153,30 +153,36 @@
     line-height: 1;
   }
 
-  /* ===== Chapter completion / collapse ===== */
-  /* Push label to the left so status + done-button cluster on the right */
-  .chapter-meta .chapter-label { margin-right: auto; }
-  .chapter-done-btn {
-    font-family: 'Poppins', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .02em;
-    padding: 4px 12px;
-    border-radius: 14px;
-    border: 1px solid var(--border);
-    background: var(--bg);
-    color: var(--muted);
+  /* ===== Completion checkboxes in side-nav ===== */
+  .side-nav-chapter-row { display: flex; align-items: flex-start; gap: 6px; }
+  .side-nav-chapter-row .side-nav-chapter-title { padding-left: 0; flex: 1; }
+  .side-nav-item { display: flex; align-items: flex-start; gap: 4px; padding-left: 12px; }
+  .side-nav-item .side-nav-link { flex: 1; padding-left: 6px; }
+  .snav-check {
+    flex: none;
+    width: 13px;
+    height: 13px;
+    border: 1.5px solid #cccccc;
+    border-radius: 3px;
+    background: #fff;
     cursor: pointer;
-    white-space: nowrap;
-    transition: all .15s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    line-height: 1;
+    color: #fff;
+    transition: all .12s;
   }
-  .chapter-done-btn:hover { border-color: var(--text); color: var(--text); }
-  .chapter-done-btn.is-done {
-    background: #d4edda;
-    border-color: #c3e6cb;
-    color: #155724;
-  }
-  /* When a chapter is completed it can be folded: hide everything except header */
+  .side-nav-chapter-row .snav-check { margin-top: 1px; }
+  .side-nav-item .snav-check { margin-top: 6px; }
+  .snav-check:hover { border-color: var(--text); }
+  .snav-check.checked { background: #2a9d8f; border-color: #2a9d8f; }
+  .snav-check.checked::after { content: '✓'; }
+  .side-nav-item.done .side-nav-link { color: #cfcfcf; }
+
+  /* ===== Chapter / section folding ===== */
+  /* When marked done, fold to a single-line header */
   .chapter.collapsed > *:not(.chapter-meta):not(.chapter-title) { display: none; }
   .chapter.collapsed { margin-bottom: 18px; }
   .chapter.collapsed .chapter-title {
@@ -185,9 +191,13 @@
     margin-bottom: 0;
     color: var(--muted);
   }
-  /* Chevron appears only on completed chapters; clicking the title folds/unfolds */
-  .chapter.completed .chapter-title { cursor: pointer; }
-  .chapter-chevron {
+  .section.collapsed > *:not(h2) { display: none; }
+  .section.collapsed { margin-bottom: 14px; }
+  .section.collapsed h2 { margin-bottom: 0; color: var(--muted); }
+  /* Chevron appears only on completed chapters/sections; click header to fold/unfold */
+  .chapter.completed .chapter-title,
+  .section.done h2 { cursor: pointer; }
+  .chapter-chevron, .section-chevron {
     display: none;
     float: right;
     font-size: 0.8em;
@@ -195,8 +205,10 @@
     transition: transform .15s;
     user-select: none;
   }
-  .chapter.completed .chapter-chevron { display: inline-block; }
-  .chapter.collapsed .chapter-chevron { transform: rotate(-90deg); }
+  .chapter.completed .chapter-chevron,
+  .section.done .section-chevron { display: inline-block; }
+  .chapter.collapsed .chapter-chevron,
+  .section.collapsed .section-chevron { transform: rotate(-90deg); }
   /* Global control bar */
   .notes-controls {
     display: flex;
@@ -710,7 +722,7 @@
   <div class="view active" id="view-notes">
 
     <div class="notes-controls">
-      <span class="done-summary" id="doneSummary">0 / 0 章 履修済み</span>
+      <span class="done-summary" id="doneSummary">0 / 0 項目 履修済み</span>
       <span class="spacer"></span>
       <button type="button" onclick="foldAllDone()">履修済みを畳む</button>
       <button type="button" onclick="unfoldAll()">すべて展開</button>
@@ -3785,8 +3797,114 @@
           <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75"><span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span><strong>3×3</strong> → サラスの法則、または余因子展開</li>
           <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75"><span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span><strong>一般の n×n</strong> → <span class="key">余因子展開（Laplace 展開）</span>／行基本変形で三角化してから対角積</li>
         </ul>
-        <p style="color:var(--muted);font-size:13px">※ 各計算手順は学習しながら例題を追記予定。</p>
+        <p style="color:var(--muted);font-size:13px">※ <strong>サラスの公式</strong>（3×3 専用）と <strong>余因子展開</strong>（任意サイズ）は次の2セクションで例題つきで解説。</p>
         </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="det-sarrus">
+        <h2>サラスの公式（Sarrus' Rule）— 3×3 専用の対角線テク</h2>
+
+        <p><span class="hl">3×3 行列だけ</span>に使える暗算用の覚え方。右下がりの対角線3本を<span class="key">足し</span>、右上がりの対角線3本を<span class="key">引く</span>。4×4 以上には使えない（→ 余因子展開へ）。</p>
+
+        <div class="formula" style="text-align:center;font-size:15px">
+          det&nbsp;[ a&nbsp;b&nbsp;c ; d&nbsp;e&nbsp;f ; g&nbsp;h&nbsp;i ]<br>
+          =&nbsp;<span style="color:#1d4e89;font-weight:700">aei + bfg + cdh</span>&nbsp;−&nbsp;<span style="color:#d62828;font-weight:700">ceg + afh + bdi</span>
+        </div>
+
+        <p style="margin-top:14px"><span class="key">やり方：</span>行列の<span class="hl">右に最初の2列をコピーして並べる</span>と、対角線が見やすい。</p>
+
+        <div class="formula" style="font-family:'Poppins',monospace;font-size:15px;line-height:2;text-align:center">
+          <span style="color:#1d4e89">＼ ＼ ＼</span>&nbsp;（足す）<br>
+          a&nbsp;&nbsp;b&nbsp;&nbsp;c&nbsp;|&nbsp;a&nbsp;&nbsp;b<br>
+          d&nbsp;&nbsp;e&nbsp;&nbsp;f&nbsp;|&nbsp;d&nbsp;&nbsp;e<br>
+          g&nbsp;&nbsp;h&nbsp;&nbsp;i&nbsp;|&nbsp;g&nbsp;&nbsp;h<br>
+          <span style="color:#d62828">／ ／ ／</span>&nbsp;（引く）
+        </div>
+
+        <ul style="list-style:none;padding:0;margin:10px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.7"><span style="position:absolute;left:0;top:9px;width:6px;height:6px;background:#1d4e89;content:''"></span><span style="color:#1d4e89;font-weight:700">右下がり「＼」を足す：</span> a·e·i、b·f·g、c·d·h</li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.7"><span style="position:absolute;left:0;top:9px;width:6px;height:6px;background:#d62828;content:''"></span><span style="color:#d62828;font-weight:700">右上がり「／」を引く：</span> c·e·g、a·f·h、b·d·i</li>
+        </ul>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例題</h3>
+
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td>2</td><td>0</td><td>1</td></tr>
+              <tr><td>3</td><td>1</td><td>2</td></tr>
+              <tr><td>1</td><td>4</td><td>0</td></tr>
+            </table>
+          </div>
+          <span class="op">→</span>
+          <span style="font-size:13px">det を求める</span>
+        </div>
+
+        <div class="formula" style="font-size:14px;line-height:1.9">
+          <span style="color:#1d4e89">足す：</span> 2·1·0 + 0·2·1 + 1·3·4 = 0 + 0 + 12 = <strong>12</strong><br>
+          <span style="color:#d62828">引く：</span> 1·1·1 + 2·2·4 + 0·3·0 = 1 + 16 + 0 = <strong>17</strong><br>
+          <span class="key">det =</span> 12 − 17 = <span class="hl" style="font-weight:700">−5</span>
+        </div>
+
+        <p style="color:var(--muted);font-size:13px;margin-top:8px">※ 次のセクションで同じ行列を余因子展開して −5 になることを確認する（クロスチェック）。</p>
+      </div>
+
+      <div class="section" id="det-cofactor">
+        <h2>余因子展開（Cofactor / Laplace Expansion）— 任意サイズに効く</h2>
+
+        <p>どんな n×n でも使える汎用法。1つの行（または列）を選び、各成分について<span class="hl">その行・列を消した小行列の det（＝小行列式 / minor）</span>に符号をつけて足し合わせる。サイズが1つ小さい det に帰着する<span class="key">再帰</span>がミソ。</p>
+
+        <div class="formula" style="font-size:14px;line-height:1.9">
+          <span class="key">小行列式（Minor）M<sub>ij</sub>：</span> i 行 j 列を消して残る (n−1)×(n−1) の det<br>
+          <span class="key">余因子（Cofactor）C<sub>ij</sub>：</span> C<sub>ij</sub> = (−1)<sup>i+j</sup> · M<sub>ij</sub>（符号つき minor）<br>
+          <span class="key">展開（i 行で）：</span> det(A) = a<sub>i1</sub>C<sub>i1</sub> + a<sub>i2</sub>C<sub>i2</sub> + … + a<sub>in</sub>C<sub>in</sub>
+        </div>
+
+        <p style="margin-top:14px"><span class="key">符号 (−1)<sup>i+j</sup> はチェッカーボード：</span></p>
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="color:#1d4e89;font-weight:700">+</td><td style="color:#d62828;font-weight:700">−</td><td style="color:#1d4e89;font-weight:700">+</td></tr>
+              <tr><td style="color:#d62828;font-weight:700">−</td><td style="color:#1d4e89;font-weight:700">+</td><td style="color:#d62828;font-weight:700">−</td></tr>
+              <tr><td style="color:#1d4e89;font-weight:700">+</td><td style="color:#d62828;font-weight:700">−</td><td style="color:#1d4e89;font-weight:700">+</td></tr>
+            </table>
+          </div>
+          <span style="font-size:13px;color:var(--muted)">左上が必ず +。隣に進むごとに符号が反転。</span>
+        </div>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13.5px">
+          <span class="key">コツ：</span><span class="hl">0 が一番多い行・列を選んで展開</span>すると、その項は計算せず消えるので一番ラク。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例題（サラスと同じ行列・1行目で展開）</h3>
+
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700;color:#1d4e89">2</td><td style="font-weight:700;color:#d62828">0</td><td style="font-weight:700;color:#1d4e89">1</td></tr>
+              <tr><td>3</td><td>1</td><td>2</td></tr>
+              <tr><td>1</td><td>4</td><td>0</td></tr>
+            </table>
+          </div>
+          <span style="font-size:13px">1行目 (2, 0, 1) で展開</span>
+        </div>
+
+        <div class="formula" style="font-size:14px;line-height:2">
+          det = <span style="color:#1d4e89">+2·</span>det&nbsp;[ 1&nbsp;2 ; 4&nbsp;0 ]
+          <span style="color:#d62828">&nbsp;−&nbsp;0·</span>det&nbsp;[ 3&nbsp;2 ; 1&nbsp;0 ]
+          <span style="color:#1d4e89">&nbsp;+&nbsp;1·</span>det&nbsp;[ 3&nbsp;1 ; 1&nbsp;4 ]<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;= 2·(1·0 − 2·4) − 0 + 1·(3·4 − 1·1)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;= 2·(−8) + (11) = −16 + 11 = <span class="hl" style="font-weight:700">−5</span>
+        </div>
+
+        <p style="margin-top:8px"><span class="key">✓ クロスチェック：</span>サラスの −5 と一致。2列目に 0 があるので、その項（−0·…）は計算不要だったのもポイント。</p>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px;margin-top:14px">
+          <span class="key">サラス vs 余因子展開：</span><br>
+          ・<strong>サラス</strong> … 3×3 専用・暗算向き。4×4 以上では<span class="hl">使えない</span>。<br>
+          ・<strong>余因子展開</strong> … 任意 n×n。ただし手計算は n が増えると爆発的に重い（n! 項）。<br>
+          ・実用では大きい行列は<a href="#gauss-jordan" onclick="gotoSection('gauss-jordan');return false;">掃き出し法</a>で三角化してから<span class="hl">対角成分の積</span>で出すのが速い。
+        </div>
       </div>
 
       <div class="section" id="det-properties">
@@ -4350,18 +4468,27 @@ function buildSideNav() {
     const cTitle = titleEl ? titleEl.textContent.trim() : '';
     const cId = chapter.id;
     html += '<div class="side-nav-chapter" data-chapter-id="' + cId + '">';
+    html += '<div class="side-nav-chapter-row">';
+    html += '<span class="snav-check' + (doneSet.has(cId) ? ' checked' : '') + '" data-done="' + cId + '" title="履修済みにする"></span>';
     html += '<div class="side-nav-chapter-title">' + cTitle + '</div>';
+    html += '</div>';
     html += '<ul class="side-nav-list">';
     chapter.querySelectorAll(':scope > .section').forEach(section => {
       const h2 = section.querySelector('h2');
       const { title: sTitle, status } = _getSectionMeta(h2);
       const sId = section.id;
       const statusClass = status ? (' ' + status) : '';
-      html += '<li><a class="side-nav-link' + statusClass + '" href="#' + sId + '" data-target="' + sId + '">' + sTitle + '</a></li>';
+      html += '<li class="side-nav-item' + (doneSet.has(sId) ? ' done' : '') + '">';
+      html += '<span class="snav-check' + (doneSet.has(sId) ? ' checked' : '') + '" data-done="' + sId + '" title="履修済みにする"></span>';
+      html += '<a class="side-nav-link' + statusClass + '" href="#' + sId + '" data-target="' + sId + '">' + sTitle + '</a>';
+      html += '</li>';
     });
     html += '</ul></div>';
   });
   target.innerHTML = html;
+  target.querySelectorAll('.snav-check').forEach(cb => {
+    cb.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); toggleDone(cb.dataset.done); });
+  });
   setupSectionObserver();
 }
 
@@ -4404,31 +4531,49 @@ function updateActiveSection(id) {
   }
 }
 
-buildSideNav();
-
-// ===== Chapter completion / fold =====
-// A chapter can be marked 履修済み (✅). Completed chapters can be folded to a
-// single-line header to keep the page short. Completion is persisted; fold state
-// defaults to folded-on-load for completed chapters (peek by clicking the header).
-const DONE_KEY = 'linalg-completed-chapters-v1';
-let doneSet = new Set(JSON.parse(localStorage.getItem(DONE_KEY) || '[]'));
+// ===== Completion / fold (chapters + sections) =====
+// Both chapters (大) and sections (小) can be marked 履修済み via the checkboxes
+// in the left side-nav. A marked item folds to a single-line header to keep the
+// page short. Completion is persisted; fold state defaults to folded-on-load.
+// Peek by clicking the header (chevron toggles fold without un-marking).
+const DONE_KEY = 'linalg-done-items-v1';
+let doneSet = new Set(JSON.parse(localStorage.getItem(DONE_KEY) || 'null') || []);
+// Migrate the old chapter-only key (v1) into the unified store, once.
+(function migrateDone() {
+  if (localStorage.getItem(DONE_KEY) !== null) return;
+  const old = localStorage.getItem('linalg-completed-chapters-v1');
+  if (old) { (JSON.parse(old) || []).forEach(id => doneSet.add(id)); }
+  _persistDone();
+})();
 function _persistDone() { localStorage.setItem(DONE_KEY, JSON.stringify([...doneSet])); }
 
-function setupChapterToggles() {
+// Reflect a single id's done state onto its chapter/section element.
+function applyDoneState(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const done = doneSet.has(id);
+  if (el.classList.contains('chapter')) {
+    el.classList.toggle('completed', done);
+    el.classList.toggle('collapsed', done);
+  } else if (el.classList.contains('section')) {
+    el.classList.toggle('done', done);
+    el.classList.toggle('collapsed', done);
+  }
+}
+
+function toggleDone(id) {
+  if (doneSet.has(id)) doneSet.delete(id); else doneSet.add(id);
+  _persistDone();
+  applyDoneState(id);
+  syncNavChecks();
+  updateDoneSummary();
+}
+
+// Click a folded header (chapter title / section h2) to peek without un-marking.
+function setupFoldInteractions() {
   document.querySelectorAll('#view-notes .chapter').forEach(chapter => {
-    const id = chapter.id;
-    const meta = chapter.querySelector('.chapter-meta');
     const title = chapter.querySelector('.chapter-title');
-    if (!id || !meta || !title) return;
-
-    // "履修済み" button → toggles completion (and auto-folds on completion)
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'chapter-done-btn';
-    btn.addEventListener('click', e => { e.stopPropagation(); toggleDone(id); });
-    meta.appendChild(btn);
-
-    // Chevron (shown only when completed); clicking the title folds/unfolds
+    if (!title) return;
     const chev = document.createElement('span');
     chev.className = 'chapter-chevron';
     chev.textContent = '▾';
@@ -4436,51 +4581,51 @@ function setupChapterToggles() {
     title.addEventListener('click', () => {
       if (chapter.classList.contains('completed')) chapter.classList.toggle('collapsed');
     });
-
-    if (doneSet.has(id)) chapter.classList.add('completed', 'collapsed');
-    _syncChapterBtn(chapter);
   });
-  updateDoneSummary();
+  document.querySelectorAll('#view-notes .section').forEach(section => {
+    const h2 = section.querySelector('h2');
+    if (!h2) return;
+    const chev = document.createElement('span');
+    chev.className = 'section-chevron';
+    chev.textContent = '▾';
+    h2.appendChild(chev);
+    h2.addEventListener('click', () => {
+      if (section.classList.contains('done')) section.classList.toggle('collapsed');
+    });
+  });
 }
 
-function _syncChapterBtn(chapter) {
-  const btn = chapter.querySelector('.chapter-done-btn');
-  if (!btn) return;
-  const done = chapter.classList.contains('completed');
-  btn.textContent = done ? '✅ 履修済み' : '＋ 履修済みにする';
-  btn.classList.toggle('is-done', done);
-}
-
-function toggleDone(id) {
-  const chapter = document.getElementById(id);
-  if (!chapter) return;
-  if (doneSet.has(id)) {
-    doneSet.delete(id);
-    chapter.classList.remove('completed', 'collapsed');
-  } else {
-    doneSet.add(id);
-    chapter.classList.add('completed', 'collapsed');
-  }
-  _persistDone();
-  _syncChapterBtn(chapter);
-  updateDoneSummary();
+function syncNavChecks() {
+  document.querySelectorAll('.snav-check').forEach(cb => {
+    const on = doneSet.has(cb.dataset.done);
+    cb.classList.toggle('checked', on);
+    const item = cb.closest('.side-nav-item');
+    if (item) item.classList.toggle('done', on);
+  });
 }
 
 function foldAllDone() {
-  document.querySelectorAll('#view-notes .chapter.completed').forEach(c => c.classList.add('collapsed'));
+  document.querySelectorAll('#view-notes .chapter.completed, #view-notes .section.done')
+    .forEach(el => el.classList.add('collapsed'));
 }
 function unfoldAll() {
-  document.querySelectorAll('#view-notes .chapter').forEach(c => c.classList.remove('collapsed'));
+  document.querySelectorAll('#view-notes .chapter, #view-notes .section')
+    .forEach(el => el.classList.remove('collapsed'));
 }
 
 function updateDoneSummary() {
   const el = document.getElementById('doneSummary');
   if (!el) return;
-  const total = document.querySelectorAll('#view-notes .chapter').length;
-  el.textContent = doneSet.size + ' / ' + total + ' 章 履修済み';
+  const total = document.querySelectorAll('#view-notes .chapter, #view-notes .section').length;
+  let done = 0;
+  doneSet.forEach(id => { if (document.getElementById(id)) done++; });
+  el.textContent = done + ' / ' + total + ' 項目 履修済み';
 }
 
-setupChapterToggles();
+buildSideNav();
+setupFoldInteractions();
+doneSet.forEach(id => applyDoneState(id));
+updateDoneSummary();
 </script>
 </body>
 </html>
