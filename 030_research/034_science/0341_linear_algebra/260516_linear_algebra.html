@@ -3762,6 +3762,60 @@
         </div><!-- /.subsection-pending -->
       </div>
 
+      <div class="section" id="det-same-space">
+        <h2>落とし穴 — det が意味を持つのは「同じ空間への変換」だけ</h2>
+
+        <p>det は「体積を何倍にするか」と説明したが、これは <span class="hl">入口と出口が同じ空間</span>（V → V、いわゆる自己準同型 endomorphism）のときだけ成り立つ話。<span class="key">サイズが同じ正方行列なら det は計算できてしまう</span>が、入口と出口が<span class="hl">別の空間</span>だと、その数値は「何倍」という意味を持たない。<span class="key">同じ次元 ≠ 同じ空間</span>がポイント。</p>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89">
+          <span class="key">一言で：</span>「次元が同じ（＝正方行列になる）」は det が<span class="hl">計算できる</span>条件にすぎない。det が<span class="hl">不変量として意味を持つ</span>のは、入口＝出口で<span class="key">同じ目盛り（基底）</span>を共有しているときだけ。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">具体データで考える — カラムが違う3次元同士</h3>
+
+        <p>どちらも「3次元データ」だが、軸（カラム）の意味がまったく違う2つの空間を変換する場合：</p>
+
+        <div class="matrix-row" style="gap:10px">
+          <div class="formula" style="margin:0;font-size:13px;line-height:1.8">
+            <span class="key">入口 V（3列）</span><br>
+            ・身長 [m]<br>・体重 [kg]<br>・年齢 [年]
+          </div>
+          <span class="op">—&nbsp;A&nbsp;→</span>
+          <div class="formula" style="margin:0;font-size:13px;line-height:1.8">
+            <span class="key">出口 W（3列）</span><br>
+            ・年収 [万円]<br>・歩数 [歩]<br>・心拍 [bpm]
+          </div>
+        </div>
+
+        <p style="margin-top:14px">入口の「体積」は <span class="key">m · kg · 年</span>、出口の「体積」は <span class="key">万円 · 歩 · bpm</span>。det はこの比だから、単位は</p>
+
+        <div class="formula" style="text-align:center;font-size:14px">
+          det の "単位" = <span class="hl">(万円 · 歩 · bpm) / (m · kg · 年)</span>
+        </div>
+
+        <p>という<span class="hl">意味不明な合成単位</span>になる。「何倍に拡大した」と言える純粋な数（無次元）ではない。さらに —</p>
+
+        <div class="formula" style="border-left-color:#d62828;background:#fff5f5;font-size:13.5px">
+          <span class="key" style="color:#d62828">決定的な問題：</span>体重を kg → g に変える（×1000）だけで入口の体積が1000倍になり、<span class="hl">det は 1/1000 に変わる</span>。データ自体は同じなのに数値が動く ＝ <span class="key">行列に固有の量になっていない</span>。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">なぜ同じ空間なら大丈夫か — 基底変換で見る</h3>
+
+        <p>違いは「基底を変えたときに det がどう動くか」に現れる。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:2">
+          ・<span class="key">同じ空間 V → V（自己準同型）</span>：基底を変えると A → <span class="hl">P A P⁻¹</span>（入口と出口を<span class="key">同時に</span>同じ P で取り替える）<br>
+          &nbsp;&nbsp;⇒ det(P A P⁻¹) = det(P)·det(A)·det(P)⁻¹ = <span class="hl" style="font-weight:700">det(A)</span>　… 目盛りを変えても不変 ✓<br>
+          <br>
+          ・<span class="key">違う空間 V → W</span>：入口と出口を<span class="hl">バラバラの基底</span>で取り替えるので A → <span class="hl">P A Q⁻¹</span>（P ≠ Q）<br>
+          &nbsp;&nbsp;⇒ det(P A Q⁻¹) = <span class="hl">det(P)/det(Q)</span> · det(A)　… 目盛りの取り方しだいで<span class="key">いくらでも変わる</span> ✗
+        </div>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13.5px">
+          <span class="key">まとめ：</span>det が「体積比」「正則かどうか」という<span class="hl">行列固有の意味</span>を持つのは、入口＝出口で同じ基底を共有する <span class="key">V → V</span> のときだけ。だから <span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>・<span class="vt" data-vocab="diagonalization" data-ja="対角化">対角化</span>（det(A − λI)）も、すべて<span class="hl">同じ空間への変換</span>を前提にしている。
+        </div>
+      </div>
+
       <div class="section" id="det-zero">
         <h2>det = 0 の意味 — 既習章との接続（rank・核・逆行列）<span class="status-tag tag-not-learned">未履修</span></h2>
         <div class="subsection-pending">
