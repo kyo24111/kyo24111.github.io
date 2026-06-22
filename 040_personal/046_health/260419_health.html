@@ -749,9 +749,26 @@ const GOALS = {
   bmr: 1690, muscle_mass: 28.07, protein: 19.0, metabolic_age: 23
 };
 
+// ── BODY DIFF COLORING (vs 7日前) ────────────────────────────
+// weight / body_fat は「低いほど良い」。7日前より下がれば緑・上がれば赤、
+// 変化量が大きいほど濃く。比較対象が無い日は無着色。
+const DIFF_GREEN = ['#e8f5e9', '#c8e6c9', '#a5d6a7', '#81c784']; // 薄→濃（改善大ほど濃）
+const DIFF_RED   = ['#ffebee', '#ffcdd2', '#ef9a9a', '#e57373']; // 薄→濃（悪化大ほど濃）
+function weekAgoColor(v, row, key, th) {
+  const prev = bodyData.find(r => r.date === isoAdd(row.date, -7));
+  if (!prev || prev[key] === undefined || prev[key] === '') return '';
+  const pv = +prev[key], cur = +v;
+  if (isNaN(pv) || isNaN(cur)) return '';
+  const delta = cur - pv;            // <0 = 改善（減少）
+  if (delta === 0) return '';
+  let b = 0; for (const t of th) { if (Math.abs(delta) >= t) b++; else break; }
+  const ramp = delta < 0 ? DIFF_GREEN : DIFF_RED;
+  return ramp[Math.min(b, ramp.length - 1)];
+}
+
 const BODY_COLS = [
-  { key: 'weight',           label: 'Weight (kg)',    goal: GOALS.weight },
-  { key: 'body_fat',         label: 'BodyFat (%)',     goal: GOALS.body_fat },
+  { key: 'weight',           label: 'Weight (kg)',    goal: GOALS.weight,   bg: (v, r) => weekAgoColor(v, r, 'weight',   [0.3, 0.7, 1.2]) },
+  { key: 'body_fat',         label: 'BodyFat (%)',     goal: GOALS.body_fat, bg: (v, r) => weekAgoColor(v, r, 'body_fat', [0.2, 0.5, 1.0]) },
   { key: 'bmi',              label: 'BMI',             goal: GOALS.bmi },
   { key: 'fat_free_weight',  label: 'FatFree (kg)',    goal: GOALS.fat_free_weight },
   { key: 'subcutaneous_fat', label: 'SubcutFat (%)',   goal: GOALS.subcutaneous_fat },
@@ -1337,25 +1354,38 @@ function mondayOf(iso) {
 function renderWeekly() {
   const el = document.getElementById('tbl-cal-weekly');
   if (!el) return;
-  const rows = calData.filter(r => r.date && r.calories !== '' && r.calories !== undefined && !isNaN(+r.calories));
+  const rows = calData.filter(r => r.date);
   if (!rows.length) { el.innerHTML = '<div class="msg">No data</div>'; return; }
   const weeks = {};
-  rows.forEach(r => { const wk = mondayOf(r.date); (weeks[wk] = weeks[wk] || []).push(+r.calories); });
+  rows.forEach(r => { const wk = mondayOf(r.date); (weeks[wk] = weeks[wk] || []).push(r); });
   const keys = Object.keys(weeks).sort().reverse();
+  const fmt = (key, val) => key === 'calories' ? commafy(Math.round(val)) : commafy(+val.toFixed(1));
   const trs = keys.map((wk, i) => {
-    const arr = weeks[wk];
-    const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
-    const bg = rampColor(bucketAsc(avg, [1500, 1750, 2000, 2250, 2500, 3000]));
+    const grp = weeks[wk];
+    const avg = {};
+    CAL_COLS.forEach(c => {
+      const vals = grp.map(r => r[c.key]).filter(x => x !== '' && x !== undefined && !isNaN(+x)).map(Number);
+      avg[c.key] = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : NaN;
+    });
+    const cells = CAL_COLS.map(c => {
+      const av = avg[c.key];
+      if (isNaN(av)) return '<td>—</td>';
+      const bg = c.bg ? c.bg(av, avg) : '';
+      const style = bg ? ` style="background:${bg};color:#1a1a1a"` : '';
+      return `<td${style}>${fmt(c.key, av)}</td>`;
+    }).join('');
     const label = wk.slice(5).replace('-', '/') + '–' + isoAdd(wk, 6).slice(5).replace('-', '/');
     return `<tr class="${i === 0 ? 'latest' : ''}">
-      <td>${label}</td>
-      <td class="stat-c">${arr.length}</td>
-      <td style="background:${bg};color:#1a1a1a">${commafy(Math.round(avg))}</td>
+      <td>${label}</td><td class="stat-c">${grp.length}</td>${cells}
     </tr>`;
   }).join('');
+  const goalCells = CAL_COLS.map(c => `<td>${c.goal !== null && c.goal !== undefined ? commafy(c.goal) : '—'}</td>`).join('');
   el.innerHTML = `<table class="raw">
-    <thead><tr><th>Week</th><th>n</th><th>Avg kcal</th></tr></thead>
-    <tbody><tr class="goal-row"><td>Target</td><td>—</td><td>1,500</td></tr>${trs}</tbody>
+    <thead><tr><th>Week</th><th>n</th>${CAL_COLS.map(c => `<th>${c.label}</th>`).join('')}</tr></thead>
+    <tbody>
+      <tr class="goal-row"><td>Target</td><td>—</td>${goalCells}</tr>
+      ${trs}
+    </tbody>
   </table>`;
 }
 
