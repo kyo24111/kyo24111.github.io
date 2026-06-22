@@ -154,14 +154,6 @@ body {
 }
 .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-.cal-layout { display: flex; gap: 18px; align-items: flex-start; }
-.cal-layout > #tbl-cal { flex: 1 1 auto; min-width: 0; }
-.cal-layout > #tbl-cal-weekly { flex: 0 0 auto; }
-.cal-layout #tbl-cal-weekly table.raw { min-width: 0; }
-@media (max-width: 760px) {
-  .cal-layout { flex-direction: column; }
-  .cal-layout > #tbl-cal-weekly { width: 100%; }
-}
 table.raw {
   width: 100%; border-collapse: collapse;
   font-size: 12px; min-width: 640px;
@@ -678,15 +670,16 @@ body{padding-top:56px!important;padding-bottom:68px!important}
   <div class="subtabs-bar">
     <button class="subtab-btn active" onclick="switchSubTab('body')">Body Comp</button>
     <button class="subtab-btn" onclick="switchSubTab('cal')">Calories</button>
+    <button class="subtab-btn" onclick="switchSubTab('weekly')">Weekly</button>
   </div>
   <div id="subpanel-body">
     <div class="table-wrap" id="tbl-body"><div class="msg">loading...</div></div>
   </div>
   <div id="subpanel-cal" style="display:none">
-    <div class="cal-layout">
-      <div class="table-wrap" id="tbl-cal"><div class="msg">loading...</div></div>
-      <div class="table-wrap" id="tbl-cal-weekly"><div class="msg">loading...</div></div>
-    </div>
+    <div class="table-wrap" id="tbl-cal"><div class="msg">loading...</div></div>
+  </div>
+  <div id="subpanel-weekly" style="display:none">
+    <div class="table-wrap" id="tbl-cal-weekly"><div class="msg">loading...</div></div>
   </div>
 </div>
 
@@ -1407,10 +1400,13 @@ function renderStatus() {
 
 // ── SUB-TABS ────────────────────────────────────────────────
 function switchSubTab(name) {
-  document.getElementById('subpanel-body').style.display = name === 'body' ? '' : 'none';
-  document.getElementById('subpanel-cal').style.display  = name === 'cal'  ? '' : 'none';
+  const order = ['body', 'cal', 'weekly'];
+  order.forEach(k => {
+    const p = document.getElementById('subpanel-' + k);
+    if (p) p.style.display = k === name ? '' : 'none';
+  });
   document.querySelectorAll('.subtab-btn').forEach((b, i) => {
-    b.classList.toggle('active', (i === 0) === (name === 'body'));
+    b.classList.toggle('active', order[i] === name);
   });
 }
 
