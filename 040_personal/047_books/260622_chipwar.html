@@ -64,47 +64,28 @@
 
     /* ── CHAPTER ROW ── */
     .row {
-      display: grid;
-      grid-template-columns: 40px 1fr 230px;
-      gap: 0 16px;
-      padding: 14px 0;
+      display: flex; align-items: center; gap: 12px;
+      padding: 6px 0;
       border-bottom: 1px solid var(--line);
-      align-items: start;
+      cursor: pointer;
     }
-    .row.done { background: var(--fill); }
-    .row.done .ch-title { color: var(--muted); }
+    .row.done .ch-title { color: var(--light); text-decoration: line-through; }
 
-    .ch-check { padding-top: 1px; }
     .ch-check input {
       appearance: none; -webkit-appearance: none;
-      width: 20px; height: 20px; border: 1.5px solid var(--light);
-      border-radius: 4px; cursor: pointer; position: relative;
+      width: 17px; height: 17px; border: 1.5px solid var(--light);
+      border-radius: 4px; cursor: pointer; position: relative; display: block;
       transition: border-color .15s, background .15s;
     }
-    .ch-check input:hover { border-color: var(--muted); }
     .ch-check input:checked { background: var(--text); border-color: var(--text); }
     .ch-check input:checked::after {
-      content: ''; position: absolute; left: 6px; top: 2px;
-      width: 5px; height: 10px; border: solid #fff;
+      content: ''; position: absolute; left: 5px; top: 1.5px;
+      width: 4px; height: 9px; border: solid #fff;
       border-width: 0 2px 2px 0; transform: rotate(45deg);
     }
 
-    .ch-num { font-size: 11px; font-weight: 700; color: var(--light); }
-    .ch-title { font-size: 14.5px; font-weight: 600; line-height: 1.45; }
-
-    .ch-memo {
-      width: 100%; border: 1px solid var(--line); border-radius: 6px;
-      padding: 7px 9px; font-family: inherit; font-size: 12.5px; color: var(--text);
-      line-height: 1.55; resize: vertical; min-height: 38px; background: #fff;
-      transition: border-color .15s;
-    }
-    .ch-memo::placeholder { color: var(--light); }
-    .ch-memo:focus { outline: none; border-color: var(--muted); }
-
-    @media (max-width: 640px) {
-      .row { grid-template-columns: 34px 1fr; gap: 6px 12px; }
-      .ch-memo { grid-column: 1 / -1; margin-top: 4px; }
-    }
+    .ch-num { font-size: 10px; font-weight: 700; color: var(--light); width: 36px; flex-shrink: 0; }
+    .ch-title { font-size: 13.5px; font-weight: 500; line-height: 1.4; }
 
     /* ── SITE NAV (snav) ── */
     body { padding-top: 56px; padding-bottom: 68px; }
@@ -157,7 +138,7 @@
     <div class="progress-num"><b id="progDone">0</b> / <span id="progTotal">0</span> 章 理解OK</div>
   </div>
   <div class="tips">
-    <b>使い方</b> ── 章を読んだら ✓ をチェック。右のメモ欄に要点・問い・疑問を自由に記入（入力は自動保存）。
+    <b>使い方</b> ── 章を読んで理解できたら行をクリックして ✓（自動保存）。
     &nbsp;·&nbsp; <button class="reset" onclick="resetAll()">全リセット</button>
   </div>
 
@@ -266,34 +247,28 @@ function render() {
     const box = document.createElement("input");
     box.type = "checkbox";
     box.checked = !!st.done;
-    box.addEventListener("change", () => {
-      state[c.num] = state[c.num] || {};
-      state[c.num].done = box.checked;
-      row.classList.toggle("done", box.checked);
-      save(); updateProgress();
-    });
     chk.appendChild(box);
 
-    const mid = document.createElement("div");
-    mid.innerHTML = '<div class="ch-num">' + (c.num === "序" ? "序章" : "Ch. " + c.num) + '</div>' +
-                    '<div class="ch-title">' + c.title + '</div>';
+    const num = document.createElement("div");
+    num.className = "ch-num";
+    num.textContent = (c.num === "序" ? "序章" : "Ch." + c.num);
 
-    const memo = document.createElement("textarea");
-    memo.className = "ch-memo";
-    memo.placeholder = "要点・問い・疑問…";
-    memo.value = st.memo || "";
-    const autosize = () => { memo.style.height = "auto"; memo.style.height = memo.scrollHeight + "px"; };
-    memo.addEventListener("input", () => {
-      state[c.num] = state[c.num] || {};
-      state[c.num].memo = memo.value;
-      save(); autosize();
+    const title = document.createElement("div");
+    title.className = "ch-title";
+    title.textContent = c.title;
+
+    row.addEventListener("click", () => {
+      const done = !box.checked;
+      box.checked = done;
+      state[c.num] = { done };
+      row.classList.toggle("done", done);
+      save(); updateProgress();
     });
 
     row.appendChild(chk);
-    row.appendChild(mid);
-    row.appendChild(memo);
+    row.appendChild(num);
+    row.appendChild(title);
     toc.appendChild(row);
-    autosize();
   });
   updateProgress();
 }
