@@ -154,6 +154,14 @@ body {
 }
 .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.cal-layout { display: flex; gap: 18px; align-items: flex-start; }
+.cal-layout > #tbl-cal { flex: 1 1 auto; min-width: 0; }
+.cal-layout > #tbl-cal-weekly { flex: 0 0 auto; }
+.cal-layout #tbl-cal-weekly table.raw { min-width: 0; }
+@media (max-width: 760px) {
+  .cal-layout { flex-direction: column; }
+  .cal-layout > #tbl-cal-weekly { width: 100%; }
+}
 table.raw {
   width: 100%; border-collapse: collapse;
   font-size: 12px; min-width: 640px;
@@ -675,7 +683,10 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     <div class="table-wrap" id="tbl-body"><div class="msg">loading...</div></div>
   </div>
   <div id="subpanel-cal" style="display:none">
-    <div class="table-wrap" id="tbl-cal"><div class="msg">loading...</div></div>
+    <div class="cal-layout">
+      <div class="table-wrap" id="tbl-cal"><div class="msg">loading...</div></div>
+      <div class="table-wrap" id="tbl-cal-weekly"><div class="msg">loading...</div></div>
+    </div>
   </div>
 </div>
 
@@ -1319,6 +1330,40 @@ function renderTable(containerId, data, cols) {
 function renderTables() {
   renderTable('tbl-body', bodyData, BODY_COLS);
   renderTable('tbl-cal',  calData,  CAL_COLS);
+  renderWeekly();
+}
+
+// ── WEEKLY CALORIES AVG (Raw Data → Calories 横) ──────────────
+// 月曜始まりの週ごとに平均kcalを算出。色はデイリーと同一スケール。
+function mondayOf(iso) {
+  const d = new Date(iso + 'T00:00:00Z');
+  const off = (d.getUTCDay() + 6) % 7; // 0=月
+  d.setUTCDate(d.getUTCDate() - off);
+  return d.toISOString().slice(0, 10);
+}
+function renderWeekly() {
+  const el = document.getElementById('tbl-cal-weekly');
+  if (!el) return;
+  const rows = calData.filter(r => r.date && r.calories !== '' && r.calories !== undefined && !isNaN(+r.calories));
+  if (!rows.length) { el.innerHTML = '<div class="msg">No data</div>'; return; }
+  const weeks = {};
+  rows.forEach(r => { const wk = mondayOf(r.date); (weeks[wk] = weeks[wk] || []).push(+r.calories); });
+  const keys = Object.keys(weeks).sort().reverse();
+  const trs = keys.map((wk, i) => {
+    const arr = weeks[wk];
+    const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+    const bg = rampColor(bucketAsc(avg, [1500, 1750, 2000, 2250, 2500, 3000]));
+    const label = wk.slice(5).replace('-', '/') + '–' + isoAdd(wk, 6).slice(5).replace('-', '/');
+    return `<tr class="${i === 0 ? 'latest' : ''}">
+      <td>${label}</td>
+      <td class="stat-c">${arr.length}</td>
+      <td style="background:${bg};color:#1a1a1a">${commafy(Math.round(avg))}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<table class="raw">
+    <thead><tr><th>Week</th><th>n</th><th>Avg kcal</th></tr></thead>
+    <tbody><tr class="goal-row"><td>Target</td><td>—</td><td>1,500</td></tr>${trs}</tbody>
+  </table>`;
 }
 
 // ── LOG STATUS (提出状況) ─────────────────────────────────────
