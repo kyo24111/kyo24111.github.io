@@ -153,6 +153,83 @@
     line-height: 1;
   }
 
+  /* ===== Chapter completion / collapse ===== */
+  /* Push label to the left so status + done-button cluster on the right */
+  .chapter-meta .chapter-label { margin-right: auto; }
+  .chapter-done-btn {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    padding: 4px 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .15s;
+  }
+  .chapter-done-btn:hover { border-color: var(--text); color: var(--text); }
+  .chapter-done-btn.is-done {
+    background: #d4edda;
+    border-color: #c3e6cb;
+    color: #155724;
+  }
+  /* When a chapter is completed it can be folded: hide everything except header */
+  .chapter.collapsed > *:not(.chapter-meta):not(.chapter-title) { display: none; }
+  .chapter.collapsed { margin-bottom: 18px; }
+  .chapter.collapsed .chapter-title {
+    border-bottom-width: 1px;
+    padding-bottom: 8px;
+    margin-bottom: 0;
+    color: var(--muted);
+  }
+  /* Chevron appears only on completed chapters; clicking the title folds/unfolds */
+  .chapter.completed .chapter-title { cursor: pointer; }
+  .chapter-chevron {
+    display: none;
+    float: right;
+    font-size: 0.8em;
+    color: var(--muted);
+    transition: transform .15s;
+    user-select: none;
+  }
+  .chapter.completed .chapter-chevron { display: inline-block; }
+  .chapter.collapsed .chapter-chevron { transform: rotate(-90deg); }
+  /* Global control bar */
+  .notes-controls {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 10px 14px;
+    margin-bottom: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 12px;
+  }
+  .notes-controls .done-summary {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .notes-controls .spacer { flex: 1; }
+  .notes-controls button {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .notes-controls button:hover { border-color: var(--text); color: var(--text); }
+
   h1 {
     font-family: 'Poppins', sans-serif;
     font-size: 2rem;
@@ -631,6 +708,13 @@
 
   <!-- ===== NOTES TAB ===== -->
   <div class="view active" id="view-notes">
+
+    <div class="notes-controls">
+      <span class="done-summary" id="doneSummary">0 / 0 章 履修済み</span>
+      <span class="spacer"></span>
+      <button type="button" onclick="foldAllDone()">履修済みを畳む</button>
+      <button type="button" onclick="unfoldAll()">すべて展開</button>
+    </div>
 
     <div class="chapter" id="dim-ops">
       <div class="chapter-meta">
@@ -4321,6 +4405,82 @@ function updateActiveSection(id) {
 }
 
 buildSideNav();
+
+// ===== Chapter completion / fold =====
+// A chapter can be marked 履修済み (✅). Completed chapters can be folded to a
+// single-line header to keep the page short. Completion is persisted; fold state
+// defaults to folded-on-load for completed chapters (peek by clicking the header).
+const DONE_KEY = 'linalg-completed-chapters-v1';
+let doneSet = new Set(JSON.parse(localStorage.getItem(DONE_KEY) || '[]'));
+function _persistDone() { localStorage.setItem(DONE_KEY, JSON.stringify([...doneSet])); }
+
+function setupChapterToggles() {
+  document.querySelectorAll('#view-notes .chapter').forEach(chapter => {
+    const id = chapter.id;
+    const meta = chapter.querySelector('.chapter-meta');
+    const title = chapter.querySelector('.chapter-title');
+    if (!id || !meta || !title) return;
+
+    // "履修済み" button → toggles completion (and auto-folds on completion)
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chapter-done-btn';
+    btn.addEventListener('click', e => { e.stopPropagation(); toggleDone(id); });
+    meta.appendChild(btn);
+
+    // Chevron (shown only when completed); clicking the title folds/unfolds
+    const chev = document.createElement('span');
+    chev.className = 'chapter-chevron';
+    chev.textContent = '▾';
+    title.appendChild(chev);
+    title.addEventListener('click', () => {
+      if (chapter.classList.contains('completed')) chapter.classList.toggle('collapsed');
+    });
+
+    if (doneSet.has(id)) chapter.classList.add('completed', 'collapsed');
+    _syncChapterBtn(chapter);
+  });
+  updateDoneSummary();
+}
+
+function _syncChapterBtn(chapter) {
+  const btn = chapter.querySelector('.chapter-done-btn');
+  if (!btn) return;
+  const done = chapter.classList.contains('completed');
+  btn.textContent = done ? '✅ 履修済み' : '＋ 履修済みにする';
+  btn.classList.toggle('is-done', done);
+}
+
+function toggleDone(id) {
+  const chapter = document.getElementById(id);
+  if (!chapter) return;
+  if (doneSet.has(id)) {
+    doneSet.delete(id);
+    chapter.classList.remove('completed', 'collapsed');
+  } else {
+    doneSet.add(id);
+    chapter.classList.add('completed', 'collapsed');
+  }
+  _persistDone();
+  _syncChapterBtn(chapter);
+  updateDoneSummary();
+}
+
+function foldAllDone() {
+  document.querySelectorAll('#view-notes .chapter.completed').forEach(c => c.classList.add('collapsed'));
+}
+function unfoldAll() {
+  document.querySelectorAll('#view-notes .chapter').forEach(c => c.classList.remove('collapsed'));
+}
+
+function updateDoneSummary() {
+  const el = document.getElementById('doneSummary');
+  if (!el) return;
+  const total = document.querySelectorAll('#view-notes .chapter').length;
+  el.textContent = doneSet.size + ' / ' + total + ' 章 履修済み';
+}
+
+setupChapterToggles();
 </script>
 </body>
 </html>
