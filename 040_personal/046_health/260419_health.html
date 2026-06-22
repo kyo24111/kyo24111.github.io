@@ -669,16 +669,20 @@ body{padding-top:56px!important;padding-bottom:68px!important}
 <div id="panel-table" style="display:none">
   <div class="subtabs-bar">
     <button class="subtab-btn active" onclick="switchSubTab('body')">Body Comp</button>
+    <button class="subtab-btn" onclick="switchSubTab('body-weekly')">Weekly</button>
     <button class="subtab-btn" onclick="switchSubTab('cal')">Calories</button>
-    <button class="subtab-btn" onclick="switchSubTab('weekly')">Weekly</button>
+    <button class="subtab-btn" onclick="switchSubTab('cal-weekly')">Weekly</button>
   </div>
   <div id="subpanel-body">
     <div class="table-wrap" id="tbl-body"><div class="msg">loading...</div></div>
   </div>
+  <div id="subpanel-body-weekly" style="display:none">
+    <div class="table-wrap" id="tbl-body-weekly"><div class="msg">loading...</div></div>
+  </div>
   <div id="subpanel-cal" style="display:none">
     <div class="table-wrap" id="tbl-cal"><div class="msg">loading...</div></div>
   </div>
-  <div id="subpanel-weekly" style="display:none">
+  <div id="subpanel-cal-weekly" style="display:none">
     <div class="table-wrap" id="tbl-cal-weekly"><div class="msg">loading...</div></div>
   </div>
 </div>
@@ -754,17 +758,19 @@ const GOALS = {
 // 変化量が大きいほど濃く。比較対象が無い日は無着色。
 const DIFF_GREEN = ['#e8f5e9', '#c8e6c9', '#a5d6a7', '#81c784']; // 薄→濃（改善大ほど濃）
 const DIFF_RED   = ['#ffebee', '#ffcdd2', '#ef9a9a', '#e57373']; // 薄→濃（悪化大ほど濃）
+function weekDeltaColor(cur, prev, th) {   // 低いほど良い: <0=改善(緑) / >0=悪化(赤)
+  const delta = +cur - +prev;
+  if (isNaN(delta) || delta === 0) return '';
+  let b = 0; for (const t of th) { if (Math.abs(delta) >= t) b++; else break; }
+  return (delta < 0 ? DIFF_GREEN : DIFF_RED)[Math.min(b, DIFF_GREEN.length - 1)];
+}
 function weekAgoColor(v, row, key, th) {
   const prev = bodyData.find(r => r.date === isoAdd(row.date, -7));
-  if (!prev || prev[key] === undefined || prev[key] === '') return '';
-  const pv = +prev[key], cur = +v;
-  if (isNaN(pv) || isNaN(cur)) return '';
-  const delta = cur - pv;            // <0 = 改善（減少）
-  if (delta === 0) return '';
-  let b = 0; for (const t of th) { if (Math.abs(delta) >= t) b++; else break; }
-  const ramp = delta < 0 ? DIFF_GREEN : DIFF_RED;
-  return ramp[Math.min(b, ramp.length - 1)];
+  if (!prev || prev[key] === undefined || prev[key] === '' || isNaN(+v)) return '';
+  return weekDeltaColor(+v, +prev[key], th);
 }
+// weight/body_fat の濃淡しきい値（日次・週次で共用）
+const DIFF_TH = { weight: [0.3, 0.7, 1.2], body_fat: [0.2, 0.5, 1.0] };
 
 const BODY_COLS = [
   { key: 'weight',           label: 'Weight (kg)',    goal: GOALS.weight,   bg: (v, r) => weekAgoColor(v, r, 'weight',   [0.3, 0.7, 1.2]) },
@@ -1340,18 +1346,70 @@ function renderTable(containerId, data, cols) {
 function renderTables() {
   renderTable('tbl-body', bodyData, BODY_COLS);
   renderTable('tbl-cal',  calData,  CAL_COLS);
-  renderWeekly();
+  renderBodyWeekly();
+  renderCalWeekly();
 }
 
-// ── WEEKLY CALORIES AVG (Raw Data → Calories 横) ──────────────
-// 月曜始まりの週ごとに平均kcalを算出。色はデイリーと同一スケール。
+// ── WEEKLY AVG (月曜始まり) ───────────────────────────────────
 function mondayOf(iso) {
   const d = new Date(iso + 'T00:00:00Z');
   const off = (d.getUTCDay() + 6) % 7; // 0=月
   d.setUTCDate(d.getUTCDate() - off);
   return d.toISOString().slice(0, 10);
 }
-function renderWeekly() {
+// データを週ごとにまとめ、列ごとの平均を {key: avg, _n: 日数} で返す（昇順）
+function weeklyAverages(data, cols) {
+  const weeks = {};
+  data.filter(r => r.date).forEach(r => { const wk = mondayOf(r.date); (weeks[wk] = weeks[wk] || []).push(r); });
+  const out = {};
+  Object.keys(weeks).forEach(wk => {
+    const grp = weeks[wk], a = { _n: grp.length };
+    cols.forEach(c => {
+      const vals = grp.map(r => r[c.key]).filter(x => x !== '' && x !== undefined && !isNaN(+x)).map(Number);
+      a[c.key] = vals.length ? vals.reduce((s, b) => s + b, 0) / vals.length : NaN;
+    });
+    out[wk] = a;
+  });
+  return out;
+}
+function weekLabel(wk) { return wk.slice(5).replace('-', '/') + '–' + isoAdd(wk, 6).slice(5).replace('-', '/'); }
+function weeklyGoalRow(cols) {
+  const cells = cols.map(c => `<td>${c.goal !== null && c.goal !== undefined ? commafy(c.goal) : '—'}</td>`).join('');
+  return `<tr class="goal-row"><td>Target</td><td>—</td>${cells}</tr>`;
+}
+
+// Body weekly: weight/body_fat は「前週平均」との差で着色（日次と同じ濃淡）。
+function bodyWeeklyFmt(key, val) {
+  if (key === 'visceral_fat' || key === 'bmr' || key === 'metabolic_age') return commafy(Math.round(val));
+  if (key === 'weight' || key === 'fat_free_weight' || key === 'muscle_mass' || key === 'bone_mass') return commafy(+val.toFixed(2));
+  return commafy(+val.toFixed(1));
+}
+function renderBodyWeekly() {
+  const el = document.getElementById('tbl-body-weekly');
+  if (!el) return;
+  const wkAvg = weeklyAverages(bodyData, BODY_COLS);
+  const keys = Object.keys(wkAvg).sort();
+  if (!keys.length) { el.innerHTML = '<div class="msg">No data</div>'; return; }
+  const trs = keys.slice().reverse().map((wk, i) => {
+    const a = wkAvg[wk], prev = wkAvg[isoAdd(wk, -7)];
+    const cells = BODY_COLS.map(c => {
+      const av = a[c.key];
+      if (isNaN(av)) return '<td>—</td>';
+      let bg = '';
+      if (DIFF_TH[c.key] && prev && !isNaN(prev[c.key])) bg = weekDeltaColor(av, prev[c.key], DIFF_TH[c.key]);
+      const style = bg ? ` style="background:${bg};color:#1a1a1a"` : '';
+      return `<td${style}>${bodyWeeklyFmt(c.key, av)}</td>`;
+    }).join('');
+    return `<tr class="${i === 0 ? 'latest' : ''}"><td>${weekLabel(wk)}</td><td class="stat-c">${a._n}</td>${cells}</tr>`;
+  }).join('');
+  el.innerHTML = `<table class="raw">
+    <thead><tr><th>Week</th><th>n</th>${BODY_COLS.map(c => `<th>${c.label}</th>`).join('')}</tr></thead>
+    <tbody>${weeklyGoalRow(BODY_COLS)}${trs}</tbody>
+  </table>`;
+}
+
+// Calories weekly: 各週の平均を Calories タブと同一ロジックで着色。
+function renderCalWeekly() {
   const el = document.getElementById('tbl-cal-weekly');
   if (!el) return;
   const rows = calData.filter(r => r.date);
@@ -1430,7 +1488,7 @@ function renderStatus() {
 
 // ── SUB-TABS ────────────────────────────────────────────────
 function switchSubTab(name) {
-  const order = ['body', 'cal', 'weekly'];
+  const order = ['body', 'body-weekly', 'cal', 'cal-weekly'];
   order.forEach(k => {
     const p = document.getElementById('subpanel-' + k);
     if (p) p.style.display = k === name ? '' : 'none';
