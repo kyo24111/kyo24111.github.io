@@ -166,6 +166,7 @@ table.raw th {
   border-bottom: 2px solid var(--accent); white-space: nowrap;
 }
 table.raw th:first-child { text-align: left; position: sticky; left: 0; background: var(--card2); }
+table.raw th.th-tip { cursor: help; text-decoration: underline dotted; text-underline-offset: 3px; }
 table.raw td {
   padding: 7px 12px; border-bottom: 1px solid var(--border);
   text-align: right; color: var(--text);
@@ -263,6 +264,13 @@ table.raw tr.stat-miss td:first-child { background: rgba(192,57,43,.06); }
   display: flex; align-items: center; gap: 10px;
 }
 .foods-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+details.foods-fold { margin: 0; }
+details.foods-fold > summary { cursor: pointer; list-style: none; }
+details.foods-fold > summary::-webkit-details-marker { display: none; }
+details.foods-fold > summary.foods-section-label::before {
+  content: '▸'; color: var(--accent); font-size: 10px; flex: 0 0 auto;
+}
+details.foods-fold[open] > summary.foods-section-label::before { content: '▾'; }
 .foods-section-label-jp {
   font-family: 'Noto Sans JP', sans-serif;
   font-size: 12px;
@@ -635,7 +643,7 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     <div class="chart-box chart-box-wide" onclick="openModal('c-calories')">
       <div class="chart-title">Calories (kcal)</div>
       <canvas id="c-calories" height="100"></canvas>
-      <div class="chart-target-note">Target: 1,500 kcal/day</div>
+      <div class="chart-target-note">Target: 1,400 kcal/day</div>
     </div>
     <div class="chart-box chart-box-wide" onclick="openModal('c-pfc-ratio')">
       <div class="chart-title">PFC Calorie Ratio (%)</div>
@@ -645,7 +653,7 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     <div class="chart-box" onclick="openModal('c-protein')">
       <div class="chart-title">Protein (g)</div>
       <canvas id="c-protein" height="180"></canvas>
-      <div class="chart-target-note">Target: 130 g</div>
+      <div class="chart-target-note">Target: 110 g</div>
     </div>
     <div class="chart-box" onclick="openModal('c-fat-cal')">
       <div class="chart-title">Fat (g)</div>
@@ -802,14 +810,18 @@ function pctColor(v, cal, mult, th, higherIsBetter) {
 }
 
 const CAL_COLS = [
-  // カロリー: <1500=最緑 … >=3000=最赤
-  { key: 'calories', label: 'Calories (kcal)', goal: 1500, bg: v => rampColor(bucketAsc(+v, [1500, 1750, 2000, 2250, 2500, 3000])) },
+  // カロリー: <1400=最緑 … >=3000=最赤
+  { key: 'calories', label: 'Calories (kcal)', goal: 1400, bg: v => rampColor(bucketAsc(+v, [1400, 1700, 2000, 2300, 2600, 3000])),
+    desc: 'セル色 = 摂取カロリーの絶対量。緑＝目標1400kcal以下ほど濃い緑、赤＝多いほど濃い赤。区切り: 1400 / 1700 / 2000 / 2300 / 2600 / 3000 kcal' },
   // Protein%(×4/cal): 高いほど緑 [15,20,25,30,35,40]
-  { key: 'protein',  label: 'Protein (g)',     goal: 130,  bg: (v, r) => pctColor(+v, +r.calories, 4, [15, 20, 25, 30, 35, 40], true) },
+  { key: 'protein',  label: 'Protein (g)',     goal: 110,  bg: (v, r) => pctColor(+v, +r.calories, 4, [15, 20, 25, 30, 35, 40], true),
+    desc: 'セル色 = タンパク質の摂取カロリー比 (P×4 ÷ kcal)。比率が高いほど濃い緑。区切り: 15 / 20 / 25 / 30 / 35 / 40 %' },
   // Fat%(×9/cal): 低いほど緑 [20,25,30,35,40,50]
-  { key: 'fat',      label: 'Fat (g)',         goal: null, bg: (v, r) => pctColor(+v, +r.calories, 9, [20, 25, 30, 35, 40, 50], false) },
+  { key: 'fat',      label: 'Fat (g)',         goal: 40,   bg: (v, r) => pctColor(+v, +r.calories, 9, [20, 25, 30, 35, 40, 50], false),
+    desc: 'セル色 = 脂質の摂取カロリー比 (F×9 ÷ kcal)。比率が低いほど濃い緑。区切り: 20 / 25 / 30 / 35 / 40 / 50 %' },
   // Carbs%(×4/cal): 低いほど緑 [20,30,40,50,60,70]
-  { key: 'carbs',    label: 'Carbs (g)',       goal: null, bg: (v, r) => pctColor(+v, +r.calories, 4, [20, 30, 40, 50, 60, 70], false) },
+  { key: 'carbs',    label: 'Carbs (g)',       goal: 150,  bg: (v, r) => pctColor(+v, +r.calories, 4, [20, 30, 40, 50, 60, 70], false),
+    desc: 'セル色 = 炭水化物の摂取カロリー比 (C×4 ÷ kcal)。比率が低いほど濃い緑。区切り: 20 / 30 / 40 / 50 / 60 / 70 %' },
   { key: 'sugar',    label: 'Sugar (g)',       goal: null },
   { key: 'fiber',    label: 'Fiber (g)',       goal: null },
   { key: 'salt',     label: 'Salt (g)',        goal: null },
@@ -1278,7 +1290,7 @@ function renderCharts() {
   const fc = getFilteredData(calData);
   if (fc.length) {
     const cd = fmtLabels(fc.map(d => d.date));
-    mkBar('c-calories', fv(fc,'calories'), cd, 1500, 'Calories (kcal)', 'Target: 1,500 kcal/day');
+    mkBar('c-calories', fv(fc,'calories'), cd, 1400, 'Calories (kcal)', 'Target: 1,400 kcal/day');
 
     const pfcCtx = document.getElementById('c-pfc-ratio');
     if (pfcCtx) {
@@ -1288,7 +1300,7 @@ function renderCharts() {
       chartDefs['c-pfc-ratio'] = { config: pfcCfg, title: 'PFC Calorie Ratio (%)', note: 'P: protein×4 / cal · F: fat×9 / cal · C: carbs×4 / cal' };
     }
 
-    mkLine('c-protein',  fv(fc,'protein'), cd, 130,  0, 200, 'Protein (g)', 'Target: 130 g');
+    mkLine('c-protein',  fv(fc,'protein'), cd, 110,  0, 200, 'Protein (g)', 'Target: 110 g');
     mkLine('c-fat-cal',  fv(fc,'fat'),      cd, null, 0, 200, 'Fat (g)',     '');
     mkLine('c-carbs',    fv(fc,'carbs'),    cd, null, 0, 350, 'Carbs (g)',   '');
     mkLine('c-fiber',    fv(fc,'fiber'),    cd, null, 0,  30, 'Fiber (g)',   '');
@@ -1336,7 +1348,7 @@ function renderTable(containerId, data, cols) {
     <thead>
       <tr>
         <th>Date</th>
-        ${cols.map(c => `<th>${c.label}</th>`).join('')}
+        ${cols.map(c => `<th${c.desc ? ` class="th-tip" title="${c.desc}"` : ''}>${c.label}</th>`).join('')}
       </tr>
     </thead>
     <tbody>${goalRow}${rows}</tbody>
@@ -1374,16 +1386,19 @@ function weeklyAverages(data, cols) {
 }
 function weekLabel(wk) { return wk.slice(5).replace('-', '/') + '–' + isoAdd(wk, 6).slice(5).replace('-', '/'); }
 function weeklyGoalRow(cols) {
-  const cells = cols.map(c => `<td>${c.goal !== null && c.goal !== undefined ? commafy(c.goal) : '—'}</td>`).join('');
+  const cells = cols.map(c => `<td>${c.goal !== null && c.goal !== undefined ? wkFmt(c.key, c.goal) : '—'}</td>`).join('');
   return `<tr class="goal-row"><td>Target</td><td>—</td>${cells}</tr>`;
 }
 
-// Body weekly: weight/body_fat は「前週平均」との差で着色（日次と同じ濃淡）。
-function bodyWeeklyFmt(key, val) {
-  if (key === 'visceral_fat' || key === 'bmr' || key === 'metabolic_age') return commafy(Math.round(val));
-  if (key === 'weight' || key === 'fat_free_weight' || key === 'muscle_mass' || key === 'bone_mass') return commafy(+val.toFixed(2));
-  return commafy(+val.toFixed(1));
+// 週次平均の表示桁: kcal/BMR/代謝年齢/内臓脂肪は整数、他は最大1桁（末尾の.0は除去）。
+const WK_INT_KEYS = ['calories', 'bmr', 'metabolic_age', 'visceral_fat'];
+function wkFmt(key, val) {
+  if (val === '' || val === undefined || val === null || isNaN(+val)) return '—';
+  const dp = WK_INT_KEYS.includes(key) ? 0 : 1;
+  return commafy(+(+val).toFixed(dp));
 }
+
+// Body weekly: weight/body_fat は「前週平均」との差で着色（日次と同じ濃淡）。
 function renderBodyWeekly() {
   const el = document.getElementById('tbl-body-weekly');
   if (!el) return;
@@ -1398,7 +1413,7 @@ function renderBodyWeekly() {
       let bg = '';
       if (DIFF_TH[c.key] && prev && !isNaN(prev[c.key])) bg = weekDeltaColor(av, prev[c.key], DIFF_TH[c.key]);
       const style = bg ? ` style="background:${bg};color:#1a1a1a"` : '';
-      return `<td${style}>${bodyWeeklyFmt(c.key, av)}</td>`;
+      return `<td${style}>${wkFmt(c.key, av)}</td>`;
     }).join('');
     return `<tr class="${i === 0 ? 'latest' : ''}"><td>${weekLabel(wk)}</td><td class="stat-c">${a._n}</td>${cells}</tr>`;
   }).join('');
@@ -1417,7 +1432,6 @@ function renderCalWeekly() {
   const weeks = {};
   rows.forEach(r => { const wk = mondayOf(r.date); (weeks[wk] = weeks[wk] || []).push(r); });
   const keys = Object.keys(weeks).sort().reverse();
-  const fmt = (key, val) => key === 'calories' ? commafy(Math.round(val)) : commafy(+val.toFixed(1));
   const trs = keys.map((wk, i) => {
     const grp = weeks[wk];
     const avg = {};
@@ -1430,20 +1444,16 @@ function renderCalWeekly() {
       if (isNaN(av)) return '<td>—</td>';
       const bg = c.bg ? c.bg(av, avg) : '';
       const style = bg ? ` style="background:${bg};color:#1a1a1a"` : '';
-      return `<td${style}>${fmt(c.key, av)}</td>`;
+      return `<td${style}>${wkFmt(c.key, av)}</td>`;
     }).join('');
     const label = wk.slice(5).replace('-', '/') + '–' + isoAdd(wk, 6).slice(5).replace('-', '/');
     return `<tr class="${i === 0 ? 'latest' : ''}">
       <td>${label}</td><td class="stat-c">${grp.length}</td>${cells}
     </tr>`;
   }).join('');
-  const goalCells = CAL_COLS.map(c => `<td>${c.goal !== null && c.goal !== undefined ? commafy(c.goal) : '—'}</td>`).join('');
   el.innerHTML = `<table class="raw">
-    <thead><tr><th>Week</th><th>n</th>${CAL_COLS.map(c => `<th>${c.label}</th>`).join('')}</tr></thead>
-    <tbody>
-      <tr class="goal-row"><td>Target</td><td>—</td>${goalCells}</tr>
-      ${trs}
-    </tbody>
+    <thead><tr><th>Week</th><th>n</th>${CAL_COLS.map(c => `<th${c.desc ? ` class="th-tip" title="${c.desc}"` : ''}>${c.label}</th>`).join('')}</tr></thead>
+    <tbody>${weeklyGoalRow(CAL_COLS)}${trs}</tbody>
   </table>`;
 }
 
@@ -1691,15 +1701,16 @@ function renderFoods() {
   for (const store of Object.values(FOODS_DB)) {
     html += `<div class="foods-store">`;
     html += `<div class="foods-store-head"><div class="foods-store-name">${store.label}</div><div class="foods-store-jp">${store.jp}</div></div>`;
+    // 定番セットを持つ店は、セット以外のセクションを折りたたむ
+    const hasSets = store.sections.some(s => s.sets);
     for (const sec of store.sections) {
-      html += `<div class="foods-section-label">${sec.title}<span class="foods-section-label-jp">${sec.titleJp}</span></div>`;
-      html += `<div class="table-wrap"><table class="foods">`;
+      let tbl = `<div class="table-wrap"><table class="foods">`;
       if (sec.items) {
-        html += `<thead><tr>
+        tbl += `<thead><tr>
           <th>Item</th><th>g</th><th>kcal</th><th>P (g)</th><th>F (g)</th><th>C (g)</th><th style="text-align:left">Note</th>
         </tr></thead><tbody>`;
         for (const it of sec.items) {
-          html += `<tr>
+          tbl += `<tr>
             <td>${it[0]}</td>
             <td>${fmtNum(it[1], 0)}</td>
             <td>${fmtNum(it[2], 0)}</td>
@@ -1709,14 +1720,14 @@ function renderFoods() {
             <td class="note">${it[6] || ''}</td>
           </tr>`;
         }
-        html += `</tbody>`;
+        tbl += `</tbody>`;
       } else if (sec.sets) {
-        html += `<thead><tr>
+        tbl += `<thead><tr>
           <th>Set</th><th>kcal</th><th>P (g)</th><th>F (g)</th><th>C (g)</th>
         </tr></thead><tbody>`;
         for (const [name, items] of sec.sets) {
           const s = sumSet(items);
-          html += `<tr class="set-row">
+          tbl += `<tr class="set-row">
             <td>${name}</td>
             <td>${fmtNum(s.cal, 0)}</td>
             <td>${fmtNum(s.p, 1)}</td>
@@ -1724,9 +1735,15 @@ function renderFoods() {
             <td>${fmtNum(s.c, 1)}</td>
           </tr>`;
         }
-        html += `</tbody>`;
+        tbl += `</tbody>`;
       }
-      html += `</table></div>`;
+      tbl += `</table></div>`;
+      const labelInner = `${sec.title}<span class="foods-section-label-jp">${sec.titleJp}</span>`;
+      if (hasSets && !sec.sets) {
+        html += `<details class="foods-fold"><summary class="foods-section-label">${labelInner}</summary>${tbl}</details>`;
+      } else {
+        html += `<div class="foods-section-label">${labelInner}</div>${tbl}`;
+      }
     }
     html += `</div>`;
   }
@@ -1735,7 +1752,7 @@ function renderFoods() {
 
 // ── MAIN PANEL ──────────────────────────────────────────────
 const MAIN_CFG = {
-  target: { kcal: 1500, p: 130, f: 46, c: 100 },
+  target: { kcal: 1400, p: 110, f: 40, c: 150 },
   fixed: [
     { name: 'プロテイン × 3杯',                                kcal: 348, p: 63,   f: 5.7,  c: 13.2 },
     { name: 'しんぱちシャケセット（厚切り+半割+納豆+生卵+味噌汁）', kcal: 736, p: 54.6, f: 35.3, c: 54.4 },
@@ -1863,7 +1880,7 @@ function renderMain() {
     </tbody></table></div>
     <div class="main-callout">
       <strong>${best.kcal.toFixed(0)} kcal / P ${best.p.toFixed(1)} / F ${best.f.toFixed(1)} / C ${best.c.toFixed(1)}</strong>。
-      目標1500kcalに対して<strong>${Math.abs(bestVsTarget.kcal).toFixed(0)} kcal以内</strong>、
+      目標1400kcalに対して<strong>${Math.abs(bestVsTarget.kcal).toFixed(0)} kcal以内</strong>、
       Protein は<strong>+${bestVsTarget.p.toFixed(1)}g</strong>と大幅超過で筋量維持・増量に有利。
       Fat はほぼ目標通り、Carbs にやや余裕あり。理想バランス。
     </div>
@@ -1937,7 +1954,7 @@ function renderDiet() {
 
     <div class="main-callout">
       <strong>1日1食（夜のみ）+ プロテイン3〜4杯 + 飲酒なし</strong>のシンプル設計。
-      1日 <strong>1,500 kcal</strong> 目標、水分 <strong>2L/日</strong>。
+      1日 <strong>1,400 kcal</strong> 目標、水分 <strong>2L/日</strong>。
       朝・昼・夕方はプロテインだけで Protein のベースを作り、夜の1食でPFCを完結させる。
     </div>
 
@@ -1945,7 +1962,7 @@ function renderDiet() {
       <div class="main-block-label">Daily Targets<span class="main-block-label-jp">1日の目標</span></div>
       <div class="table-wrap"><table class="foods">
         <tbody>
-          <tr><td>カロリー</td><td style="text-align:left">1,500 kcal/日</td></tr>
+          <tr><td>カロリー</td><td style="text-align:left">1,400 kcal/日</td></tr>
           <tr><td>水分</td><td style="text-align:left">2 L/日</td></tr>
           <tr><td>PFC</td><td style="text-align:left">P 130g / F 46g / C 100g <span class="note">(詳細は Main タブ)</span></td></tr>
         </tbody>
@@ -2154,7 +2171,7 @@ function renderDiet() {
       <div class="main-callout">
         プロテイン×4 + バナナ + しんぱち厚切りシャケセット + サラダチキン×1
         <br>= <strong>1,419 kcal / P 154.7 / F 49.2 / C 97.5</strong>
-        <br>→ 目標 1500/130/46/100 にほぼピッタリ。詳細試算は <strong>Main タブ</strong>。
+        <br>→ 目標 1400/110/40/150 が基準。詳細試算は <strong>Main タブ</strong>。
       </div>
     </div>
   `;
@@ -2395,7 +2412,7 @@ const TOC_ENTRIES = [
     desc: 'よく食べる店・品目のPFCデータベース。しんぱち食堂（小鉢/ご飯/鮭/セット）・ターリー屋（パーツ/セット）・サプリ&補食。セット試算は構成品目から自動計算。'
   },
   { tab: 'main',  label: 'Main',         jp: '目標・戦略',
-    desc: '1日の目標PFC（1500kcal / P130 / F46 / C100）、固定摂取（プロテイン4杯+サラダチキン）、残量計算、ベストPFC日のテンプレート、TDEE 2500基準の減量試算。'
+    desc: '1日の目標PFC（1400kcal / P110 / F40 / C150）、固定摂取（プロテイン3杯+しんぱちシャケセット+野菜一日これ一本）、残量計算、ベストPFC日のテンプレート、TDEE 2500基準の減量試算。'
   },
   { tab: 'diet',  label: 'Diet',         jp: '食事習慣',
     desc: '普段の食事リズム・好み・苦手・水分摂取・定番メニューなど、個人の食生活スタイルを記録するページ。FoodsとMainを行動に落とし込む場所。'
