@@ -1056,7 +1056,18 @@ function fv(arr, key) {
   return arr.map(d => { const v = parseFloat(d[key]); return isNaN(v) ? null : v; });
 }
 
-function mkLineConfig(values, dates, goal, yMin, yMax) {
+// x軸ラベルの曜日色: 土=青 / 日=赤 / 平日=既定グレー（Raw Data表と統一）
+function dowColors(isoArr) {
+  return isoArr.map(iso => {
+    const wd = new Date(iso + 'T00:00:00Z').getUTCDay();
+    return wd === 6 ? '#2563eb' : wd === 0 ? '#dc2626' : '#666';
+  });
+}
+function xTickColorFn(xColors) {
+  return (c) => (xColors && xColors[c.index]) || '#666';
+}
+
+function mkLineConfig(values, dates, goal, yMin, yMax, xColors) {
   const datasets = [
     {
       data: values,
@@ -1096,14 +1107,14 @@ function mkLineConfig(values, dates, goal, yMin, yMax) {
         },
       },
       scales: {
-        x: { ticks: { maxTicksLimit: 8 }, grid: { color: '#f0f0f0' } },
+        x: { ticks: { maxTicksLimit: 8, color: xTickColorFn(xColors) }, grid: { color: '#f0f0f0' } },
         y: { min: yMin, max: yMax, grid: { color: '#f0f0f0' } },
       },
     },
   };
 }
 
-function mkBarConfig(values, dates, target) {
+function mkBarConfig(values, dates, target, xColors) {
   return {
     type: 'bar',
     data: {
@@ -1131,14 +1142,14 @@ function mkBarConfig(values, dates, target) {
       responsive: true,
       plugins: { legend: { display: false } },
       scales: {
-        x: { ticks: { maxTicksLimit: 12 }, grid: { display: false } },
+        x: { ticks: { maxTicksLimit: 12, color: xTickColorFn(xColors) }, grid: { display: false } },
         y: { grid: { color: '#f0f0f0' } },
       },
     },
   };
 }
 
-function mkPfcRatioConfig(fc, dates) {
+function mkPfcRatioConfig(fc, dates, xColors) {
   const pPct = fc.map(d => {
     const cal = parseFloat(d.calories);
     if (!cal) return null;
@@ -1228,7 +1239,7 @@ function mkPfcRatioConfig(fc, dates) {
         },
       },
       scales: {
-        x: { ticks: { maxTicksLimit: 8 }, grid: { color: '#f0f0f0' } },
+        x: { ticks: { maxTicksLimit: 8, color: xTickColorFn(xColors) }, grid: { color: '#f0f0f0' } },
         y: {
           min: 0, max: 100,
           ticks: { callback: v => v + '%' },
@@ -1239,20 +1250,20 @@ function mkPfcRatioConfig(fc, dates) {
   };
 }
 
-function mkLine(id, values, dates, goal, yMin, yMax, title, note) {
+function mkLine(id, values, dates, goal, yMin, yMax, title, note, xColors) {
   const ctx = document.getElementById(id);
   if (!ctx) return;
   if (charts[id]) charts[id].destroy();
-  const cfg = mkLineConfig(values, dates, goal, yMin, yMax);
+  const cfg = mkLineConfig(values, dates, goal, yMin, yMax, xColors);
   charts[id] = new Chart(ctx, cfg);
   chartDefs[id] = { config: cfg, title, note };
 }
 
-function mkBar(id, values, dates, target, title, note) {
+function mkBar(id, values, dates, target, title, note, xColors) {
   const ctx = document.getElementById(id);
   if (!ctx) return;
   if (charts[id]) charts[id].destroy();
-  const cfg = mkBarConfig(values, dates, target);
+  const cfg = mkBarConfig(values, dates, target, xColors);
   charts[id] = new Chart(ctx, cfg);
   chartDefs[id] = { config: cfg, title, note };
 }
@@ -1284,6 +1295,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal()
 function renderCharts() {
   const fb = getFilteredData(bodyData);
   const bd = fmtLabels(fb.map(d => d.date));
+  const bdc = dowColors(fb.map(d => d.date));
   const wv = fv(fb, 'weight').filter(v => v != null && !isNaN(v));
   let wMin = 70, wMax = 78;
   if (wv.length) {
@@ -1291,28 +1303,29 @@ function renderCharts() {
     wMin = Math.floor(Math.min(mid - 4, lo - 0.5) * 2) / 2;
     wMax = Math.ceil(Math.max(mid + 4, hi + 0.5) * 2) / 2;
   }
-  mkLine('c-weight',   fv(fb,'weight'),      bd, GOALS.weight,      wMin, wMax, 'Weight (kg)',   'Target: 69.5 kg');
-  mkLine('c-fat',      fv(fb,'body_fat'),     bd, GOALS.body_fat,    14, 21, 'Body Fat (%)',  'Target: 15.3 %');
-  mkLine('c-visceral', fv(fb,'visceral_fat'), bd, GOALS.visceral_fat, 5, 10, 'Visceral Fat',  'Target: 6');
-  mkLine('c-water',    fv(fb,'body_water'),   bd, GOALS.body_water,  56, 62, 'Body Water (%)', 'Target: 60.2 %');
+  mkLine('c-weight',   fv(fb,'weight'),      bd, GOALS.weight,      wMin, wMax, 'Weight (kg)',   'Target: 69.5 kg', bdc);
+  mkLine('c-fat',      fv(fb,'body_fat'),     bd, GOALS.body_fat,    14, 21, 'Body Fat (%)',  'Target: 15.3 %', bdc);
+  mkLine('c-visceral', fv(fb,'visceral_fat'), bd, GOALS.visceral_fat, 5, 10, 'Visceral Fat',  'Target: 6', bdc);
+  mkLine('c-water',    fv(fb,'body_water'),   bd, GOALS.body_water,  56, 62, 'Body Water (%)', 'Target: 60.2 %', bdc);
 
   const fc = getFilteredData(calData);
   if (fc.length) {
     const cd = fmtLabels(fc.map(d => d.date));
-    mkBar('c-calories', fv(fc,'calories'), cd, 1400, 'Calories (kcal)', 'Target: 1,400 kcal/day');
+    const cdc = dowColors(fc.map(d => d.date));
+    mkBar('c-calories', fv(fc,'calories'), cd, 1400, 'Calories (kcal)', 'Target: 1,400 kcal/day', cdc);
 
     const pfcCtx = document.getElementById('c-pfc-ratio');
     if (pfcCtx) {
       if (charts['c-pfc-ratio']) charts['c-pfc-ratio'].destroy();
-      const pfcCfg = mkPfcRatioConfig(fc, cd);
+      const pfcCfg = mkPfcRatioConfig(fc, cd, cdc);
       charts['c-pfc-ratio'] = new Chart(pfcCtx, pfcCfg);
       chartDefs['c-pfc-ratio'] = { config: pfcCfg, title: 'PFC Calorie Ratio (%)', note: 'P: protein×4 / cal · F: fat×9 / cal · C: carbs×4 / cal' };
     }
 
-    mkLine('c-protein',  fv(fc,'protein'), cd, 110,  0, 200, 'Protein (g)', 'Target: 110 g');
-    mkLine('c-fat-cal',  fv(fc,'fat'),      cd, null, 0, 200, 'Fat (g)',     '');
-    mkLine('c-carbs',    fv(fc,'carbs'),    cd, null, 0, 350, 'Carbs (g)',   '');
-    mkLine('c-fiber',    fv(fc,'fiber'),    cd, null, 0,  30, 'Fiber (g)',   '');
+    mkLine('c-protein',  fv(fc,'protein'), cd, 110,  0, 200, 'Protein (g)', 'Target: 110 g', cdc);
+    mkLine('c-fat-cal',  fv(fc,'fat'),      cd, null, 0, 200, 'Fat (g)',     '', cdc);
+    mkLine('c-carbs',    fv(fc,'carbs'),    cd, null, 0, 350, 'Carbs (g)',   '', cdc);
+    mkLine('c-fiber',    fv(fc,'fiber'),    cd, null, 0,  30, 'Fiber (g)',   '', cdc);
   } else {
     ['c-calories','c-protein','c-fat-cal','c-carbs','c-fiber'].forEach(id => {
       const box = document.getElementById(id)?.closest('.chart-box');
