@@ -167,6 +167,14 @@ table.raw th {
 }
 table.raw th:first-child { text-align: left; position: sticky; left: 0; background: var(--card2); }
 table.raw th.th-tip { cursor: help; text-decoration: underline dotted; text-underline-offset: 3px; }
+#th-tip-pop {
+  position: fixed; z-index: 9999; max-width: min(300px, 86vw);
+  background: #1a1a1a; color: #fff;
+  font-family: 'Noto Sans JP', sans-serif; font-size: 12px; line-height: 1.55;
+  letter-spacing: 0; text-transform: none; font-weight: 400;
+  padding: 10px 12px; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.28);
+  pointer-events: none; opacity: 0; transition: opacity .12s; display: none;
+}
 table.raw td {
   padding: 7px 12px; border-bottom: 1px solid var(--border);
   text-align: right; color: var(--text);
@@ -1348,7 +1356,7 @@ function renderTable(containerId, data, cols) {
     <thead>
       <tr>
         <th>Date</th>
-        ${cols.map(c => `<th${c.desc ? ` class="th-tip" title="${c.desc}"` : ''}>${c.label}</th>`).join('')}
+        ${cols.map(c => `<th${c.desc ? ` class="th-tip" data-tip="${c.desc}"` : ''}>${c.label}</th>`).join('')}
       </tr>
     </thead>
     <tbody>${goalRow}${rows}</tbody>
@@ -1452,7 +1460,7 @@ function renderCalWeekly() {
     </tr>`;
   }).join('');
   el.innerHTML = `<table class="raw">
-    <thead><tr><th>Week</th><th>n</th>${CAL_COLS.map(c => `<th${c.desc ? ` class="th-tip" title="${c.desc}"` : ''}>${c.label}</th>`).join('')}</tr></thead>
+    <thead><tr><th>Week</th><th>n</th>${CAL_COLS.map(c => `<th${c.desc ? ` class="th-tip" data-tip="${c.desc}"` : ''}>${c.label}</th>`).join('')}</tr></thead>
     <tbody>${weeklyGoalRow(CAL_COLS)}${trs}</tbody>
   </table>`;
 }
@@ -2456,8 +2464,45 @@ function renderToc() {
   root.innerHTML = html;
 }
 
+// ── COLUMN-HEADER TOOLTIP (hover=PC / tap=スマホ 両対応) ───────
+function setupThTooltips() {
+  const pop = document.createElement('div');
+  pop.id = 'th-tip-pop';
+  document.body.appendChild(pop);
+  let pinned = null;
+  const hide = () => { pop.style.display = 'none'; pop.style.opacity = '0'; };
+  const show = (th) => {
+    const tip = th.getAttribute('data-tip');
+    if (!tip) return;
+    pop.textContent = tip;
+    pop.style.display = 'block';
+    pop.style.opacity = '0';
+    requestAnimationFrame(() => {
+      const r = th.getBoundingClientRect(), pw = pop.offsetWidth, ph = pop.offsetHeight;
+      let left = r.left + r.width / 2 - pw / 2;
+      left = Math.max(8, Math.min(left, window.innerWidth - pw - 8));
+      let top = r.bottom + 6;
+      if (top + ph > window.innerHeight - 8) top = r.top - ph - 6;
+      pop.style.left = left + 'px';
+      pop.style.top = top + 'px';
+      pop.style.opacity = '1';
+    });
+  };
+  // tap / click：トグル（スマホ主経路）
+  document.addEventListener('click', (e) => {
+    const th = e.target.closest('.th-tip');
+    if (th) { if (pinned === th) { hide(); pinned = null; } else { show(th); pinned = th; } }
+    else { hide(); pinned = null; }
+  });
+  // hover：PCでピン留めされていない時だけ
+  document.addEventListener('mouseover', (e) => { const th = e.target.closest('.th-tip'); if (th && !pinned) show(th); });
+  document.addEventListener('mouseout',  (e) => { const th = e.target.closest('.th-tip'); if (th && !pinned) hide(); });
+  window.addEventListener('scroll', () => { if (!pinned) hide(); }, true);
+}
+
 // ── INIT ────────────────────────────────────────────────────
 loadData();
+setupThTooltips();
 // Restore tab from URL hash (after charts have rendered to avoid Chart.js sizing issues)
 {
   const initial = tabFromHash();
