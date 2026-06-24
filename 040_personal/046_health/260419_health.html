@@ -321,6 +321,65 @@ table.foods tr.set-row td:first-child {
 }
 table.foods tr:last-child td { border-bottom: none; }
 
+/* ── WORKOUT PANEL ── */
+.wk-day { margin-bottom: 28px; }
+.wk-day-head {
+  display: flex; align-items: baseline; gap: 12px;
+  background: var(--accent); border-radius: 9px;
+  padding: 11px 18px; margin-bottom: 14px;
+}
+.wk-day-date {
+  font-family: 'Poppins', sans-serif; font-weight: 800;
+  font-size: 18px; color: var(--white); letter-spacing: .02em;
+}
+.wk-day-dow {
+  font-family: 'Poppins', sans-serif; font-weight: 700;
+  font-size: 10px; color: var(--dim); letter-spacing: .14em; text-transform: uppercase;
+}
+.wk-day-sum {
+  margin-left: auto; font-family: 'Poppins', sans-serif;
+  font-size: 11px; font-weight: 600; color: var(--dim);
+}
+.wk-entry {
+  border: 1px solid var(--border); border-radius: 9px;
+  padding: 14px 16px; margin-bottom: 10px; background: var(--bg);
+}
+.wk-entry-head { display: flex; align-items: center; gap: 10px; margin-bottom: 11px; }
+.wk-type {
+  font-family: 'Poppins', sans-serif; font-size: 8px; font-weight: 700;
+  letter-spacing: .12em; text-transform: uppercase; color: var(--white);
+  background: var(--accent); padding: 3px 8px; border-radius: 4px; flex: 0 0 auto;
+}
+.wk-ex {
+  font-family: 'Noto Sans JP', sans-serif; font-weight: 700;
+  font-size: 15px; color: var(--text);
+}
+.wk-sets { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+.wk-set {
+  font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700;
+  color: var(--text); background: var(--surface);
+  border: 1px solid var(--border); border-radius: 6px; padding: 4px 11px;
+}
+.wk-set small { font-size: 9.5px; font-weight: 600; color: var(--muted); margin-left: 1px; }
+.wk-set .reps { color: var(--muted); font-weight: 500; margin-left: 3px; }
+.wk-metrics {
+  display: flex; flex-wrap: wrap; gap: 24px;
+  padding-top: 11px; border-top: 1px dashed var(--border);
+}
+.wk-metric { display: flex; flex-direction: column; gap: 2px; }
+.wk-metric .v {
+  font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 16px; color: var(--text);
+}
+.wk-metric .v small { font-size: 10px; font-weight: 600; color: var(--muted); margin-left: 1px; }
+.wk-metric .l {
+  font-family: 'Poppins', sans-serif; font-size: 8px; font-weight: 700;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+.wk-note {
+  font-family: 'Noto Sans JP', sans-serif; font-size: 12px;
+  color: var(--muted); margin-top: 9px;
+}
+
 /* ── KNOWLEDGE PANEL ── */
 .kn-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
 .kn-search {
@@ -615,6 +674,7 @@ body{padding-top:56px!important;padding-bottom:68px!important}
   <button class="tab-btn" onclick="switchTab('diet')">Diet</button>
   <button class="tab-btn" onclick="switchTab('knowledge')">Knowledge</button>
   <button class="tab-btn" onclick="switchTab('kine')">Kinesiology</button>
+  <button class="tab-btn" onclick="switchTab('workout')">Workout</button>
   <button class="tab-btn" onclick="switchTab('toc')">Contents</button>
 </div>
 
@@ -741,6 +801,10 @@ body{padding-top:56px!important;padding-bottom:68px!important}
 <!-- KINESIOLOGY PANEL -->
 <div id="panel-kine" style="display:none">
   <div id="kine-render"></div>
+</div>
+
+<div id="panel-workout" style="display:none">
+  <div id="workout-render"></div>
 </div>
 
 <!-- CONTENTS PANEL -->
@@ -976,6 +1040,11 @@ const CAL_CSV = `date,calories,protein,fat,carbs,sugar,fiber,salt
 2026-06-21,2294,62.1,84.1,325.0,312.3,12.7,6.64
 2026-06-23,1330,144.3,44.6,95.2,85.9,9.3,1.56`;
 
+// 筋トレ・有酸素ログ。type=strength は sets を "重量x回数" を ; 区切りで記録（自重は重量0）。
+// type=cardio/walking は distance_km / duration_min を使う。種目・セット以外の列は空でOK。
+const WORKOUT_CSV = `date,type,exercise,sets,distance_km,duration_min,note
+2026-06-24,strength,ベンチプレス,40x8;45x8;45x10,,,`;
+
 // ── DATE FORMATTER ──────────────────────────────────────────
 // MM/DD; first point of each new year shows '25 MM/DD
 function fmtLabels(dates) {
@@ -988,7 +1057,7 @@ function fmtLabels(dates) {
 }
 
 // ── STATE ───────────────────────────────────────────────────
-let bodyData = [], calData = [];
+let bodyData = [], calData = [], workoutData = [];
 let currentRange = 14;
 const charts   = {};
 const chartDefs = {};   // { id: { config, title, note } }
@@ -1017,6 +1086,8 @@ function loadData() {
     .sort((a, b) => new Date(a.date) - new Date(b.date));
   calData = Papa.parse(CAL_CSV, { header: true, skipEmptyLines: true }).data
     .sort((a, b) => new Date(a.date) - new Date(b.date));
+  workoutData = Papa.parse(WORKOUT_CSV, { header: true, skipEmptyLines: true }).data
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   renderKPIs();
   renderCharts();
@@ -1532,7 +1603,7 @@ function switchSubTab(name) {
 }
 
 // ── TABS ────────────────────────────────────────────────────
-const TAB_ORDER = ['chart', 'table', 'status', 'foods', 'main', 'diet', 'knowledge', 'kine', 'toc'];
+const TAB_ORDER = ['chart', 'table', 'status', 'foods', 'main', 'diet', 'knowledge', 'kine', 'workout', 'toc'];
 function switchTab(name, opts = {}) {
   if (!TAB_ORDER.includes(name)) name = 'chart';
   TAB_ORDER.forEach(t => {
@@ -1548,6 +1619,7 @@ function switchTab(name, opts = {}) {
   if (name === 'diet')  renderDiet();
   if (name === 'knowledge') renderKnowledge();
   if (name === 'kine')  renderKine();
+  if (name === 'workout') renderWorkout();
   if (name === 'toc')   renderToc();
   if (!opts.skipHash) {
     const newHash = '#' + name;
@@ -2446,10 +2518,109 @@ const TOC_ENTRIES = [
   { tab: 'kine',  label: 'Kinesiology',  jp: '運動・トレーニング',
     desc: '現行ルーチン（分割法・頻度）、Strength PRs（BIG3等）、Mobility/可動域、Recovery（睡眠・心拍）、Cardio（VO2max・距離）等を記録予定。'
   },
+  { tab: 'workout', label: 'Workout',    jp: 'トレーニング記録',
+    desc: '筋トレ・ウォーキングの実施ログ。筋トレはセット（重量×回数）を構造化記録し、トータルボリューム・トップセット・推定1RMを自動算出。有酸素は距離・時間・ペースを記録。'
+  },
   { tab: 'toc',   label: 'Contents',     jp: '目次',
     desc: 'このページ。各タブが何を扱っているかの一覧と案内。'
   },
 ];
+
+// ── WORKOUT PANEL ───────────────────────────────────────────
+// sets 文字列 "40x8;45x8;45x10" → [{w:40,r:8}, ...]
+function parseWorkoutSets(s) {
+  if (!s) return [];
+  return s.split(';').map(p => p.trim()).filter(Boolean).map(p => {
+    const [w, r] = p.toLowerCase().split('x');
+    return { w: parseFloat(w) || 0, r: parseInt(r, 10) || 0 };
+  });
+}
+
+function renderWorkout() {
+  const root = document.getElementById('workout-render');
+  let html = `
+    <div class="main-hero">
+      <div class="main-hero-tag">Workout</div>
+      <div class="main-hero-title">トレーニング記録</div>
+    </div>`;
+
+  // 日付ごとにグループ化（新しい順）
+  const byDate = {};
+  workoutData.forEach(w => { (byDate[w.date] = byDate[w.date] || []).push(w); });
+  const dates = Object.keys(byDate).sort((a, b) => new Date(b) - new Date(a));
+
+  if (!dates.length) {
+    root.innerHTML = html + `<div class="msg">記録がまだありません。</div>`;
+    return;
+  }
+
+  const DOW = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+  for (const date of dates) {
+    const entries = byDate[date];
+    const d = new Date(date + 'T00:00:00Z');
+    const [, m, dd] = date.split('-');
+
+    // 当日のトータルボリューム（筋トレ分）
+    let dayVol = 0;
+    entries.forEach(e => {
+      if (e.type === 'strength') {
+        parseWorkoutSets(e.sets).forEach(x => { dayVol += x.w * x.r; });
+      }
+    });
+    const sumStr = dayVol > 0 ? `Total Volume ${dayVol.toLocaleString()} kg` : '';
+
+    html += `<div class="wk-day">
+      <div class="wk-day-head">
+        <span class="wk-day-date">${+m}/${+dd}</span>
+        <span class="wk-day-dow">${DOW[d.getUTCDay()]}</span>
+        ${sumStr ? `<span class="wk-day-sum">${sumStr}</span>` : ''}
+      </div>`;
+
+    for (const e of entries) {
+      if (e.type === 'strength') {
+        const sets = parseWorkoutSets(e.sets);
+        const volume = sets.reduce((s, x) => s + x.w * x.r, 0);
+        const top = sets.reduce((mx, x) => Math.max(mx, x.w), 0);
+        const totalReps = sets.reduce((s, x) => s + x.r, 0);
+        // 推定1RM（Epley式：各セットのうち最大値）
+        const e1rm = sets.length ? Math.max(...sets.map(x => x.w * (1 + x.r / 30))) : 0;
+
+        html += `<div class="wk-entry">
+          <div class="wk-entry-head"><span class="wk-type">Strength</span><span class="wk-ex">${e.exercise || ''}</span></div>
+          <div class="wk-sets">${sets.map(x =>
+            `<span class="wk-set">${x.w}<small>kg</small><span class="reps">×${x.r}</span></span>`).join('')}</div>
+          <div class="wk-metrics">
+            <div class="wk-metric"><span class="v">${top}<small>kg</small></span><span class="l">Top Set</span></div>
+            <div class="wk-metric"><span class="v">${volume.toLocaleString()}<small>kg</small></span><span class="l">Volume</span></div>
+            <div class="wk-metric"><span class="v">${e1rm.toFixed(1)}<small>kg</small></span><span class="l">Est 1RM</span></div>
+            <div class="wk-metric"><span class="v">${sets.length}<small>set</small> · ${totalReps}<small>rep</small></span><span class="l">Sets · Reps</span></div>
+          </div>
+          ${e.note ? `<div class="wk-note">${e.note}</div>` : ''}
+        </div>`;
+      } else {
+        // 有酸素（walking / cardio）
+        const dist = parseFloat(e.distance_km);
+        const dur  = parseFloat(e.duration_min);
+        const pace = (!isNaN(dist) && dist > 0 && !isNaN(dur)) ? dur / dist : null;
+        const metrics = [];
+        if (!isNaN(dist)) metrics.push(`<div class="wk-metric"><span class="v">${dist.toFixed(1)}<small>km</small></span><span class="l">Distance</span></div>`);
+        if (!isNaN(dur))  metrics.push(`<div class="wk-metric"><span class="v">${dur.toFixed(0)}<small>min</small></span><span class="l">Duration</span></div>`);
+        if (pace)         metrics.push(`<div class="wk-metric"><span class="v">${pace.toFixed(1)}<small>/km</small></span><span class="l">Pace</span></div>`);
+        const label = e.type === 'walking' ? 'Walking' : e.type === 'cardio' ? 'Cardio' : (e.type || 'Cardio');
+
+        html += `<div class="wk-entry">
+          <div class="wk-entry-head"><span class="wk-type">${label}</span>${e.exercise ? `<span class="wk-ex">${e.exercise}</span>` : ''}</div>
+          ${metrics.length ? `<div class="wk-metrics">${metrics.join('')}</div>` : ''}
+          ${e.note ? `<div class="wk-note">${e.note}</div>` : ''}
+        </div>`;
+      }
+    }
+    html += `</div>`;
+  }
+
+  root.innerHTML = html;
+}
 
 function renderToc() {
   const root = document.getElementById('toc-render');
