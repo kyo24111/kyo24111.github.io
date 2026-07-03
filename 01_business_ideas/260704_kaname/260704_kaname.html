@@ -23,7 +23,8 @@ body {
   font-size: 15px;
   line-height: 1.8;
 }
-.page { max-width: 880px; margin: 0 auto; padding: 56px 28px 120px; }
+.layout { display: flex; gap: 40px; max-width: 1180px; margin: 0 auto; padding: 0 24px; align-items: flex-start; }
+.page { flex: 1; min-width: 0; padding: 56px 0 120px; }
 
 /* ── header ── */
 .breadcrumb { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: .14em; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; }
@@ -32,10 +33,10 @@ h1.page-title { font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em; lin
 
 /* ── TOC ── */
 .toc {
-  position: fixed; top: 24px; left: 24px; width: 230px;
+  position: sticky; top: 24px; width: 232px; flex-shrink: 0; margin-top: 56px;
   max-height: calc(100vh - 48px); overflow-y: auto;
-  font-size: 12px; padding: 14px 12px; background: var(--bg);
-  border: 1px solid var(--border); border-radius: 6px; z-index: 50;
+  font-size: 12px; padding: 16px 12px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 8px; z-index: 50;
 }
 .toc-title { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: .15em; color: var(--muted); text-transform: uppercase; padding: 0 8px 8px; margin-bottom: 6px; border-bottom: 1px solid var(--border); }
 .toc a { display: block; color: var(--muted); text-decoration: none; padding: 3px 8px; border-left: 2px solid transparent; line-height: 1.45; transition: color .15s, border-color .15s; }
@@ -43,7 +44,7 @@ h1.page-title { font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em; lin
 .toc a.lvl-h2 { font-weight: 700; font-size: 12px; }
 .toc a.lvl-h3 { padding-left: 22px; font-size: 11.5px; }
 .toc a.active { color: var(--text); border-left-color: var(--text); font-weight: 700; }
-@media (max-width: 1320px) { .toc { display: none; } }
+@media (max-width: 980px) { .toc { display: none; } .layout { padding: 0 20px; } .page { padding: 48px 0 100px; } }
 
 /* ── Tabs ── */
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin: 18px 0 32px; flex-wrap: wrap; }
@@ -152,7 +153,8 @@ ul { margin: 0 0 16px 20px; } li { margin-bottom: 6px; color: var(--mid); }
 </head>
 <body>
 
-<nav class="toc"><div class="toc-title">Index</div><div id="toc-links"></div></nav>
+<div class="layout">
+<nav class="toc"><div class="toc-title">Contents</div><div id="toc-links"></div></nav>
 
 <div class="page">
   <div class="breadcrumb">01_business_ideas / kaname</div>
@@ -541,6 +543,7 @@ ul { margin: 0 0 16px 20px; } li { margin-bottom: 6px; color: var(--mid); }
 
   <div class="footnote mono">source: user pitch outline (Kaname / cold chain Nigeria) · scaffold created 260704 · Pitch & Source data pending</div>
 </div>
+</div>
 
 <script>
 // ── Tab switching ──
@@ -566,7 +569,14 @@ function buildTOC() {
     if (!h.id) h.id = 'sec-' + activeTab.id + '-' + i;
     const a = document.createElement('a');
     a.href = '#' + h.id;
-    a.textContent = h.textContent;
+    const numEl = h.querySelector ? h.querySelector('.sec-num') : null;
+    if (numEl) {
+      const clone = h.cloneNode(true);
+      clone.querySelectorAll('.sec-num, .en').forEach(el => el.remove());
+      a.textContent = numEl.textContent.trim() + ' · ' + clone.textContent.trim();
+    } else {
+      a.textContent = h.textContent.trim();
+    }
     a.className = 'lvl-' + (h.tagName.toLowerCase() === 'h3' ? 'h3' : 'h2');
     a.dataset.targetId = h.id;
     a.addEventListener('click', e => { e.preventDefault(); document.getElementById(h.id).scrollIntoView({behavior:'smooth', block:'start'}); });
