@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>カナメ / Kaname — Cold Chain in Nigeria</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #ffffff;
+  --text: #111111;
+  --mid: #444444;
+  --muted: #888888;
+  --border: #d8d8d8;
+  --surface: #f5f5f5;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Noto Sans JP', sans-serif;
+  font-size: 15px;
+  line-height: 1.8;
+}
+.page { max-width: 880px; margin: 0 auto; padding: 56px 28px 120px; }
+
+/* ── header ── */
+.breadcrumb { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: .14em; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; }
+h1.page-title { font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.3; margin-bottom: 6px; }
+.page-sub { font-size: 13px; color: var(--muted); margin-bottom: 4px; }
+
+/* ── TOC ── */
+.toc {
+  position: fixed; top: 24px; left: 24px; width: 230px;
+  max-height: calc(100vh - 48px); overflow-y: auto;
+  font-size: 12px; padding: 14px 12px; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 6px; z-index: 50;
+}
+.toc-title { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: .15em; color: var(--muted); text-transform: uppercase; padding: 0 8px 8px; margin-bottom: 6px; border-bottom: 1px solid var(--border); }
+.toc a { display: block; color: var(--muted); text-decoration: none; padding: 3px 8px; border-left: 2px solid transparent; line-height: 1.45; transition: color .15s, border-color .15s; }
+.toc a:hover { color: var(--text); }
+.toc a.lvl-h2 { font-weight: 700; font-size: 12px; }
+.toc a.lvl-h3 { padding-left: 22px; font-size: 11.5px; }
+.toc a.active { color: var(--text); border-left-color: var(--text); font-weight: 700; }
+@media (max-width: 1320px) { .toc { display: none; } }
+
+/* ── Tabs ── */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin: 18px 0 32px; flex-wrap: wrap; }
+.tab-button { background: transparent; border: none; border-bottom: 2px solid transparent; padding: 10px 20px; font-family: 'Noto Sans JP', sans-serif; font-size: 14px; font-weight: 700; color: var(--muted); cursor: pointer; letter-spacing: .02em; margin-bottom: -1px; }
+.tab-button:hover { color: var(--mid); }
+.tab-button.active { color: var(--text); border-bottom-color: var(--text); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+/* ── headings ── */
+h2 { font-size: 1.25rem; font-weight: 700; letter-spacing: -.01em; margin: 48px 0 16px; padding-bottom: 8px; border-bottom: 2px solid var(--text); }
+h2:first-child { margin-top: 0; }
+h3 { font-size: 1.02rem; font-weight: 700; margin: 30px 0 12px; }
+p { margin-bottom: 14px; color: var(--mid); }
+p strong, li strong { color: var(--text); }
+ul { margin: 0 0 16px 20px; } li { margin-bottom: 6px; color: var(--mid); }
+.lead { font-size: 14px; color: var(--mid); margin-bottom: 24px; }
+.mono { font-family: 'Share Tech Mono', monospace; }
+
+/* ── Raw Contents (text-format outline) ── */
+.raw { font-size: 14.5px; line-height: 1.85; }
+.raw .sec { margin: 0 0 30px; }
+.raw .sec-h {
+  font-size: 1.06rem; font-weight: 700; color: var(--text);
+  padding-bottom: 6px; margin-bottom: 4px; border-bottom: 1px solid var(--border);
+}
+.raw .sec-h .en { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--muted); letter-spacing: .04em; font-weight: 400; margin-left: 8px; }
+.raw .sec-num { font-family: 'Share Tech Mono', monospace; color: var(--muted); font-weight: 400; margin-right: 8px; }
+/* indented body lines */
+.raw ul { list-style: none; margin: 8px 0 0 0; padding: 0; }
+.raw ul li { position: relative; padding-left: 20px; margin-bottom: 5px; color: var(--mid); }
+.raw ul li::before { content: "–"; position: absolute; left: 4px; color: var(--muted); }
+.raw ul ul { margin: 4px 0 6px 0; }
+.raw ul ul li { padding-left: 22px; font-size: 13.5px; }
+.raw ul ul li::before { content: "·"; left: 8px; }
+.raw .step { font-weight: 700; color: var(--text); }
+.raw .blank {
+  display: inline-block; font-family: 'Share Tech Mono', monospace; font-size: 11px;
+  letter-spacing: .06em; color: var(--muted); background: var(--surface);
+  border: 1px dashed var(--border); border-radius: 4px; padding: 1px 8px; margin-left: 2px;
+}
+.raw .note { color: var(--muted); font-size: 13px; }
+.raw .best { font-weight: 700; color: var(--text); }
+
+/* matrix (kept text-simple) */
+.mx { width: 100%; border-collapse: collapse; margin: 12px 0 6px; font-size: 13px; }
+.mx th, .mx td { border: 1px solid var(--border); padding: 8px 11px; text-align: left; vertical-align: top; }
+.mx th { background: var(--surface); font-size: 11px; letter-spacing: .04em; color: var(--mid); text-transform: uppercase; }
+.mx th .note, .mx td .note { font-weight: 400; font-size: 10.5px; }
+.mx td.hl { background: #f5f5f5; font-weight: 700; color: var(--text); }
+.mx td.start { background: #111; color: #fff; font-weight: 700; text-align: center; }
+.mx td.later { color: var(--muted); text-align: center; }
+.mx .ph { font-family: 'Share Tech Mono', monospace; font-size: 9.5px; letter-spacing: .06em; color: var(--muted); display: block; margin-top: 2px; }
+.mx td.start .ph { color: #bbb; }
+
+/* ── quadrant mapping matrix ── */
+.qmap-outer { display: grid; grid-template-columns: 22px 1fr; grid-template-rows: 1fr 22px; max-width: 560px; margin: 22px auto 6px; gap: 4px; }
+.qmap-ytitle { grid-column: 1; grid-row: 1; writing-mode: vertical-rl; transform: rotate(180deg); text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--mid); }
+.qmap-xtitle { grid-column: 2; grid-row: 2; text-align: center; font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--mid); }
+.qmap { grid-column: 2; grid-row: 1; position: relative; width: 100%; aspect-ratio: 1 / 0.8; border: 1px solid var(--border); background: var(--bg); }
+.qmap .zone-best { position: absolute; left: 50%; top: 50%; right: 0; bottom: 0; background: rgba(0,0,0,.045); }
+.qmap .zone-tag { position: absolute; right: 10px; bottom: 8px; font-family: 'Share Tech Mono', monospace; font-size: 9px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.qmap .axis-x { position: absolute; left: 0; right: 0; top: 50%; border-top: 1px dashed var(--border); }
+.qmap .axis-y { position: absolute; top: 0; bottom: 0; left: 50%; border-left: 1px dashed var(--border); }
+.qmap .edge { position: absolute; font-family: 'Share Tech Mono', monospace; font-size: 9.5px; letter-spacing: .05em; color: var(--muted); text-transform: uppercase; }
+.qmap .edge.hi { top: 5px; left: 50%; transform: translateX(-50%); }
+.qmap .edge.lo { bottom: 5px; left: 50%; transform: translateX(-50%); }
+.qmap .edge.sm { left: 6px; top: 50%; transform: translateY(-50%); }
+.qmap .edge.big { right: 6px; top: 50%; transform: translateY(-50%); }
+.qmap .pt { position: absolute; transform: translate(-50%, -50%); display: flex; flex-direction: column; align-items: center; text-align: center; z-index: 2; }
+.qmap .pt .dot { width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--mid); background: #fff; }
+.qmap .pt .nm { font-size: 11.5px; font-weight: 700; color: var(--mid); margin-top: 4px; line-height: 1.15; white-space: nowrap; }
+.qmap .pt .nm small { display: block; font-weight: 400; font-size: 9.5px; color: var(--muted); }
+.qmap .pt.best .dot { width: 16px; height: 16px; background: #111; border-color: #111; box-shadow: 0 0 0 5px rgba(0,0,0,.08); }
+.qmap .pt.best .nm { color: var(--text); font-size: 12.5px; }
+
+/* ── Source scaffold ── */
+.src-month { margin: 30px 0 10px; font-family: 'Share Tech Mono', monospace; font-size: 12px; letter-spacing: .1em; color: var(--text); font-weight: 700; border-bottom: 1px solid var(--text); padding-bottom: 5px; }
+.src-table { width: 100%; border-collapse: collapse; margin: 8px 0 22px; font-size: 13px; }
+.src-table th, .src-table td { border: 1px solid var(--border); padding: 9px 11px; text-align: left; vertical-align: top; }
+.src-table th { background: var(--surface); font-weight: 700; font-size: 11px; letter-spacing: .04em; color: var(--mid); text-transform: uppercase; }
+.src-table td.claim { font-weight: 500; color: var(--text); width: 42%; }
+.src-table td.src { color: var(--muted); }
+.src-table .todo { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--muted); background: var(--surface); border: 1px dashed var(--border); border-radius: 4px; padding: 1px 7px; }
+
+.callout { border: 1px solid var(--border); border-left: 3px solid var(--text); border-radius: 0 6px 6px 0; background: var(--surface); padding: 14px 18px; margin: 18px 0 26px; font-size: 13.5px; color: var(--mid); }
+.callout .clabel { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; margin-bottom: 6px; }
+.placeholder { border: 1px dashed var(--border); border-radius: 6px; padding: 40px 22px; text-align: center; color: var(--muted); font-size: 13px; margin: 16px 0; }
+.footnote { font-size: 11px; color: var(--muted); margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border); }
+</style>
+</head>
+<body>
+
+<nav class="toc"><div class="toc-title">Index</div><div id="toc-links"></div></nav>
+
+<div class="page">
+  <div class="breadcrumb">01_business_ideas / kaname</div>
+  <h1 class="page-title">カナメ / Kaname<br>Cold Chain in Nigeria — Pitch Material</h1>
+  <div class="page-sub mono">created 260704 · fish-first cold chain · aiming to eliminate Africa's fresh-food loss</div>
+
+  <nav class="tabs">
+    <button class="tab-button active" data-tab="raw">Raw Contents</button>
+    <button class="tab-button" data-tab="pitch">Pitch</button>
+    <button class="tab-button" data-tab="source">Source</button>
+  </nav>
+
+  <!-- ════════════════════ RAW CONTENTS ════════════════════ -->
+  <div id="tab-raw" class="tab-content active">
+    <p class="lead">ピッチの素材（text outline）。<strong>headline / indent</strong> でコンテンツの濃淡をつけた叩き台。<span class="blank">Blank</span> は今後埋める箇所。ここが固まったら <strong>Pitch タブ</strong> に清書する。</p>
+
+    <div class="raw">
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">01</span>Mission<span class="en">ミッション</span></div>
+        <ul>
+          <li><strong>アフリカの生鮮食品ロスをなくす</strong></li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">02</span>Why Nigeria?<span class="en">なぜナイジェリアか</span></div>
+        <ul>
+          <li><span class="note">他の新興国ではなく、なぜナイジェリアなのか</span> <span class="blank">Blank</span></li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">03</span>Nigeria's Fishery Resources<span class="en">ナイジェリアの水産資源</span></div>
+        <ul>
+          <li>国内の Seafood ニーズが大きい <span class="note">（Data を示す）</span> <span class="blank">Data</span></li>
+          <li>国内の生産量は多いが、<strong>Cold chain の問題で死んでいる</strong></li>
+          <li>国外からの Import に頼っている</li>
+          <li>国内で Popular な魚の種類</li>
+          <li>Wealthy class の伸び <span class="note">（高級でおいしい魚のニーズがある証明）</span></li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">04</span>Why Fish First?<span class="en">なぜ魚から始めるのか</span></div>
+        <ul>
+          <li>最初は<strong>魚の Cold chain</strong> からスタート</li>
+          <li>その後、<strong>Meat → Vegetables → Medical 品</strong> などへ展開予定</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">05</span>Problem &amp; Background<span class="en">課題と背景</span></div>
+        <ul>
+          <li>漁業は盛んだが、Cold chain の問題で国内産業が盛り上がりづらい<span class="note">（根っこは電力不足 → §06）</span></li>
+          <li>供給が追いつかず、外国産に頼っている</li>
+          <li>美味しい海鮮 Restaurant、特に Sushi などがない</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">06</span>Current Problem<span class="en">現状の課題 — なぜ今までできていないのか</span></div>
+        <ul>
+          <li><strong>電力不足 / グリッドの不安定さ</strong>（最有力仮説）
+            <ul>
+              <li>ナイジェリアは慢性的な電力不足・停電が常態。<strong>安定した電気がない＝冷蔵/冷凍が回らない</strong>ため、コールドチェーンが物理的に成立しづらい</li>
+              <li>各事業者はディーゼル発電機に頼らざるを得ず、燃料コストで冷蔵の経済性が壊れる → 「氷で冷やして急いで売る」以上のことができない</li>
+              <li>だからこそ Victory Farms / Yalelo のように<strong>電力に依存しすぎない自前フィジカル網（氷・トラック・拠点倉庫）</strong>を作り切った者だけが勝てる <span class="note">→ カナメの参入余地の核</span></li>
+            </ul>
+          </li>
+          <li><span class="note">他の構造要因（コールドチェーン投資の資本負担、与信・決済、道路インフラ 等）も追記予定</span> <span class="blank">追記</span></li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">07</span>Competitor &amp; Existing Market<span class="en">競合と既存マーケット</span></div>
+        <ul>
+          <li>ほとんどの魚市で魚は腐っており、<strong>管理基準がない</strong></li>
+          <li>血抜きや温度管理が徹底できている Player はごく一部</li>
+          <li>彼らは Price を<strong>6倍</strong>などで売っている</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">08</span>Reference Ecosystem<span class="en">参考になるコールドチェーンエコシステム</span></div>
+        <ul>
+          <li>ナイジェリアより少し先を行く、または Market が似ている国の Ecosystem</li>
+          <li><strong>お手本になる国</strong>
+            <ul>
+              <li><strong>インド</strong> <span class="note">（理由は追記予定）</span> <span class="blank">理由</span></li>
+              <li><strong>インドネシア</strong> <span class="note">（理由は追記予定）</span> <span class="blank">理由</span></li>
+              <li><strong>エジプト</strong> <span class="note">（理由は追記予定）</span> <span class="blank">理由</span></li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">09</span>Reference Company &amp; Strategy<span class="en">参考企業と戦略</span></div>
+        <ul>
+          <li><strong>Captain Fresh（インド）</strong><span class="note"> — comps / 最も近い直接アナログ</span>
+            <ul>
+              <li>新興国（インド）で「<strong>魚・水産の B2B コールドチェーン</strong>」を tech で作った先行例。まさにカナメが狙う "魚ファースト" モデルそのもの</li>
+              <li>漁師・養殖から調達 → 温度管理された流通 → 小売/外食/輸出へ卸す垂直統合。断片的で品質基準のない既存市場をテコにスケール</li>
+              <li>ユニコーン化・海外（輸出）展開まで到達 <span class="note">（規模・調達額は要出典 → Source）</span></li>
+              <li><strong>学ぶ点</strong>：新興国の分断された水産流通で、どう調達網と与信・物流を立ち上げたか（カナメの Step 1→2 の型）</li>
+            </ul>
+          </li>
+          <li><strong>Licious（インド）</strong><span class="note"> — comps / D2C 品質ブランド型</span>
+            <ul>
+              <li>インドの <strong>生鮮肉・シーフードの D2C ブランド</strong>。自社で調達〜加工〜配送のコールドチェーンを保有し、品質を武器に<strong>高価格帯</strong>を確立（カナメの「6倍で売る」プレミアム論と同型）</li>
+              <li>Captain Fresh が B2B流通なのに対し、Licious は <strong>ブランド × 品質 × D2C</strong>。§04 の <strong>Meat 展開</strong>のイメージにも直結</li>
+              <li>ユニコーン化 <span class="note">（規模・調達額は要出典 → Source）</span></li>
+              <li><strong>学ぶ点</strong>：新興国で「安全・美味い生鮮」をどうブランド化し、プレミアム価格を成立させたか</li>
+            </ul>
+          </li>
+          <li><strong>Aruna（インドネシア）</strong><span class="note"> — comps / 群島国の漁師直結型</span>
+            <ul>
+              <li>インドネシアの <strong>水産 B2B プラットフォーム</strong>。小規模漁師をテック（アプリ）で束ね、中間業者を飛ばして加工・輸出・国内流通に直結</li>
+              <li>群島で分断された漁業（＝ナイジェリアの分断市場と近い構造）を、<strong>漁師の組織化 × 集荷ハブ × コールドチェーン</strong>で束ねた新興国事例</li>
+              <li><strong>学ぶ点</strong>：多数の零細漁師をどう囲い込み、集荷・与信・品質基準を現地でどう立ち上げたか（カナメ Step 1 の型）</li>
+            </ul>
+          </li>
+          <li><strong>Victory Farms（ケニア）</strong><span class="note"> — comps / アフリカ×魚×自前フィジカル網（最重要）</span>
+            <ul>
+              <li>魚（<strong>ティラピア</strong>）の会社。アプリなどではなく、<strong>自分たちで氷・Truck・各都市の Storage（倉庫）</strong>を持ち、ケニア中にゴリゴリと <strong>Physical な Cold chain 網</strong>を作った</li>
+              <li>Captain Fresh / Aruna が "tech プラットフォーム型" なのに対し、Victory Farms は <strong>垂直統合 × 自前物流の物量型</strong>。地理（サブサハラ・アフリカ）も魚種も<strong>カナメに最も近い実例</strong></li>
+              <li><strong>学ぶ点</strong>：新興国アフリカで、氷・トラック・倉庫を自前で積み上げてコールドチェーンを"物理で"作り切る現実的な立ち上げ順序（カナメ Step 1→2→3 のリアル版）</li>
+            </ul>
+          </li>
+          <li><strong>Yalelo（ザンビア）</strong><span class="note"> — comps / アフリカ×魚×垂直統合の自前流通（Victory Farms と双璧）</span>
+            <ul>
+              <li>ザンビアの大手アクアカルチャー企業。<strong>ティラピア</strong>の養殖から、自前の物流・小売網でザンビア国内に配る<strong>垂直統合型</strong></li>
+              <li>Victory Farms（ケニア）と同型で、<strong>サブサハラ・アフリカで魚のコールドチェーン／流通を自前で組み上げた実例</strong>。地理・魚種ともにカナメの直接参照先</li>
+              <li><strong>学ぶ点</strong>：養殖（供給の内製）× 自前流通を組み合わせた場合の経済性と、国内小売まで下りていく展開順序</li>
+            </ul>
+          </li>
+          <li><strong>Bidcorp（南アフリカ）</strong>：スケールノウハウを学ぶ</li>
+          <li><strong>日本の Cold chain 企業</strong>：品質管理を学ぶ</li>
+          <li>これら計7社から学び、ナイジェリアを攻略する</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">10</span>Kaname's Business Model<span class="en">事業名「カナメ」の卸のイメージ</span></div>
+        <ul>
+          <li>流通の中で<strong>カナメが最初どこをやるか</strong>を説明</li>
+          <li><span class="step">Step 1</span> — 漁師から直接買取し、自社で徹底保管。現地業者と差別化し、高級レストランや市場への卸ルートを確立</li>
+          <li><span class="step">Step 2</span> — 安定流通後の Milestone として、冷凍倉庫の建設と冷凍物流網の確保</li>
+          <li><span class="step">Step 3</span> — ひたすら在庫、流通量を増やす</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">11</span>Expansion Matrix<span class="en">展開の2軸 — 生鮮食品 × 対象エリア</span></div>
+        <ul>
+          <li>大きく2軸で広げる。<strong>まず「ラゴス × 魚」の1マスを取り切る</strong>のが起点</li>
+          <li><span class="step">縦軸（商品）</span> 魚 → 肉 → 野菜 <span class="note">（→ Medical 品）</span></li>
+          <li><span class="step">横軸（エリア）</span> ラゴス → 国内 第2・3都市 → 近隣国（輸出）</li>
+        </ul>
+        <table class="mx">
+          <thead><tr>
+            <th>生鮮食品 ＼ 対象エリア</th>
+            <th>ラゴス<span class="note"> / Lagos</span></th>
+            <th>国内 第2・3都市<span class="note"> / Kano・Ibadan・Abuja・PH 等</span></th>
+            <th>近隣国<span class="note"> / Ghana 等</span></th>
+          </tr></thead>
+          <tbody>
+            <tr>
+              <td class="hl">魚 / Fish</td>
+              <td class="start">◎ まずはここ<span class="ph">PHASE 1 · START</span></td>
+              <td class="later">エリア拡大<span class="ph">PHASE 2 →</span></td>
+              <td class="later">輸出<span class="ph">PHASE 4 →→</span></td>
+            </tr>
+            <tr>
+              <td class="hl">肉 / Meat</td>
+              <td class="later">商品拡大<span class="ph">PHASE 3 ↓</span></td>
+              <td class="later"><span class="ph">later</span></td>
+              <td class="later"><span class="ph">later</span></td>
+            </tr>
+            <tr>
+              <td class="hl">野菜 / Vegetables</td>
+              <td class="later">商品拡大<span class="ph">PHASE 3+ ↓</span></td>
+              <td class="later"><span class="ph">later</span></td>
+              <td class="later"><span class="ph">later</span></td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="note" style="font-size:12.5px;">＊ まず1マス（ラゴス×魚）で「調達→保管→卸」を回し切る。そこから <strong>横（エリア）</strong> と <strong>縦（商品）</strong> の2方向へ拡張。§10 の Step 1→3 はこの「1マス目」の中身。</p>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">12</span>Mapping Matrix<span class="en">マーケットニーズ × コールドチェーンクオリティ</span></div>
+        <ul>
+          <li>各国を <strong>Cold chain Quality（縦）× Market Need / Size（横）</strong> の2軸でマッピング</li>
+          <li><strong>右下＝「大きい市場 × 低品質」＝ホワイトスペース</strong>。ここに Nigeria が座る（＝Best target）</li>
+        </ul>
+        <div class="qmap-outer">
+          <div class="qmap-ytitle">Cold chain Quality</div>
+          <div class="qmap">
+            <div class="zone-best"></div>
+            <div class="zone-tag">White space ◎</div>
+            <div class="axis-x"></div>
+            <div class="axis-y"></div>
+            <div class="edge hi">High ↑</div>
+            <div class="edge lo">↓ Low</div>
+            <div class="edge sm">← Small</div>
+            <div class="edge big">Big →</div>
+            <div class="pt" style="left:80%;top:17%"><span class="dot"></span><span class="nm">Japan<small>成熟・学ぶ対象</small></span></div>
+            <div class="pt" style="left:57%;top:31%"><span class="dot"></span><span class="nm">South Africa<small>先行事例</small></span></div>
+            <div class="pt" style="left:20%;top:75%"><span class="dot"></span><span class="nm">Ghana / Senegal<small>小規模</small></span></div>
+            <div class="pt best" style="left:77%;top:72%"><span class="dot"></span><span class="nm">Nigeria<small>大・成長 ＝ Best target！</small></span></div>
+          </div>
+          <div class="qmap-xtitle">Market Need / Size</div>
+        </div>
+        <p class="note" style="font-size:12.5px;text-align:center;">＊ 品質が高い国（日本・南ア）は学ぶ対象。品質が低くても市場が小さい国（ガーナ等）は旨みが薄い。<strong>大きく伸びる市場なのに品質が低いマス＝ナイジェリア</strong>が狙い目。</p>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">13</span>TAM / SAM / SOM</div>
+        <ul>
+          <li><span class="blank">Blank</span></li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">14</span>Impact<span class="en">インパクト</span></div>
+        <ul>
+          <li>Domestic な漁業産業が盛り上がる</li>
+          <li>近隣国への Export 国になる</li>
+          <li>外食産業の発展</li>
+          <li>魚以外にも広げ、<strong>国内 Cold chain インフラを拡充</strong>する</li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">15</span>Milestone<span class="en">直近のマイルストーン</span></div>
+        <ul>
+          <li><span class="blank">Blank</span></li>
+        </ul>
+      </div>
+
+      <div class="sec">
+        <div class="sec-h"><span class="sec-num">16</span>Funding Goal<span class="en">調達目標</span></div>
+        <ul>
+          <li><span class="blank">Blank</span></li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ════════════════════ PITCH ════════════════════ -->
+  <div id="tab-pitch" class="tab-content">
+    <div class="placeholder">
+      🖋 <strong>Pitch</strong> — アウトプット用。Raw Contents が固まったらここに清書する。<br>
+      <span class="mono" style="font-size:11px;">(intentionally blank for now)</span>
+    </div>
+  </div>
+
+  <!-- ════════════════════ SOURCE ════════════════════ -->
+  <div id="tab-source" class="tab-content">
+    <p class="lead">Raw Contents の各主張の<strong>根拠データ</strong>を、<strong>根拠月</strong>（出典が出た月 / 調べた月）ごとに置いておく場所。<span class="src todo">TODO</span> は未取得。取得したら出典 URL・数値・日付を埋める。</p>
+
+    <div class="src-month">─── 2026-07（調査開始月）</div>
+    <table class="src-table">
+      <thead><tr><th>データ項目 / 主張（対応セクション）</th><th>出典 / 数値 / URL</th></tr></thead>
+      <tbody>
+        <tr><td class="claim">国内 Seafood 需要の規模 <span class="note">(§03)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">国内水産生産量 & Cold chain ロス率 <span class="note">(§03 / §05)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">水産物の輸入依存度（輸入量 / 金額） <span class="note">(§03)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">国内で人気の魚種 <span class="note">(§03)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">Wealthy class / 中間層の伸び <span class="note">(§03)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">ナイジェリアの電力不足・停電の実態（電化率 / 発電容量 / 停電頻度 / ディーゼル依存） <span class="note">(§06 / §05・背景の核)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">「なぜ今までできなかったか」その他の構造要因（資本・与信・道路） <span class="note">(§06)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">既存 Player の価格プレミアム（6倍の根拠） <span class="note">(§07)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">Captain Fresh（印）事業規模・調達額・輸出展開 <span class="note">(§09 / comps)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">Licious（印）事業規模・調達額・価格プレミアム <span class="note">(§09 / comps)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">Aruna（尼）事業規模・調達額・漁師組織化数 <span class="note">(§09 / comps)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">Victory Farms（ケニア）生産量・拠点数・調達額 <span class="note">(§09 / comps)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">Yalelo（ザンビア）生産量・拠点数・調達額 <span class="note">(§09 / comps)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">Bidcorp（南ア）事業規模・戦略 <span class="note">(§09)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">参考 Ecosystem（類似国）の事例 <span class="note">(§08)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+        <tr><td class="claim">TAM / SAM / SOM の算定根拠 <span class="note">(§13)</span></td><td class="src"><span class="src todo">TODO</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <div class="clabel">運用メモ</div>
+      新しい根拠を取得したら、その月の見出し（例 <span class="mono">─── 2026-08</span>）を追加し、そこに行を足していく。数字は必ず出典 URL と発表年月をセットで残す（ピッチで「いつ時点の数字か」を言えるように）。
+    </div>
+  </div>
+
+  <div class="footnote mono">source: user pitch outline (Kaname / cold chain Nigeria) · scaffold created 260704 · Pitch & Source data pending</div>
+</div>
+
+<script>
+// ── Tab switching ──
+document.querySelectorAll('.tab-button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.tab-button').forEach(b => b.classList.toggle('active', b === btn));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-' + target));
+    window.scrollTo({top: 0, behavior: 'instant'});
+    buildTOC();
+  });
+});
+
+// ── Dynamic TOC ──
+function buildTOC() {
+  const tocLinks = document.getElementById('toc-links');
+  if (!tocLinks) return;
+  tocLinks.innerHTML = '';
+  const activeTab = document.querySelector('.tab-content.active');
+  if (!activeTab) return;
+  const headers = activeTab.querySelectorAll('.sec-h, h2, h3');
+  headers.forEach((h, i) => {
+    if (!h.id) h.id = 'sec-' + activeTab.id + '-' + i;
+    const a = document.createElement('a');
+    a.href = '#' + h.id;
+    a.textContent = h.textContent;
+    a.className = 'lvl-' + (h.tagName.toLowerCase() === 'h3' ? 'h3' : 'h2');
+    a.dataset.targetId = h.id;
+    a.addEventListener('click', e => { e.preventDefault(); document.getElementById(h.id).scrollIntoView({behavior:'smooth', block:'start'}); });
+    tocLinks.appendChild(a);
+  });
+  observeSections();
+}
+let observer;
+function observeSections() {
+  if (observer) observer.disconnect();
+  const activeTab = document.querySelector('.tab-content.active');
+  if (!activeTab) return;
+  const headers = activeTab.querySelectorAll('.sec-h, h2, h3');
+  observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+      const link = document.querySelector('.toc a[data-target-id="' + entry.target.id + '"]');
+      if (!link) return;
+      if (entry.isIntersecting) {
+        document.querySelectorAll('.toc a').forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px', threshold: 0 });
+  headers.forEach(h => observer.observe(h));
+}
+buildTOC();
+</script>
+</body>
+</html>
