@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dwarkesh × Jensen Huang — NVIDIA CEO インタビュー</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:       #ffffff;
+      --surface:  #f5f5f5;
+      --surface2: #ebebeb;
+      --accent:   #111111;
+      --accent2:  #444444;
+      --text:     #111111;
+      --muted:    #888888;
+      --border:   #e0e0e0;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: var(--accent);
+      padding: 64px 40px 48px;
+    }
+    .hero-inner { max-width: 900px; margin: 0 auto; }
+    .hero-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 12px;
+    }
+    .hero h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: clamp(26px, 4vw, 44px);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      color: #fff;
+      margin-bottom: 10px;
+    }
+    .hero-sub {
+      font-size: 15px;
+      color: rgba(255,255,255,.6);
+      margin-bottom: 28px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 24px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,.15);
+    }
+    .hero-meta-item .label { font-size: 10px; color: rgba(255,255,255,.4); letter-spacing: 0.12em; text-transform: uppercase; }
+    .hero-meta-item .value { font-size: 13px; font-weight: 600; color: #fff; margin-top: 2px; }
+
+    /* ── TABS ── */
+    .tabs-bar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+    }
+    .tabs-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      gap: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    .tabs-inner::-webkit-scrollbar { display: none; }
+    .tab-btn {
+      flex-shrink: 0;
+      padding: 14px 18px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      white-space: nowrap;
+    }
+    .tab-btn:hover { color: var(--text); }
+    .tab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+
+    /* ── LAYOUT ── */
+    .container { max-width: 900px; margin: 0 auto; padding: 0 40px 80px; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── SECTION HEADER ── */
+    .sec-header {
+      margin-top: 44px;
+      margin-bottom: 24px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sec-label {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 4px;
+    }
+    .sec-header h2 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* ── CHAPTER HEADER (within transcript) ── */
+    .chapter {
+      margin-top: 48px;
+    }
+    .chapter-ts {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .chapter h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--accent);
+      margin-bottom: 24px;
+    }
+
+    /* ── DIALOGUE ── */
+    .dialogue { display: flex; flex-direction: column; gap: 0; }
+    .turn {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 0 20px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .turn:last-child { border-bottom: none; }
+    .speaker {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      padding-top: 3px;
+      line-height: 1.4;
+    }
+    .speaker.guest { color: var(--muted); }
+    .speech {
+      font-size: 14px;
+      line-height: 1.9;
+      color: var(--text);
+    }
+    .speech p + p { margin-top: 10px; }
+
+    /* ── KEY POINTS ── */
+    .kp-section { margin-top: 44px; }
+    .kp-section + .kp-section { margin-top: 36px; }
+    .kp-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      padding-left: 12px;
+      border-left: 3px solid var(--accent);
+    }
+    .kp-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .kp-list li {
+      font-size: 14px;
+      line-height: 1.8;
+      padding: 10px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .kp-list li strong { font-weight: 700; }
+
+    /* ── GLOSSARY ── */
+    .glossary-section { margin-top: 44px; }
+    .glossary-section + .glossary-section { margin-top: 36px; }
+    .g-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .g-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .g-table th {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-align: left;
+      padding: 8px 12px;
+      border-bottom: 2px solid var(--border);
+      background: var(--surface);
+    }
+    .g-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      line-height: 1.75;
+    }
+    .g-table tr:last-child td { border-bottom: none; }
+    .g-table td:first-child {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 12px;
+      white-space: nowrap;
+      color: var(--accent);
+      width: 160px;
+    }
+
+    /* ── QUOTE BLOCK ── */
+    .quote {
+      margin: 20px 0;
+      padding: 18px 22px;
+      background: var(--surface);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 6px 6px 0;
+      font-size: 14px;
+      line-height: 1.85;
+      font-style: italic;
+      color: var(--accent2);
+    }
+
+    /* ── CHIP TAGS ── */
+    .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+    .tag {
+      font-family: 'Poppins', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent2);
+    }
+
+    @media (max-width: 640px) {
+      .hero { padding: 40px 20px 32px; }
+      .tabs-bar { padding: 0 16px; }
+      .container { padding: 0 20px 60px; }
+      .turn { grid-template-columns: 1fr; gap: 4px; }
+      .speaker { font-size: 10px; }
+      .g-table td:first-child { width: 120px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-label">Dwarkesh Podcast × Research</div>
+    <h1>Jensen Huang<br>NVIDIA CEO インタビュー</h1>
+    <div class="hero-sub">サプライチェーン・TPU競争・ハイパースケーラー戦略・中国輸出規制</div>
+    <div class="tags">
+      <span class="tag">NVIDIA</span>
+      <span class="tag">AI Infrastructure</span>
+      <span class="tag">Supply Chain</span>
+      <span class="tag">China Policy</span>
+      <span class="tag">CUDA</span>
+      <span class="tag">Semiconductor</span>
+    </div>
+    <div class="hero-meta" style="margin-top:24px;">
+      <div class="hero-meta-item"><div class="label">収録日</div><div class="value">2026-04-15</div></div>
+      <div class="hero-meta-item"><div class="label">収録時間</div><div class="value">152分</div></div>
+      <div class="hero-meta-item"><div class="label">インタビュアー</div><div class="value">Dwarkesh Patel</div></div>
+      <div class="hero-meta-item"><div class="label">ゲスト</div><div class="value">Jensen Huang (NVIDIA CEO)</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS BAR -->
+<div class="tabs-bar">
+  <div class="tabs-inner">
+    <button class="tab-btn active" onclick="switchTab('original')">① 原文（英語）</button>
+    <button class="tab-btn" onclick="switchTab('japanese')">② 日本語訳（全文）</button>
+    <button class="tab-btn" onclick="switchTab('summary')">③ 要点まとめ</button>
+    <button class="tab-btn" onclick="switchTab('glossary')">④ 知識・単語解説</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- ===== TAB 1: ORIGINAL ===== -->
+  <div id="tab-original" class="tab-panel active">
+
+    <div class="chapter" style="margin-top:40px;">
+      <div class="chapter-ts">00:00:00</div>
+      <h3>Is Nvidia's biggest moat its grip on scarce supply chains?</h3>
+      <div class="dialogue">
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">We've seen the valuations of a bunch of software companies crash because people are expecting AI to commoditize software. There's a potentially naive way of thinking about things, which is: look, Nvidia sends a GDS2 file to TSMC. TSMC builds the logic dies, it builds the switches, then it packages them with the HBM that SK Hynix, Micron, and Samsung make. Then it sends it to an ODM in Taiwan where they assemble the racks. Nvidia is fundamentally making software that other people are manufacturing, and if software gets commoditized, does Nvidia get commoditized?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">In the end, something has to transform electrons to tokens. The transformation of electrons to tokens and making those tokens more valuable over time is hard to completely commoditize. The way that you framed the question is my mental model of our company. The input is electrons, the output is tokens. In the middle is Nvidia. Our job is to do as much as necessary and as little as possible to enable that transformation to be done at incredible capabilities. What I mean by "as little as possible," whatever I don't need to do, I partner with somebody and make it part of my ecosystem. AI is a five-layer cake, if you will. We have ecosystems across the entire five layers. We try to do as little as possible, but the part that we have to do, as it turns out, is insanely hard. I don't think that gets commoditized.<br><br>I actually see the opposite of what people see. I think the number of agents is going to grow exponentially, and the number of tool users is going to grow exponentially. Today we're limited by the number of engineers. Tomorrow, those engineers are going to be supported by a bunch of agents. I think tool use is going to cause the software companies to skyrocket.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">In your latest filings, you had almost a $100 billion in purchase commitments with foundries, memory, and packaging. SemiAnalysis has reported that you will have $250 billion of these kinds of purchase commitments. One interpretation is that Nvidia's moat is really that you've locked up many years of these scarce components. Is this really Nvidia's big moat for the next few years?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">It's one of the things that we can do that is hard for someone else to do. We've made enormous commitments upstream. Some of it is explicit. Some of it is implicit. A lot of the investments that are upstream are made by our supply chain because I said to the CEOs, "Let me tell you how big this industry is going to be." As a result of that process of informing, inspiring, and aligning with CEOs upstream, they're willing to make the investments. Nvidia's downstream supply chain and our downstream demand is so large, they're willing to make the investment upstream.<br><br>Regarding the moat: we're able to build for a future. If our next several years are a trillion dollars in scale, we have the supply chain to do it. Nobody is going to build a supply chain for an architecture if the business churns are low. Our ability to sustain the scale is only because our downstream demand is so great.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">For many years now, you guys have been 2x-ing revenue year over year. You're the biggest customer on TSMC's N3 node. AI as a whole this year is going to be sixty percent of N3. It's going to be 86% next year. How do you double if you're the majority? Are we in a regime now where the growth rate in AI compute has to slow because of upstream?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">At some level, the instantaneous demand is greater than the supply. At any instant, we could be limited by the number of plumbers, which actually happens. But that's a good condition. You want an industry where the instantaneous demand is greater than the total supply of the industry.<br><br>For example, notice people aren't talking very much about CoWoS anymore. The reason is because for two years we swarmed the living daylights out of it. Each one of these bottlenecks gets a great deal of attention. Now we're prefetching the bottlenecks years in advance. The investments that we've done with Lumentum, Coherent, and the silicon photonics ecosystem over the last several years really reshaped the supply chain.<br><br>My point is that none of the bottlenecks last longer than a couple of years, two, three years, none of them. Meanwhile, we're improving computing efficiency by 10x, 20x, and in the case of Hopper to Blackwell, 30x to 50x. None of those things worry me. It's the stuff that's downstream from us. Energy policies. You can't create an industry without energy. More chip capacity, that's a 2–3 year problem. More CoWoS capacity, 2–3 year problem.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">What's the hardest bottleneck to scale?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">Plumbers. Plumbers and electricians. This is one of the concerns that I have about the doomers describing the end of work. If we discourage people from being software engineers, we're going to run out of software engineers. The same prediction happened ten years ago — "don't be a radiologist." Guess what we're short of? Radiologists.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <div class="chapter-ts">00:16:25</div>
+      <h3>Will TPUs break Nvidia's hold on AI compute?</h3>
+      <div class="dialogue">
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">If you look at the TPU, arguably two out of the top three models in the world, Claude and Gemini, were trained on TPU. What does that mean for Nvidia going forward?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">We build a very different thing. What Nvidia built is accelerated computing, not a tensor processing unit. Accelerated computing is used for all kinds of things: molecular dynamics, quantum chromodynamics, data processing, fluid dynamics, and particle physics. In addition, we use it for AI. Nvidia has reinvented the way computing is done, moving from general-purpose computing to accelerated computing. Our market reach is far greater than any TPU or ASIC can possibly have.<br><br>Nvidia built CUDA to be a fantastic tensor processing unit as well, but it also handles every life cycle of data processing, computing, AI, and so on. Our market opportunity is just a lot larger, and our reach is a lot greater.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">What is AI? It's just these very predictable matrix multiplies again and again and again. You don't have to give up any die area for warp schedulers or switches between threads and memory banks. The TPU is really optimized for the bulk of this growth in compute. I wonder how you react to that.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">Matrix multiplies are an important part of AI, but they're not the only part. If you want to come up with a new attention mechanism, or invent a whole new type of architecture altogether—like a hybrid SSM—you want an architecture that's generally programmable. The ability to invent new algorithms is really what makes AI advance so quickly.<br><br>The only reason we were able to make Blackwell to Hopper 50x is because CUDA is so flexible. The way we solve that problem is with new models, like MoEs, that are parallelized, disaggregated, and distributed across a computing system. Without the ability to come up with new kernels with CUDA, it's really hard to do.<br><br>We can even offload some of the computation into the fabric itself, like NVLink, or into the network with Spectrum-X. We could affect change across the processors, the system, the fabric, the libraries, and the algorithm simultaneously. Without CUDA to do that, I wouldn't even know where to start.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">60% of your revenue is coming from the big five hyperscalers. These hyperscalers have the resources to write their own kernels. Anthropic and Google are mostly running TPUs and Trainium. OpenAI has Triton. If most of your customers can and do make replacements for CUDA, to what extent is CUDA really the thing that will keep them on Nvidia?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">CUDA is a rich ecosystem. If you want to build on any computer first, building on CUDA first is incredibly smart. We contribute enormously to Triton — the back end of Triton has huge amounts of Nvidia technology.<br><br>The single most important thing for a developer is an install base. Nvidia's CUDA ecosystem is ultimately its great treasure. We have several hundred million GPUs out there now. Every cloud has it. If you're a robotics company, you want that CUDA stack to actually run in the robot itself. We're literally everywhere. The install base means that once you develop the software or the model, it's going to be useful everywhere. That is just incredibly valuable.<br><br>Nvidia's computing stack is the best performance per TCO in the world, bar none. Dylan's InferenceMAX is sitting out there for everybody to use, and not one — TPU won't come, Trainium won't come. I would welcome Trainium to demonstrate their 40% cost advantage that they claim all the time. Nobody wants to show up. MLPerf. It makes absolutely zero sense on first principles.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">If all these things are true on paper, why do Anthropic and Google use TPUs for the majority of their compute?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">Anthropic is a unique instance, not a trend. Without Anthropic, why would there be any TPU growth at all? It's 100% Anthropic. Without Anthropic, why would there be Trainium growth at all? It's 100% Anthropic.<br><br>A long time ago, I didn't deeply internalize how difficult it would be to build a foundation AI lab like OpenAI and Anthropic, and the fact that they needed huge investments from the supplier themselves. Google and AWS put in huge investments in the beginning so that Anthropic, in return, used their compute. That was my miss. But I'm not going to make that same mistake again. I'm delighted to invest in OpenAI and in Anthropic.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <div class="chapter-ts">00:41:06</div>
+      <h3>Why doesn't Nvidia become a hyperscaler?</h3>
+      <div class="dialogue">
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">It's been reported that you've done up to $30 billion in OpenAI and $10 billion in Anthropic. Why doesn't Nvidia become a cloud themselves and rent this compute out? You have all this cash to do it.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">This is a philosophy of the company. We should do as much as needed, as little as possible. The work that we do with building our computing platform — if we don't do it, I genuinely believe it doesn't get done. If we didn't dedicate ourselves to 20 years of CUDA while losing money most of that time — if we didn't do it, nobody else would have done it. We created cuLitho. If we didn't create it, nobody would have.<br><br>However, the world has lots of clouds. If I didn't do it, somebody would show up. So following the philosophy of doing as much as needed but as little as possible — in the case of clouds, if we didn't support CoreWeave to exist, these neoclouds wouldn't exist. We invest in our ecosystem because I want our ecosystem to thrive. I want the planet to be built on AI and to be built on the American tech stack.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">Why do you go out of your way not to pick winners among the AI labs?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">Because it's not our job to, number one. Number two, when Nvidia first started, there were 60 3D graphics companies. We are the only one that survived. Nvidia's graphics architecture was precisely wrong — it was an impossible thing for developers to support. Everybody would have counted us out. And here we are. So I have enough humility to recognize that. Don't pick winners. Either let them all take care of themselves, or take care of all of them.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">Why not just sell to the highest bidder when GPUs are scarce?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">Because it's a bad business practice. You set your price and then people decide to buy it or not. I prefer to be dependable, to be the foundation of the industry. You don't need to second-guess. If I quoted you a price, we quoted you a price. That's it.<br><br>One of the things you can count on with Nvidia: this year Vera Rubin is going to be incredible. Next year, Vera Rubin Ultra will come. The year after that, Feynman will come. Every single year you can count on us. For no other company in history can you possibly say that. You can say that about Nvidia today.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <div class="chapter-ts">00:57:36</div>
+      <h3>Should we be selling AI chips to China?</h3>
+      <div class="dialogue">
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">Anthropic announced Mythos Preview — a model they're not releasing publicly because it found thousands of high-severity zero-day vulnerabilities across every major OS, including one in OpenBSD that had existed for 27 years. If Chinese companies had access to chips to train a similar model and run millions of instances of it, is that a threat to American national security?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">First of all, Mythos was trained on fairly mundane capacity that is abundantly available in China. They manufacture 60% of the world's mainstream chips. They have 50% of the world's AI researchers. They have an abundance of energy, plenty of chips. Considering all the assets they already have — if you're worried about them, what is the best way to create a safe world? Victimizing them, turning them into an enemy, likely isn't the best answer. It is essential that our AI researchers and their AI researchers are actually talking.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">There are estimates that because they're at 7nm — no EUV because of export controls — they have one tenth the flops of the US. American labs can get to Mythos-level capabilities first because they have more compute. Isn't it better that we get there first, prepare our society, before China gets there with less compute?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">We should always be first and we should always have more. But for that outcome to be true, they have to have no compute. The amount of compute they have in China is enormous. AI is a parallel computing problem. Why can't they just put 4x, 10x as many chips together because energy's free? 7nm chips are essentially Hopper. Today's models are largely trained on Hopper generation. So 7nm chips are plenty good. The abundance of energy is their advantage.<br><br>The day that DeepSeek comes out on Huawei first, that is a horrible outcome for our nation.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">But AI is similar to enriched uranium, right? It can have positive uses and negative uses. We still don't want to send enriched uranium to other countries.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">Comparing AI to anything that you just mentioned is lunacy. It's a lousy analogy. It's an illogical analogy.<br><br>The single most important thing to our company is the richness of our ecosystem, which is about developers. 50% of the AI developers are in China. The United States should not give that up.<br><br>We shouldn't concede it. If we lose it, we lose it. But why do we concede it? Nobody is advocating all or nothing. We should always have the best technology here, the first. But we should also try to compete and win around the world. Both things can simultaneously happen. It requires some amount of nuance instead of absolutes.<br><br>The policies you're advocating resulted in the American telecommunications industry being policied out of basically the world, to the point where we don't control our own telecommunications anymore. I don't see that as smart.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <div class="chapter-ts">01:35:06</div>
+      <h3>Why doesn't Nvidia make multiple different chip architectures?</h3>
+      <div class="dialogue">
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">Why doesn't Nvidia run multiple different chip projects at the same time with totally different architectures? Cerebras-style wafer scale, Dojo-style huge package, something without CUDA. You have the resources and engineering talent. Why put all eggs in one basket?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">Oh, we could. It's just that we don't have a better idea. We simulate it all in our simulator — provably worse. So we wouldn't do it.<br><br>We recently added Groq and we're going to fold Groq into our CUDA ecosystem. We're doing that now because the value of tokens has gone up so high that you could have different pricing of tokens. The value of faster response time — even at lower throughput — is now something customers will pay for. We decided to expand the Pareto frontier and create a segment of inference that is faster response time, even though it's lower throughput.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">Final question: suppose the deep learning revolution didn't happen. What would Nvidia be doing?</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">Accelerated computing, the same thing we've been doing all along. The premise of our company is that general purpose computing is good for a lot of things, but for a lot of computation it's not ideal. So we combined a GPU with CUDA to a CPU to accelerate different kernels. As a result, you speed up an application by 100x, 200x.<br><br>Even if AI doesn't exist today, Nvidia would be very, very large. The ability for general purpose computing to continue to scale has largely run its course. The way to do that is through domain-specific acceleration — particle physics, fluids, structured data processing, all kinds of different types of algorithms that benefit from CUDA.<br><br>Because of the advances that we made in computing, we democratized deep learning. We made it possible for any researcher, any scientist, anywhere, any student, to be able to access a PC or a GeForce add-in card and do amazing science. That fundamental promise hasn't changed, not even a little bit.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">Dwarkesh Patel</div>
+          <div class="speech">Jensen, thank you so much.</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">Jensen Huang</div>
+          <div class="speech">You're welcome. I enjoyed it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 2: JAPANESE ===== -->
+  <div id="tab-japanese" class="tab-panel">
+
+    <div class="chapter" style="margin-top:40px;">
+      <div class="chapter-ts">00:00:00</div>
+      <h3>Nvidiaの最大の競争優位性は、希少なサプライチェーンの掌握にあるのか？</h3>
+      <div class="dialogue">
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">多くのソフトウェア企業の評価額が急落しています。AIがソフトウェアをコモディティ化すると見込まれているからです。単純な見方をすれば、こうなります。NvidiaはGDS2ファイルをTSMCに送る。TSMCがロジックダイとスイッチを製造し、SK Hynix・Micron・SamsungのHBMと合わせてパッケージングする。それを台湾のODMに送ってラックに組み上げる。Nvidiaは本質的に、他社が製造するソフトウェアを作っているに過ぎない。ソフトウェアがコモディティ化するなら、Nvidiaもコモディティ化するのではないか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">結局のところ、電子をトークンへと変換するものが必要です。電子をトークンへ変換し、そのトークンの価値を時間とともに高めていく作業は、完全にコモディティ化することは難しい。あなたが質問の枠組みとして示したものは、まさに私自身の会社に対するメンタルモデルと同じです。インプットは電子、アウトプットはトークン。その中間にNvidiaがある。私たちの仕事は、その変換を卓越した能力で実現するために、必要な分だけ関与し、できる限り少なくする、ということです。AIは、いわば5層のケーキです。私たちはその全5層にわたるエコシステムを持っている。できる限り少なく関与しようとしていますが、私たちが担わなければならない部分は、結果的に恐ろしく難しい領域です。そこがコモディティ化するとは思いません。<br><br>私は人々とは逆の方向が見えています。エージェントの数は指数関数的に増え、ツールのユーザー数も指数関数的に増えると思う。今は技術者の数に制限されている。明日には、その技術者たちが多数のエージェントにサポートされるようになる。ツールの使用がソフトウェア企業を急成長させると私は思う。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">最新の開示によると、Nvidiaはファウンドリやメモリ、パッケージングに対してほぼ1000億ドルの購買コミットメントを持っているとのこと。SemiAnalysisは2500億ドルに達するとも報告しています。一つの解釈は、Nvidiaの競争優位性の本質は、何年分もの希少部品を押さえていることにある、というものです。これが今後数年のNvidiaにとっての最大の堀なのでしょうか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">それは、他社には難しい私たちにできることの一つです。上流に対して巨大なコミットメントを行っています。私がそのCEOたちに言ったからです——「この業界がどれだけ大きくなるか話しましょう、なぜそうなるかを説明しましょう」と。情報を伝え、鼓舞し、上流のCEOたちと方向性を合わせるそのプロセスの結果として、彼らは投資に踏み切る意欲を持つのです。なぜなら、私がそのサプライを購入して下流に売り切る能力を持っていることを、彼らが知っているからです。<br><br>あなたが言う「堀」について言えば、私たちは未来のために構築できる。今後数年がトリリオンドル規模になるとすれば、私たちにはそのサプライチェーンがある。アーキテクチャのビジネスチャーンが低ければ、誰もそのためにサプライチェーンを構築しない。私たちがこのスケールを維持できるのは、下流需要がそれほど大きいからです。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">何年もの間、Nvidiaは前年比で収益を2倍にしてきた。NvidiaはTSMCのN3ノードの最大顧客で、N2でも最大クラスです。SemiAnalysisによれば、AI全体が今年はN3の60%を占め、来年は86%になる。大多数を占めているのに、どうやって2倍にするのか。今やAIコンピューティングの成長率は上流の制約から鈍化せざるを得ない局面にあるのか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">ある時点では、瞬間的な需要が世界中のサプライを超えています。どの瞬間も、配管工の数に制限されることがある——実際にそれが起きています。でもそれは良い状態なんですよ。瞬間的な需要が業界の総供給を上回っている業界——これが理想です。<br><br>たとえば、今はCoWoSについてあまり話題に上らなくなっているでしょう。2年間、文字通りあらゆるリソースを投入したからです。各ボトルネックに集中砲火を浴びせ、今では数年先のボトルネックをプリフェッチしている。シリコンフォトニクスエコシステムへの投資がサプライチェーンを大きく再編しました。<br><br>どのボトルネックも2〜3年以上続くものはないということです。一方で私たちはHopperからBlackwellに至って30〜50倍の効率改善をしています。心配なのは私たちの下流にあるもの——エネルギー政策です。チップキャパシティも、CoWoSキャパシティも、2〜3年の問題にすぎません。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">一番難しいボトルネックは配管工です。配管工と電気工。これは、仕事の終わりを語るドゥーマーたちへの懸念のひとつです。「何があっても放射線科医にはなるな」と言われていた。では今何が不足しているか？放射線科医です。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <div class="chapter-ts">00:16:25</div>
+      <h3>TPUはNvidiaのAIコンピューティング支配を崩すか？</h3>
+      <div class="dialogue">
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">TPUを見ると、世界トップ3のモデルのうち2つ——ClaudeとGemini——はTPU上で訓練されています。これはNvidiaの将来にとって何を意味しますか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">私たちは全く異なるものを作っています。Nvidiaが構築したのはアクセラレーテッド・コンピューティングであって、テンソル処理ユニット（TPU）ではありません。分子動力学、量子色力学、データ処理、流体力学、素粒子物理学。そしてAIにも使われる。私たちの市場範囲は、いかなるTPUやASICよりもはるかに広い。NvidiaはCUDAを、素晴らしいテンソル処理ユニットとしても機能するよう構築しましたが、データ処理・コンピューティング・AIのあらゆるライフサイクルにも対応しています。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">AIとは何か——ひたすら予測可能な行列積の繰り返しです。ワープスケジューラやスレッドとメモリバンクの切り替えにダイ面積を割く必要はない。TPUはまさに今オンラインになっているコンピューティングの収益・ユースケース成長の大部分に最適化されている。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">行列積はAIの重要な部分ですが、それだけではありません。新しいアテンション機構を考案したい、ハイブリッドSSMのようなまったく新しいアーキテクチャを発明したいなら——汎用的にプログラム可能なアーキテクチャが必要です。新しいアルゴリズムを発明できることこそが、AIをこれほど速く進歩させている本質です。<br><br>BlackwellがHopperより50倍というのも——Moore's Lawだけでは合理的にそれはできません。MoEのような新しいモデルで、並列化・分解・コンピューティングシステム全体への分散によって実現しています。NVLinkのようなファブリック自体やSpectrum-Xのようなネットワークにも一部の計算をオフロードできる。CUDAなしでは、どこから手を付けたらいいか分からないでしょう。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">収益の60%はビッグ5のハイパースケーラーからです。これらのハイパースケーラーは独自のカーネルを書く能力がある。AnthropicやGoogleは主にTPU・Trainiumで動かしています。主要顧客の多くがCUDAの代替を構築できるとしたら、CUDAは本当にフロンティアAIをNvidia上で実現させるものと言えますか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">CUDAは豊かなエコシステムです。どのコンピュータで最初にビルドするにしても、まずCUDA上で構築するのは非常に賢明です。私たちはTritonのバックエンドに膨大なNvidia技術を提供しています。<br><br>開発者にとって最も重要なのはインストールベースです。NvidiaのCUDAエコシステムは、今や数億台のGPUが出回っている。すべてのクラウドに入っています。私たちは文字通りどこにでもいます。<br><br>NvidiaのコンピューティングスタックはTCOあたりパフォーマンスで世界最高です。断言します。DylanのInferenceMAXが公開されているが、TPUもTrainiumも来ない。MLPerfでTrainiumは来ない。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">なぜ紙の上でこれらが正しいなら、AnthropicやGoogleは他のアクセラレータを選ぶのか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">Anthropicは固有の事例であってトレンドではありません。Anthropicなしで、TPUの成長が存在するでしょうか？100%Anthropicによるものです。Trainiumも100%Anthropicです。<br><br>私のミスは、VCがAnthropicになるという期待のもと50〜100億ドルをAIラボに投資することは絶対にないという事実を、深く内在化できていなかったことです。GoogleとAWSは初期段階から巨額投資をした。同じ間違いは二度としません。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <div class="chapter-ts">00:41:06</div>
+      <h3>Nvidiaはなぜハイパースケーラーにならないのか？</h3>
+      <div class="dialogue">
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">なぜNvidiaはクラウド事業者にならないのか？自らハイパースケーラーになって、このコンピュートを貸し出せばいい。資金は持っているのに。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">会社の哲学として——「必要なだけやる、でも最小限で」。コンピューティングプラットフォームの構築は、私たちがやらなければ誰もやらない。20年間赤字を出しながらCUDAに専念した。cuLithoも私たちが作らなければ誰も作らなかった。<br><br>一方で、世界にはクラウドがたくさんある。私がやらなくても、誰かがやります。CoreWeave・Nscale・Nebiusを支えなければ、これらのネオクラウドは生まれなかったでしょう。「必要なだけ、でも最小限で」——エコシステムに投資するのは、エコシステムに繁栄してほしいからです。地球全体がAIの上に構築され、アメリカのテックスタックの上に構築されることを可能にしたい。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">なぜ勝者を選ばないように努めるのですか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">まず第一に、それは私たちの仕事ではないから。第二に、Nvidiaが創業した頃、3Dグラフィックス企業は60社ありました。生き残ったのは私たちだけです。Nvidiaのグラフィックスアーキテクチャは根本的に間違っていた——開発者がサポートしようにもできないアーキテクチャでした。誰もが私たちを除外していたでしょう。それでも、今こうして存在している。だから私は十分な謙虚さを持って認識しています。勝者を選ばない。全員に自立させるか、全員の面倒を見るか。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">なぜ最高値入札方式を採らないのですか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">悪い商慣行だからです。価格を設定して、それを見て買うか買わないか決める。私は業界の基盤でありたい。余計な気を使わせたくない。<br><br>今年Vera Rubinが来る、来年はVera Rubin Ultraが来る、その次はFeynmanが来る——毎年、確実に届けます。世界中でASICチームを選んで「毎年必ず来てくれる、トークンコストは毎年桁違いに下がる」と言えるチームを探してみてください。NvidiaとTSMCについては言えます。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <div class="chapter-ts">00:57:36</div>
+      <h3>AIチップを中国に売るべきか？</h3>
+      <div class="dialogue">
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">AnthropicのMythos Previewは、主要OS全体を横断した数千件の高深刻度のゼロデイ脆弱性を発見しました——OpenBSDに27年間存在したものも含めて。中国がより多くのチップにアクセスできたなら、同様のモデルでアメリカへのサイバー攻撃が可能になるのではないか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">Mythosが訓練に使ったのは、中国にすでに存在する平凡なキャパシティです。中国は主流チップの60%を製造している。世界のAI研究者の50%が中国にいます。豊富なエネルギーがあり、Huaweiは過去最高の年を記録しました。問題は彼らにチップを売るかどうかではなく、いかに安全な世界を作るか——対立的な孤立ではなく、対話を通じて。米国のAI研究者と中国のAI研究者が実際に対話することが不可欠です。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">EUV輸出規制により、中国は米国の10分の1のフロップスしかない。米国のラボが先にMythosレベルの能力に到達し、脆弱性を先にパッチできる。より多くのコンピュートを持つ米国が先行することは安全保障上の利益ではないか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">常に先行すべきで、常により多く持つべきです。でもその結論が成立するには、彼らのコンピュートがゼロでなければならない。AIは並列コンピューティングの問題です。エネルギーがタダ同然なら、7nmチップを4倍・10倍並べればいい。7nmチップは実質的にHopperです。今日のモデルの多くはHopper世代で訓練されています。豊富なエネルギーが彼らの優位性です。<br><br>DeepSeekがHuawei上で最初に登場する日は、我が国にとって最悪の結果です。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">でもAIは濃縮ウランと似ていますよね？正の用途も負の用途もある。われわれは濃縮ウランを他国に送ることはしません。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">AIを濃縮ウランと比較するのは狂気の沙汰です。お粗末なアナロジーです。<br><br>AI開発者の50%が中国にいる。米国はそれを手放すべきではありません。放棄すべきではない。失うかもしれない、でもなぜ自ら譲り渡すのか？米国は常に先行すべきですが、同時に世界規模で競い勝つべきです。この二つは同時に実現できる。絶対論ではなく、ある程度の繊細さと成熟が必要です。<br><br>あなたが主張するような政策の結果、アメリカの通信産業が事実上世界市場から排除されました。賢い選択とは言えなかった。</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chapter">
+      <div class="chapter-ts">01:35:06</div>
+      <h3>NvidiaはなぜMultipleの異なるチップアーキテクチャを作らないのか？</h3>
+      <div class="dialogue">
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">Cerebras流のウェーハスケール、Dojo流の巨大パッケージ、CUDAなしのもの——そういうものを並行して進めるリソースもエンジニアリングの人材もあるはずです。なぜ一つのカゴに全卵を入れるのですか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">やろうと思えばできます。ただ、それより良いアイデアがないだけです。シミュレーターで全部試していて、証明できる形で劣っています。<br><br>最近GroqをCUDAエコシステムに統合しようとしています。トークンの価値が非常に高くなり、レスポンスタイムという軸でPareto frontierを広げ、スループットは低くても応答速度が速い推論セグメントを作ることができる。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">仮にディープラーニング革命が起きなかったとしたら、Nvidiaは何をしていたと思いますか？</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">アクセラレーテッドコンピューティング、ずっとやってきたこととまったく同じです。汎用コンピューティングは多くのことに向いているが、多くの計算処理には最適ではない。私たちはGPUとCUDAというアーキテクチャをCPUと組み合わせることで、CPUのワークロードを加速できるようにした。アプリケーションを100倍、200倍高速化できる。<br><br>仮に今日AIが存在しなくても、Nvidiaは非常に大きな会社になっていたでしょう。汎用コンピューティングがスケールし続ける能力は、ほぼ限界に来ている。私たちがコンピューティングで達成した進歩によって、ディープラーニングを民主化しました。どんな研究者も、どんな学生でも、PCやGeForceのアドインカードにアクセスして素晴らしい科学ができるようにした。その根本的な約束は、今も微塵も変わっていません。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker guest">ドワルケシュ・パテル</div>
+          <div class="speech">ジェンセン、どうもありがとうございました。</div>
+        </div>
+        <div class="turn">
+          <div class="speaker">ジェンセン・フアン</div>
+          <div class="speech">どういたしまして。楽しかったです。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TAB 3: SUMMARY ===== -->
+  <div id="tab-summary" class="tab-panel">
+
+    <div class="kp-section" style="margin-top:40px;">
+      <div class="kp-title">① サプライチェーンの堀（00:00:00）</div>
+      <ul class="kp-list">
+        <li>Nvidiaのビジネスモデルは<strong>「電子をトークンへ変換する中間者」</strong>。インプット＝電子、アウトプット＝トークン</li>
+        <li>購買コミットメント約<strong>1000億〜2500億ドル</strong>で何年分もの希少部品（TSMC N3/N2、HBM、CoWoS）を確保</li>
+        <li>堀の本質は「部品の独占」ではなく、<strong>上流CEOへのビジョン共有と信頼関係</strong>による投資誘発</li>
+        <li>ボトルネック解消の公式：「需要が供給を超えている状態＝業界の良い状態」。どのボトルネックも<strong>2〜3年で解決できる</strong></li>
+        <li>真の長期ボトルネックはチップではなく<strong>エネルギー政策と配管工・電気工</strong>（現場インフラ人材）</li>
+      </ul>
+    </div>
+
+    <div class="kp-section">
+      <div class="kp-title">② TPU競争（00:16:25）</div>
+      <ul class="kp-list">
+        <li>NvidiaはTPUではなく「<strong>アクセラレーテッド・コンピューティング</strong>」——AI以外の分子動力学・流体力学・量子化学にも対応</li>
+        <li>「HopperからBlackwellで50倍」→ Moore's Lawだけでは不可能。<strong>CUDAの柔軟性＋アルゴリズム革新（MoE等）</strong>で実現</li>
+        <li>CUDAの価値＝①エコシステムの豊かさ　②数億台のインストールベース　③全クラウド対応</li>
+        <li><strong>「AnthropicなしにTPU成長はない。TPU成長＝Anthropic一社」</strong> — Anthropicは固有事例でトレンドではない</li>
+        <li>TCO（総所有コスト）あたりパフォーマンスは世界最高。「<strong>MLPerfにTPU・Trainiumは来ない</strong>」と挑発</li>
+      </ul>
+    </div>
+
+    <div class="kp-section">
+      <div class="kp-title">③ ハイパースケーラー戦略（00:41:06）</div>
+      <ul class="kp-list">
+        <li>哲学：<strong>「必要なだけやる、でも最小限で（Do as much as needed, as little as possible）」</strong></li>
+        <li>クラウドは誰かがやる。CUDA・NVLink・cuLithoは<strong>誰もやらない → だから自分たちがやる</strong></li>
+        <li>CoreWeave・Nscale・Nebiusへの投資は「ネオクラウドを育てる最小限の支援」。ファイナンス業には入らない</li>
+        <li><strong>「なぜ勝者を選ばないか」</strong>→ NvidiaもかつてはAGRE（全60社中の一つ）。自社すら生き残れないと予測されていた</li>
+        <li>毎年新アーキテクチャを確実に届ける：<strong>Vera Rubin → Vera Rubin Ultra → Feynman → …</strong></li>
+      </ul>
+    </div>
+
+    <div class="kp-section">
+      <div class="kp-title">④ 中国輸出規制（00:57:36）</div>
+      <ul class="kp-list">
+        <li>Mythosが訓練に使ったコンピュートは<strong>中国にすでに存在する</strong></li>
+        <li>中国のAI開発能力：世界のAI研究者の<strong>50%</strong>、豊富なエネルギー、7nm≒Hopper、Huawei過去最高年</li>
+        <li>「AIをウランと比較するのは<strong>狂気の沙汰</strong>」。解決策は対話であって孤立ではない</li>
+        <li>最大リスク：<strong>「DeepSeekがHuawei上で最初に登場する日が来ること」</strong></li>
+        <li>過去の教訓：通信産業の輸出規制で米国は世界市場を失い、今や自国通信も支配できていない</li>
+        <li><strong>「放棄すべきではない。失うかもしれない、でもなぜ自ら譲り渡すのか？」</strong></li>
+      </ul>
+    </div>
+
+    <div class="kp-section">
+      <div class="kp-title">⑤ チップアーキテクチャ（01:35:06）</div>
+      <ul class="kp-list">
+        <li>複数アーキテクチャを試さない理由：<strong>シミュレーターで全て試済み。証明できる形で劣る</strong></li>
+        <li>Groqを取り込んでCUDAエコシステムへ統合中。理由は「<strong>プレミアムトークン市場の出現</strong>」</li>
+        <li>Pareto frontierの拡張：<strong>高スループット（従来）↔ 高レスポンス・低スループット（新市場）</strong></li>
+        <li>AIがなかったとしても：分子動力学・地震探査・流体力学でNvidiaは巨大企業になっていた</li>
+        <li><strong>「ディープラーニングを民主化した」</strong>：GeForce一枚で誰でもどこでも研究できる状態を作った</li>
+      </ul>
+    </div>
+
+    <div class="sec-header" style="margin-top:56px;">
+      <div class="sec-label">Key Quote</div>
+      <h2>印象的な発言</h2>
+    </div>
+
+    <div class="quote">"The input is electrons, the output is tokens. In the middle is Nvidia."<br><span style="font-style:normal; font-size:13px; color:var(--muted);">— ジェンセン・フアン</span></div>
+    <div class="quote">"Do as much as needed, as little as possible."<br><span style="font-style:normal; font-size:13px; color:var(--muted);">— ジェンセン・フアン（Nvidiaの哲学）</span></div>
+    <div class="quote">"Anthropic is a unique instance, not a trend."<br><span style="font-style:normal; font-size:13px; color:var(--muted);">— ジェンセン・フアン（TPUの成長はAnthropicによるもの）</span></div>
+    <div class="quote">"The day that DeepSeek comes out on Huawei first, that is a horrible outcome for our nation."<br><span style="font-style:normal; font-size:13px; color:var(--muted);">— ジェンセン・フアン（中国政策の核心）</span></div>
+    <div class="quote">"We shouldn't concede it. If we lose it, we lose it. But why do we concede it?"<br><span style="font-style:normal; font-size:13px; color:var(--muted);">— ジェンセン・フアン（中国市場の放棄への反論）</span></div>
+  </div>
+
+  <!-- ===== TAB 4: GLOSSARY ===== -->
+  <div id="tab-glossary" class="tab-panel">
+
+    <div class="glossary-section" style="margin-top:40px;">
+      <div class="g-title">半導体・製造</div>
+      <table class="g-table">
+        <thead><tr><th>用語</th><th>解説</th></tr></thead>
+        <tbody>
+          <tr><td>GDS2ファイル</td><td>半導体チップの物理的なレイアウト設計データ（Graphic Design System 2）。NvidiaがTSMCに送る製造指示書に相当</td></tr>
+          <tr><td>TSMC</td><td>台湾積体電路製造。世界最大のファウンドリ（半導体受託製造）企業。N3（3nm）・N2（2nm）が最先端ノード</td></tr>
+          <tr><td>N3 / N2 / N7</td><td>TSMCのプロセスノード（製造世代）。数字が小さいほど最先端。N7＝7nm（旧世代）、N3＝3nm（現行最先端）。Nvidiaは現在N3の60%超を占める</td></tr>
+          <tr><td>EUV（極端紫外線）</td><td>最先端半導体製造に必要な露光技術。ASML（オランダ）のみが製造。中国はEUV装置の輸出規制により入手不可 → 7nm止まり</td></tr>
+          <tr><td>ASML</td><td>EUV露光装置の世界唯一のメーカー（オランダ）。半導体製造の最重要サプライヤー</td></tr>
+          <tr><td>HBM</td><td>High Bandwidth Memory。AIチップのトレーニング・推論に必要な超高速メモリ。SK Hynix・Micron・Samsungが製造</td></tr>
+          <tr><td>CoWoS</td><td>Chip on Wafer on Substrate。TSMCの先進パッケージング技術。NvidiaのGPU+HBMをロジックダイ上で超高密度に接続</td></tr>
+          <tr><td>ODM</td><td>受託製造業者（Original Design Manufacturer）。台湾のHon Hai等がNvidiaのサーバーラック組み立てを担当</td></tr>
+          <tr><td>SMIC</td><td>中国最大のファウンドリ。EUV装置なしで7nmの量産に成功したとされる</td></tr>
+          <tr><td>Huawei 910C（昇騰910C）</td><td>HuaweiのAI向けアクセラレータ。H200と比べると性能は半分〜3分の1程度とされる</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="glossary-section">
+      <div class="g-title">NvidiaのGPUアーキテクチャ世代</div>
+      <table class="g-table">
+        <thead><tr><th>世代名</th><th>特徴</th></tr></thead>
+        <tbody>
+          <tr><td>Hopper（H100/H200）</td><td>2022年〜。現在も多くのデータセンターで主力。7nm相当。今日のモデルの多くはHopper世代で訓練</td></tr>
+          <tr><td>Blackwell（B100/B200）</td><td>2024〜2025年。Hopperより30〜50倍のエネルギー効率。NVL72構成が主力</td></tr>
+          <tr><td>Vera Rubin</td><td>2026年予定の次世代アーキテクチャ</td></tr>
+          <tr><td>Vera Rubin Ultra</td><td>2027年予定</td></tr>
+          <tr><td>Feynman</td><td>2028年予定</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="glossary-section">
+      <div class="g-title">ソフトウェア・エコシステム</div>
+      <table class="g-table">
+        <thead><tr><th>用語</th><th>解説</th></tr></thead>
+        <tbody>
+          <tr><td>CUDA</td><td>NvidiaのGPU向けプログラミングプラットフォーム。2006年から20年間開発。現在は数億台のGPUにインストール済み</td></tr>
+          <tr><td>CUDA-X ライブラリ</td><td>CUDA上に構築されたドメイン固有ライブラリ群。cuDNN（深層学習）、cuBLAS（線形代数）、NCCL（集合通信）等</td></tr>
+          <tr><td>cuLitho</td><td>TSMC向けの計算リソグラフィー加速ライブラリ。Nvidiaが開発し、業界にオープン化。「誰もやらないから自分たちでやった」の典型例</td></tr>
+          <tr><td>NVLink</td><td>Nvidia独自のGPU間高速インターコネクト。PCIeより大幅に高速。NVL72は72基のBlackwellをNVLink接続した構成</td></tr>
+          <tr><td>Spectrum-X</td><td>NvidiaのAIネットワーキングプラットフォーム。イーサネットベースでAIクラスター内の通信を最適化</td></tr>
+          <tr><td>Triton</td><td>OpenAIが開発したGPUカーネル向けプログラミング言語。NvidiaはTritonのバックエンドに大きく貢献</td></tr>
+          <tr><td>vLLM / SGLang</td><td>LLM推論の高速化ライブラリ。Nvidia GPU上での推論最適化のデファクトスタンダード</td></tr>
+          <tr><td>verl / NeMo RL</td><td>強化学習（RLHF等）向けフレームワーク。ポストトレーニング市場の急拡大に対応</td></tr>
+          <tr><td>InferenceMAX</td><td>Dylan Patel（SemiAnalysis）が公開した推論コストベンチマーク。「TPUもTrainiumも参加しない」とJensenが挑発</td></tr>
+          <tr><td>MLPerf</td><td>ML業界のベンチマーク標準。NvidiaはMLPerfで一貫してトップ。TrainiumはMLPerfに出てこない</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="glossary-section">
+      <div class="g-title">アーキテクチャ概念</div>
+      <table class="g-table">
+        <thead><tr><th>用語</th><th>解説</th></tr></thead>
+        <tbody>
+          <tr><td>TPU（Tensor Processing Unit）</td><td>GoogleのAI専用チップ（ASIC）。行列積演算（シストリックアレイ）に特化。ClaudeとGeminiはTPUで訓練</td></tr>
+          <tr><td>Trainium</td><td>AWSのAI訓練向けASIC。AnthropicはAWSからの巨額投資の見返りとしてTrainiumを使用</td></tr>
+          <tr><td>ASIC</td><td>Application Specific Integrated Circuit（特定用途向け集積回路）。TPU・TrainiumはASICの一種。Nvidiaの汎用GPUと対比される</td></tr>
+          <tr><td>シストリックアレイ</td><td>行列積演算に最適化されたハードウェア構造。データが規則的に流れる（血液循環のような動き）ためこの名前。TPUの中核技術</td></tr>
+          <tr><td>MoE（Mixture of Experts）</td><td>モデルアーキテクチャの一種。全パラメータを一度に使わず、入力に応じて一部の「専門家」モデルを活性化。GPT-4・Gemini等が採用</td></tr>
+          <tr><td>SSM（State Space Model）</td><td>Transformerの代替アーキテクチャ候補。Mamba等が代表例。アテンション機構を使わずシーケンスを状態空間として処理</td></tr>
+          <tr><td>TCO（Total Cost of Ownership）</td><td>総所有コスト。購入価格だけでなく電力・冷却・人件費・保守費を含む長期コスト。AI業界では「ドルあたりトークン数」が主要指標</td></tr>
+          <tr><td>Moore's Law</td><td>「半導体のトランジスタ数は約2年で2倍になる」という法則。現在は年率25%程度の性能向上に鈍化。Jensenは「だからCUDAによるアルゴリズム改善で10〜100倍の飛躍が必要」と主張</td></tr>
+          <tr><td>Pareto Frontier</td><td>「一方を改善すれば他方が悪化する」限界の集合。ここでは「高スループット低レスポンス」vs「低スループット高レスポンス」のトレードオフ</td></tr>
+          <tr><td>ASP（Average Selling Price）</td><td>平均販売価格。プレミアムトークン市場では低スループットでも高ASPで収益を出せる</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="glossary-section">
+      <div class="g-title">企業・人物</div>
+      <table class="g-table">
+        <thead><tr><th>名称</th><th>解説</th></tr></thead>
+        <tbody>
+          <tr><td>Dwarkesh Patel</td><td>「Dwarkesh Podcast」の司会者。AI・科学・歴史のロングフォームインタビューで知られる。全文書き起こしをdwarkesh.comで公開</td></tr>
+          <tr><td>Dylan Patel</td><td>SemiAnalysis創設者。半導体サプライチェーン分析の第一人者。InferenceMAXの作者。Blackwellの「50倍性能」を独自検証した人物</td></tr>
+          <tr><td>SemiAnalysis</td><td>半導体・AI業界の調査・分析会社。TSMCのキャパシティ配分等の独自分析で業界に影響力を持つ</td></tr>
+          <tr><td>CoreWeave</td><td>Nvidia投資先のネオクラウド（AI特化クラウド）。Nvidiaが63億ドルのバックストップと20億ドルの投資。2025年にIPO</td></tr>
+          <tr><td>Crusoe / Nscale / Nebius</td><td>Nvidiaが支援するネオクラウド企業群。「私たちが支えなければ存在しなかった」とJensenが言及</td></tr>
+          <tr><td>GTC（GPU Technology Conference）</td><td>Nvidiaの年次技術カンファレンス。AIサプライチェーン全体が一堂に会する場。Jensenはここをエコシステム教育の場として活用</td></tr>
+          <tr><td>Cerebras</td><td>ウェーハ全体を一枚のチップとして使う「ウェーハスケール」AI専用チップを製造するスタートアップ</td></tr>
+          <tr><td>Groq</td><td>超高速推論に特化したASIC「LPU」を持つスタートアップ。Nvidiaが最近CUDAエコシステムへの統合を発表</td></tr>
+          <tr><td>DeepSeek</td><td>中国のAI企業。非常に効率的なオープンソースモデル（DeepSeek-R1等）でAI業界に衝撃を与えた。「少ないコンピュートで高性能」の象徴</td></tr>
+          <tr><td>Anthropic Mythos</td><td>Anthropicが開発したAIモデル（インタビュー当時未公開）。主要OS全体のゼロデイ脆弱性を大量発見できる能力を持つとされ、安全上の理由から非公開</td></tr>
+          <tr><td>OpenBSD</td><td>セキュリティを最優先設計とするUNIX系OS。「ゼロデイ脆弱性がない」とされていたが、Mythosが27年間未発見だった脆弱性を発見したとされる</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="glossary-section">
+      <div class="g-title">ビジネス・経済概念</div>
+      <table class="g-table">
+        <thead><tr><th>用語</th><th>解説</th></tr></thead>
+        <tbody>
+          <tr><td>ハイパースケーラー</td><td>超大規模クラウドプロバイダー。Google・Amazon（AWS）・Microsoft（Azure）・Meta・Oracleの5社がビッグ5。NvidiaはこれらをGPUの主要顧客として持つ</td></tr>
+          <tr><td>ネオクラウド（Neocloud）</td><td>AI専用の新世代クラウドプロバイダー（CoreWeave・Crusoe・Lambda等）。Nvidiaが意図的に育成した存在</td></tr>
+          <tr><td>CapEx / OpEx</td><td>資本支出（Capital Expenditure）／運営費（Operating Expenditure）。ハイパースケーラーがGPUを購入するのはCapEx。ラボがレンタルするのはOpEx化</td></tr>
+          <tr><td>PO（Purchase Order）</td><td>発注書。Nvidiaはどんな大物でもPOがなければ優先しない。「先着順が基本」</td></tr>
+          <tr><td>フライホイール効果</td><td>①豊富なインストールベース→②開発者が集まる→③エコシステムが豊かになる→④さらにインストールベースが広がる、という正のフィードバックループ</td></tr>
+          <tr><td>コモディティ化</td><td>製品・サービスが差別化できなくなり価格競争になること。Jensenは「トークン生成はコモディティ化しない」と主張</td></tr>
+          <tr><td>ゼロデイ脆弱性（Zero-day）</td><td>開発者が把握していないソフトウェアの脆弱性。発見後すぐに悪用可能なため「ゼロデイ（対処時間ゼロ）」と呼ぶ。Mythos議論の中核</td></tr>
+          <tr><td>チャーン（Churn）</td><td>ビジネスの回転率・循環率。「サプライチェーンにはキャッシュフローのようにチャーンがある——回転率が低ければ誰もサプライチェーンを構築しない」</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div><!-- /tab-glossary -->
+
+</div><!-- /container -->
+
+<script>
+  function switchTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.currentTarget.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
