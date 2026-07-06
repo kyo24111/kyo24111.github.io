@@ -47,6 +47,7 @@ Dwarkesh系ファイルは5セクション構成：原文（verbatim）／英語
 
 | ファイル | 種別 | 題名 | 公開日 | 依頼日 |
 |--------|------|------|--------|--------|
+| [260706_pivot_semiconductor_industry_map.html](260706_pivot_semiconductor_industry_map.html) | YouTube | 半導体産業の業界研究（インダストリーマップ2026・PIVOT CAREER） | 2026-07-04 | 2026-07-06 |
 | [260705_pivot_sovereign_ai_1tn.html](260705_pivot_sovereign_ai_1tn.html) | YouTube | 日の丸AIに1兆円 — 国産AIは本当に可能か（PIVOT） | 2026-07-02 | 2026-07-05 |
 | [260705_pivot_us_china_ai_energy.html](260705_pivot_us_china_ai_energy.html) | YouTube | 米中AI競争 主戦場は電力・エネルギーへ（PIVOT） | 2026-06-30 | 2026-07-05 |
 | [260602_patrick_collison_reading.html](260602_patrick_collison_reading.html) | YouTube | Patrick Collison — 読書論 | 2018-05 | 2026-06-02 |
