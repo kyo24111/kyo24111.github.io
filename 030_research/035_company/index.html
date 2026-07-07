@@ -175,11 +175,19 @@
     .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); }
     table.co { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
     table.co col.c-w-name { width: 13%; }
-    table.co col.c-w-hq   { width: 14%; }
-    table.co col.c-w-ceo  { width: 14%; }
-    table.co col.c-w-ppl  { width: 33%; }
-    table.co col.c-w-rev  { width: 14%; }
+    table.co col.c-w-hq   { width: 13%; }
+    table.co col.c-w-ceo  { width: 13%; }
+    table.co col.c-w-ppl  { width: 29%; }
+    table.co col.c-w-rev  { width: 13%; }
     table.co col.c-w-ind  { width: 12%; }
+    table.co col.c-w-read { width: 7%; }
+    /* read/unread tracking */
+    table.co th.th-read { text-align: center; }
+    table.co td.c-read { text-align: center; vertical-align: middle; }
+    .readck { width: 15px; height: 15px; cursor: pointer; accent-color: #111; margin: 0; }
+    table.co tbody tr.is-read { opacity: .4; }
+    table.co tbody tr.is-read:hover { opacity: .8; }
+    table.co tbody tr.is-read td.c-name a { text-decoration: line-through; text-decoration-color: var(--dim); }
     table.co thead th {
       background: #111;
       color: #fff;
@@ -301,12 +309,13 @@
   <section class="panel active" id="panel-all">
     <div class="table-tools">
       <input type="text" class="table-search" id="tblSearch" placeholder="検索（企業名・人物・業種…）" oninput="filterTable()">
-      <span class="table-hint">列見出しをクリックで並び替え</span>
+      <span class="table-hint">列見出しをクリックで並び替え・✓は読了記録（この端末に保存）</span>
+      <span class="table-hint" id="readCounter" style="margin-left:auto;font-weight:600;color:var(--muted)"></span>
     </div>
     <div class="tbl-wrap">
       <table class="co" id="coTable">
         <colgroup>
-          <col class="c-w-name"><col class="c-w-hq"><col class="c-w-ceo"><col class="c-w-ppl"><col class="c-w-rev"><col class="c-w-ind">
+          <col class="c-w-name"><col class="c-w-hq"><col class="c-w-ceo"><col class="c-w-ppl"><col class="c-w-rev"><col class="c-w-ind"><col class="c-w-read">
         </colgroup>
         <thead>
           <tr>
@@ -316,6 +325,7 @@
             <th data-type="str" onclick="sortTable(3,this)">Key People<span class="arr">↕</span></th>
             <th data-type="num" onclick="sortTable(4,this)">Revenue<span class="arr">↕</span></th>
             <th data-type="str" onclick="sortTable(5,this)">Industry<span class="arr">↕</span></th>
+            <th class="th-read" data-type="num" onclick="sortTable(6,this)" title="読んだらチェック（未読を上に並べ替え可）">✓<span class="arr">↕</span></th>
           </tr>
         </thead>
         <tbody>
@@ -1035,6 +1045,43 @@ function filterTable(){
     r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
   });
 }
+
+/* ---- 読了トラッキング（localStorage・この端末に保存） ---- */
+(function(){
+  const KEY = 'company_read_v1';
+  function load(){ try { return new Set(JSON.parse(localStorage.getItem(KEY)||'[]')); } catch(e){ return new Set(); } }
+  function save(set){ try { localStorage.setItem(KEY, JSON.stringify(Array.from(set))); } catch(e){} }
+  const read = load();
+  const rows = Array.from(document.querySelectorAll('#coTable tbody tr'));
+  const total = rows.length;
+  rows.forEach(tr=>{
+    const a = tr.querySelector('.c-name a');
+    const href = a ? a.getAttribute('href') : null;
+    const td = document.createElement('td');
+    td.className = 'c-read';
+    const isRead = href && read.has(href);
+    td.dataset.sort = isRead ? '1' : '0';
+    const ck = document.createElement('input');
+    ck.type = 'checkbox'; ck.className = 'readck'; ck.checked = !!isRead;
+    ck.setAttribute('aria-label','読了');
+    if(isRead) tr.classList.add('is-read');
+    ck.addEventListener('click', e=>e.stopPropagation());
+    ck.addEventListener('change', ()=>{
+      if(!href) return;
+      if(ck.checked){ read.add(href); tr.classList.add('is-read'); td.dataset.sort='1'; }
+      else { read.delete(href); tr.classList.remove('is-read'); td.dataset.sort='0'; }
+      save(read); updateCounter();
+    });
+    td.appendChild(ck);
+    tr.appendChild(td);
+  });
+  function updateCounter(){
+    let c=0; document.querySelectorAll('#coTable tbody tr').forEach(tr=>{ if(tr.classList.contains('is-read')) c++; });
+    const el = document.getElementById('readCounter');
+    if(el) el.textContent = c + ' / ' + total + ' 読了';
+  }
+  updateCounter();
+})();
 </script>
 </body>
 </html>
