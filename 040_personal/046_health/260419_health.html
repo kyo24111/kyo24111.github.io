@@ -699,6 +699,7 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     <button class="range-btn active" onclick="setRange(14)">14D</button>
     <button class="range-btn" onclick="setRange(30)">30D</button>
     <button class="range-btn" onclick="setRange(90)">90D</button>
+    <button class="range-btn" onclick="setRange('7dave')">7D AVE</button>
     <button class="range-btn" onclick="setRange(0)">ALL</button>
   </div>
   <div class="chart-grid">
@@ -1114,8 +1115,8 @@ function getFilteredData(data) {
 
 function setRange(days) {
   currentRange = days;
-  document.querySelectorAll('.range-btn').forEach(b => {
-    const map = { '7D': 7, '14D': 14, '30D': 30, '90D': 90, 'ALL': 0 };
+  document.querySelectorAll('#range-bar .range-btn').forEach(b => {
+    const map = { '7D': 7, '14D': 14, '30D': 30, '90D': 90, '7D AVE': '7dave', 'ALL': 0 };
     b.classList.toggle('active', map[b.textContent] === days);
   });
   renderCharts();
@@ -1405,8 +1406,26 @@ function closeModal() {
 
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 
+// 全データを週ごと(月曜始まり)に平均し、同じ行形状で返す（date=週の月曜）
+function toWeeklySeries(data) {
+  const rows = data.filter(r => r.date);
+  if (!rows.length) return [];
+  const weeks = {};
+  rows.forEach(r => { const wk = mondayOf(r.date); (weeks[wk] = weeks[wk] || []).push(r); });
+  const keys = Object.keys(rows[0]).filter(k => k !== 'date');
+  return Object.keys(weeks).sort().map(wk => {
+    const grp = weeks[wk], o = { date: wk, _n: grp.length };
+    keys.forEach(k => {
+      const vals = grp.map(r => r[k]).filter(x => x !== '' && x != null && !isNaN(+x)).map(Number);
+      o[k] = vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : '';
+    });
+    return o;
+  });
+}
+
 function renderCharts() {
-  const fb = getFilteredData(bodyData);
+  const weekly = currentRange === '7dave';
+  const fb = weekly ? toWeeklySeries(bodyData) : getFilteredData(bodyData);
   const bd = fmtLabels(fb.map(d => d.date));
   const bdc = dowColors(fb.map(d => d.date));
   const wv = fv(fb, 'weight').filter(v => v != null && !isNaN(v));
@@ -1421,7 +1440,7 @@ function renderCharts() {
   mkLine('c-visceral', fv(fb,'visceral_fat'), bd, GOALS.visceral_fat, 5, 10, 'Visceral Fat',  'Target: 6', bdc);
   mkLine('c-water',    fv(fb,'body_water'),   bd, GOALS.body_water,  56, 62, 'Body Water (%)', 'Target: 60.2 %', bdc);
 
-  const fc = getFilteredData(calData);
+  const fc = weekly ? toWeeklySeries(calData) : getFilteredData(calData);
   if (fc.length) {
     const cd = fmtLabels(fc.map(d => d.date));
     const cdc = dowColors(fc.map(d => d.date));
