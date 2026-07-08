@@ -3752,6 +3752,7 @@
       <div class="chapter-meta">
         <div class="chapter-label">Chapter</div>
         <div class="chapter-status">📝 これから学ぶ</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-07-08</div>
       </div>
       <div class="chapter-title"><span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span>（Determinant）</div>
 
@@ -3868,6 +3869,81 @@
         </ul>
         <p style="color:var(--muted);font-size:13px">※ <strong>サラスの公式</strong>（3×3 専用）と <strong>余因子展開</strong>（任意サイズ）は次の2セクションで例題つきで解説。</p>
         </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="det-2x2-why">
+        <h2>なぜ 2×2 の det は ad − bc なのか — 面積で読む</h2>
+
+        <p>前セクションで「2×2 は <code>ad − bc</code>」と天下りに書いたが、これは丸暗記する式ではない。正体は <span class="hl">2本の列ベクトルが張る平行四辺形の符号つき面積</span>。なぜその式になるのかを3つの角度で。</p>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89">
+          <span class="key">出発点：</span>A = <span class="mtx"><table><tr><td>a</td><td>b</td></tr><tr><td>c</td><td>d</td></tr></table></span> は基底を<span class="hl">列</span>に飛ばす変換。<br>
+          ・e₁=(1,0) → 1列目 <span class="key">(a, c)</span>　　・e₂=(0,1) → 2列目 <span class="key">(b, d)</span><br>
+          だから<span class="hl">単位正方形（面積 1）が、この2本 (a,c) と (b,d) が張る平行四辺形に化ける</span>。det ＝ その平行四辺形の符号つき面積、というのが 9-1 の話の具体形。
+        </div>
+
+        <div style="display:flex;justify-content:center;margin:18px 0">
+          <svg viewBox="0 0 220 168" width="300" style="max-width:100%;font-family:'Share Tech Mono',monospace">
+            <!-- axes -->
+            <line x1="24" y1="150" x2="205" y2="150" stroke="#d8dbe0" stroke-width="1"/>
+            <line x1="24" y1="150" x2="24" y2="30" stroke="#d8dbe0" stroke-width="1"/>
+            <!-- unit square -->
+            <path d="M24,150 L60,150 L60,114 L24,114 Z" fill="#9aa1ab" fill-opacity="0.18" stroke="#9aa1ab" stroke-width="1" stroke-dasharray="3 2"/>
+            <!-- parallelogram spanned by columns -->
+            <path d="M24,150 L132,114 L168,42 L60,78 Z" fill="#1d4e89" fill-opacity="0.10" stroke="#1d4e89" stroke-width="1.5"/>
+            <!-- column vectors -->
+            <line x1="24" y1="150" x2="132" y2="114" stroke="#1d4e89" stroke-width="2"/>
+            <line x1="24" y1="150" x2="60" y2="78" stroke="#c0392b" stroke-width="2"/>
+            <circle cx="132" cy="114" r="3" fill="#1d4e89"/>
+            <circle cx="60" cy="78" r="3" fill="#c0392b"/>
+            <text x="138" y="112" font-size="11" fill="#1d4e89">(a, c)</text>
+            <text x="60" y="72" font-size="11" fill="#c0392b">(b, d)</text>
+            <text x="30" y="132" font-size="9" fill="#727a85">単位□</text>
+            <text x="120" y="86" font-size="10" fill="#3c424b">面積 = |ad − bc|</text>
+          </svg>
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">導出① 切り貼り — 外接長方形からまわりを引く</h3>
+
+        <p>平行四辺形を <code>(a+b) × (c+d)</code> の長方形でぴったり囲む。まわりに余る断片（三角形4つ・長方形2つ）を引くと、平行四辺形が残る。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:2">
+          外接長方形 <code>(a+b)(c+d)</code><br>
+          &nbsp;&nbsp;− 三角形2つ（脚 a,c）＝ <code>ac</code>　− 三角形2つ（脚 b,d）＝ <code>bd</code>　− 長方形2つ ＝ <code>2bc</code><br>
+          <span class="key">展開すると：</span> <span class="hl">(ac + ad + bc + bd) − ac − bd − 2bc = ad − bc</span> ✓
+        </div>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13.5px">
+          <span class="key">数値で確認（a=3, b=1, c=1, d=2）：</span>外接長方形 4×3 = 12、引く断片 = ac(3) + bd(2) + 2bc(2) = 7 → 12 − 7 = <span class="hl">5</span>。式 <code>ad − bc = 3·2 − 1·1 = 5</code> と一致。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">導出② 多重線形性 — det の“定義”から自動で出る</h3>
+
+        <p>面積（det）は列について次の3性質だけで決まる：<span class="hl">①各列について線形　②2列を入れ替えると符号が反転（＝同じ列なら 0）　③det(単位) = 1</span>。この3つに列を代入するだけで ad − bc が落ちてくる。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:2">
+          1列目 = <code>a·e₁ + c·e₂</code>、2列目 = <code>b·e₁ + d·e₂</code> を det に入れて展開：<br>
+          det = <code>ab·det(e₁,e₁) + ad·det(e₁,e₂) + cb·det(e₂,e₁) + cd·det(e₂,e₂)</code><br>
+          ここで <code>det(e₁,e₁)=det(e₂,e₂)=0</code>（同じ列＝つぶれて 0）、<code>det(e₁,e₂)=+1</code>、<code>det(e₂,e₁)=−1</code>（入れ替えで符号反転）<br>
+          <span class="key">よって：</span> det = <span class="hl">ad·(+1) + cb·(−1) = ad − bc</span> ✓
+        </div>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700;font-size:13.5px">
+          <span class="key">ここが一番深い「なぜ」：</span>ad − bc は覚える式ではなく、<span class="hl">「面積は各辺について線形」＋「つぶれたら 0」＋「単位は 1」だけ</span>から強制的に出てくる形。3×3 の複雑な式やサラスも、同じ3性質から出る同じ理屈。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">なぜ「＋」でなく「−」なのか</h3>
+
+        <p>マイナスは<span class="hl">向き（符号）</span>の反映。②の「列を入れ替えると符号が反転」があるので、2項は必ず逆符号＝引き算になる。決定的なのは<span class="hl">2列が同じとき</span>：</p>
+
+        <div class="formula" style="font-size:13.5px">
+          (a,c) = (b,d) なら <code>ad − bc = ad − ad = 0</code> ＝ 平行四辺形がつぶれて面積 0 ✓。<br>
+          もし <code>ad + bc</code> だったら、同じ列でも 0 にならず「つぶれ ⇔ 面積0」という肝心の性質が壊れる。だから<span class="hl">引き算でなければならない</span>。
+        </div>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;font-size:13.5px">
+          <span class="key">9-3（det=0）とのつながり：</span><code>ad − bc = 0 ⟺ ad = bc ⟺ 2列が平行</code>（(b,d) が (a,c) の定数倍）<code> ⟺ 平行四辺形がぺしゃんこ ⟺ 空間が潰れる</code>。前セクションの「det=0 ＝ 潰れる」が、2×2 では <code>ad=bc</code> という一目で分かる形になる。
+        </div>
       </div>
 
       <div class="section" id="det-sarrus">
@@ -4102,6 +4178,43 @@
           <span class="key">章のつながり：</span><span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span>（det）と <span class="vt" data-vocab="kernel" data-ja="核">核</span>（Ax = 0 の解空間）が、ここで固有値計算の道具として直接効いてくる。具体的な計算例は今後この章に追加していく。
         </div>
         </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="eig-triangular">
+        <h2>ショートカット — 三角行列の固有値は「対角線の数字」そのまま</h2>
+
+        <p><span class="hl">上三角・下三角（対角も含む）行列は、対角線に並ぶ数字がそっくりそのまま固有値</span>になる。<code>det(A − λI) = 0</code> をわざわざ解く必要がない。試験や暗算で即答できる強力なショートカット。</p>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;font-size:13.5px;line-height:1.95">
+          <span class="key">なぜ成り立つか：</span>A が上三角なら、<code>A − λI</code> も<span class="hl">上三角のまま</span>（対角から λ を引くだけ、下は 0 のまま）。<br>
+          三角行列の det は<span class="hl">対角成分の積</span>（9章）だったので：<br>
+          &nbsp;&nbsp;<code>det(A − λI) = (a₁₁ − λ)(a₂₂ − λ) … (aₙₙ − λ)</code><br>
+          これが 0 になる λ ＝ 各因子を 0 にする値 ＝ <span class="hl">λ = a₁₁, a₂₂, …, aₙₙ（対角成分そのもの）</span>。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例</h3>
+
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td style="font-weight:700;color:#1d4e89">3</td><td>19</td></tr>
+              <tr><td>0</td><td style="font-weight:700;color:#1d4e89">5</td></tr>
+            </table>
+          </div>
+          <span class="op">→</span>
+          <span style="font-size:13px">固有値は?</span>
+        </div>
+
+        <div class="formula" style="font-size:14px;line-height:1.95">
+          左下が 0 ＝ 上三角。対角は <span style="color:#1d4e89;font-weight:700">3</span> と <span style="color:#1d4e89;font-weight:700">5</span> → <span class="hl" style="font-weight:700">λ = 3, 5</span>（即答）。<br>
+          <span class="key">検算：</span><code>det(A − λI) = (3 − λ)(5 − λ) − 19·0 = (3 − λ)(5 − λ) = 0</code> → λ = 3, 5 ✓
+        </div>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13.5px">
+          <span class="key">手触りのポイント：</span>右上の <code>19</code> は<span class="hl">固有値には一切効かない</span>（左下が 0 なので det の掛け算に絡まない）。効くのは対角の 3 と 5 だけ。<br>
+          ※ ただし <span class="hl">19 は固有ベクトルには効く</span> ── 固有値だけの話。固有ベクトルは別途 <code>(A − λI)v = 0</code> を解く。<br>
+          ※ 「対角＝固有値」は<span class="key">三角・対角行列だけの特権</span>。一般の行列では成り立たない（対角の和＝トレース＝固有値の和、という緩い関係しかない）。
+        </div>
       </div>
 
       <div class="section" id="eig-why">
