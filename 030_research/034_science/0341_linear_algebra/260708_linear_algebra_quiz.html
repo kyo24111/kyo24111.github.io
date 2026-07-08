@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>線形代数 確認テスト</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1a1c20; --soft:#3c424b; --muted:#727a85; --faint:#9aa1ab;
+    --line:#e4e6ea; --line2:#eef0f3; --paper:#f7f8f9; --card:#fff;
+    --accent:#c0392b;        /* 解答リビール */
+    --accent-soft:#fff3f1;
+    --hl:#fff3cf; --code:#eef0f3;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:"Noto Sans JP",sans-serif;color:var(--ink);background:var(--paper);
+    line-height:1.8;font-feature-settings:"palt";-webkit-font-smoothing:antialiased}
+  .mono{font-family:"Share Tech Mono",monospace}
+  .wrap{max-width:780px;margin:0 auto;padding:0 22px}
+
+  header{background:var(--card);border-bottom:1px solid var(--line);padding:60px 0 40px}
+  .kick{font-family:"Share Tech Mono",monospace;font-size:12px;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--faint);margin-bottom:18px}
+  h1{font-size:32px;font-weight:700;line-height:1.3;margin-bottom:14px}
+  .lede{color:var(--soft);font-weight:300;font-size:15.5px;max-width:640px}
+  .how{margin-top:22px;background:var(--accent-soft);border:1px solid #f2d8d3;border-radius:9px;
+    padding:13px 18px;font-size:13.5px;color:var(--soft)}
+  .how b{color:var(--accent)}
+
+  /* sticky tab bar (章＝タブ) */
+  .tabbar{position:sticky;top:0;z-index:5;background:rgba(247,248,249,.92);
+    backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 0}
+  .tabbar .wrap{display:flex;gap:7px;overflow-x:auto;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+  .tab{font-family:"Share Tech Mono",monospace;font-size:12px;letter-spacing:.03em;white-space:nowrap;
+    border:1px solid var(--line);background:var(--card);color:var(--muted);
+    padding:7px 13px;border-radius:7px;cursor:pointer;flex:none;transition:.12s}
+  .tab .tno{color:var(--faint);margin-right:6px}
+  .tab:hover{border-color:var(--muted);color:var(--ink)}
+  .tab.active{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+  .tab.active .tno{color:var(--accent)}
+
+  /* panel */
+  .panel{display:none;margin:30px 0}
+  .panel.active{display:block}
+  .panel-head{display:flex;align-items:baseline;gap:11px;margin-bottom:4px;flex-wrap:wrap}
+  .panel-head h2{font-size:22px;font-weight:700}
+  .panel-head .no{font-family:"Share Tech Mono",monospace;font-size:13px;color:var(--accent);
+    border:1px solid #f0cdc7;border-radius:6px;padding:2px 9px}
+  .panel-head .updated{margin-left:auto;font-family:"Share Tech Mono",monospace;
+    font-size:11.5px;color:var(--faint)}
+  .panel .sub{color:var(--muted);font-size:13.5px;margin-bottom:8px}
+  .panel .toolrow{display:flex;gap:9px;align-items:center;margin:12px 0 4px}
+  .btn{font-family:"Share Tech Mono",monospace;font-size:11.5px;letter-spacing:.05em;
+    border:1px solid var(--line);background:var(--card);color:var(--soft);
+    padding:6px 12px;border-radius:7px;cursor:pointer}
+  .btn:hover{border-color:var(--muted);color:var(--ink)}
+  .counts{margin-left:auto;font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--faint)}
+
+  .empty{border:1px dashed var(--line);border-radius:11px;padding:26px 20px;text-align:center;
+    color:var(--faint);font-size:13.5px;background:var(--card)}
+
+  /* problem card */
+  .q{background:var(--card);border:1px solid var(--line);border-radius:11px;
+    padding:18px 20px;margin:13px 0}
+  .q .qhead{display:flex;gap:10px;align-items:baseline;margin-bottom:8px}
+  .q .qno{font-family:"Share Tech Mono",monospace;font-size:12px;color:var(--faint);flex:none;
+    border-bottom:2px solid var(--line);padding-bottom:1px}
+  .q .qbody{font-size:15.5px;color:var(--ink)}
+  .q .qbody p{margin:5px 0}
+
+  details{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+  summary{font-family:"Share Tech Mono",monospace;font-size:12.5px;letter-spacing:.08em;
+    color:var(--accent);cursor:pointer;list-style:none;display:inline-flex;align-items:center;gap:7px;
+    user-select:none}
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"▶";font-size:9px;transition:transform .15s}
+  details[open] summary::before{transform:rotate(90deg)}
+  summary:hover{text-decoration:underline}
+  .ans{margin-top:11px;font-size:14.5px;color:var(--soft)}
+  .ans p{margin:7px 0}
+  .ans .res{background:var(--hl);padding:1px 6px;border-radius:3px;font-weight:500;color:var(--ink)}
+  .ans .step{color:var(--muted);font-size:13.5px}
+  .ans code,.q code{font-family:"Share Tech Mono",monospace;background:var(--code);
+    padding:1px 6px;border-radius:4px;font-size:13px;color:var(--ink)}
+  .ans ul{margin:7px 0 7px 2px;padding-left:20px}
+  .ans li{margin:4px 0}
+
+  /* matrix */
+  .mtx{display:inline-block;position:relative;padding:3px 11px;vertical-align:middle;margin:0 3px}
+  .mtx::before,.mtx::after{content:"";position:absolute;top:0;bottom:0;width:6px;
+    border:1.8px solid var(--soft)}
+  .mtx::before{left:0;border-right:none;border-radius:4px 0 0 4px}
+  .mtx::after{right:0;border-left:none;border-radius:0 4px 4px 0}
+  .mtx table{border-collapse:collapse}
+  .mtx td{font-family:"Share Tech Mono",monospace;font-size:14px;padding:2px 9px;text-align:center;
+    color:var(--ink);min-width:14px}
+  .vec td{padding:2px 6px}
+
+  footer{border-top:1px solid var(--line);background:var(--card);margin-top:50px;padding:30px 0 50px}
+  footer p{font-size:12.5px;color:var(--muted)}
+  footer a{color:var(--accent)}
+  @media(max-width:560px){h1{font-size:25px}.panel-head h2{font-size:19px}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="kick">Linear Algebra · Quiz</div>
+    <h1>線形代数 確認テスト</h1>
+    <p class="lede">章ごとに理解を確認するためのテスト。まず自力で答えを出してから解答を開く。解けなかった章は本編解説に戻る。</p>
+    <div class="how">使い方 — 上の<b>タブで章を切替</b>。各問題の <b>▶ 解答</b> をクリックすると答えが開きます。まず隠したまま解いて、答え合わせに使ってください。</div>
+  </div>
+</header>
+
+<div class="tabbar">
+  <div class="wrap" id="tabbar">
+    <button class="tab active" data-tab="c01"><span class="tno">01</span>次元・サイズ</button>
+    <button class="tab" data-tab="c02"><span class="tno">02</span>行列の型</button>
+    <button class="tab" data-tab="c03"><span class="tno">03</span>行列の積</button>
+    <button class="tab" data-tab="c04"><span class="tno">04</span>可換性</button>
+    <button class="tab" data-tab="c05"><span class="tno">05</span>Span・独立</button>
+    <button class="tab" data-tab="c06"><span class="tno">06</span>Rank</button>
+    <button class="tab" data-tab="c07"><span class="tno">07</span>掃き出し法</button>
+    <button class="tab" data-tab="c08"><span class="tno">08</span>像・核</button>
+    <button class="tab" data-tab="c09"><span class="tno">09</span>行列式</button>
+    <button class="tab" data-tab="c10"><span class="tno">10</span>固有値</button>
+    <button class="tab" data-tab="c11"><span class="tno">11</span>ジョルダン</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============================================================
+       Q 追加テンプレ（章のパネル内 <div class="qlist"> の中に貼る）
+       <div class="q">
+         <div class="qhead"><span class="qno">Q1</span><div class="qbody">
+           <p>ここに問題文。行列は <span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table></span> のように。</p>
+         </div></div>
+         <details><summary>解答・解説</summary><div class="ans">
+           <p>答えは <span class="res">ここ</span>。</p>
+           <p class="step">補足・考え方はこの行で。</p>
+         </div></details>
+       </div>
+       ※ Q を入れたら、その章パネルの .updated を「Last updated: YYYY-MM-DD」に更新する。
+       ============================================================ -->
+
+  <section class="panel active" id="c01">
+    <div class="panel-head"><span class="no">01</span><h2>次元操作・行と列数</h2><span class="updated">Last updated: 2026-07-08</span></div>
+    <p class="sub">列数＝入力の次元、行数＝出力の次元。積は内側一致で定義、外側がサイズ。</p>
+    <div class="toolrow"><button class="btn" data-open="c01">全部開く</button><button class="btn" data-close="c01">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist">
+      <!-- サンプル1問（動作確認用・Qを入れたら削除OK） -->
+      <div class="q">
+        <div class="qhead"><span class="qno">例</span><div class="qbody"><p><span class="mono">3×2</span> 行列は何次元空間から何次元空間への変換か。<span style="color:var(--faint);font-size:12px">（サンプル・削除可）</span></p></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p>列2＝入力、行3＝出力 → <span class="res">R² → R³</span>。</p>
+        </div></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="c02">
+    <div class="panel-head"><span class="no">02</span><h2>さまざまな行列の型</h2><span class="updated">Last updated: —</span></div>
+    <p class="sub">対角・スカラー・単位・三角・置換・ニルポテント・対称を見分ける。</p>
+    <div class="toolrow"><button class="btn" data-open="c02">全部開く</button><button class="btn" data-close="c02">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist"><div class="empty">この章の問題はまだありません。</div></div>
+  </section>
+
+  <section class="panel" id="c03">
+    <div class="panel-head"><span class="no">03</span><h2>行列の積</h2><span class="updated">Last updated: —</span></div>
+    <p class="sub">「左の行 × 右の列」の内積。順番を変えると基本は別物（非可換）。</p>
+    <div class="toolrow"><button class="btn" data-open="c03">全部開く</button><button class="btn" data-close="c03">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist"><div class="empty">この章の問題はまだありません。</div></div>
+  </section>
+
+  <section class="panel" id="c04">
+    <div class="panel-head"><span class="no">04</span><h2>可換性（Commutativity）</h2><span class="updated">Last updated: —</span></div>
+    <p class="sub">両方計算して一致するか。対角同士・単位行列・自分のべき乗は常に可換。</p>
+    <div class="toolrow"><button class="btn" data-open="c04">全部開く</button><button class="btn" data-close="c04">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist"><div class="empty">この章の問題はまだありません。</div></div>
+  </section>
+
+  <section class="panel" id="c05">
+    <div class="panel-head"><span class="no">05</span><h2>Span・一次独立</h2><span class="updated">Last updated: —</span></div>
+    <p class="sub">他のベクトルの足し算・定数倍で作れたら従属。独立な本数＝張る空間の次元。</p>
+    <div class="toolrow"><button class="btn" data-open="c05">全部開く</button><button class="btn" data-close="c05">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist"><div class="empty">この章の問題はまだありません。</div></div>
+  </section>
+
+  <section class="panel" id="c06">
+    <div class="panel-head"><span class="no">06</span><h2>Rank（階数）</h2><span class="updated">Last updated: —</span></div>
+    <p class="sub">独立な行（＝列）の本数。フルランクなら次元が潰れていない。det≠0 とつながる。</p>
+    <div class="toolrow"><button class="btn" data-open="c06">全部開く</button><button class="btn" data-close="c06">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist"><div class="empty">この章の問題はまだありません。</div></div>
+  </section>
+
+  <section class="panel" id="c07">
+    <div class="panel-head"><span class="no">07</span><h2>掃き出し法（Gauss-Jordan）</h2><span class="updated">Last updated: —</span></div>
+    <p class="sub">行基本変形で階段形へ。連立方程式・逆行列・rank・核の計算基盤。</p>
+    <div class="toolrow"><button class="btn" data-open="c07">全部開く</button><button class="btn" data-close="c07">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist"><div class="empty">この章の問題はまだありません。</div></div>
+  </section>
+
+  <section class="panel" id="c08">
+    <div class="panel-head"><span class="no">08</span><h2>像（Image）と核（Kernel）</h2><span class="updated">Last updated: —</span></div>
+    <p class="sub">像＝出力が届く範囲、核＝原点に潰される入力。次元定理でつながる。</p>
+    <div class="toolrow"><button class="btn" data-open="c08">全部開く</button><button class="btn" data-close="c08">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist"><div class="empty">この章の問題はまだありません。</div></div>
+  </section>
+
+  <section class="panel" id="c09">
+    <div class="panel-head"><span class="no">09</span><h2>行列式（Determinant）</h2><span class="updated">Last updated: —</span></div>
+    <p class="sub">正方行列に付く数。体積の拡大率＋向き。det=0 ⟺ 空間が潰れる ⟺ 核≠{0}。</p>
+    <div class="toolrow"><button class="btn" data-open="c09">全部開く</button><button class="btn" data-close="c09">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist"><div class="empty">この章の問題はまだありません。</div></div>
+  </section>
+
+  <section class="panel" id="c10">
+    <div class="panel-head"><span class="no">10</span><h2>固有値・固有ベクトル</h2><span class="updated">Last updated: —</span></div>
+    <p class="sub">① det(A−λE)=0 で λ → ② (A−λE)v=0 の核で v。傾かない軸＝固有ベクトル。</p>
+    <div class="toolrow"><button class="btn" data-open="c10">全部開く</button><button class="btn" data-close="c10">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist"><div class="empty">この章の問題はまだありません。</div></div>
+  </section>
+
+  <section class="panel" id="c11">
+    <div class="panel-head"><span class="no">11</span><h2>ジョルダン標準形</h2><span class="updated">Last updated: —</span></div>
+    <p class="sub">固有ベクトルが足りず対角化できない行列の「妥協形」。λI＋シフト。</p>
+    <div class="toolrow"><button class="btn" data-open="c11">全部開く</button><button class="btn" data-close="c11">全部閉じる</button><span class="counts"></span></div>
+    <div class="qlist"><div class="empty">この章の問題はまだありません。</div></div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>線形代数 確認テスト — 章ごとの理解チェック。本編解説は <a href="260516_linear_algebra.html">260516_linear_algebra.html</a>、計算ドリルは <a href="260630_linear_algebra_exercises.html">260630_linear_algebra_exercises.html</a>。</p>
+    <p style="margin-top:8px;color:var(--faint)">030_research/034_science/0341_linear_algebra/260708_linear_algebra_quiz.html</p>
+  </div>
+</footer>
+
+<script>
+  // タブ切替
+  const tabs=document.querySelectorAll('.tab');
+  const panels=document.querySelectorAll('.panel');
+  tabs.forEach(t=>t.addEventListener('click',()=>{
+    tabs.forEach(x=>x.classList.remove('active'));
+    panels.forEach(p=>p.classList.remove('active'));
+    t.classList.add('active');
+    document.getElementById(t.dataset.tab).classList.add('active');
+  }));
+
+  // 全部開く／閉じる（その章だけ）
+  document.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#'+b.dataset.open+' details').forEach(d=>d.open=true);updateCounts();}));
+  document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#'+b.dataset.close+' details').forEach(d=>d.open=false);updateCounts();}));
+
+  // 章ごとの問題数カウント
+  function updateCounts(){
+    panels.forEach(p=>{
+      const all=p.querySelectorAll('details');
+      const open=p.querySelectorAll('details[open]').length;
+      const c=p.querySelector('.counts');
+      if(c) c.textContent = all.length ? ('問題 '+all.length+' 問 / 開 '+open) : '';
+    });
+  }
+  document.querySelectorAll('details').forEach(d=>d.addEventListener('toggle',updateCounts));
+  updateCounts();
+</script>
+
+</body>
+</html>
