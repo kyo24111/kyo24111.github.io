@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PJ Wonder Capital Gain Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafafa;
+    --paper: #ffffff;
+    --ink: #111111;
+    --ink-soft: #444444;
+    --ink-mute: #888888;
+    --line: #e5e5e5;
+    --line-strong: #cccccc;
+    --highlight: #f4f4f4;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', 'Poppins', sans-serif;
+    font-weight: 400;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1000px; margin: 0 auto; padding: 56px 32px 96px; }
+  .num, .meta, h1 .sub, .ttl-en, .stat .val, .stage-amount {
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+
+  header.doc-head {
+    border-bottom: 1px solid var(--line-strong);
+    padding-bottom: 24px;
+    margin-bottom: 28px;
+  }
+  .eyebrow {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 10px;
+  }
+  h1 { font-size: 30px; font-weight: 700; margin: 0; letter-spacing: 0.02em; }
+  h1 .sub {
+    display: block;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    margin-top: 8px;
+  }
+  .meta { font-size: 12px; color: var(--ink-mute); margin-top: 10px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    gap: 0;
+    margin: 0 0 32px;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .tab-btn {
+    appearance: none; background: none; border: none;
+    padding: 14px 22px;
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color .15s, border-color .15s;
+  }
+  .tab-btn:hover { color: var(--ink-soft); }
+  .tab-btn.active { color: var(--ink); border-bottom-color: var(--ink); font-weight: 600; }
+  .tab-pane { display: none; }
+  .tab-pane.active { display: block; }
+
+  /* Section headings */
+  h2 {
+    font-size: 18px;
+    font-weight: 700;
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
+    letter-spacing: 0.03em;
+  }
+  h2 .ttl-en {
+    font-size: 11px;
+    color: var(--ink-mute);
+    margin-left: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+  h3 { font-size: 14px; font-weight: 600; margin: 28px 0 10px; }
+  p { margin: 0 0 12px; }
+
+  /* Simulator inputs */
+  .sim-inputs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin: 8px 0 28px;
+  }
+  .sim-input {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 18px 20px 20px;
+  }
+  .sim-input label {
+    display: block;
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 12px;
+  }
+  .sim-input-val {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .sim-input-val .v {
+    font-family: 'Poppins', sans-serif;
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    color: var(--ink);
+  }
+  .sim-input-val .u {
+    font-size: 13px;
+    color: var(--ink-mute);
+    font-family: 'Poppins', sans-serif;
+  }
+  .sim-input input[type="range"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--line);
+    outline: none;
+    border-radius: 0;
+    cursor: pointer;
+  }
+  .sim-input input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px; height: 16px;
+    background: var(--ink);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .sim-input input[type="range"]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    background: var(--ink);
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+  }
+  .sim-input .range-bounds {
+    display: flex;
+    justify-content: space-between;
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    color: var(--ink-mute);
+    margin-top: 4px;
+    letter-spacing: 0.04em;
+  }
+
+  /* Advanced details */
+  details.sim-advanced {
+    margin: 0 0 28px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+  }
+  details.sim-advanced > summary {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+    font-size: 11.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    list-style: none;
+  }
+  details.sim-advanced > summary::-webkit-details-marker { display: none; }
+  details.sim-advanced > summary::before { content: "+ "; color: var(--ink-mute); }
+  details.sim-advanced[open] > summary::before { content: "− "; }
+  details.sim-advanced .adv-body {
+    padding: 4px 20px 20px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .adv-input label {
+    display: block;
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.06em;
+    margin-bottom: 6px;
+  }
+  .adv-input input[type="number"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    background: var(--bg);
+  }
+  .adv-input small {
+    display: block;
+    font-size: 10.5px;
+    color: var(--ink-mute);
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+  .preset-row {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .preset-btn {
+    background: none;
+    border: 1px solid var(--line-strong);
+    padding: 6px 12px;
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-soft);
+    cursor: pointer;
+  }
+  .preset-btn:hover { background: var(--highlight); }
+
+  /* Output */
+  .stages {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin: 8px 0 32px;
+  }
+  .stage {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    padding: 22px 22px 18px;
+  }
+  .stage.total { border: 2px solid var(--ink); }
+  .stage-label {
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    margin-bottom: 16px;
+  }
+  .stage.total .stage-label { color: var(--ink); }
+  .stage-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 12.5px;
+  }
+  .stage-row:last-of-type { border-bottom: none; }
+  .stage-row .lbl { color: var(--ink-soft); }
+  .stage-row .amt {
+    font-family: 'Poppins', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .stage-row .amt.sub {
+    font-size: 11px;
+    color: var(--ink-mute);
+    font-weight: 400;
+    margin-left: 6px;
+  }
+  .stage-row.tax .amt { color: var(--ink-soft); }
+  .stage-row.net {
+    margin-top: 8px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line-strong);
+  }
+  .stage-row.net .lbl {
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .stage-row.net .amt {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .stage-row.net .amt.sub { font-size: 12px; }
+
+  /* Bar visualization */
+  .stage-bar-wrap {
+    margin-top: 16px;
+    height: 6px;
+    background: var(--highlight);
+    border: 1px solid var(--line);
+    overflow: hidden;
+    display: flex;
+  }
+  .stage-bar-net { background: var(--ink); }
+  .stage-bar-tax { background: var(--ink-mute); }
+
+  /* Cap table tab */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 20px;
+    font-size: 13.5px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    font-weight: 500;
+    color: var(--ink-soft);
+    background: var(--highlight);
+    border-bottom: 1px solid var(--line-strong);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+  }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: 'Poppins','Noto Sans JP', sans-serif; }
+  tr:last-child td { border-bottom: 1px solid var(--line-strong); }
+  ul, ol { padding-left: 22px; margin: 8px 0 16px; }
+  li { margin: 4px 0; }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin: 16px 0 24px;
+  }
+  .stat {
+    border: 1px solid var(--line);
+    padding: 18px;
+    background: var(--paper);
+  }
+  .stat .lbl {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--ink-mute);
+    margin-bottom: 8px;
+  }
+  .stat .val { font-size: 22px; font-weight: 600; }
+  .stat .ann { font-size: 11px; color: var(--ink-mute); margin-top: 4px; }
+
+  .bar-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 70px;
+    align-items: center;
+    gap: 14px;
+    padding: 6px 0;
+    font-size: 13px;
+  }
+  .bar-track { background: var(--highlight); height: 14px; border: 1px solid var(--line); }
+  .bar-fill { background: var(--ink); height: 100%; }
+  .bar-fill.muted { background: var(--ink-soft); }
+  .bar-fill.light { background: var(--ink-mute); }
+  .bar-row .pct {
+    text-align: right;
+    font-family: 'Poppins', sans-serif;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-soft);
+  }
+
+  .callout {
+    border-left: 3px solid var(--ink);
+    background: var(--paper);
+    padding: 14px 18px;
+    margin: 16px 0 24px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  .callout.warn { border-left-color: var(--ink-soft); background: var(--highlight); color: var(--ink); }
+  .callout strong { color: var(--ink); }
+
+  /* Term link — clickable inline term */
+  .term-link {
+    cursor: pointer;
+    border-bottom: 1px dotted var(--ink-soft);
+    color: var(--ink);
+    padding-bottom: 1px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .term-link::after {
+    content: " ⓘ";
+    font-size: 9px;
+    vertical-align: super;
+    color: var(--ink-mute);
+    margin-left: 1px;
+  }
+  .term-link:hover {
+    background: var(--highlight);
+    border-bottom-color: var(--ink);
+  }
+  .term-link:hover::after { color: var(--ink-soft); }
+
+  /* Terms tab list */
+  .terms-toc {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 8px;
+    margin: 0 0 28px;
+    padding: 16px 18px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+  }
+  .terms-toc a {
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border: 1px solid var(--line);
+    padding: 4px 10px;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  .terms-toc a:hover {
+    background: var(--ink);
+    color: #fff;
+    border-color: var(--ink);
+  }
+
+  .terms-list {
+    margin: 0;
+  }
+  .term-entry {
+    padding: 20px 22px;
+    margin: 0 0 10px;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    scroll-margin-top: 24px;
+    transition: background 0.6s, border-color 0.6s, box-shadow 0.6s;
+  }
+  .term-entry .term-head {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+  .term-entry .term-jp {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+  .term-entry .term-en {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    color: var(--ink-mute);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .term-entry .term-def {
+    font-size: 13.5px;
+    line-height: 1.8;
+    color: var(--ink-soft);
+    margin: 0;
+  }
+  .term-entry .term-context {
+    margin-top: 10px;
+    padding: 10px 12px;
+    background: var(--bg);
+    border-left: 2px solid var(--line-strong);
+    font-size: 12.5px;
+    color: var(--ink-soft);
+  }
+  .term-entry .term-context strong { color: var(--ink); }
+  .term-entry.flash {
+    background: #fffbe6;
+    border-color: #d4b800;
+    box-shadow: 0 0 0 2px rgba(212, 184, 0, 0.18);
+  }
+
+  /* Capital Gain cell modal */
+  .cg-cell {
+    cursor: pointer;
+    transition: background 0.12s;
+  }
+  .cg-cell:hover { background: var(--highlight); }
+  .cg-cell::after {
+    content: " ⓘ";
+    font-size: 9px;
+    color: var(--ink-mute);
+    vertical-align: super;
+    margin-left: 2px;
+    opacity: 0.5;
+  }
+  .cg-cell:hover::after { opacity: 1; }
+
+  .cg-modal-backdrop {
+    position: fixed; inset: 0;
+    background: rgba(17, 17, 17, 0.35);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .cg-modal-backdrop.active { display: flex; }
+  .cg-modal {
+    background: var(--paper);
+    border: 1px solid var(--line-strong);
+    padding: 24px 28px 22px;
+    max-width: 460px;
+    width: 100%;
+    position: relative;
+    font-size: 13px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+  }
+  .cg-modal h4 {
+    margin: 0 0 14px;
+    padding-right: 24px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .cg-modal-close {
+    position: absolute;
+    top: 10px; right: 12px;
+    background: none; border: none;
+    cursor: pointer;
+    font-size: 20px;
+    color: var(--ink-soft);
+    line-height: 1;
+    padding: 4px 8px;
+  }
+  .cg-modal-close:hover { color: var(--ink); }
+  .cg-modal-formula {
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    padding: 14px 16px;
+    border-left: 2px solid var(--ink);
+    line-height: 1.85;
+    font-variant-numeric: tabular-nums;
+    font-size: 13px;
+  }
+  .cg-modal-formula .step { display: block; color: var(--ink-soft); }
+  .cg-modal-formula .step.label {
+    font-size: 11px; letter-spacing: 0.08em; color: var(--ink-mute);
+    text-transform: uppercase; margin-bottom: 4px;
+  }
+  .cg-modal-formula .result {
+    display: block;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line-strong);
+  }
+  .cg-modal-note {
+    margin-top: 12px;
+    font-size: 11px;
+    color: var(--ink-mute);
+    line-height: 1.6;
+  }
+
+  /* Q&A */
+  .qa-entry {
+    border: 1px solid var(--line);
+    background: var(--paper);
+    padding: 22px 24px;
+    margin: 0 0 18px;
+  }
+  .qa-q {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 14px;
+  }
+  .qa-mark {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    color: var(--ink-mute);
+    border: 1px solid var(--line-strong);
+    padding: 3px 8px;
+    flex-shrink: 0;
+  }
+  .qa-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.55;
+  }
+  .qa-a {
+    font-size: 13.5px;
+    color: var(--ink-soft);
+    line-height: 1.85;
+  }
+  .qa-a strong { color: var(--ink); }
+  .qa-a p { margin: 0 0 12px; }
+  .qa-a ul, .qa-a ol { padding-left: 22px; margin: 8px 0 14px; }
+  .qa-a li { margin: 4px 0; }
+
+  footer.doc-foot {
+    margin-top: 80px;
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+    font-size: 11.5px;
+    color: var(--ink-mute);
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+    letter-spacing: 0.04em;
+  }
+
+  @media (max-width: 720px) {
+    .page { padding: 36px 18px 64px; }
+    .sim-inputs { grid-template-columns: 1fr; }
+    .stages { grid-template-columns: 1fr; }
+    details.sim-advanced .adv-body { grid-template-columns: 1fr; }
+    .summary-grid { grid-template-columns: 1fr; }
+    .bar-row { grid-template-columns: 90px 1fr 56px; gap: 10px; }
+    .tabs { overflow-x: auto; }
+    .tab-btn { padding: 12px 14px; font-size: 11px; white-space: nowrap; }
+    h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="doc-head">
+    <div class="eyebrow">PJ Wonder &nbsp;/&nbsp; Stockmark Acquisition</div>
+    <h1>
+      Capital Gain Simulator
+      <span class="sub">2段階売却スキーム下でのKyoの手残りシミュレーション — 2026年4月30日提案ベース</span>
+    </h1>
+    <div class="meta">対象: 株式会社 Wanderlust（WL社）&nbsp;・&nbsp;提案者: ストックマーク株式会社（SM社）&nbsp;・&nbsp;Last updated: 2026-06-01</div>
+    <a href="260709_shareholder_transition.html" style="display:inline-block; margin-top:12px; font-family:'Poppins','Noto Sans JP',sans-serif; font-size:11.5px; letter-spacing:0.06em; color:var(--ink-soft); text-decoration:none; border-bottom:1px solid var(--line-strong); padding-bottom:2px;">関連資料：株主変遷表（Cap Table Evolution）&nbsp;→</a>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="tabs" role="tablist">
+    <button class="tab-btn active" data-tab="pane-sim">Simulator</button>
+    <button class="tab-btn" data-tab="pane-captable">Cap Table</button>
+    <button class="tab-btn" data-tab="pane-ref">Scheme Reference</button>
+    <button class="tab-btn" data-tab="pane-terms">Terms</button>
+    <button class="tab-btn" data-tab="pane-qa">Q&amp;A</button>
+  </nav>
+
+  <!-- ============ Pane 1: Simulator ============ -->
+  <div id="pane-sim" class="tab-pane active" role="tabpanel">
+
+    <p style="font-size:13px; color:var(--ink-soft); margin-top:0;">
+      Kyoの2段階売却で「1段階目／2段階目／合計」の手残りを試算。<strong>J-KISS転換後</strong>の cap table をベースに計算しています（Step 1時点で全J-KISSは転換選択されているため）。
+    </p>
+
+    <div class="callout" style="font-size:12px; margin-bottom:24px;">
+      <strong>計算ベース</strong>: Kyo持株 = <strong>61.40%</strong>（生株75.80% × 0.81） / 経営陣+コア = <strong>15.07%</strong> / VC+J-KISS放出 = <strong>23.54%</strong> / <strong>SM 1段階目取得 = 50.7%（元資料・定数）</strong> / 2段階目 = 100%買い切り（確定）
+    </div>
+
+    <!-- Main inputs -->
+    <div class="sim-inputs">
+      <div class="sim-input">
+        <label>① 1段階目 Valuation</label>
+        <div class="sim-input-val">
+          <span class="v" id="v_val1">10.0</span><span class="u">億円</span>
+        </div>
+        <input type="range" id="in_val1" min="10" max="15" step="0.5" value="10" oninput="window.__simCalc && window.__simCalc()" onchange="window.__simCalc && window.__simCalc()">
+        <div class="range-bounds"><span>10億</span><span>15億</span></div>
+        <small style="display:block; margin-top:8px; font-size:10.5px; color:var(--ink-mute); line-height:1.5;">
+          SM社提案 = 10億（1株¥8,300基準）。<br>
+          交渉次第で最大15億まで動かして手残りを試算。
+        </small>
+      </div>
+      <div class="sim-input">
+        <label>② 2段階目 Valuation</label>
+        <div class="sim-input-val">
+          <span class="v" id="v_val2">18.0</span><span class="u">億円</span>
+        </div>
+        <input type="range" id="in_val2" min="9" max="24" step="0.5" value="18" oninput="window.__simCalc && window.__simCalc()" onchange="window.__simCalc && window.__simCalc()">
+        <div class="range-bounds"><span>9億</span><span>24億</span></div>
+        <div style="margin-top:10px; padding:8px 10px; background:var(--bg); border:1px solid var(--line); font-size:11.5px; color:var(--ink-soft);">
+          → 27/3期 営業利益（=Val/6） <span style="font-family:'Poppins',sans-serif; font-weight:600; color:var(--ink);" id="v_oi">3.0</span> 億円
+        </div>
+        <small style="display:block; margin-top:8px; font-size:10.5px; color:var(--ink-mute); line-height:1.5;">
+          Val = 営業利益 × 6 の倍率前提。<br>
+          想定基準: 営業利益 3億 = Val 18億（リスクケース割らない=確実達成想定）
+        </small>
+      </div>
+      <div class="sim-input">
+        <label>③ Kyo 1段階目 売却分（WL社全体の%）</label>
+        <div class="sim-input-val">
+          <span class="v" id="v_r1">24.70</span><span class="u">% / WL社</span>
+        </div>
+        <input type="range" id="in_r1" min="12.45" max="25.70" step="0.01" value="24.70" oninput="window.__simCalc && window.__simCalc()" onchange="window.__simCalc && window.__simCalc()">
+        <div class="range-bounds"><span id="r1_min_lbl">下限 12.45%</span><span id="r1_max_lbl">上限 25.70%</span></div>
+        <div style="margin-top:10px; padding:10px 12px; background:var(--bg); border:1px solid var(--line); font-size:12px;">
+          <div style="font-size:10.5px; letter-spacing:0.08em; color:var(--ink-mute); margin-bottom:6px; text-transform:uppercase;">1段階目 内部売却 27.16% の分配</div>
+          <div style="display:flex; justify-content:space-between; padding:3px 0;">
+            <span>Kyo</span>
+            <span><strong id="v_kyo_s1_disp" style="font-family:'Poppins',sans-serif;">24.70</strong>% <span style="color:var(--ink-mute); font-size:10px;">変数</span></span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:3px 0;">
+            <span>佐々木</span>
+            <span><strong id="v_sasaki" style="font-family:'Poppins',sans-serif;">1.46</strong>% <span style="color:var(--ink-mute); font-size:10px;">固定・全量</span></span>
+          </div>
+          <div style="display:flex; justify-content:space-between; padding:3px 0; border-top:1px solid var(--line); margin-top:4px; padding-top:6px;">
+            <span>その他（森・飯野・久保田・植山）</span>
+            <span><strong id="v_others" style="font-family:'Poppins',sans-serif;">0.00</strong>% <span style="color:var(--ink-mute); font-size:10px;">残差</span></span>
+          </div>
+        </div>
+        <small style="display:block; margin-top:8px; font-size:10.5px; color:var(--ink-mute); line-height:1.5;">
+          佐々木 1.46% (post-J-KISS) が <strong>固定・全量</strong>。<br>
+          残り 25.70% を Kyo と その他（森・飯野・久保田・植山 計 13.61%）で分担。<br>
+          上限 25.70% = Kyo が全部負担（その他 0%） / 下限 12.09% = その他全 13.61% 売却<br>
+          2段階目: Kyo 残全量 + その他残 → SM完全買い切り
+        </small>
+      </div>
+    </div>
+
+    <!-- Advanced -->
+    <details class="sim-advanced">
+      <summary>Advanced settings — 持株比率 / VC / 税率 / プリセット</summary>
+      <div class="adv-body">
+        <div class="adv-input">
+          <label>Kyo 持株比率（J-KISS転換後）</label>
+          <input type="number" id="in_stake" value="61.40" step="0.01" min="0" max="100">
+          <small>生株75.80% × 0.81（J-KISS 19%希薄化後）= 61.40%。Kyo 1段階目売却の上限になる。</small>
+        </div>
+        <div class="adv-input">
+          <label>VC+J-KISS 1段階目 放出分（%）</label>
+          <input type="number" id="in_vc" value="23.54" step="0.01" min="0" max="100">
+          <small>Deep30 4.46 + Sota 0.08 + ANOBAKA 10 + Skyland 2 + 高木 1 + EV 6 = 23.54% を全量売却の想定（全J-KISSが転換選択）。</small>
+        </div>
+        <div class="adv-input">
+          <label>税率（%）</label>
+          <input type="number" id="in_tax" value="20.315" step="0.1" min="0" max="60">
+          <small>株式譲渡益: 20.315%（所得税15.315 + 住民税5）／ NAM社配当スキーム実効: 約11.7%</small>
+        </div>
+        <div class="preset-row">
+          <button class="preset-btn" data-preset="plain">プリセット: 通常の株式譲渡（20.315%）</button>
+          <button class="preset-btn" data-preset="nam">プリセット: NAM社配当スキーム（11.7%）</button>
+          <button class="preset-btn" data-preset="reset">変数を初期値に戻す</button>
+        </div>
+      </div>
+    </details>
+
+    <div class="callout" id="bound-note" style="font-size:12.5px;">
+      <strong>1段階目</strong>: SM <span class="num" id="b_buyer">50.7</span>% = VC+J-KISS <span class="num" id="b_vc">23.54</span>% + Kyo売却 <span class="num" id="b_min">27.16</span>% (+ 経営陣の差分)　／　<strong>2段階目</strong>: Kyo売却 <span class="num" id="b_max">31.48</span>% (残全量、100%買い切り)
+    </div>
+
+    <!-- Output -->
+    <h2>Kyo 手残り試算 <span class="ttl-en">Stage-by-Stage Output</span></h2>
+
+    <div class="stages">
+      <!-- Stage 1 -->
+      <div class="stage" id="stage1">
+        <div class="stage-label">Stage 1 — 1段階目売却</div>
+        <div class="stage-row"><span class="lbl">売却株数 比率</span><span class="amt" id="s1_pct">36.20%<span class="amt sub">of WL社</span></span></div>
+        <div class="stage-row"><span class="lbl">売却額（FA前）</span><span class="amt" id="s1_gross">¥3.62億<span class="amt sub">≒ ¥362M</span></span></div>
+        <div class="stage-row tax"><span class="lbl">FA手数料（売却額5%・▲）</span><span class="amt" id="s1_fa">¥0.12億<span class="amt sub">5%</span></span></div>
+        <div class="stage-row tax"><span class="lbl">納税（Capital Gainに課税・▲）</span><span class="amt" id="s1_tax">¥0.48億<span class="amt sub">≒ ¥48M</span></span></div>
+        <div class="stage-row net"><span class="lbl">手残り</span><span class="amt" id="s1_net">¥1.87億<span class="amt sub">≒ ¥187M</span></span></div>
+        <div class="stage-bar-wrap">
+          <div class="stage-bar-net" id="s1_bar_net" style="width:79.7%"></div>
+          <div class="stage-bar-tax" id="s1_bar_tax" style="width:20.3%"></div>
+        </div>
+      </div>
+
+      <!-- Stage 2 -->
+      <div class="stage" id="stage2">
+        <div class="stage-label">Stage 2 — 2段階目売却</div>
+        <div class="stage-row"><span class="lbl">売却株数 比率</span><span class="amt" id="s2_pct">36.20%<span class="amt sub">of WL社</span></span></div>
+        <div class="stage-row"><span class="lbl">粗収入</span><span class="amt" id="s2_gross">¥5.43億<span class="amt sub">≒ ¥543M</span></span></div>
+        <div class="stage-row tax"><span class="lbl">納税（▲）</span><span class="amt" id="s2_tax">¥1.10億<span class="amt sub">≒ ¥110M</span></span></div>
+        <div class="stage-row net"><span class="lbl">手残り</span><span class="amt" id="s2_net">¥4.33億<span class="amt sub">≒ ¥433M</span></span></div>
+        <div class="stage-bar-wrap">
+          <div class="stage-bar-net" id="s2_bar_net" style="width:79.7%"></div>
+          <div class="stage-bar-tax" id="s2_bar_tax" style="width:20.3%"></div>
+        </div>
+      </div>
+
+      <!-- Total -->
+      <div class="stage total" id="stageT">
+        <div class="stage-label">Total — 合算</div>
+        <div class="stage-row"><span class="lbl">売却株数 比率</span><span class="amt" id="t_pct">72.40%<span class="amt sub">of WL社</span></span></div>
+        <div class="stage-row"><span class="lbl">粗収入</span><span class="amt" id="t_gross">¥9.05億<span class="amt sub">≒ ¥905M</span></span></div>
+        <div class="stage-row tax"><span class="lbl">納税（▲）</span><span class="amt" id="t_tax">¥1.84億<span class="amt sub">≒ ¥184M</span></span></div>
+        <div class="stage-row net"><span class="lbl">手残り</span><span class="amt" id="t_net">¥7.21億<span class="amt sub">≒ ¥721M</span></span></div>
+        <div class="stage-bar-wrap">
+          <div class="stage-bar-net" id="t_bar_net" style="width:79.7%"></div>
+          <div class="stage-bar-tax" id="t_bar_tax" style="width:20.3%"></div>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-top:48px;">各メンバー Capital Gain（FA控除後・税前） <span class="ttl-en">Per-Member Breakdown</span></h2>
+    <p style="font-size:12px; color:var(--ink-soft);">
+      各メンバーの1段階目・2段階目 Capital Gain（億円・税前）。<strong>Capital Gain = (Val − FA手数料5%) × cash-out比率</strong>。1段階目は各売却者が売却額の5%をFAとして負担（控除後）、2段階目はFAなし。
+    </p>
+    <table id="cg-table">
+      <thead>
+        <tr>
+          <th>区分</th>
+          <th>メンバー</th>
+          <th class="num">持株比率<br><span style="font-weight:400; font-size:10px; color:var(--ink-mute); letter-spacing:0;">pre-J-KISS（生株）</span></th>
+          <th class="num">持株比率<br><span style="font-weight:400; font-size:10px; color:var(--ink-mute); letter-spacing:0;">post-J-KISS</span></th>
+          <th class="num">1段階目</th>
+          <th class="num">2段階目</th>
+          <th class="num">合計</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Founder</td><td>Kyo</td><td class="num">75.80%</td><td class="num">61.40%</td><td class="num cg-cell" data-cg="kyo_s1" id="cg_kyo_s1">2.42</td><td class="num cg-cell" data-cg="kyo_s2" id="cg_kyo_s2">6.20</td><td class="num cg-cell" data-cg="kyo_t" id="cg_kyo_t">8.62</td></tr>
+        <tr><td>コアメンバー</td><td>佐々木 <span style="font-size:10px; color:var(--ink-mute);">(全量1段)</span></td><td class="num">1.80%</td><td class="num">1.46%</td><td class="num cg-cell" data-cg="sasaki_s1" id="cg_sasaki_s1">0.15</td><td class="num">—</td><td class="num cg-cell" data-cg="sasaki_t" id="cg_sasaki_t">0.15</td></tr>
+        <tr><td>経営陣</td><td>森</td><td class="num">5.80%</td><td class="num">4.70%</td><td class="num cg-cell" data-cg="mori_s1" id="cg_mori_s1">0.00</td><td class="num cg-cell" data-cg="mori_s2" id="cg_mori_s2">0.71</td><td class="num cg-cell" data-cg="mori_t" id="cg_mori_t">0.71</td></tr>
+        <tr><td>経営陣</td><td>飯野</td><td class="num">5.30%</td><td class="num">4.29%</td><td class="num cg-cell" data-cg="iino_s1" id="cg_iino_s1">0.00</td><td class="num cg-cell" data-cg="iino_s2" id="cg_iino_s2">0.70</td><td class="num cg-cell" data-cg="iino_t" id="cg_iino_t">0.70</td></tr>
+        <tr><td>経営陣</td><td>久保田</td><td class="num">4.00%</td><td class="num">3.24%</td><td class="num cg-cell" data-cg="kubota_s1" id="cg_kubota_s1">0.00</td><td class="num cg-cell" data-cg="kubota_s2" id="cg_kubota_s2">0.58</td><td class="num cg-cell" data-cg="kubota_t" id="cg_kubota_t">0.58</td></tr>
+        <tr><td>コアメンバー</td><td>植山</td><td class="num">1.70%</td><td class="num">1.38%</td><td class="num cg-cell" data-cg="ueyama_s1" id="cg_ueyama_s1">0.00</td><td class="num cg-cell" data-cg="ueyama_s2" id="cg_ueyama_s2">0.25</td><td class="num cg-cell" data-cg="ueyama_t" id="cg_ueyama_t">0.25</td></tr>
+        <tr><td>VC</td><td>Deep30</td><td class="num">5.50%</td><td class="num">4.46%</td><td class="num cg-cell" data-cg="deep30_s1" id="cg_deep30_s1">0.45</td><td class="num">—</td><td class="num cg-cell" data-cg="deep30_t">0.45</td></tr>
+        <tr><td>VC</td><td>Sota Watanabe</td><td class="num">0.10%</td><td class="num">0.08%</td><td class="num cg-cell" data-cg="sota_s1" id="cg_sota_s1">0.01</td><td class="num">—</td><td class="num cg-cell" data-cg="sota_t">0.01</td></tr>
+        <tr><td>J-KISS</td><td>ANOBAKA</td><td class="num" style="color:var(--ink-mute);">—</td><td class="num">10.00%</td><td class="num cg-cell" data-cg="anobaka_s1" id="cg_anobaka_s1">1.00</td><td class="num">—</td><td class="num cg-cell" data-cg="anobaka_t">1.00</td></tr>
+        <tr><td>J-KISS</td><td>Skyland</td><td class="num" style="color:var(--ink-mute);">—</td><td class="num">2.00%</td><td class="num cg-cell" data-cg="skyland_s1" id="cg_skyland_s1">0.20</td><td class="num">—</td><td class="num cg-cell" data-cg="skyland_t">0.20</td></tr>
+        <tr><td>J-KISS</td><td>高木</td><td class="num" style="color:var(--ink-mute);">—</td><td class="num">1.00%</td><td class="num cg-cell" data-cg="takagi_s1" id="cg_takagi_s1">0.10</td><td class="num">—</td><td class="num cg-cell" data-cg="takagi_t">0.10</td></tr>
+        <tr><td>J-KISS</td><td>EV</td><td class="num" style="color:var(--ink-mute);">—</td><td class="num">6.00%</td><td class="num cg-cell" data-cg="ev_s1" id="cg_ev_s1">0.60</td><td class="num">—</td><td class="num cg-cell" data-cg="ev_t">0.60</td></tr>
+        <tr><th>合計</th><th></th><th class="num">100.00%</th><th class="num">100.01%</th><th class="num cg-cell" data-cg="total_s1" id="cg_total_s1">4.82</th><th class="num cg-cell" data-cg="total_s2" id="cg_total_s2">8.87</th><th class="num cg-cell" data-cg="total_t" id="cg_total_t">13.69</th></tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:11px; color:var(--ink-mute);">
+      ※ Capital Gain =(Val − FA5%)× cash-out比率（税前）。1段階目はFA5%控除後、2段階目はFAなし。Kyoの税後は Stage 1/2 カード参照。VC・J-KISSは法人税体系のため別計算（参考表示）。<br>
+      ※ 経営陣（森・飯野・久保田）+ コア植山 の 1段階目分は <strong>その他</strong> Stage 1 残差を持株比率で按分（森 4.70/13.61、飯野 4.29/13.61、久保田 3.24/13.61、植山 1.38/13.61）。
+    </p>
+
+    <div class="callout">
+      <strong>計算式</strong>:<br>
+      Kyo 1段階目 売却 = スライダー入力値（WL社全体の%）<br>
+      Kyo 2段階目 売却 = Kyo持株 61.40% − Kyo 1段階目 売却<br>
+      Capital Gain(1段) = (Val1 − FA手数料5%) × 売却% = Val1 × 95% × 売却%<br>
+      Capital Gain(2段) = Val2 × 売却%（FAなし）<br>
+      納税 = Capital Gain × 税率<br>
+      手残り = Capital Gain − 納税
+    </div>
+
+    <div class="callout warn">
+      <strong>前提・注意</strong>:<br>
+      ・取得原価はゼロ（創業者株を簡略化）。実際は取得原価分が非課税。<br>
+      ・<span class="term-link" data-term="nam">NAM社</span>配当スキームを使う場合、税率は低くなる（実効11.7%目線）が、配当条件付け等の制約がある。<br>
+      ・<span class="term-link" data-term="risk-case">リスクケース</span>は割らない前提=Stage 2は確実に実施される想定。<br>
+      ・SO（ストックオプション）はKyoには実質関係ないため本試算では考慮せず。
+    </div>
+
+    <div class="callout" style="font-size:11px; color:var(--ink-mute);">
+      <strong>FA手数料（売却額の5%）</strong>: 各売却者が<strong>自分の売却額の5%</strong>をFAへ。よって <strong>Capital Gain = (Val − FA) × 比率 = 売却額 × 95%</strong>（「全員が持分の5%を売り、持分が19/20に縮小」モデル）。<br>
+      <strong>Stage1 総FA</strong> = 5% ×（SM取得50.7% × Val1）= 5% × 5.07億 = <strong>¥2,535万</strong>（Val1=10億時）。※ 旧版は「Val全体の5%=5,000万」を50.7%取引に丸ごと乗せていた（実効約10%）ため過大。売却額ベースの5%に修正。<br>
+      Kyo の負担分 = Kyo売却額 × 5%（例: 24.70% × 10億 × 5% = ¥1,235万）。<strong>Stage2 はFAなし</strong>（別途要協議）。
+    </div>
+
+  </div><!-- /pane-sim -->
+
+  <!-- ============ Pane 2: Cap Table ============ -->
+  <div id="pane-captable" class="tab-pane" role="tabpanel">
+
+    <h2>Cap Table（生株ベース） <span class="ttl-en">Equity Holders — Pre J-KISS</span></h2>
+    <p style="font-size:13px; color:var(--ink-soft);">
+      2026年6月時点の <strong>生株（実発行株式）</strong> ベースの社内持株比率。<br>
+      <span class="num">※ この上に <span class="term-link" data-term="jkiss">J-KISS（新株予約権）</span>が乗っかるイメージ。J-KISS全行使時の希薄化後比率は別途算出。</span>
+    </p>
+
+    <div class="summary-grid" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="stat">
+        <div class="lbl">西川（Founder）</div>
+        <div class="val">75.80 %</div>
+        <div class="ann">過半数を大きく上回るコントロール</div>
+      </div>
+      <div class="stat">
+        <div class="lbl">経営陣（3名）</div>
+        <div class="val">15.10 %</div>
+        <div class="ann">森 5.80 / 飯野 5.30 / 久保田 4.00</div>
+      </div>
+      <div class="stat">
+        <div class="lbl">コアメンバー（2名）</div>
+        <div class="val">3.50 %</div>
+        <div class="ann">佐々木 1.80 / 植山 1.70</div>
+      </div>
+      <div class="stat">
+        <div class="lbl">外部投資家</div>
+        <div class="val">5.60 %</div>
+        <div class="ann">Deep30 5.50 / Sota Watanabe 0.10</div>
+      </div>
+    </div>
+
+    <h3>持株比率 一覧 <span class="ttl-en" style="font-size:13px;">Phase 1（生株）→ Phase 2（J-KISS全転換後）</span></h3>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-bottom:8px;">
+      <strong>Phase 1</strong> ＝ J-KISS転換前の社内生株（総株数 100,000株）。<strong>Phase 2</strong> ＝ 4本のJ-KISSが全て株式転換した後（総株数 123,457株）。<br>
+      既存株主の保有<strong>株数は不変</strong>で、分母が増えるぶん比率だけ希薄化（Phase2比率 ＝ Phase1比率 × 0.81）。J-KISSは換算%（出資額÷Post Cap）ぶんの新株を取得する。
+    </p>
+    <div class="scroll">
+    <table class="phase-tbl">
+      <thead>
+        <tr>
+          <th rowspan="2">株主</th><th rowspan="2">区分</th>
+          <th colspan="2" class="num ph1">Phase 1 — 生株</th>
+          <th colspan="2" class="num ph2">Phase 2 — J-KISS転換後</th>
+        </tr>
+        <tr>
+          <th class="num ph1">比率</th><th class="num ph1">株数</th>
+          <th class="num ph2">比率</th><th class="num ph2">株数</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>西川</td><td>Founder</td>
+            <td class="num ph1"><strong>75.80%</strong></td><td class="num ph1"><strong>75,800</strong></td>
+            <td class="num ph2"><strong>61.40%</strong></td><td class="num ph2"><strong>75,800</strong></td></tr>
+        <tr><td>森</td><td>経営陣</td>
+            <td class="num ph1">5.80%</td><td class="num ph1">5,800</td>
+            <td class="num ph2">4.70%</td><td class="num ph2">5,800</td></tr>
+        <tr><td>飯野</td><td>経営陣</td>
+            <td class="num ph1">5.30%</td><td class="num ph1">5,300</td>
+            <td class="num ph2">4.29%</td><td class="num ph2">5,300</td></tr>
+        <tr><td>久保田</td><td>経営陣</td>
+            <td class="num ph1">4.00%</td><td class="num ph1">4,000</td>
+            <td class="num ph2">3.24%</td><td class="num ph2">4,000</td></tr>
+        <tr><td>植山</td><td>コアメンバー</td>
+            <td class="num ph1">1.70%</td><td class="num ph1">1,700</td>
+            <td class="num ph2">1.38%</td><td class="num ph2">1,700</td></tr>
+        <tr><td>佐々木</td><td>コアメンバー</td>
+            <td class="num ph1">1.80%</td><td class="num ph1">1,800</td>
+            <td class="num ph2">1.46%</td><td class="num ph2">1,800</td></tr>
+        <tr><td>Deep30</td><td>VC（生株）</td>
+            <td class="num ph1">5.50%</td><td class="num ph1">5,500</td>
+            <td class="num ph2">4.46%</td><td class="num ph2">5,500</td></tr>
+        <tr><td>Sota Watanabe</td><td>個人投資家（生株）</td>
+            <td class="num ph1">0.10%</td><td class="num ph1">100</td>
+            <td class="num ph2">0.08%</td><td class="num ph2">100</td></tr>
+        <tr><td>ANOBAKA</td><td>J-KISS転換</td>
+            <td class="num ph1">—</td><td class="num ph1">—</td>
+            <td class="num ph2"><strong>10.00%</strong></td><td class="num ph2">12,346</td></tr>
+        <tr><td>Skyland</td><td>J-KISS転換</td>
+            <td class="num ph1">—</td><td class="num ph1">—</td>
+            <td class="num ph2"><strong>2.00%</strong></td><td class="num ph2">2,469</td></tr>
+        <tr><td>EV</td><td>J-KISS転換</td>
+            <td class="num ph1">—</td><td class="num ph1">—</td>
+            <td class="num ph2"><strong>6.00%</strong></td><td class="num ph2">7,407</td></tr>
+        <tr><td>Kensaku Takagi</td><td>J-KISS転換</td>
+            <td class="num ph1">—</td><td class="num ph1">—</td>
+            <td class="num ph2"><strong>1.00%</strong></td><td class="num ph2">1,235</td></tr>
+        <tr><th>合計</th><th></th>
+            <th class="num ph1">100.00%</th><th class="num ph1">100,000</th>
+            <th class="num ph2">100.00%</th><th class="num ph2">123,457</th></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="callout">
+      <strong>Phase 2（J-KISS全転換）の計算ロジック</strong><br>
+      ① J-KISS換算% 合計 = ANOBAKA 10 + Skyland 2 + EV 6 + 高木 1 = <strong>19%</strong>（＝転換後に新株主が持つ割合）<br>
+      ② 既存生株 100,000株 が残り <strong>81%</strong> を占める → 総株数 = 100,000 ÷ 0.81 ≒ <strong>123,457株</strong><br>
+      ③ 新規発行 = 23,457株。各J-KISS = 換算% × 123,457株、既存株主は 生株% × 0.81 に希薄化<br>
+      ④ ※ Discount 0.8（20%割引）は次回エクイティラウンドが先行した場合用で、M&Aルートでは不使用
+    </div>
+
+    <h3 style="margin-top:36px;">2段階 Deal 構成 <span class="ttl-en">Who Cashes Out, When</span></h3>
+    <p style="font-size:12.5px; color:var(--ink-soft); margin-bottom:8px;">
+      Phase 2（全J-KISS転換後・総株数 123,457株）を、SM社の2段階買収でどう現金化するかの割り当て。
+    </p>
+    <div class="callout">
+      <strong>1段階目（SM 50.70% 取得）で現金化</strong><br>
+      ・佐々木 … <strong>全量</strong>（1.46%）<br>
+      ・VC・外部投資家（Deep30 / Sota / ANOBAKA / Skyland / EV / Kensaku Takagi）… <strong>全量</strong>（計 23.54%）<br>
+      ・森 … <strong>1.00%</strong> のみ<br>
+      ・西川 … 50.70% −（上記の和 26.00%）＝ <strong>24.70%</strong>（残枠を充当）<br>
+      <strong>2段階目（残り 49.30%）</strong>: 西川の残り＋森の残り＋飯野・久保田・植山の全量 → SM完全買い切り
+    </div>
+    <div class="scroll">
+    <table class="phase-tbl">
+      <thead>
+        <tr>
+          <th rowspan="2">売却者</th><th rowspan="2">区分</th><th rowspan="2" class="num">保有<br>(Phase 2)</th>
+          <th colspan="2" class="num ph1">1段階目（S1）</th>
+          <th colspan="2" class="num ph2">2段階目（S2）</th>
+        </tr>
+        <tr>
+          <th class="num ph1">比率</th><th class="num ph1">株数</th>
+          <th class="num ph2">比率</th><th class="num ph2">株数</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>西川</td><td>Founder</td><td class="num">61.40%</td>
+            <td class="num ph1"><strong>24.70%</strong></td><td class="num ph1">30,494</td>
+            <td class="num ph2"><strong>36.70%</strong></td><td class="num ph2">45,306</td></tr>
+        <tr><td>森</td><td>経営陣</td><td class="num">4.70%</td>
+            <td class="num ph1">1.00%</td><td class="num ph1">1,235</td>
+            <td class="num ph2">3.70%</td><td class="num ph2">4,565</td></tr>
+        <tr><td>飯野</td><td>経営陣</td><td class="num">4.29%</td>
+            <td class="num ph1">—</td><td class="num ph1">—</td>
+            <td class="num ph2">4.29%</td><td class="num ph2">5,300</td></tr>
+        <tr><td>久保田</td><td>経営陣</td><td class="num">3.24%</td>
+            <td class="num ph1">—</td><td class="num ph1">—</td>
+            <td class="num ph2">3.24%</td><td class="num ph2">4,000</td></tr>
+        <tr><td>植山</td><td>コアメンバー</td><td class="num">1.38%</td>
+            <td class="num ph1">—</td><td class="num ph1">—</td>
+            <td class="num ph2">1.38%</td><td class="num ph2">1,700</td></tr>
+        <tr><td>佐々木</td><td>コアメンバー</td><td class="num">1.46%</td>
+            <td class="num ph1">1.46%</td><td class="num ph1">1,800</td>
+            <td class="num ph2">—</td><td class="num ph2">—</td></tr>
+        <tr><td>Deep30</td><td>VC</td><td class="num">4.46%</td>
+            <td class="num ph1">4.46%</td><td class="num ph1">5,500</td>
+            <td class="num ph2">—</td><td class="num ph2">—</td></tr>
+        <tr><td>Sota Watanabe</td><td>外部投資家</td><td class="num">0.08%</td>
+            <td class="num ph1">0.08%</td><td class="num ph1">100</td>
+            <td class="num ph2">—</td><td class="num ph2">—</td></tr>
+        <tr><td>ANOBAKA</td><td>外部（J-KISS）</td><td class="num">10.00%</td>
+            <td class="num ph1">10.00%</td><td class="num ph1">12,346</td>
+            <td class="num ph2">—</td><td class="num ph2">—</td></tr>
+        <tr><td>Skyland</td><td>外部（J-KISS）</td><td class="num">2.00%</td>
+            <td class="num ph1">2.00%</td><td class="num ph1">2,469</td>
+            <td class="num ph2">—</td><td class="num ph2">—</td></tr>
+        <tr><td>EV</td><td>外部（J-KISS）</td><td class="num">6.00%</td>
+            <td class="num ph1">6.00%</td><td class="num ph1">7,407</td>
+            <td class="num ph2">—</td><td class="num ph2">—</td></tr>
+        <tr><td>Kensaku Takagi</td><td>外部（J-KISS）</td><td class="num">1.00%</td>
+            <td class="num ph1">1.00%</td><td class="num ph1">1,235</td>
+            <td class="num ph2">—</td><td class="num ph2">—</td></tr>
+        <tr><th>合計</th><th></th><th class="num">100.00%</th>
+            <th class="num ph1">50.70%</th><th class="num ph1">62,586</th>
+            <th class="num ph2">49.30%</th><th class="num ph2">60,871</th></tr>
+      </tbody>
+    </table>
+    </div>
+    <p style="font-size:11.5px; color:var(--ink-mute); margin-top:4px;">
+      ※ 西川の1段階目は「定義済み 50.70% − 他売却者の和 26.00%」で算出した残枠。各行の%は四捨五入のため、内訳合計が端数で一致しない場合あり（株数ベースは厳密）。<br>
+      ※ 飯野・久保田・植山は1段階目では売却せず、全量を2段階目に回す。森のみ1段階目で1%放出。
+    </p>
+
+    <style>
+      .chart-toggle { margin: 8px 0 24px; }
+      .chart-toggle > summary {
+        cursor: pointer; font-size: 13px; color: var(--ink-soft);
+        padding: 8px 14px; border: 1px solid var(--line); background: var(--paper);
+        border-radius: 6px; display: inline-block; user-select: none; list-style: none;
+      }
+      .chart-toggle > summary::-webkit-details-marker { display: none; }
+      .chart-toggle > summary::before { content: "▸ "; color: var(--ink-mute); }
+      .chart-toggle[open] > summary::before { content: "▾ "; }
+      .chart-toggle[open] > summary { margin-bottom: 20px; }
+      .pie-wrap { display: flex; gap: 36px; align-items: center; flex-wrap: wrap; }
+      .pie-box { position: relative; width: 180px; height: 180px; flex: none; }
+      .pie {
+        width: 180px; height: 180px; border-radius: 50%;
+        background: conic-gradient(
+          #111111 0 75.80%, #333333 75.80% 81.60%, #4d4d4d 81.60% 87.10%,
+          #666666 87.10% 92.40%, #808080 92.40% 96.40%, #999999 96.40% 98.20%,
+          #b3b3b3 98.20% 99.90%, #cccccc 99.90% 100%);
+        -webkit-mask: radial-gradient(circle, transparent 0 52px, #000 53px);
+                mask: radial-gradient(circle, transparent 0 52px, #000 53px);
+      }
+      .pie-center {
+        position: absolute; inset: 0; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; text-align: center;
+        font-size: 12px; color: var(--ink-mute); line-height: 1.5;
+      }
+      .pie-center b { color: var(--ink); font-size: 13px; }
+      .pie-legend { list-style: none; padding: 0; margin: 0;
+        display: grid; grid-template-columns: repeat(2, minmax(150px, 1fr)); gap: 3px 28px; }
+      .pie-legend li { display: flex; align-items: center; gap: 9px; font-size: 13px; padding: 2px 0; }
+      .pie-legend .sw { width: 12px; height: 12px; border-radius: 2px; flex: none; border: 1px solid var(--line); }
+      .pie-legend b { margin-left: auto; font-variant-numeric: tabular-nums; }
+      @media (max-width: 520px) { .pie-legend { grid-template-columns: 1fr; } }
+      .phase-tbl th.ph1, .phase-tbl td.ph1 { background: #f4f4f4; }
+      .phase-tbl th.ph2, .phase-tbl td.ph2 { background: #fbfbfb; }
+      .phase-tbl thead th.ph1, .phase-tbl thead th.ph2 { font-size: 11px; letter-spacing: 0.02em; }
+    </style>
+
+    <h3>持株分布 ビジュアル</h3>
+    <details class="chart-toggle">
+      <summary>円グラフを表示</summary>
+      <div class="pie-wrap">
+        <div class="pie-box">
+          <div class="pie"></div>
+          <div class="pie-center">WL<br><b>100,000株</b></div>
+        </div>
+        <ul class="pie-legend">
+          <li><span class="sw" style="background:#111111"></span>西川 <b>75.80%</b></li>
+          <li><span class="sw" style="background:#333333"></span>森 <b>5.80%</b></li>
+          <li><span class="sw" style="background:#4d4d4d"></span>Deep30 <b>5.50%</b></li>
+          <li><span class="sw" style="background:#666666"></span>飯野 <b>5.30%</b></li>
+          <li><span class="sw" style="background:#808080"></span>久保田 <b>4.00%</b></li>
+          <li><span class="sw" style="background:#999999"></span>佐々木 <b>1.80%</b></li>
+          <li><span class="sw" style="background:#b3b3b3"></span>植山 <b>1.70%</b></li>
+          <li><span class="sw" style="background:#cccccc"></span>Sota Watanabe <b>0.10%</b></li>
+        </ul>
+      </div>
+    </details>
+
+    <div class="callout">
+      <strong>区分凡例</strong>:<br>
+      ■ Founder（西川）&nbsp;&nbsp; ▨ 経営陣（森・飯野・久保田）&nbsp;&nbsp; ◇ コアメンバー（植山・佐々木）&nbsp;&nbsp; ▢ 外部投資家（Deep30・Sota Watanabe）
+    </div>
+
+    <h2 style="margin-top:48px;">J-KISS 一覧 <span class="ttl-en">Convertible Notes</span></h2>
+    <p style="font-size:13px; color:var(--ink-soft);">
+      上の生株に乗っかる「新株予約権」契約 4本。<strong>参加上限額 = 投資額の 2倍</strong>、<strong>Discount = 0.8（20%割引）</strong> で統一。M&A時には「<span class="term-link" data-term="pre-money">Post Cap</span>で株式転換して按分」と「投資額の2倍を即時受け取り」のうち有利な方を投資家が選択する設計。
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>投資家</th>
+          <th class="num">Post Cap</th>
+          <th class="num">出資額</th>
+          <th class="num">換算%</th>
+          <th class="num">2x 参加上限</th>
+          <th class="num">転換有利分岐 EV</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>ANOBAKA</td><td class="num">2.0 億円</td><td class="num">2,000 万円</td><td class="num">10.0%</td><td class="num">4,000 万円</td><td class="num">4.0 億円超</td></tr>
+        <tr><td>Skyland</td><td class="num">4.0 億円</td><td class="num">800 万円</td><td class="num">2.0%</td><td class="num">1,600 万円</td><td class="num">8.0 億円超</td></tr>
+        <tr><td>高木</td><td class="num">4.0 億円</td><td class="num">400 万円</td><td class="num">1.0%</td><td class="num">800 万円</td><td class="num">8.0 億円超</td></tr>
+        <tr><td>EV</td><td class="num">5.0 億円</td><td class="num">3,000 万円</td><td class="num">6.0%</td><td class="num">6,000 万円</td><td class="num">10.0 億円超</td></tr>
+        <tr><th>合計</th><th class="num">—</th><th class="num">6,200 万円</th><th class="num">19.0%</th><th class="num">1.24 億円</th><th class="num">—</th></tr>
+      </tbody>
+    </table>
+
+    <h3>J-KISS Payout シミュレーション</h3>
+    <p style="font-size:12.5px; color:var(--ink-soft);">
+      売却EV（Enterprise Value）に応じた、各J-KISS投資家の受取額。「Post Cap換算% × EV」と「投資額×2倍」のうち、<strong>大きい方</strong>を投資家が選ぶ前提。
+    </p>
+    <table id="jkiss-sim-table">
+      <thead>
+        <tr>
+          <th>投資家</th>
+          <th class="num">5億 売却</th>
+          <th class="num">10億 売却</th>
+          <th class="num">15億 売却</th>
+          <th class="num">20億 売却</th>
+          <th class="num">30億 売却</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>ANOBAKA <span style="font-size:10px;color:var(--ink-mute);">10%</span></td><td class="num">5,000 万</td><td class="num">1.0 億</td><td class="num">1.5 億</td><td class="num">2.0 億</td><td class="num">3.0 億</td></tr>
+        <tr><td>Skyland <span style="font-size:10px;color:var(--ink-mute);">2%</span></td><td class="num">1,600 万</td><td class="num">2,000 万</td><td class="num">3,000 万</td><td class="num">4,000 万</td><td class="num">6,000 万</td></tr>
+        <tr><td>高木 <span style="font-size:10px;color:var(--ink-mute);">1%</span></td><td class="num">800 万</td><td class="num">1,000 万</td><td class="num">1,500 万</td><td class="num">2,000 万</td><td class="num">3,000 万</td></tr>
+        <tr><td>EV <span style="font-size:10px;color:var(--ink-mute);">6%</span></td><td class="num">6,000 万</td><td class="num">6,000 万</td><td class="num">9,000 万</td><td class="num">1.2 億</td><td class="num">1.8 億</td></tr>
+        <tr><th>J-KISS 合計</th><th class="num">1.34 億</th><th class="num">1.9 億</th><th class="num">2.85 億</th><th class="num">3.8 億</th><th class="num">5.7 億</th></tr>
+        <tr><th>生株株主 取り分</th><th class="num">3.66 億</th><th class="num">8.1 億</th><th class="num">12.15 億</th><th class="num">16.2 億</th><th class="num">24.3 億</th></tr>
+      </tbody>
+    </table>
+
+    <div class="callout">
+      <strong>計算ロジック</strong><br>
+      ① Post Cap換算% = 出資額 ÷ Post Cap<br>
+      ② Post Cap転換時の受取 = 売却EV × 換算%<br>
+      ③ 2倍参加 = 出資額 × 2（固定）<br>
+      ④ <strong>投資家受取 = MAX(②, ③)</strong>（投資家が有利な方を選択）<br>
+      ⑤ 分岐EV = 投資額 × 2 ÷ 換算% = Post Cap × 2<br>
+      （EV &lt; 分岐EV なら2倍参加が有利、EV &gt; 分岐EV なら株式転換が有利）
+    </div>
+
+    <div class="callout warn">
+      <strong>J-KISSについて</strong>: 上記は J-KISS 行使前の <strong>生株</strong> 比率。J-KISS 全行使時に発行株式が増え、各メンバーの比率は希薄化する。<br>
+      Simulatorで「Kyo持株比率」を希薄化後の数字（例: 59.8%）にすると、J-KISS行使後の手残りも試算可能。<br>
+      Discount Rate（0.8）は「次回エクイティラウンドが先に起きた場合の20%割引」で、本件のようなM&Aルートでは使わない。
+    </div>
+
+  </div><!-- /pane-captable -->
+
+  <!-- ============ Pane 3: Scheme Reference ============ -->
+  <div id="pane-ref" class="tab-pane" role="tabpanel">
+
+    <h2>Scheme Reference <span class="ttl-en">SM社買収スキーム 詳細</span></h2>
+    <p style="font-size:13px; color:var(--ink-soft);">2026年4月30日にSM社から提示された買収スキーム全文の要約（法的拘束力なし／DD・正式契約締結が前提）。</p>
+
+    <h3>提案リターン（業績目標達成の場合）</h3>
+    <div class="summary-grid">
+      <div class="stat">
+        <div class="lbl">税前資金収入累計</div>
+        <div class="val">¥781 M</div>
+        <div class="ann">西川 ¥632M ＋ 他経営陣 ¥149M</div>
+      </div>
+      <div class="stat">
+        <div class="lbl">西川 税後手残り</div>
+        <div class="val">¥558 M</div>
+        <div class="ann">税負担 ▲¥74M（実効 約11.7%）</div>
+      </div>
+      <div class="stat">
+        <div class="lbl">SO（参考）</div>
+        <div class="val" style="font-size:16px;">¥0.5–1.0 B</div>
+        <div class="ann">残留経営陣向け（Kyoには実質関係なし）</div>
+      </div>
+    </div>
+
+    <h3>Step 1 — <span class="term-link" data-term="nam">資産管理会社</span>設立 ＆ SM社による資本参加</h3>
+    <p style="font-size:12.5px; color:var(--ink-mute);">時期想定: <strong>2026年8月</strong></p>
+    <ol>
+      <li><span class="term-link" data-term="nam">NAM社</span>設立: 西川がWL社株式を<span class="term-link" data-term="genbutsu-shusshi">現物出資</span>し資産管理会社を設立</li>
+      <li>SM社が VC等保有株（26,823株）を <strong>2.2億円</strong> で買取</li>
+      <li>SM社が WL社の<span class="term-link" data-term="zoushi">増資</span>を <strong>9.1億円</strong> で引受
+        <ul>
+          <li><span class="term-link" data-term="stock-types">普通株</span>増資: 1株 ¥8,300（<span class="term-link" data-term="pre-money">Pre</span> 10億円強）</li>
+          <li><span class="term-link" data-term="stock-types">優先株</span>: 1株 ¥3,300（無<span class="term-link" data-term="giketsuken">議決権</span>・無配）</li>
+        </ul>
+      </li>
+    </ol>
+    <table>
+      <thead>
+        <tr><th>株主</th><th class="num">議決権比率</th><th>備考</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ストックマーク</td><td class="num"><strong>50.7%</strong></td><td>経営権取得</td></tr>
+        <tr><td>NAM社（西川）</td><td class="num">37.9%</td><td>個人 → 資産管理会社</td></tr>
+        <tr><td>経営陣・幹部</td><td class="num">11.4%</td><td>残留経営陣</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout warn">
+      <strong>注</strong>: 上記は、1段階目の売却で <strong>WL社内の株を西川のみが売却したケース</strong>。他のメンバーの一部も売却する場合、その分だけ西川の持株売却枠は減り、<strong>西川の1段階目での Capital Gain は小さくなる</strong>。Simulatorで「Kyo 1段階目 売却分」を下げて試算すると効果が見える。
+    </div>
+
+    <h3>Step 2 — 臨時配当の実施</h3>
+    <p style="font-size:12.5px; color:var(--ink-mute);">時期想定: <strong>2027年8月</strong>　／　総額 ¥960M（1株5,000円）</p>
+    <div class="callout warn">
+      ⚠ 2回目の配当は、27/3期通期業績が<span class="term-link" data-term="risk-case">リスクケース</span>割れの場合 <strong>SM社判断で中止可能</strong>。
+    </div>
+    <table>
+      <thead>
+        <tr><th>受領者</th><th class="num">1回目（¥M）</th><th class="num">2回目（¥M）</th><th class="num">合計（¥M）</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>ストックマーク</td><td class="num">242.1</td><td class="num">242.1</td><td class="num">484.2</td></tr>
+        <tr><td>NAM社（西川）</td><td class="num">180.8</td><td class="num">180.8</td><td class="num">361.6</td></tr>
+        <tr><td>森 一晟</td><td class="num">12.1</td><td class="num">12.1</td><td class="num">24.2</td></tr>
+        <tr><td>飯野 祐介</td><td class="num">11.9</td><td class="num">11.9</td><td class="num">23.8</td></tr>
+      </tbody>
+    </table>
+    <p style="font-size:12px; color:var(--ink-mute);">NAM社は受取配当金の「益金不算入」を仮定し税負担を抑制。<br>※ 経営陣の残り（久保田・佐々木・植山）の配当金額は元資料に続きあり。</p>
+
+    <h3>Step 3 — （元資料 続きあり）</h3>
+    <div class="callout warn">元資料は Step 2 の経営陣配当内訳の途中で終了。Step 3（最終クロージング・株式買取り等）の詳細は別途追記が必要。</div>
+
+  </div><!-- /pane-ref -->
+
+  <!-- ============ Pane 4: Terms ============ -->
+  <div id="pane-terms" class="tab-pane" role="tabpanel">
+
+    <h2>Terms <span class="ttl-en">本書で出てくる難しめの用語</span></h2>
+    <p style="font-size:13px; color:var(--ink-soft);">
+      他タブで下線付きの語（例: <span class="term-link" data-term="genbutsu-shusshi">現物出資</span>）をクリックするとここに飛びます。一覧から飛ぶこともできます。
+    </p>
+
+    <div class="terms-toc">
+      <a href="#term-genbutsu-shusshi">現物出資</a>
+      <a href="#term-nam">資産管理会社 / NAM社</a>
+      <a href="#term-ekikin-fusannyu">益金不算入</a>
+      <a href="#term-zoushi">増資</a>
+      <a href="#term-stock-types">普通株 / 優先株</a>
+      <a href="#term-giketsuken">議決権比率</a>
+      <a href="#term-so">ストックオプション（SO）</a>
+      <a href="#term-rinji-haitou">臨時配当</a>
+      <a href="#term-kabushiki-jouto">株式譲渡益課税</a>
+      <a href="#term-pre-money">Pre株式価値</a>
+      <a href="#term-risk-case">リスクケース</a>
+      <a href="#term-lockup">ロックアップ</a>
+    </div>
+
+    <div class="terms-list">
+
+      <div class="term-entry" id="term-genbutsu-shusshi">
+        <div class="term-head"><span class="term-jp">現物出資</span><span class="term-en">In-Kind Contribution</span></div>
+        <p class="term-def">金銭の代わりに「現物（株式・不動産・知財など）」を出資すること。会社設立時や増資時に使われる。</p>
+        <div class="term-context"><strong>本件での使われ方</strong>: 西川社長が個人保有しているWL社株 72,336株を、新設の<span class="term-link" data-term="nam">NAM社（資産管理会社）</span>に現物出資。NAM社が西川個人の代わりにWL社株を保有する形になり、以降の配当はNAM社経由で受け取る。これにより<span class="term-link" data-term="ekikin-fusannyu">益金不算入</span>のメリットが効く。</div>
+      </div>
+
+      <div class="term-entry" id="term-nam">
+        <div class="term-head"><span class="term-jp">資産管理会社 / NAM社</span><span class="term-en">Holding Company</span></div>
+        <p class="term-def">創業者個人の資産（株式など）を管理する目的で設立する会社。法人税ベースになり、配当の<span class="term-link" data-term="ekikin-fusannyu">益金不算入</span>や経費計上、相続・事業承継対策など、個人保有よりも税効率が良い場合がある。</p>
+        <div class="term-context"><strong>本件での使われ方</strong>: 西川がWL社株を<span class="term-link" data-term="genbutsu-shusshi">現物出資</span>して設立。本案ではWL社の<span class="term-link" data-term="rinji-haitou">臨時配当</span>をNAM社が受け取る経路で、通常の<span class="term-link" data-term="kabushiki-jouto">株式譲渡益課税</span>（約20.3%）より低い実効税率（約11.7%）が実現される。</div>
+      </div>
+
+      <div class="term-entry" id="term-ekikin-fusannyu">
+        <div class="term-head"><span class="term-jp">益金不算入</span><span class="term-en">Dividend Received Deduction</span></div>
+        <p class="term-def">法人が受け取った配当について、一定割合を法人税の課税対象（益金）に含めなくてよいというルール。完全子法人株式（保有100%）なら配当全額が益金不算入になる。</p>
+        <div class="term-context"><strong>本件での使われ方</strong>: NAM社がWL社株を保有していれば、WL社からNAM社への配当は益金不算入の対象になり、NAM社に法人税がほぼかからない。これが「<span class="term-link" data-term="nam">NAM社</span>経由スキーム」のキモ。最終的に西川個人がNAM社からお金を取り出すときに役員報酬や配当として課税されるが、タイミングを調整できる。</div>
+      </div>
+
+      <div class="term-entry" id="term-zoushi">
+        <div class="term-head"><span class="term-jp">増資</span><span class="term-en">Capital Increase</span></div>
+        <p class="term-def">会社が新しく株式を発行して資本金を増やすこと。出資した側は新株主になり、既存株主の持株比率は希薄化する。</p>
+        <div class="term-context"><strong>本件での使われ方</strong>: SM社がWL社の増資を9.1億円で引受け、新規発行された普通株を取得する。これによりSM社が一気に過半数株主になる。同時に既存株主の議決権比率は薄まる。</div>
+      </div>
+
+      <div class="term-entry" id="term-stock-types">
+        <div class="term-head"><span class="term-jp">普通株 / 優先株</span><span class="term-en">Common / Preferred Stock</span></div>
+        <p class="term-def">普通株は議決権・配当がある通常の株式。優先株は配当や残余財産の分配について普通株より優先される権利を持つが、本件のような「無議決権・無配」のタイプもある。種類株として柔軟に設計できる。</p>
+        <div class="term-context"><strong>本件での使われ方</strong>: SM社の増資引受は、普通株（1株¥8,300、議決権あり）と優先株（1株¥3,300、<strong>議決権なし・配当なし</strong>）の組み合わせ。優先株は「金は出すが議決には参加しない」資金供給ツールとして使われている。普通株のみで議決権過半を握り、優先株で追加資金を入れる構造。</div>
+      </div>
+
+      <div class="term-entry" id="term-giketsuken">
+        <div class="term-head"><span class="term-jp">議決権比率</span><span class="term-en">Voting Rights Ratio</span></div>
+        <p class="term-def">株主総会で投票できる権利の比率。発行済株式数のうち議決権付き株式（=普通株など）における比率で計算する。経営権の支配は議決権比率で決まる（過半数=単独可決、2/3=特別決議）。</p>
+        <div class="term-context"><strong>本件での使われ方</strong>: Step 1完了後、SM社の議決権比率は50.7%（普通株96,823 / 議決権付き総数 191,050株）。優先株100,000株は無議決権なので分母には入らない。これでSM社が経営権を取得する。</div>
+      </div>
+
+      <div class="term-entry" id="term-so">
+        <div class="term-head"><span class="term-jp">ストックオプション（SO）</span><span class="term-en">Stock Option</span></div>
+        <p class="term-def">将来、決められた価格で自社株を買える権利。役員・従業員向けの報酬。</p>
+        <div class="term-context"><strong>本件での扱い</strong>: 残留経営陣向け（5〜10億規模）。<strong>Kyoには実質関係ない</strong>ので本ドキュメントの試算では考慮外。</div>
+      </div>
+
+      <div class="term-entry" id="term-rinji-haitou">
+        <div class="term-head"><span class="term-jp">臨時配当</span><span class="term-en">Special / Interim Dividend</span></div>
+        <p class="term-def">通常の期末配当とは別に、株主総会または取締役会決議で随時実施する配当。剰余金を機動的に株主還元するときに使われる。</p>
+        <div class="term-context"><strong>本件での使われ方</strong>: Step 2でWL社が総額9.6億円を臨時配当として吐き出す（1株5,000円）。これがSM社/NAM社/経営陣に分配される。<strong>2回目（2027/6）の配当はSM社の判断で中止可能</strong>（業績条件付き）。</div>
+      </div>
+
+      <div class="term-entry" id="term-kabushiki-jouto">
+        <div class="term-head"><span class="term-jp">株式譲渡益課税</span><span class="term-en">Capital Gains Tax on Stock</span></div>
+        <p class="term-def">株式を売って得た利益（売却価格 − 取得原価）に対して課される税金。個人の場合、所得税15.315% + 住民税5% = <strong>合計20.315%</strong>の申告分離課税。</p>
+        <div class="term-context"><strong>本件での使われ方</strong>: 西川が個人でWL社株を直接売ると20.315%が課税される。本案では<span class="term-link" data-term="nam">NAM社</span>経由で<span class="term-link" data-term="rinji-haitou">配当</span>に変えることで、実効税率を約11.7%まで下げている。Simulatorタブの税率はこの2つを切り替え可能。</div>
+      </div>
+
+      <div class="term-entry" id="term-pre-money">
+        <div class="term-head"><span class="term-jp">Pre株式価値 / Post Cap / Valuation Cap</span><span class="term-en">Pre-Money / Post-Money / Cap</span></div>
+        <p class="term-def">
+          <strong>Pre-Money</strong>: 増資の「直前」の企業価値（=出資が入る前の評価額）。<br>
+          <strong>Post-Money</strong>: Pre + 出資額 = 増資後の企業価値。<br>
+          <strong>Valuation Cap（J-KISSのPost Cap）</strong>: J-KISS転換時のバリュエーション上限。Cap以上の評価で次回ラウンドが起きても、J-KISS投資家はCap基準で割安に株式に転換できる（投資家保護のメイン仕掛け）。
+        </p>
+        <div class="term-context">
+          <strong>本件での使われ方</strong>:<br>
+          ① SM社の増資引受時の1株¥8,300は「Pre株式価値 約10億円強」で設定。Step 1のVC買取価格（2.2億円 / 26,823株≒¥8,303）と整合している。<br>
+          ② J-KISS 4本のPost Capは ANOBAKA 2億 / Skyland 4億 / 高木 4億 / EV 5億 と各社個別に設定。Cap Tableタブ末尾のJ-KISS節を参照。
+        </div>
+      </div>
+
+      <div class="term-entry" id="term-risk-case">
+        <div class="term-head"><span class="term-jp">リスクケース</span><span class="term-en">Risk / Downside Case</span></div>
+        <p class="term-def">事業計画の中で「下振れシナリオ」を指す業界用語。通常はベースケース・アップサイドケース・リスクケースの3層で計画を作る。</p>
+        <div class="term-context"><strong>本件での使われ方</strong>: 2027/3期業績がリスクケースを下回ると、Step 2の2回目臨時配当（2027/6, 額面で約242M+181M+α）がSM社判断で<strong>中止</strong>される条件付き。つまり「業績未達 → 2回目配当ゼロ」というダウンサイドがある。</div>
+      </div>
+
+      <div class="term-entry" id="term-lockup">
+        <div class="term-head"><span class="term-jp">ロックアップ</span><span class="term-en">Lock-Up</span></div>
+        <p class="term-def">M&Aの売り手（主に創業者）が、買収後一定期間は会社に残って働く（株を売れない・退任できない）契約条件。買い手側は「売って即離脱」を防ぎたいので付ける。期間は通常1〜3年。</p>
+        <div class="term-context"><strong>本件での使われ方</strong>: 本案では西川は<strong>顧問就任</strong>を想定（フルタイム取締役からは外れる）。WL社内のM&A方針では、5億以下＋ロックアップ3年なら降りる、8〜9億＋2〜3年なら受ける、という基準。</div>
+      </div>
+
+    </div>
+
+  </div><!-- /pane-terms -->
+
+  <!-- ============ Pane 5: Q&A ============ -->
+  <div id="pane-qa" class="tab-pane" role="tabpanel">
+
+    <h2>Q&amp;A <span class="ttl-en">論点・疑問の整理</span></h2>
+    <p style="font-size:13px; color:var(--ink-soft);">スキームを読み込む中で出てきた論点を整理。確度が高くないものは ⚠ で示し、税理士・弁護士確認推奨。</p>
+
+    <div class="qa-list">
+
+      <div class="qa-entry">
+        <div class="qa-q">
+          <span class="qa-mark">Q1</span>
+          <span class="qa-title">NAM社設立の際、西川は WL社の株を出資資産とする、で合っている?</span>
+        </div>
+        <div class="qa-a">
+          <p><strong>はい、合っています。</strong> 西川がNAM社を設立する際、金銭の代わりに自分が保有するWL社株式（72,336株）を<span class="term-link" data-term="genbutsu-shusshi">現物出資</span>することで、NAM社が西川の代わりにWL社株を保有する形になる。</p>
+          <p><strong>具体的な流れ</strong></p>
+          <ol>
+            <li>NAM社を新規設立（西川100%株主）</li>
+            <li>西川が保有するWL社株 72,336株を NAM社に <strong>現物出資</strong>（金銭ではなく株式そのものを出資資産にする）</li>
+            <li>その対価として NAM社が新株を発行し、西川に交付</li>
+            <li>結果: 西川は NAM社株を100%保有、NAM社が WL社株 72,336株を保有する2階建て構造</li>
+          </ol>
+          <p>これにより、WL社からの将来配当はまず NAM社に入り、<span class="term-link" data-term="ekikin-fusannyu">益金不算入</span>で法人税負担をほぼゼロにできる。西川個人がNAM社からお金を取り出すタイミングは別途コントロール可能。</p>
+        </div>
+      </div>
+
+      <div class="qa-entry">
+        <div class="qa-q">
+          <span class="qa-mark">Q2</span>
+          <span class="qa-title">その場合、贈与税はかかる?</span>
+        </div>
+        <div class="qa-a">
+          <p><strong>贈与税はかかりません。</strong> 西川は WL社株を「贈与」しているのではなく、対価として NAM社株を受け取る「等価交換」だから。</p>
+          <p style="background: var(--highlight); padding: 10px 14px; border-left: 2px solid var(--ink); margin: 14px 0;">
+            <strong>贈与税が発生する条件</strong>: 無償で資産を渡す、または対価が時価より著しく低い場合に発生する。<br>
+            <strong>本件の構造</strong>: 西川は WL株（時価 X円）を渡し、その対価として NAM社株（時価 X円）を受け取る → 経済的に贈与ではない。
+          </p>
+
+          <p><strong>⚠ 注意: ただし「所得税」のリスクは別途あり</strong></p>
+          <p>贈与税ではないが、<span class="term-link" data-term="kabushiki-jouto">株式譲渡益課税</span>（みなし譲渡所得課税）が発生する可能性がある。これは見落とされやすい論点。</p>
+          <ul>
+            <li><strong>所得税法59条</strong>: 個人が法人へ資産を現物出資する場合、<strong>時価で譲渡したものとみなす</strong>（みなし譲渡）</li>
+            <li>西川のWL株は創業者株なので取得原価がほぼゼロ → 時価相当額の含み益が一気に実現課税対象になる</li>
+            <li>例: WL株 時価 7億円なら、7億円 × 20.315% ≒ <strong>1.4億円の所得税</strong>がNAM社設立時に発生する可能性</li>
+          </ul>
+
+          <p><strong>実務上の論点</strong></p>
+          <ul>
+            <li>現物出資の評価額をどう設定するか（簿価 / 時価）で、課税タイミングと額が変わる</li>
+            <li>「同族会社の行為計算否認」（所得税法157条）に該当しないか</li>
+            <li>本件スキームの「実効税率11.7%」が成り立つには、現物出資時の課税を回避 or 繰延する設計が前提のはず（→ 詳細はSM社/税理士に要確認）</li>
+            <li>仮に現物出資時に1.4億の所得税が発生するなら、これも全体の手残り計算に織り込む必要あり</li>
+          </ul>
+
+          <div class="callout warn" style="margin-top: 14px;">
+            <strong>要確認事項</strong>: 本Q&Aは一般的な税法理解に基づく整理。実際のスキーム税効果は、SM社提案の税理士コメント・正式DDで検証必須。「11.7%実効税率」の前提条件（現物出資時の課税回避ロジック）が成立するかを確認すべし。
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /pane-qa -->
+
+  <footer class="doc-foot">
+    PJ Wonder · 013_ma / 260601_capital_gain · Wanderlust Internal
+  </footer>
+
+  <!-- Capital Gain formula modal -->
+  <div class="cg-modal-backdrop" id="cg-modal-backdrop">
+    <div class="cg-modal" role="dialog" aria-modal="true">
+      <button class="cg-modal-close" id="cg-modal-close" aria-label="閉じる">×</button>
+      <h4 id="cg-modal-title">—</h4>
+      <div class="cg-modal-formula" id="cg-modal-formula"></div>
+      <div class="cg-modal-note" id="cg-modal-note"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // Tab switching
+  function switchTab(targetId, opts) {
+    opts = opts || {};
+    document.querySelectorAll('.tab-btn').forEach(b => {
+      const on = b.dataset.tab === targetId;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('.tab-pane').forEach(p => {
+      p.classList.toggle('active', p.id === targetId);
+    });
+    if (!opts.noScroll) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  (function() {
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.tab));
+    });
+  })();
+
+  // Term link → jump to Terms tab anchor + flash
+  (function() {
+    function flashTerm(slug) {
+      const el = document.getElementById('term-' + slug);
+      if (!el) return;
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.classList.remove('flash');
+      void el.offsetWidth; // restart animation
+      el.classList.add('flash');
+      setTimeout(() => el.classList.remove('flash'), 2000);
+    }
+    document.addEventListener('click', (e) => {
+      const t = e.target.closest('.term-link');
+      if (!t) return;
+      e.preventDefault();
+      const slug = t.dataset.term;
+      if (!slug) return;
+      const onTerms = document.getElementById('pane-terms').classList.contains('active');
+      if (!onTerms) {
+        switchTab('pane-terms', { noScroll: true });
+        setTimeout(() => flashTerm(slug), 80);
+      } else {
+        flashTerm(slug);
+      }
+    });
+    // Also handle TOC anchor links inside terms tab
+    document.querySelectorAll('.terms-toc a').forEach(a => {
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        const id = a.getAttribute('href').slice(1); // term-xxx
+        const slug = id.replace(/^term-/, '');
+        flashTerm(slug);
+      });
+    });
+  })();
+
+  // Capital Gain Simulator
+  (function() {
+    const $ = (id) => document.getElementById(id);
+    const inputs = {
+      val1:  $('in_val1'),
+      val2:  $('in_val2'),
+      r1:    $('in_r1'),
+      stake: $('in_stake'),
+      vc:    $('in_vc'),
+      tax:   $('in_tax'),
+    };
+    const labels = {
+      val1: $('v_val1'),
+      val2: $('v_val2'),
+      r1:   $('v_r1'),
+    };
+
+    const fmtOku = (M) => {
+      const oku = M / 100;
+      if (Math.abs(oku) >= 0.1) return `¥${oku.toFixed(2)}億`;
+      return `¥${M.toFixed(1)}M`;
+    };
+    const fmtM = (M) => `≒ ¥${M.toFixed(0)}M`;
+    const fmtPct = (p) => `${p.toFixed(2)}%`;
+
+    // 1段階目: SM 50.7% = VC+J-KISS放出 23.54% + 内部売却 27.16%
+    // 内部 27.16% の分配:
+    //   - 佐々木: 1.46% (固定・全量売却 post-J-KISS)
+    //   - Kyo:    可変（12.45 〜 25.70%）
+    //   - その他: 残差 (= 25.70 - Kyo)
+    // 2段階目: 100% 買い切り → Kyo・その他残 全量SMへ
+    // ※ 退職株主の生株分は全て西川(Kyo)へ付与済み。
+    const SM_STAGE1_TARGET = 50.7;
+    const SASAKI_FIXED  = 1.46;   // 佐々木 全量 post-J-KISS (1.80 × 0.81)
+    const OTHERS_CAP    = 13.61;  // 森(4.70)+飯野(4.29)+久保田(3.24)+植山(1.38)
+
+    function updateBounds() {
+      const stake = parseFloat(inputs.stake.value);   // Kyo持株 (post-J-KISS)
+      const vc    = parseFloat(inputs.vc.value);      // VC+J-KISS全量放出
+
+      const internal_s1 = Math.max(0, SM_STAGE1_TARGET - vc); // = 27.16%
+      const variable_pool = internal_s1 - SASAKI_FIXED; // = 25.70%
+
+      const kyo_s1_max = variable_pool;                          // その他 0
+      const kyo_s1_min = Math.max(0, variable_pool - OTHERS_CAP); // その他 全売
+
+      inputs.r1.min = kyo_s1_min.toFixed(2);
+      inputs.r1.max = kyo_s1_max.toFixed(2);
+      let cur = parseFloat(inputs.r1.value);
+      if (cur < kyo_s1_min) cur = kyo_s1_min;
+      if (cur > kyo_s1_max) cur = kyo_s1_max;
+      inputs.r1.value = cur.toFixed(2);
+
+      const others_s1 = Math.max(0, variable_pool - cur);
+      const kyo_s2 = Math.max(0, stake - cur);   // 2段 Kyo売却 = 残全量
+
+      $('r1_min_lbl').textContent = `下限 ${kyo_s1_min.toFixed(2)}%`;
+      $('r1_max_lbl').textContent = `上限 ${kyo_s1_max.toFixed(2)}%`;
+
+      // 4-bucket display
+      $('v_kyo_s1_disp').textContent = cur.toFixed(2);
+      $('v_sasaki').textContent = SASAKI_FIXED.toFixed(2);
+      $('v_others').textContent = others_s1.toFixed(2);
+
+      // bound-note breakdown
+      $('b_buyer').textContent = SM_STAGE1_TARGET.toFixed(1);
+      $('b_vc').textContent = vc.toFixed(2);
+      $('b_min').textContent = cur.toFixed(2);
+      $('b_max').textContent = kyo_s2.toFixed(2);
+
+      const note = $('bound-note');
+      note.classList.remove('warn');
+    }
+
+    function calc() {
+      updateBounds();
+
+      const val1_oku = parseFloat(inputs.val1.value);
+      const val2_oku = parseFloat(inputs.val2.value);
+      const stake_pct = parseFloat(inputs.stake.value);  // Kyo持株 %
+      const kyo_s1_input = parseFloat(inputs.r1.value);  // slider③: Kyo 1段売却 %
+      const tax      = parseFloat(inputs.tax.value) / 100;
+
+      const val1_M = val1_oku * 100;
+      const val2_M = val2_oku * 100;
+
+      // 1段Kyo売却 = slider値
+      const s1_pct = kyo_s1_input;
+      // 2段Kyo売却 = 残持株を全量SMに売却（2段=100%買い切り確定）
+      const s2_pct = Math.max(0, stake_pct - s1_pct);
+
+      // FA手数料 — 各売却者が自分の売却額の5%を負担するモデル
+      // Capital Gain = (Val − FA手数料5%) × cash-out比率 = 売却額 × 95%
+      // 概念的には「全員が持分の5%を売る（持分が19/20に縮小）」効果
+      const FA_RATE = 0.05;       // FA手数料率（売却額に対して5%）
+      const FA_MUL  = 1 - FA_RATE; // = 0.95（Capital Gain 掛率）
+      // Stage1 全体で発生する総FA手数料（参考・M）＝ 5% × (SM取得50.7% × Val1)
+      const s1_fa_total_M = val1_M * (SM_STAGE1_TARGET / 100) * FA_RATE;
+
+      // Stage 1（FAは1段階目のみ）
+      const s1_gross = val1_M * (s1_pct / 100);         // 売却額（FA前）
+      const s1_fa_M  = s1_gross * FA_RATE;              // Kyo自身の売却額の5%
+      const s1_cg    = s1_gross - s1_fa_M;              // Capital Gain =(Val−FA)×比率
+      const s1_tax_amt = s1_cg * tax;                   // 税は Capital Gain に対して
+      const s1_net = s1_cg - s1_tax_amt;
+
+      // Stage 2
+      const s2_gross = val2_M * (s2_pct / 100);
+      const s2_tax_amt = s2_gross * tax;
+      const s2_net = s2_gross - s2_tax_amt;
+
+      // Total
+      const t_pct = s1_pct + s2_pct;
+      const t_gross = s1_gross + s2_gross;
+      const t_tax_amt = s1_tax_amt + s2_tax_amt;
+      const t_net = s1_net + s2_net;
+
+      labels.val1.textContent = val1_oku.toFixed(1);
+      labels.val2.textContent = val2_oku.toFixed(1);
+      labels.r1.textContent = kyo_s1_input.toFixed(2);
+      const oiEl = $('v_oi');
+      if (oiEl) oiEl.textContent = (val2_oku / 6).toFixed(2);
+
+      const row = (id, M) => {
+        $(id).innerHTML = `${fmtOku(M)}<span class="amt sub">${fmtM(M)}</span>`;
+      };
+
+      $('s1_pct').innerHTML = `${fmtPct(s1_pct)}<span class="amt sub">of WL社</span>`;
+      row('s1_gross', s1_gross);
+      row('s1_tax', s1_tax_amt);
+      row('s1_fa', s1_fa_M);
+      row('s1_net', s1_net);
+
+      $('s2_pct').innerHTML = `${fmtPct(s2_pct)}<span class="amt sub">of WL社</span>`;
+      row('s2_gross', s2_gross);
+      row('s2_tax', s2_tax_amt);
+      row('s2_net', s2_net);
+
+      $('t_pct').innerHTML = `${fmtPct(t_pct)}<span class="amt sub">of WL社</span>`;
+      row('t_gross', t_gross);
+      row('t_tax', t_tax_amt);
+      row('t_net', t_net);
+
+      const setBar = (netId, taxId, gross, tax_amt) => {
+        if (gross <= 0) {
+          $(netId).style.width = '0%';
+          $(taxId).style.width = '0%';
+          return;
+        }
+        const netPct = (1 - tax_amt/gross) * 100;
+        $(netId).style.width = `${netPct}%`;
+        $(taxId).style.width = `${100 - netPct}%`;
+      };
+      // 暗色=手残り / 明色=控除（1段は FA+税、2段は税のみ）
+      setBar('s1_bar_net', 's1_bar_tax', s1_gross, s1_fa_M + s1_tax_amt);
+      setBar('s2_bar_net', 's2_bar_tax', s2_gross, s2_tax_amt);
+      setBar('t_bar_net',  't_bar_tax',  t_gross,  s1_fa_M + t_tax_amt);
+
+      // === Per-member capital gain table ===
+      // ≥ 1億: "x.x億" / < 1億: "x,xxx万円"
+      const cgFmt = (oku) => {
+        const abs = Math.abs(oku);
+        if (abs >= 1) return `${oku.toFixed(1)}億`;
+        const man = Math.round(oku * 10000);
+        return `${man.toLocaleString()}万円`;
+      };
+      const setCG = (id, v) => { const el = $(id); if (el) el.textContent = cgFmt(v); };
+
+      // Individual stakes (post-J-KISS, % of WL社)
+      const STAKE = { mori:4.70, iino:4.29, kubota:3.24, ueyama:1.38, sasaki:1.46,
+                      deep30:4.46, sota:0.081, anobaka:10, skyland:2, takagi:1, ev:6 };
+      const othersTotal = STAKE.mori + STAKE.iino + STAKE.kubota + STAKE.ueyama; // 13.61
+      const others_s1 = Math.max(0, (SM_STAGE1_TARGET - parseFloat(inputs.vc.value)) - SASAKI_FIXED - s1_pct);
+      const others_frac = othersTotal > 0 ? others_s1 / othersTotal : 0; // = 各人の何%売るか
+
+      // Capital Gain = (Val − FA5%) × cash-out比率
+      //  1段階目(_s1): FA5%控除後（× FA_MUL）／ 2段階目(_s2): FAなし
+      const cg = {
+        kyo_s1: val1_oku * s1_pct / 100 * FA_MUL,
+        kyo_s2: val2_oku * s2_pct / 100,
+        sasaki_s1: val1_oku * SASAKI_FIXED / 100 * FA_MUL,
+        mori_s1: val1_oku * (STAKE.mori * others_frac) / 100 * FA_MUL,
+        mori_s2: val2_oku * (STAKE.mori * (1 - others_frac)) / 100,
+        iino_s1: val1_oku * (STAKE.iino * others_frac) / 100 * FA_MUL,
+        iino_s2: val2_oku * (STAKE.iino * (1 - others_frac)) / 100,
+        kubota_s1: val1_oku * (STAKE.kubota * others_frac) / 100 * FA_MUL,
+        kubota_s2: val2_oku * (STAKE.kubota * (1 - others_frac)) / 100,
+        ueyama_s1: val1_oku * (STAKE.ueyama * others_frac) / 100 * FA_MUL,
+        ueyama_s2: val2_oku * (STAKE.ueyama * (1 - others_frac)) / 100,
+        deep30_s1: val1_oku * STAKE.deep30 / 100 * FA_MUL,
+        sota_s1: val1_oku * STAKE.sota / 100 * FA_MUL,
+        anobaka_s1: val1_oku * STAKE.anobaka / 100 * FA_MUL,
+        skyland_s1: val1_oku * STAKE.skyland / 100 * FA_MUL,
+        takagi_s1: val1_oku * STAKE.takagi / 100 * FA_MUL,
+        ev_s1: val1_oku * STAKE.ev / 100 * FA_MUL,
+      };
+
+      // Populate cells
+      setCG('cg_kyo_s1', cg.kyo_s1); setCG('cg_kyo_s2', cg.kyo_s2); setCG('cg_kyo_t', cg.kyo_s1 + cg.kyo_s2);
+      setCG('cg_sasaki_s1', cg.sasaki_s1); setCG('cg_sasaki_t', cg.sasaki_s1);
+      setCG('cg_mori_s1', cg.mori_s1); setCG('cg_mori_s2', cg.mori_s2);
+      setCG('cg_mori_t', cg.mori_s1 + cg.mori_s2);
+      setCG('cg_iino_s1', cg.iino_s1); setCG('cg_iino_s2', cg.iino_s2);
+      setCG('cg_iino_t', cg.iino_s1 + cg.iino_s2);
+      setCG('cg_kubota_s1', cg.kubota_s1); setCG('cg_kubota_s2', cg.kubota_s2);
+      setCG('cg_kubota_t', cg.kubota_s1 + cg.kubota_s2);
+      setCG('cg_ueyama_s1', cg.ueyama_s1); setCG('cg_ueyama_s2', cg.ueyama_s2);
+      setCG('cg_ueyama_t', cg.ueyama_s1 + cg.ueyama_s2);
+      setCG('cg_deep30_s1', cg.deep30_s1);
+      setCG('cg_sota_s1', cg.sota_s1);
+      setCG('cg_anobaka_s1', cg.anobaka_s1);
+      setCG('cg_skyland_s1', cg.skyland_s1);
+      setCG('cg_takagi_s1', cg.takagi_s1);
+      setCG('cg_ev_s1', cg.ev_s1);
+
+      // Totals（FAは各メンバーのCapital Gainに控除済み）
+      const total_s1 = cg.kyo_s1 + cg.sasaki_s1 + cg.mori_s1 + cg.iino_s1
+                     + cg.kubota_s1 + cg.ueyama_s1 + cg.deep30_s1 + cg.sota_s1
+                     + cg.anobaka_s1 + cg.skyland_s1 + cg.takagi_s1 + cg.ev_s1;
+      const total_s2 = cg.kyo_s2 + cg.mori_s2 + cg.iino_s2 + cg.kubota_s2 + cg.ueyama_s2;
+      setCG('cg_total_s1', total_s1);
+      setCG('cg_total_s2', total_s2);
+      setCG('cg_total_t', total_s1 + total_s2);
+
+      // === Formula data for modal popups ===
+      const f = (x) => x.toFixed(2);
+      const memberPct = {
+        kyo: stake_pct, sasaki: STAKE.sasaki,
+        mori: STAKE.mori, iino: STAKE.iino, kubota: STAKE.kubota, ueyama: STAKE.ueyama,
+        deep30: STAKE.deep30, sota: STAKE.sota,
+        anobaka: STAKE.anobaka, skyland: STAKE.skyland, takagi: STAKE.takagi, ev: STAKE.ev,
+      };
+      const othersFracPct = (others_frac * 100).toFixed(2);
+      const otherMember = (n, jpName) => ({
+        s1: {
+          title: `${jpName} 1段階目`,
+          formula: `<span class="step label">「その他」按分による1段売却</span>
+            <span class="step">持株 ${f(memberPct[n])}% × その他Stage1比率 ${othersFracPct}%</span>
+            <span class="step">= ${f(memberPct[n] * others_frac)}%</span>
+            <span class="step">${f(memberPct[n] * others_frac)}% × (Val1−FA5%) ${(val1_oku*FA_MUL).toFixed(2)}億</span>
+            <span class="result">¥${f(cg[n+'_s1'])} 億</span>`,
+          note: `その他Stage1比率 = (27.16% − Kyo${f(s1_pct)}% − 佐々木1.46%) ÷ 13.61% = ${othersFracPct}%。Capital Gain はFA5%控除後。`,
+        },
+        s2: {
+          title: `${jpName} 2段階目`,
+          formula: `<span class="step label">残持株を全量Stage2で売却</span>
+            <span class="step">持株 ${f(memberPct[n])}% − Stage1売却 ${f(memberPct[n] * others_frac)}%</span>
+            <span class="step">= ${f(memberPct[n] * (1 - others_frac))}%</span>
+            <span class="step">${f(memberPct[n] * (1 - others_frac))}% × Val2 ${val2_oku}億</span>
+            <span class="result">¥${f(cg[n+'_s2'])} 億</span>`,
+        },
+        t: {
+          title: `${jpName} 合計`,
+          formula: `<span class="step label">Stage1 + Stage2 合算</span>
+            <span class="step">Stage1: ¥${f(cg[n+'_s1'])} 億</span>
+            <span class="step">Stage2: ¥${f(cg[n+'_s2'])} 億</span>
+            <span class="result">¥${f(cg[n+'_s1'] + cg[n+'_s2'])} 億</span>`,
+        },
+      });
+      const vcSimple = (n, jpName, pct) => ({
+        s1: {
+          title: `${jpName} 1段階目`,
+          formula: `<span class="step label">全量Stage1で売却（Capital Gain＝FA5%控除後）</span>
+            <span class="step">持株 ${pct}% × (Val1−FA5%) ${(val1_oku*FA_MUL).toFixed(2)}億</span>
+            <span class="result">¥${f(cg[n+'_s1'])} 億</span>`,
+          note: n.startsWith('anobaka')||n.startsWith('skyland')||n.startsWith('takagi')||n.startsWith('ev')
+            ? 'J-KISS転換 (cap基準) → Stage1で全量売却（2x参加より転換が有利な Val1=10億想定）' : 'VC全量Stage1で売却',
+        },
+        t: {
+          title: `${jpName} 合計`,
+          formula: `<span class="step label">Stage1のみ（Stage2は0）</span>
+            <span class="result">¥${f(cg[n+'_s1'])} 億</span>`,
+        },
+      });
+      const jkissCap = { anobaka:2, skyland:4, takagi:4, ev:5 };
+      window.__cgFormulas = {
+        kyo_s1: {
+          title: 'Kyo 1段階目（Capital Gain）',
+          formula: `<span class="step label">(Val1 − FA手数料5%) × Kyo 1段売却%</span>
+            <span class="step">(${val1_oku}億 − ${(val1_oku*FA_RATE).toFixed(2)}億) × ${f(s1_pct)}%</span>
+            <span class="step">= ${(val1_oku*FA_MUL).toFixed(2)}億 × ${f(s1_pct)}%</span>
+            <span class="result">¥${f(cg.kyo_s1)} 億</span>`,
+          note: 'FA手数料5%控除後。スライダー③ で Kyo 1段売却% を 12.45〜25.70% の範囲で調整',
+        },
+        kyo_s2: {
+          title: 'Kyo 2段階目',
+          formula: `<span class="step label">Kyo 2段売却% × Val2</span>
+            <span class="step">Kyo持株 ${f(stake_pct)}% − 1段売却 ${f(s1_pct)}%</span>
+            <span class="step">= ${f(s2_pct)}%</span>
+            <span class="step">${f(s2_pct)}% × Val2 ${val2_oku}億</span>
+            <span class="result">¥${f(cg.kyo_s2)} 億</span>`,
+          note: 'Stage2は100%買い切り → Kyo残持株は全量SMへ',
+        },
+        kyo_t: {
+          title: 'Kyo 合計（Capital Gain・税前）',
+          formula: `<span class="step label">Stage1 + Stage2（1段はFA5%控除後）</span>
+            <span class="step">Stage1: ¥${f(cg.kyo_s1)} 億</span>
+            <span class="step">Stage2: ¥${f(cg.kyo_s2)} 億</span>
+            <span class="result">¥${f(cg.kyo_s1 + cg.kyo_s2)} 億</span>`,
+          note: 'Capital GainはFA控除後（税前）。税後手残りは Stage1/2 カード参照。',
+        },
+        sasaki_s1: {
+          title: '佐々木 1段階目（固定・全量）',
+          formula: `<span class="step label">佐々木は持株全量を1段階目で売却（固定）</span>
+            <span class="step">持株 1.46% × (Val1−FA5%) ${(val1_oku*FA_MUL).toFixed(2)}億</span>
+            <span class="result">¥${f(cg.sasaki_s1)} 億</span>`,
+          note: '生株 1.80% × 0.81 (J-KISS希薄化) = 1.46%。Capital Gain はFA5%控除後。',
+        },
+        sasaki_t: { title: '佐々木 合計',
+          formula: `<span class="step">Stage1のみ: ¥${f(cg.sasaki_s1)} 億</span>
+            <span class="result">¥${f(cg.sasaki_s1)} 億</span>` },
+        mori_s1: otherMember('mori', '森').s1, mori_s2: otherMember('mori', '森').s2, mori_t: otherMember('mori', '森').t,
+        iino_s1: otherMember('iino', '飯野').s1, iino_s2: otherMember('iino', '飯野').s2, iino_t: otherMember('iino', '飯野').t,
+        kubota_s1: otherMember('kubota', '久保田').s1, kubota_s2: otherMember('kubota', '久保田').s2, kubota_t: otherMember('kubota', '久保田').t,
+        ueyama_s1: otherMember('ueyama', '植山').s1, ueyama_s2: otherMember('ueyama', '植山').s2, ueyama_t: otherMember('ueyama', '植山').t,
+        deep30_s1: vcSimple('deep30', 'Deep30', '4.46').s1,
+        deep30_t:  vcSimple('deep30', 'Deep30', '4.46').t,
+        sota_s1: vcSimple('sota', 'Sota Watanabe', '0.08').s1,
+        sota_t:  vcSimple('sota', 'Sota Watanabe', '0.08').t,
+        anobaka_s1: { ...vcSimple('anobaka', 'ANOBAKA', '10.00').s1,
+          note: 'J-KISS転換 (Post Cap 2億・10%)。Val1=10億 → 転換価値 1億 > 2x参加4,000万 → 転換選択。' },
+        anobaka_t: vcSimple('anobaka', 'ANOBAKA', '10.00').t,
+        skyland_s1: { ...vcSimple('skyland', 'Skyland', '2.00').s1,
+          note: 'J-KISS転換 (Post Cap 4億・2%)。Val1=10億 → 転換価値 2,000万 > 2x参加1,600万 → 転換選択。' },
+        skyland_t: vcSimple('skyland', 'Skyland', '2.00').t,
+        takagi_s1: { ...vcSimple('takagi', '高木', '1.00').s1,
+          note: 'J-KISS転換 (Post Cap 4億・1%)。Val1=10億 → 転換価値 1,000万 > 2x参加800万 → 転換選択。' },
+        takagi_t: vcSimple('takagi', '高木', '1.00').t,
+        ev_s1: { ...vcSimple('ev', 'EV', '6.00').s1,
+          note: 'J-KISS転換 (Post Cap 5億・6%)。Val1=10億 → 転換価値 6,000万 = 2x参加6,000万 (同額)。' },
+        ev_t: vcSimple('ev', 'EV', '6.00').t,
+        total_s1: {
+          title: '合計 1段階目（FA控除後）',
+          formula: `<span class="step label">Capital Gain = (Val1 − FA5%) × SM取得50.7%</span>
+            <span class="step">売却額(FA前): ${SM_STAGE1_TARGET}% × Val1 ${val1_oku}億 = ¥${(val1_oku*SM_STAGE1_TARGET/100).toFixed(2)} 億</span>
+            <span class="step">− FA手数料5%: ▲¥${(s1_fa_total_M/100).toFixed(2)} 億</span>
+            <span class="result">¥${f(total_s1)} 億</span>`,
+          note: 'FA手数料は各売却者の売却額の5%。各メンバーのCapital Gainに控除済み。',
+        },
+        total_s2: {
+          title: '合計 2段階目',
+          formula: `<span class="step label">残持株 49.3% × Val2</span>
+            <span class="step">Kyo残 ${f(s2_pct)}% + その他残 ${f((1-others_frac)*othersTotal)}%</span>
+            <span class="step">× Val2 ${val2_oku}億</span>
+            <span class="result">¥${f(total_s2)} 億</span>`,
+        },
+        total_t: {
+          title: '合計 (Stage1 + Stage2)',
+          formula: `<span class="step">Stage1: ¥${f(total_s1)} 億</span>
+            <span class="step">Stage2: ¥${f(total_s2)} 億</span>
+            <span class="result">¥${f(total_s1 + total_s2)} 億</span>`,
+          note: 'これがWL社の総取引額 (FA控除後) = (50.7% × Val1) + (49.3% × Val2) − FA手数料',
+        },
+      };
+    }
+
+    // Expose calc globally so inline oninput handlers work even if listeners fail
+    window.__simCalc = calc;
+
+    // Listen on both 'input' (live) and 'change' (release) for max compatibility
+    ['input', 'change'].forEach(evt => {
+      Object.values(inputs).forEach(el => {
+        if (el) el.addEventListener(evt, calc);
+      });
+    });
+
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const p = btn.dataset.preset;
+        if (p === 'plain') inputs.tax.value = '20.315';
+        else if (p === 'nam') inputs.tax.value = '11.7';
+        else if (p === 'reset') {
+          inputs.val1.value  = '10';
+          inputs.val2.value  = '18';
+          inputs.r1.value    = '24.70';
+          inputs.stake.value = '61.40';
+          inputs.vc.value    = '23.54';
+          inputs.tax.value   = '20.315';
+        }
+        calc();
+      });
+    });
+
+    calc();
+  })();
+
+  // Capital Gain cell click → modal
+  (function() {
+    const $ = (id) => document.getElementById(id);
+    const backdrop = $('cg-modal-backdrop');
+    const titleEl  = $('cg-modal-title');
+    const formulaEl= $('cg-modal-formula');
+    const noteEl   = $('cg-modal-note');
+    const closeBtn = $('cg-modal-close');
+
+    function open(key) {
+      const data = (window.__cgFormulas || {})[key];
+      if (!data) return;
+      titleEl.textContent = data.title || '';
+      formulaEl.innerHTML = data.formula || '';
+      noteEl.textContent = data.note || '';
+      noteEl.style.display = data.note ? 'block' : 'none';
+      backdrop.classList.add('active');
+    }
+    function close() { backdrop.classList.remove('active'); }
+
+    document.addEventListener('click', (e) => {
+      const cell = e.target.closest('.cg-cell');
+      if (cell && cell.dataset.cg) {
+        e.preventDefault();
+        open(cell.dataset.cg);
+      }
+    });
+    closeBtn.addEventListener('click', close);
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) close(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+  })();
+</script>
+</body>
+</html>
