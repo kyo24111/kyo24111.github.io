@@ -4071,7 +4071,7 @@
       <div class="chapter-meta">
         <div class="chapter-label">Chapter</div>
         <div class="chapter-status pending">📝 これから学ぶ</div>
-        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-07-08</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-07-13</div>
       </div>
       <div class="chapter-title"><span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>・<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span>（Eigenvalue / Eigenvector）</div>
 
@@ -4219,6 +4219,70 @@
           <span class="key">手触りのポイント：</span>右上の <code>19</code> は<span class="hl">固有値には一切効かない</span>（左下が 0 なので det の掛け算に絡まない）。効くのは対角の 3 と 5 だけ。<br>
           ※ ただし <span class="hl">19 は固有ベクトルには効く</span> ── 固有値だけの話。固有ベクトルは別途 <code>(A − λI)v = 0</code> を解く。<br>
           ※ 「対角＝固有値」は<span class="key">三角・対角行列だけの特権</span>。一般の行列では成り立たない（対角の和＝トレース＝固有値の和、という緩い関係しかない）。
+        </div>
+      </div>
+
+      <div class="section" id="eig-markov">
+        <h2>応用の読み方 — 市場シェア（客の奪い合い）と定常状態</h2>
+
+        <p>「こういうビジネスの言い方ができるのか?」→ <span class="hl">できる。これは<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>を<strong>マルコフ連鎖（推移行列）</strong>として読む、固有値の最も有名な応用</span>。λ=1 の固有ベクトルが「最終的に落ち着く先＝定常状態」になる。同じ A=[[0.9,0.1],[0.1,0.9]] で読んでみる。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:22px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">① 行列を「移動ルール」として読む</h3>
+
+        <p>状態ベクトル <code>x = [A店の客数, B店の客数]</code> とすると、来年は <code>x' = A x</code>：</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.95">
+          A店の来年 = <code>0.9·(A店) + 0.1·(B店)</code>　… A の客の90%残留＋B の客の10%流入<br>
+          B店の来年 = <code>0.1·(A店) + 0.9·(B店)</code>　… B の客の90%残留＋A の客の10%流入
+        </div>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13.5px">
+          <span class="key">列の和がどちらも 1（0.9+0.1）：</span>これは<span class="hl">客が消えも増えもしない（総数が保存される）</span>ことを意味する。この「列和＝1」の行列がマルコフ推移行列。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:22px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">② 2つの固有ベクトルの「意味」</h3>
+
+        <ul style="list-style:none;padding:0;margin:8px 0;display:flex;flex-direction:column;gap:8px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.7"><span style="position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:#1d7a4d"></span><span style="color:#1d7a4d;font-weight:700">(1,1) ・ λ=1 ＝ 定常状態（50:50）：</span>両店が同数のとき、流出10%と流入10%が釣り合い、<span class="hl">来年も全く同じ</span>。<code>A(1,1)=(1,1)</code>。λ=1 なので総数も減らずキープ。</li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.7"><span style="position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;background:#c0392b"></span><span style="color:#c0392b;font-weight:700">(1,−1) ・ λ=0.8 ＝ 偏り成分：</span>「A が多く B が少ない」という<span class="hl">かたより</span>を表す方向。<code>A(1,−1)=0.8(1,−1)</code> なので、偏りは<span class="hl">毎年 0.8 倍に薄れて消えていく</span>。</li>
+        </ul>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:22px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">③ なぜ必ず 50:50 に落ち着くか — [2,0] で追う</h3>
+
+        <p>どんな初期状態も <span class="hl">「平均 (1,1)」＋「偏り (1,−1)」</span>に分解できる。偏りだけが 0.8ⁿ で消えるので、残るのは平均だけ。<code>[2,0] = 1·(1,1) + 1·(1,−1)</code> なので：</p>
+
+        <div class="formula" style="text-align:center;font-size:14px">
+          Aⁿ[2,0] = <span class="hl">[1 + 0.8ⁿ, 1 − 0.8ⁿ]</span> &nbsp;→&nbsp; [1, 1]（n→∞）
+        </div>
+
+        <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:13px">
+          <thead><tr style="text-align:left">
+            <th style="padding:7px 10px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">n（年）</th>
+            <th style="padding:7px 10px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">[A店, B店]</th>
+            <th style="padding:7px 10px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)">シェア</th>
+          </tr></thead>
+          <tbody style="font-family:'Share Tech Mono',monospace">
+            <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border)">0</td><td style="padding:6px 10px;border-bottom:1px solid var(--border)">[2.00, 0.00]</td><td style="padding:6px 10px;border-bottom:1px solid var(--border)">100 : 0</td></tr>
+            <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border)">1</td><td style="padding:6px 10px;border-bottom:1px solid var(--border)">[1.80, 0.20]</td><td style="padding:6px 10px;border-bottom:1px solid var(--border)">90 : 10</td></tr>
+            <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border)">2</td><td style="padding:6px 10px;border-bottom:1px solid var(--border)">[1.64, 0.36]</td><td style="padding:6px 10px;border-bottom:1px solid var(--border)">82 : 18</td></tr>
+            <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border)">5</td><td style="padding:6px 10px;border-bottom:1px solid var(--border)">[1.33, 0.67]</td><td style="padding:6px 10px;border-bottom:1px solid var(--border)">66 : 34</td></tr>
+            <tr><td style="padding:6px 10px;border-bottom:1px solid var(--border)">10</td><td style="padding:6px 10px;border-bottom:1px solid var(--border)">[1.11, 0.89]</td><td style="padding:6px 10px;border-bottom:1px solid var(--border)">55 : 45</td></tr>
+            <tr><td style="padding:6px 10px">∞</td><td style="padding:6px 10px"><span class="hl">[1.00, 1.00]</span></td><td style="padding:6px 10px"><span class="hl">50 : 50</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700;font-size:13.5px">
+          <span class="key">「それ以上つぶれずにキープ」の正体：</span>(1,1) 方向が <span class="hl">λ=1（＜1 でない）</span>だから。もしこの固有値が 1 未満なら、年々<span class="hl">両店とも客が減り、最後は誰もいなくなる（→ 原点に潰れる）</span>。λ=1 はまさに「総数が保存されて消えない」ことの数学的な意味。前セクションの「傾かない軸＋伸縮率」でいえば、伸縮率ちょうど 1 の軸が生き残り、0.8 の軸（偏り）が消える。
+        </div>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px">
+          <span class="key">一般化（これが効く理由）：</span><br>
+          ・<span class="hl">λ=1 の固有ベクトル ＝ 定常状態（stationary / steady state）</span>。Google PageRank・人口移動・在庫・評判モデルなど、「長期的にどこへ落ち着くか」はすべてこの λ=1 固有ベクトルで決まる。<br>
+          ・<span class="hl">2番目の固有値 0.8 ＝ 収束の速さ</span>。絶対値が小さいほど速く定常状態へ。0.8 なら偏りは毎年20%ずつ消える。
+        </div>
+
+        <div class="formula" style="background:#eef8f2;border-left-color:#1d7a4d;font-size:13.5px">
+          <span class="key" style="color:#1d7a4d">▶ 同じ話を動かして見る：</span><a href="260708_eigenvector_flow.html" style="color:#1d7a4d;font-weight:700">固有ベクトルの流れ（アニメーション）</a>。この市場シェアの収束は、[2,0] が (1,1) 線へ吸い寄せられるアニメそのもの。
         </div>
       </div>
 
