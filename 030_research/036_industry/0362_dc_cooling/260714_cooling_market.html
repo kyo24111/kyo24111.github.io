@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>24111 / industry / data center cooling market</title>
+<style>
+  :root{ --ink:#111;--sub:#555;--line:#ddd;--bg:#fff;--soft:#f6f6f6;--soft2:#efefef; }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{ margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.9;font-size:16px;letter-spacing:.01em;-webkit-font-smoothing:antialiased; }
+  .wrap{max-width:820px;margin:0 auto;padding:56px 22px 96px}
+  .mono{font-family:"Share Tech Mono","SFMono-Regular",Menlo,Consolas,monospace}
+
+  header{border-bottom:2px solid var(--ink);padding-bottom:26px;margin-bottom:40px}
+  .kicker{font-size:12px;letter-spacing:.18em;color:var(--sub);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:26px;line-height:1.5;margin:0 0 18px;font-weight:700}
+  .meta{font-size:13px;color:var(--sub);line-height:1.85}
+
+  .sib{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .sib a{font-size:11.5px;letter-spacing:.06em;text-decoration:none;color:var(--sub);
+    border:1px solid var(--line);border-radius:20px;padding:5px 13px}
+  .sib a.on{color:#fff;background:var(--ink);border-color:var(--ink)}
+
+  section{margin:48px 0}
+  h2{ font-size:13px;letter-spacing:.14em;color:var(--ink);text-transform:uppercase;
+    border-bottom:1px solid var(--line);padding-bottom:8px;margin:0 0 22px;font-weight:700; }
+  h3{font-size:17px;margin:34px 0 12px;font-weight:700}
+
+  .tldr{background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:22px 26px}
+  .tldr p{margin:0 0 12px;font-size:15.5px}
+  .tldr p:last-child{margin-bottom:0}
+
+  .toc{columns:2;column-gap:28px;font-size:14px}
+  .toc a{color:var(--ink);text-decoration:none;display:block;padding:4px 0;border-bottom:1px dotted var(--line)}
+  @media(max-width:640px){.toc{columns:1}}
+
+  ul.key{list-style:none;margin:0;padding:0}
+  ul.key li{position:relative;padding:0 0 12px 24px;font-size:15px}
+  ul.key li:before{content:"—";position:absolute;left:0;color:var(--sub)}
+
+  table.data{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:13px}
+  table.data th,table.data td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6}
+  table.data th{background:var(--soft);font-weight:700}
+  table.data td.n{font-family:"Share Tech Mono",monospace;white-space:nowrap}
+
+  .todo{border:1px dashed var(--line);border-radius:6px;padding:16px 20px;color:var(--sub);font-size:13.5px;background:var(--soft)}
+  .todo b{color:var(--ink)}
+
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--sub)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">Industry · AI Infrastructure</div>
+  <h1>データセンター冷却マーケット</h1>
+  <div class="meta">
+    Started 2026-07-14 ／ 継続追記。空冷 → 液冷 → 液浸への移行と、それを駆動するラック密度・電力・水・規制の力学を整理する。<br>
+    Power / Cooling / Location の <b>Cooling</b> 面。
+  </div>
+  <nav class="sib">
+    <a class="on" href="../0362_dc_cooling/260714_cooling_market.html">Cooling 冷却</a>
+    <a href="../0363_power_utility/260714_power_utility.html">Power 電力</a>
+    <a href="../0364_power_generation/260714_power_generation.html">Generation 発電</a>
+    <a href="../data_center.html">DC 業界俯瞰</a>
+  </nav>
+</header>
+
+<section>
+  <h2>TL;DR</h2>
+  <div class="tldr">
+    <p>GPUの発熱密度（TDP・ラックkW）が空冷の物理限界を超え、冷却が「あれば良い」から「無いとチップが動かない」制約に変わりつつある。ここが本テーマの出発点。</p>
+    <p class="todo" style="margin:0"><b>TODO:</b> 論点を確定したら3行に凝縮する（市場規模／勝ち筋の技術／日本の立ち位置）。</p>
+  </div>
+</section>
+
+<section>
+  <h2>目次</h2>
+  <nav class="toc">
+    <a href="#driver">1. なぜ今 — 需要ドライバ</a>
+    <a href="#map">2. 冷却技術の地図</a>
+    <a href="#stack">3. サプライチェーン構造</a>
+    <a href="#players">4. 主要プレイヤー</a>
+    <a href="#japan">5. 日本の立ち位置</a>
+    <a href="#market">6. 市場規模・予測</a>
+    <a href="#deals">7. 投資・M&A</a>
+    <a href="#take">8. 考察 / NFA</a>
+  </nav>
+</section>
+
+<section id="driver">
+  <h2>1. なぜ今 — 需要ドライバ</h2>
+  <ul class="key">
+    <li>GPU TDPの上昇（H100 700W → Blackwell → Rubin 世代）とラック密度の kW 化</li>
+    <li>PUE規制・水規制（WUE）、電力ひっ迫による効率要求</li>
+    <li>ハイパースケーラの設計標準が空冷前提から液冷前提へ</li>
+  </ul>
+  <div class="todo"><b>受け皿:</b> ここに数字（世代別TDP、ラックkWの推移、空冷の限界点 ~20-30kW/rack 説）を埋める。</div>
+</section>
+
+<section id="map">
+  <h2>2. 冷却技術の地図</h2>
+  <p>まず全体像。縦軸に「対応できるラック密度」、コスト・水・成熟度で各方式を比較する骨格。数値は追って埋める。</p>
+  <table class="data">
+    <thead><tr><th>方式</th><th>概要</th><th>対応密度<br>(kW/rack)</th><th>成熟度</th><th>水使用</th><th>論点</th></tr></thead>
+    <tbody>
+      <tr><td>空冷（CRAC/CRAH＋アイル封じ込め）</td><td>従来型。冷気を床下・通路で管理</td><td class="n">~15–30</td><td>成熟</td><td>中</td><td>密度の天井</td></tr>
+      <tr><td>外気・蒸発冷却（free/evaporative）</td><td>気候を利用しコンプレッサ負荷減</td><td class="n">—</td><td>成熟</td><td>高（蒸発）</td><td>立地依存・水</td></tr>
+      <tr><td>リアドア熱交換（RDHx）</td><td>ラック背面に水冷HX。既存改修向き</td><td class="n">~40–60</td><td>実用</td><td>中</td><td>移行期の橋渡し</td></tr>
+      <tr><td>直接液冷 / コールドプレート（DTC, single/two-phase）</td><td>チップに冷却板を直付け。CDUで熱を運ぶ</td><td class="n">~100+</td><td>立ち上がり</td><td>低〜中</td><td>本命候補。配管・CDU・保守</td></tr>
+      <tr><td>液浸（single-phase immersion）</td><td>絶縁液に基板ごと浸す</td><td class="n">~100+</td><td>初期</td><td>低</td><td>流体コスト・運用文化</td></tr>
+      <tr><td>液浸（two-phase immersion）</td><td>沸騰潜熱で除熱。最高効率だが</td><td class="n">高</td><td>初期</td><td>低</td><td>PFAS/フッ素系規制リスク</td></tr>
+    </tbody>
+  </table>
+  <div class="todo"><b>受け皿:</b> 各方式の熱伝達係数・PUE寄与・CAPEX/OPEX、two-phaseのPFAS規制動向を追記。</div>
+</section>
+
+<section id="stack">
+  <h2>3. サプライチェーン構造</h2>
+  <div class="todo"><b>受け皿:</b> 冷却板 / CDU / マニフォールド / 冷媒（誘電流体） / チラー / 施工 の層に分けて、誰が握っているか（利益プール）を書く。</div>
+</section>
+
+<section id="players">
+  <h2>4. 主要プレイヤー</h2>
+  <ul class="key">
+    <li>統合系: Vertiv, Schneider Electric</li>
+    <li>液冷専業: CoolIT, Asetek, Boyd, JetCool</li>
+    <li>液浸: LiquidStack, Submer, GRC（two-phase / single-phase）</li>
+    <li>日本: 富士通、NEC、パナソニックHD（<a href="../../037_net_search/260709_panasonic_dc_cooling.html">冷却新技術メモ</a>）、NTT</li>
+    <li>流体: 3M（Novec撤退）、Shell、Castrol など</li>
+  </ul>
+  <div class="todo"><b>受け皿:</b> 各社の技術ポジション・上場/非上場・提携（NVIDIA/ハイパースケーラ）を表に。</div>
+</section>
+
+<section id="japan">
+  <h2>5. 日本の立ち位置</h2>
+  <div class="todo"><b>受け皿:</b> 素材・精密加工（冷却板、流体、配管）での勝ち筋。パナHD・富士通の技術。国内DC投資（印西・北海道・九州）との接続。</div>
+</section>
+
+<section id="market">
+  <h2>6. 市場規模・予測</h2>
+  <div class="todo"><b>受け皿:</b> 液冷市場のTAM/CAGR（複数ソースを読み比べ、レンジで）。空冷→液冷の置換ペース。</div>
+</section>
+
+<section id="deals">
+  <h2>7. 投資・M&A</h2>
+  <div class="todo"><b>受け皿:</b> Vertiv等の買収、液冷スタートアップの調達、NVIDIAリファレンス採用。</div>
+</section>
+
+<section id="take">
+  <h2>8. 考察 / NFA</h2>
+  <div class="todo"><b>受け皿:</b> 自分の仮説を書く場所。「利益プールはどこか」「日本発で取れる隙間はあるか」「次事業（ハードインフラ）との接点」。</div>
+</section>
+
+<footer>
+  24111 / research / industry / dc cooling · Started 2026-07-14 · monochrome · NFA
+</footer>
+</div>
+</body>
+</html>

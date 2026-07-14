@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>24111 / industry / power &amp; grid (electric utility)</title>
+<style>
+  :root{ --ink:#111;--sub:#555;--line:#ddd;--bg:#fff;--soft:#f6f6f6;--soft2:#efefef; }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{ margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.9;font-size:16px;letter-spacing:.01em;-webkit-font-smoothing:antialiased; }
+  .wrap{max-width:820px;margin:0 auto;padding:56px 22px 96px}
+  .mono{font-family:"Share Tech Mono","SFMono-Regular",Menlo,Consolas,monospace}
+
+  header{border-bottom:2px solid var(--ink);padding-bottom:26px;margin-bottom:40px}
+  .kicker{font-size:12px;letter-spacing:.18em;color:var(--sub);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:26px;line-height:1.5;margin:0 0 18px;font-weight:700}
+  .meta{font-size:13px;color:var(--sub);line-height:1.85}
+
+  .sib{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .sib a{font-size:11.5px;letter-spacing:.06em;text-decoration:none;color:var(--sub);
+    border:1px solid var(--line);border-radius:20px;padding:5px 13px}
+  .sib a.on{color:#fff;background:var(--ink);border-color:var(--ink)}
+
+  section{margin:48px 0}
+  h2{ font-size:13px;letter-spacing:.14em;color:var(--ink);text-transform:uppercase;
+    border-bottom:1px solid var(--line);padding-bottom:8px;margin:0 0 22px;font-weight:700; }
+  h3{font-size:17px;margin:34px 0 12px;font-weight:700}
+
+  .tldr{background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:22px 26px}
+  .tldr p{margin:0 0 12px;font-size:15.5px}
+  .tldr p:last-child{margin-bottom:0}
+
+  .toc{columns:2;column-gap:28px;font-size:14px}
+  .toc a{color:var(--ink);text-decoration:none;display:block;padding:4px 0;border-bottom:1px dotted var(--line)}
+  @media(max-width:640px){.toc{columns:1}}
+
+  ul.key{list-style:none;margin:0;padding:0}
+  ul.key li{position:relative;padding:0 0 12px 24px;font-size:15px}
+  ul.key li:before{content:"—";position:absolute;left:0;color:var(--sub)}
+
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;margin:8px 0}
+  .flow .b{border:1px solid var(--ink);border-radius:6px;padding:8px 12px;background:#fff}
+  .flow .a{color:var(--sub);font-weight:700}
+
+  table.data{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:13px}
+  table.data th,table.data td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6}
+  table.data th{background:var(--soft);font-weight:700}
+  table.data td.n{font-family:"Share Tech Mono",monospace;white-space:nowrap}
+
+  .todo{border:1px dashed var(--line);border-radius:6px;padding:16px 20px;color:var(--sub);font-size:13.5px;background:var(--soft)}
+  .todo b{color:var(--ink)}
+
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--sub)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">Industry · AI Infrastructure</div>
+  <h1>電力 — 電力会社・系統・電力市場</h1>
+  <div class="meta">
+    Started 2026-07-14 ／ 継続追記。発電された電気を「送り・配り・売る」側と、DCが刺さる系統制約の話。東京電力HDなど。<br>
+    Power / Cooling / Location の <b>Power（グリッド）</b> 面。発電そのものは隣の Generation へ。
+  </div>
+  <nav class="sib">
+    <a href="../0362_dc_cooling/260714_cooling_market.html">Cooling 冷却</a>
+    <a class="on" href="../0363_power_utility/260714_power_utility.html">Power 電力</a>
+    <a href="../0364_power_generation/260714_power_generation.html">Generation 発電</a>
+    <a href="../data_center.html">DC 業界俯瞰</a>
+  </nav>
+</header>
+
+<section>
+  <h2>TL;DR</h2>
+  <div class="tldr">
+    <p>AI-DCの立地は「土地」より「系統に空き容量があり、いつ接続できるか」で決まりつつある。電力会社（特に送配電）と系統制約がボトルネックの主役。</p>
+    <p class="todo" style="margin:0"><b>TODO:</b> 論点が固まったら3行に凝縮。</p>
+  </div>
+</section>
+
+<section>
+  <h2>目次</h2>
+  <nav class="toc">
+    <a href="#chain">1. バリューチェーン</a>
+    <a href="#players">2. 日本の電力会社</a>
+    <a href="#grid">3. 系統制約・接続問題</a>
+    <a href="#market">4. 電力市場（JEPX・容量・需給調整）</a>
+    <a href="#price">5. 料金・託送</a>
+    <a href="#dc">6. DC向け受電・PPA</a>
+    <a href="#take">7. 考察 / NFA</a>
+  </nav>
+</section>
+
+<section id="chain">
+  <h2>1. バリューチェーン</h2>
+  <div class="flow">
+    <span class="b">発電</span><span class="a">→</span>
+    <span class="b">送電（基幹系統）</span><span class="a">→</span>
+    <span class="b">変電</span><span class="a">→</span>
+    <span class="b">配電</span><span class="a">→</span>
+    <span class="b">小売</span>
+  </div>
+  <p>2020年の発送電分離で、送配電が中立化。この記事は主に「送電〜小売」を扱う（発電は Generation 側）。</p>
+  <div class="todo"><b>受け皿:</b> 各段の担い手・規制（総括原価→レベニューキャップ）を整理。</div>
+</section>
+
+<section id="players">
+  <h2>2. 日本の電力会社</h2>
+  <table class="data">
+    <thead><tr><th>グループ</th><th>送配電</th><th>発電・小売</th><th>メモ</th></tr></thead>
+    <tbody>
+      <tr><td>東京電力HD</td><td>東京電力パワーグリッド</td><td>東京電力EP / JERA(火力)</td><td>首都圏DC集積。JERAは中部と折半</td></tr>
+      <tr><td>関西電力</td><td>関西電力送配電</td><td>関西電力</td><td>原子力比率高い</td></tr>
+      <tr><td>中部電力</td><td>中部電力パワーグリッド</td><td>中部電力ミライズ / JERA</td><td>—</td></tr>
+      <tr><td>その他</td><td colspan="3">北海道・東北・北陸・中国・四国・九州・沖縄</td></tr>
+    </tbody>
+  </table>
+  <div class="todo"><b>受け皿:</b> 財務（時価総額・レートベース・投資計画）、DC誘致スタンス。JERAの位置づけは発電側にも記載。</div>
+</section>
+
+<section id="grid">
+  <h2>3. 系統制約・接続問題</h2>
+  <ul class="key">
+    <li>接続の空き容量・接続検討〜工事完了までのリードタイム</li>
+    <li>ノンファーム型接続、再エネの出力制御</li>
+    <li>広域連系（地域間連系線）の増強計画（マスタープラン）</li>
+  </ul>
+  <div class="todo"><b>受け皿:</b> ここがDC立地の本丸。空き容量マップ・特高連系の実務を埋める。</div>
+</section>
+
+<section id="market">
+  <h2>4. 電力市場</h2>
+  <div class="todo"><b>受け皿:</b> JEPX（スポット/先物）、容量市場、需給調整市場、非化石価値取引。価格変動とDCの調達戦略。</div>
+</section>
+
+<section id="price">
+  <h2>5. 料金・託送</h2>
+  <div class="todo"><b>受け皿:</b> 特別高圧の料金構造、託送料金（発電側課金）、再エネ賦課金。</div>
+</section>
+
+<section id="dc">
+  <h2>6. DC向け受電・PPA</h2>
+  <div class="todo"><b>受け皿:</b> 特高受電、コーポレートPPA、24/7 CFE、behind-the-meter（発電併設）。→ 詳細は Generation 側と往復。</div>
+</section>
+
+<section id="take">
+  <h2>7. 考察 / NFA</h2>
+  <div class="todo"><b>受け皿:</b> 自分の仮説。「系統がボトルネックなら、DCは電源に寄るのか電源をDCに寄せるのか」「日本の系統制約は本質か運用か」。<br>関連: Power / Cooling / Location の3制約のうち Location とも接続。</div>
+</section>
+
+<footer>
+  24111 / research / industry / power utility · Started 2026-07-14 · monochrome · NFA
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>24111 / industry / power generation</title>
+<style>
+  :root{ --ink:#111;--sub:#555;--line:#ddd;--bg:#fff;--soft:#f6f6f6;--soft2:#efefef; }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{ margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.9;font-size:16px;letter-spacing:.01em;-webkit-font-smoothing:antialiased; }
+  .wrap{max-width:820px;margin:0 auto;padding:56px 22px 96px}
+  .mono{font-family:"Share Tech Mono","SFMono-Regular",Menlo,Consolas,monospace}
+
+  header{border-bottom:2px solid var(--ink);padding-bottom:26px;margin-bottom:40px}
+  .kicker{font-size:12px;letter-spacing:.18em;color:var(--sub);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:26px;line-height:1.5;margin:0 0 18px;font-weight:700}
+  .meta{font-size:13px;color:var(--sub);line-height:1.85}
+
+  .sib{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+  .sib a{font-size:11.5px;letter-spacing:.06em;text-decoration:none;color:var(--sub);
+    border:1px solid var(--line);border-radius:20px;padding:5px 13px}
+  .sib a.on{color:#fff;background:var(--ink);border-color:var(--ink)}
+
+  section{margin:48px 0}
+  h2{ font-size:13px;letter-spacing:.14em;color:var(--ink);text-transform:uppercase;
+    border-bottom:1px solid var(--line);padding-bottom:8px;margin:0 0 22px;font-weight:700; }
+  h3{font-size:17px;margin:34px 0 12px;font-weight:700}
+
+  .tldr{background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:22px 26px}
+  .tldr p{margin:0 0 12px;font-size:15.5px}
+  .tldr p:last-child{margin-bottom:0}
+
+  .toc{columns:2;column-gap:28px;font-size:14px}
+  .toc a{color:var(--ink);text-decoration:none;display:block;padding:4px 0;border-bottom:1px dotted var(--line)}
+  @media(max-width:640px){.toc{columns:1}}
+
+  ul.key{list-style:none;margin:0;padding:0}
+  ul.key li{position:relative;padding:0 0 12px 24px;font-size:15px}
+  ul.key li:before{content:"—";position:absolute;left:0;color:var(--sub)}
+
+  table.data{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:13px}
+  table.data th,table.data td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6}
+  table.data th{background:var(--soft);font-weight:700}
+  table.data td.n{font-family:"Share Tech Mono",monospace;white-space:nowrap}
+
+  .todo{border:1px dashed var(--line);border-radius:6px;padding:16px 20px;color:var(--sub);font-size:13.5px;background:var(--soft)}
+  .todo b{color:var(--ink)}
+
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--sub)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="kicker">Industry · AI Infrastructure</div>
+  <h1>発電 — 電源種別と AI-DC 電源</h1>
+  <div class="meta">
+    Started 2026-07-14 ／ 継続追記。原子力・SMR・火力・再エネ・核融合の電源種別を、LCOE・利用率・リードタイム・出力密度で比較し、AI-DCの電源確保に接続する。<br>
+    Power / Cooling / Location の <b>Power（電源）</b> 面。送配電・市場は隣の Power utility へ。
+  </div>
+  <nav class="sib">
+    <a href="../0362_dc_cooling/260714_cooling_market.html">Cooling 冷却</a>
+    <a href="../0363_power_utility/260714_power_utility.html">Power 電力</a>
+    <a class="on" href="../0364_power_generation/260714_power_generation.html">Generation 発電</a>
+    <a href="../data_center.html">DC 業界俯瞰</a>
+  </nav>
+</header>
+
+<section>
+  <h2>TL;DR</h2>
+  <div class="tldr">
+    <p>AI-DCは「24/7で大量・安定・低炭素」の電源を欲しがる。既存系統では足りず、原子力再稼働・SMR・ガス・洋上風力・（将来）核融合の取り合いになる。どの電源がDC隣接で成立するかが論点。</p>
+    <p class="todo" style="margin:0"><b>TODO:</b> 論点が固まったら3行に凝縮。</p>
+  </div>
+</section>
+
+<section>
+  <h2>目次</h2>
+  <nav class="toc">
+    <a href="#map">1. 電源種別の地図</a>
+    <a href="#nuclear">2. 原子力 / SMR</a>
+    <a href="#fusion">3. 核融合</a>
+    <a href="#thermal">4. 火力（ガス）</a>
+    <a href="#renew">5. 再エネ（太陽光・風力・洋上）</a>
+    <a href="#japan">6. 日本の電源構成・GX</a>
+    <a href="#dc">7. AI-DC × 電源</a>
+    <a href="#take">8. 考察 / NFA</a>
+  </nav>
+</section>
+
+<section id="map">
+  <h2>1. 電源種別の地図</h2>
+  <p>比較軸の骨格。数値はレンジで追って埋める。</p>
+  <table class="data">
+    <thead><tr><th>電源</th><th>役割</th><th>設備利用率</th><th>CO2</th><th>リードタイム</th><th>DC隣接適性</th></tr></thead>
+    <tbody>
+      <tr><td>原子力（大型）</td><td>ベースロード</td><td class="n">高</td><td>低</td><td>長</td><td>△（立地）</td></tr>
+      <tr><td>SMR（小型モジュール炉）</td><td>ベース/分散</td><td class="n">高</td><td>低</td><td>中(未実証)</td><td>◎候補</td></tr>
+      <tr><td>ガス火力（CCGT）</td><td>ミドル/調整</td><td class="n">中〜高</td><td>中</td><td>短</td><td>◎現実解</td></tr>
+      <tr><td>太陽光</td><td>変動</td><td class="n">低</td><td>低</td><td>短</td><td>△（蓄電併用）</td></tr>
+      <tr><td>陸上/洋上風力</td><td>変動</td><td class="n">中</td><td>低</td><td>長</td><td>△</td></tr>
+      <tr><td>核融合</td><td>将来ベース</td><td class="n">—</td><td>低</td><td>超長</td><td>将来</td></tr>
+    </tbody>
+  </table>
+  <div class="todo"><b>受け皿:</b> LCOE（$/MWh）レンジ、出力密度（W/m²）、24/7 CFEとの相性を追記。</div>
+</section>
+
+<section id="nuclear">
+  <h2>2. 原子力 / SMR</h2>
+  <ul class="key">
+    <li>再稼働の状況（国内）／新設・リプレース議論</li>
+    <li>SMRスタートアップ: Oklo, TerraPower, X-energy 等 → <a href="../../035_company/260409_oklo_deep_research.html">Oklo</a> / <a href="../../035_company/260406_terrapower_deep_research.html">TerraPower</a> / <a href="../../035_company/260415_general_matter_deep_research.html">燃料(HALEU)</a></li>
+    <li>ハイパースケーラの原子力調達（既設再稼働・PPA・出資）</li>
+  </ul>
+  <div class="todo"><b>受け皿:</b> 035_company の各deep researchを電源視点で束ねる。</div>
+</section>
+
+<section id="fusion">
+  <h2>3. 核融合</h2>
+  <ul class="key">
+    <li>方式: 磁場閉じ込め（トカマク/ヘリカル）／慣性／磁化標的</li>
+    <li>プレイヤー: <a href="../../035_company/260406_commonwealth_fusion_deep_research.html">Commonwealth Fusion</a> / <a href="../../035_company/260406_helion_energy_deep_research.html">Helion</a> / <a href="../../035_company/260406_helical_fusion_deep_research.html">Helical Fusion</a></li>
+  </ul>
+  <div class="todo"><b>受け皿:</b> 商用化時期の現実味、DC電源としての位置づけ（当面は物語）。</div>
+</section>
+
+<section id="thermal">
+  <h2>4. 火力（ガス）</h2>
+  <div class="todo"><b>受け皿:</b> 米国でDC隣接ガス発電が現実解になっている流れ。JERAなど。CCS/水素混焼。</div>
+</section>
+
+<section id="renew">
+  <h2>5. 再エネ（太陽光・風力・洋上）</h2>
+  <div class="todo"><b>受け皿:</b> 変動電源＋蓄電（BESS）。日本の太陽光ポテンシャル（国土2.5-3%で全電力説）。洋上風力の入札。</div>
+</section>
+
+<section id="japan">
+  <h2>6. 日本の電源構成・GX</h2>
+  <div class="todo"><b>受け皿:</b> エネルギー基本計画の電源ミックス目標、GX推進、原子力回帰。</div>
+</section>
+
+<section id="dc">
+  <h2>7. AI-DC × 電源</h2>
+  <div class="todo"><b>受け皿:</b> behind-the-meter、24/7 CFE、電源からDCへ寄せる潮流。→ 系統・PPAは Power utility 側と往復。</div>
+</section>
+
+<section id="take">
+  <h2>8. 考察 / NFA</h2>
+  <div class="todo"><b>受け皿:</b> 自分の仮説。「AI電力需要は原子力/SMRの経済性を変えるか」「日本で取れる電源事業の隙間」「次事業（ハードインフラ $10B+）との接点」。</div>
+</section>
+
+<footer>
+  24111 / research / industry / power generation · Started 2026-07-14 · monochrome · NFA
+</footer>
+</div>
+</body>
+</html>
