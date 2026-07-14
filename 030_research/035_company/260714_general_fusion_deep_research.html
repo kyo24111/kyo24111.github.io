@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>General Fusion — 核融合スタートアップ・ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #ffffff;
+    --surface: #f5f5f5;
+    --card:    #f0f0f0;
+    --card2:   #e8e8e8;
+    --border:  #d8d8d8;
+    --accent:  #111111;
+    --mid:     #444444;
+    --muted:   #888888;
+    --dim:     #bbbbbb;
+    --text:    #111111;
+    --white:   #ffffff;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .page { max-width: 900px; margin: 0 auto; padding: 48px 24px 100px; }
+
+  strong { font-weight: 700; }
+  em     { font-style: italic; color: var(--mid); }
+  a      { color: var(--accent); text-decoration: underline; }
+
+  /* ===================== HERO ===================== */
+  .hero {
+    background: var(--accent);
+    color: var(--white);
+    border-radius: 16px;
+    padding: 40px 40px 36px;
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute; bottom: -40px; right: -40px;
+    width: 200px; height: 200px; border-radius: 50%;
+    background: rgba(255,255,255,.04);
+    pointer-events: none;
+  }
+  .hero-badges { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+  .badge {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: 3px 10px; border-radius: 4px; display: inline-block;
+  }
+  .badge-white  { background: rgba(255,255,255,.15); color: #fff; border: 1px solid rgba(255,255,255,.25); }
+  .badge-solid  { background: #fff; color: var(--accent); }
+  .hero h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2.4rem; font-weight: 800; line-height: 1.2;
+    letter-spacing: -.02em; margin-bottom: 12px;
+  }
+  .hero-sub { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 640px; line-height: 1.7; margin-bottom: 28px; }
+  .kpi-row { display: flex; gap: 32px; flex-wrap: wrap; padding-top: 20px; border-top: 1px solid rgba(255,255,255,.2); }
+  .kpi .val { font-family: 'Poppins', sans-serif; font-size: 1.6rem; font-weight: 800; color: #fff; line-height: 1; margin-bottom: 3px; }
+  .kpi .lbl { font-size: 10px; color: rgba(255,255,255,.55); letter-spacing: .07em; text-transform: uppercase; font-family: 'Poppins', sans-serif; }
+
+  /* ===================== TOC ===================== */
+  .toc {
+    background: var(--surface); border: 1px solid var(--border);
+    border-left: 3px solid var(--accent); border-radius: 10px;
+    padding: 22px 28px; margin-bottom: 32px;
+  }
+  .toc-lbl { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .toc ol { list-style: none; column-count: 2; column-gap: 32px; counter-reset: toc; }
+  .toc ol li { counter-increment: toc; padding: 4px 0; font-size: 13px; color: var(--mid); break-inside: avoid; }
+  .toc ol li::before { content: counter(toc, decimal-leading-zero) ". "; color: var(--accent); font-weight: 700; font-family: 'Poppins', sans-serif; font-size: 10px; }
+  .toc ol li a { color: var(--text); text-decoration: none; }
+  .toc ol li a:hover { text-decoration: underline; }
+
+  /* ===================== SECTION ===================== */
+  .sec { margin-bottom: 48px; }
+  .sec-label {
+    font-family: 'Poppins', sans-serif;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .12em;
+    margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+  }
+  .sec-label .num {
+    background: var(--accent); color: #fff;
+    font-size: 10px; font-weight: 700;
+    width: 22px; height: 22px; border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; flex-shrink: 0;
+  }
+  .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.15rem; font-weight: 800; color: var(--text);
+    margin-bottom: 16px;
+  }
+  h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: .82rem; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: .1em;
+    margin: 24px 0 10px; padding-left: 10px;
+    border-left: 2px solid var(--accent);
+  }
+  h3:first-child { margin-top: 0; }
+  h4 { font-size: .88rem; font-weight: 700; color: var(--mid); margin: 16px 0 8px; }
+
+  p { margin-bottom: 14px; font-size: 14px; color: var(--text); line-height: 1.85; }
+  p:last-child { margin-bottom: 0; }
+
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px,1fr)); gap: 10px; margin-bottom: 16px; }
+  .kv-item { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 16px; }
+  .kv-item .k { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 5px; }
+  .kv-item .v { font-size: 13.5px; color: var(--text); font-weight: 500; line-height: 1.5; }
+
+  .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 12px 0; }
+  .t th { background: var(--card2); color: var(--mid); font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 9px 14px; text-align: left; border-bottom: 2px solid var(--accent); }
+  .t td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; line-height: 1.6; color: var(--text); }
+  .t tr:last-child td { border-bottom: none; }
+  .t tr:hover td { background: var(--surface); }
+  .t td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+
+  .profile {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 22px; margin-bottom: 16px;
+    border-top: 3px solid var(--accent);
+  }
+  .profile-hd { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid var(--border); }
+  .avatar {
+    width: 50px; height: 50px; border-radius: 10px; flex-shrink: 0;
+    background: var(--accent); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Poppins', sans-serif; font-size: 1.1rem; font-weight: 800;
+  }
+  .profile-hd h3 { font-size: 1rem; font-weight: 700; margin: 0 0 3px; padding: 0; border: none; text-transform: none; letter-spacing: 0; color: var(--text); }
+  .p-role { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; }
+  .p-rows { display: flex; flex-direction: column; gap: 8px; }
+  .p-row { display: flex; gap: 12px; font-size: 13px; align-items: flex-start; }
+  .p-row .lbl { font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); min-width: 70px; padding-top: 3px; flex-shrink: 0; }
+  .p-row .val { color: var(--text); line-height: 1.6; }
+
+  .timeline { position: relative; padding-left: 26px; }
+  .timeline::before { content: ''; position: absolute; left: 7px; top: 6px; bottom: 6px; width: 2px; background: var(--border); border-radius: 2px; }
+  .tl-item { position: relative; margin-bottom: 8px; }
+  .tl-item:last-child { margin-bottom: 0; }
+  .tl-dot { position: absolute; left: -22px; top: 14px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--accent); background: var(--bg); z-index: 1; }
+  .tl-dot.filled { background: var(--accent); }
+  .tl-content { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 13px 16px; }
+  .tl-header { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .tl-date { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; color: var(--accent); background: #11111110; border: 1px solid #11111125; padding: 1px 8px; border-radius: 4px; white-space: nowrap; }
+  .tl-date.muted { color: var(--muted); background: #88888812; border-color: #88888828; }
+  .tl-title { font-size: 13.5px; font-weight: 700; color: var(--text); }
+  .tl-body { font-size: 13px; color: var(--muted); line-height: 1.65; margin-top: 4px; }
+  .tl-body b { color: var(--text); font-weight: 600; }
+
+  .f-stack { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .f-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; align-items: center; gap: 16px; }
+  .f-card.gov  { border-left: 3px solid var(--mid); }
+  .f-card.corp { border-left: 3px solid var(--accent); }
+  .r-badge { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; white-space: nowrap; flex-shrink: 0; background: var(--card2); color: var(--mid); border: 1px solid var(--border); }
+  .f-card.corp .r-badge { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .f-amount { font-family: 'Poppins', sans-serif; font-size: 1.4rem; font-weight: 800; color: var(--text); flex-shrink: 0; min-width: 84px; }
+  .f-detail { flex: 1; }
+  .f-date { font-size: 10.5px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .05em; margin-bottom: 3px; }
+  .f-desc { font-size: 13px; color: var(--mid); line-height: 1.6; }
+
+  .vc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; }
+  .vc-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px 20px; position: relative; }
+  .vc-card.lead { border-top: 3px solid var(--accent); }
+  .vc-name { font-family: 'Poppins', sans-serif; font-size: .95rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .vc-role { font-size: 10px; color: var(--muted); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 10px; }
+  .vc-desc { font-size: 12.5px; color: var(--mid); line-height: 1.65; }
+  .lead-tag { position: absolute; top: 14px; right: 14px; background: var(--accent); color: #fff; font-family: 'Poppins', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 8px; border-radius: 3px; }
+
+  .callout { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 14px 18px; margin: 16px 0; font-size: 13.5px; color: var(--mid); line-height: 1.75; }
+  .callout strong { color: var(--text); }
+
+  .quote { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin: 10px 0; }
+  .quote p { font-size: 13.5px; font-style: italic; color: var(--mid); margin-bottom: 8px; line-height: 1.7; }
+  .quote p::before { content: '\201C'; font-size: 1.4rem; color: var(--accent); line-height: 0; vertical-align: -.3em; margin-right: 3px; }
+  .quote .attr { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .07em; text-transform: uppercase; }
+
+  .ind-list { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .ind-item { display: flex; gap: 14px; align-items: flex-start; background: var(--card); border: 1px solid var(--border); border-radius: 9px; padding: 16px 18px; }
+  .ind-num { font-family: 'Poppins', sans-serif; font-size: .85rem; font-weight: 800; color: #fff; background: var(--accent); width: 32px; height: 32px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ind-title { font-size: .88rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .ind-desc { font-size: 13px; color: var(--mid); line-height: 1.7; }
+
+  .comp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 12px 0; }
+  .comp-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 18px; }
+  .comp-card.strong { border-left: 3px solid var(--accent); }
+  .comp-card.mid    { border-left: 3px solid var(--mid); }
+  .comp-card.weak   { border-left: 3px solid var(--dim); }
+  .comp-name { font-family: 'Poppins', sans-serif; font-size: .9rem; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .comp-tag { font-family: 'Poppins', sans-serif; font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; padding: 2px 8px; border-radius: 3px; display: inline-block; margin-bottom: 8px; background: var(--card2); color: var(--muted); border: 1px solid var(--border); }
+  .comp-card.strong .comp-tag { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .comp-desc { font-size: 12.5px; color: var(--mid); line-height: 1.6; }
+
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .pill { background: var(--surface); border: 1px solid var(--border); color: var(--mid); font-size: 12px; padding: 5px 12px; border-radius: 20px; font-family: 'Poppins', sans-serif; font-weight: 500; }
+  .pill.s { background: var(--card2); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+
+  .warn-box { background: var(--card); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin: 16px 0; }
+  .warn-box .w-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .warn-box ul { padding-left: 18px; }
+  .warn-box li { font-size: 13.5px; color: var(--mid); line-height: 1.8; margin-bottom: 4px; }
+  .warn-box li b { color: var(--text); }
+
+  .sources { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 22px 28px; margin-top: 40px; }
+  .sources h2 { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 14px; }
+  .sources ul { list-style: none; display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; }
+  .sources li { font-size: 12px; color: var(--mid); padding: 4px 0; border-bottom: 1px solid var(--border); }
+  .sources li a { color: var(--accent); }
+
+  @media (max-width: 640px) {
+    .toc ol { column-count: 1; }
+    .vc-grid, .comp-grid { grid-template-columns: 1fr; }
+    .kv { grid-template-columns: 1fr 1fr; }
+    .sources ul { grid-template-columns: 1fr; }
+    .kpi-row { gap: 18px; }
+    .f-card { flex-wrap: wrap; }
+    .hero { padding: 28px 24px; }
+    .hero h1 { font-size: 1.7rem; }
+  }
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<!-- snav:bar -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/047_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/046_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/044_travel/0441_flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+
+<!-- ===================== HERO ===================== -->
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">核融合</span>
+    <span class="badge badge-white">磁化標的（MTF）</span>
+    <span class="badge badge-solid">Nasdaq: GFUZ</span>
+  </div>
+  <h1>General Fusion</h1>
+  <p class="hero-sub">
+    「巨大磁石も巨大レーザーも使わない、蒸気ピストンで殴る核融合」——<br>
+    カナダ発。液体金属を機械式ピストンで一気に圧縮し、その中の磁化プラズマを瞬間的に核融合条件へ押し込む<strong>磁化標的核融合（MTF）</strong>を追求。2026年7月、SPAC合併で<strong>世界初の上場ピュア核融合企業</strong>となったが、資金難と技術タイムラインの後退という重い課題も抱える。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">2002</div><div class="lbl">設立年</div></div>
+    <div class="kpi"><div class="val">GFUZ</div><div class="lbl">2026/7 Nasdaq上場</div></div>
+    <div class="kpi"><div class="val">~$600M</div><div class="lbl">累計調達（生涯）</div></div>
+    <div class="kpi"><div class="val">Richmond, BC</div><div class="lbl">本社（カナダ）</div></div>
+    <div class="kpi"><div class="val">MTF</div><div class="lbl">磁化標的核融合</div></div>
+  </div>
+</div>
+
+
+<!-- ===================== TOC ===================== -->
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">会社概要</a></li>
+    <li><a href="#tech">磁化標的核融合（MTF）の本質</a></li>
+    <li><a href="#why-mtf">なぜMTFという「第三の道」か</a></li>
+    <li><a href="#origin">創業逸話 — レーザー技師が40歳で辞めて</a></li>
+    <li><a href="#roadmap">開発ロードマップ PI3→LM26</a></li>
+    <li><a href="#funding">資金調達・投資家</a></li>
+    <li><a href="#ipo">2026 SPAC上場（GFUZ）</a></li>
+    <li><a href="#competition">競合比較</a></li>
+    <li><a href="#team">経営陣</a></li>
+    <li><a href="#japan">日本とのつながり</a></li>
+    <li><a href="#risks">リスクと課題</a></li>
+    <li><a href="#stock">Stock分析 / NFA</a></li>
+    <li><a href="#why-now">なぜ今見るべきか</a></li>
+  </ol>
+</div>
+
+
+<!-- ===================== 1. OVERVIEW ===================== -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Company Overview</div>
+  <h2>会社概要</h2>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">General Fusion（上場後: General Fusion Group）</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2002年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Richmond, British Columbia, Canada</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">Greg Twinney（2022年〜）</div></div>
+    <div class="kv-item"><div class="k">創業者 / CSO</div><div class="v">Dr. Michel Laberge（物理学者）</div></div>
+    <div class="kv-item"><div class="k">従業員数</div><div class="v">約110〜150名（2025年に約25%削減）</div></div>
+    <div class="kv-item"><div class="k">累計調達</div><div class="v">生涯で約$600M（民間）＋政府支援</div></div>
+    <div class="kv-item"><div class="k">上場</div><div class="v">Nasdaq: GFUZ（2026年7月13日〜）</div></div>
+  </div>
+
+  <p>General Fusionは、レーザープリンタ技術者から物理学者へ転じたDr. Michel Laberge（ミシェル・ラベルジュ）が2002年に創業した、カナダ・ブリティッシュコロンビア州の核融合スタートアップである。トカマク（磁場閉じ込め）でもレーザー慣性閉じ込めでもない、<strong>磁化標的核融合（Magnetized Target Fusion, MTF）</strong>という「第三の道」を一貫して追求してきた、業界でも最古参のプレイヤーの一社だ。</p>
+
+  <p>MTFの核心思想は「<strong>高価な超伝導磁石も巨大レーザーも使わず、機械的な圧縮で核融合条件を作る</strong>」ことにある。回転する液体金属（鉛-リチウム）の球殻を、外周に並んだ蒸気/空圧ピストンで一斉に叩き込んで圧縮し、その中心に注入した磁化プラズマを一瞬でD-T核融合が起きる高温・高密度状態へ押し込む。液体金属は中性子を吸収し、熱を運び、燃料のトリチウムを増殖する「一石三鳥」の役割を担う——これがGeneral Fusionの独自性であり、賭けでもある。</p>
+
+  <p>2026年7月13日、同社はSPAC（Spring Valley Acquisition Corp. III）との合併を通じてNasdaqに上場し、<strong>世界初の「上場ピュア核融合企業」</strong>となった（Okloは核分裂）。初値$12.85から一時+40%と初日は買われたが、SPACの高い償還により手元資金は乏しく、科学的ブレークイーブンの目標時期は当初の2026年から2028年以降へ後退——「上場という延命」と「技術・資金の綱渡り」が同居する、非常にコントラストの強い局面にある。</p>
+
+  <div class="callout">
+    <strong>産業的文脈：</strong>Fusion Industry Association（FIA）によれば民間核融合への累計投資は$70億超に達し、Commonwealth Fusion（トカマク）やHelion（FRC）が牽引する。その中でGeneral Fusionは「20年以上MTF一本」という技術的ユニークさで知られる一方、資金規模ではCFS等に大きく水をあけられ、上場という異例の資金調達手段に踏み切った点で象徴的な事例となっている。
+  </div>
+</div>
+
+
+<!-- ===================== 2. TECHNOLOGY ===================== -->
+<div class="sec" id="tech">
+  <div class="sec-label"><span class="num">2</span> Technology</div>
+  <h2>磁化標的核融合（MTF）の本質 — 液体金属を「殴る」</h2>
+
+  <h3>MTFとは — 磁場閉じ込めと慣性閉じ込めの中間</h3>
+  <p>核融合の閉じ込め方式は大きく2つに分かれる。トカマク等の<strong>磁場閉じ込め（MCF）</strong>は低密度のプラズマを長時間（秒オーダー）磁場で保持し、レーザー等の<strong>慣性閉じ込め（ICF）</strong>は超高密度の燃料をナノ秒で爆縮させる。<strong>磁化標的核融合（MTF）はこの中間</strong>に位置し、あらかじめ磁場を持たせた（＝磁化した）中密度プラズマを、機械的にミリ秒スケールで圧縮する方式だ。磁化しておくことで熱の逃げを抑えつつ、レーザーほど極端な密度・速度を要求しない——「いいとこ取り」を狙う設計思想である。</p>
+
+  <h3>General Fusion方式のしくみ</h3>
+  <p>General Fusionの装置は、直径3m級の球体の内側で<strong>液体金属（鉛-リチウム合金）を高速回転</strong>させ、遠心力で中心に空洞（ボルテックス）を作る構造を基本とする。動作は概ね次の通り：</p>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">磁化プラズマの注入</div>
+        <div class="ind-desc">プラズマインジェクターが、磁場を帯びたコンパクト・トロイド状の重水素-三重水素（D-T）プラズマを、液体金属の中心空洞へ撃ち込む。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">ピストンによる一斉圧縮</div>
+        <div class="ind-desc">球体外周に並んだ多数の蒸気/空圧ピストン（ラム）が同期して液体金属を内側へ叩き込み、中心の空洞とプラズマをミリ秒で圧縮。温度・密度を核融合条件（1億℃超）まで一気に押し上げる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">液体金属が熱・中性子・燃料を担う</div>
+        <div class="ind-desc">核融合で生じたエネルギーは液体金属を加熱→熱交換器→蒸気タービンで発電。同じ液体金属が中性子を吸収して機器を保護し、内部のリチウムがトリチウムを増殖する。これを繰り返す<b>パルス運転</b>が発電の基本サイクル。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>「固体第一壁問題」を回避する液体金属ライナー</h3>
+  <p>核融合炉最大の工学的難題の一つが、高速中性子に晒され続ける<strong>第一壁（プラズマに面する固体壁）の劣化</strong>だ。General Fusionは炉内壁を液体金属で覆うことで、固体壁を中性子から守り、損傷したら循環させて入れ替えればよい、というエレガントな解を主張する。同時に高価な超伝導磁石も巨大レーザーも不要——「安く、部品を交換しながら回せる炉」を志向する点が、CFSやHelionと根本的に異なる哲学である。</p>
+
+  <div class="callout">
+    <strong>なぜ“安い”を狙うのか：</strong>核融合の最終的な勝敗は物理よりも<strong>$/MWh（発電コスト）</strong>で決まる可能性が高い。General Fusionの賭けは「多少エネルギー利得（Q）が低くても、装置が桁違いに安く・交換部品ベースで量産できれば、経済性で勝てる」という仮説にある。裏を返せば、圧縮の精密同期という機械工学の難所を越えられるかが全てを決める。
+  </div>
+</div>
+
+
+<!-- ===================== 3. WHY MTF ===================== -->
+<div class="sec" id="why-mtf">
+  <div class="sec-label"><span class="num">3</span> Why MTF</div>
+  <h2>なぜMTFという「第三の道」か</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">超伝導磁石が要らない → 資本コストが軽い（はず）</div>
+        <div class="ind-desc">CFSは20テスラHTS磁石、ITERは巨大LTS磁石に莫大な費用を投じる。MTFは磁化を「プラズマ自身の弱い磁場＋機械圧縮」で担うため、原理上は高価な磁石群が不要。理論上の資本効率が売りだ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">巨大レーザーも要らない → NIF型の低繰返し問題を回避</div>
+        <div class="ind-desc">レーザーICF（NIF等）は1発ごとにターゲットとレーザー整備が必要で、発電に必須の高繰返しが難しい。機械ピストンは繰り返し駆動しやすく、連続パルス運転に向く——とGeneral Fusionは主張する。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">液体金属が「壁・冷却・燃料増殖」を兼ねる</div>
+        <div class="ind-desc">固体第一壁の中性子損傷、除熱、トリチウム増殖ブランケット——この3つの難題を液体金属ライナー1つで同時に受け持つ設計は、工学的な統合度が高い。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">裏返しのリスク：精密同期という機械の壁</div>
+        <div class="ind-desc">数十本のピストンをマイクロ秒精度で同期させ、対称に球殻を潰す必要がある。非対称性（Rayleigh-Taylor不安定等）が少しでも出るとプラズマが壊れる。物理より“機械の作り込み”が律速——ここがMTF最大の未証明領域だ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">トカマクほどのデータ蓄積がない</div>
+        <div class="ind-desc">トカマクは60年超の世界的データベースがあるが、MTFの本格実証データは乏しい。物理リスクの外挿が効きにくく、実機で確かめるしかない領域が多いのがハンデ。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 4. ORIGIN STORY ===================== -->
+<div class="sec" id="origin">
+  <div class="sec-label"><span class="num">4</span> Founding Story</div>
+  <h2>創業逸話 — レーザー技師が40歳で会社を辞めて</h2>
+
+  <p>創業者Michel Labergeの物語は、核融合スタートアップ史でも際立って個性的だ。彼はもともとレーザープリンタ／製版機メーカー<strong>Creo</strong>の主任物理学者として活躍していた優秀なレーザー技術者だった。しかし40歳を目前に「このまま印刷機のレーザーを改良し続けて人生を終えるのか」と自問し、<strong>子どもの頃からの夢だった核融合に人生を賭ける</strong>ことを決意。安定した職を辞し、2002年にGeneral Fusionを立ち上げた。</p>
+
+  <p>Labergeが選んだのは、1970〜80年代に米海軍研究所（NRL）等で研究されながら本格実用化されなかった<strong>MTFという“忘れられた道”</strong>だった。巨額の国家予算を要するトカマクやレーザーではなく、「町工場的な機械工学で核融合を安く作れないか」という発想は、当時は異端視されつつも、後にJeff Bezos（Bezos Expeditions）をはじめとする投資家を惹きつける独自性となった。彼のTEDトーク「How synchronized hammer strikes could generate nuclear fusion（同期させたハンマーの一撃で核融合を起こす）」は、MTFの発想を一般に広めた有名な講演として知られる。</p>
+
+  <div class="quote">
+    <p>I was 40 years old, working on laser printers, and I thought: if I don't do fusion now, I never will.</p>
+    <div class="attr">— Dr. Michel Laberge, Founder（趣旨）</div>
+  </div>
+
+  <p>2022年、経営はファイナンス／オペレーション出身のGreg TwinneyがCEOに就き、Laberge自身はChief Science Officer（CSO）として技術の魂を担う体制に移行した。「発明家の情熱」と「事業としての規律」を分離するこの布陣は、ディープテックが実用化フェーズに入る際の典型的な移行でもある。</p>
+</div>
+
+
+<!-- ===================== 5. ROADMAP ===================== -->
+<div class="sec" id="roadmap">
+  <div class="sec-label"><span class="num">5</span> Development Roadmap</div>
+  <h2>開発ロードマップ — PI3 → LM26 → 商用炉</h2>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2002</span><span class="tl-title">創業</span></div>
+        <div class="tl-body">Michel LabergeがMTFを掲げカナダで創業。以後20年以上、MTF一本で研究を継続。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2017</span><span class="tl-title">PI3 プラズマインジェクター</span></div>
+        <div class="tl-body">世界最大級のMTFプラズマインジェクター<b>PI3</b>で、外部磁場安定化なしに約<b>250eV</b>・10ミリ秒級の閉じ込めを達成。プラズマ側の基礎性能を実証。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2021</span><span class="tl-title">英国Culham実証プラント計画</span></div>
+        <div class="tl-body">英オックスフォードシャーCulhamに<b>実物の約70%スケール</b>の実証プラント建設を発表。のちLM26への集中で事実上ホールド。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2023年8月</span><span class="tl-title">LM26（Lawson Machine 26）着手</span></div>
+        <div class="tl-body">本拠地に統合実証機<b>LM26</b>を建設開始。1億℃超の到達と<b>科学的ブレークイーブン相当</b>を2026年に狙うと表明。社名の由来でもあるLawson基準（核融合成立条件）を機械名に冠した。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年5月</span><span class="tl-title">資金難で約25%レイオフ</span></div>
+        <div class="tl-body">「予期せぬ緊急の資金制約」により従業員の約25%を削減、LM26の運転も縮小。技術タイムラインが後退する契機に。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025年8月</span><span class="tl-title">$22Mのつなぎ資金</span></div>
+        <div class="tl-body">既存投資家から約$22Mの「命綱」を確保し当面の存続を確保。同時に上場（SPAC）による資金調達の検討が進む。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年6月</span><span class="tl-title">LM26 約840万℃到達</span></div>
+        <div class="tl-body">LM26で約<b>8.4M℃</b>の温度マイルストーンを報告。1keV→10keV→Lawson基準へ向かうステップの途上だが、1億℃目標にはなお距離がある。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026年7月13日</span><span class="tl-title">Nasdaq上場（GFUZ）</span></div>
+        <div class="tl-body">Spring Valley Acquisition Corp. IIIとのSPAC合併が完了し上場。<b>世界初の上場ピュア核融合企業</b>に。初値$12.85、初日一時+40%。手元資金は約$150M。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date muted">2028年以降（目標）</span><span class="tl-title">科学的ブレークイーブン</span></div>
+        <div class="tl-body">当初2026年目標だった科学的ブレークイーブンは、資金難で<b>2028年以降</b>へ後ろ倒し。ここが最大の技術的分岐点。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date muted">~2035年（目標）</span><span class="tl-title">初号商用炉</span></div>
+        <div class="tl-body">2030年代半ば（~2035年）に初号の商用発電炉を目指す。2026年にはイタリアでの展開に向けた初期ステップも発表。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 6. FUNDING ===================== -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">6</span> Funding &amp; Investors</div>
+  <h2>資金調達・投資家</h2>
+
+  <div class="f-stack">
+    <div class="f-card corp">
+      <div class="r-badge">SPAC / IPO</div>
+      <div class="f-amount">~$150M</div>
+      <div class="f-detail">
+        <div class="f-date">2026年7月</div>
+        <div class="f-desc">Spring Valley III合併で上場。SPAC信託は高い償還で$30M未満、別途PIPE等の私募$108Mと合わせ手元資金は約$150M。名目取引規模は約$1B。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">つなぎ</div>
+      <div class="f-amount">$22M</div>
+      <div class="f-detail">
+        <div class="f-date">2025年8月</div>
+        <div class="f-desc">レイオフ後の緊急局面で既存投資家が拠出した「命綱」。上場までの延命資金。</div>
+      </div>
+    </div>
+    <div class="f-card corp">
+      <div class="r-badge">Private（生涯累計）</div>
+      <div class="f-amount">~$600M</div>
+      <div class="f-detail">
+        <div class="f-date">2002〜2025</div>
+        <div class="f-desc">上場前までに民間で累計$600M超を調達（一部集計では$500M強）。ただし20年超に薄く分散し、単年の推進力ではCFS等に劣後した。</div>
+      </div>
+    </div>
+    <div class="f-card gov">
+      <div class="r-badge">政府支援</div>
+      <div class="f-amount">Gov</div>
+      <div class="f-detail">
+        <div class="f-date">複数年</div>
+        <div class="f-desc">カナダ政府のStrategic Innovation Fund（SIF）等からの支援。官民併用でMTF開発を後押し。</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>主要投資家プロフィール</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead">
+      <div class="lead-tag">象徴的</div>
+      <div class="vc-name">Bezos Expeditions</div>
+      <div class="vc-role">Jeff Bezosの個人投資ビークル</div>
+      <div class="vc-desc">早期からの著名支援者。Bezosの参加はGeneral Fusionの知名度と「本気で見る価値のある技術」という評価を大きく底上げした。</div>
+    </div>
+    <div class="vc-card lead">
+      <div class="lead-tag">戦略</div>
+      <div class="vc-name">Temasek</div>
+      <div class="vc-role">シンガポール政府系ファンド</div>
+      <div class="vc-desc">長期・脱炭素志向の政府系ファンド。エネルギー転換ポートフォリオの一環として核融合に張る。GIC等アジア系マネーの参加も。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Chrysalix Venture Capital</div>
+      <div class="vc-role">カナダのディープテック/クリーンテックVC</div>
+      <div class="vc-desc">創業地カナダの有力VC。エネルギー・産業技術に強く、General Fusionの長年の中核投資家。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">BDC Capital</div>
+      <div class="vc-role">カナダ政府系（Business Development Bank）</div>
+      <div class="vc-desc">カナダの公的投資機関。自国発ディープテックの育成という政策的動機も含み参加。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Spring Valley Acquisition Corp. III</div>
+      <div class="vc-role">SPAC（上場ビークル）</div>
+      <div class="vc-desc">2026年の上場相手。合併で「General Fusion Group」を形成。ただし多くのSPAC同様、株主の高い償還で調達額は目減りした。</div>
+    </div>
+    <div class="vc-card">
+      <div class="vc-name">Cenovus / GIMV 他</div>
+      <div class="vc-role">事業会社・欧州系VC</div>
+      <div class="vc-desc">カナダのエネルギー大手Cenovus、ベルギーのGIMV等、事業会社・欧州系投資家も名を連ねる多様な株主構成。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 7. IPO ===================== -->
+<div class="sec" id="ipo">
+  <div class="sec-label"><span class="num">7</span> 2026 Public Listing</div>
+  <h2>2026 SPAC上場 — 世界初の上場ピュア核融合</h2>
+
+  <p>2026年1月に発表され、7月7日の週に完了したSpring Valley Acquisition Corp. IIIとのSPAC合併により、General Fusionは<strong>2026年7月13日にNasdaq（ティッカー: GFUZ）へ上場</strong>した。核融合を主業とする企業としては世界初の上場であり（Okloは核分裂）、業界の象徴的な出来事として報じられた。</p>
+
+  <div class="kv">
+    <div class="kv-item"><div class="k">Ticker</div><div class="v">GFUZ（Nasdaq）</div></div>
+    <div class="kv-item"><div class="k">Listing date</div><div class="v">2026年7月13日</div></div>
+    <div class="kv-item"><div class="k">Opening price</div><div class="v">$12.85</div></div>
+    <div class="kv-item"><div class="k">Day-1 move</div><div class="v">一時 +40%</div></div>
+    <div class="kv-item"><div class="k">Cash on hand</div><div class="v">約 $150M</div></div>
+    <div class="kv-item"><div class="k">Deal size (nominal)</div><div class="v">約 $1B</div></div>
+  </div>
+
+  <div class="callout">
+    <strong>「上場＝資金潤沢」ではない点に注意：</strong>SPAC合併は名目$1Bでも、SPAC信託からの株主償還（redemption）が高く、信託からの新規現金は$30M未満に留まった。手元約$150Mの多くは別途の私募（PIPE等$108M）由来だ。核融合のブレークイーブンと商用化に必要な資金は桁が違うため、<strong>上場はゴールではなく“公開市場から継続的に資金を取りにいく入口”</strong>と読むのが妥当。今後の増資（希薄化）や株価変動リスクが常につきまとう。</div>
+
+  <div class="quote">
+    <p>初の上場核融合企業という象徴性と、資金・技術タイムラインの不確実性が、同じ一社の中に同居している。</p>
+    <div class="attr">— 2026年7月の各種報道の要旨</div>
+  </div>
+</div>
+
+
+<!-- ===================== 8. COMPETITION ===================== -->
+<div class="sec" id="competition">
+  <div class="sec-label"><span class="num">8</span> Competitive Landscape</div>
+  <h2>競合比較 — CFS / Helion / TAE / ITER</h2>
+
+  <table class="t">
+    <thead>
+      <tr>
+        <th>項目</th>
+        <th>General Fusion</th>
+        <th>Commonwealth Fusion</th>
+        <th>Helion Energy</th>
+        <th>TAE Technologies</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>方式</td>
+        <td>MTF（機械圧縮＋液体金属）</td>
+        <td>HTS磁石コンパクトトカマク</td>
+        <td>FRC（磁場反転配位）</td>
+        <td>FRC＋p-B11</td>
+      </tr>
+      <tr>
+        <td>設立</td>
+        <td>2002（最古参級）</td>
+        <td>2018</td>
+        <td>2013</td>
+        <td>1998</td>
+      </tr>
+      <tr>
+        <td>燃料</td>
+        <td>D-T</td>
+        <td>D-T</td>
+        <td>D-He3</td>
+        <td>p-B11（水素-ホウ素）</td>
+      </tr>
+      <tr>
+        <td>高価な要素</td>
+        <td>精密同期ピストン（磁石/レーザー不要）</td>
+        <td>20T級HTS磁石</td>
+        <td>大電力パルス・キャパシタ</td>
+        <td>加速器・高温要件</td>
+      </tr>
+      <tr>
+        <td>累計調達</td>
+        <td>~$600M＋上場</td>
+        <td>~$3B+（民間最大）</td>
+        <td>~$2.2B</td>
+        <td>~$1.2B</td>
+      </tr>
+      <tr>
+        <td>資金の潤沢さ</td>
+        <td>厳しい（要増資）</td>
+        <td>潤沢</td>
+        <td>潤沢（MS PPA）</td>
+        <td>中</td>
+      </tr>
+      <tr>
+        <td>ブレークイーブン目標</td>
+        <td>2028以降（後退）</td>
+        <td>2020年代後半（SPARC）</td>
+        <td>2028頃</td>
+        <td>2030年代</td>
+      </tr>
+      <tr>
+        <td>物理リスク</td>
+        <td>中〜高（実証データ薄）</td>
+        <td>低〜中（トカマク実績）</td>
+        <td>中〜高</td>
+        <td>最高（p-B11）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="comp-grid">
+    <div class="comp-card strong">
+      <div class="comp-name">General Fusion</div>
+      <div class="comp-tag">安さ志向・上場先行</div>
+      <div class="comp-desc">磁石もレーザーも要らない低コスト路線と液体金属ライナーが独自性。ただし資金規模で劣り、精密同期という機械の壁と実証データの薄さが課題。上場で市場から資金を取りにいく賭けに出た。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Commonwealth Fusion</div>
+      <div class="comp-tag">本命・最大調達</div>
+      <div class="comp-desc">20T HTS磁石を実証済みで、トカマクの豊富なデータと$3B超の資金を持つ業界本命。物理リスクが相対的に低く、General Fusionと最も対照的。</div>
+    </div>
+    <div class="comp-card mid">
+      <div class="comp-name">Helion Energy</div>
+      <div class="comp-tag">直接発電・MS PPA</div>
+      <div class="comp-desc">FRCと直接電力変換、MicrosoftとのPPAで先行感。資金も潤沢。General Fusion同様「非トカマク・安さ」を狙うが、資金力で大きく上回る。</div>
+    </div>
+    <div class="comp-card weak">
+      <div class="comp-name">TAE / ITER 他</div>
+      <div class="comp-tag">長期・大型</div>
+      <div class="comp-desc">TAEは究極クリーンなp-B11で最難度、ITERは政府主導の巨大実験炉。いずれもタイムラインは長く、民間の「速く安く」路線とは別の座標にある。</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 9. TEAM ===================== -->
+<div class="sec" id="team">
+  <div class="sec-label"><span class="num">9</span> Leadership</div>
+  <h2>経営陣</h2>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">GT</div>
+      <div>
+        <h3>Greg Twinney</h3>
+        <div class="p-role">Chief Executive Officer（2022〜）</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row">
+        <div class="lbl">役割</div>
+        <div class="val">ファイナンス／オペレーション畑出身。研究フェーズから事業化・資金調達フェーズへの移行を担うCEO。2025年の資金難対応と2026年のSPAC上場を主導した。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">論点</div>
+        <div class="val">「技術の完成前に上場して延命する」という難しい舵取りを引き受ける立場。市場との対話と希薄化のバランスが今後の評価軸。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="profile">
+    <div class="profile-hd">
+      <div class="avatar">ML</div>
+      <div>
+        <h3>Dr. Michel Laberge</h3>
+        <div class="p-role">Founder &amp; Chief Science Officer</div>
+      </div>
+    </div>
+    <div class="p-rows">
+      <div class="p-row">
+        <div class="lbl">経歴</div>
+        <div class="val">元Creo主任物理学者（レーザー技術）。40歳で職を辞し2002年にGeneral Fusionを創業。MTFの発想と技術の魂を担う人物。</div>
+      </div>
+      <div class="p-row">
+        <div class="lbl">発信</div>
+        <div class="val">TEDトーク「同期させたハンマーの一撃で核融合を起こす」でMTFの概念を広く一般に知らしめた。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ===================== 10. JAPAN ===================== -->
+<div class="sec" id="japan">
+  <div class="sec-label"><span class="num">10</span> Japan Connection</div>
+  <h2>日本とのつながり</h2>
+
+  <p>General Fusion自体は日本企業との直接的な資本・事業提携が前面に出ているわけではないが、日本の核融合エコシステムとの間接的な接点・対比は押さえておきたい。</p>
+
+  <ul class="key" style="list-style:none;padding:0">
+    <li style="padding:6px 0 6px 20px;position:relative;font-size:14px;color:var(--mid)"><span style="position:absolute;left:0">—</span> <b>日本の民間核融合との対比：</b>日本には<a href="260406_helical_fusion_deep_research.html">Helical Fusion</a>（ヘリカル型、京都フュージョニアリングと並ぶ日本の代表格）があり、方式は異なるが「非トカマクでの商用化」を狙う点でGeneral Fusionと問題意識が重なる。</li>
+    <li style="padding:6px 0 6px 20px;position:relative;font-size:14px;color:var(--mid)"><span style="position:absolute;left:0">—</span> <b>京都フュージョニアリング：</b>日本発の核融合“ピック＆ショベル”企業は、炉方式を問わず熱交換・トリチウム技術等を各社に供給する立場。General FusionのようなMTF勢も潜在顧客になり得るサプライヤー的ポジション。</li>
+    <li style="padding:6px 0 6px 20px;position:relative;font-size:14px;color:var(--mid)"><span style="position:absolute;left:0">—</span> <b>アジアマネー：</b>直接の日本勢ではないが、シンガポールTemasek/GICなどアジア系政府系ファンドが株主に入る。日本の商社・電力が核融合に本格参入する際の比較対象として、上場MTF企業GFUZは格好のウォッチ対象。</li>
+    <li style="padding:6px 0 6px 20px;position:relative;font-size:14px;color:var(--mid)"><span style="position:absolute;left:0">—</span> <b>政策面：</b>日本も2023年に「フュージョンエネルギー・イノベーション戦略」を策定し官民で推進中。カナダ（SIF）同様、国策としての核融合という文脈は日加で共通する。</li>
+  </ul>
+
+  <div class="callout"><b>TODO：</b>General Fusionと日本企業（商社・重工・電力・京都フュージョニアリング等）の具体的な提携・調達関係が判明したらここに追記する。</div>
+</div>
+
+
+<!-- ===================== 11. RISKS ===================== -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">11</span> Risks &amp; Challenges</div>
+  <h2>リスクと課題</h2>
+
+  <div class="warn-box">
+    <div class="w-title">技術リスク</div>
+    <ul>
+      <li><b>精密同期の未証明：</b>多数ピストンをマイクロ秒精度で対称に駆動しプラズマを潰す——この機械的同期と圧縮対称性の確立がMTF最大の未証明領域。少しの非対称でプラズマが壊れる。</li>
+      <li><b>温度到達の遅れ：</b>LM26は2026年で約840万℃と、目標の1億℃超・科学的ブレークイーブンにはなお大きな距離。ブレークイーブンは2028年以降へ後退した。</li>
+      <li><b>実証データの薄さ：</b>トカマクほどの世界的データベースがなく、物理外挿が効きにくい。実機で確かめるしかない領域が多い。</li>
+      <li><b>D-T共通の課題：</b>トリチウム増殖ブランケット・中性子照射耐性は他のD-T勢と同じく未解決。液体金属ライナーはこれを緩和する設計だが実証はこれから。</li>
+    </ul>
+  </div>
+
+  <div class="warn-box">
+    <div class="w-title">事業・資金リスク</div>
+    <ul>
+      <li><b>慢性的な資金不足：</b>2025年に25%レイオフ、$22Mつなぎ、そして上場という綱渡り。上場後も手元$150Mは商用化に必要な資金からは桁が足りず、継続的な増資（希薄化）が不可避。</li>
+      <li><b>SPAC上場の質：</b>高い償還で信託からの現金が乏しく、名目$1Bの割に実弾は小さい。株価ボラティリティと市場依存が高い。</li>
+      <li><b>競合との資金格差：</b>CFS（$3B+）やHelion（$2B+）に対し資金規模で明確に劣後。「安さ」で勝つ前に資金が尽きるリスクが最大の脅威。</li>
+    </ul>
+  </div>
+</div>
+
+
+<!-- ===================== 12. STOCK ===================== -->
+<div class="sec" id="stock">
+  <div class="sec-label"><span class="num">12</span> Stock Analysis</div>
+  <h2>Stock分析（GFUZ） — NFA</h2>
+
+  <p>2026年7月時点で、GFUZは「核融合を主業とする世界初の上場株」というユニークな存在だ。個人投資家にとって“純粋な核融合エクスポージャー”を公開市場で取れる唯一の銘柄という希少性がある一方、ファンダメンタルズは極めて投機的である。</p>
+
+  <h3>強気シナリオ（Bull）</h3>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">+</div><div>
+      <div class="ind-title">唯一の上場ピュア核融合 → テーマ買いの受け皿</div>
+      <div class="ind-desc">AI電力需要×クリーンエネルギーのテーマで、公開市場から核融合に張りたい資金の“唯一の入口”。初日+40%が示すように物語だけで買われやすい。</div></div>
+    </div>
+    <div class="ind-item"><div class="ind-num">+</div><div>
+      <div class="ind-title">マイルストーン・ドリブンの株価</div>
+      <div class="ind-desc">温度到達・keV到達・ブレークイーブンといった技術マイルストーンごとに再評価される「イベント株」。達成すれば大きく跳ねる非対称性がある。</div></div>
+    </div>
+  </div>
+
+  <h3>弱気シナリオ（Bear）</h3>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">−</div><div>
+      <div class="ind-title">売上ゼロ・継続増資・希薄化</div>
+      <div class="ind-desc">当面キャッシュフローは全て支出。手元$150Mでは足りず、株価が高いうちに増資→既存株主の希薄化という力学が働きやすい。De-SPAC銘柄の初期急落パターンにも要注意。</div></div>
+    </div>
+    <div class="ind-item"><div class="ind-num">−</div><div>
+      <div class="ind-title">タイムライン後退の常習性</div>
+      <div class="ind-desc">既にブレークイーブンは2026→2028以降へ後退済み。核融合全般でタイムラインは滑りやすく、失望売りのトリガーになりやすい。</div></div>
+    </div>
+    <div class="ind-item"><div class="ind-num">−</div><div>
+      <div class="ind-title">技術が本命でない可能性</div>
+      <div class="ind-desc">仮に核融合が商用化しても、勝者がトカマク（CFS）やFRC（Helion）で、MTFが主流にならないシナリオは十分あり得る。「核融合の勝ち」と「GFUZの勝ち」は別物。</div></div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>NFA（Not Financial Advice）：</strong>GFUZは事実上「2030年代の一発逆転に賭けるロングデーテッド・オプション」のような性格の株。売上・利益で評価できる対象ではなく、<b>マイルストーン到達確率 × 巨大TAM × 希薄化リスク</b>で見るべき投機枠。ポジションを取るなら、失っても構わない少額で、マイルストーン・カレンダー（次の温度/keV発表、次の増資）を軸に監視するのが筋。個人的な結論はQ&amp;Aゾーンに蓄積していく。
+  </div>
+</div>
+
+
+<!-- ===================== 13. WHY NOW ===================== -->
+<div class="sec" id="why-now">
+  <div class="sec-label"><span class="num">13</span> Why Now</div>
+  <h2>なぜ今見るべきか</h2>
+
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">核融合が「公開市場」に出た最初の事例</div>
+        <div class="ind-desc">これまで核融合は非上場VC案件だった。GFUZの上場は、核融合が資金調達の手段として公開市場を使い始めた転換点。成否にかかわらず、業界の資本形成モデルを占う先行指標になる。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">「安さ」路線が正しいかの試金石</div>
+        <div class="ind-desc">磁石・レーザーに巨費を投じるCFS/Helionに対し、General Fusionは機械工学で安く作る逆張り。資金が続けば「$/MWhで勝つ」思想の当否を実機で見られる、産業的に貴重なサンプル。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">AI電力需要という追い風と、資金難という逆風の同居</div>
+        <div class="ind-desc">AI-DCの電力逼迫は核融合全体の追い風だが、General Fusion個社は資金難で綱渡り。マクロの追い風がミクロの資金繰りを救えるかを観察できる、生々しいケーススタディ。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">ハードインフラ次事業の参照点</div>
+        <div class="ind-desc">$10B+バリュエーションのハードインフラ次事業を構想する立場からは、「20年一本足→上場延命」というGeneral Fusionの軌跡は、ディープテックの資本設計・タイムライン管理の反面教師／教材として示唆に富む。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>まとめ：</strong>General Fusionは「技術的独自性（MTF・液体金属・安さ）」と「事業的脆弱性（資金難・タイムライン後退・SPAC上場）」が最も鮮明に同居した核融合企業だ。本命はCFSでも、General Fusionは<b>核融合の“経済性で勝つ”仮説と、ディープテックの資金設計の限界</b>を同時に観察できる稀有なケース。次の分岐点は「次の温度／keVマイルストーン」と「次の増資」。
+  </div>
+</div>
+
+
+<!-- ===================== SOURCES ===================== -->
+<div class="sources">
+  <h2>主要参考情報</h2>
+  <ul>
+    <li>General Fusion 公式サイト（generalfusion.com）</li>
+    <li>Wikipedia — General Fusion</li>
+    <li>TechCrunch — 上場初日報道（2026年7月13日）</li>
+    <li>TechCrunch — レイオフ／$22Mつなぎ報道（2025年5月・8月）</li>
+    <li>Physics World — 資金制約によるレイオフ（2025）</li>
+    <li>BetaKit / Globe and Mail — SPAC合併・資金調達報道</li>
+    <li>GeekWire — イタリア展開の初期ステップ（2026）</li>
+    <li>Fusion Industry Association — Global Fusion Report</li>
+  </ul>
+</div>
+<!-- ===================== Q&A ZONE ===================== -->
+<style>
+.qa-zone{margin:48px 0 8px}
+.qa-zone .qa-head{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#888;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.qa-zone .qa-head .num{background:#111;color:#fff;font-size:11px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+.qa-zone .qa-head::after{content:'';flex:1;height:1px;background:#d8d8d8}
+.qa-zone h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:#111;margin:0 0 6px}
+.qa-zone .qa-sub{font-size:12.5px;color:#888;margin-bottom:16px;line-height:1.7}
+.qa-list{display:flex;flex-direction:column;gap:10px}
+.qa-item{background:#f7f7f7;border:1px solid #e0e0e0;border-radius:10px;overflow:hidden}
+.qa-item[open]{border-color:#111;background:#fff}
+.qa-q{list-style:none;cursor:pointer;padding:14px 18px;font-size:14px;font-weight:700;color:#111;display:flex;gap:12px;align-items:flex-start;line-height:1.6}
+.qa-q::-webkit-details-marker{display:none}
+.qa-q:hover{background:#f0f0f0}
+.qa-item[open] .qa-q:hover{background:#fafafa}
+.qa-mark{font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#111;color:#fff;margin-top:1px}
+.qa-mark.a{background:#fff;color:#111;border:1px solid #111}
+.qa-a{display:flex;gap:12px;padding:2px 18px 16px 18px;font-size:13.5px;color:#444;line-height:1.85}
+.qa-a>div{flex:1}
+.qa-a b{color:#111;font-weight:700}
+.qa-a ul{margin:6px 0 0;padding-left:18px}
+.qa-a li{margin-bottom:3px}
+.qa-empty{background:#fafafa;border:1px dashed #bbb;border-radius:10px;padding:20px;font-size:13px;color:#999;text-align:center;line-height:1.7}
+</style>
+<div class="sec qa-zone" id="qa">
+  <div class="qa-head"><span class="num">Q</span> Q&amp;A Zone</div>
+  <h2>Q&amp;A &mdash; 事業理解のための問答</h2>
+  <p class="qa-sub">事業構造を自分の言葉で理解するために、疑問と答えを貯めていくゾーン。Qをクリックで回答を開閉。</p>
+  <div class="qa-list">
+    <div class="qa-empty">まだQ&amp;Aはありません。事業理解を深める疑問を、ここに貯めていく。</div>
+  </div>
+</div>
+
+
+
+</div>
+<!-- snav:footer -->
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+</body>
+</html>
