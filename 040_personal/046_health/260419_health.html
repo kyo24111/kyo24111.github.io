@@ -851,7 +851,7 @@ body{padding-top:56px!important;padding-bottom:68px!important}
 <script>
 // ── CONFIG ──────────────────────────────────────────────────
 const GOALS = {
-  weight: 69.5, body_fat: 15.3, bmi: 24.1,
+  weight: 69.5, body_fat: 15.3, fat_mass: 10.6, bmi: 24.1,
   fat_free_weight: 58.9, subcutaneous_fat: 13.0, visceral_fat: 6,
   body_water: 60.2, skeletal_muscle: 54.3, bone_mass: 2.93,
   bmr: 1690, muscle_mass: 28.07, protein: 19.0, metabolic_age: 23
@@ -874,11 +874,12 @@ function weekAgoColor(v, row, key, th) {
   return weekDeltaColor(+v, +prev[key], th);
 }
 // weight/body_fat の濃淡しきい値（日次・週次で共用）
-const DIFF_TH = { weight: [0.3, 0.7, 1.2], body_fat: [0.2, 0.5, 1.0] };
+const DIFF_TH = { weight: [0.3, 0.7, 1.2], body_fat: [0.2, 0.5, 1.0], fat_mass: [0.15, 0.35, 0.6] };
 
 const BODY_COLS = [
   { key: 'weight',           label: 'Weight (kg)',    goal: GOALS.weight,   bg: (v, r) => weekAgoColor(v, r, 'weight',   [0.3, 0.7, 1.2]) },
-  { key: 'body_fat',         label: 'BodyFat (%)',     goal: GOALS.body_fat, bg: (v, r) => weekAgoColor(v, r, 'body_fat', [0.2, 0.5, 1.0]) },
+  { key: 'body_fat',         label: 'BodyFat (%)',     goal: GOALS.body_fat, bg: (v, r) => weekAgoColor(v, r, 'body_fat', DIFF_TH.body_fat) },
+  { key: 'fat_mass',         label: 'FatMass (kg)',    goal: GOALS.fat_mass, bg: (v, r) => weekAgoColor(v, r, 'fat_mass', DIFF_TH.fat_mass) },
   { key: 'bmi',              label: 'BMI',             goal: GOALS.bmi },
   { key: 'fat_free_weight',  label: 'FatFree (kg)',    goal: GOALS.fat_free_weight },
   { key: 'subcutaneous_fat', label: 'SubcutFat (%)',   goal: GOALS.subcutaneous_fat },
@@ -1154,6 +1155,12 @@ function setRange(days) {
 function loadData() {
   bodyData = Papa.parse(BODY_CSV, { header: true, skipEmptyLines: true }).data
     .sort((a, b) => new Date(a.date) - new Date(b.date));
+  // 生成カラム: 脂肪量(kg) = 体重 − 除脂肪量。水分ノイズを含まない「見た目の腹筋」の直接指標。
+  bodyData.forEach(r => {
+    const w = +r.weight, ff = +r.fat_free_weight;
+    r.fat_mass = (r.weight !== '' && r.fat_free_weight !== '' && !isNaN(w) && !isNaN(ff))
+      ? (w - ff).toFixed(2) : '';
+  });
   calData = Papa.parse(CAL_CSV, { header: true, skipEmptyLines: true }).data
     .sort((a, b) => new Date(a.date) - new Date(b.date));
   workoutData = Papa.parse(WORKOUT_CSV, { header: true, skipEmptyLines: true }).data
