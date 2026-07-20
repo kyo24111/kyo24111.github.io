@@ -762,6 +762,16 @@ body{padding-top:56px!important;padding-bottom:68px!important}
       <canvas id="c-fiber" height="180"></canvas>
       <div class="chart-target-note"></div>
     </div>
+    <div class="chart-box" onclick="openModal('c-sleep-dur')">
+      <div class="chart-title">Sleep Duration (h)</div>
+      <canvas id="c-sleep-dur" height="180"></canvas>
+      <div class="chart-target-note"></div>
+    </div>
+    <div class="chart-box" onclick="openModal('c-sleep-bed')">
+      <div class="chart-title">Bedtime</div>
+      <canvas id="c-sleep-bed" height="180"></canvas>
+      <div class="chart-target-note"></div>
+    </div>
   </div>
 </div>
 
@@ -1116,6 +1126,8 @@ const CAL_CSV = `date,calories,protein,fat,carbs,sugar,fiber,salt
 const WORKOUT_CSV = `date,type,exercise,sets,distance_km,duration_min,note
 2026-06-24,strength,ベンチプレス,40x8;45x8;45x10,,,`;
 
+const SLEEP_CSV = `date,bedtime,waketime,duration_min`;
+
 // ── DATE FORMATTER ──────────────────────────────────────────
 // MM/DD; first point of each new year shows '25 MM/DD
 function fmtLabels(dates) {
@@ -1128,7 +1140,7 @@ function fmtLabels(dates) {
 }
 
 // ── STATE ───────────────────────────────────────────────────
-let bodyData = [], calData = [], workoutData = [];
+let bodyData = [], calData = [], workoutData = [], sleepData = [];
 let currentRange = 14;
 const charts   = {};
 const chartDefs = {};   // { id: { config, title, note } }
@@ -1165,6 +1177,9 @@ function loadData() {
     .sort((a, b) => new Date(a.date) - new Date(b.date));
   workoutData = Papa.parse(WORKOUT_CSV, { header: true, skipEmptyLines: true }).data
     .sort((a, b) => new Date(b.date) - new Date(a.date));
+  sleepData = Papa.parse(SLEEP_CSV, { header: true, skipEmptyLines: true }).data
+    .filter(r => r.date)
+    .sort((a, b) => new Date(a.date) - new Date(b.date));
 
   renderKPIs();
   renderCharts();
@@ -1501,6 +1516,100 @@ function renderCharts() {
       if (box) box.innerHTML = `<div class="chart-title">${id}</div><div class="msg">No data</div>`;
     });
   }
+
+  renderSleep();
+}
+
+// ── SLEEP ────────────────────────────────────────────────────
+// 標準偏差（母集団）。2点未満はnull。
+function stdev(arr) {
+  const a = arr.filter(v => v != null && !isNaN(v));
+  if (a.length < 2) return null;
+  const m = a.reduce((x, y) => x + y, 0) / a.length;
+  return Math.sqrt(a.reduce((s, v) => s + (v - m) ** 2, 0) / a.length);
+}
+function meanOf(arr) {
+  const a = arr.filter(v => v != null && !isNaN(v));
+  return a.length ? a.reduce((x, y) => x + y, 0) / a.length : null;
+}
+function hm(mins) {  // 分 → "6h30m"
+  if (mins == null || isNaN(mins)) return '—';
+  return `${Math.floor(mins / 60)}h${String(Math.round(mins % 60)).padStart(2, '0')}m`;
+}
+function clockOf(dec) {  // シフト済み小数時 → "1:05"
+  if (dec == null || isNaN(dec)) return '—';
+  const h = Math.floor(dec) % 24, m = Math.round((dec - Math.floor(dec)) * 60);
+  return `${h}:${String(m).padStart(2, '0')}`;
+}
+// 就寝時刻を連続量へ: 0〜12時は+24（夜〜未明が途切れないように）。23:00→23, 00:00→24, 01:30→25.5
+function bedDec(hhmm) {
+  if (!hhmm) return null;
+  const [h, m] = hhmm.split(':').map(Number);
+  if (isNaN(h) || isNaN(m)) return null;
+  return h + m / 60 + (h < 12 ? 24 : 0);
+}
+// 直近7日/30日の標準偏差（分）を "±42m（7日）/ ±51m（30日）" 形式に
+function stabilityNote(valsMin) {
+  const fmt = sd => sd == null ? '—' : `±${Math.round(sd)}m`;
+  return `${fmt(stdev(valsMin.slice(-7)))}（7日）/ ${fmt(stdev(valsMin.slice(-30)))}（30日）・低いほど安定`;
+}
+function mkSleepBedtimeConfig(values, dates, yMin, yMax, xColors) {
+  return {
+    type: 'line',
+    data: { labels: dates, datasets: [{
+      data: values, borderColor: '#111', backgroundColor: 'rgba(17,17,17,0.05)',
+      tension: 0.35, pointRadius: 4, pointBackgroundColor: '#111',
+      pointBorderColor: '#fff', pointBorderWidth: 1.5, fill: true,
+    }] },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: i => clockOf(i.parsed.y) } } },
+      scales: {
+        x: { ticks: { maxTicksLimit: 8, color: xTickColorFn(xColors) }, grid: { color: '#f0f0f0' } },
+        y: { min: yMin, max: yMax, ticks: { callback: v => clockOf(v) }, grid: { color: '#f0f0f0' } },
+      },
+    },
+  };
+}
+function setBoxNote(id, text) {
+  const n = document.getElementById(id)?.closest('.chart-box')?.querySelector('.chart-target-note');
+  if (n) n.textContent = text;
+}
+function renderSleep() {
+  const fs = getFilteredData(sleepData);
+  const dates = fmtLabels(fs.map(d => d.date));
+  const xc = dowColors(fs.map(d => d.date));
+  const dur = fs.map(d => (d.duration_min !== '' && d.duration_min != null && !isNaN(+d.duration_min)) ? +d.duration_min / 60 : null);
+  const bed = fs.map(d => bedDec(d.bedtime));
+
+  // 安定度は表示レンジに依存せず、全データ末尾から算出
+  const allDurMin = sleepData.map(d => (d.duration_min !== '' && !isNaN(+d.duration_min)) ? +d.duration_min : null);
+  const allBedMin = sleepData.map(d => { const v = bedDec(d.bedtime); return v == null ? null : v * 60; });
+  const durMean7 = meanOf(sleepData.slice(-7).map(d => +d.duration_min).filter(v => !isNaN(v)));
+  const bedMean7 = meanOf(sleepData.slice(-7).map(d => bedDec(d.bedtime)).filter(v => v != null));
+  const durNote = `直近7日平均 ${hm(durMean7)} ・ ブレ ${stabilityNote(allDurMin)}`;
+  const bedNote = `直近7日平均 ${clockOf(bedMean7)} ・ ブレ ${stabilityNote(allBedMin)}`;
+
+  // Sleep Duration（時間・目標線なし）
+  const dv = dur.filter(v => v != null);
+  const dMin = dv.length ? Math.floor(Math.min(...dv) - 0.5) : 3;
+  const dMax = dv.length ? Math.ceil(Math.max(...dv) + 0.5) : 10;
+  mkLine('c-sleep-dur', dur, dates, null, dMin, dMax, 'Sleep Duration (h)', durNote, xc);
+
+  // Bedtime（時刻目盛りの専用config）
+  const bv = bed.filter(v => v != null);
+  const bMin = bv.length ? Math.floor((Math.min(...bv) - 0.5) * 2) / 2 : 22;
+  const bMax = bv.length ? Math.ceil((Math.max(...bv) + 0.5) * 2) / 2 : 27;
+  const ctx = document.getElementById('c-sleep-bed');
+  if (ctx) {
+    if (charts['c-sleep-bed']) charts['c-sleep-bed'].destroy();
+    const cfg = mkSleepBedtimeConfig(bed, dates, bMin, bMax, xc);
+    charts['c-sleep-bed'] = new Chart(ctx, cfg);
+    chartDefs['c-sleep-bed'] = { config: cfg, title: 'Bedtime', note: bedNote };
+  }
+  setBoxNote('c-sleep-dur', durNote);
+  setBoxNote('c-sleep-bed', bedNote);
 }
 
 // ── TABLES ──────────────────────────────────────────────────
