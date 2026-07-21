@@ -4155,6 +4155,202 @@
 
     </div>
 
+    <div class="chapter" id="inverse">
+      <div class="chapter-meta">
+        <div class="chapter-label">Chapter</div>
+        <div class="chapter-status pending">📝 これから学ぶ</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-07-21</div>
+      </div>
+      <div class="chapter-title"><span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span>（Inverse Matrix）</div>
+
+      <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;margin-bottom:28px">
+        <span class="key">この章の位置づけ：</span><br>
+        <span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span>で「変換が空間を潰すか（det = 0）／潰さないか（det ≠ 0）」を測れるようになった。<span class="hl">潰さない変換なら、元に戻す変換が必ず存在する</span> — それが<span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span> A⁻¹。<br>
+        この章は「逆行列とは何か（<span class="key">巻き戻し</span>）→ いつ存在するか（<span class="key">det ≠ 0</span>）→ どう計算するか（<span class="key">2×2公式・余因子・掃き出し法</span>）→ 性質と使い道」を1本につなぐ。ファイルの学習順では <span class="hl">行列式 → 逆行列 → 固有値</span> の中間地点。
+      </div>
+
+      <div class="section" id="inv-meaning">
+        <h2>そもそも何か — 「変換を巻き戻す」行列<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p><span class="vt" data-vocab="square-matrix" data-ja="正方行列">正方行列</span> A が<span class="vt" data-vocab="vector" data-ja="ベクトル">ベクトル</span>を動かす変換だとすると、その動きを<span class="hl">完全に元へ戻す</span>変換が <span class="key">A⁻¹</span>（A インバース）。掛ける順序に関係なく、往復すると「何もしない」＝<span class="vt" data-vocab="identity-matrix" data-ja="単位行列">単位行列</span> I に戻る。</p>
+
+        <div class="formula" style="text-align:center;font-size:16px">
+          A · A⁻¹ &nbsp;=&nbsp; A⁻¹ · A &nbsp;=&nbsp; <span class="hl">I</span>
+        </div>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">直感（undo）：</span>A が「2倍に伸ばして45°回す」なら、A⁻¹ は「45°戻して 1/2 に縮める」。順に適用すると出発点に戻る。<br>
+          <span class="key">重要な前提：</span>逆行列は <span class="hl">正方行列（n × n）にしか定義されない</span>。入口と出口が同じ空間（V → V）でないと「戻ってくる」という話にならないため。行列式と同じく<span class="key">自己写像</span>の道具。
+        </div>
+
+        <p><span class="key">用語：</span>逆行列を<span class="hl">持つ</span>行列を <span class="key">正則（regular / 可逆 invertible / 非特異 nonsingular）</span>、持たないものを <span class="key">特異（singular）</span>という。「正則 ＝ 逆が作れる ＝ 潰さない変換」はすべて同義。</p>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="inv-existence">
+        <h2>存在条件 — det ≠ 0 と、既習章の総まとめ<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>逆行列が存在するかどうかは、これまで別々の章で見てきた条件と<span class="hl">すべて同じこと</span>。1つでも成り立てば全部成り立つ（＝<span class="key">正則の同値条件</span>）。</p>
+
+        <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px">
+          <thead>
+            <tr style="background:var(--surface);text-align:left">
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">観点</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">逆行列あり（正則）</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">逆行列なし（特異）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="hl">det(A) ≠ 0</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">det(A) = 0</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="vt" data-vocab="rank" data-ja="階数">rank</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="hl">フルランク</span>（rank = n）</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">rank &lt; n（rank 落ち）</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">列（行）</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">一次従属</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="vt" data-vocab="kernel" data-ja="核">核</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">{0} のみ</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">0 以外のベクトルを含む</td></tr>
+            <tr><td style="padding:8px 12px">幾何</td><td style="padding:8px 12px">体積を保つ（潰れない）</td><td style="padding:8px 12px"><span class="hl">潰れて情報が失われる</span></td></tr>
+          </tbody>
+        </table>
+
+        <div class="formula" style="border-left-color:#d62828;background:#fff5f5;font-size:13.5px">
+          <span class="key" style="color:#d62828">なぜ det = 0 だと戻せないか：</span>det = 0 は「空間を低次元へ潰す」変換。潰れると<span class="hl">別々の点が同じ点に重なる</span>（<a href="#image-kernel" onclick="gotoSection('image-kernel');return false;">核が {0} でない</a>）。重なった後から「元がどっちだったか」を復元する規則は作れない ＝ 逆変換が存在しない。
+        </div>
+        <p style="margin-top:8px">つまり <span class="key">逆行列を求める前に、まず det ≠ 0 を確認</span>するのが定石。det = 0 なら計算するだけ無駄。</p>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="inv-2x2">
+        <h2>計算① 2×2 の公式 — 「入れ替えて符号、det で割る」<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>2×2 だけは<span class="hl">暗記できる公式</span>がある。手計算で最速。</p>
+
+        <div class="formula" style="text-align:center;font-size:15px">
+          A = <span class="matrix"><table><tr><td>a</td><td>b</td></tr><tr><td>c</td><td>d</td></tr></table></span>
+          &nbsp;→&nbsp;
+          A⁻¹ = <span class="hl">1 / (ad − bc)</span> · <span class="matrix"><table><tr><td>d</td><td>−b</td></tr><tr><td>−c</td><td>a</td></tr></table></span>
+        </div>
+
+        <p><span class="key">覚え方：</span>① 対角（a と d）を<span class="hl">入れ替える</span> ② 反対角（b, c）の<span class="hl">符号を反転</span> ③ 全体を <span class="key">det = ad − bc</span> で割る。det = 0 なら割れない＝逆行列なし、と公式からも分かる。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:20px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例題</h3>
+        <p>A = <span class="matrix"><table><tr><td>4</td><td>7</td></tr><tr><td>2</td><td>6</td></tr></table></span> の逆行列。</p>
+        <p>det = 4·6 − 7·2 = 24 − 14 = <span class="key">10</span>（≠ 0 なので存在）。入れ替え・符号反転して 1/10 倍：</p>
+        <div class="matrix-row">
+          <span>A⁻¹ = 1/10 ·</span>
+          <div class="matrix"><table><tr><td>6</td><td>−7</td></tr><tr><td>−2</td><td>4</td></tr></table></div>
+          <span>=</span>
+          <div class="matrix"><table><tr><td>0.6</td><td>−0.7</td></tr><tr><td>−0.2</td><td>0.4</td></tr></table></div>
+        </div>
+        <p class="step" style="color:var(--muted);font-size:13.5px">検算：A·A⁻¹ の (1,1) = 4·0.6 + 7·(−0.2) = 2.4 − 1.4 = 1、(1,2) = 4·(−0.7) + 7·0.4 = −2.8 + 2.8 = 0 … I になる ✓</p>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="inv-cofactor">
+        <h2>計算② 余因子行列（一般 n×n）— A⁻¹ = adj(A) / det(A)<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>3×3 以上の一般公式。<a href="#det-cofactor" onclick="gotoSection('det-cofactor');return false;">余因子展開</a>で使った<span class="key">余因子（cofactor）</span>をそのまま流用する。</p>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px;line-height:2">
+          <span class="key">手順：</span><br>
+          ① 各成分の <span class="key">余因子</span> Cᵢⱼ = (−1)<sup>i+j</sup> × Mᵢⱼ を全部計算（Mᵢⱼ ＝ i 行 j 列を消した小行列の行列式 ＝ <span class="key">小行列式・minor</span>）<br>
+          ② 余因子を並べた<span class="key">余因子行列</span>を作り、<span class="hl">転置</span>する → これが <span class="key">余因子行列 adj(A)（adjugate・随伴行列）</span><br>
+          ③ 全体を det(A) で割る： &nbsp; A⁻¹ = <span class="hl">adj(A) / det(A)</span>
+        </div>
+        <p style="color:var(--muted);font-size:13px">※ 2×2 公式はこの一般式の特殊ケース（adj = [[d,−b],[−c,a]]）。だから「入れ替えて符号反転」の正体は転置つき余因子行列。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:20px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例題（3×3）</h3>
+        <p>A = <span class="matrix"><table><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>0</td><td>1</td><td>4</td></tr><tr><td>5</td><td>6</td><td>0</td></tr></table></span> &nbsp;の逆行列。</p>
+        <p><span class="key">Step 1 — det：</span>1行目で余因子展開すると det = 1·(1·0−4·6) − 2·(0·0−4·5) + 3·(0·6−1·5) = −24 + 40 − 15 = <span class="key">1</span>（≠ 0）。</p>
+        <p><span class="key">Step 2 — 余因子を9個：</span>各成分で「その行と列を消した 2×2 の det」に符号 (−1)<sup>i+j</sup> を付ける。</p>
+        <div class="matrix-row">
+          <span>余因子行列 =</span>
+          <div class="matrix"><table><tr><td>−24</td><td>20</td><td>−5</td></tr><tr><td>18</td><td>−15</td><td>4</td></tr><tr><td>5</td><td>−4</td><td>1</td></tr></table></div>
+        </div>
+        <p class="step" style="color:var(--muted);font-size:13.5px">例：C₁₁ = +det[[1,4],[6,0]] = −24、C₁₂ = −det[[0,4],[5,0]] = +20、C₂₁ = −det[[2,3],[6,0]] = +18 …（符号は市松模様 + − + / − + − / + − +）</p>
+        <p><span class="key">Step 3 — 転置して det で割る：</span>det = 1 なので割り算は不要、転置するだけ。</p>
+        <div class="matrix-row">
+          <span>A⁻¹ = adj(A)/1 =</span>
+          <div class="matrix"><table><tr><td>−24</td><td>18</td><td>5</td></tr><tr><td>20</td><td>−15</td><td>−4</td></tr><tr><td>−5</td><td>4</td><td>1</td></tr></table></div>
+        </div>
+        <p class="step" style="color:var(--muted);font-size:13.5px">検算：A の1行目 (1,2,3) と A⁻¹ の1列目 (−24,20,−5) の内積 = −24 + 40 − 15 = 1 ✓。2列目 (18,−15,4) との内積 = 18 − 30 + 12 = 0 ✓。</p>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+          <span class="key">実用メモ：</span>余因子法は<span class="hl">理論的にきれい</span>（公式で書ける）が、n が大きいと余因子を n² 個 × それぞれ (n−1)×(n−1) の det … と計算量が爆発する。4×4 以上を手で解くなら次の<span class="key">掃き出し法</span>が現実的。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="inv-gauss">
+        <h2>計算③ 掃き出し法 — [A | I] → [I | A⁻¹]（既習の再掲）<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>実務上いちばん使う方法。手順と原理は <a href="#gj-inverse" onclick="gotoSection('gj-inverse');return false;">掃き出し法の章（7-5）</a>で詳説済みなので要点だけ。</p>
+        <div class="formula" style="text-align:center;font-size:15px">
+          [ A | I ] &nbsp;—（行基本変形で左を I にする）→&nbsp; [ I | <span class="hl">A⁻¹</span> ]
+        </div>
+        <p>A の右に単位行列を並べ、<span class="vt" data-vocab="elementary-row-operations" data-ja="行基本変形">行基本変形</span>だけで左半分を I に整えると、右半分に A⁻¹ が現れる。途中で<span class="hl">左側にゼロ行が出たら</span> rank 落ち＝逆行列なし（det = 0 と同じ結論）。</p>
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+          <span class="key">3つの計算法の使い分け：</span><br>
+          ・<span class="key">2×2</span> → 公式（一瞬）<br>
+          ・<span class="key">3×3 で det が既知/きれい</span> → 余因子法（理論の確認にも良い）<br>
+          ・<span class="key">4×4 以上・実務・プログラム</span> → 掃き出し法（計算量が素直）
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="inv-cramer">
+        <h2>クラメルの公式 — 逆行列を作らず「1成分だけ」解く<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>連立方程式 <span class="key">A x = b</span> の解を、逆行列を全部作らずに<span class="hl">1変数ずつ</span>求める公式。分母は det(A)、分子は「A の i 列目を b で置き換えた行列」の det。</p>
+        <div class="formula" style="text-align:center;font-size:15px">
+          xᵢ = <span class="hl">det(Aᵢ) / det(A)</span> &nbsp;&nbsp;（Aᵢ ＝ A の i 列目を b に差し替えた行列）
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:20px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例題</h3>
+        <p>連立 &nbsp;<code>2x + y = 5</code>, &nbsp;<code>x + 3y = 10</code>。 &nbsp; A = <span class="matrix"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>3</td></tr></table></span>, &nbsp; b = <span class="matrix"><table><tr><td>5</td></tr><tr><td>10</td></tr></table></span>。</p>
+        <p>det(A) = 2·3 − 1·1 = <span class="key">5</span>。</p>
+        <div class="matrix-row">
+          <span>x = det<span class="matrix"><table><tr><td>5</td><td>1</td></tr><tr><td>10</td><td>3</td></tr></table></span> / 5 = (15−10)/5 = <span class="res" style="background:#fff3a0;padding:1px 6px;border-radius:3px">1</span></span>
+        </div>
+        <div class="matrix-row">
+          <span>y = det<span class="matrix"><table><tr><td>2</td><td>5</td></tr><tr><td>1</td><td>10</td></tr></table></span> / 5 = (20−5)/5 = <span class="res" style="background:#fff3a0;padding:1px 6px;border-radius:3px">3</span></span>
+        </div>
+        <p class="step" style="color:var(--muted);font-size:13.5px">検算：2·1 + 3 = 5 ✓、1 + 3·3 = 10 ✓。</p>
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+          <span class="key">立ち位置：</span>変数が2〜3個で「1変数だけ欲しい」時に手計算が速い。ただし n が増えると det を何度も計算するため<span class="hl">実務では掃き出し法に負ける</span>。理論（解が det の比で書ける）を理解する道具として重要。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="inv-properties">
+        <h2>性質 — 積・転置・det との関係<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <div class="formula" style="border-left-color:#888;font-size:14px;line-height:2">
+          ・<strong>(A⁻¹)⁻¹ = A</strong>　… 巻き戻しをもう一度巻き戻すと元に戻る<br>
+          ・<strong>(AB)⁻¹ = B⁻¹A⁻¹</strong>　… <span class="hl">順序が逆転</span>（靴下→靴を履いたら、脱ぐのは靴→靴下）<br>
+          ・<strong>(Aᵀ)⁻¹ = (A⁻¹)ᵀ</strong>　… 転置と逆は交換できる<br>
+          ・<strong>(cA)⁻¹ = (1/c) A⁻¹</strong>　（c ≠ 0）<br>
+          ・<strong>det(A⁻¹) = 1 / det(A)</strong>　… <a href="#det-properties" onclick="gotoSection('det-properties');return false;">行列式の性質</a>から。逆変換は倍率も逆数<br>
+          ・<span class="vt" data-vocab="diagonal-matrix" data-ja="対角行列">対角行列</span> diag(d₁,…,dₙ)⁻¹ = diag(1/d₁,…,1/dₙ)　（全 dᵢ ≠ 0）
+        </div>
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">(AB)⁻¹ の順序反転が効く場面：</span><span class="vt" data-vocab="diagonalization" data-ja="対角化">対角化</span> P⁻¹AP や<span class="vt" data-vocab="basis" data-ja="基底">基底</span>変換では、逆行列を挟む順序を間違えると別物になる。「外側から戻す」と覚える。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="inv-applications">
+        <h2>使い道 — 連立方程式・基底変換、そして「実は使わない」話<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p><span class="key">① 連立方程式：</span>A x = b の両辺に左から A⁻¹ を掛けると <span class="hl">x = A⁻¹ b</span>。理論的には逆行列を1回作れば、どんな b でも掛けるだけで解ける。</p>
+        <p><span class="key">② 基底変換・対角化：</span><a href="#span-coords-inverse" onclick="gotoSection('span-coords-inverse');return false;">Span の章</a>の「基底で点を読む＝A⁻¹ を作用させる」、そして次章以降の <span class="key">P⁻¹AP</span>（対角化）の中心にいる。</p>
+        <div class="formula" style="border-left-color:#d62828;background:#fff5f5;font-size:13.5px">
+          <span class="key" style="color:#d62828">実務の落とし穴：</span>コンピュータで A x = b を解くとき、<span class="hl">逆行列を明示的に計算するのは避ける</span>のが常識。A⁻¹ を作って掛けるより、掃き出し法（LU 分解）で直接 x を解くほうが<span class="key">速く・数値的に安定</span>。逆行列は「理論を語る道具」であって「計算の手段」ではない、が実践の感覚。
+        </div>
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+          <span class="key">次章への接続：</span>逆行列が「変換を戻す」道具だと分かると、次の<span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>・<span class="vt" data-vocab="diagonalization" data-ja="対角化">対角化</span>で出てくる <span class="key">P⁻¹AP</span> が「A を別の座標系で見直す（見終わったら戻す）」操作だと読めるようになる。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+    </div>
+
     <div class="chapter" id="eigen">
       <div class="chapter-meta">
         <div class="chapter-label">Chapter</div>
@@ -4871,6 +5067,26 @@
           ・det(A) ≠ 0 ⇔ A は<span class="hl">フルランク・正則</span>、逆行列が存在する<br>
           ・三角行列・対角行列の場合：det = 対角成分の積<br>
           ・det(AB) = det(A)·det(B)、det(A<sup>T</sup>) = det(A)
+        </div>
+      </li>
+      <li class="notation-item">
+        <div class="notation-symbol">I &nbsp;/&nbsp; E</div>
+        <div class="notation-desc">
+          <span class="key">単位行列</span>（<strong>I</strong>dentity matrix）。対角成分がすべて 1、それ以外が 0 の正方行列。掛けても相手を変えない「何もしない」変換：<strong>AI = IA = A</strong>。<br>
+          <span class="key">記号：</span><strong>I</strong> が英語圏で標準（Identity）。ドイツ語圏・日本の教科書では <strong>E</strong> と書くことも多い（ドイツ語 <em>Einheitsmatrix</em>＝単位行列の頭文字）。<span class="hl">I と E は同じもの</span>。サイズを明示するとき <strong>Iₙ</strong>（n×n）と書く。<br>
+          <span class="key">読み方：</span>「アイ」または「単位行列」。<br>
+          例：I₂ = <span class="matrix"><table><tr><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td></tr></table></span>、&nbsp; I₃ = <span class="matrix"><table><tr><td>1</td><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td></tr></table></span>
+        </div>
+      </li>
+      <li class="notation-item">
+        <div class="notation-symbol">A<sup>-1</sup></div>
+        <div class="notation-desc">
+          <span class="key">逆行列</span>（<strong>inverse matrix</strong>）。A という変換を<strong>巻き戻す</strong>行列で、<strong>A·A⁻¹ = A⁻¹·A = I</strong> を満たす。<span class="hl">正方行列にのみ定義</span>。<br>
+          <span class="key">読み方：</span>「A インバース」または「A の逆（行列）」。指数 −1 は「逆数」の類推（スカラー a の a⁻¹ = 1/a と同じ発想）だが、<strong>行列に "割り算" はない</strong>ので A⁻¹ を掛けることで代用する。<br>
+          <strong>存在条件：</strong><span class="key">det(A) ≠ 0</span>（＝正則・フルランク・核が {0}）。det(A) = 0 のときは逆行列は存在しない。<br>
+          <strong>性質：</strong><br>
+          ・(A⁻¹)⁻¹ = A、&nbsp;(AB)⁻¹ = B⁻¹A⁻¹（<span class="hl">順序反転</span>）<br>
+          ・(A<sup>T</sup>)⁻¹ = (A⁻¹)<sup>T</sup>、&nbsp;det(A⁻¹) = 1 / det(A)
         </div>
       </li>
     </ul>
