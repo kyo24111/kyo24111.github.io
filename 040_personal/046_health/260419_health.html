@@ -225,6 +225,8 @@ table.raw tr.stat-miss td:first-child { background: rgba(192,57,43,.06); }
   transition: color .15s, border-color .15s;
 }
 .subtab-btn.active { color: var(--text); border-bottom-color: var(--accent); }
+.subpanel-heading { font-size: 13px; font-weight: 700; color: var(--text); margin: 4px 2px 10px; letter-spacing: .02em; }
+.subpanel-sub { font-size: 11px; font-weight: 400; color: var(--dim); margin-left: 8px; }
 
 /* ── MSG ── */
 .msg {
@@ -722,16 +724,6 @@ body{padding-top:56px!important;padding-bottom:68px!important}
       <canvas id="c-fat" height="180"></canvas>
       <div class="chart-target-note">Target: 15.3 %</div>
     </div>
-    <div class="chart-box" onclick="openModal('c-visceral')">
-      <div class="chart-title">Visceral Fat</div>
-      <canvas id="c-visceral" height="180"></canvas>
-      <div class="chart-target-note">Target: 6</div>
-    </div>
-    <div class="chart-box" onclick="openModal('c-water')">
-      <div class="chart-title">Body Water (%)</div>
-      <canvas id="c-water" height="180"></canvas>
-      <div class="chart-target-note">Target: 60.2 %</div>
-    </div>
     <div class="chart-box chart-box-wide" onclick="openModal('c-calories')">
       <div class="chart-title">Calories (kcal)</div>
       <canvas id="c-calories" height="100"></canvas>
@@ -741,26 +733,6 @@ body{padding-top:56px!important;padding-bottom:68px!important}
       <div class="chart-title">PFC Calorie Ratio (%)</div>
       <canvas id="c-pfc-ratio" height="100"></canvas>
       <div class="chart-target-note">P: protein×4 / cal · F: fat×9 / cal · C: carbs×4 / cal</div>
-    </div>
-    <div class="chart-box" onclick="openModal('c-protein')">
-      <div class="chart-title">Protein (g)</div>
-      <canvas id="c-protein" height="180"></canvas>
-      <div class="chart-target-note">Target: 110 g</div>
-    </div>
-    <div class="chart-box" onclick="openModal('c-fat-cal')">
-      <div class="chart-title">Fat (g)</div>
-      <canvas id="c-fat-cal" height="180"></canvas>
-      <div class="chart-target-note"></div>
-    </div>
-    <div class="chart-box" onclick="openModal('c-carbs')">
-      <div class="chart-title">Carbs (g)</div>
-      <canvas id="c-carbs" height="180"></canvas>
-      <div class="chart-target-note"></div>
-    </div>
-    <div class="chart-box" onclick="openModal('c-fiber')">
-      <div class="chart-title">Fiber (g)</div>
-      <canvas id="c-fiber" height="180"></canvas>
-      <div class="chart-target-note"></div>
     </div>
     <div class="chart-box" onclick="openModal('c-sleep-dur')">
       <div class="chart-title">Sleep Duration (h)</div>
@@ -782,6 +754,7 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     <button class="subtab-btn" onclick="switchSubTab('body-weekly')">Weekly</button>
     <button class="subtab-btn" onclick="switchSubTab('cal')">Calories</button>
     <button class="subtab-btn" onclick="switchSubTab('cal-weekly')">Weekly</button>
+    <button class="subtab-btn" onclick="switchSubTab('other')">Other</button>
   </div>
   <div id="subpanel-body">
     <div class="table-wrap" id="tbl-body"><div class="msg">loading...</div></div>
@@ -794,6 +767,12 @@ body{padding-top:56px!important;padding-bottom:68px!important}
   </div>
   <div id="subpanel-cal-weekly" style="display:none">
     <div class="table-wrap" id="tbl-cal-weekly"><div class="msg">loading...</div></div>
+  </div>
+  <div id="subpanel-other" style="display:none">
+    <div class="subpanel-heading">睡眠 <span class="subpanel-sub">就寝・起床時刻から睡眠時間を自動算出</span></div>
+    <div class="table-wrap" id="tbl-sleep"><div class="msg">loading...</div></div>
+    <div class="subpanel-heading" style="margin-top:22px">喫煙 <span class="subpanel-sub">非公開ログ（ローカルでのみ表示）</span></div>
+    <div class="table-wrap" id="tbl-smoke"><div class="msg">loading...</div></div>
   </div>
 </div>
 
@@ -1146,7 +1125,7 @@ function fmtLabels(dates) {
 }
 
 // ── STATE ───────────────────────────────────────────────────
-let bodyData = [], calData = [], workoutData = [], sleepData = [];
+let bodyData = [], calData = [], workoutData = [], sleepData = [], smokData = [];
 let currentRange = 14;
 const charts   = {};
 const chartDefs = {};   // { id: { config, title, note } }
@@ -1186,10 +1165,41 @@ function loadData() {
   sleepData = Papa.parse(SLEEP_CSV, { header: true, skipEmptyLines: true }).data
     .filter(r => r.date)
     .sort((a, b) => new Date(a.date) - new Date(b.date));
+  // 睡眠時間は就寝・起床時刻から算出（両方揃う日は算出値をduration_minに上書き）。
+  sleepData.forEach(r => {
+    const c = sleepDurFromTimes(r.bedtime, r.waketime);
+    if (c != null) r.duration_min = c;
+  });
 
   renderKPIs();
   renderCharts();
   renderTables();
+  // 喫煙ログは非公開（data/smoking.csvはgitignore・公開コピーには存在しない）。
+  // 実行時にfetchし、ローカルで開いた時のみ表示。公開github.ioでは404で空のまま。
+  loadSmoking();
+}
+
+// 就寝(bedtime)・起床(waketime)"HH:MM"から睡眠時間(分)を算出。
+// 起床≤就寝は日跨ぎとして+24h。どちらか欠けたらnull。
+function sleepDurFromTimes(bedtime, waketime) {
+  const toMin = t => { if (!t) return null; const [h, m] = t.split(':').map(Number); return (isNaN(h) || isNaN(m)) ? null : h * 60 + m; };
+  const b = toMin(bedtime), w = toMin(waketime);
+  if (b == null || w == null) return null;
+  let d = w - b; if (d <= 0) d += 1440;
+  return d;
+}
+
+function loadSmoking() {
+  fetch('./data/smoking.csv', { cache: 'no-store' })
+    .then(r => r.ok ? r.text() : Promise.reject())
+    .then(txt => {
+      smokData = Papa.parse(txt.trim(), { header: true, skipEmptyLines: true }).data
+        .filter(r => r.date)
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
+      renderStatus();
+      renderSmokeTable();
+    })
+    .catch(() => { smokData = []; });  // 公開コピー/ file:// では取得不可 → 空表示
 }
 
 // ── KPIs ────────────────────────────────────────────────────
@@ -1311,6 +1321,55 @@ function mkBarConfig(values, dates, target, xColors) {
     options: {
       responsive: true,
       plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { maxTicksLimit: 12, color: xTickColorFn(xColors) }, grid: { display: false } },
+        y: { grid: { color: '#f0f0f0' } },
+      },
+    },
+  };
+}
+
+// Calories: 折れ線＋ドット。点は目標(target)超で濃・以下で淡に塗り分け、
+// 破線で目標ラインを重ねる。棒グラフより推移が読みやすい。
+function mkCalLineConfig(values, dates, target, xColors) {
+  const ptColor = values.map(v => (v != null && v > target) ? '#111' : 'rgba(17,17,17,0.35)');
+  return {
+    type: 'line',
+    data: {
+      labels: dates,
+      datasets: [
+        {
+          data: values,
+          borderColor: '#111',
+          backgroundColor: 'rgba(17,17,17,0.05)',
+          tension: 0.35,
+          pointRadius: 4,
+          pointBackgroundColor: ptColor,
+          pointBorderColor: '#fff',
+          pointBorderWidth: 1.5,
+          fill: true,
+          spanGaps: true,
+        },
+        {
+          data: Array(dates.length).fill(target),
+          borderColor: '#bbb',
+          borderDash: [5, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: item => item.datasetIndex === 1 ? `Target: ${target}` : `${item.formattedValue} kcal`,
+          },
+        },
+      },
       scales: {
         x: { ticks: { maxTicksLimit: 12, color: xTickColorFn(xColors) }, grid: { display: false } },
         y: { grid: { color: '#f0f0f0' } },
@@ -1495,14 +1554,19 @@ function renderCharts() {
   }
   mkLine('c-weight',   fv(fb,'weight'),      bd, GOALS.weight,      wMin, wMax, 'Weight (kg)',   'Target: 69.5 kg', bdc);
   mkLine('c-fat',      fv(fb,'body_fat'),     bd, GOALS.body_fat,    14, 21, 'Body Fat (%)',  'Target: 15.3 %', bdc);
-  mkLine('c-visceral', fv(fb,'visceral_fat'), bd, GOALS.visceral_fat, 5, 10, 'Visceral Fat',  'Target: 6', bdc);
-  mkLine('c-water',    fv(fb,'body_water'),   bd, GOALS.body_water,  56, 62, 'Body Water (%)', 'Target: 60.2 %', bdc);
 
   const fc = weekly ? toWeeklySeries(calData) : getFilteredData(calData);
   if (fc.length) {
     const cd = fmtLabels(fc.map(d => d.date));
     const cdc = dowColors(fc.map(d => d.date));
-    mkBar('c-calories', fv(fc,'calories'), cd, 1400, 'Calories (kcal)', 'Target: 1,400 kcal/day', cdc);
+    // Calories: 棒ではなくドット＋ライン。目標(1400)超の点は濃、以下は淡で塗り分け。
+    const calCtx = document.getElementById('c-calories');
+    if (calCtx) {
+      if (charts['c-calories']) charts['c-calories'].destroy();
+      const calCfg = mkCalLineConfig(fv(fc,'calories'), cd, 1400, cdc);
+      charts['c-calories'] = new Chart(calCtx, calCfg);
+      chartDefs['c-calories'] = { config: calCfg, title: 'Calories (kcal)', note: 'Target: 1,400 kcal/day' };
+    }
 
     const pfcCtx = document.getElementById('c-pfc-ratio');
     if (pfcCtx) {
@@ -1511,13 +1575,8 @@ function renderCharts() {
       charts['c-pfc-ratio'] = new Chart(pfcCtx, pfcCfg);
       chartDefs['c-pfc-ratio'] = { config: pfcCfg, title: 'PFC Calorie Ratio (%)', note: 'P: protein×4 / cal · F: fat×9 / cal · C: carbs×4 / cal' };
     }
-
-    mkLine('c-protein',  fv(fc,'protein'), cd, 110,  0, 200, 'Protein (g)', 'Target: 110 g', cdc);
-    mkLine('c-fat-cal',  fv(fc,'fat'),      cd, null, 0, 200, 'Fat (g)',     '', cdc);
-    mkLine('c-carbs',    fv(fc,'carbs'),    cd, null, 0, 350, 'Carbs (g)',   '', cdc);
-    mkLine('c-fiber',    fv(fc,'fiber'),    cd, null, 0,  30, 'Fiber (g)',   '', cdc);
   } else {
-    ['c-calories','c-protein','c-fat-cal','c-carbs','c-fiber'].forEach(id => {
+    ['c-calories'].forEach(id => {
       const box = document.getElementById(id)?.closest('.chart-box');
       if (box) box.innerHTML = `<div class="chart-title">${id}</div><div class="msg">No data</div>`;
     });
@@ -1666,6 +1725,54 @@ function renderTables() {
   renderTable('tbl-cal',  calData,  CAL_COLS);
   renderBodyWeekly();
   renderCalWeekly();
+  renderSleepTable();
+  renderSmokeTable();
+}
+
+// Raw Data → Other: 睡眠テーブル（就寝・起床・算出した睡眠時間）
+function renderSleepTable() {
+  const el = document.getElementById('tbl-sleep');
+  if (!el) return;
+  if (!sleepData.length) { el.innerHTML = '<div class="msg">No data</div>'; return; }
+  const rows = [...sleepData].reverse().map((r, i) => {
+    const wd = new Date(r.date + 'T00:00:00Z').getUTCDay();
+    const dcolor = wd === 6 ? '#2563eb' : wd === 0 ? '#dc2626' : '';
+    const dstyle = dcolor ? ` style="color:${dcolor};font-weight:700"` : '';
+    const dur = (r.duration_min !== '' && r.duration_min != null && !isNaN(+r.duration_min)) ? hm(+r.duration_min) : '—';
+    return `<tr class="${i === 0 ? 'latest' : ''}">
+      <td${dstyle}>${r.date.slice(5).replace('-', '/')} (${isoWd(r.date)})</td>
+      <td class="stat-c">${r.bedtime || '—'}</td>
+      <td class="stat-c">${r.waketime || '—'}</td>
+      <td class="stat-c">${dur}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<table class="raw">
+    <thead><tr><th>Date</th><th>就寝</th><th>起床</th><th>睡眠時間</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
+}
+
+// Raw Data → Other: 喫煙テーブル（非公開ログ。公開コピーでは空）
+function renderSmokeTable() {
+  const el = document.getElementById('tbl-smoke');
+  if (!el) return;
+  if (!smokData.length) {
+    el.innerHTML = '<div class="msg">記録なし（喫煙ログは非公開・ローカルでのみ表示）</div>';
+    return;
+  }
+  const rows = [...smokData].reverse().map((r, i) => {
+    const wd = new Date(r.date + 'T00:00:00Z').getUTCDay();
+    const dcolor = wd === 6 ? '#2563eb' : wd === 0 ? '#dc2626' : '';
+    const dstyle = dcolor ? ` style="color:${dcolor};font-weight:700"` : '';
+    return `<tr class="${i === 0 ? 'latest' : ''}">
+      <td${dstyle}>${r.date.slice(5).replace('-', '/')} (${isoWd(r.date)})</td>
+      <td class="stat-c">${r.count}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML = `<table class="raw">
+    <thead><tr><th>Date</th><th>本数</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table>`;
 }
 
 // ── WEEKLY AVG (月曜始まり) ───────────────────────────────────
@@ -1776,35 +1883,40 @@ function setStatusRange(n) {
 function renderStatus() {
   const el = document.getElementById('tbl-status');
   if (!el) return;
-  const calSet  = new Set(calData.map(r => r.date).filter(Boolean));
-  const bodySet = new Set(bodyData.map(r => r.date).filter(Boolean));
-  const all = [...new Set([...calSet, ...bodySet])].sort();
+  const calSet   = new Set(calData.map(r => r.date).filter(Boolean));
+  const bodySet  = new Set(bodyData.map(r => r.date).filter(Boolean));
+  const sleepSet = new Set(sleepData.map(r => r.date).filter(Boolean));
+  const smokMap  = new Map(smokData.map(r => [r.date, r.count]));
+  const all = [...new Set([...calSet, ...bodySet, ...sleepSet, ...smokMap.keys()])].sort();
   if (!all.length) { el.innerHTML = '<div class="msg">no data</div>'; return; }
   const maxD = all[all.length - 1];
   const start = statusRange === 0 ? all[0] : isoAdd(maxD, -(statusRange - 1));
   const days = [];
   for (let d = maxD; d >= start; d = isoAdd(d, -1)) days.push(d);
   let both = 0, pfcOnly = 0, bodyOnly = 0, none = 0;
+  const cell = ok => ok ? '<span class="stat-yes">⚪︎</span>' : '<span class="stat-no">-</span>';
   const rows = days.map(iso => {
-    const p = calSet.has(iso), b = bodySet.has(iso);
+    const p = calSet.has(iso), b = bodySet.has(iso), s = sleepSet.has(iso);
     if (p && b) both++; else if (p) pfcOnly++; else if (b) bodyOnly++; else none++;
     const md = iso.slice(5).replace('-', '/');
     const cls = (p && b) ? '' : ' class="stat-miss"';
-    const cell = ok => ok ? '<span class="stat-yes">⚪︎</span>' : '<span class="stat-no">-</span>';
-    return `<tr${cls}><td>${md} (${isoWd(iso)})</td><td class="stat-c">${cell(p)}</td><td class="stat-c">${cell(b)}</td></tr>`;
+    const smk = smokMap.has(iso) ? `<span class="stat-yes">${smokMap.get(iso)}</span>` : '<span class="stat-no">-</span>';
+    return `<tr${cls}><td>${md} (${isoWd(iso)})</td>` +
+      `<td class="stat-c">${cell(p)}</td><td class="stat-c">${cell(b)}</td>` +
+      `<td class="stat-c">${cell(s)}</td><td class="stat-c">${smk}</td></tr>`;
   }).join('');
   document.getElementById('status-summary').innerHTML =
     `<b>${days.length}</b>日中 <b>${both}</b>日が両方提出済み` +
     ` · 未提出: PFCのみ欠 ${bodyOnly}日 / 体組成のみ欠 ${pfcOnly}日 / 両方なし <b>${none}</b>日`;
   el.innerHTML = `<table class="raw">
-    <thead><tr><th>Date</th><th>PFC</th><th>体組成</th></tr></thead>
+    <thead><tr><th>Date</th><th>PFC</th><th>体組成</th><th>睡眠</th><th>喫煙</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
 }
 
 // ── SUB-TABS ────────────────────────────────────────────────
 function switchSubTab(name) {
-  const order = ['body', 'body-weekly', 'cal', 'cal-weekly'];
+  const order = ['body', 'body-weekly', 'cal', 'cal-weekly', 'other'];
   order.forEach(k => {
     const p = document.getElementById('subpanel-' + k);
     if (p) p.style.display = k === name ? '' : 'none';
