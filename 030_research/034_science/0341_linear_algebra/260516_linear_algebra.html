@@ -2770,6 +2770,65 @@
         </div>
       </div>
 
+      <div class="section" id="rank-intuition-ds">
+        <h2>感覚でつかむ：相関と rank 落ち（データサイエンス視点）</h2>
+        <p style="color:var(--muted);font-size:12.5px;margin-top:-4px">Last updated: 2026-07-23</p>
+
+        <p>行基本変形の手順に入る前に、rank が「落ちる／落ちかける」という現象を<span class="hl">実データの肌感</span>で押さえておく。行列の各<span class="key">列 = 1つの変数</span>だと思うと、線形代数の rank とデータ分析の話がそのまま重なる。</p>
+
+        <div class="formula" style="background:#f5f7fa">
+          <span class="key">設定：家賃を決める 4 変数</span><br>
+          家賃を予測するのに、<span class="hl">延べ床面積・坪数・駅からの距離・築年数</span> の4変数を並べる。<br>
+          データ全体は 4 列の行列 → 見た目の<span class="vt" data-vocab="dimension" data-ja="次元">次元</span>は 4（rank 4 を期待）。<br>
+          でも「その4本、本当に独立に効いてる？」を測るのが rank。
+        </div>
+
+        <p style="margin-top:14px"><span class="key">① 相関係数 = 1 → rank がきっちり1下がる</span></p>
+        <ul style="list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <span class="hl">延べ床面積（m²）</span>と<span class="hl">坪数</span>は、単位換算しただけの<span class="key">完全に同じ動き</span>（相関 = 1）。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            片方があれば<span class="key">もう片方は定数倍で復元できる</span> → 2本ある意味がなく、情報は実質1本。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            列が<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次独立</span>でなくなる = <span class="key">rank が 4 → 3 にきっちり1つ下がる</span>。これはあなたの言う通り。
+          </li>
+        </ul>
+
+        <p style="margin-top:14px"><span class="key">② 相関が高い（≠ 1）→ rank は落ちないが "落ちかける"</span></p>
+        <ul style="list-style:none;padding:0;margin:6px 0;display:flex;flex-direction:column;gap:6px">
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <span class="key">理論（数学）：</span>相関が 0.999 でも 1 ぴったりではないので、厳密には列は独立 → <span class="hl">rank は 4 のまま落ちない</span>。ここもあなたの感覚通り。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            <span class="key">現実（数値計算）：</span>2本のベクトルが<span class="hl">ほぼ同じ方向を向いている</span>状態。「独立ではあるが独立度がスカスカ」で、rank 落ち寸前の挙動をする。
+          </li>
+          <li style="padding-left:14px;position:relative;font-size:14px;line-height:1.75">
+            <span style="position:absolute;left:0;top:10px;width:5px;height:5px;border-radius:50%;background:var(--accent);content:''"></span>
+            この「厳密には落ちてないが実質潰れかけ」を、データ分析では <span class="key">マルチコ（多重共線性）</span>／<span class="key">病的な行列（ill-conditioned）</span> と呼ぶ。
+          </li>
+        </ul>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700;margin-top:14px">
+          <span class="key">まとめ（あなたの理解＝ほぼ完全正解）：</span><br>
+          ・相関 = 1　→ <span class="hl">完全な rank 落ち</span>（<span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span>が消滅・計算が崩壊）<br>
+          ・相関 ≈ 1（高）→ <span class="hl">ほぼ rank 落ち</span>（<span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span>の値が暴走し、予測係数が激しくブレる）<br>
+          rank は「独立な情報が何本あるか」のメーターなので、完全に潰れる場合だけでなく<span class="key">"似た方向を向いている" 冗長データも整理対象</span>になる、という肌感が正しい。
+        </div>
+
+        <div class="formula" style="border-left-color:#888">
+          <span class="key">補足：なぜ "近い" だけで暴走するのか</span><br>
+          rank 落ちに近い行列 = <span class="hl">det がほぼ 0</span>。<span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span>は det で割る操作を含むので、det ≈ 0 だと結果が 1/0 に近づいて発散気味になる。<br>
+          → だから「完全一致（相関1）」でなくても、近いだけで実務上は危険。この「det が 0 に近い＝潰れかけ」という尺度が、後の <a href="#eigen" onclick="gotoSection('eigen');return false;">固有値</a> や PCA の話にそのまま繋がる。
+        </div>
+      </div>
+
       <div class="section" id="rank-row-echelon">
         <h2>行基本変形と階段<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>（rank の計算手順）</h2>
 
