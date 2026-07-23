@@ -769,10 +769,8 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     <div class="table-wrap" id="tbl-cal-weekly"><div class="msg">loading...</div></div>
   </div>
   <div id="subpanel-other" style="display:none">
-    <div class="subpanel-heading">睡眠 <span class="subpanel-sub">就寝・起床時刻から睡眠時間を自動算出</span></div>
-    <div class="table-wrap" id="tbl-sleep"><div class="msg">loading...</div></div>
-    <div class="subpanel-heading" style="margin-top:22px">喫煙 <span class="subpanel-sub">非公開ログ（ローカルでのみ表示）</span></div>
-    <div class="table-wrap" id="tbl-smoke"><div class="msg">loading...</div></div>
+    <div class="subpanel-heading">睡眠・喫煙 <span class="subpanel-sub">睡眠時間は就寝・起床から自動算出／喫煙は非公開ログ（ローカルのみ表示）</span></div>
+    <div class="table-wrap" id="tbl-other"><div class="msg">loading...</div></div>
   </div>
 </div>
 
@@ -1205,7 +1203,7 @@ function loadSmoking() {
         .filter(r => r.date)
         .sort((a, b) => new Date(a.date) - new Date(b.date));
       renderStatus();
-      renderSmokeTable();
+      renderOtherTable();
     })
     .catch(() => { smokData = []; });  // 公開コピー/ file:// では取得不可 → 空表示
 }
@@ -1733,52 +1731,37 @@ function renderTables() {
   renderTable('tbl-cal',  calData,  CAL_COLS);
   renderBodyWeekly();
   renderCalWeekly();
-  renderSleepTable();
-  renderSmokeTable();
+  renderOtherTable();
 }
 
-// Raw Data → Other: 睡眠テーブル（就寝・起床・算出した睡眠時間）
-function renderSleepTable() {
-  const el = document.getElementById('tbl-sleep');
+// Raw Data → Other: 睡眠＋喫煙を日付でまとめた1枚の表。
+// GoToBed/WakeUp/Sleep(睡眠時間) は sleepData、Smoke(本数) は smokData（非公開・ローカルのみ）。
+function renderOtherTable() {
+  const el = document.getElementById('tbl-other');
   if (!el) return;
-  if (!sleepData.length) { el.innerHTML = '<div class="msg">No data</div>'; return; }
-  const rows = [...sleepData].reverse().map((r, i) => {
-    const wd = new Date(r.date + 'T00:00:00Z').getUTCDay();
+  const sleepMap = new Map(sleepData.map(r => [r.date, r]));
+  const smokMap  = new Map(smokData.map(r => [r.date, r.count]));
+  const dates = [...new Set([...sleepMap.keys(), ...smokMap.keys()])].sort().reverse();
+  if (!dates.length) { el.innerHTML = '<div class="msg">No data</div>'; return; }
+  const rows = dates.map((iso, i) => {
+    const wd = new Date(iso + 'T00:00:00Z').getUTCDay();
     const dcolor = wd === 6 ? '#2563eb' : wd === 0 ? '#dc2626' : '';
     const dstyle = dcolor ? ` style="color:${dcolor};font-weight:700"` : '';
-    const dur = (r.duration_min !== '' && r.duration_min != null && !isNaN(+r.duration_min)) ? hm(+r.duration_min) : '—';
+    const s = sleepMap.get(iso);
+    const bed  = s && s.bedtime  ? s.bedtime  : '—';
+    const wake = s && s.waketime ? s.waketime : '—';
+    const dur  = s && s.duration_min !== '' && s.duration_min != null && !isNaN(+s.duration_min) ? hm(+s.duration_min) : '—';
+    const smk  = smokMap.has(iso) ? smokMap.get(iso) : '—';
     return `<tr class="${i === 0 ? 'latest' : ''}">
-      <td${dstyle}>${r.date.slice(5).replace('-', '/')} (${isoWd(r.date)})</td>
-      <td class="stat-c">${r.bedtime || '—'}</td>
-      <td class="stat-c">${r.waketime || '—'}</td>
+      <td${dstyle}>${iso.slice(5).replace('-', '/')} (${isoWd(iso)})</td>
+      <td class="stat-c">${bed}</td>
+      <td class="stat-c">${wake}</td>
       <td class="stat-c">${dur}</td>
+      <td class="stat-c">${smk}</td>
     </tr>`;
   }).join('');
   el.innerHTML = `<table class="raw">
-    <thead><tr><th>Date</th><th>就寝</th><th>起床</th><th>睡眠時間</th></tr></thead>
-    <tbody>${rows}</tbody>
-  </table>`;
-}
-
-// Raw Data → Other: 喫煙テーブル（非公開ログ。公開コピーでは空）
-function renderSmokeTable() {
-  const el = document.getElementById('tbl-smoke');
-  if (!el) return;
-  if (!smokData.length) {
-    el.innerHTML = '<div class="msg">記録なし（喫煙ログは非公開・ローカルでのみ表示）</div>';
-    return;
-  }
-  const rows = [...smokData].reverse().map((r, i) => {
-    const wd = new Date(r.date + 'T00:00:00Z').getUTCDay();
-    const dcolor = wd === 6 ? '#2563eb' : wd === 0 ? '#dc2626' : '';
-    const dstyle = dcolor ? ` style="color:${dcolor};font-weight:700"` : '';
-    return `<tr class="${i === 0 ? 'latest' : ''}">
-      <td${dstyle}>${r.date.slice(5).replace('-', '/')} (${isoWd(r.date)})</td>
-      <td class="stat-c">${r.count}</td>
-    </tr>`;
-  }).join('');
-  el.innerHTML = `<table class="raw">
-    <thead><tr><th>Date</th><th>本数</th></tr></thead>
+    <thead><tr><th>Date</th><th>GoToBed</th><th>WakeUp</th><th>Sleep</th><th>Smoke</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
 }
