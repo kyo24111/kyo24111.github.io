@@ -926,16 +926,16 @@ const CAL_COLS = [
   { key: 'calories', label: 'Calories (kcal)', goal: 1400, bg: v => rampColor(bucketAsc(+v, [1400, 1700, 2000, 2300, 2600, 3000])),
     desc: 'セル色 = 摂取カロリーの絶対量。緑＝目標1400kcal以下ほど濃い緑、赤＝多いほど濃い赤。区切り: 1400 / 1700 / 2000 / 2300 / 2600 / 3000 kcal' },
   // Protein%(×4/cal): 高いほど緑 [15,20,25,30,35,40]
-  { key: 'protein',  label: 'Protein (g)',     goal: 110,  bg: (v, r) => pctColor(+v, +r.calories, 4, [15, 20, 25, 30, 35, 40], true),
+  { key: 'protein',  label: 'Protein (g)',     goal: 105,  bg: (v, r) => pctColor(+v, +r.calories, 4, [15, 20, 25, 30, 35, 40], true),
     desc: 'セル色 = タンパク質の摂取カロリー比 (P×4 ÷ kcal)。比率が高いほど濃い緑。区切り: 15 / 20 / 25 / 30 / 35 / 40 %' },
   // うちプロテイン(サプリ)由来。Protein の内数。色は「総Pに占めるプロテイン比」が高いほど濃い青緑。
   { key: 'protein_supp', label: 'P-Supp (g)',   goal: null, bg: (v, r) => suppShareColor(+v, +r.protein),
     desc: 'タンパク質のうちプロテイン(サプリ)由来のg（Protein の内数）。食事由来 = Protein − P-Supp。セル色 = 総Pに占めるプロテイン比が高いほど濃い。' },
   // Fat%(×9/cal): 低いほど緑 [20,25,30,35,40,50]
-  { key: 'fat',      label: 'Fat (g)',         goal: 40,   bg: (v, r) => pctColor(+v, +r.calories, 9, [20, 25, 30, 35, 40, 50], false),
+  { key: 'fat',      label: 'Fat (g)',         goal: 39,   bg: (v, r) => pctColor(+v, +r.calories, 9, [20, 25, 30, 35, 40, 50], false),
     desc: 'セル色 = 脂質の摂取カロリー比 (F×9 ÷ kcal)。比率が低いほど濃い緑。区切り: 20 / 25 / 30 / 35 / 40 / 50 %' },
   // Carbs%(×4/cal): 低いほど緑 [20,30,40,50,60,70]
-  { key: 'carbs',    label: 'Carbs (g)',       goal: 150,  bg: (v, r) => pctColor(+v, +r.calories, 4, [20, 30, 40, 50, 60, 70], false),
+  { key: 'carbs',    label: 'Carbs (g)',       goal: 158,  bg: (v, r) => pctColor(+v, +r.calories, 4, [20, 30, 40, 50, 60, 70], false),
     desc: 'セル色 = 炭水化物の摂取カロリー比 (C×4 ÷ kcal)。比率が低いほど濃い緑。区切り: 20 / 30 / 40 / 50 / 60 / 70 %' },
   { key: 'sugar',    label: 'Sugar (g)',       goal: null },
   { key: 'fiber',    label: 'Fiber (g)',       goal: null },
@@ -1478,8 +1478,8 @@ function mkPfcRatioConfig(fc, dates, xColors) {
           pointBorderWidth: 1.5,
         },
         {
-          label: 'P目標ライン 35%',
-          data: Array(dates.length).fill(35),
+          label: 'P目標ライン 30%',
+          data: Array(dates.length).fill(30),
           borderColor: '#16a34a',
           borderDash: [6, 4],
           borderWidth: 1.5,
@@ -1522,7 +1522,7 @@ function mkPfcRatioConfig(fc, dates, xColors) {
 }
 
 // Protein Source: 1日の総タンパク質を「食事由来」＋「プロテイン(サプリ)由来」に積み上げ。
-// 目標130gの破線を重ね、プロテインで総Pのどれだけを賄えているかを視覚化する。
+// 目標105gの破線を重ね、プロテインで総Pのどれだけを賄えているかを視覚化する。
 function mkProteinSrcConfig(fc, dates, xColors) {
   const supp = fc.map(d => { const v = parseFloat(d.protein_supp); return isNaN(v) ? null : v; });
   const food = fc.map(d => {
@@ -1539,7 +1539,7 @@ function mkProteinSrcConfig(fc, dates, xColors) {
           borderColor: 'rgba(17,17,17,0.35)', borderWidth: 1, stack: 'p' },
         { label: 'プロテイン', data: supp, backgroundColor: '#26a69a',
           borderColor: '#1f8e83', borderWidth: 1, stack: 'p' },
-        { type: 'line', label: 'P目標 130g', data: Array(dates.length).fill(130),
+        { type: 'line', label: 'P目標 105g', data: Array(dates.length).fill(105),
           borderColor: '#bbb', borderDash: [5, 4], borderWidth: 1.5, pointRadius: 0, fill: false },
       ],
     },
@@ -1552,7 +1552,7 @@ function mkProteinSrcConfig(fc, dates, xColors) {
         tooltip: {
           callbacks: {
             label: item => {
-              if (item.dataset.type === 'line') return `目標: 130g`;
+              if (item.dataset.type === 'line') return `目標: 105g`;
               const d = fc[item.dataIndex], p = parseFloat(d.protein), s = parseFloat(d.protein_supp);
               const share = (!isNaN(p) && p && !isNaN(s)) ? ` (${Math.round(s / p * 100)}%)` : '';
               return item.dataset.label === 'プロテイン'
@@ -1673,7 +1673,7 @@ function renderCharts() {
       const psCfg = mkProteinSrcConfig(fc, cd, cdc);
       // 直近7日でプロテインが総Pに占める比率（両方揃う日だけで算出）
       const recent = calData.filter(r => r.protein_supp !== '' && r.protein_supp != null && !isNaN(+r.protein_supp) && +r.protein > 0).slice(-7);
-      let psNote = 'タンパク質の内訳: 食事由来 + プロテイン(サプリ)。目標 130g';
+      let psNote = 'タンパク質の内訳: 食事由来 + プロテイン(サプリ)。目標 105g';
       if (recent.length) {
         const sumS = recent.reduce((a, r) => a + +r.protein_supp, 0);
         const sumP = recent.reduce((a, r) => a + +r.protein, 0);
@@ -2325,7 +2325,7 @@ function renderFoods() {
 
 // ── MAIN PANEL ──────────────────────────────────────────────
 const MAIN_CFG = {
-  target: { kcal: 1400, p: 110, f: 40, c: 150 },
+  target: { kcal: 1400, p: 105, f: 39, c: 158 },
   fixed: [
     { name: 'プロテイン × 3杯',                                kcal: 348, p: 63,   f: 5.7,  c: 13.2 },
     { name: 'しんぱちシャケセット（厚切り+半割+納豆+生卵+味噌汁）', kcal: 736, p: 54.6, f: 35.3, c: 54.4 },
@@ -2539,7 +2539,7 @@ function renderDiet() {
         <tbody>
           <tr><td>カロリー</td><td style="text-align:left">1,400 kcal/日</td></tr>
           <tr><td>水分</td><td style="text-align:left">2 L/日</td></tr>
-          <tr><td>PFC</td><td style="text-align:left">P 130g / F 46g / C 100g <span class="note">(詳細は Main タブ)</span></td></tr>
+          <tr><td>PFC</td><td style="text-align:left">P 105g / F 39g / C 158g <span class="note">(詳細は Main タブ)</span></td></tr>
         </tbody>
       </table></div>
     </div>
@@ -2634,7 +2634,7 @@ function renderDiet() {
           <tr>
             <td>ビタミンB6</td>
             <td class="col-num">1.4〜2 mg/日</td>
-            <td style="text-align:left">たんぱく質（アミノ酸）代謝の主役。<span class="delta-neg">高タンパク食(P130g/日)ほど必要量↑</span>・神経伝達・免疫</td>
+            <td style="text-align:left">たんぱく質（アミノ酸）代謝の主役。<span class="delta-neg">高タンパク食(P105g/日)ほど必要量↑</span>・神経伝達・免疫</td>
             <td style="text-align:left">鮭・マグロ・カツオ、鶏肉、バナナ、にんにく</td>
           </tr>
           <tr>
@@ -2708,7 +2708,7 @@ function renderDiet() {
           <tr><td>1杯あたり</td><td style="text-align:left">116 kcal / P 21g / F 1.9g / C 4.4g</td></tr>
           <tr><td>1日杯数</td><td style="text-align:left">3〜4杯（寝起き・昼・夕方は固定、夜は会食次第）</td></tr>
           <tr><td>4杯合計</td><td style="text-align:left">464 kcal / P 84g / F 7.6g / C 17.6g</td></tr>
-          <tr><td>役割</td><td style="text-align:left">Protein 目標130gのうち約65%をカバー。残りは食事のたんぱく源で埋める</td></tr>
+          <tr><td>役割</td><td style="text-align:left">Protein 目標105gのうち約半分(≈48g/2〜2.5杯)をカバー。残りは固形食(シャケセット等)で確保。摂り過ぎ(食事+80g等)は目標超過・質の偏りに注意</td></tr>
         </tbody>
       </table></div>
     </div>
@@ -2746,7 +2746,7 @@ function renderDiet() {
       <div class="main-callout">
         プロテイン×4 + バナナ + しんぱち厚切りシャケセット + サラダチキン×1
         <br>= <strong>1,419 kcal / P 154.7 / F 49.2 / C 97.5</strong>
-        <br>→ 目標 1400/110/40/150 が基準。詳細試算は <strong>Main タブ</strong>。
+        <br>→ 目標 1400/105/39/158 が基準。詳細試算は <strong>Main タブ</strong>。
       </div>
     </div>
   `;
@@ -2763,7 +2763,7 @@ const KN_CAT = {
 };
 const KNOWLEDGE = [
   { cat:'macro', ja:'カロリー', en:'Energy (kcal)', desc:'摂取エネルギーの総量。P・Cは4、Fは9 kcal/g。体重はこの収支（摂取−消費）で決まる。', rel:'PFCの量の合計で算出。消費(TDEE)を下回れば減量する。' },
-  { cat:'macro', ja:'タンパク質 (P)', en:'Protein', desc:'筋肉・臓器・酵素・ホルモンの材料。4 kcal/g。1日130g目標。', rel:'Cと同熱量だが筋維持に必須。代謝にビタミンB6が必要。プロテインで約65%確保。' },
+  { cat:'macro', ja:'タンパク質 (P)', en:'Protein', desc:'筋肉・臓器・酵素・ホルモンの材料。4 kcal/g。1日105g目標(≈カロリーの30%)。', rel:'Cと同熱量だが筋維持に必須。代謝にビタミンB6が必要。プロテインで約半分を確保。' },
   { cat:'macro', ja:'脂質 (F)', en:'Fat', desc:'最も高密度なエネルギー源（9 kcal/g）。ホルモン・細胞膜の材料。1日46g目標。', rel:'「量」より「質」が重要 → 飽和より不飽和（オメガ3）を増やす。' },
   { cat:'macro', ja:'炭水化物 (C)', en:'Carbohydrate', desc:'主エネルギー源（4 kcal/g）。糖質＋食物繊維の総称。', rel:'糖質=吸収される / 食物繊維=されない。両者を分けて考える。' },
   { cat:'macro', ja:'糖質', en:'Sugars (net carbs)', desc:'炭水化物から食物繊維を除いた、実際に吸収され血糖を上げる分。', rel:'食物繊維と対。低GI・水溶性食物繊維で吸収が緩やかになる。' },
@@ -2780,7 +2780,7 @@ const KNOWLEDGE = [
   { cat:'vitamin', ja:'ビタミンA', en:'Vitamin A (Retinol)', desc:'脂溶性。視覚・皮膚と粘膜・免疫。', rel:'脂溶性（A・Dは体に蓄積→過剰注意）。βカロテン（緑黄色野菜）から体内変換も。' },
   { cat:'vitamin', ja:'ビタミンB1', en:'Thiamine', desc:'水溶性。糖質をエネルギーに変える。不足で疲労・神経症状。', rel:'B2と対：B1=糖質代謝、B2=脂質代謝。豚肉・玄米・大豆。' },
   { cat:'vitamin', ja:'ビタミンB2', en:'Riboflavin', desc:'水溶性。脂質代謝・皮膚と粘膜の健康。', rel:'B1と対：B2=脂質代謝。卵・納豆・レバー。' },
-  { cat:'vitamin', ja:'ビタミンB6', en:'Pyridoxine', desc:'水溶性。タンパク質（アミノ酸）代謝の主役・神経伝達物質の合成。', rel:'高タンパク食（P130g）ほど必要量↑ → Pと連動。鮭・カツオ・バナナ。' },
+  { cat:'vitamin', ja:'ビタミンB6', en:'Pyridoxine', desc:'水溶性。タンパク質（アミノ酸）代謝の主役・神経伝達物質の合成。', rel:'高タンパク食（P105g）ほど必要量↑ → Pと連動。鮭・カツオ・バナナ。' },
   { cat:'vitamin', ja:'ビタミンC', en:'Vitamin C (Ascorbic Acid)', desc:'水溶性。抗酸化・コラーゲン合成・鉄の吸収促進・免疫。', rel:'水溶性で蓄積されない→毎日必要。脂溶性（A/D）と対照的。果物・野菜。' },
   { cat:'vitamin', ja:'ビタミンD', en:'Vitamin D (Calciferol)', desc:'脂溶性。カルシウム吸収・骨・免疫・筋力・テストステロン。日光で皮膚合成。', rel:'Aと同じ脂溶性。出張/室内中心だと不足 → サプリ推奨。鮭・きのこ。' },
 
@@ -3081,7 +3081,7 @@ const TOC_ENTRIES = [
     desc: 'よく食べる店・品目のPFCデータベース。しんぱち食堂（小鉢/ご飯/鮭/セット）・ターリー屋（パーツ/セット）・サプリ&補食。セット試算は構成品目から自動計算。'
   },
   { tab: 'main',  label: 'Main',         jp: '目標・戦略',
-    desc: '1日の目標PFC（1400kcal / P110 / F40 / C150）、固定摂取（プロテイン3杯+しんぱちシャケセット+野菜一日これ一本）、残量計算、ベストPFC日のテンプレート、TDEE 2200基準の減量試算。'
+    desc: '1日の目標PFC（1400kcal / P105 / F39 / C158・P=30%）、固定摂取（プロテイン+しんぱちシャケセット+野菜一日これ一本）、残量計算、ベストPFC日のテンプレート、TDEE 2200基準の減量試算。'
   },
   { tab: 'diet',  label: 'Diet',         jp: '食事習慣',
     desc: '普段の食事リズム・好み・苦手・水分摂取・定番メニューなど、個人の食生活スタイルを記録するページ。FoodsとMainを行動に落とし込む場所。'
