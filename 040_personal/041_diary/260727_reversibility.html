@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>可逆性と余白 — 失敗する機会について</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --line: #e8e8e8; --text: #111111; --muted: #888888; --light: #cccccc;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 15px; line-height: 1.9; }
+    .page { max-width: 720px; margin: 0 auto; padding: 48px 24px 100px; }
+
+    .header { margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid var(--text); }
+    .header .cat { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 12px; }
+    .header h1 { font-size: 26px; font-weight: 800; letter-spacing: -.4px; line-height: 1.35; }
+    .header .date { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+    .lead { font-size: 16px; color: #333; margin-bottom: 40px; }
+    .lead b { color: var(--text); font-weight: 700; }
+
+    section { margin-bottom: 40px; }
+    section h2 { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+    section h2 .no { color: var(--light); }
+    section h2::after { content: ''; flex: 1; height: 1px; background: var(--line); }
+    section .title { font-size: 18px; font-weight: 700; margin-bottom: 14px; letter-spacing: -.2px; }
+    section p { font-size: 14.5px; color: #333; margin-bottom: 14px; }
+    section p:last-child { margin-bottom: 0; }
+    section p b { color: var(--text); font-weight: 700; }
+    section p a { color: var(--text); text-decoration: none; border-bottom: 1px solid var(--light); }
+    section p a:hover { border-bottom-color: var(--text); }
+    section p.note { font-size: 12.5px; color: var(--muted); border-left: 2px solid var(--line); padding-left: 14px; line-height: 1.75; }
+    section ul { list-style: none; margin: 4px 0 14px; }
+    section ul li { font-size: 14px; color: #333; padding: 4px 0 4px 20px; position: relative; }
+    section ul li::before { content: "—"; position: absolute; left: 0; color: var(--light); }
+    section ol { margin: 4px 0 14px 4px; padding-left: 20px; }
+    section ol li { font-size: 14px; color: #333; padding: 4px 0; }
+
+    .pull { border-left: 2px solid var(--text); padding: 4px 0 4px 18px; margin: 20px 0; font-size: 15px; color: var(--text); font-weight: 500; line-height: 1.7; }
+
+    .quote { margin: 24px 0; padding: 20px 22px; background: #fafafa; border-left: 3px solid var(--text); }
+    .quote .q-lead { font-size: 18px; font-weight: 700; color: var(--text); font-style: italic; margin-bottom: 8px; line-height: 1.55; letter-spacing: -.2px; }
+    .quote .q { font-size: 13.5px; color: #555; font-style: italic; margin: 14px 0 6px; line-height: 1.7; }
+    .quote .qja { font-size: 12.5px; color: var(--muted); font-style: normal; margin-bottom: 14px; line-height: 1.7; }
+    .quote cite { display: block; font-style: normal; font-size: 12px; color: var(--muted); }
+    .quote cite a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--light); }
+    .quote cite a:hover { color: var(--text); }
+
+    /* figures */
+    figure { margin: 30px 0 24px; }
+    figure svg { width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto; }
+    figcaption { font-size: 12.5px; color: var(--muted); margin-top: 12px; line-height: 1.7; }
+    figcaption b { color: var(--text); font-weight: 600; }
+    .fig-title { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .g-zone { fill: #f4f4f4; }
+    .g-axis { stroke: #aaaaaa; stroke-width: 1.4; }
+    .g-grid { stroke: #e6e6e6; stroke-width: 1; }
+    .g-dash { stroke: #c2c2c2; stroke-width: 1.6; stroke-dasharray: 5 4; }
+    .g-curve { fill: none; stroke: #111111; stroke-width: 2.6; stroke-linecap: round; }
+    .g-dot { fill: #111111; }
+    .g-dot-o { fill: #ffffff; stroke: #111111; stroke-width: 2.2; }
+    .g-arrow { fill: #9a9a9a; }
+    .g-lbl { font-family: 'Noto Sans JP', sans-serif; font-size: 13px; fill: #2a2a2a; }
+    .g-lbl-b { font-family: 'Noto Sans JP', sans-serif; font-size: 14.5px; fill: #111111; font-weight: 700; }
+    .g-sub { font-family: 'Noto Sans JP', sans-serif; font-size: 11.5px; fill: #8a8a8a; }
+    .g-ax { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; fill: #888888; font-weight: 500; }
+    .g-quad { font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 11px; letter-spacing: .4px; fill: #b0b0b0; }
+
+    .close { border-top: 2px solid var(--text); padding-top: 28px; margin-top: 48px; }
+    .close p { font-size: 15px; color: #333; margin-bottom: 14px; }
+    .close p:last-child { margin-bottom: 0; }
+    .close p b { color: var(--text); font-weight: 700; }
+
+    footer { max-width: 720px; margin: 0 auto; padding: 24px; border-top: 1px solid var(--line); font-size: 11px; color: var(--light); }
+    footer a { color: var(--muted); text-decoration: none; }
+    footer a:hover { color: var(--text); }
+
+    @media (max-width: 600px) {
+      body { font-size: 14.5px; line-height: 1.85; }
+      .page { padding: 32px 18px 72px; }
+      .header h1 { font-size: 22px; }
+      .lead { font-size: 15px; }
+      section p { font-size: 14px; }
+      section .title { font-size: 16.5px; }
+      .pull { font-size: 14.5px; }
+      figure { margin: 24px 0 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <div class="cat">Diary / Career</div>
+      <h1>可逆性と余白<br>— 失敗する機会について</h1>
+      <div class="date">2026.07.27</div>
+    </div>
+
+    <p class="lead">昨日、日本のとある大企業に勤める方と話す機会があった。私より一回り（10歳前後）年上で、これから海外のMBAに留学するという。大企業で積み上げたキャリアから一歩踏み出したい、という意思が感じられる動きだった。この会話を通じて<b>キャリアや人生における「失敗」</b>について深く考えさせられたので、感じたことを書き残しておく。</p>
+
+    <section>
+      <h2><span class="no">01</span> エリートゆえの「認知の歪み」</h2>
+      <p class="title">失敗する機会を持つことが、どれほど重要か。</p>
+      <p>日本の大企業に勤める人の多くは、東大や早慶といった名門校を出て、新卒で一流企業に入り、着実に年収を上げてきたエリート層だ。銀行の与信や不動産の借りやすさといった社会的信用も高く、プライベートも含めていわゆる「順風満帆な人生」を送っている。</p>
+      <p>しかしそれゆえに、新しい挑戦を始めるときの期待値や認知が大きく歪んでしまっているように見える。商社や外資系金融のエリートが普段扱うのは、数百億〜数千億円規模の巨大プロジェクトだ。業界のど真ん中にある、極めてインパクトの大きいアジェンダに触れている。</p>
+      <p>一方でスタートアップの現実はまったく異なる。「誰を雇うべきか」「どういうエコノミクスで回すか」を考える以前に、まずは<b>「目の前の一人のユーザーを幸せにできるか」「最初の1円の売上を立てられるか」</b>という泥臭い次元から始まる。ここに認識と現実との大きなギャップ（歪み）がある。過去の成功体験に縛られ、認識のメカニズムが狂っているために、目の前の事象や期待値を正しく計算できない。その結果、挑戦することが過度に怖くなる。</p>
+      <p>「そもそも起業なんて最初からうまくいくものではない」という前提を持てていれば素直に挑めるはずだ。しかし、自分で設定した高すぎるハードルが、かえって自分を苦しめている。そんな構図があるように感じた。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">02</span> キャリア序盤の「失敗」という財産</h2>
+      <p>結局のところ、キャリアの早い段階で「失敗」を経験しているかどうかの差でしかない。失敗する機会は、本当に貴重な財産だ。</p>
+      <p>学生時代でも、新卒すぐのタイミングでも構わない。大学を中退したり、大企業を1〜2年で辞めたりするのは世間的にはドラスティックな決断に見える。だがこうした決断を経験した人は、「失敗すること」や「途中でやめること」への心理的ハードルが普通の人とまったく違う。失敗を恐れず、軌道修正を繰り返しながら進めるため、中長期的に人生の複利が効いて、結果的に素晴らしいキャリアを築いていける。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">03</span> すべての土台は「余白」</h2>
+      <p>では、どうすれば失敗や撤退（やめる決断）ができるようになるのか。詰まるところ、人生に<b>「余白」</b>があるかどうかにかかっている。</p>
+      <p>大企業のエリートや海外MBAを目指す人、あるいは東大の理一・工学部や慶応の理工学部のように課題に追われる優秀な学生に、果たして失敗するチャンスはあるだろうか。「大学生なんだからバイトでもしよう」と思って入学しても、現実は日々の講義に出て、課題をこなし、バイトに行き、サークルの友人と飲んで帰って寝る、というルーティンの繰り返しになりがちだ。</p>
+      <p>余白がない人は、そもそも失敗する機会すら得られない。<b>失敗の前提には、必ず余白が必要だ。</b></p>
+      <p>ここから言える具体的なアプローチは2つ。いずれも中長期の複利を得るための土台づくりだ。</p>
+      <ol>
+        <li><b>大学の時間を引き延ばす。</b>休学、あるいは退学して別の道を探ることは、決してマイナスではない。</li>
+        <li><b>新卒での就職を急がない。</b>1年早く社会に出たところで、長い人生で得することは何もない。院進する人は2年、浪人した人は1年、すでに社会に出るのが遅れている。同様に、2年ほど休学して新卒入社しても不利益は一切被らない。</li>
+      </ol>
+      <p>難しいチャレンジに身を投じるのは、まず「失敗に対する耐性」や「失敗をどう捉えるかというスタンス」を磨いてからで遅くない。「どうせ最初は失敗する」「うまくいかないのが当たり前で、そこからどう修正するかが大事だ」と自然に考えられるマインドセットさえあれば、どんな物事も最終的にはうまくいく。<b>「どうでもいいや」という感覚</b>が若いうちにつくと、すごく気持ちが楽になる。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">04</span> リスクとリターンは一様ではない</h2>
+      <p>よく「人生はハイリスク・ハイリターンだ」と言われるが、案外そうでないケースも多い。スタートアップへの挑戦や起業でも、リスクを低く抑えられているケースはたくさんある。逆に、中長期的に大きいアウトカムを得られないのなら、大企業に行くことは本当にリターンなのか、という話にもなる。</p>
+      <p>世の中には「ローリスク・ハイリターン」も「ハイリスク・ローリターン」も無数に存在する。だからこそ、リスクとリターンの関数を丁寧に見極めることに、ちゃんと時間を使ったほうがいい。</p>
+
+      <figure>
+        <div class="fig-title">Fig.1 — 常識の直線と、現実の散らばり</div>
+        <svg viewBox="0 0 460 320" role="img" aria-label="リスクとリターンの4象限マトリクス">
+          <!-- highlight zone: low risk / high return -->
+          <rect class="g-zone" x="62" y="28" width="184" height="120"/>
+          <!-- quadrant grid -->
+          <line class="g-grid" x1="246" y1="28" x2="246" y2="268"/>
+          <line class="g-grid" x1="62" y1="148" x2="430" y2="148"/>
+          <!-- axes -->
+          <line class="g-axis" x1="62" y1="268" x2="430" y2="268"/>
+          <line class="g-axis" x1="62" y1="28" x2="62" y2="268"/>
+          <!-- 常識の対角線 -->
+          <line class="g-dash" x1="62" y1="268" x2="430" y2="28"/>
+          <text class="g-quad" x="390" y="48" transform="rotate(-33 390 48)" text-anchor="middle">Risk = Return</text>
+          <!-- startup: low risk / high return (emphasised) -->
+          <circle class="g-dot" cx="150" cy="88" r="6.5"/>
+          <text class="g-lbl-b" x="164" y="84">スタートアップ挑戦</text>
+          <text class="g-sub" x="164" y="103">案外ローリスク・ハイリターン</text>
+          <!-- big company: low risk / low return -->
+          <circle class="g-dot-o" cx="150" cy="212" r="6.5"/>
+          <text class="g-lbl" x="164" y="208">大企業（安定）</text>
+          <text class="g-sub" x="164" y="227">本当にリターンか？</text>
+          <!-- reckless: high risk / low return -->
+          <circle class="g-dot-o" cx="360" cy="212" r="6.5"/>
+          <text class="g-lbl" x="360" y="240" text-anchor="middle">消耗するだけの賭け</text>
+          <!-- axis labels -->
+          <text class="g-ax" x="62" y="20">リターン ↑</text>
+          <text class="g-ax" x="430" y="292" text-anchor="end">リスク →</text>
+        </svg>
+        <figcaption><b>ハイリスク・ハイリターンは幻想の直線にすぎない。</b>現実の選択肢はこの線の周りに散らばっている。関数の形を丁寧に見極めれば、リスクを抑えたまま大きなリターンを取りにいける場所（左上）がある。</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2><span class="no">05</span> ボトムラインという罠</h2>
+      <p>話した方は、<b>ボトムラインが3,000万円</b>だと言っていた。海外MBAに行くが、戻ってからは起業・転職・元の会社に戻るなど選択肢があり、ワーストケースでも戻れば年収3,000万円はある。だから色々うまくいかなかったら、そこに戻ってコスパよく暮らそう、と。</p>
+      <p>それ自体はいいことだと思いつつ、構造として<b>「ボトムラインが3,000万円であるがゆえに、人間がチャレンジできなくなる」</b>側面もあるのではないかと感じた。</p>
+      <p>基本的に、下限のバーが高ければ高いほど、一歩を踏み出す勇気は持てなくなる。そして踏み出す勇気はシンプルにあればあるほど、得られるアウトカムも大きくなる。つまり少し遠回りな表現だが、<b>「下限のバーが高いと、大きく成功する確率が下がる」</b>という構造だ。だからこそ、そうした選択肢を持つ日本の優秀な30代前後にとって、起業というキャリアを選ぶのは非常に難しいのだろうと思う。</p>
+
+      <figure>
+        <div class="fig-title">Fig.2 — 下限（ボトムライン）の高さと、踏み出す勇気</div>
+        <svg viewBox="0 0 460 300" role="img" aria-label="下限の高さと期待アウトカムの逆相関">
+          <!-- y-axis caption (horizontal, top-left) -->
+          <text class="g-ax" x="40" y="20">踏み出す勇気・アウトカム ↑</text>
+          <!-- left zone: low bottomline = can move -->
+          <rect class="g-zone" x="62" y="34" width="106" height="224"/>
+          <!-- axes -->
+          <line class="g-axis" x1="62" y1="258" x2="430" y2="258"/>
+          <line class="g-axis" x1="62" y1="34" x2="62" y2="258"/>
+          <!-- decreasing convex curve -->
+          <path class="g-curve" d="M80,52 C175,78 250,182 424,238"/>
+          <!-- left point (on curve) -->
+          <circle class="g-dot" cx="90" cy="55" r="6"/>
+          <text class="g-lbl" x="104" y="52">失うものが少ない＝動ける</text>
+          <!-- 3000万 marker -->
+          <line class="g-dash" x1="360" y1="34" x2="360" y2="258"/>
+          <circle class="g-dot" cx="360" cy="218" r="6.5"/>
+          <text class="g-lbl-b" x="350" y="234" text-anchor="end">下限 3,000万</text>
+          <text class="g-sub" x="350" y="250" text-anchor="end">踏み出しにくい</text>
+          <!-- x-axis caption -->
+          <text class="g-ax" x="430" y="282" text-anchor="end">下限（ボトムライン）の高さ →</text>
+        </svg>
+        <figcaption>下限が保証されているほど、逆説的に大きく賭けにいく理由が消えていく。<b>守られていることが、伸びしろの天井になる。</b></figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2><span class="no">06</span> 人材のアビトラージと三方よし</h2>
+      <p>私はこの構造の中で、結果的にスタートアップの人間などを繋いだりしている。こういう<b>アビトラージ</b>をたくさん取っていきたい。利己的な私目線の話ではあるが、そもそも大企業の人は別のキャリアの人と会うことで強く刺激されるし、優秀な人材が流動的にスタートアップへ行くことは、日本社会にとっても非常に価値がある。</p>
+      <p>その上で「三方よし」なので、自分の利についても語る。大企業が持っている情報や見ている視点は、スタートアップの人にはまったくない。特に自分のように、インフラ・エネルギー・核融合・半導体・ロボットといった大きい産業を攻めるときには、そうした知見が本当にマストになる。この仕組みを回せば、スタートアップに大企業の人材を流せるし、大企業側からはそういう人をどんどん紹介してもらえる。さらに自分も大企業の情報が手に入る。自分にとっても非常に嬉しいアウトカムが起きる。</p>
+      <p>ただ、三菱商事のような歴史ある会社を想像すると、これは結構残酷だとも思う。三菱商事の執行役員や常務、社長は新卒で入った人しかいない。流動性を上げるカルチャーは、三菱商事自身がこれまでのあり方を見直さざるを得なくなる、そんな瞬間を迎えることになる。これは我々（Wanderlust）の顧問である<a href="https://ja.wikipedia.org/wiki/%E5%B0%8F%E5%B3%B6%E4%BF%A1%E6%98%8E" target="_blank" rel="noopener">小島信明さん</a>と話していても、すごく感じることだ。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">07</span> なぜ日本は構造的に苦しいか</h2>
+      <p>大きいアジェンダとスタートアップのアジェンダを両立させる難しさはある。だが基本的に、中国やアメリカがすごいのはまさにそこだと思う。</p>
+      <p>アメリカにはGoogleのような巨大な時価総額の規模があり、その上で大企業としてのOpenAIやAnthropicがある。中国もTencentなどそうだが、すごく大きい会社のその先に、スタートアップのチャレンジが連続的につながっている。一方で日本の巨大企業といえばトヨタや三菱商事、三菱UFJ銀行で、そこがスタートアップと少しかけ離れてしまっている。これは構造的に、国として厳しい。</p>
+      <p>つまり、日本でいう<b>時価総額30兆円前後に育つスタートアップが1個でも出てくれば</b>、状況はすごく変わるはずだ。DeNAやサイバーエージェントなどは起業家予備軍が出やすい環境にあるが、時価総額でいうと3,000億〜4,000億円規模なので、集まる人材のレンジもGoogleほどのトップティアばかりにはならない。中国のTencentにトップティアが集まっていることを考えると、ここは非常に難しい問題だ。</p>
+
+      <figure>
+        <div class="fig-title">Fig.3 — 大企業の時価総額 × スタートアップとの連続性</div>
+        <svg viewBox="0 0 460 330" role="img" aria-label="国別ポジショニング：時価総額と人材流動性">
+          <defs>
+            <marker id="ah" markerWidth="9" markerHeight="9" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" class="g-arrow"/>
+            </marker>
+          </defs>
+          <!-- ideal zone: upper-right -->
+          <rect class="g-zone" x="278" y="28" width="152" height="118"/>
+          <text class="g-quad" x="296" y="48">理想ゾーン</text>
+          <!-- axes -->
+          <line class="g-axis" x1="62" y1="288" x2="430" y2="288"/>
+          <line class="g-axis" x1="62" y1="28" x2="62" y2="288"/>
+          <!-- arrow: Japan-big should move up-right -->
+          <line class="g-dash" x1="150" y1="122" x2="272" y2="108" marker-end="url(#ah)"/>
+          <text class="g-quad" x="424" y="134" text-anchor="end">30兆円級が1社で右上へ</text>
+          <!-- USA (top-right) -->
+          <circle class="g-dot" cx="388" cy="58" r="7"/>
+          <text class="g-lbl-b" x="374" y="54" text-anchor="end">米</text>
+          <text class="g-sub" x="374" y="72" text-anchor="end">Google → OpenAI / Anthropic</text>
+          <!-- China -->
+          <circle class="g-dot" cx="300" cy="166" r="7"/>
+          <text class="g-lbl-b" x="286" y="162" text-anchor="end">中</text>
+          <text class="g-sub" x="286" y="182" text-anchor="end">Tencent 〜 連続的な挑戦</text>
+          <!-- Japan big (top-left, isolated) -->
+          <circle class="g-dot-o" cx="112" cy="94" r="7"/>
+          <text class="g-lbl-b" x="126" y="90">日・大企業</text>
+          <text class="g-sub" x="126" y="108">トヨタ / 三菱商事（孤立）</text>
+          <!-- Japan startup (bottom-right, capped) -->
+          <circle class="g-dot-o" cx="358" cy="244" r="7"/>
+          <text class="g-lbl" x="344" y="240" text-anchor="end">DeNA / サイバー</text>
+          <text class="g-sub" x="344" y="258" text-anchor="end">3〜4千億で頭打ち</text>
+          <!-- axis labels -->
+          <text class="g-ax" x="62" y="20">最大企業の時価総額 ↑</text>
+          <text class="g-ax" x="430" y="312" text-anchor="end">連続性・人材流動性 →</text>
+        </svg>
+        <figcaption>米中は<b>「巨大時価総額」と「連続的な挑戦」が右上でつながっている</b>。日本は大企業が左上に孤立し、スタートアップは右下で頭打ち。この断絶を埋める1社が要る。</figcaption>
+      </figure>
+    </section>
+
+    <section>
+      <h2><span class="no">08</span> 可逆性と、練度の高い意思決定</h2>
+      <p>やはり<b>「可逆性」</b>を考えたほうがいい。失敗ができる、失敗を許容できる余白がある——こうしたものはすべて人生の序盤に設計される。25歳や30歳を超えると、もうラットレースが始まっていて、資本主義の奴隷（リビングデッド）として一生働き続けることになりかねない。</p>
+      <p>大前提として、年収2,000万〜3,000万円で幸せを享受できる人は無数にいるし、一般的には十分に豊かな経済水準だと思う。ただ、自分のようにもっと上を目指したい人にとっては話が別だ。お金はあればあるだけいいが、100億と1,000億の違いがわかるかは人による。しかし年収3,000万と年収1億はまったく違う。そういう意味でも、やはりどれだけキャリアの若い頃に失敗を経験できるかだ。</p>
+      <p>これは練度の高い意思決定の話でもある。大切なのは次の3つを整理することだ。</p>
+      <ol>
+        <li>どんな分岐や条件があり、どの変数がどう動いたときに自分のアウトカムがどうなるのかを把握する</li>
+        <li>先人たちのケース（失敗事例・成功事例）をインプットする</li>
+        <li>自分の特殊な状況や変数を考慮した上で、「自分だったらこうはならないな」と軌道修正する</li>
+      </ol>
+      <p>総じて、リスク・リターンへの丁寧な分析と、<b>「違ったらやめる」「新しいもので興味があれば飛び込む」というフットワークの軽さ</b>の掛け合わせが、非常に重要なのだと思う。</p>
+    </section>
+
+    <section>
+      <h2><span class="no">09</span> 大学は本当に必要か</h2>
+      <p>大学の意義についても同じことが言える。ピーター・ティールも言っているが、「本当に大学に行く必要があるのか」「大学に行っていることで、その人の人生はどれくらいキャップされているのか」ということだ。彼は高等教育を"バブル"と呼ぶ。</p>
+
+      <blockquote class="quote">
+        <p class="q-lead">“Education has become a substitute for thinking about the future.”</p>
+        <p class="qja">教育は、未来を考えることそのものの代替物になってしまった。</p>
+        <p class="q">“University administrators are the equivalent of subprime mortgage brokers selling you a story that you should go into debt massively — that it's not a consumption decision, it's an investment decision. Actually, no. It's a bad consumption decision.”</p>
+        <p class="qja">大学の運営側はサブプライムローンの業者と同じだ。「これは投資だ」と言って多額の借金を負わせる。だが実際には、それは"割の悪い消費"にすぎない。</p>
+        <cite>— Peter Thiel, <a href="https://www.youtube.com/watch?v=vmPFg30Ycys" target="_blank" rel="noopener">on the higher education bubble (2014)</a></cite>
+      </blockquote>
+
+      <p>短期的な目線なら、「将来のために大学に行けばいい」「テストを受けてコスパよく学位を取っておけばデメリットはない」と思うかもしれない。しかし、<b>「両立しようとするマインドやスタンス」に少しでも時間を取られる、その構造自体</b>が、その人のポテンシャルをキャップしている。</p>
+
+      <p>ただし、ティールの議論はそのままアメリカの前提で語られている。<b>日本は文脈が少し違う。</b>まず学費が桁違いに低いので、大学に行くことの金銭的ダウンサイドは米ほど大きくない。だが同時に、米ほど「学歴が必要になるシーン」も少ない。つまり米のように"バブル"として全否定する話ではなく、天秤の両側がともに軽いということだ。</p>
+      <p>だからこそ日本での最適解ははっきりしている。<b>とにかく休学して、何かに東京でのめり込むこと。</b>東京にはタレント（人材）が異常なほど揃っている。時の流れを自分でコントロールし、密なearly 20sを送ること——これが決定的に重要だと思う。</p>
+      <p class="note">※ もちろん、熱中の対象が東京の外にあるなら、そこへ行けばいい。ただ日本国内に関しては、情報と機会が東京にここまで集中している以上、スタートは"脳死で東京"を選んでいいほどだ。</p>
+    </section>
+
+    <div class="close">
+      <p class="pull">勝負するフィールドは自分で選ぶ。いざロックインしたら、そこでの戦いをフルフルでやり抜く。</p>
+      <p>両立はすごく難しいので何とも言えない部分もあるが、私はよく<b>「圧勝する感覚を持つこと」「負け癖をつけないこと」</b>も大事だと言っている。ただ、プライオリティとしては、勝負するフィールドは自分で選ぶべきだ。やりたいことは自分で選べばいい。そっちのほうが大事だと思う。</p>
+      <p>これは戦略と戦術の話でもある。<b>戦略は「どこで戦うか」、戦術は「それをどう勝つか」。</b>常に上流の戦略のほうが重要であり、自分の人生の主導権を握るという意味でも、何をやるか・どんな意思決定をするかという戦略の部分が非常に重要だと思う。</p>
+    </div>
+  </div>
+
+  <footer>/040_personal/041_diary/260727_reversibility.html</footer>
+</body>
+</html>
