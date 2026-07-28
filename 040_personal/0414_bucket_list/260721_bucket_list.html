@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bucket List</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #ffffff; --text: #111111; --mid: #555555; --muted: #999999; --light: #cccccc; --line: #e8e8e8;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 13px; min-height: 100vh; }
+
+    .header { background: #111; color: #fff; padding: 52px 48px 44px; }
+    .header .kicker { font-size: 10px; font-weight: 600; letter-spacing: .28em; text-transform: uppercase; color: rgba(255,255,255,.5); margin-bottom: 14px; }
+    .header h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+    .header p { font-size: 12px; color: rgba(255,255,255,.55); margin-top: 14px; max-width: 620px; line-height: 1.7; }
+
+    .main { max-width: 720px; margin: 0 auto; padding: 44px 48px 90px; }
+
+    /* progress */
+    .progress { display: flex; align-items: center; gap: 14px; margin-bottom: 34px; }
+    .progress .bar { flex: 1; height: 6px; background: var(--line); border-radius: 999px; overflow: hidden; }
+    .progress .bar span { display: block; height: 100%; width: 0; background: var(--text); border-radius: 999px; transition: width .25s ease; }
+    .progress .count { font-size: 12px; font-weight: 600; color: var(--mid); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+    .cat { margin-bottom: 34px; }
+    .cat-head { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; padding-bottom: 8px; border-bottom: 2px solid var(--text); }
+
+    .item { display: flex; align-items: center; gap: 12px; padding: 11px 2px; border-bottom: 1px solid var(--line); cursor: pointer; user-select: none; font-size: 14.5px; font-weight: 500; letter-spacing: -.01em; }
+    .item:last-child { border-bottom: none; }
+    .item input { appearance: none; -webkit-appearance: none; width: 17px; height: 17px; border: 1.5px solid var(--light); border-radius: 4px; flex: none; cursor: pointer; position: relative; transition: .12s; }
+    .item input:hover { border-color: var(--mid); }
+    .item input:checked { background: var(--text); border-color: var(--text); }
+    .item input:checked::after { content: "✓"; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 700; }
+    .item .t { transition: .12s; }
+    .item input:checked + .t { color: var(--muted); text-decoration: line-through; }
+    .item .note { color: var(--muted); font-size: 12px; font-weight: 400; }
+
+    footer { max-width: 720px; margin: 0 auto; padding: 24px 48px 60px; border-top: 1px solid var(--line); font-size: 11px; color: var(--light); }
+    footer .disclaimer { margin-top: 6px; font-style: italic; }
+
+    @media (max-width: 600px) {
+      .header { padding: 36px 24px 32px; }
+      .main { padding: 36px 24px 60px; }
+      footer { padding: 20px 24px 50px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="kicker">Bucket List / やりたいこと</div>
+    <h1>Bucket List</h1>
+    <p>やりたいこと・済ませておきたいことのチェックリスト。タップで完了、状態はこの端末に保存される。</p>
+  </div>
+
+  <div class="main">
+    <div class="progress">
+      <div class="bar"><span id="bar"></span></div>
+      <div class="count" id="count">0 / 0</div>
+    </div>
+
+    <div class="cat">
+      <div class="cat-head">Beauty / Health</div>
+      <label class="item"><input type="checkbox" data-id="whitening"><span class="t">ホワイトニング</span></label>
+      <label class="item"><input type="checkbox" data-id="datsumo"><span class="t">脱毛</span></label>
+      <label class="item"><input type="checkbox" data-id="mayu-datsumo"><span class="t">眉毛脱毛</span></label>
+      <label class="item"><input type="checkbox" data-id="kyousei"><span class="t">歯列矯正</span></label>
+      <label class="item"><input type="checkbox" data-id="yokujouhen"><span class="t">翼状片手術</span></label>
+      <label class="item"><input type="checkbox" data-id="gym-seitai"><span class="t">ジム・整体</span></label>
+      <label class="item"><input type="checkbox" data-id="aga"><span class="t">AGA治療</span></label>
+    </div>
+  </div>
+
+  <footer>
+    040_personal / 260721_bucket_list.html · gitignore対象外（非公開ナビは _private_index から）
+    <div class="disclaimer">チェック状態は localStorage に保存。端末ごとに独立。</div>
+  </footer>
+
+  <script>
+    var boxes = [].slice.call(document.querySelectorAll('.item input[data-id]'));
+    var bar = document.getElementById('bar');
+    var count = document.getElementById('count');
+
+    function render() {
+      var done = boxes.filter(function (b) { return b.checked; }).length;
+      count.textContent = done + ' / ' + boxes.length;
+      bar.style.width = boxes.length ? (done / boxes.length * 100) + '%' : '0';
+    }
+
+    boxes.forEach(function (box) {
+      var key = 'bucket:' + box.dataset.id;
+      box.checked = localStorage.getItem(key) === '1';
+      box.addEventListener('change', function () {
+        localStorage.setItem(key, box.checked ? '1' : '0');
+        render();
+      });
+    });
+    render();
+  </script>
+</body>
+</html>
