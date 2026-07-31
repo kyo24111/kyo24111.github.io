@@ -22,3 +22,4 @@
 ## ファイル
 
 - [260516_linear_algebra.html](260516_linear_algebra.html) — メインページ（今後prompt駆動で蓄積）
+- [260731_rotation_eigenaxis.html](260731_rotation_eigenaxis.html) — 回転の合成→斜め軸(固有ベクトル)の3Dビジュアライズ。直交行列/SO(3)/O(3)/オイラーの回転定理。

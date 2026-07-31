@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>回転の合成と固有ベクトル — 斜めの回転軸が生まれる</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+  :root{ --ink:#1a1a18; --sub:#5f5e5a; --faint:#888780; --line:rgba(0,0,0,0.12);
+         --x:#D85A30; --y:#1D9E75; --z:#3F6FE0; --axis:#7A44C4; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; padding:28px 20px 64px; background:#fff; color:var(--ink);
+        font-family:'Noto Sans JP', system-ui, sans-serif; line-height:1.75; }
+  .wrap{ max-width:720px; margin:0 auto; }
+  h1{ font-family:'Poppins','Noto Sans JP',sans-serif; font-weight:600; font-size:22px;
+      letter-spacing:.01em; margin:0 0 6px; }
+  .lead{ color:var(--sub); font-size:14.5px; margin:0 0 22px; }
+  h2{ font-family:'Poppins','Noto Sans JP',sans-serif; font-weight:600; font-size:16px;
+      margin:34px 0 12px; padding-bottom:7px; border-bottom:1px solid var(--line); }
+
+  #scene{ width:100%; height:460px; border-radius:12px; border:1px solid var(--line);
+          background:#f5f4ef; position:relative; touch-action:none; cursor:grab; overflow:hidden; }
+  #step{ position:absolute; left:14px; top:12px; font-family:'Poppins',sans-serif; font-size:13px;
+         color:var(--sub); background:rgba(255,255,255,.82); padding:5px 11px; border-radius:20px;
+         border:1px solid var(--line); backdrop-filter:blur(2px); }
+
+  .controls{ display:flex; flex-wrap:wrap; gap:9px; margin-top:14px; align-items:center; }
+  button{ font-family:'Noto Sans JP',sans-serif; font-size:13.5px; font-weight:500; cursor:pointer;
+          padding:9px 15px; border-radius:9px; border:1px solid var(--ink); background:var(--ink);
+          color:#fff; transition:opacity .15s; }
+  button.ghost{ background:#fff; color:var(--ink); }
+  button:hover{ opacity:.82; }
+  button:disabled{ opacity:.35; cursor:default; }
+  .toggles{ display:flex; gap:16px; margin-top:12px; font-size:13px; color:var(--sub); flex-wrap:wrap; }
+  .toggles label{ display:flex; align-items:center; gap:6px; cursor:pointer; }
+
+  .legend{ display:flex; flex-wrap:wrap; gap:15px; margin-top:14px; font-size:13.5px; color:var(--sub); }
+  .legend span{ display:flex; align-items:center; gap:7px; }
+  .sw{ width:13px; height:13px; border-radius:3px; }
+  .sw.line{ height:3px; width:20px; border-radius:2px; }
+
+  .card{ background:#faf9f5; border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-top:16px; }
+  p{ margin:11px 0; font-size:14.5px; }
+  .key{ background:#1a1a18; color:#fff; border-radius:12px; padding:18px 20px; margin-top:16px; }
+  .key p{ color:#e8e7e2; }
+  .key b{ color:#fff; }
+  code{ font-family:'Poppins',ui-monospace,monospace; background:rgba(0,0,0,.05); padding:1px 6px;
+        border-radius:5px; font-size:13.5px; }
+  .key code{ background:rgba(255,255,255,.14); color:#fff; }
+  .cx{ color:var(--x); font-weight:700; } .cy{ color:var(--y); font-weight:700; }
+  .cz{ color:var(--z); font-weight:700; } .ca{ color:var(--axis); font-weight:700; }
+
+  /* CSS で組む行列 */
+  .mrow{ display:flex; align-items:center; justify-content:center; gap:14px; flex-wrap:wrap;
+         margin:16px 0; font-family:'Poppins',serif; }
+  .mat{ display:inline-grid; grid-auto-flow:column; gap:0; position:relative; padding:2px 12px; }
+  .mat::before,.mat::after{ content:''; position:absolute; top:0; bottom:0; width:7px;
+        border:1.6px solid var(--ink); }
+  .mat::before{ left:0; border-right:none; border-radius:4px 0 0 4px; }
+  .mat::after{ right:0; border-left:none; border-radius:0 4px 4px 0; }
+  .mcol{ display:grid; grid-auto-rows:26px; text-align:center; }
+  .mcol span{ min-width:22px; font-size:15px; }
+  .op{ font-size:18px; color:var(--sub); }
+  .lbl{ font-size:12px; color:var(--faint); font-family:'Noto Sans JP',sans-serif; }
+  .foot{ margin-top:40px; font-size:12px; color:var(--faint); text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>回転の合成と、生まれる「斜めの回転軸」</h1>
+  <p class="lead">横回転 <code>R<sub>z</sub></code> と縦回転 <code>R<sub>y</sub></code> を続けて実行すると、
+  全体としては<b>ある斜めの軸のまわりの1回の回転</b>になる。その軸こそ、合成行列の
+  <b>固有値 λ=1 に対応する固有ベクトル</b>です。数字で仕込んだ例で確かめましょう。</p>
+
+  <div id="scene"><div id="step">ドラッグで視点回転</div></div>
+
+  <div class="controls">
+    <button id="btnDecomp">① 分解して見る：R<sub>z</sub> → R<sub>y</sub></button>
+    <button id="btnComp" class="ghost">② 合成として見る：斜め軸で 120°</button>
+    <button id="btnReset" class="ghost">リセット</button>
+  </div>
+  <div class="toggles">
+    <label><input type="checkbox" id="tgAxis" checked> 斜め軸 (1,1,1) を表示</label>
+    <label><input type="checkbox" id="tgGhost" checked> 開始位置のゴーストを表示</label>
+    <label><input type="checkbox" id="tgSpin" checked> 自動で視点をまわす</label>
+  </div>
+
+  <div class="legend">
+    <span><span class="sw" style="background:var(--x)"></span>x 軸方向の矢印</span>
+    <span><span class="sw" style="background:var(--y)"></span>y 軸方向の矢印</span>
+    <span><span class="sw" style="background:var(--z)"></span>z 軸方向の矢印</span>
+    <span><span class="sw line" style="background:var(--axis)"></span>斜めの回転軸 (1,1,1)</span>
+  </div>
+
+  <h2>仕込んだ数字（90°ずつの回転）</h2>
+  <div class="card">
+    <div class="mrow">
+      <div>
+        <div class="lbl" style="text-align:center;margin-bottom:4px;">R = R<sub>y</sub> R<sub>z</sub></div>
+        <div class="mat">
+          <div class="mcol"><span>0</span><span>1</span><span>0</span></div>
+          <div class="mcol"><span>0</span><span>0</span><span>1</span></div>
+          <div class="mcol"><span>1</span><span>0</span><span>0</span></div>
+        </div>
+      </div>
+      <span class="op">＝</span>
+      <div>
+        <div class="lbl" style="text-align:center;margin-bottom:4px;">R<sub>y</sub>（縦・90°）</div>
+        <div class="mat">
+          <div class="mcol"><span>0</span><span>0</span><span>−1</span></div>
+          <div class="mcol"><span>0</span><span>1</span><span>0</span></div>
+          <div class="mcol"><span>1</span><span>0</span><span>0</span></div>
+        </div>
+      </div>
+      <span class="op">×</span>
+      <div>
+        <div class="lbl" style="text-align:center;margin-bottom:4px;">R<sub>z</sub>（横・90°）</div>
+        <div class="mat">
+          <div class="mcol"><span>0</span><span>1</span><span>0</span></div>
+          <div class="mcol"><span>−1</span><span>0</span><span>0</span></div>
+          <div class="mcol"><span>0</span><span>0</span><span>1</span></div>
+        </div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--sub);margin:0;text-align:center;">
+      ※ 画面に合わせて z 軸を「上」に取っています。行列は列ベクトルに左から掛ける規約
+      （<code>v' = R·v</code>）で、まず横 <code>R<sub>z</sub></code>、次に縦 <code>R<sub>y</sub></code>。</p>
+  </div>
+
+  <h2>なぜ「斜め軸で 120°」になるのか</h2>
+  <div class="card">
+    <p>合成 <code>R</code> が 3 本の矢印に何をするか、列を読むだけで分かります。</p>
+    <p><span class="cx">x軸の矢印</span> → <span class="cy">y の位置</span> →
+       <span class="cz">z の位置</span> → <span class="cx">x に戻る</span>。
+       つまり <b>x → y → z → x</b> の巡回置換。3 本を 1 つずつ送る＝ちょうど <b>1/3 周 = 120°</b> の回転です。</p>
+    <p>その回転が「どの軸のまわりか」を決めるのが固有ベクトル。<b>回っても動かない方向</b>を探すので、
+       <code>R·v = v</code>、すなわち <code>(R − I)·v = 0</code> を解きます
+       — これは <b>固有値 λ = 1 の固有ベクトル</b>そのもの。</p>
+    <p>この例では <code>v = (1, 1, 1)</code>。実際に代入すると、行列の各行が
+       <span class="cx">1</span>+<span class="cy">1</span>+<span class="cz">1</span> を拾って
+       <code>R·(1,1,1) = (1,1,1)</code>。x・y・z から等距離にある対角線だから、
+       3 軸を対称に入れ替える軸になる、というわけです。</p>
+  </div>
+
+  <div class="key">
+    <p style="margin-top:0;"><b>核心（線型写像 × 固有値の視点）</b></p>
+    <p>3 次元では、回転をいくつ合成しても結果はまた 1 つの回転になる（<b>オイラーの回転定理</b>）。
+    その回転の<b>軸＝固有値 1 の固有ベクトル</b>、<b>回転角＝残り 2 つの複素固有値
+    <code>e<sup>±iθ</sup></code> の θ</b>。ここでは軸 <span class="ca">(1,1,1)</span>、
+    <code>θ = 120°</code> でした。</p>
+    <p style="margin-bottom:0;">「縦＋横を足したら斜めに回っていた」という現象は、
+    <b>合成行列の固有ベクトルが座標軸からズレた方向を向いていた</b>、ということの見た目上の姿です。
+    上の ① と ② が<b>まったく同じ最終姿勢</b>に着地するのが、その証拠。</p>
+  </div>
+
+  <h2>一段上へ：直交行列・SO(3)・O(3)</h2>
+  <div class="card">
+    <p><b>回転行列は直交行列</b>。列ベクトルが互いに直交する長さ1の基底で、<code>RᵀR = I</code>
+       （＝ <code>R⁻¹ = Rᵀ</code>）。これは「長さと角度を保つ」写像であることと同値です。
+       長さを保つ 3×3 の写像を全部集めたのが <b>O(3)</b>。</p>
+    <p>そのうち <code>det R = +1</code> のもの＝<b>裏返しを含まない純粋な回転</b>が <b>SO(3)</b>
+       （S = Special = 行列式1）。<code>det R = −1</code> 側が鏡映（裏返し）や回転＋裏返し。
+       あなたの整理どおり、<b>裏返しも入れると O(3)</b> です。</p>
+    <p><b>固有ベクトル = 回っても向きを変えない方向 = 軸</b>。この対応もあなたの言うとおり。
+       だから自然に湧く疑問——「<b>SO(3) の行列を一つ取ってきたら、固有ベクトル（＝軸）は必ずあるのか?</b>」</p>
+  </div>
+
+  <div class="key">
+    <p style="margin-top:0;"><b>答え：必ずある（オイラーの回転定理）</b></p>
+    <p>SO(3) の任意の <code>R</code> は、<b>固有値 λ = 1 の実固有ベクトルを必ず持つ</b>。理由は3行:</p>
+    <p style="margin:6px 0;">・直交行列の固有値は絶対値1（長さを保つから <code>|λ| = 1</code>）。<br>
+       ・特性方程式は <b>3次＝奇数次</b>なので、実根が少なくとも1つある。実で <code>|λ|=1</code> なら <code>λ = ±1</code>。<br>
+       ・固有値の積 <code>= det R = +1</code>。残り2つは複素共役ペア <code>e<sup>±iθ</sup></code>（積は1）だから、
+         実固有値は <b>+1 で確定</b>。</p>
+    <p>その <code>λ=1</code> の固有ベクトルが<b>回転軸</b>。残りの <code>e<sup>±iθ</sup></code> の
+       <code>θ</code> が<b>回転角</b>（この教材では 120°）。「縦＋横を合成したら斜めに回っていた」の正体は、
+       この <b>固有値1の固有ベクトルが座標軸からズレた向きだった</b>、というだけのこと。</p>
+    <p style="margin-bottom:0;"><b>対比で腹落ちする点：</b>SO(<b>2</b>)（平面の回転）は固有値が
+       <code>e<sup>±iθ</sup></code> だけで<b>実固有ベクトルを持たない</b>＝2次元の回転に軸はない。
+       「軸が生まれる」のは<b>奇数次元</b>だからこそ。O(3) の <code>det=−1</code> 側なら
+       <code>λ=−1</code>（裏返す方向）が現れる。</p>
+  </div>
+
+  <p class="foot">030_research / 034_science / 0341_linear_algebra — 260731 · Three.js r128</p>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+  const host = document.getElementById('scene');
+  const stepEl = document.getElementById('step');
+  const COL = { x:0xD85A30, y:0x1D9E75, z:0x3F6FE0, axis:0x7A44C4, grid:0xcfcdc4, ink:0x555452 };
+
+  let W = host.clientWidth, H = host.clientHeight;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(48, W/H, 0.1, 100);
+  camera.up.set(0,0,1);                       // ★ z を上に
+  const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setSize(W,H); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  host.appendChild(renderer.domElement);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.9));
+  const dl = new THREE.DirectionalLight(0xffffff, 0.5); dl.position.set(4,6,10); scene.add(dl);
+
+  // ---- 固定の座標フレーム（薄いグレーの軸）----
+  function staticAxis(dir){
+    const g = new THREE.BufferGeometry().setFromPoints(
+      [new THREE.Vector3(0,0,0), dir.clone().multiplyScalar(2.3)]);
+    scene.add(new THREE.Line(g, new THREE.LineBasicMaterial({ color:COL.grid })));
+    const gn = new THREE.BufferGeometry().setFromPoints(
+      [new THREE.Vector3(0,0,0), dir.clone().multiplyScalar(-2.0)]);
+    scene.add(new THREE.Line(gn, new THREE.LineBasicMaterial({ color:COL.grid, transparent:true, opacity:.5 })));
+  }
+  staticAxis(new THREE.Vector3(1,0,0));
+  staticAxis(new THREE.Vector3(0,1,0));
+  staticAxis(new THREE.Vector3(0,0,1));
+
+  // ---- ラベル用スプライト ----
+  function sprite(text, color, size){
+    const cv = document.createElement('canvas'); cv.width=128; cv.height=64;
+    const ctx = cv.getContext('2d');
+    ctx.fillStyle = color; ctx.font = 'bold 46px Poppins, sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(text,64,34);
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({
+      map:new THREE.CanvasTexture(cv), transparent:true, depthTest:false }));
+    sp.scale.set(size||0.7, (size||0.7)*0.5, 1);
+    return sp;
+  }
+  function hex(n){ return '#'+n.toString(16).padStart(6,'0'); }
+  const lblX = sprite('x', hex(COL.x)); lblX.position.set(2.55,0,0); scene.add(lblX);
+  const lblY = sprite('y', hex(COL.y)); lblY.position.set(0,2.55,0); scene.add(lblY);
+  const lblZ = sprite('z', hex(COL.z)); lblZ.position.set(0,0,2.55); scene.add(lblZ);
+
+  // ---- 斜め軸 (1,1,1) ----
+  const axisGroup = new THREE.Group();
+  const d111 = new THREE.Vector3(1,1,1).normalize();
+  const axLine = new THREE.Line(
+    new THREE.BufferGeometry().setFromPoints(
+      [d111.clone().multiplyScalar(-2.4), d111.clone().multiplyScalar(2.4)]),
+    new THREE.LineBasicMaterial({ color:COL.axis, linewidth:2 }));
+  axisGroup.add(axLine);
+  // 軸の両端に小球＋ラベル
+  const capGeo = new THREE.SphereGeometry(0.055, 16, 16);
+  const capMat = new THREE.MeshBasicMaterial({ color:COL.axis });
+  const cap = new THREE.Mesh(capGeo, capMat); cap.position.copy(d111.clone().multiplyScalar(2.4)); axisGroup.add(cap);
+  const lblA = sprite('(1,1,1)', hex(COL.axis), 1.15);
+  lblA.position.copy(d111.clone().multiplyScalar(2.7)); axisGroup.add(lblA);
+  scene.add(axisGroup);
+
+  // ---- 回転する物体：3本の色つき矢印（+asymmetric tab で向きを判別しやすく）----
+  function arrow(dir, color){
+    const g = new THREE.Group();
+    const len = 1.7, r = 0.045;
+    const shaft = new THREE.Mesh(
+      new THREE.CylinderGeometry(r, r, len-0.32, 20),
+      new THREE.MeshStandardMaterial({ color, roughness:.6, metalness:.05 }));
+    shaft.position.y = (len-0.32)/2;
+    const head = new THREE.Mesh(
+      new THREE.ConeGeometry(0.13, 0.34, 22),
+      new THREE.MeshStandardMaterial({ color, roughness:.6, metalness:.05 }));
+    head.position.y = len-0.16;
+    g.add(shaft); g.add(head);
+    // 既定は +y 向き。dir に合わせて回す
+    const from = new THREE.Vector3(0,1,0);
+    g.quaternion.setFromUnitVectors(from, dir.clone().normalize());
+    return g;
+  }
+  function buildObject(){
+    const o = new THREE.Group();
+    o.add(arrow(new THREE.Vector3(1,0,0), COL.x));
+    o.add(arrow(new THREE.Vector3(0,1,0), COL.y));
+    o.add(arrow(new THREE.Vector3(0,0,1), COL.z));
+    // 中心の小さな白い立方体（回転の基準体）
+    const core = new THREE.Mesh(new THREE.BoxGeometry(0.34,0.34,0.34),
+      new THREE.MeshStandardMaterial({ color:0xffffff, roughness:.5 }));
+    o.add(core);
+    return o;
+  }
+  const obj = buildObject(); scene.add(obj);
+
+  // 開始位置ゴースト（薄い）
+  const ghost = buildObject();
+  ghost.traverse(m=>{ if(m.material){ m.material = m.material.clone();
+     m.material.transparent=true; m.material.opacity=0.16; m.material.depthWrite=false; }});
+  scene.add(ghost);
+
+  // ---- 行列 → クォータニオン（native 座標 = 数学座標, z-up）----
+  function q(m9){ // 行優先の 9 要素
+    const M = new THREE.Matrix4().set(
+      m9[0],m9[1],m9[2],0, m9[3],m9[4],m9[5],0, m9[6],m9[7],m9[8],0, 0,0,0,1);
+    return new THREE.Quaternion().setFromRotationMatrix(M);
+  }
+  const qRz = q([0,-1,0, 1,0,0, 0,0,1]);   // 横（z軸まわり 90°）
+  const qRy = q([0,0,1,  0,1,0, -1,0,0]);  // 縦（y軸まわり 90°）
+  const qR  = qRy.clone().multiply(qRz);   // 合成 R = Ry·Rz
+  const qI  = new THREE.Quaternion();
+  const tmpA = new THREE.Quaternion(), tmpB = new THREE.Quaternion();
+  const easeIO = t => t<.5 ? 2*t*t : 1-Math.pow(-2*t+2,2)/2;
+
+  // ---- アニメーション状態機械 ----
+  let mode='idle', clock=0;
+  const btnD=document.getElementById('btnDecomp'), btnC=document.getElementById('btnComp'),
+        btnR=document.getElementById('btnReset');
+  function setBusy(b){ btnD.disabled=b; btnC.disabled=b; }
+  function play(m){ mode=m; clock=0; setBusy(true); ghost.visible=document.getElementById('tgGhost').checked; }
+  btnD.onclick=()=>play('decomp');
+  btnC.onclick=()=>play('comp');
+  btnR.onclick=()=>{ mode='idle'; clock=0; obj.quaternion.copy(qI); setBusy(false); stepEl.textContent='ドラッグで視点回転'; };
+
+  document.getElementById('tgAxis').onchange = e=> axisGroup.visible = e.target.checked;
+  document.getElementById('tgGhost').onchange = e=> ghost.visible = e.target.checked && mode!=='idle';
+  ghost.visible=false;
+
+  const DUR = 1.25; // 各フェーズ秒数
+  function updateAnim(dt){
+    if(mode==='idle') return;
+    clock += dt;
+    if(mode==='decomp'){
+      if(clock < DUR){                       // フェーズ1：横 Rz
+        const s = easeIO(clock/DUR);
+        obj.quaternion.copy(tmpA.copy(qI).slerp(qRz, s));
+        stepEl.textContent = `① 横回転 R_z … ${Math.round(s*90)}°`;
+      } else if(clock < DUR*1.35){            // 小休止
+        obj.quaternion.copy(qRz);
+        stepEl.textContent = `① 横回転 R_z 完了（90°）`;
+      } else if(clock < DUR*2.35){            // フェーズ2：縦 Ry（固定軸まわり＝左から掛ける）
+        const s = easeIO((clock-DUR*1.35)/DUR);
+        tmpA.copy(qI).slerp(qRy, s);          // 部分的な Ry
+        obj.quaternion.copy(tmpA.multiply(qRz)); // Ry_partial · Rz
+        stepEl.textContent = `② 縦回転 R_y … ${Math.round(s*90)}°`;
+      } else {
+        obj.quaternion.copy(qR);
+        stepEl.textContent = `完了：R = R_y R_z（① と ② は同じ姿勢）`;
+        mode='done'; setBusy(false);
+      }
+    } else if(mode==='comp'){
+      if(clock < DUR*1.6){                     // 斜め軸まわりに 120°（= qR への最短 slerp）
+        const s = easeIO(clock/(DUR*1.6));
+        obj.quaternion.copy(tmpA.copy(qI).slerp(qR, s));
+        stepEl.textContent = `斜め軸 (1,1,1) で回転 … ${Math.round(s*120)}°`;
+      } else {
+        obj.quaternion.copy(qR);
+        stepEl.textContent = `完了：120° 回転（軸上のベクトルは不動 → 固有値 1）`;
+        mode='done'; setBusy(false);
+      }
+    }
+  }
+
+  // ---- 視点操作（z-up 球面）----
+  let theta=0.85, phi=0.62, radius=6.6, dragging=false, lx=0, ly=0;
+  function place(){
+    camera.position.set(
+      radius*Math.cos(phi)*Math.cos(theta),
+      radius*Math.cos(phi)*Math.sin(theta),
+      radius*Math.sin(phi));
+    camera.lookAt(0,0,0);
+  }
+  const el = renderer.domElement;
+  el.addEventListener('pointerdown', e=>{ dragging=true; lx=e.clientX; ly=e.clientY;
+    host.style.cursor='grabbing'; el.setPointerCapture(e.pointerId); });
+  el.addEventListener('pointermove', e=>{ if(!dragging) return;
+    theta -= (e.clientX-lx)*0.008; phi += (e.clientY-ly)*0.008;
+    phi = Math.max(-1.4, Math.min(1.4, phi)); lx=e.clientX; ly=e.clientY; });
+  el.addEventListener('pointerup', ()=>{ dragging=false; host.style.cursor='grab'; });
+  el.addEventListener('pointercancel', ()=>{ dragging=false; host.style.cursor='grab'; });
+  window.addEventListener('resize', ()=>{ W=host.clientWidth; H=host.clientHeight;
+    camera.aspect=W/H; camera.updateProjectionMatrix(); renderer.setSize(W,H); });
+
+  let last = performance.now();
+  (function loop(now){
+    requestAnimationFrame(loop);
+    const dt = Math.min((now-last)/1000, 0.05); last = now;
+    if(!dragging && document.getElementById('tgSpin').checked) theta += 0.0022;
+    updateAnim(dt);
+    place();
+    renderer.render(scene, camera);
+  })(last);
+})();
+</script>
+</body>
+</html>
