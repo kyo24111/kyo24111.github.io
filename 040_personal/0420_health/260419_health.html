@@ -785,7 +785,7 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     <div class="table-wrap" id="tbl-cal-weekly"><div class="msg">loading...</div></div>
   </div>
   <div id="subpanel-other" style="display:none">
-    <div class="subpanel-heading">睡眠・喫煙 <span class="subpanel-sub">睡眠時間は就寝・起床から自動算出／喫煙は非公開ログ（ローカルのみ表示）</span></div>
+    <div class="subpanel-heading">睡眠 <span class="subpanel-sub">睡眠時間は就寝・起床から自動算出</span></div>
     <div class="table-wrap" id="tbl-other"><div class="msg">loading...</div></div>
   </div>
 </div>
@@ -1182,7 +1182,7 @@ function fmtLabels(dates) {
 }
 
 // ── STATE ───────────────────────────────────────────────────
-let bodyData = [], calData = [], workoutData = [], sleepData = [], smokData = [];
+let bodyData = [], calData = [], workoutData = [], sleepData = [];
 let currentRange = 14;
 const charts   = {};
 const chartDefs = {};   // { id: { config, title, note } }
@@ -1231,9 +1231,6 @@ function loadData() {
   renderKPIs();
   renderCharts();
   renderTables();
-  // 喫煙ログは非公開（data/smoking.csvはgitignore・公開コピーには存在しない）。
-  // 実行時にfetchし、ローカルで開いた時のみ表示。公開github.ioでは404で空のまま。
-  loadSmoking();
 }
 
 // 就寝(bedtime)・起床(waketime)"HH:MM"から睡眠時間(分)を算出。
@@ -1244,19 +1241,6 @@ function sleepDurFromTimes(bedtime, waketime) {
   if (b == null || w == null) return null;
   let d = w - b; if (d <= 0) d += 1440;
   return d;
-}
-
-function loadSmoking() {
-  fetch('./data/smoking.csv', { cache: 'no-store' })
-    .then(r => r.ok ? r.text() : Promise.reject())
-    .then(txt => {
-      smokData = Papa.parse(txt.trim(), { header: true, skipEmptyLines: true }).data
-        .filter(r => r.date)
-        .sort((a, b) => new Date(a.date) - new Date(b.date));
-      renderStatus();
-      renderOtherTable();
-    })
-    .catch(() => { smokData = []; });  // 公開コピー/ file:// では取得不可 → 空表示
 }
 
 // ── KPIs ────────────────────────────────────────────────────
@@ -1876,14 +1860,13 @@ function renderTables() {
   renderOtherTable();
 }
 
-// Raw Data → Other: 睡眠＋喫煙を日付でまとめた1枚の表。
-// GoToBed/WakeUp/Sleep(睡眠時間) は sleepData、Smoke(本数) は smokData（非公開・ローカルのみ）。
+// Raw Data → Other: 睡眠を日付でまとめた1枚の表。
+// GoToBed/WakeUp/Sleep(睡眠時間) は sleepData。
 function renderOtherTable() {
   const el = document.getElementById('tbl-other');
   if (!el) return;
   const sleepMap = new Map(sleepData.map(r => [r.date, r]));
-  const smokMap  = new Map(smokData.map(r => [r.date, r.count]));
-  const dates = [...new Set([...sleepMap.keys(), ...smokMap.keys()])].sort().reverse();
+  const dates = [...sleepMap.keys()].sort().reverse();
   if (!dates.length) { el.innerHTML = '<div class="msg">No data</div>'; return; }
   const rows = dates.map((iso, i) => {
     const wd = new Date(iso + 'T00:00:00Z').getUTCDay();
@@ -1893,17 +1876,15 @@ function renderOtherTable() {
     const bed  = s && s.bedtime  ? s.bedtime  : '—';
     const wake = s && s.waketime ? s.waketime : '—';
     const dur  = s && s.duration_min !== '' && s.duration_min != null && !isNaN(+s.duration_min) ? hm(+s.duration_min) : '—';
-    const smk  = smokMap.has(iso) ? smokMap.get(iso) : '—';
     return `<tr class="${i === 0 ? 'latest' : ''}">
       <td${dstyle}>${iso.slice(5).replace('-', '/')} (${isoWd(iso)})</td>
       <td class="stat-c">${bed}</td>
       <td class="stat-c">${wake}</td>
       <td class="stat-c">${dur}</td>
-      <td class="stat-c">${smk}</td>
     </tr>`;
   }).join('');
   el.innerHTML = `<table class="raw">
-    <thead><tr><th>Date</th><th>GoToBed</th><th>WakeUp</th><th>Sleep</th><th>Smoke</th></tr></thead>
+    <thead><tr><th>Date</th><th>GoToBed</th><th>WakeUp</th><th>Sleep</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
 }
@@ -2019,8 +2000,7 @@ function renderStatus() {
   const calSet   = new Set(calData.map(r => r.date).filter(Boolean));
   const bodySet  = new Set(bodyData.map(r => r.date).filter(Boolean));
   const sleepSet = new Set(sleepData.map(r => r.date).filter(Boolean));
-  const smokMap  = new Map(smokData.map(r => [r.date, r.count]));
-  const all = [...new Set([...calSet, ...bodySet, ...sleepSet, ...smokMap.keys()])].sort();
+  const all = [...new Set([...calSet, ...bodySet, ...sleepSet])].sort();
   if (!all.length) { el.innerHTML = '<div class="msg">no data</div>'; return; }
   const maxD = all[all.length - 1];
   const start = statusRange === 0 ? all[0] : isoAdd(maxD, -(statusRange - 1));
@@ -2033,16 +2013,15 @@ function renderStatus() {
     if (p && b) both++; else if (p) pfcOnly++; else if (b) bodyOnly++; else none++;
     const md = iso.slice(5).replace('-', '/');
     const cls = (p && b) ? '' : ' class="stat-miss"';
-    const smk = smokMap.has(iso) ? `<span class="stat-yes">${smokMap.get(iso)}</span>` : '<span class="stat-no">-</span>';
     return `<tr${cls}><td>${md} (${isoWd(iso)})</td>` +
       `<td class="stat-c">${cell(p)}</td><td class="stat-c">${cell(b)}</td>` +
-      `<td class="stat-c">${cell(s)}</td><td class="stat-c">${smk}</td></tr>`;
+      `<td class="stat-c">${cell(s)}</td></tr>`;
   }).join('');
   document.getElementById('status-summary').innerHTML =
     `<b>${days.length}</b>日中 <b>${both}</b>日が両方提出済み` +
     ` · 未提出: PFCのみ欠 ${bodyOnly}日 / 体組成のみ欠 ${pfcOnly}日 / 両方なし <b>${none}</b>日`;
   el.innerHTML = `<table class="raw">
-    <thead><tr><th>Date</th><th>PFC</th><th>体組成</th><th>睡眠</th><th>喫煙</th></tr></thead>
+    <thead><tr><th>Date</th><th>PFC</th><th>体組成</th><th>睡眠</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
 }
