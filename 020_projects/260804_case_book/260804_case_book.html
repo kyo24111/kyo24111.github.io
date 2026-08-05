@@ -173,23 +173,33 @@
   .s4 .mrow .mv{font-family:var(--mono);font-size:1.9cqw;font-weight:800;color:#fff;line-height:1.25}
   .s4 .mrow .mv.tbd{color:rgba(255,255,255,.26)}
 
-  table.s-idx{width:100%;border-collapse:collapse;font-size:1.95cqw}
-  table.s-idx td{border-bottom:1px solid rgba(255,255,255,.12);padding:.85cqw .6cqw;color:rgba(255,255,255,.9);vertical-align:middle}
-  table.s-idx td.i{font-family:var(--mono);font-weight:700;color:rgba(255,255,255,.42);white-space:nowrap;width:4%}
+  /* 行の余白・見出しは em 基準。fitDeck() が font-size を縮めると行間も一緒に詰まる */
+  table.s-idx{width:100%;border-collapse:collapse;font-size:1.95cqw;table-layout:fixed}
+  table.s-idx td{border-bottom:1px solid rgba(255,255,255,.12);padding:.3em .3em;line-height:1.3;
+    color:rgba(255,255,255,.9);vertical-align:middle}
+  /* table-layout:fixed は1行目（th）の幅で決まるので、列幅は th 側で指定する。
+     業務・技術は広く取り、ラベルが2行に折り返さないようにする */
+  table.s-idx th:nth-child(1){width:5.5%}
+  table.s-idx th:nth-child(3){width:11%}
+  table.s-idx th:nth-child(4){width:20%}
+  table.s-idx th:nth-child(5){width:30%}
+  table.s-idx td.i{font-family:var(--mono);font-weight:700;color:rgba(255,255,255,.42);white-space:nowrap}
   table.s-idx td.t{font-weight:700}
-  table.s-idx td.g{width:11%;white-space:nowrap}
-  table.s-idx td.b{width:13%;white-space:nowrap;color:rgba(255,255,255,.7)}
-  table.s-idx td.a{font-family:var(--mono);width:11%;white-space:nowrap;color:rgba(255,255,255,.62)}
+  table.s-idx td.g{white-space:nowrap}
+  table.s-idx td.b{color:rgba(255,255,255,.72)}
+  table.s-idx td.a{color:rgba(255,255,255,.66)}
+  table.s-idx .lb{white-space:nowrap}
+  table.s-idx .sep{color:rgba(255,255,255,.28);padding:0 .1em}
 
   /* 改行ルール：句読点の後・矢印の前で折り返す（収まらない時だけ文中で折る） */
   .seg{display:inline-block}
 
-  .slide .s-note{font-size:1.25cqw;line-height:1.6;color:rgba(255,255,255,.42);margin:1.2cqw 0 0}
+  /* 注記は下端に寄せる（表を上に、注記は footer 直前） */
+  .slide .s-note{font-size:1.25cqw;line-height:1.55;color:rgba(255,255,255,.42);margin:auto 0 0;padding-top:1.2cqw}
   .deck.poster .slide .s-note{font-size:1.5cqw}
   .deck.poster table.s-idx{font-size:2.05cqw}
-  .deck.poster table.s-idx th{font-size:1.6cqw}
-  table.s-idx th{font-family:var(--mono);font-size:1.45cqw;font-weight:700;color:rgba(255,255,255,.45);
-    text-align:left;padding:.45cqw .5cqw;border-bottom:1px solid rgba(255,255,255,.3);white-space:nowrap}
+  table.s-idx th{font-family:var(--mono);font-size:.74em;font-weight:700;color:rgba(255,255,255,.45);
+    text-align:left;padding:.42em .34em;border-bottom:1px solid rgba(255,255,255,.3);white-space:nowrap}
 
   /* ===== POSTER：構成はSlideと同じ・文字を大きく ===== */
   .deck.poster .sh h4{font-size:3.4cqw}
@@ -313,6 +323,7 @@
    ラベル語彙（ここを直せば全タブのフィルタ・表示が変わる）
    ======================================================================= */
 const INDUSTRY = {            /* 業界：意味を持つラベルなので配色あり */
+  '全産業':    '#4a4a4a',
   '保険':      '#2f6fb0',
   '金融':      '#a03a6a',
   '自動車':    '#b04a3a',
@@ -329,8 +340,9 @@ const INDUSTRY = {            /* 業界：意味を持つラベルなので配�
 };
 const REVENUE = ['3兆〜','1兆〜','3,000億〜','1,000億〜','500億〜'];
 const AMOUNT  = ['5,000万〜','3,000万〜','2,000万〜','1,000万〜','500万〜','300万〜'];
-const BIZ     = ['人事','間接部門','DX部','営業','マーケティング','製造','R&D'];
-const TECH    = ['FAQ','RAG','戦略コンサル','AIワークフロー'];
+/* 業務・技術は無彩色（配色するのは業界だけ。色を増やすと一覧が読みにくくなるため） */
+const BIZ     = ['全部門','人事','人材育成','間接部門','DX部','営業','マーケティング','製造','R&D','調達','設計'];
+const TECH    = ['FAQ','RAG','戦略コンサル','AIワークフロー','データ構造化','VLM','リテラシー向上'];
 
 /* =======================================================================
    CASES : ここに事例を足すだけで TOC / Text / Slide / Poster に反映される
@@ -590,6 +602,111 @@ const CASES = [
     metrics:[{k:'蓄積年数',v:'約50年'},{k:'データ形式',v:'PDF・Word・Excel'},{k:'次の展開',v:'発明のサジェスト'}],
     status:'fixed'
   },
+  {
+    id:'C08',
+    title:'配管図面の構造化（P&ID・PFDをグラフ化して自然言語検索）',
+    short:'配管図面の構造化',
+    client:'製造業（設計・調達部門）', real:'',
+    industry:'製造', revenue:'', amount:'',
+    period:'', team:'',
+    role:'課題選定〜PoC〜本開発',
+    biz:['R&D','調達','設計'], tech:['データ構造化','VLM'],
+    src:'Kyo 口述',
+    lead:'非構造データだった配管図面をグラフとして構造化し、自然言語検索と部品の個数カウントを可能にした事例。',
+    challenge:[
+      'P&ID・PFD・PLCなどの図面が非構造データのままで、検索ができない',
+      '過去案件を探せず、類似の検討にたどり着けない',
+      '調達における部品の個数カウントも人手に頼っており不便'
+    ],
+    approach:[
+      '★構造化：それぞれの部品とオブジェクトのつながりをグラフに見立てて構造化する',
+      '自然言語による検索と、部品の個数カウントを可能にする',
+      '過去の類似事例も検索できる状態にする'
+    ],
+    result:[
+      '過去の類似案件を検索できる',
+      '調達部門における部品の個数カウント作業が簡易化される',
+      '自然言語での検索により、類似案件の検索性が向上する'
+    ],
+    data:[
+      'ラダー図やP&IDが対象。まずそれぞれのオブジェクトを学習し、そこからつながりを検知する',
+      'つながりは線が交差したり特徴的な部分があるため、そこを丁寧に扱う',
+      '★技術的な工夫：いきなりLLMで処理せず、一度JSONとしてグラフを保持し、そことLLMを行き来する構造にした'
+    ],
+    metrics:[{k:'対象図面',v:'P&ID・PFD・PLC'},{k:'構造化の形式',v:'グラフ（JSON）'},{k:'主な用途',v:'類似案件検索・部品カウント'}],
+    status:'fixed'
+  },
+  {
+    id:'C09',
+    title:'非構造データの構造化（VLM × OCR の独自ETLでRAGの前処理を作る）',
+    short:'非構造データの構造化',
+    client:'全産業・全部門（横断テーマ）', real:'',
+    industry:'全産業', revenue:'', amount:'',
+    period:'', team:'',
+    role:'データパイプライン構築〜PoC〜本開発',
+    biz:['全部門'], tech:['データ構造化','RAG'],
+    src:'Kyo 口述',
+    dataLabel:'効果測定の方法（PoCの手順）', dataLabelShort:'効果測定の方法', dataEn:'HOW WE MEASURE',
+    lead:'RAGの精度が上がらない根本原因である非構造データを、VLMとOCRの独自ETLで構造化する横断テーマ。産業・部門を問わず適用できる。',
+    challenge:[
+      'PDFやPowerPointなど、視覚情報の多いマルチモーダルなデータや、複雑なExcelが中心',
+      '法律や規定の文章を除き、製造・マーケティング・物流などの現場データには基本的にマルチモーダルなコンテンツが含まれる',
+      'これらはLLMでうまく検索できず、そのままRAGに用いても精度が上がらない。非構造データの構造化が不可欠'
+    ],
+    approach:[
+      '★VLM×OCR：視覚言語モデルとOCRを組み合わせた独自のETLパイプラインを構築',
+      '自動構造化の独自アルゴリズムで、大量の非構造データを効率的かつ高速に構造化',
+      '構造化したデータをデータソースに格納し、RAGの検索対象とする'
+    ],
+    result:[
+      '検索精度の向上：非構造データが原因で失敗していた検索の精度が上がる',
+      '汎用性と拡張性：LLMで扱いやすい形式に構造化されるため、一度パイプラインを作ればAIエージェント・AIワークフロー・他のRAGユースケースにも広く使える'
+    ],
+    data:[
+      'ステップ1：事前に非構造データをサンプルとして収集する',
+      'ステップ2：ETLパイプラインで、収集したデータを構造化する',
+      'ステップ3：構造化前と構造化後の2つのデータソースを用意し、RAGの精度を比較する',
+      '★比較方法：特に非構造な領域で回答が困難な質問を意図的に作成し、ビフォーアフターで回答精度を測定する'
+    ],
+    metrics:[{k:'適用範囲',v:'全産業・全部門'},{k:'主な対象',v:'PDF・PPT・複雑なExcel'},{k:'測定方法',v:'構造化前後のRAG精度比較'}],
+    status:'fixed'
+  },
+  {
+    id:'C10',
+    title:'全社DX人材の育成（「0 to 1」ワークショップ × 課題の目利き）',
+    short:'全社DX人材の育成',
+    client:'レガシー産業の大手企業（DX部・経営企画室）', real:'',
+    industry:'全産業', revenue:'', amount:'',
+    period:'', team:'',
+    role:'講師〜課題の目利き〜戦略コンサル〜開発',
+    biz:['人材育成','DX部'], tech:['リテラシー向上','戦略コンサル'],
+    src:'Kyo 口述',
+    dataLabel:'取り組みの特徴', dataLabelShort:'取り組みの特徴', dataEn:'OUR APPROACH',
+    lead:'全社の「0 to 1」ワークショップを通じてAIリテラシーを底上げしつつ、現場から上がる課題を目利きし、そのまま全社DXコンサル・開発へ繋げる事例。',
+    challenge:[
+      '会社全体のDXリテラシーが低い（レガシー産業）',
+      'DX部や経営企画室など横串の部署はあるが、全社的にDXが浸透していない',
+      'データも課題も大量にあるが、遂行する人材が社内に不足しDXが加速しない',
+      '結果として、外部ベンダーに依存している'
+    ],
+    approach:[
+      '全社で「0 to 1」ワークショップを実施',
+      'Wanderlustが講師となり、AIやRAGの基礎知識を講義形式で伝える',
+      '★最終課題：各メンバーが自分たちの業務で効率化できる課題のアイデアを出し、発表する'
+    ],
+    result:[
+      'メンバーが、身の回りでAIをどう活用すべきかを解像度高く理解できるようになる',
+      '現場から実際の課題が吸い上がるため、全社DXコンサルティングへ繋げ、最も筋の良い課題を選定できる',
+      '各部署に横串で、若手を中心としたAIリテラシーの高いメンバーが配置され、各事業部でAIプロジェクトの議論が活性化する'
+    ],
+    data:[
+      '優秀な若手メンバーの抜擢：各部門の若く意欲のあるメンバーの工数を一部確保してアサインする',
+      '実践的な学習設計：勉強会と最終アウトプット（自社業務の課題抽出）を組み合わせ、知識を実業務に直接結びつけて定着させる',
+      '★一気通貫の支援体制：講師として参加するだけでなく、現場から上がった課題をプロの目で目利きし筋の良し悪しを判断する。勉強会→戦略コンサル（課題の発見・選定）→開発までシームレスに繋がる'
+    ],
+    metrics:[{k:'形式',v:'講義＋最終発表'},{k:'対象',v:'全社・各部門の若手'},{k:'次の展開',v:'全社DXコンサル〜開発'}],
+    status:'fixed'
+  },
 
   /* ---------- 以下 Draft（ファクト未確認 → Draft タブのみ） ---------- */
   {
@@ -798,6 +915,30 @@ const POSTER = {
     approach:['★自然言語処理とSQLを分離','テーブル専用の処理系を構築','プロンプトで可視化を生成'],
     result:['工数を30%削減','全社がデータにアクセス可能','異常値検知と需要予測にも活用'],
     data:['自然言語で検索と提案ができる','数百万行を超えるテーブルデータ','RDB前提の処理系が必要']
+  },
+  C08:{
+    title:'製造業 × 配管図面の構造化',
+    lead:'P&ID・PFDをグラフ化し、自然言語で検索',
+    challenge:['図面が非構造データで検索できない','過去案件を探せない','部品の個数カウントが人手'],
+    approach:['★部品とつながりをグラフとして構造化','自然言語での検索を可能に','部品の個数カウントも自動化'],
+    result:['過去の類似案件を検索できる','調達の個数カウントを簡易化','自然言語で検索性が向上'],
+    data:['対象＝ラダー図・P&ID','オブジェクトを学習しつながりを検知','★JSONでグラフを保持しLLMと往復']
+  },
+  C09:{
+    title:'全産業 × 非構造データの構造化',
+    lead:'RAGが効かない根本原因を前処理で潰す',
+    challenge:['PDF・PPT・複雑なExcelが中心','現場データはマルチモーダル','そのままではRAG精度が上がらない'],
+    approach:['★VLM×OCRの独自ETLを構築','独自アルゴリズムで高速に構造化','構造化データをRAGの検索対象に'],
+    result:['失敗していた検索の精度が向上','一度作れば他用途にも展開できる','エージェント・ワークフローにも活用'],
+    data:['①非構造データをサンプル収集','②ETLで構造化','★③構造化の前後でRAG精度を比較']
+  },
+  C10:{
+    title:'レガシー産業 × 全社DX人材の育成',
+    lead:'ワークショップから課題選定・開発まで繋げる',
+    challenge:['全社のDXリテラシーが低い','横串の部署はあるが浸透しない','人材不足で外部ベンダーに依存'],
+    approach:['全社で「0 to 1」ワークショップ','AI・RAGの基礎を講義形式で','★最終課題は自部署の効率化アイデア'],
+    result:['AIの使いどころを解像度高く理解','現場の課題を吸い上げ筋の良い課題へ','各部署で議論が活性化'],
+    data:['各部門の若手を抜擢しアサイン','勉強会＋自社課題の抽出で定着','★目利きから戦略・開発まで一気通貫']
   }
 };
 
@@ -805,7 +946,17 @@ const POSTER = {
 const el = (h)=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstElementChild};
 const esc = (s)=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const indColor = (n)=>INDUSTRY[n]||'#777';
+/* 暗いスライド上では業界色を白へ寄せて可読性を確保する */
+const lite = (hex,k=.5)=>{
+  const m=String(hex).replace('#','');
+  return '#'+[0,2,4].map(i=>{const x=parseInt(m.slice(i,i+2),16);
+    return Math.round(x+(255-x)*k).toString(16).padStart(2,'0')}).join('');
+};
 const indChip  = (n)=>n?`<span class="chip ind" style="color:${indColor(n)};background:${indColor(n)}14">${esc(n)}</span>`:'<span style="color:#bbb">—</span>';
+const bizChips = (a)=>(a||[]).map(t=>`<span class="chip biz">${esc(t)}</span>`).join('');
+const techChips= (a)=>(a||[]).map(t=>`<span class="chip tech">${esc(t)}</span>`).join('');
+/* INDEXスライドのラベル（無彩色・ラベル単位では折り返さない） */
+const sLbl     = (a)=>(a||[]).map(t=>`<span class="lb">${esc(t)}</span>`).join('<span class="sep">・</span>');
 /* ---- 改行ルール（ルールベース） ----
    「。」「、」「：」の直後と「→」の直前を改行候補にし、各セグメントを inline-block にする。
    → 収まる限り句読点・矢印の位置で折り返し、収まらないときだけ従来どおり文中で折る。 */
@@ -839,28 +990,29 @@ const DRAFTS = CASES.filter(c=>c.status!=='fixed');
 /* ---------------- filter state ---------------- */
 const state = {ind:new Set(), biz:new Set(), tech:new Set(), rev:new Set(), amt:new Set(), q:'', sort:'title', dir:1};
 
-function addChips(hostId,values,set,key,colored){
+function addChips(hostId,values,set,key,cf){
   const host=document.getElementById(hostId);
   values.forEach(v=>{
     const n=countBy(key,v);
-    const b=el(`<span class="fx" data-v="${esc(v)}" data-c="${colored?1:0}">${esc(v)}<span class="n">${n}</span></span>`);
-    if(colored){b.style.color=indColor(v);b.style.borderColor=indColor(v)+'55'}
+    const col=cf?cf(v):'';
+    const b=el(`<span class="fx" data-v="${esc(v)}" data-c="${col?1:0}">${esc(v)}<span class="n">${n}</span></span>`);
+    if(col){b.dataset.col=col;b.style.color=col;b.style.borderColor=col+'55'}
     if(!n){b.style.opacity='.4'}
     b.onclick=()=>{
       set.has(v)?set.delete(v):set.add(v);
       const on=b.classList.toggle('on');
-      if(colored){b.style.background=on?indColor(v):'#fff';b.style.color=on?'#fff':indColor(v)}
+      if(col){b.style.background=on?col:'#fff';b.style.color=on?'#fff':col}
       render();
     };
     host.appendChild(b);
   });
 }
 function buildFilters(){
-  addChips('fInd',  Object.keys(INDUSTRY), state.ind,  'industry', true);
-  addChips('fBiz',  BIZ,                   state.biz,  'biz',      false);
-  addChips('fTech', TECH,                  state.tech, 'tech',     false);
-  addChips('fRev',  REVENUE,               state.rev,  'revenue',  false);
-  addChips('fAmt',  AMOUNT,                state.amt,  'amount',   false);
+  addChips('fInd',  Object.keys(INDUSTRY), state.ind,  'industry', indColor);
+  addChips('fBiz',  BIZ,                   state.biz,  'biz',      null);
+  addChips('fTech', TECH,                  state.tech, 'tech',     null);
+  addChips('fRev',  REVENUE,               state.rev,  'revenue',  null);
+  addChips('fAmt',  AMOUNT,                state.amt,  'amount',   null);
 }
 
 function match(c){
@@ -895,8 +1047,8 @@ function renderTOC(list){
     const tr=el(`<tr>
       <td class="ctitle">${esc(c.short||c.title)}<span class="cl">${esc(c.client)}</span></td>
       <td>${indChip(c.industry)}</td>
-      <td class="lb">${c.biz.map(t=>`<span class="chip biz">${esc(t)}</span>`).join('')}</td>
-      <td class="lb">${c.tech.map(t=>`<span class="chip tech">${esc(t)}</span>`).join('')}</td>
+      <td class="lb">${bizChips(c.biz)}</td>
+      <td class="lb">${techChips(c.tech)}</td>
       <td class="num">${c.revenue?`<span class="chip money">${esc(c.revenue)}</span>`:'<span style="color:#bbb">—</span>'}</td>
       <td class="num">${c.amount?`<span class="chip money">${esc(c.amount)}</span>`:'<span style="color:#bbb">—</span>'}</td>
       <td class="num">${esc(c.period||'—')}</td>
@@ -924,8 +1076,8 @@ function renderCases(list){
         <tr><td class="k">顧客</td><td>${esc(c.client)}</td><td class="k">業界</td><td>${indChip(c.industry)}</td></tr>
         <tr><td class="k">売上規模</td><td>${esc(c.revenue||'—')}</td><td class="k">案件規模</td><td>${esc(c.amount||'—')}</td></tr>
         <tr><td class="k">期間</td><td>${esc(c.period||'—')}</td><td class="k">体制</td><td>${esc(c.team||'—')}</td></tr>
-        <tr><td class="k">業務</td><td>${c.biz.map(t=>`<span class="chip biz">${esc(t)}</span>`).join('')}</td>
-            <td class="k">技術</td><td>${c.tech.map(t=>`<span class="chip tech">${esc(t)}</span>`).join('')}</td></tr>
+        <tr><td class="k">業務</td><td>${bizChips(c.biz)}</td>
+            <td class="k">技術</td><td>${techChips(c.tech)}</td></tr>
         <tr><td class="k">WLの関与</td><td colspan="3">${esc(c.role)}</td></tr>
       </table>
       <div class="c3">
@@ -998,12 +1150,13 @@ function renderDeck(list,hostId,mode){
     d.appendChild(el(`<div class="slide">
       <div class="sh"><span class="bar"></span><h4>事例一覧</h4>${MARK}</div>
       <div class="body"><table class="s-idx">
-        <tr><th>案件</th><th>業界</th><th>業務</th><th>技術</th></tr>
-        ${list.map(c=>`<tr>
+        <tr><th>No.</th><th>案件</th><th>業界</th><th>業務</th><th>技術</th></tr>
+        ${list.map((c,i)=>`<tr>
+          <td class="i">${String(i+1).padStart(2,'0')}</td>
           <td class="t">${esc(c.short||c.title)}</td>
-          <td class="g">${esc(c.industry||'—')}</td>
-          <td class="b">${esc(c.biz.join('・'))}</td>
-          <td class="a">${esc(c.tech.join('・'))}</td></tr>`).join('')}
+          <td class="g">${c.industry?`<span class="lb" style="color:${lite(indColor(c.industry),.45)};font-weight:700">${esc(c.industry)}</span>`:'—'}</td>
+          <td class="b">${sLbl(c.biz)}</td>
+          <td class="a">${sLbl(c.tech)}</td></tr>`).join('')}
       </table>
       <p class="s-note">※ 実際の案件の詳細をそのまま掲載したものではなく、想定される課題から逆算して一部の情報を調整・匿名化しています。支援領域のイメージを掴んでいただく参考としてご覧ください。</p>
       </div>
@@ -1015,20 +1168,47 @@ function renderDeck(list,hostId,mode){
 
 /* ---------------- 自動フィット（溢れる箱だけフォントを縮める） ---------------- */
 const DECKS=[
-  /* base=既定サイズ / soft=通常余白での下限 / min=詰めモードでの下限（これ以上は小さくしない） */
-  {sel:'#deck',       base:1.55, soft:1.40, min:1.25, t1:30, f1:2.20, t2:42, f2:1.95},
-  {sel:'#draftDeck',  base:1.55, soft:1.40, min:1.25, t1:30, f1:2.20, t2:42, f2:1.95},
-  {sel:'#posterDeck', base:2.40, soft:2.20, min:2.00, t1:22, f1:3.00, t2:30, f2:2.60}
+  /* base=既定サイズ / soft=通常余白での下限 / min=詰めモードでの下限（これ以上は小さくしない）
+     ibase/imin = 事例一覧（INDEXスライド）の表のサイズ。件数が増えたら自動で縮めて必ず1枚に収める */
+  /* tbase/tmin = タイトル（デッキ内で1サイズに統一）。t1/f1/t2/f2 は非表示タブ用のフォールバック */
+  {sel:'#deck',       base:1.55, soft:1.40, min:1.25, tbase:2.55, tmin:1.85, t1:30, f1:2.20, t2:42, f2:1.95, ibase:1.95, imin:1.00},
+  {sel:'#draftDeck',  base:1.55, soft:1.40, min:1.25, tbase:2.55, tmin:1.85, t1:30, f1:2.20, t2:42, f2:1.95, ibase:1.95, imin:1.00},
+  {sel:'#posterDeck', base:2.40, soft:2.20, min:2.00, tbase:3.40, tmin:2.40, t1:22, f1:3.00, t2:30, f2:2.60, ibase:2.05, imin:1.05}
 ];
 function fitDeck(){
   DECKS.forEach(d=>{
     const root=document.querySelector(d.sel); if(!root) return;
-    root.querySelectorAll('.sh h4').forEach(t=>{
-      const n=t.textContent.length;
-      t.style.fontSize = n>d.t2 ? d.f2+'cqw' : n>d.t1 ? d.f1+'cqw' : '';
-    });
+    /* タイトル：デッキ内で1つのサイズに揃える。
+       いちばん長いタイトルが1行に収まるサイズを実測で求め、全スライドへ一律に適用する
+       （スライドごとに大小がバラつくと、通しで見たときに崩れて見えるため）。 */
+    const hs=[...root.querySelectorAll('.slide .sh h4')];
+    if(hs.length){
+      if(hs[0].clientHeight){
+        const wrapped=(h)=>h.clientHeight>parseFloat(getComputedStyle(h).lineHeight)*1.4;
+        const fits=(s)=>{hs.forEach(h=>h.style.fontSize=s.toFixed(2)+'cqw');return !hs.some(wrapped)};
+        let ts=d.tbase;
+        while(!fits(ts) && ts>d.tmin) ts-=0.05;
+        hs.forEach(h=>h.style.fontSize=ts.toFixed(2)+'cqw');
+      }else{
+        /* 非表示タブでは測れないので、文字数から一律に決める（全スライド同じサイズ） */
+        const n=Math.max(...hs.map(h=>h.textContent.length));
+        const s=n>d.t2 ? d.f2 : n>d.t1 ? d.f1 : d.tbase;
+        hs.forEach(h=>h.style.fontSize=s+'cqw');
+      }
+    }
     /* 1スライド内は同じ文字サイズに揃える。まず通常余白で縮め、それでも入らなければ
        詰めモード（余白を削る）に切り替えて、なるべく大きい文字のまま収める。 */
+    /* 事例一覧（表）：body に収まるまで表のフォントを縮める（行間も em 連動で詰まる） */
+    root.querySelectorAll('.slide').forEach(sl=>{
+      const tb=sl.querySelector('table.s-idx'); if(!tb) return;
+      const body=sl.querySelector('.body');
+      sl.classList.remove('tight'); tb.style.fontSize='';
+      if(!body || !body.clientHeight) return;   // 非表示タブでは測れないのでスキップ
+      const ov=()=>body.scrollHeight>body.clientHeight+1;
+      let s=d.ibase;
+      while(ov() && s>d.imin){ s-=0.05; tb.style.fontSize=s.toFixed(2)+'cqw' }
+      if(ov()) sl.classList.add('tight');
+    });
     root.querySelectorAll('.slide').forEach(sl=>{
       const boxes=[...sl.querySelectorAll('.s4 .box')];
       const cols =[...sl.querySelectorAll('.s4 .col')];
@@ -1085,7 +1265,7 @@ document.getElementById('reset').onclick=()=>{
   document.getElementById('q').value='';
   document.querySelectorAll('.fx').forEach(b=>{
     b.classList.remove('on');
-    if(b.dataset.c==='1'){b.style.background='#fff';b.style.color=indColor(b.dataset.v)}
+    if(b.dataset.c==='1'){b.style.background='#fff';b.style.color=b.dataset.col||indColor(b.dataset.v)}
   });
   document.querySelectorAll('table.db th').forEach(x=>x.classList.remove('on'));
   render();
