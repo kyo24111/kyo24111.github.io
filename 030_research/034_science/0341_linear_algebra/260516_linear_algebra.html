@@ -5529,12 +5529,12 @@
 
           <!-- ==== inline animation ==== -->
           <div class="eigdemo" id="eig1">
-            <div class="cvwrap"><canvas id="eig1cv" width="480" height="440"></canvas></div>
-            <div class="lg">
-              <span><span class="sw" style="background:#b8860b"></span>e₁=(1,0) → ×2（向き不変）</span>
-              <span><span class="sw" style="background:#2f5d8a"></span>e₂=(0,1) → ×3（向き不変）</span>
-              <span><span class="sw" style="background:#c0392b"></span>(1,1) → (2,3)（向きが変わる）</span>
+            <div class="ctrl" style="margin:0 0 12px">
+              <button class="b on" id="eig1m23">A = diag(2, 3)</button>
+              <button class="b" id="eig1m22">A = diag(2, 2) = 2I</button>
             </div>
+            <div class="cvwrap"><canvas id="eig1cv" width="480" height="440"></canvas></div>
+            <div class="lg" id="eig1lg"></div>
             <div class="ctrl">
               <button class="b on" id="eig1play">❚❚ 一時停止</button>
               <div class="sl">
@@ -5549,6 +5549,11 @@
           </div>
 
           <p class="step"><b>アニメの読み方.</b> 灰色の細い矢印は円周上に並べたいろいろな向きのベクトル。変形すると<b>ほとんどが y 軸側へ倒れていく</b>＝向きが変わる。向きが1ミリも変わらないのは金（x軸）と青（y軸）の2本だけで、それぞれちょうど 2倍・3倍に伸びる。この「<b>変換しても直線から出てこない方向</b>」が固有ベクトル、「<b>その方向での伸び率</b>」が固有値。</p>
+
+          <p><b>おまけ：もし diag(2, 2) だったら — 円のまま広がる＝固有空間が2次元</b></p>
+          <p class="step">上のボタンで <code>diag(2,2) = 2I</code> に切り替えると、<span class="hl">単位円が楕円ではなく「大きい円」になる</span>。x も y も同じ2倍なので<b>どの方向も等しく引き伸ばされ、1本も傾かない</b>。つまり<span class="res">平面上のすべての方向が固有ベクトル</span>で、固有空間は直線ではなく<b>平面まるごと（dim 2）</b>。<br>
+          特性方程式も <code>(2−λ)² = 0</code> で <b>λ=2 の重解</b>、<code>A−2I</code> は零行列なので条件式が1本も残らず（rank 0）、x も y も自由 → 自由変数2個 → dim 2、と計算でも一致する。<br>
+          <span class="hl">「楕円になる＝方向に優劣がつく＝固有ベクトルは特定の2本」「円のまま＝方向に優劣がない＝全方向が固有ベクトル」</span>という対比で見ると、重解のときに固有空間が膨らむ意味がそのまま目に入る（→ <a href="#eig-eigenspace" onclick="gotoSection('eig-eigenspace');return false;">固有空間の節</a>）。</p>
 
           <p class="step"><span class="key">補足：</span>対角行列は<b>すでに対角化が終わっている状態</b>（P = I）。一般の行列で固有値・固有ベクトルを求める作業は、要するに<b>この形に見える座標系を探す</b>こと。また A を繰り返しかけると x方向は 2ⁿ、y方向は 3ⁿ で伸びるので、大きい方の固有値 3 の方向が支配的になっていく。</p>
         </div></details>
@@ -6248,6 +6253,8 @@ updateDoneSummary();
   const px = x => OX + x*S, py = y => OY - y*S;
 
   let t = 0, playing = true, dir = 1, showRing = true, showFan = true;
+  let D1 = 2, D2 = 3;                      // 目標の対角成分（diag(D1, D2)）
+  const iso = () => D1 === D2;             // 等方（円のまま）かどうか
 
   function arrow(x0,y0,x1,y1,color,w,head,alpha){
     ctx.save();
@@ -6263,6 +6270,19 @@ updateDoneSummary();
       ctx.closePath(); ctx.fill();
     }
     ctx.restore();
+  }
+
+  function renderLegend(){
+    const el = document.getElementById('eig1lg');
+    if(!el) return;
+    el.innerHTML = iso()
+      ? '<span><span class="sw" style="background:'+GOLD+'"></span>e₁=(1,0) → ×2</span>'
+      + '<span><span class="sw" style="background:'+BLUE+'"></span>e₂=(0,1) → ×2</span>'
+      + '<span><span class="sw" style="background:'+RED+'"></span>(1,1) → (2,2)（45°のまま）</span>'
+      + '<span><span class="sw" style="background:'+GOLD+';opacity:.45"></span>周りの全方向も固有ベクトル</span>'
+      : '<span><span class="sw" style="background:'+GOLD+'"></span>e₁=(1,0) → ×2（向き不変）</span>'
+      + '<span><span class="sw" style="background:'+BLUE+'"></span>e₂=(0,1) → ×3（向き不変）</span>'
+      + '<span><span class="sw" style="background:'+RED+'"></span>(1,1) → (2,3)（向きが変わる）</span>';
   }
 
   function grid(){
@@ -6283,7 +6303,7 @@ updateDoneSummary();
   }
 
   function draw(){
-    const a = 1 + t, b = 1 + 2*t;            // M = diag(a, b) : I → diag(2,3)
+    const a = 1 + (D1-1)*t, b = 1 + (D2-1)*t;   // M = diag(a, b) : I → diag(D1, D2)
     ctx.clearRect(0,0,W,H);
     grid();
 
@@ -6298,7 +6318,7 @@ updateDoneSummary();
       ctx.restore();
     }
 
-    // 円周上のいろいろな向き（向きが変わる様子）
+    // 円周上のいろいろな向き（向きが変わる様子 / 等方なら全部が固有ベクトル）
     if(showFan){
       const N = 24;
       for(let i=0;i<N;i++){
@@ -6306,7 +6326,7 @@ updateDoneSummary();
         const u = [Math.cos(th), Math.sin(th)];
         if(Math.abs(u[0])<1e-9 || Math.abs(u[1])<1e-9) continue;   // 軸上は主役の矢印に任せる
         const p = [a*u[0], b*u[1]];
-        arrow(px(0),py(0),px(p[0]),py(p[1]),'#111',1,4.5,0.16);
+        arrow(px(0),py(0),px(p[0]),py(p[1]), iso()?GOLD:'#111', iso()?1.4:1, 5, iso()?0.42:0.16);
       }
     }
 
@@ -6314,7 +6334,7 @@ updateDoneSummary();
     ctx.save();
     ctx.setLineDash([3,4]); ctx.lineWidth=1.2; ctx.globalAlpha=0.55;
     ctx.strokeStyle=RED;
-    ctx.beginPath(); ctx.moveTo(px(0),py(0)); ctx.lineTo(px(2.2),py(2.2)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px(0),py(0)); ctx.lineTo(px(2.7),py(2.7)); ctx.stroke();
     ctx.restore();
 
     // 主役3本
@@ -6331,7 +6351,7 @@ updateDoneSummary();
     ctx.fillStyle=RED; ctx.textAlign='left';
     ctx.fillText('('+a.toFixed(2)+', '+b.toFixed(2)+')', px(a)+8, py(b)-8);
     ctx.font='600 10.5px Poppins, sans-serif'; ctx.fillStyle='#a0a0a0';
-    ctx.fillText('元の (1,1) の向き', px(2.2)+4, py(2.2)+11);
+    ctx.fillText('元の向き', px(2.7)+3, py(2.7)+13);
 
     // 角度
     const deg = Math.atan2(b,a)*180/Math.PI;
@@ -6343,12 +6363,19 @@ updateDoneSummary();
 
     const cap = document.getElementById('eig1cap');
     if(cap){
-      const deg0 = 45;
-      cap.innerHTML = t < 0.02
-        ? '変形前（単位行列 I）。すべてのベクトルがそのまま。'
-        : (t > 0.98
-          ? '変形後（A = diag(2,3)）。<b>金は x軸上のまま2倍、青は y軸上のまま3倍</b>＝固有ベクトル。赤の (1,1) は '+deg0+'° → <b>'+deg.toFixed(1)+'°</b> に傾きが変わったので固有ベクトルではない。'
-          : 'x方向 ×'+a.toFixed(2)+'、y方向 ×'+b.toFixed(2)+' の途中。軸上の2本だけが直線から出ず、他は向きが動いている（赤：'+deg.toFixed(1)+'°）。');
+      if(iso()){
+        cap.innerHTML = t < 0.02
+          ? '変形前（単位行列 I）。ここから x も y も同じ倍率で伸ばす。'
+          : (t > 0.98
+            ? '変形後（A = 2I）。円は<b>楕円にならず大きい円のまま</b>。どの矢印も傾かず全部ちょうど2倍＝<b>すべての方向が固有ベクトル</b>。固有空間は平面まるごと（dim 2）。'
+            : 'x方向 ×'+a.toFixed(2)+'、y方向 ×'+b.toFixed(2)+'（同じ倍率）。<b>1本も傾かない</b>まま、円が円のまま膨らんでいく。');
+      } else {
+        cap.innerHTML = t < 0.02
+          ? '変形前（単位行列 I）。すべてのベクトルがそのまま。'
+          : (t > 0.98
+            ? '変形後（A = diag(2,3)）。<b>金は x軸上のまま2倍、青は y軸上のまま3倍</b>＝固有ベクトル。赤の (1,1) は 45° → <b>'+deg.toFixed(1)+'°</b> に傾きが変わったので固有ベクトルではない。'
+            : 'x方向 ×'+a.toFixed(2)+'、y方向 ×'+b.toFixed(2)+' の途中。軸上の2本だけが直線から出ず、他は向きが動いている（赤：'+deg.toFixed(1)+'°）。');
+      }
     }
     document.getElementById('eig1t').value = t;
   }
@@ -6381,10 +6408,21 @@ updateDoneSummary();
   document.getElementById('eig1fan').addEventListener('click', e=>{
     showFan = !showFan; e.currentTarget.classList.toggle('on', showFan);
   });
+  const m23 = document.getElementById('eig1m23'), m22 = document.getElementById('eig1m22');
+  function setMode(d1, d2, btn){
+    D1 = d1; D2 = d2;
+    m23.classList.toggle('on', btn === m23);
+    m22.classList.toggle('on', btn === m22);
+    renderLegend();
+  }
+  m23.addEventListener('click', ()=>setMode(2,3,m23));
+  m22.addEventListener('click', ()=>setMode(2,2,m22));
+
   const det = cv.closest('details');
   if(det) det.addEventListener('toggle', fit);
   window.addEventListener('resize', fit);
 
+  renderLegend();
   loop();
 })();
 
