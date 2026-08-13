@@ -596,6 +596,39 @@
     font-family: 'Poppins', sans-serif; font-size: 14px; padding: 2px 9px; text-align: center; min-width: 14px;
   }
 
+  /* 行列（table）を含む段落は <p> だと HTML 側で強制的に閉じられるため div.pl を使う */
+  .pl { margin: 10px 0; }
+  #view-exercises .qbody .pl { margin: 5px 0; }
+  #view-exercises .ans .pl { margin: 7px 0; }
+
+  /* ===== inline eigen animation (exercises) ===== */
+  .eigdemo { background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin: 14px 0; }
+  .eigdemo .cvwrap { background: var(--bg); border: 1px solid var(--border); border-radius: 9px;
+    display: flex; justify-content: center; padding: 4px; }
+  .eigdemo canvas { width: 100%; max-width: 470px; height: auto; display: block; }
+  .eigdemo .ctrl { display: flex; gap: 9px; align-items: center; flex-wrap: wrap; margin-top: 12px; }
+  .eigdemo .b {
+    font-family: 'Poppins', sans-serif; font-size: 12px; font-weight: 600;
+    border: 1px solid var(--border); background: var(--bg); color: #3c424b;
+    padding: 7px 12px; border-radius: 8px; cursor: pointer;
+  }
+  .eigdemo .b:hover { border-color: var(--muted); color: var(--text); }
+  .eigdemo .b.on { background: var(--text); color: #fff; border-color: var(--text); }
+  .eigdemo .sl { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 180px; }
+  .eigdemo .sl label { font-family: 'Poppins', sans-serif; font-size: 11px; color: var(--muted); white-space: nowrap; }
+  .eigdemo .sl input { flex: 1; accent-color: var(--text); }
+  .eigdemo .lg { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center;
+    font-size: 12px; color: #3c424b; margin-top: 9px; }
+  .eigdemo .lg span { display: inline-flex; align-items: center; gap: 5px; }
+  .eigdemo .sw { width: 13px; height: 3.5px; border-radius: 2px; flex: none; }
+  .eigdemo .cap { text-align: center; font-size: 12.5px; color: #3c424b; margin-top: 10px; min-height: 36px; }
+  .eigdemo .cap b { font-weight: 700; }
+  @media (max-width: 560px) {
+    .eigdemo .b { font-size: 11.5px; padding: 6px 10px; }
+    .eigdemo .lg { font-size: 11px; gap: 9px; }
+  }
+
   /* ===== VOCABULARY ===== */
   .vocab-header {
     background: var(--surface);
@@ -3895,7 +3928,7 @@
       <div class="chapter-meta">
         <div class="chapter-label">Chapter</div>
         <div class="chapter-status">📝 これから学ぶ</div>
-        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-07-08</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-08-13</div>
       </div>
       <div class="chapter-title"><span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span>（Determinant）</div>
 
@@ -4020,7 +4053,7 @@
         <p>前セクションで「2×2 は <code>ad − bc</code>」と天下りに書いたが、これは丸暗記する式ではない。正体は <span class="hl">2本の列ベクトルが張る平行四辺形の符号つき面積</span>。なぜその式になるのかを3つの角度で。</p>
 
         <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89">
-          <span class="key">出発点：</span>A = <span class="mtx"><table><tr><td>a</td><td>b</td></tr><tr><td>c</td><td>d</td></tr></table></span> は基底を<span class="hl">列</span>に飛ばす変換。<br>
+          <span class="key">出発点：</span>A = <span class="matrix"><table><tr><td>a</td><td>b</td></tr><tr><td>c</td><td>d</td></tr></table></span> は基底を<span class="hl">列</span>に飛ばす変換。<br>
           ・e₁=(1,0) → 1列目 <span class="key">(a, c)</span>　　・e₂=(0,1) → 2列目 <span class="key">(b, d)</span><br>
           だから<span class="hl">単位正方形（面積 1）が、この2本 (a,c) と (b,d) が張る平行四辺形に化ける</span>。det ＝ その平行四辺形の符号つき面積、というのが 9-1 の話の具体形。
         </div>
@@ -4139,6 +4172,116 @@
         </div>
 
         <p style="color:var(--muted);font-size:13px;margin-top:8px">※ 次のセクションで同じ行列を余因子展開して −5 になることを確認する（クロスチェック）。</p>
+      </div>
+
+      <div class="section" id="det-collapse-cross">
+        <h2>なぜ「斜めに掛けて引く」と潰れ判定になるのか — 2次元・3次元を絵で</h2>
+
+        <p><code>ad − bc</code>、サラスの6項。<span class="hl">なぜあの斜めの掛け算・引き算が「潰れているか」を当てられるのか</span>。答えは一言でいうと、<span class="hl">あの式が平行四辺形の面積（3次元なら平行六面体の体積）そのものだから</span>。面積が 0 ＝ ぺしゃんこ ＝ 潰れている、というだけの話。ここでは 2次元 → 3次元 の順で絵にする。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">2次元 — ad − bc は「平行からのズレ」を測っている</h3>
+
+        <p>列ベクトル <span style="color:#1d4e89;font-weight:700">u = (a, c)</span>（e₁ の行き先）と <span style="color:#c0392b;font-weight:700">w = (b, d)</span>（e₂ の行き先）が張る平行四辺形を考える。この面積が |ad − bc|。</p>
+
+        <div style="display:flex;justify-content:center;margin:18px 0">
+          <svg viewBox="0 0 480 210" width="540" style="max-width:100%">
+            <!-- left: normal -->
+            <line x1="18" y1="180" x2="210" y2="180" stroke="#e4e4e4" stroke-width="1"/>
+            <line x1="30" y1="196" x2="30" y2="26" stroke="#e4e4e4" stroke-width="1"/>
+            <path d="M30,180 L150,144 L186,66 L66,102 Z" fill="#1d4e89" fill-opacity="0.10" stroke="#9aa1ab" stroke-width="1"/>
+            <line x1="30" y1="180" x2="150" y2="144" stroke="#1d4e89" stroke-width="2.4"/>
+            <polygon points="150,144 140,141 142,151" fill="#1d4e89"/>
+            <line x1="30" y1="180" x2="66" y2="102" stroke="#c0392b" stroke-width="2.4"/>
+            <polygon points="66,102 58,108 68,111" fill="#c0392b"/>
+            <!-- height marker -->
+            <line x1="66" y1="102" x2="96" y2="167" stroke="#3c424b" stroke-width="1" stroke-dasharray="3 3"/>
+            <text x="98" y="140" font-size="10" fill="#3c424b">高さ</text>
+            <text x="152" y="158" font-size="10.5" fill="#1d4e89">u = (a, c)</text>
+            <text x="56" y="94" font-size="10.5" fill="#c0392b">w = (b, d)</text>
+            <text x="112" y="112" font-size="10.5" font-weight="700" fill="#3c424b">面積 = |ad − bc|</text>
+            <text x="18" y="18" font-size="11" font-weight="700" fill="#3c424b">傾きが違う → 面積あり → det ≠ 0</text>
+            <!-- right: collapsed -->
+            <line x1="258" y1="180" x2="462" y2="180" stroke="#e4e4e4" stroke-width="1"/>
+            <line x1="270" y1="196" x2="270" y2="26" stroke="#e4e4e4" stroke-width="1"/>
+            <line x1="270" y1="180" x2="390" y2="144" stroke="#1d4e89" stroke-width="2.4"/>
+            <polygon points="390,144 380,141 382,151" fill="#1d4e89"/>
+            <line x1="270" y1="180" x2="450" y2="126" stroke="#c0392b" stroke-width="2.4" opacity="0.85"/>
+            <polygon points="450,126 440,123 442,133" fill="#c0392b" opacity="0.85"/>
+            <text x="392" y="158" font-size="10.5" fill="#1d4e89">u</text>
+            <text x="446" y="120" font-size="10.5" fill="#c0392b" text-anchor="end">w = k·u</text>
+            <text x="300" y="146" font-size="10.5" font-weight="700" fill="#c0392b">面積 = 0（ぺしゃんこ）</text>
+            <text x="258" y="18" font-size="11" font-weight="700" fill="#3c424b">傾きが同じ → 潰れる → det = 0</text>
+          </svg>
+        </div>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;font-size:13.5px;line-height:1.95">
+          <span class="key">「引き算」の正体＝傾きの比べっこ：</span>2本が平行（＝潰れる）のは、傾きが等しいとき。<br>
+          <code>c/a = d/b</code>　⟺　<span class="hl">ad = bc</span>　⟺　<span class="hl">ad − bc = 0</span><br>
+          つまり <b>ad − bc は「u の傾き」と「w の傾き」の差を、分母を払った形で書いたもの</b>。差がゼロなら平行＝潰れている。<span class="hl">斜めに掛けるのは2本の傾きを突き合わせる操作、引くのはその差を取る操作</span>だった、というのがカラクリ。
+        </div>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px">
+          <span class="key">三角関数で見ると同じことがもっと露骨：</span><code>ad − bc = |u||w| sinθ</code>（θ は2本のなす角）。<br>
+          「底辺 × 高さ」の高さが <code>|w| sinθ</code> なので、これは平行四辺形の面積そのもの。そして<span class="hl">平行のとき θ=0 → sinθ=0 → 面積0</span>。もし「引く」でなく「足す」だったら、平行でも 0 にならず、潰れ判定として機能しない。<br>
+          <span style="font-size:12.5px;color:var(--muted)">※ この <code>ad − bc</code> は 2次元版の外積（クロス積の z 成分）。3次元の外積と同じ量。</span>
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">3次元 — サラスの6項は平行六面体の体積</h3>
+
+        <p>3×3 では、列ベクトル3本 <span style="color:#1d4e89;font-weight:700">u</span>・<span style="color:#c0392b;font-weight:700">w</span>・<span style="color:#1d7a4d;font-weight:700">z</span> が張る<span class="hl">平行六面体（傾いた箱）の体積</span>が |det|。潰れる ＝ 箱がぺったんこになる ＝ <span class="hl">3本が同じ平面に乗ってしまう</span>。</p>
+
+        <div style="display:flex;justify-content:center;margin:18px 0">
+          <svg viewBox="0 0 480 220" width="540" style="max-width:100%">
+            <!-- left: parallelepiped -->
+            <path d="M60,170 L150,190 L210,150 L120,130 Z" fill="#1d4e89" fill-opacity="0.10" stroke="#9aa1ab" stroke-width="1"/>
+            <path d="M60,170 L120,130 L150,70 L90,110 Z" fill="#1d4e89" fill-opacity="0.06" stroke="#c8ccd2" stroke-width="1"/>
+            <path d="M120,130 L210,150 L240,90 L150,70 Z" fill="#1d4e89" fill-opacity="0.04" stroke="#c8ccd2" stroke-width="1"/>
+            <path d="M90,110 L150,70 L240,90 L180,130 Z" fill="none" stroke="#c8ccd2" stroke-width="1" stroke-dasharray="3 3"/>
+            <line x1="60" y1="170" x2="150" y2="190" stroke="#1d4e89" stroke-width="2.4"/>
+            <polygon points="150,190 141,185 139,194" fill="#1d4e89"/>
+            <line x1="60" y1="170" x2="120" y2="130" stroke="#c0392b" stroke-width="2.4"/>
+            <polygon points="120,130 111,132 116,140" fill="#c0392b"/>
+            <line x1="60" y1="170" x2="90" y2="110" stroke="#1d7a4d" stroke-width="2.4"/>
+            <polygon points="90,110 81,114 89,119" fill="#1d7a4d"/>
+            <line x1="150" y1="190" x2="150" y2="150" stroke="#3c424b" stroke-width="1" stroke-dasharray="3 3"/>
+            <text x="156" y="192" font-size="10.5" fill="#1d4e89">u</text>
+            <text x="124" y="126" font-size="10.5" fill="#c0392b">w</text>
+            <text x="70" y="104" font-size="10.5" fill="#1d7a4d">z</text>
+            <text x="128" y="168" font-size="10.5" font-weight="700" fill="#3c424b">体積 = |det|</text>
+            <text x="20" y="24" font-size="11" font-weight="700" fill="#3c424b">3本が別々の方向 → 箱に厚みあり → det ≠ 0</text>
+            <!-- right: flat -->
+            <path d="M300,170 L392,190 L452,152 L360,132 Z" fill="#c0392b" fill-opacity="0.10" stroke="#c0392b" stroke-width="1"/>
+            <line x1="300" y1="170" x2="392" y2="190" stroke="#1d4e89" stroke-width="2.4"/>
+            <polygon points="392,190 383,185 381,194" fill="#1d4e89"/>
+            <line x1="300" y1="170" x2="360" y2="132" stroke="#c0392b" stroke-width="2.4"/>
+            <polygon points="360,132 351,134 356,142" fill="#c0392b"/>
+            <line x1="300" y1="170" x2="422" y2="171" stroke="#1d7a4d" stroke-width="2.4"/>
+            <polygon points="422,171 413,167 413,176" fill="#1d7a4d"/>
+            <text x="396" y="192" font-size="10.5" fill="#1d4e89">u</text>
+            <text x="364" y="128" font-size="10.5" fill="#c0392b">w</text>
+            <text x="418" y="186" font-size="10.5" fill="#1d7a4d" text-anchor="end">z = 2u − w</text>
+            <text x="316" y="160" font-size="10.5" font-weight="700" fill="#c0392b">高さ 0 → 体積 0</text>
+            <text x="272" y="24" font-size="11" font-weight="700" fill="#3c424b">3本が同一平面 → ぺったんこ → det = 0</text>
+          </svg>
+        </div>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;font-size:13.5px;line-height:1.95">
+          <span class="key">6項の意味＝「底面積 × 高さ」を展開しただけ：</span><br>
+          <code>det = u · (w × z)</code>（スカラー三重積）<br>
+          ・<code>w × z</code>（外積）＝ w と z が張る<span class="hl">底面の面積</span>を大きさに持ち、その面に垂直なベクトル<br>
+          ・それと u の内積 ＝ <span class="hl">u のうち底面に垂直な成分（＝高さ）</span>を拾って掛ける<br>
+          ⇒ <span class="hl" style="font-weight:700">底面積 × 高さ ＝ 体積</span>。この式をバラすと <code>aei + bfg + cdh − ceg − afh − bdi</code>、つまり<b>サラスの6項</b>そのものになる。<br>
+          <span style="font-size:12.5px;color:var(--muted)">2次元の <code>ad − bc</code>（2項）が3次元で6項に増えるのは、「3本の並べ方が 3! = 6 通り」だから。n次元なら n! 項。</span>
+        </div>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px">
+          <span class="key">符号（足す3本・引く3本）の意味：</span>足す組は「右手系の並び」、引く組は「入れ替えて左手系になった並び」。<span class="hl">2本を入れ替えると符号が反転</span>という det の性質の現れで、だからこそ<b>同じベクトルが2本あると打ち消し合って 0</b> になる（＝潰れたら 0 が保証される）。<a href="#det-2x2-why" onclick="gotoSection('det-2x2-why');return false;">なぜ 2×2 の det は ad − bc なのか</a> の「導出②（多重線形性）」と同じ理屈が、次元を上げても効いている。
+        </div>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700;font-size:13.5px">
+          <span class="key">まとめ：</span>斜めの掛け算は<span class="hl">「ベクトルどうしの向きの食い違い」を組み合わせで拾う操作</span>、引き算は<span class="hl">「同じ向きぶんを打ち消す操作」</span>。だから全部打ち消されて 0 になったとき＝<b>向きの食い違いが無い＝同じ直線・同じ平面に乗っている＝潰れている</b>。det が潰れ判定になるのはこのため。<br>
+          <span style="font-size:12.5px">この判定を λ 付きで使うのが <a href="#eig-find" onclick="gotoSection('eig-find');return false;">det(A − λI) = 0</a>。「A − λI がぺしゃんこになる λ はどれか」を、面積・体積という1つの数値で探している。</span>
+        </div>
       </div>
 
       <div class="section" id="det-cofactor">
@@ -4289,7 +4432,7 @@
         <p><span class="key">覚え方：</span>① 対角（a と d）を<span class="hl">入れ替える</span> ② 反対角（b, c）の<span class="hl">符号を反転</span> ③ 全体を <span class="key">det = ad − bc</span> で割る。det = 0 なら割れない＝逆行列なし、と公式からも分かる。</p>
 
         <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:20px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例題</h3>
-        <p>A = <span class="matrix"><table><tr><td>4</td><td>7</td></tr><tr><td>2</td><td>6</td></tr></table></span> の逆行列。</p>
+        <div class="pl">A = <span class="matrix"><table><tr><td>4</td><td>7</td></tr><tr><td>2</td><td>6</td></tr></table></span> の逆行列。</div>
         <p>det = 4·6 − 7·2 = 24 − 14 = <span class="key">10</span>（≠ 0 なので存在）。入れ替え・符号反転して 1/10 倍：</p>
         <div class="matrix-row">
           <span>A⁻¹ = 1/10 ·</span>
@@ -4315,7 +4458,7 @@
         <p style="color:var(--muted);font-size:13px">※ 2×2 公式はこの一般式の特殊ケース（adj = [[d,−b],[−c,a]]）。だから「入れ替えて符号反転」の正体は転置つき余因子行列。</p>
 
         <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:20px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例題（3×3）</h3>
-        <p>A = <span class="matrix"><table><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>0</td><td>1</td><td>4</td></tr><tr><td>5</td><td>6</td><td>0</td></tr></table></span> &nbsp;の逆行列。</p>
+        <div class="pl">A = <span class="matrix"><table><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>0</td><td>1</td><td>4</td></tr><tr><td>5</td><td>6</td><td>0</td></tr></table></span> &nbsp;の逆行列。</div>
         <p><span class="key">Step 1 — det：</span>1行目で余因子展開すると det = 1·(1·0−4·6) − 2·(0·0−4·5) + 3·(0·6−1·5) = −24 + 40 − 15 = <span class="key">1</span>（≠ 0）。</p>
         <p><span class="key">Step 2 — 余因子を9個：</span>各成分で「その行と列を消した 2×2 の det」に符号 (−1)<sup>i+j</sup> を付ける。</p>
         <div class="matrix-row">
@@ -4362,7 +4505,7 @@
         </div>
 
         <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:20px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例題</h3>
-        <p>連立 &nbsp;<code>2x + y = 5</code>, &nbsp;<code>x + 3y = 10</code>。 &nbsp; A = <span class="matrix"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>3</td></tr></table></span>, &nbsp; b = <span class="matrix"><table><tr><td>5</td></tr><tr><td>10</td></tr></table></span>。</p>
+        <div class="pl">連立 &nbsp;<code>2x + y = 5</code>, &nbsp;<code>x + 3y = 10</code>。 &nbsp; A = <span class="matrix"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>3</td></tr></table></span>, &nbsp; b = <span class="matrix"><table><tr><td>5</td></tr><tr><td>10</td></tr></table></span>。</div>
         <p>det(A) = 2·3 − 1·1 = <span class="key">5</span>。</p>
         <div class="matrix-row">
           <span>x = det<span class="matrix"><table><tr><td>5</td><td>1</td></tr><tr><td>10</td><td>3</td></tr></table></span> / 5 = (15−10)/5 = <span class="res" style="background:#fff3a0;padding:1px 6px;border-radius:3px">1</span></span>
@@ -4414,7 +4557,7 @@
       <div class="chapter-meta">
         <div class="chapter-label">Chapter</div>
         <div class="chapter-status pending">📝 これから学ぶ</div>
-        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-07-13</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-08-13</div>
       </div>
       <div class="chapter-title"><span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>・<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span>（Eigenvalue / Eigenvector）</div>
 
@@ -4445,6 +4588,117 @@
           <span class="key">なぜ v ≠ 0 が条件か：</span>v = 0 なら A0 = λ0 がどんな λ でも成り立ってしまい、情報がない。だから<span class="hl">ゼロでない</span>方向だけを問題にする。
         </div>
         </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="eig-eigenspace">
+        <h2>固有値1つに対して、固有ベクトルは<span class="key">複数（無限個）</span> — 固有空間という考え方</h2>
+
+        <p><code>Av = λv</code> の v は<span class="hl">1本に決まらない</span>。答えとして「λ=2 → v=(1,0)」と書くが、これは<span class="hl">代表を1本選んで書いているだけ</span>で、実際には (2,0) も (−5,0) も (0.1, 0) もすべて固有ベクトル。理由は1行で終わる。</p>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;font-size:14px">
+          <span class="key">v が固有ベクトルなら cv も固有ベクトル（c ≠ 0）：</span><br>
+          <code>A(cv) = c(Av) = c(λv) = λ(cv)</code> ✓<br>
+          <span style="font-size:13px;color:var(--muted)">行列は定数倍を素通しする（線形性）ので、長さを変えても関係式は壊れない。</span>
+        </div>
+
+        <p>つまり固有ベクトルの正体は<span class="hl">1本の矢印ではなく、原点を通る直線まるごと</span>。「かたむかない軸」という言い方をしたときの<b>軸そのもの</b>が答えで、その上のどの矢印を代表に選ぶかは自由（長さ1に正規化する、成分を整数にする、などは<b>ただの慣習</b>）。</p>
+
+        <div style="display:flex;justify-content:center;margin:18px 0">
+          <svg viewBox="0 0 460 190" width="520" style="max-width:100%">
+            <!-- left: 1-dim eigenspace -->
+            <line x1="20" y1="160" x2="200" y2="160" stroke="#e4e4e4" stroke-width="1"/>
+            <line x1="30" y1="175" x2="30" y2="30" stroke="#e4e4e4" stroke-width="1"/>
+            <line x1="30" y1="160" x2="196" y2="46" stroke="#1d4e89" stroke-width="1.4" stroke-dasharray="5 4" opacity="0.55"/>
+            <line x1="30" y1="160" x2="88" y2="120" stroke="#1d4e89" stroke-width="2.4"/>
+            <polygon points="88,120 79,120 84,128" fill="#1d4e89"/>
+            <line x1="30" y1="160" x2="146" y2="80" stroke="#1d4e89" stroke-width="2.4" opacity="0.6"/>
+            <polygon points="146,80 137,80 142,88" fill="#1d4e89" opacity="0.6"/>
+            <line x1="30" y1="160" x2="8" y2="175" stroke="#1d4e89" stroke-width="2.4" opacity="0.35"/>
+            <polygon points="8,175 16,174 12,181" fill="#1d4e89" opacity="0.35"/>
+            <circle cx="30" cy="160" r="3" fill="#111"/>
+            <text x="96" y="116" font-size="10.5" fill="#1d4e89">v</text>
+            <text x="152" y="76" font-size="10.5" fill="#1d4e89" opacity="0.75">2v</text>
+            <text x="196" y="46" font-size="10.5" fill="#1d4e89" opacity="0.75">…</text>
+            <text x="22" y="188" font-size="10.5" fill="#3c424b">−v</text>
+            <text x="20" y="20" font-size="11" font-weight="700" fill="#3c424b">この直線ぜんぶが λ の固有ベクトル</text>
+            <text x="20" y="34" font-size="9.5" fill="#888">固有空間 dim = 1（ふつうの場合）</text>
+            <!-- right: 2-dim eigenspace -->
+            <line x1="260" y1="160" x2="440" y2="160" stroke="#e4e4e4" stroke-width="1"/>
+            <line x1="270" y1="175" x2="270" y2="30" stroke="#e4e4e4" stroke-width="1"/>
+            <rect x="272" y="44" width="164" height="114" fill="#c0392b" fill-opacity="0.08" stroke="#c0392b" stroke-width="1" stroke-dasharray="4 3"/>
+            <line x1="270" y1="160" x2="330" y2="118" stroke="#c0392b" stroke-width="2.2"/>
+            <polygon points="330,118 321,118 326,126" fill="#c0392b"/>
+            <line x1="270" y1="160" x2="374" y2="146" stroke="#c0392b" stroke-width="2.2"/>
+            <polygon points="374,146 366,142 366,151" fill="#c0392b"/>
+            <line x1="270" y1="160" x2="306" y2="66" stroke="#c0392b" stroke-width="2.2"/>
+            <polygon points="306,66 298,71 306,75" fill="#c0392b"/>
+            <circle cx="270" cy="160" r="3" fill="#111"/>
+            <text x="260" y="20" font-size="11" font-weight="700" fill="#3c424b">A = 2I なら平面ぜんぶが固有</text>
+            <text x="260" y="34" font-size="9.5" fill="#888">固有空間 dim = 2（重解のときだけ起こりうる）</text>
+          </svg>
+        </div>
+
+        <p><span class="key">この解の集合に名前が付いている：</span></p>
+
+        <div class="formula" style="text-align:center;font-size:16px">
+          E<sub>λ</sub> = { v | Av = λv } = <span class="hl">ker(A − λI)</span>　<span style="font-size:12.5px;color:var(--muted)">（固有空間 / eigenspace）</span>
+        </div>
+
+        <p>固有空間は <span class="vt" data-vocab="kernel" data-ja="核">核</span>そのもの。核は必ず<span class="hl">部分空間</span>（足し算・定数倍で閉じている）なので、固有空間も直線や平面といった<b>空間の形</b>で出てくる。<br>
+        <span style="font-size:13.5px;color:var(--muted)">※ 形式上 E<sub>λ</sub> は 0 を含む（部分空間なので）が、0 は固有ベクトルとは呼ばない。「0 以外の元が固有ベクトル」。</span></p>
+
+        <div class="formula" style="background:#f7f7f9;border-left-color:#888;font-size:13.5px;line-height:1.95">
+          <span class="key">「複数個」には2つのレベルがある：</span><br>
+          <span style="color:#1d4e89;font-weight:700">① 定数倍の自由（必ず起きる）</span> … 直線まるごと無限個。<span class="hl">独立な方向としては1本</span>なので、情報としては1つ。<br>
+          <span style="color:#c0392b;font-weight:700">② 固有空間の次元が2以上（起きたり起きなかったり）</span> … <span class="hl">独立な固有ベクトルが2本以上取れる</span>。この場合は平面まるごとが「かたむかない」。同じ λ が重解のときだけ起こりうる。
+        </div>
+
+        <p style="margin-top:16px">具体例で見ると違いがはっきりする。</p>
+
+        <table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px">
+          <thead>
+            <tr style="background:var(--surface);text-align:left">
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">行列</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">λ</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">固有空間 E<sub>λ</sub></th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">独立な固有ベクトルの本数</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:8px 12px;border-bottom:1px solid var(--border)">diag(2, 3)</td>
+              <td style="padding:8px 12px;border-bottom:1px solid var(--border)">2 と 3</td>
+              <td style="padding:8px 12px;border-bottom:1px solid var(--border)">それぞれ<span class="hl">直線</span>（x軸／y軸）</td>
+              <td style="padding:8px 12px;border-bottom:1px solid var(--border)">各1本（合計2本）→ 対角化可</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 12px;border-bottom:1px solid var(--border)">2I = diag(2, 2)</td>
+              <td style="padding:8px 12px;border-bottom:1px solid var(--border)">2（重解）</td>
+              <td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="hl">平面ぜんぶ</span>（どの向きも2倍）</td>
+              <td style="padding:8px 12px;border-bottom:1px solid var(--border)">2本（例：(1,0) と (0,1)）→ 対角化可</td>
+            </tr>
+            <tr>
+              <td style="padding:8px 12px">[[4,1],[0,4]]</td>
+              <td style="padding:8px 12px">4（重解）</td>
+              <td style="padding:8px 12px"><span class="hl">直線1本だけ</span>（x軸）</td>
+              <td style="padding:8px 12px" ><span style="color:#c0392b;font-weight:700">1本しか取れない</span> → 対角化<b>不可</b></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700;font-size:13.5px">
+          <span class="key">ここが対角化・ジョルダンの分かれ道：</span>固有値が重解のとき、固有空間の次元（<span class="key">幾何的重複度</span>）が重解の個数（<span class="key">代数的重複度</span>）に<span class="hl">届くかどうか</span>で運命が決まる。<br>
+          ・届く（2重解に対し2本取れる）→ <b>対角化できる</b>（例：2I）<br>
+          ・届かない（2重解なのに1本）→ <b>対角化できない</b>＝<a href="#jordan-normal-form" onclick="gotoSection('jordan-normal-form');return false;">ジョルダン標準形</a>が必要（例：[[4,1],[0,4]]）<br>
+          <span style="font-size:12.5px;color:var(--muted)">一般に「幾何的重複度 ≤ 代数的重複度」で、超えることはない。</span>
+        </div>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px">
+          <span class="key">計算のときの見え方：</span><code>(A − λI)v = 0</code> を解くと必ず<span class="hl">自由変数が残る</span>（λ は det=0 になるよう選んだので、この行列は必ず rank 落ちしている）。<br>
+          ・自由変数1個 → 解は直線 → 固有空間 dim 1<br>
+          ・自由変数2個 → 解は平面 → 固有空間 dim 2<br>
+          <span class="hl">「自由変数の個数＝固有空間の次元＝独立な固有ベクトルの本数」</span>。次元定理 <code>dim ker = n − rank(A − λI)</code> でも同じ数が出る。
+        </div>
       </div>
 
       <div class="section" id="eig-geometric">
@@ -4513,6 +4767,40 @@
 
         <div class="formula" style="font-size:17px;text-align:center">
           det(A − λI) = 0
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">なぜ「v ≠ 0」から det = 0 が出てくるのか</h3>
+
+        <p>ここが固有値計算の心臓部。ポイントは <code>(A − λI)v = 0</code> を、<span class="hl">「M というひとつの行列が、v というゼロでないベクトルをゼロに潰している」</span>と読み直すこと（M = A − λI と置く）。</p>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;font-size:14px;line-height:1.95">
+          <span class="key">背理法で一発：</span>もし <code>det M ≠ 0</code> だったら M には<span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span> M⁻¹ があるので、両辺に左から掛けられる：<br>
+          <code>M v = 0</code> → <code>M⁻¹M v = M⁻¹0</code> → <code>v = 0</code><br>
+          つまり<span class="hl">解は v = 0 の1個だけ</span>になってしまい、「v ≠ 0 が欲しい」という要求と矛盾する。<br>
+          <span class="key">よって：</span>ゼロでない v が存在するには <span class="hl">M は逆行列を持ってはいけない</span> ＝ <code>det(A − λI) = 0</code>。
+        </div>
+
+        <p><span class="key">言い換えの連鎖（全部同じことを言っている）：</span></p>
+
+        <div class="formula" style="font-size:13.5px;line-height:2;background:#fafafa;border-left-color:#888">
+          <code>(A−λI)v = 0</code> を満たす <b>v ≠ 0</b> がある<br>
+          ⟺ <span class="vt" data-vocab="kernel" data-ja="核">核</span> ker(A−λI) が <span class="hl">{0} より大きい</span>（0以外の元を含む）<br>
+          ⟺ 2つの違う入力が同じ出力（0）に潰れる ＝ <b>1対1でない</b><br>
+          ⟺ <span class="vt" data-vocab="rank" data-ja="ランク">rank</span> が落ちている（列が<span class="vt" data-vocab="linear-independence" data-ja="一次独立">一次従属</span>）<br>
+          ⟺ 逆行列がない（潰れた情報は戻せない）<br>
+          ⟺ <span class="hl" style="font-weight:700">det(A − λI) = 0</span>（面積・体積が 0 に潰れる）
+        </div>
+
+        <p style="margin-top:14px"><span class="key">λ の役割：</span>A そのものは普通ゼロベクトル以外を 0 に潰さない。しかし <span class="hl">λ という「ズラし量」を対角から引くと、ちょうど潰れる瞬間がある</span>。その瞬間の λ が固有値で、そのとき潰されるベクトル（＝核の中身）が固有ベクトル。<span class="hl">固有値を探す作業は「A − λI が潰れる λ を探す」作業</span>そのもの。</p>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px">
+          <span class="key">例（演習 10-Q1 の A = diag(2,3)）：</span><code>det(A − λI) = (2−λ)(3−λ)</code> を λ の関数と見ると、λ=2 と λ=3 でだけ 0 になる。<br>
+          ・λ=1 のとき A−λI = diag(1,2) … det=2 ≠ 0 → 潰れない → 0 に写る非ゼロベクトルなし → 固有値ではない<br>
+          ・λ=2 のとき A−λI = diag(0,1) … <span class="hl">det=0</span> → x軸方向が丸ごと 0 に潰れる → その方向が固有ベクトル ✓
+        </div>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700;font-size:13.5px">
+          <span class="key">なぜ det という道具でなければならないか：</span>「潰れているか？」を<span class="hl">1つの数値で判定できる</span>のが det だから。ここで det が「面積・体積の倍率」であることが効く — 倍率 0 ＝ 潰れた、という判定。<a href="#det-collapse-cross" onclick="gotoSection('det-collapse-cross');return false;">なぜ斜めに掛けて引くと潰れ判定になるのか</a>（行列式の章）も合わせて読むと、det(A−λI)=0 という式が何を測っているのかが完全につながる。
         </div>
 
         <p>これを <code>λ</code> の方程式と見たものが <span class="vt" data-vocab="characteristic-polynomial" data-ja="特性多項式">特性多項式</span>（characteristic polynomial）。<span class="hl">この根が固有値</span>。手順はこう：</p>
@@ -4626,6 +4914,61 @@
 
         <div class="formula" style="background:#eef8f2;border-left-color:#1d7a4d;font-size:13.5px">
           <span class="key" style="color:#1d7a4d">▶ 同じ話を動かして見る：</span><a href="260713_animations.html#anim-eigflow" style="color:#1d7a4d;font-weight:700">固有ベクトルの流れ（アニメーション）</a>。この市場シェアの収束は、[2,0] が (1,1) 線へ吸い寄せられるアニメそのもの。
+        </div>
+      </div>
+
+      <div class="section" id="eig-dynamical-systems">
+        <h2><span style="font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.08em;color:#fff;background:#3c424b;padding:2px 8px;border-radius:20px;vertical-align:middle;margin-right:8px">COLUMN</span>力学系 — 「同じ操作を繰り返す」と何が起きるかは固有値が全部決める</h2>
+
+        <p>状態を決まったルールで更新し続ける仕組みを <span class="key">力学系（dynamical system）</span>という。<span class="hl">今の状態ベクトル x に毎回 A を掛ける</span>だけの一番素直なものが<b>線形離散力学系</b>：</p>
+
+        <div class="formula" style="text-align:center;font-size:16px">
+          x<sub>n+1</sub> = A x<sub>n</sub>　⟹　x<sub>n</sub> = <span class="hl">Aⁿ x<sub>0</sub></span>
+        </div>
+
+        <p>フィボナッチも市場シェアも人口動態も、形はこれ1つ。<span class="hl">知りたいのは n を大きくしたときの行き先</span>（発散するか、落ち着くか、振動するか）で、それを決めるのが固有値。理由は簡単で、固有ベクトルの基底で見ると <code>Aⁿ</code> は <span class="hl">各方向を λⁿ 倍するだけ</span>に化けるから。</p>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;font-size:13.5px;line-height:1.95">
+          <span class="key">分解して見る：</span>出発点を固有ベクトルの和に分解して <code>x₀ = c₁v₁ + c₂v₂ + …</code> と書けば<br>
+          <code>Aⁿx₀ = c₁λ₁ⁿv₁ + c₂λ₂ⁿv₂ + …</code><br>
+          <span class="hl">各方向が完全に独立に、自分の λ の n 乗で伸び縮みする</span>。混ざり合わないので、長期挙動は「どの λⁿ が一番大きく育つか」だけの勝負になる。
+        </div>
+
+        <table style="width:100%;border-collapse:collapse;margin:14px 0;font-size:13.5px">
+          <thead>
+            <tr style="background:var(--surface);text-align:left">
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">固有値</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">その方向で起きること</th>
+              <th style="padding:8px 12px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">呼び名・例</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="key">|λ| &gt; 1</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">指数的に<span class="hl">発散</span>する</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">不安定方向。フィボナッチの φ=1.618</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="key">|λ| = 1</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">大きさが<span class="hl">保存</span>される</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">中立。マルコフ連鎖の λ=1 ＝<b>定常状態</b></td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="key">|λ| &lt; 1</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">指数的に<span class="hl">消える</span>（原点へ）</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">安定方向。初期条件のズレが忘れられる</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="key">λ &lt; 0</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">毎回<span class="hl">符号が反転</span>しながら伸縮</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)">振動。フィボナッチの λ₂ = −0.618</td></tr>
+            <tr><td style="padding:8px 12px"><span class="key">複素数</span></td><td style="padding:8px 12px"><span class="hl">回転</span>しながら伸縮（渦を巻く）</td><td style="padding:8px 12px">回転行列。|λ|&lt;1 なら渦を巻いて原点へ</td></tr>
+          </tbody>
+        </table>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700;font-size:13.5px">
+          <span class="key">支配的固有値（dominant eigenvalue）：</span>絶対値が最大の λ の方向だけが最後まで生き残り、<span class="hl">系全体の長期の姿はその1方向で決まる</span>。<br>
+          ・<b>行き先の「向き」</b> ＝ 支配的な固有ベクトル　・<b>成長率</b> ＝ その |λ|<br>
+          ・<b>そこに落ち着く速さ</b> ＝ 2番目との比 <code>|λ₂/λ₁|</code>（小さいほど早く忘れる）<br>
+          <span style="font-size:12.5px;color:var(--muted)">最大の |λ| をスペクトル半径と呼ぶ。Google の PageRank はこの性質をそのまま使った計算法（べき乗法：適当なベクトルに A を掛け続けると支配的固有ベクトルに収束する）。</span>
+        </div>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px;line-height:1.95">
+          <span class="key">同じ話が出てくる場所：</span><br>
+          ・<b>フィボナッチ</b> … λ₁=1.618 が支配、λ₂=−0.618 は消える → 比が φ に収束（<a href="260808_fibonacci_eigen.html" style="font-weight:700">アニメーションで見る</a>）<br>
+          ・<b>マルコフ連鎖・市場シェア</b> … λ=1 の固有ベクトルが定常状態、残りが |λ|&lt;1 で減衰（<a href="#eig-markov" onclick="gotoSection('eig-markov');return false;">前セクション</a>）<br>
+          ・<b>人口動態（Leslie 行列）</b> … 支配的固有値が人口の増減率、固有ベクトルが安定な年齢構成<br>
+          ・<b>連続時間版（微分方程式）</b> … <code>x' = Ax</code> の解は <code>e<sup>λt</sup></code> が並ぶ形になり、<span class="hl">安定性を決めるのは |λ| ではなく Re λ の符号</span>（負なら収束）。離散は「1と比べる」、連続は「0と比べる」と覚える<br>
+          ・<b>機械学習・数値計算</b> … 勾配法の収束、行列の条件数、べき乗法など、ほぼ全部この構図
+        </div>
+
+        <div class="formula" style="background:#f7f7f9;border-left-color:#1d4e89;font-size:13.5px">
+          <span class="key">この視点の効用：</span>「A を1回掛けると何が起きるか」ではなく、<span class="hl">「A を無限回掛けたら世界はどうなるか」</span>を問うのが力学系の見方。固有値・固有ベクトルは、その答えを<b>掛け算を1回もせずに先読みするための道具</b>になっている。行列を計算対象ではなく<b>「時間を進める規則」</b>として読むクセをつけると、対角化の意味（＝時間発展が最も単純に見える座標系を選ぶこと）も一気に腑に落ちる。
         </div>
       </div>
 
@@ -4873,21 +5216,21 @@
       <p class="sub">対角・スカラー・単位・三角・置換・ニルポテント・対称。「各行/各列の非ゼロの位置」で見分ける。</p>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><p>次の行列の型は。<span class="mtx"><table><tr><td>2</td><td>0</td></tr><tr><td>0</td><td>2</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><div class="pl">次の行列の型は。<span class="mtx"><table><tr><td>2</td><td>0</td></tr><tr><td>0</td><td>2</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p><span class="res">スカラー行列</span>（対角が全部同じ 2 ＝ <code>2I</code>）。対角行列の特殊例で、何にでも一律 2 倍する変換。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><p>型は。<span class="mtx"><table><tr><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><div class="pl">型は。<span class="mtx"><table><tr><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p><span class="res">置換行列</span>。各行・各列に 1 がちょうど 1 個。掛けると成分を入れ替える（ここでは x と y の交換）。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><p>型は。また 2 乗すると何になるか。<span class="mtx"><table><tr><td>0</td><td>5</td></tr><tr><td>0</td><td>0</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><div class="pl">型は。また 2 乗すると何になるか。<span class="mtx"><table><tr><td>0</td><td>5</td></tr><tr><td>0</td><td>0</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p><span class="res">ニルポテント行列</span>（かつ上三角）。<code>N² = O</code>（零行列）になる。</p>
           <p class="step">確認：N² の (1,1)=0·0+5·0=0、(1,2)=0·5+5·0=0 … すべて 0。情報を一方向に潰して消すタイプ。</p>
@@ -4895,7 +5238,7 @@
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q4</span><div class="qbody"><p>型は。固有値はすぐ分かるか。<span class="mtx"><table><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>0</td><td>4</td><td>5</td></tr><tr><td>0</td><td>0</td><td>6</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q4</span><div class="qbody"><div class="pl">型は。固有値はすぐ分かるか。<span class="mtx"><table><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>0</td><td>4</td><td>5</td></tr><tr><td>0</td><td>0</td><td>6</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p><span class="res">上三角行列</span>。三角行列の固有値は対角成分そのものなので <span class="res">λ = 1, 4, 6</span>（計算不要）。</p>
         </div></details>
@@ -4908,9 +5251,9 @@
       <p class="sub">「左の行 × 右の列」の内積。順番を変えると基本は別物（非可換）。</p>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><p>A=<span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table></span> B=<span class="mtx"><table><tr><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td></tr></table></span> のとき <code>AB</code> を求めよ。</p></div></div>
+        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><div class="pl">A=<span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table></span> B=<span class="mtx"><table><tr><td>0</td><td>1</td></tr><tr><td>1</td><td>0</td></tr></table></span> のとき <code>AB</code> を求めよ。</div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><code>AB</code> = <span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>4</td><td>3</td></tr></table></span></p>
+          <div class="pl"><code>AB</code> = <span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>4</td><td>3</td></tr></table></span></div>
           <p class="step">(1,1)=1·0+2·1=2、(1,2)=1·1+2·0=1、(2,1)=3·0+4·1=4、(2,2)=3·1+4·0=3。B が「列を入れ替える」ので、A の列が左右入れ替わった形。</p>
         </div></details>
       </div>
@@ -4918,16 +5261,16 @@
       <div class="q">
         <div class="qhead"><span class="qno">Q2</span><div class="qbody"><p>同じ A, B で <code>BA</code> を求め、<code>AB</code> と比べよ。</p></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><code>BA</code> = <span class="mtx"><table><tr><td>3</td><td>4</td></tr><tr><td>1</td><td>2</td></tr></table></span> ≠ <code>AB</code> → <span class="res">非可換</span>。</p>
+          <div class="pl"><code>BA</code> = <span class="mtx"><table><tr><td>3</td><td>4</td></tr><tr><td>1</td><td>2</td></tr></table></span> ≠ <code>AB</code> → <span class="res">非可換</span>。</div>
           <p class="step">B を左から掛けると A の「行」が入れ替わる。左から＝行に作用、右から＝列に作用、が効いている。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><p>D=<span class="mtx"><table><tr><td>2</td><td>0</td></tr><tr><td>0</td><td>3</td></tr></table></span> M=<span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td></tr></table></span>。<code>DM</code> と <code>MD</code> を求めよ。</p></div></div>
+        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><div class="pl">D=<span class="mtx"><table><tr><td>2</td><td>0</td></tr><tr><td>0</td><td>3</td></tr></table></span> M=<span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td></tr></table></span>。<code>DM</code> と <code>MD</code> を求めよ。</div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><code>DM</code> = <span class="mtx"><table><tr><td>2</td><td>2</td></tr><tr><td>3</td><td>3</td></tr></table></span>（行スケール：1行目×2、2行目×3）</p>
-          <p><code>MD</code> = <span class="mtx"><table><tr><td>2</td><td>3</td></tr><tr><td>2</td><td>3</td></tr></table></span>（列スケール：1列目×2、2列目×3）</p>
+          <div class="pl"><code>DM</code> = <span class="mtx"><table><tr><td>2</td><td>2</td></tr><tr><td>3</td><td>3</td></tr></table></span>（行スケール：1行目×2、2行目×3）</div>
+          <div class="pl"><code>MD</code> = <span class="mtx"><table><tr><td>2</td><td>3</td></tr><tr><td>2</td><td>3</td></tr></table></span>（列スケール：1列目×2、2列目×3）</div>
           <p class="step">対角行列は「左から＝行を、右から＝列をスケール」。だから一般に <code>DM ≠ MD</code>。</p>
         </div></details>
       </div>
@@ -4939,16 +5282,16 @@
       <p class="sub">両方計算して一致するか見る。対角同士・単位行列・自分のべき乗は常に可換。</p>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><p>A=<span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td></tr></table></span> B=<span class="mtx"><table><tr><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td></tr></table></span> は可換か。</p></div></div>
+        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><div class="pl">A=<span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td></tr></table></span> B=<span class="mtx"><table><tr><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td></tr></table></span> は可換か。</div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><code>AB</code>=<span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>1</td></tr></table></span> 、 <code>BA</code>=<span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>2</td></tr></table></span> → 一致しない → <span class="res">非可換</span>。</p>
+          <div class="pl"><code>AB</code>=<span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>1</td></tr></table></span> 、 <code>BA</code>=<span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>2</td></tr></table></span> → 一致しない → <span class="res">非可換</span>。</div>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><p>A=<span class="mtx"><table><tr><td>2</td><td>0</td></tr><tr><td>0</td><td>3</td></tr></table></span> B=<span class="mtx"><table><tr><td>5</td><td>0</td></tr><tr><td>0</td><td>7</td></tr></table></span> は可換か。</p></div></div>
+        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><div class="pl">A=<span class="mtx"><table><tr><td>2</td><td>0</td></tr><tr><td>0</td><td>3</td></tr></table></span> B=<span class="mtx"><table><tr><td>5</td><td>0</td></tr><tr><td>0</td><td>7</td></tr></table></span> は可換か。</div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><code>AB</code> = <code>BA</code> = <span class="mtx"><table><tr><td>10</td><td>0</td></tr><tr><td>0</td><td>21</td></tr></table></span> → <span class="res">可換</span>。</p>
+          <div class="pl"><code>AB</code> = <code>BA</code> = <span class="mtx"><table><tr><td>10</td><td>0</td></tr><tr><td>0</td><td>21</td></tr></table></span> → <span class="res">可換</span>。</div>
           <p class="step">対角行列同士は常に可換（各軸を独立に掛けるだけなので順番が効かない）。</p>
         </div></details>
       </div>
@@ -5003,21 +5346,21 @@
       <p class="sub">独立な行（＝列）の本数。フルランクなら次元が潰れていない。det≠0（正方）ともつながる。</p>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><p>rank を求めよ。<span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>2</td><td>4</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><div class="pl">rank を求めよ。<span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>2</td><td>4</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p>2 行目 = 2 ×（1 行目）→ 独立な行は 1 本 → <span class="res">rank = 1</span>（フルランクでない）。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><p>rank を求めよ。<span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><div class="pl">rank を求めよ。<span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p>det = 1·4 − 2·3 = −2 ≠ 0 → 行が独立 → <span class="res">rank = 2</span>（フルランク）。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><p>rank を求めよ。<span class="mtx"><table><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>2</td><td>4</td><td>6</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><div class="pl">rank を求めよ。<span class="mtx"><table><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>2</td><td>4</td><td>6</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p>2 行目 = 2 ×（1 行目）で消える。残る (1,2,3) と (1,1,1) は互いに定数倍でない → 独立。よって <span class="res">rank = 2</span>。</p>
           <p class="step">3×3 で rank 2 ＝ 1 次元ぶん潰れている → det = 0、核が 1 次元（次元定理）。</p>
@@ -5035,32 +5378,32 @@
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><p>A = <span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>3</td><td>2</td></tr></table></span> の A⁻¹ を求めよ。</p></div></div>
+        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><div class="pl">A = <span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>3</td><td>2</td></tr></table></span> の A⁻¹ を求めよ。</div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p>det = 2·2 − 1·3 = <span class="res">1</span>。入れ替え・符号反転して 1/1 倍。</p>
-          <p>A⁻¹ = <span class="mtx"><table><tr><td>2</td><td>−1</td></tr><tr><td>−3</td><td>2</td></tr></table></span></p>
+          <div class="pl">A⁻¹ = <span class="mtx"><table><tr><td>2</td><td>−1</td></tr><tr><td>−3</td><td>2</td></tr></table></span></div>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><p>A = <span class="mtx"><table><tr><td>3</td><td>5</td></tr><tr><td>1</td><td>2</td></tr></table></span> の A⁻¹ を求めよ。</p></div></div>
+        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><div class="pl">A = <span class="mtx"><table><tr><td>3</td><td>5</td></tr><tr><td>1</td><td>2</td></tr></table></span> の A⁻¹ を求めよ。</div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p>det = 3·2 − 5·1 = <span class="res">1</span>。</p>
-          <p>A⁻¹ = <span class="mtx"><table><tr><td>2</td><td>−5</td></tr><tr><td>−1</td><td>3</td></tr></table></span></p>
+          <div class="pl">A⁻¹ = <span class="mtx"><table><tr><td>2</td><td>−5</td></tr><tr><td>−1</td><td>3</td></tr></table></span></div>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><p>A = <span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>2</td><td>5</td></tr></table></span> の A⁻¹ を求めよ。</p></div></div>
+        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><div class="pl">A = <span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>2</td><td>5</td></tr></table></span> の A⁻¹ を求めよ。</div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p>det = 1·5 − 2·2 = <span class="res">1</span>。</p>
-          <p>A⁻¹ = <span class="mtx"><table><tr><td>5</td><td>−2</td></tr><tr><td>−2</td><td>1</td></tr></table></span></p>
+          <div class="pl">A⁻¹ = <span class="mtx"><table><tr><td>5</td><td>−2</td></tr><tr><td>−2</td><td>1</td></tr></table></span></div>
           <p class="step">A が対称なので A⁻¹ も対称。<br>検算のクセを付ける：A·A⁻¹ の (1,1)=1·5+2·(−2)=1、(1,2)=1·(−2)+2·1=0 … I ✓</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q4</span><div class="qbody"><p><span class="key">【トラップ】</span>逆行列が存在しない（Impossible）パターン。A = <span class="mtx"><table><tr><td>2</td><td>4</td></tr><tr><td>1</td><td>2</td></tr></table></span> の A⁻¹ を求めよ。</p></div></div>
+        <div class="qhead"><span class="qno">Q4</span><div class="qbody"><div class="pl"><span class="key">【トラップ】</span>逆行列が存在しない（Impossible）パターン。A = <span class="mtx"><table><tr><td>2</td><td>4</td></tr><tr><td>1</td><td>2</td></tr></table></span> の A⁻¹ を求めよ。</div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p>det = 2·2 − 4·1 = 4 − 4 = <span class="res">0</span> → <span class="res">逆行列は存在しない</span>（公式の 1/det が 0 で割れない）。</p>
           <p class="step">なぜ潰れるか：1行目 (2,4) = 2 ×（2行目 (1,2)）で<span class="hl">行が一次従属</span> ＝ rank = 1（フルランクでない）。列も (2,1) と (4,2)=2×(2,1) で従属。<br>幾何：この変換は平面を1本の直線に潰す。潰れた後から元の点を復元できない＝巻き戻し不能。</p>
@@ -5075,33 +5418,94 @@
       <p class="sub">手順：① <code>det(A − λI) = 0</code> で λ → ② 各 λ を <code>(A − λI)v = 0</code> に戻して v。三角・対角は λ が即分かる。</p>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><p>固有値と固有ベクトルを求めよ。<span class="mtx"><table><tr><td>2</td><td>0</td></tr><tr><td>0</td><td>3</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><div class="pl">固有値と固有ベクトルを求めよ。<span class="mtx"><table><tr><td>2</td><td>0</td></tr><tr><td>0</td><td>3</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p>対角行列なので <span class="res">λ = 2, 3</span>。固有ベクトルは座標軸そのもの：λ=2 → (1,0)、λ=3 → (0,1)。</p>
+          <p><b>答え：</b><span class="res">λ = 2 → v = (1,0)（x軸）</span>、<span class="res">λ = 3 → v = (0,1)（y軸）</span></p>
+
+          <p><b>⓪ まず「瞬殺」の見方（これが本質）</b></p>
+          <div class="pl">成分が (1,1) と (2,2) ＝<b>対角にしかない</b>ので、掛け算すると
+            <span class="mtx"><table><tr><td>2</td><td>0</td></tr><tr><td>0</td><td>3</td></tr></table></span>
+            <span class="mtx"><table><tr><td>x</td></tr><tr><td>y</td></tr></table></span>
+            =
+            <span class="mtx"><table><tr><td>2x</td></tr><tr><td>3y</td></tr></table></span>
+            <span class="step">（x に y が、y に x が混ざる項が無い）</span>
+          </div>
+          <p>つまりこの行列は <b>x を2倍、y を3倍するだけ</b>で、<span class="hl">x と y が独立</span>。混ざらないので連立を解く必要がなく、<b>成分ごとに「何倍か」を読むだけ</b>で終わる。</p>
+          <ul>
+            <li>y=0 の点（x軸上）→ <code>(x,0) → (2x,0)</code>：x軸から出ない・<b>ちょうど2倍</b> ⇒ λ=2、v=(1,0)</li>
+            <li>x=0 の点（y軸上）→ <code>(0,y) → (0,3y)</code>：y軸から出ない・<b>ちょうど3倍</b> ⇒ λ=3、v=(0,1)</li>
+            <li>それ以外（x,y とも 0 でない）→ 倍率が 2 と 3 で食い違うので<b>全体を λ 倍にはできない</b> ⇒ 固有ベクトルではない</li>
+          </ul>
+          <p class="step"><b>一般化：</b>対角行列 diag(d₁,…,dₙ) は「各座標軸を dᵢ 倍するだけ」の変換。だから<b>固有値＝対角成分そのもの、固有ベクトル＝座標軸（e₁,…,eₙ）</b>で、特性方程式を書くまでもなく即答できる。上三角・下三角も det が対角の積になるので λ は即答できるが、<b>固有ベクトルの方は座標軸とは限らない</b>ので計算が要る（Q3 がその例）。以下は同じ答えを正規の手順で確認したもの。</p>
+
+          <p><b>① 特性方程式で λ を出す</b></p>
+          <div class="pl"><code>A − λI</code> = <span class="mtx"><table><tr><td>2−λ</td><td>0</td></tr><tr><td>0</td><td>3−λ</td></tr></table></span>
+            → <code>det(A − λI) = (2−λ)(3−λ) − 0·0 = 0</code> → <span class="res">λ = 2, 3</span></div>
+          <p class="step">対角行列・三角行列は、det が必ず対角成分の積になるので <b>対角に並んだ数がそのまま固有値</b>。展開して λ²−5λ+6 を解いてもいいが、見た瞬間に答えが出る形。</p>
+
+          <p><b>② 各 λ を (A − λI)v = 0 に戻して v を出す</b></p>
+          <div class="pl">λ=2：<code>(A−2I)</code>=<span class="mtx"><table><tr><td>0</td><td>0</td></tr><tr><td>0</td><td>1</td></tr></table></span>
+            → 式は <code>0·x + 0·y = 0</code>（常に成立＝情報なし）と <code>y = 0</code>。
+            つまり <b>y=0 だけが条件で x は自由</b> → <span class="res">v = t(1,0)</span></div>
+          <div class="pl">λ=3：<code>(A−3I)</code>=<span class="mtx"><table><tr><td>−1</td><td>0</td></tr><tr><td>0</td><td>0</td></tr></table></span>
+            → <code>−x = 0</code> のみ。<b>x=0 だけが条件で y は自由</b> → <span class="res">v = t(0,1)</span></div>
+          <p class="step">「自由変数が残る」のは正常。(A−λI) は det = 0 になるように λ を選んだので、必ず潰れて（rank が落ちて）解が直線状に無限個出る。<b>固有ベクトルは1本の矢印ではなく直線（1次元部分空間）まるごと</b>で、(1,0) も (5,0) も (−1,0) もぜんぶ固有ベクトル。代表として成分が簡単なものを書く慣習。</p>
+
+          <p><b>③ 検算</b></p>
+          <p><code>A(1,0) = (2·1, 3·0) = (2,0) = 2(1,0)</code> ✓ &nbsp;/&nbsp; <code>A(0,1) = (0,3) = 3(0,1)</code> ✓</p>
+          <p class="step">全体の検算：<b>trace = 2+3 = 5 = λ₁+λ₂</b>、<b>det = 2·3 = 6 = λ₁λ₂</b>。この2つが合っていれば λ の計算ミスはほぼない。</p>
+
+          <p><b>④ 幾何：この行列は「x方向に2倍・y方向に3倍」引き伸ばすだけ</b></p>
+          <p class="step">だから <b>座標軸に乗った点は軸から出られない</b>（向きが変わらない＝固有ベクトル）。それ以外の点、例えば (1,1) は (2,3) に移り、傾きが 45° → 56.3° に<b>変わる</b>ので固有ベクトルではない。単位円は x半径2・y半径3 の楕円になる。下のアニメーションで確認できる。</p>
+
+          <!-- ==== inline animation ==== -->
+          <div class="eigdemo" id="eig1">
+            <div class="cvwrap"><canvas id="eig1cv" width="480" height="440"></canvas></div>
+            <div class="lg">
+              <span><span class="sw" style="background:#b8860b"></span>e₁=(1,0) → ×2（向き不変）</span>
+              <span><span class="sw" style="background:#2f5d8a"></span>e₂=(0,1) → ×3（向き不変）</span>
+              <span><span class="sw" style="background:#c0392b"></span>(1,1) → (2,3)（向きが変わる）</span>
+            </div>
+            <div class="ctrl">
+              <button class="b on" id="eig1play">❚❚ 一時停止</button>
+              <div class="sl">
+                <label>I</label>
+                <input type="range" id="eig1t" min="0" max="1" step="0.001" value="0">
+                <label>A</label>
+              </div>
+              <button class="b on" id="eig1ring">円→楕円</button>
+              <button class="b on" id="eig1fan">周りのベクトル</button>
+            </div>
+            <div class="cap" id="eig1cap"></div>
+          </div>
+
+          <p class="step"><b>アニメの読み方.</b> 灰色の細い矢印は円周上に並べたいろいろな向きのベクトル。変形すると<b>ほとんどが y 軸側へ倒れていく</b>＝向きが変わる。向きが1ミリも変わらないのは金（x軸）と青（y軸）の2本だけで、それぞれちょうど 2倍・3倍に伸びる。この「<b>変換しても直線から出てこない方向</b>」が固有ベクトル、「<b>その方向での伸び率</b>」が固有値。</p>
+
+          <p class="step"><span class="key">補足：</span>対角行列は<b>すでに対角化が終わっている状態</b>（P = I）。一般の行列で固有値・固有ベクトルを求める作業は、要するに<b>この形に見える座標系を探す</b>こと。また A を繰り返しかけると x方向は 2ⁿ、y方向は 3ⁿ で伸びるので、大きい方の固有値 3 の方向が支配的になっていく。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><p>固有値と固有ベクトルを求めよ。<span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>2</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><div class="pl">固有値と固有ベクトルを求めよ。<span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>2</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p><code>det(A−λI) = (2−λ)² − 1 = λ² − 4λ + 3 = (λ−1)(λ−3) = 0</code> → <span class="res">λ = 1, 3</span>。</p>
-          <p>λ=1：<code>(A−I)</code>=<span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td></tr></table></span> → x+y=0 → <span class="res">v=(1, −1)</span></p>
-          <p>λ=3：<code>(A−3I)</code>=<span class="mtx"><table><tr><td>-1</td><td>1</td></tr><tr><td>1</td><td>-1</td></tr></table></span> → x=y → <span class="res">v=(1, 1)</span></p>
+          <div class="pl">λ=1：<code>(A−I)</code>=<span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td></tr></table></span> → x+y=0 → <span class="res">v=(1, −1)</span></div>
+          <div class="pl">λ=3：<code>(A−3I)</code>=<span class="mtx"><table><tr><td>-1</td><td>1</td></tr><tr><td>1</td><td>-1</td></tr></table></span> → x=y → <span class="res">v=(1, 1)</span></div>
           <p class="step">対称行列なので固有ベクトルが直交している（(1,−1)⊥(1,1)）のも特徴。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><p>固有値・固有ベクトルを求めよ。何か特別なことが起きるか。<span class="mtx"><table><tr><td>4</td><td>1</td></tr><tr><td>0</td><td>4</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><div class="pl">固有値・固有ベクトルを求めよ。何か特別なことが起きるか。<span class="mtx"><table><tr><td>4</td><td>1</td></tr><tr><td>0</td><td>4</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p>三角行列なので <span class="res">λ = 4（重解）</span>。</p>
-          <p><code>(A−4I)</code>=<span class="mtx"><table><tr><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td></tr></table></span> → y=0、x 自由 → 固有ベクトルは <span class="res">(1,0) の 1 本だけ</span>。</p>
+          <div class="pl"><code>(A−4I)</code>=<span class="mtx"><table><tr><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td></tr></table></span> → y=0、x 自由 → 固有ベクトルは <span class="res">(1,0) の 1 本だけ</span>。</div>
           <p class="step">固有値は 2 個分（重複度2）あるのに固有ベクトルが 1 本しか取れない＝<b>対角化できない</b>。これがジョルダン標準形が必要になる典型例。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q4</span><div class="qbody"><p>固有値を求めよ（90°回転行列）。<span class="mtx"><table><tr><td>0</td><td>-1</td></tr><tr><td>1</td><td>0</td></tr></table></span></p></div></div>
+        <div class="qhead"><span class="qno">Q4</span><div class="qbody"><div class="pl">固有値を求めよ（90°回転行列）。<span class="mtx"><table><tr><td>0</td><td>-1</td></tr><tr><td>1</td><td>0</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p><code>det(A−λI) = λ² + 1 = 0</code> → <span class="res">λ = ±i（複素数）</span>。</p>
           <p class="step">実数の固有値・固有ベクトルを持たない。当然で、回転はどの実ベクトルの向きも変えてしまう＝「向きが変わらない実方向」が存在しない。固有値が複素数になる代表例。</p>
@@ -5677,6 +6081,169 @@ buildSideNav();
 setupFoldInteractions();
 doneSet.forEach(id => applyDoneState(id));
 updateDoneSummary();
+
+// ===== 領域10 Q1: diag(2,3) の固有ベクトル アニメーション =====
+(() => {
+  const cv = document.getElementById('eig1cv');
+  if (!cv) return;
+  const ctx = cv.getContext('2d');
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  const GOLD = '#b8860b', BLUE = '#2f5d8a', RED = '#c0392b';
+  let W = 540, H = 400, S = 98, OX = 0, OY = 0;
+
+  function fit(){
+    const w = cv.clientWidth;
+    if (!w) return false;                       // details が閉じている間は 0
+    const h = w * 440/480;
+    cv.width = w*DPR; cv.height = h*DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    W = w; H = h;
+    OX = W*0.50; OY = H*0.52;                   // 原点は中央（円と楕円を丸ごと見せる）
+    S = Math.min(W*0.46/2.35, H*0.48/3.35);
+    return true;
+  }
+  const px = x => OX + x*S, py = y => OY - y*S;
+
+  let t = 0, playing = true, dir = 1, showRing = true, showFan = true;
+
+  function arrow(x0,y0,x1,y1,color,w,head,alpha){
+    ctx.save();
+    if (alpha!=null) ctx.globalAlpha = alpha;
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=w;
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+    const d=Math.hypot(x1-x0,y1-y0);
+    if(d>5){
+      const a=Math.atan2(y1-y0,x1-x0);
+      ctx.beginPath(); ctx.moveTo(x1,y1);
+      ctx.lineTo(x1-head*Math.cos(a-0.42), y1-head*Math.sin(a-0.42));
+      ctx.lineTo(x1-head*Math.cos(a+0.42), y1-head*Math.sin(a+0.42));
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function grid(){
+    ctx.lineWidth=1; ctx.strokeStyle='#f0f0f0';
+    for(let x=-3;x<=3;x++){ ctx.beginPath(); ctx.moveTo(px(x),0); ctx.lineTo(px(x),H); ctx.stroke(); }
+    for(let y=-3;y<=3;y++){ ctx.beginPath(); ctx.moveTo(0,py(y)); ctx.lineTo(W,py(y)); ctx.stroke(); }
+    ctx.strokeStyle='#c9c9c9'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(0,py(0)); ctx.lineTo(W,py(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px(0),0); ctx.lineTo(px(0),H); ctx.stroke();
+    ctx.fillStyle='#a8a8a8'; ctx.font='400 10px Poppins, sans-serif'; ctx.textAlign='center';
+    for(let x=-3;x<=3;x++){ if(x) ctx.fillText(x, px(x), py(0)+13); }
+    ctx.textAlign='right';
+    for(let y=-3;y<=3;y++){ if(y) ctx.fillText(y, px(0)-5, py(y)+3.5); }
+    ctx.textAlign='left';
+    ctx.fillStyle='#8f8f8f'; ctx.font='600 11px Poppins, sans-serif';
+    ctx.fillText('x', W-13, py(0)-8);
+    ctx.fillText('y', px(0)+8, 13);
+  }
+
+  function draw(){
+    const a = 1 + t, b = 1 + 2*t;            // M = diag(a, b) : I → diag(2,3)
+    ctx.clearRect(0,0,W,H);
+    grid();
+
+    // 単位円（元）と楕円（変換後）
+    if(showRing){
+      ctx.save();
+      ctx.setLineDash([4,4]); ctx.strokeStyle='#cfcfcf'; ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.ellipse(px(0),py(0), S, S, 0, 0, Math.PI*2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.strokeStyle='#9a9a9a'; ctx.lineWidth=1.6;
+      ctx.beginPath(); ctx.ellipse(px(0),py(0), a*S, b*S, 0, 0, Math.PI*2); ctx.stroke();
+      ctx.restore();
+    }
+
+    // 円周上のいろいろな向き（向きが変わる様子）
+    if(showFan){
+      const N = 24;
+      for(let i=0;i<N;i++){
+        const th = i*2*Math.PI/N;
+        const u = [Math.cos(th), Math.sin(th)];
+        if(Math.abs(u[0])<1e-9 || Math.abs(u[1])<1e-9) continue;   // 軸上は主役の矢印に任せる
+        const p = [a*u[0], b*u[1]];
+        arrow(px(0),py(0),px(p[0]),py(p[1]),'#111',1,4.5,0.16);
+      }
+    }
+
+    // 元の (1,1) 方向の参照線（点線）
+    ctx.save();
+    ctx.setLineDash([3,4]); ctx.lineWidth=1.2; ctx.globalAlpha=0.55;
+    ctx.strokeStyle=RED;
+    ctx.beginPath(); ctx.moveTo(px(0),py(0)); ctx.lineTo(px(2.2),py(2.2)); ctx.stroke();
+    ctx.restore();
+
+    // 主役3本
+    arrow(px(0),py(0),px(a),py(0),GOLD,2.6,9);
+    arrow(px(0),py(0),px(0),py(b),BLUE,2.6,9);
+    arrow(px(0),py(0),px(a),py(b),RED,2.4,9);
+
+    // ラベル
+    ctx.font='700 12px Poppins, sans-serif';
+    ctx.fillStyle=GOLD; ctx.textAlign='left';
+    ctx.fillText('×'+a.toFixed(2), px(a)+9, py(0)+17);
+    ctx.fillStyle=BLUE;
+    ctx.fillText('×'+b.toFixed(2), px(0)+11, py(b)+2);
+    ctx.fillStyle=RED; ctx.textAlign='left';
+    ctx.fillText('('+a.toFixed(2)+', '+b.toFixed(2)+')', px(a)+8, py(b)-8);
+    ctx.font='600 10.5px Poppins, sans-serif'; ctx.fillStyle='#a0a0a0';
+    ctx.fillText('元の (1,1) の向き', px(2.2)+4, py(2.2)+11);
+
+    // 角度
+    const deg = Math.atan2(b,a)*180/Math.PI;
+    ctx.font='600 11.5px Poppins, sans-serif'; ctx.fillStyle=RED; ctx.textAlign='left';
+    ctx.fillText(deg.toFixed(1)+'°', px(0)+S*0.30, py(0)-S*0.36);
+
+    // 原点
+    ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(px(0),py(0),3,0,7); ctx.fill();
+
+    const cap = document.getElementById('eig1cap');
+    if(cap){
+      const deg0 = 45;
+      cap.innerHTML = t < 0.02
+        ? '変形前（単位行列 I）。すべてのベクトルがそのまま。'
+        : (t > 0.98
+          ? '変形後（A = diag(2,3)）。<b>金は x軸上のまま2倍、青は y軸上のまま3倍</b>＝固有ベクトル。赤の (1,1) は '+deg0+'° → <b>'+deg.toFixed(1)+'°</b> に傾きが変わったので固有ベクトルではない。'
+          : 'x方向 ×'+a.toFixed(2)+'、y方向 ×'+b.toFixed(2)+' の途中。軸上の2本だけが直線から出ず、他は向きが動いている（赤：'+deg.toFixed(1)+'°）。');
+    }
+    document.getElementById('eig1t').value = t;
+  }
+
+  function loop(){
+    if(fit()){
+      if(playing){
+        t += 0.0055*dir;
+        if(t>=1){ t=1; dir=-1; }
+        if(t<=0){ t=0; dir=1; }
+      }
+      draw();
+    }
+    requestAnimationFrame(loop);
+  }
+
+  const playBtn = document.getElementById('eig1play');
+  playBtn.addEventListener('click', ()=>{
+    playing = !playing;
+    playBtn.classList.toggle('on', playing);
+    playBtn.textContent = playing ? '❚❚ 一時停止' : '▶ 再生';
+  });
+  document.getElementById('eig1t').addEventListener('input', e=>{
+    t = +e.target.value; playing = false;
+    playBtn.classList.remove('on'); playBtn.textContent = '▶ 再生';
+  });
+  document.getElementById('eig1ring').addEventListener('click', e=>{
+    showRing = !showRing; e.currentTarget.classList.toggle('on', showRing);
+  });
+  document.getElementById('eig1fan').addEventListener('click', e=>{
+    showFan = !showFan; e.currentTarget.classList.toggle('on', showFan);
+  });
+  const det = cv.closest('details');
+  if(det) det.addEventListener('toggle', fit);
+  window.addEventListener('resize', fit);
+
+  loop();
+})();
 </script>
 </body>
 </html>
