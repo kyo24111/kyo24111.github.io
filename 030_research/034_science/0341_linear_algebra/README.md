@@ -24,3 +24,4 @@
 - [260516_linear_algebra.html](260516_linear_algebra.html) — メインページ（今後prompt駆動で蓄積）
 - [260731_rotation_eigenaxis.html](260731_rotation_eigenaxis.html) — 回転の合成→斜め軸(固有ベクトル)の3Dビジュアライズ。直交行列/SO(3)/O(3)/オイラーの回転定理。
 - [260808_fibonacci_eigen.html](260808_fibonacci_eigen.html) — フィボナッチ行列 A=[[1,1],[1,0]] で固有値・固有ベクトルを可視化。(λ,1)→(λ²,λ)→… の推移アニメ。
+- [260813_eigen_playground.html](260813_eigen_playground.html) — 2D/3D の行列成分（−2〜2）を手入力すると固有値・固有空間・対角化可否とアニメが即更新されるプレイグラウンド。

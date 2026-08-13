@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>固有値・固有ベクトル プレイグラウンド</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --surface:#f5f5f5; --border:#e0e0e0;
+    --text:#111111; --soft:#3c424b; --muted:#888888; --faint:#b5b5b5;
+    --c1:#b8860b; --c2:#2f5d8a; --c3:#1d7a4d; --warn:#c0392b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);
+    line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;font-feature-settings:"palt"}
+  .page{max-width:900px;margin:0 auto;padding:52px 26px 100px}
+  .mono{font-family:'Poppins',monospace}
+
+  header{margin-bottom:22px}
+  .kick{font-family:'Poppins',sans-serif;font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:14px}
+  h1{font-size:27px;font-weight:700;line-height:1.35;margin-bottom:12px}
+  .lede{color:var(--soft);font-size:15px;max-width:700px}
+  .upd{font-size:12px;color:var(--faint);margin-top:14px;font-family:'Poppins',sans-serif}
+  h2{font-size:19px;font-weight:700;margin:38px 0 8px}
+  p{margin:10px 0}
+  .small{font-size:13.5px;color:var(--soft)}
+
+  .seg{display:inline-flex;border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--bg)}
+  .seg button{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;border:none;background:var(--bg);
+    color:var(--muted);padding:9px 20px;cursor:pointer;border-right:1px solid var(--border)}
+  .seg button:last-child{border-right:none}
+  .seg button.on{background:var(--text);color:#fff}
+
+  .stage{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:18px;margin:16px 0}
+  .grid2{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:18px;align-items:start}
+  @media(max-width:760px){ .grid2{grid-template-columns:1fr} }
+
+  .panel{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:14px}
+  .panel h3{font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:700;margin-bottom:10px}
+
+  /* matrix input */
+  .mwrap{display:flex;justify-content:center;align-items:center;gap:6px;margin:4px 0 12px}
+  .brk{width:9px;align-self:stretch;border:2px solid var(--soft)}
+  .brk.l{border-right:none;border-radius:6px 0 0 6px}
+  .brk.r{border-left:none;border-radius:0 6px 6px 0}
+  .mgrid{display:grid;gap:6px}
+  .mgrid input{width:46px;height:38px;text-align:center;font-family:'Poppins',sans-serif;font-size:15px;
+    font-weight:600;border:1px solid var(--border);border-radius:7px;background:var(--bg);color:var(--text);
+    -moz-appearance:textfield}
+  .mgrid input::-webkit-outer-spin-button,.mgrid input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .mgrid input:focus{outline:none;border-color:var(--text);box-shadow:0 0 0 2px rgba(17,17,17,.08)}
+  .mgrid input.nz{background:#fffdf3;border-color:#e8d8a0}
+  .hint{font-size:11.5px;color:var(--muted);text-align:center;margin-top:-4px}
+
+  .btns{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+  .b{font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;border:1px solid var(--border);
+    background:var(--bg);color:var(--soft);padding:7px 11px;border-radius:8px;cursor:pointer}
+  .b:hover{border-color:var(--muted);color:var(--text)}
+  .b.on{background:var(--text);color:#fff;border-color:var(--text)}
+  .presets{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+  .presets button{font-size:11.5px;padding:5px 9px}
+
+  .cvwrap{background:var(--bg);border:1px solid var(--border);border-radius:12px;display:flex;
+    justify-content:center;padding:6px}
+  canvas{width:100%;height:auto;display:block;touch-action:none}
+  #cv3{cursor:grab} #cv3:active{cursor:grabbing}
+
+  .ctrl{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-top:12px}
+  .sl{display:flex;align-items:center;gap:9px;flex:1;min-width:180px}
+  .sl label{font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted)}
+  .sl input{flex:1;accent-color:var(--text)}
+
+  .lg{display:flex;gap:13px;flex-wrap:wrap;justify-content:center;font-size:12px;color:var(--soft);margin-top:9px}
+  .lg span{display:inline-flex;align-items:center;gap:5px}
+  .sw{width:13px;height:3.5px;border-radius:2px;flex:none}
+
+  /* readout */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:9px 8px;text-align:center}
+  .stat .lab{font-family:'Poppins',sans-serif;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .stat .val{font-family:'Poppins',sans-serif;font-size:17px;font-weight:700}
+
+  .eig{border:1px solid var(--border);border-radius:9px;padding:10px 12px;margin-bottom:8px;font-size:13px}
+  .eig .lam{font-family:'Poppins',sans-serif;font-weight:700;font-size:15px}
+  .eig .meta{font-size:11.5px;color:var(--muted)}
+  .eig .vecs{font-family:'Poppins',monospace;font-size:12.5px;margin-top:4px}
+  .verdict{border-radius:9px;padding:10px 12px;font-size:13px;margin-top:10px;border:1px solid var(--border);background:var(--surface)}
+  .verdict.ok{background:#eef8f2;border-color:#b8dbc7;color:#14603c}
+  .verdict.ng{background:#fdf0ee;border-color:#f0cdc7;color:#96271b}
+  .cap{text-align:center;font-size:12.5px;color:var(--soft);margin-top:10px;min-height:34px}
+  .cap b{font-weight:700}
+
+  .box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:15px 17px;margin:16px 0;font-size:13.5px}
+  code{font-family:'Poppins',monospace;background:var(--surface);padding:1px 6px;border-radius:4px;font-size:12.5px}
+  .hl{background:#fff3cf;padding:0 4px;border-radius:3px}
+  table.key{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px}
+  table.key th,table.key td{border:1px solid var(--border);padding:7px 9px;text-align:left}
+  table.key th{background:var(--surface);font-weight:700;font-family:'Poppins',sans-serif;font-size:11.5px}
+  .scroll{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <div class="kick">Linear Algebra · Playground</div>
+  <h1>固有値・固有ベクトル プレイグラウンド</h1>
+  <p class="lede">
+    行列の数字を打ち替えると、その場で固有値・固有ベクトルが計算され、変換のアニメーションも切り替わります。
+    2次元（4マス）と3次元（9マス）を選べます。各成分は <span class="mono">−2 〜 2</span> の整数。
+  </p>
+  <div class="upd">Last updated: 2026-08-13</div>
+</header>
+
+<div class="seg" id="dimSeg">
+  <button data-d="2" class="on">2D — 4マス</button>
+  <button data-d="3">3D — 9マス</button>
+</div>
+
+<div class="stage">
+  <div class="grid2">
+
+    <!-- ============ LEFT: input + readout ============ -->
+    <div>
+      <div class="panel">
+        <h3>Matrix A</h3>
+        <div class="mwrap">
+          <div class="brk l"></div>
+          <div class="mgrid" id="mgrid"></div>
+          <div class="brk r"></div>
+        </div>
+        <div class="hint">各マスは −2 / −1 / 0 / 1 / 2（↑↓キーでも変更可）</div>
+        <div class="btns">
+          <button class="b" id="btnI">単位行列 I</button>
+          <button class="b" id="btnRand">ランダム</button>
+          <button class="b" id="btnT">転置</button>
+        </div>
+        <div class="presets" id="presets"></div>
+      </div>
+
+      <div class="panel" style="margin-top:12px">
+        <h3>Result</h3>
+        <div class="stats">
+          <div class="stat"><div class="lab">det</div><div class="val" id="stDet">—</div></div>
+          <div class="stat"><div class="lab">trace</div><div class="val" id="stTr">—</div></div>
+          <div class="stat"><div class="lab">rank</div><div class="val" id="stRank">—</div></div>
+        </div>
+        <div id="eigList"></div>
+        <div class="verdict" id="verdict"></div>
+      </div>
+    </div>
+
+    <!-- ============ RIGHT: canvas ============ -->
+    <div>
+      <div class="cvwrap">
+        <canvas id="cv2" width="520" height="470"></canvas>
+        <canvas id="cv3" width="520" height="470" style="display:none"></canvas>
+      </div>
+      <div class="lg" id="legend"></div>
+      <div class="ctrl">
+        <button class="b on" id="btnPlay">❚❚ 一時停止</button>
+        <div class="sl">
+          <label>I</label>
+          <input type="range" id="tSlider" min="0" max="1" step="0.001" value="0">
+          <label>A</label>
+        </div>
+        <button class="b on" id="btnRing">円→楕円</button>
+        <button class="b on" id="btnFan">周りのベクトル</button>
+        <button class="b on" id="btnLines">固有直線</button>
+        <button class="b on" id="btnRot" style="display:none">⟳ 自動回転</button>
+      </div>
+      <div class="cap" id="cap"></div>
+    </div>
+
+  </div>
+</div>
+
+<h2>使い方と読みどころ</h2>
+<div class="box">
+  <b>アニメは <code>M(t) = (1−t)I + tA</code> で I から A へ連続変形しています。</b>
+  この <code>M(t)</code> は <span class="hl">A と固有ベクトルが完全に一致する</span>（固有値だけが <code>1−t+tλ</code> に変わる）ので、
+  <b>固有直線は最初から最後まで一切動きません</b>。だから「変形中ずっと同じ直線に乗ったままの矢印」を探せば、それが固有ベクトルです。
+</div>
+
+<div class="scroll">
+<table class="key">
+  <tr><th>試すと面白い入力</th><th>何が起きるか</th></tr>
+  <tr><td>対角 <code>diag(2,−1)</code></td><td>座標軸が固有ベクトル。負の固有値は<b>反転</b>（矢印が反対側へ）</td></tr>
+  <tr><td>対称 <code>[[2,1],[1,2]]</code></td><td>固有ベクトルが<b>直交</b>する。楕円の長軸・短軸がそのまま2本の固有直線</td></tr>
+  <tr><td>シアー <code>[[2,1],[0,2]]</code></td><td>重解なのに固有直線は<b>1本だけ</b>（対角化不可）</td></tr>
+  <tr><td>スカラー <code>2I</code></td><td>円が円のまま膨らむ ＝ <b>全方向が固有ベクトル</b>（固有空間が平面／空間全体）</td></tr>
+  <tr><td>回転 <code>[[0,−1],[1,0]]</code></td><td>実の固有方向が<b>存在しない</b>（固有値が複素数）</td></tr>
+  <tr><td>ランク落ち <code>[[1,1],[1,1]]</code></td><td>λ=0 の方向が原点に<b>潰れる</b>。det=0 で面積が消える</td></tr>
+  <tr><td>3D 回転 <code>[[0,−1,0],[1,0,0],[0,0,1]]</code></td><td>λ=1 の固有直線＝<b>回転軸</b>だけが残る</td></tr>
+  <tr><td>3D <code>diag(2,2,−1)</code></td><td>λ=2 の固有空間が<b>平面</b>になる（重解で膨らむケース）</td></tr>
+</table>
+</div>
+
+<p class="small">
+  ※ 固有ベクトルは数値計算（3次方程式は解の公式、固有空間は掃き出し法）で求めています。重解の近くでは
+  数値誤差で次元判定がぶれることがあるので、そのときは成分を整数に取り直して確認してください。
+</p>
+
+<script>
+(() => {
+  // ================= state =================
+  let n = 2;
+  let A = [[1,0],[0,1]];
+  let t = 0, dir = 1, playing = true;
+  let showRing = true, showFan = true, showLines = true, autoRot = true;
+  let yaw = 0.62, pitch = -0.38, dragging = false, lx = 0, ly = 0;
+
+  const C = ['#b8860b','#2f5d8a','#1d7a4d'];   // 固有値ごとの色
+  const WARN = '#c0392b';
+
+  // ================= linear algebra =================
+  const idn = m => Array.from({length:m},(_,i)=>Array.from({length:m},(_,j)=>i===j?1:0));
+  const lerpM = (P,Q,s) => P.map((r,i)=>r.map((v,j)=>v*(1-s)+Q[i][j]*s));
+  const mv = (M,v) => M.map(r=>r.reduce((s,x,j)=>s+x*v[j],0));
+  const norm = v => Math.hypot(...v);
+
+  function det(M){
+    if(M.length===2) return M[0][0]*M[1][1]-M[0][1]*M[1][0];
+    const [a,b,c]=M[0],[d,e,f]=M[1],[g,h,i]=M[2];
+    return a*(e*i-f*h)-b*(d*i-f*g)+c*(d*h-e*g);
+  }
+  const trace = M => M.reduce((s,r,i)=>s+r[i],0);
+
+  // RREF → {rank, nullBasis}
+  function nullSpace(M, tol){
+    const m = M.length, B = M.map(r=>r.slice()), piv = [];
+    let row = 0;
+    for(let col=0; col<m && row<m; col++){
+      let best=row, bv=Math.abs(B[row][col]);
+      for(let i=row+1;i<m;i++) if(Math.abs(B[i][col])>bv){ bv=Math.abs(B[i][col]); best=i; }
+      if(bv < tol) continue;
+      const tmp=B[row]; B[row]=B[best]; B[best]=tmp;
+      const p=B[row][col];
+      for(let j=0;j<m;j++) B[row][j]/=p;
+      for(let i=0;i<m;i++) if(i!==row){
+        const f=B[i][col];
+        if(Math.abs(f)>1e-14) for(let j=0;j<m;j++) B[i][j]-=f*B[row][j];
+      }
+      piv.push(col); row++;
+    }
+    const free=[]; for(let c=0;c<m;c++) if(piv.indexOf(c)<0) free.push(c);
+    const basis = free.map(fc=>{
+      const v=new Array(m).fill(0); v[fc]=1;
+      piv.forEach((pc,i)=>{ v[pc] = -B[i][fc]; });
+      return v;
+    });
+    return { rank: piv.length, basis };
+  }
+
+  function rankOf(M){
+    const scale = Math.max(1, ...M.flat().map(Math.abs));
+    return nullSpace(M, 1e-9*scale).rank;
+  }
+
+  // 実根/複素根（2次・3次）
+  function eigenvalues(M){
+    if(M.length===2){
+      const tr = trace(M), dt = det(M), disc = tr*tr - 4*dt;
+      if(disc >= -1e-12){
+        const s = Math.sqrt(Math.max(0,disc));
+        return [{re:(tr+s)/2},{re:(tr-s)/2}];
+      }
+      const im = Math.sqrt(-disc)/2;
+      return [{re:tr/2, im}, {re:tr/2, im:-im}];
+    }
+    // λ³ − c2λ² + c1λ − c0
+    const c2 = trace(M);
+    const c1 = (M[0][0]*M[1][1]-M[0][1]*M[1][0])
+             + (M[0][0]*M[2][2]-M[0][2]*M[2][0])
+             + (M[1][1]*M[2][2]-M[1][2]*M[2][1]);
+    const c0 = det(M);
+    // λ³ + bλ² + cλ + d
+    const b = -c2, c = c1, d = -c0;
+    const p = c - b*b/3, q = 2*b*b*b/27 - b*c/3 + d, sh = -b/3;
+    if(Math.abs(p) < 1e-12 && Math.abs(q) < 1e-12) return [{re:sh},{re:sh},{re:sh}];
+    const disc = q*q/4 + p*p*p/27;
+    if(disc > 1e-11){
+      const s = Math.sqrt(disc);
+      const u = Math.cbrt(-q/2 + s), w = Math.cbrt(-q/2 - s);
+      const r1 = u + w + sh;
+      const re = -(u+w)/2 + sh, im = (u-w)*Math.sqrt(3)/2;
+      return [{re:r1},{re,im},{re,im:-im}];
+    }
+    const r = Math.sqrt(Math.max(1e-300, -p*p*p/27));
+    let ca = -q/(2*r); ca = Math.max(-1, Math.min(1, ca));
+    const phi = Math.acos(ca), mm = 2*Math.sqrt(Math.max(0,-p/3));
+    return [0,1,2].map(k => ({ re: mm*Math.cos((phi + 2*Math.PI*k)/3) + sh }));
+  }
+
+  // 固有ベクトルまで含めた分解
+  function analyze(M){
+    const m = M.length;
+    const roots = eigenvalues(M);
+    const reals = roots.filter(r => r.im === undefined || Math.abs(r.im) < 1e-9).map(r => r.re);
+    const cplx  = roots.filter(r => r.im !== undefined && Math.abs(r.im) >= 1e-9);
+    // 実固有値をまとめる（重解の統合）
+    const groups = [];
+    reals.slice().sort((a,b)=>b-a).forEach(v=>{
+      const g = groups.find(g => Math.abs(g.lam - v) < 1e-6*Math.max(1,Math.abs(v)));
+      if(g){ g.alg++; g.lam = (g.lam*(g.alg-1)+v)/g.alg; } else groups.push({lam:v, alg:1});
+    });
+    const scale = Math.max(1, ...M.flat().map(Math.abs));
+    groups.forEach(g => {
+      const lam = Math.abs(g.lam - Math.round(g.lam)) < 1e-7 ? Math.round(g.lam) : g.lam;
+      g.lam = lam;
+      const Mi = M.map((r,i)=>r.map((v,j)=> v - (i===j ? lam : 0)));
+      const ns = nullSpace(Mi, 1e-6*scale);
+      g.basis = ns.basis.map(prettify);
+      g.geo = ns.basis.length;
+    });
+    return { groups, cplx, m };
+  }
+
+  // 見やすいスケールに直す（できるだけ小さい整数寄りに）
+  function prettify(v){
+    const nz = v.map(Math.abs).filter(x => x > 1e-9);
+    if(!nz.length) return v;
+    const mn = Math.min(...nz);
+    let w = v.map(x => x/mn);
+    if(Math.max(...w.map(Math.abs)) > 12) {
+      const mx = Math.max(...v.map(Math.abs));
+      w = v.map(x => x/mx);
+    }
+    // 先頭の非ゼロ成分を正に
+    const first = w.find(x => Math.abs(x) > 1e-9);
+    if(first < 0) w = w.map(x => -x);
+    return w.map(x => Math.abs(x) < 1e-9 ? 0 : x);
+  }
+  const fmt = x => {
+    if(Math.abs(x - Math.round(x)) < 1e-6) return String(Math.round(x));
+    return (Math.abs(x) < 100 ? x.toFixed(3) : x.toFixed(1)).replace(/0+$/,'').replace(/\.$/,'');
+  };
+  const vecStr = v => '(' + v.map(fmt).join(', ') + ')';
+
+  let INFO = analyze(A);
+
+  // ================= matrix input UI =================
+  const mgrid = document.getElementById('mgrid');
+  function buildGrid(){
+    mgrid.style.gridTemplateColumns = 'repeat(' + n + ', auto)';
+    mgrid.innerHTML = '';
+    for(let i=0;i<n;i++) for(let j=0;j<n;j++){
+      const inp = document.createElement('input');
+      inp.type = 'number'; inp.min = -2; inp.max = 2; inp.step = 1;
+      inp.value = A[i][j]; inp.dataset.i = i; inp.dataset.j = j;
+      inp.addEventListener('input', onCell);
+      inp.addEventListener('blur', onCell);
+      mgrid.appendChild(inp);
+    }
+    paintCells();
+  }
+  function onCell(e){
+    const el = e.target;
+    let v = parseInt(el.value, 10);
+    if(isNaN(v)) { if(el.value !== '' && el.value !== '-') el.value = 0; v = 0; }
+    v = Math.max(-2, Math.min(2, v));
+    if(el.value !== '' && el.value !== '-') el.value = v;
+    A[+el.dataset.i][+el.dataset.j] = v;
+    refresh();
+  }
+  function paintCells(){
+    [...mgrid.children].forEach(el=>{
+      const v = A[+el.dataset.i][+el.dataset.j];
+      el.value = v;
+      el.classList.toggle('nz', v !== 0);
+    });
+  }
+  function setA(M){
+    n = M.length; A = M.map(r=>r.slice());
+    document.querySelectorAll('#dimSeg button').forEach(b=>b.classList.toggle('on', +b.dataset.d === n));
+    document.getElementById('cv2').style.display = n===2 ? 'block' : 'none';
+    document.getElementById('cv3').style.display = n===3 ? 'block' : 'none';
+    document.getElementById('btnRot').style.display = n===3 ? '' : 'none';
+    buildGrid(); buildPresets(); refresh();
+  }
+
+  const PRESETS = {
+    2: [
+      ['対角 diag(2,−1)', [[2,0],[0,-1]]],
+      ['対称', [[2,1],[1,2]]],
+      ['シアー（重解）', [[2,1],[0,2]]],
+      ['スカラー 2I', [[2,0],[0,2]]],
+      ['90°回転', [[0,-1],[1,0]]],
+      ['ランク落ち', [[1,1],[1,1]]],
+      ['冪零', [[0,1],[0,0]]],
+    ],
+    3: [
+      ['対角 diag(2,2,−1)', [[2,0,0],[0,2,0],[0,0,-1]]],
+      ['対称', [[2,1,0],[1,2,1],[0,1,2]]],
+      ['シアー（重解）', [[2,1,0],[0,2,0],[0,0,-1]]],
+      ['スカラー 2I', [[2,0,0],[0,2,0],[0,0,2]]],
+      ['z軸まわり回転', [[0,-1,0],[1,0,0],[0,0,1]]],
+      ['ランク1', [[1,1,1],[1,1,1],[1,1,1]]],
+      ['入れ替え', [[0,1,0],[0,0,1],[1,0,0]]],
+    ],
+  };
+  function buildPresets(){
+    const wrap = document.getElementById('presets');
+    wrap.innerHTML = '';
+    PRESETS[n].forEach(([label, M])=>{
+      const b = document.createElement('button');
+      b.className = 'b'; b.textContent = label;
+      b.addEventListener('click', ()=>{ A = M.map(r=>r.slice()); paintCells(); refresh(); });
+      wrap.appendChild(b);
+    });
+  }
+
+  // ================= readout =================
+  function refresh(){
+    INFO = analyze(A);
+    paintCells();
+    document.getElementById('stDet').textContent = fmt(det(A));
+    document.getElementById('stTr').textContent = fmt(trace(A));
+    document.getElementById('stRank').textContent = rankOf(A);
+
+    const list = document.getElementById('eigList');
+    let html = '';
+    INFO.groups.forEach((g,i)=>{
+      const col = C[i % C.length];
+      const dimTxt = g.geo === 1 ? '直線（dim 1）' : g.geo === 2 ? '<b>平面（dim 2）</b>' : '<b>空間ぜんぶ（dim 3）</b>';
+      html += '<div class="eig" style="border-left:4px solid '+col+'">'
+        + '<div class="lam" style="color:'+col+'">λ = '+fmt(g.lam)+(g.alg>1?' <span class="meta">（重複度 '+g.alg+'）</span>':'')+'</div>'
+        + '<div class="meta">固有空間 '+dimTxt+' ／ 独立な固有ベクトル '+g.geo+' 本</div>'
+        + '<div class="vecs">'+ (g.basis.length ? g.basis.map(vecStr).join('　') : '—') +'</div>'
+        + '</div>';
+    });
+    if(INFO.cplx.length){
+      html += '<div class="eig" style="border-left:4px solid '+WARN+'">'
+        + '<div class="lam" style="color:'+WARN+'">λ = '+fmt(INFO.cplx[0].re)+' ± '+fmt(Math.abs(INFO.cplx[0].im))+'i</div>'
+        + '<div class="meta">複素固有値のペア ／ <b>実の固有方向なし</b>（回転成分）</div></div>';
+    }
+    list.innerHTML = html;
+
+    const geoSum = INFO.groups.reduce((s,g)=>s+g.geo,0);
+    const v = document.getElementById('verdict');
+    if(INFO.cplx.length){
+      v.className = 'verdict ng';
+      v.innerHTML = '<b>実数の範囲では対角化できない</b>（複素固有値をもつ＝回転が混ざっている）。実の固有直線は '+geoSum+' 本。';
+    } else if(geoSum >= n){
+      v.className = 'verdict ok';
+      v.innerHTML = '<b>対角化できる</b>：独立な固有ベクトルが '+geoSum+' 本そろっている（必要数 '+n+'）。';
+    } else {
+      v.className = 'verdict ng';
+      v.innerHTML = '<b>対角化できない</b>：独立な固有ベクトルが '+geoSum+' 本しかない（必要数 '+n+'）。重解に対して固有空間が足りない＝ジョルダン行き。';
+    }
+
+    const lg = document.getElementById('legend');
+    let l = '';
+    INFO.groups.forEach((g,i)=>{
+      l += '<span><span class="sw" style="background:'+C[i%C.length]+'"></span>λ='+fmt(g.lam)+' の固有'+(g.geo>1?'空間':'直線')+'</span>';
+    });
+    const full = INFO.groups.find(g=>g.geo === n);
+    l += full
+      ? '<span><span class="sw" style="background:'+C[INFO.groups.indexOf(full)%C.length]+';opacity:.6"></span><b>どの方向も固有ベクトル</b></span>'
+      : '<span><span class="sw" style="background:#111;opacity:.25"></span>ふつうのベクトル（向きが変わる）</span>';
+    lg.innerHTML = l;
+  }
+
+  // ================= drawing common =================
+  const DPR = Math.min(window.devicePixelRatio || 1, 2);
+  function setup(cv){
+    const ctx = cv.getContext('2d');
+    const w = cv.clientWidth;
+    if(!w) return null;
+    const h = w * 470/520;
+    cv.width = w*DPR; cv.height = h*DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+    return { ctx, W:w, H:h };
+  }
+  function arrow(ctx,x0,y0,x1,y1,color,w,head,alpha){
+    ctx.save();
+    if(alpha!=null) ctx.globalAlpha = alpha;
+    ctx.strokeStyle=color; ctx.fillStyle=color; ctx.lineWidth=w;
+    ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y1); ctx.stroke();
+    if(Math.hypot(x1-x0,y1-y0) > 5){
+      const a=Math.atan2(y1-y0,x1-x0);
+      ctx.beginPath(); ctx.moveTo(x1,y1);
+      ctx.lineTo(x1-head*Math.cos(a-0.42), y1-head*Math.sin(a-0.42));
+      ctx.lineTo(x1-head*Math.cos(a+0.42), y1-head*Math.sin(a+0.42));
+      ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // ================= 2D =================
+  const cv2 = document.getElementById('cv2');
+  const DIRS2 = Array.from({length:24},(_,i)=>{
+    const th=i*2*Math.PI/24; return [Math.cos(th), Math.sin(th)];
+  });
+
+  function draw2(){
+    const s = setup(cv2); if(!s) return;
+    const { ctx, W, H } = s;
+    const M = lerpM(idn(2), A, t);
+    const OX = W*0.5, OY = H*0.5;
+
+    // scale
+    let mx = 1.2;
+    DIRS2.forEach(u=>{ const p=mv(M,u); mx=Math.max(mx, Math.abs(p[0]), Math.abs(p[1])); });
+    mx = Math.max(mx, 1.6);
+    const S = Math.min(W*0.46, H*0.46) / Math.min(mx*1.12, 3.6);
+    const px = x => OX + x*S, py = y => OY - y*S;
+
+    ctx.clearRect(0,0,W,H);
+    // grid
+    const step = (S > 46) ? 1 : (S > 23 ? 2 : 5);
+    ctx.lineWidth=1; ctx.strokeStyle='#f1f1f1';
+    const xr = Math.ceil((W/2)/S), yr = Math.ceil((H/2)/S);
+    for(let i=-xr;i<=xr;i+=step){ ctx.beginPath(); ctx.moveTo(px(i),0); ctx.lineTo(px(i),H); ctx.stroke(); }
+    for(let i=-yr;i<=yr;i+=step){ ctx.beginPath(); ctx.moveTo(0,py(i)); ctx.lineTo(W,py(i)); ctx.stroke(); }
+    ctx.strokeStyle='#c9c9c9'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(0,py(0)); ctx.lineTo(W,py(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(px(0),0); ctx.lineTo(px(0),H); ctx.stroke();
+    ctx.fillStyle='#a8a8a8'; ctx.font='400 10px Poppins, sans-serif'; ctx.textAlign='center';
+    for(let i=-xr;i<=xr;i+=step) if(i) ctx.fillText(i, px(i), py(0)+13);
+    ctx.textAlign='right';
+    for(let i=-yr;i<=yr;i+=step) if(i) ctx.fillText(i, px(0)-5, py(i)+3.5);
+    ctx.textAlign='left';
+
+    // 固有直線 / 固有平面
+    if(showLines){
+      INFO.groups.forEach((g,i)=>{
+        const col = C[i%C.length];
+        if(g.geo >= 2){
+          ctx.save(); ctx.globalAlpha=0.10; ctx.fillStyle=col;
+          ctx.fillRect(0,0,W,H); ctx.restore();
+        }
+        g.basis.forEach(v=>{
+          const L = 40;
+          ctx.save(); ctx.setLineDash([6,5]); ctx.globalAlpha=0.4; ctx.lineWidth=1.6; ctx.strokeStyle=col;
+          ctx.beginPath();
+          ctx.moveTo(px(-v[0]*L),py(-v[1]*L)); ctx.lineTo(px(v[0]*L),py(v[1]*L)); ctx.stroke();
+          ctx.restore();
+        });
+      });
+    }
+
+    // 円 → 楕円
+    if(showRing){
+      ctx.save();
+      ctx.setLineDash([4,4]); ctx.strokeStyle='#d4d4d4'; ctx.lineWidth=1.2;
+      ctx.beginPath(); ctx.ellipse(px(0),py(0),S,S,0,0,Math.PI*2); ctx.stroke();
+      ctx.setLineDash([]); ctx.strokeStyle='#9a9a9a'; ctx.lineWidth=1.6;
+      ctx.beginPath();
+      for(let i=0;i<=96;i++){
+        const th=i*2*Math.PI/96, p=mv(M,[Math.cos(th),Math.sin(th)]);
+        i? ctx.lineTo(px(p[0]),py(p[1])) : ctx.moveTo(px(p[0]),py(p[1]));
+      }
+      ctx.closePath(); ctx.stroke(); ctx.restore();
+    }
+
+    // ふつうのベクトル（等方なら全部が固有ベクトルなので色を変える）
+    if(showFan){
+      const fi = INFO.groups.findIndex(g=>g.geo === 2);
+      const fullCol = fi >= 0 ? C[fi%C.length] : null;
+      DIRS2.forEach(u=>{
+        const isEig = INFO.groups.some(g=>g.basis.some(v=>Math.abs(u[0]*v[1]-u[1]*v[0]) < 1e-6*Math.max(1,norm(v))));
+        if(isEig && !fullCol) return;
+        const p = mv(M,u);
+        arrow(ctx,px(0),py(0),px(p[0]),py(p[1]), fullCol || '#111', fullCol?1.3:1, 4.8, fullCol?0.4:0.17);
+      });
+    }
+
+    // 固有ベクトル本体
+    INFO.groups.forEach((g,i)=>{
+      const col = C[i%C.length];
+      g.basis.forEach(v=>{
+        const u = v.map(x=>x/norm(v));
+        const p = mv(M,u);
+        arrow(ctx,px(0),py(0),px(p[0]),py(p[1]),col,2.5,9);
+        const k = 1 - t + t*g.lam;
+        ctx.fillStyle=col; ctx.font='700 11.5px Poppins, sans-serif';
+        ctx.textAlign = p[0] >= 0 ? 'left' : 'right';
+        ctx.fillText('×'+k.toFixed(2), px(p[0]) + (p[0]>=0?9:-9), py(p[1]) - 8);
+        ctx.textAlign='left';
+      });
+    });
+
+    ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(px(0),py(0),3,0,7); ctx.fill();
+  }
+
+  // ================= 3D =================
+  const cv3 = document.getElementById('cv3');
+  const DIRS3 = (()=>{
+    const out=[];
+    for(let i=-1;i<=1;i++) for(let j=-1;j<=1;j++) for(let k=-1;k<=1;k++){
+      if(!i && !j && !k) continue;
+      const L=Math.hypot(i,j,k); out.push([i/L,j/L,k/L]);
+    }
+    return out;
+  })();
+  const CIRC = (()=>{
+    const mk = f => Array.from({length:73},(_,i)=>f(i*2*Math.PI/72));
+    return [
+      mk(a=>[Math.cos(a),Math.sin(a),0]),
+      mk(a=>[Math.cos(a),0,Math.sin(a)]),
+      mk(a=>[0,Math.cos(a),Math.sin(a)]),
+    ];
+  })();
+
+  function draw3(){
+    const s = setup(cv3); if(!s) return;
+    const { ctx, W, H } = s;
+    const M = lerpM(idn(3), A, t);
+    const OX = W*0.5, OY = H*0.52;
+
+    let mx = 1.2;
+    DIRS3.forEach(u=>{ const p=mv(M,u); mx=Math.max(mx, Math.abs(p[0]), Math.abs(p[1]), Math.abs(p[2])); });
+    const S = Math.min(W*0.44, H*0.44) / Math.min(mx*1.2, 3.4);
+
+    const cy=Math.cos(yaw), sy=Math.sin(yaw), cp=Math.cos(pitch), sp=Math.sin(pitch);
+    function proj(p){
+      const x = p[0]*cy + p[2]*sy;
+      const z = -p[0]*sy + p[2]*cy;
+      const y2 = p[1]*cp - z*sp;
+      const z2 = p[1]*sp + z*cp;
+      return { x: OX + x*S, y: OY - y2*S, d: z2 };
+    }
+    const P = p => proj(p);
+
+    ctx.clearRect(0,0,W,H);
+
+    // 座標軸
+    const AX = [[[1,0,0],'x'],[[0,1,0],'y'],[[0,0,1],'z']];
+    ctx.save(); ctx.globalAlpha=0.55;
+    AX.forEach(([d,lab])=>{
+      const K=2.4, a=P([-d[0]*K,-d[1]*K,-d[2]*K]), b=P([d[0]*K,d[1]*K,d[2]*K]);
+      ctx.strokeStyle='#d4d4d4'; ctx.lineWidth=1;
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+      ctx.fillStyle='#9a9a9a'; ctx.font='600 11px Poppins, sans-serif';
+      ctx.fillText(lab, b.x+5, b.y-4);
+    });
+    ctx.restore();
+
+    // 固有平面（dim>=2）
+    if(showLines){
+      INFO.groups.forEach((g,i)=>{
+        if(g.geo < 2) return;
+        const col = C[i%C.length];
+        const [u,w] = g.basis;
+        const K=1.8;
+        const pts=[[-K,-K],[K,-K],[K,K],[-K,K]].map(([a,b])=>P([
+          a*u[0]+b*w[0], a*u[1]+b*w[1], a*u[2]+b*w[2]
+        ]));
+        ctx.save(); ctx.globalAlpha=0.13; ctx.fillStyle=col;
+        ctx.beginPath(); ctx.moveTo(pts[0].x,pts[0].y);
+        pts.slice(1).forEach(p=>ctx.lineTo(p.x,p.y)); ctx.closePath(); ctx.fill();
+        ctx.globalAlpha=0.35; ctx.strokeStyle=col; ctx.lineWidth=1.2; ctx.stroke();
+        ctx.restore();
+      });
+      // 固有直線
+      INFO.groups.forEach((g,i)=>{
+        const col = C[i%C.length];
+        if(g.geo !== 1) return;
+        g.basis.forEach(v=>{
+          const u = v.map(x=>x/norm(v)), K=2.6;
+          const a=P([-u[0]*K,-u[1]*K,-u[2]*K]), b=P([u[0]*K,u[1]*K,u[2]*K]);
+          ctx.save(); ctx.setLineDash([6,5]); ctx.globalAlpha=0.45; ctx.lineWidth=1.6; ctx.strokeStyle=col;
+          ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke(); ctx.restore();
+        });
+      });
+    }
+
+    // 球 → 楕円体（3つの大円）
+    if(showRing){
+      ctx.save();
+      CIRC.forEach(circle=>{
+        ctx.setLineDash([3,3]); ctx.strokeStyle='#e2e2e2'; ctx.lineWidth=1;
+        ctx.beginPath();
+        circle.forEach((p,i)=>{ const q=P(p); i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y); });
+        ctx.stroke();
+        ctx.setLineDash([]); ctx.strokeStyle='#9a9a9a'; ctx.lineWidth=1.4;
+        ctx.beginPath();
+        circle.forEach((p,i)=>{ const q=P(mv(M,p)); i?ctx.lineTo(q.x,q.y):ctx.moveTo(q.x,q.y); });
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    // ふつうのベクトル
+    if(showFan){
+      const O = P([0,0,0]);
+      const fi = INFO.groups.findIndex(g=>g.geo === 3);
+      const fullCol = fi >= 0 ? C[fi%C.length] : null;
+      DIRS3.forEach(u=>{
+        const isEig = INFO.groups.some(g=>g.basis.some(v=>{
+          const nv = norm(v); if(nv<1e-9) return false;
+          const w = v.map(x=>x/nv);
+          const dot = Math.abs(u[0]*w[0]+u[1]*w[1]+u[2]*w[2]);
+          return dot > 1 - 1e-6;
+        }));
+        if(isEig && !fullCol) return;
+        const p = P(mv(M,u));
+        arrow(ctx,O.x,O.y,p.x,p.y, fullCol || '#111', fullCol?1.3:1, 4.8, fullCol?0.38:0.15);
+      });
+    }
+
+    // 固有ベクトル本体
+    const O = P([0,0,0]);
+    INFO.groups.forEach((g,i)=>{
+      const col = C[i%C.length];
+      g.basis.forEach(v=>{
+        const u = v.map(x=>x/norm(v));
+        const p = P(mv(M,u));
+        arrow(ctx,O.x,O.y,p.x,p.y,col,2.4,8.5);
+      });
+      if(g.basis.length){
+        const u = g.basis[0].map(x=>x/norm(g.basis[0]));
+        const p = P(mv(M,u));
+        const k = 1 - t + t*g.lam;
+        ctx.fillStyle=col; ctx.font='700 11.5px Poppins, sans-serif';
+        ctx.fillText('×'+k.toFixed(2), p.x+8, p.y-7);
+      }
+    });
+
+    ctx.fillStyle='#111'; ctx.beginPath(); ctx.arc(O.x,O.y,3,0,7); ctx.fill();
+  }
+
+  // ================= caption =================
+  function caption(){
+    const el = document.getElementById('cap');
+    const geoSum = INFO.groups.reduce((s,g)=>s+g.geo,0);
+    let msg;
+    if(t < 0.02) msg = '変形前（単位行列 I）。スライダーを右へ動かすと A に近づきます。';
+    else {
+      const parts = INFO.groups.map(g=>'λ='+fmt(g.lam)+' の方向は ×'+(1-t+t*g.lam).toFixed(2));
+      msg = parts.length ? parts.join(' ／ ') + '。' : '';
+      if(INFO.cplx.length && geoSum === 0) msg = '実の固有方向が1本もないので、<b>すべての矢印が回りながら変形します</b>（固有値が複素数）。';
+      else if(INFO.cplx.length) msg += ' 残り2方向は複素固有値なので<b>回転</b>し、色つきの直線だけが残ります。';
+      else if(INFO.groups.some(g=>g.geo === n)) msg += ' <b>どの方向も同じ倍率</b>なので、1本も傾きません。';
+      else if(geoSum < n) msg += ' <b>独立な固有方向が '+geoSum+' 本しかありません（対角化不可）。</b>';
+      else msg += ' 色つきの矢印だけが同じ直線上に留まります。';
+    }
+    el.innerHTML = msg;
+  }
+
+  // ================= loop =================
+  function loop(){
+    if(playing){
+      t += 0.0055*dir;
+      if(t>=1){ t=1; dir=-1; }
+      if(t<=0){ t=0; dir=1; }
+      document.getElementById('tSlider').value = t;
+    }
+    if(n===2) draw2();
+    else { if(autoRot && !dragging) yaw += 0.005; draw3(); }
+    caption();
+    requestAnimationFrame(loop);
+  }
+
+  // ================= controls =================
+  document.getElementById('dimSeg').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    const d = +b.dataset.d;
+    if(d === n) return;
+    setA(d === 2 ? [[1,0],[0,1]] : [[1,0,0],[0,1,0],[0,0,1]]);
+  });
+  document.getElementById('btnI').addEventListener('click', ()=>{ A = idn(n); paintCells(); refresh(); });
+  document.getElementById('btnRand').addEventListener('click', ()=>{
+    A = A.map(r=>r.map(()=> Math.floor(Math.random()*5) - 2 ));
+    paintCells(); refresh();
+  });
+  document.getElementById('btnT').addEventListener('click', ()=>{
+    A = A[0].map((_,j)=>A.map(r=>r[j]));
+    paintCells(); refresh();
+  });
+  const playBtn = document.getElementById('btnPlay');
+  playBtn.addEventListener('click', ()=>{
+    playing = !playing;
+    playBtn.classList.toggle('on', playing);
+    playBtn.textContent = playing ? '❚❚ 一時停止' : '▶ 再生';
+  });
+  document.getElementById('tSlider').addEventListener('input', e=>{
+    t = +e.target.value; playing = false;
+    playBtn.classList.remove('on'); playBtn.textContent = '▶ 再生';
+  });
+  const tg = (id, get, set) => document.getElementById(id).addEventListener('click', e=>{
+    set(!get()); e.currentTarget.classList.toggle('on', get());
+  });
+  tg('btnRing', ()=>showRing, v=>showRing=v);
+  tg('btnFan',  ()=>showFan,  v=>showFan=v);
+  tg('btnLines',()=>showLines,v=>showLines=v);
+  tg('btnRot',  ()=>autoRot,  v=>autoRot=v);
+
+  cv3.addEventListener('pointerdown', e=>{ dragging=true; lx=e.clientX; ly=e.clientY; cv3.setPointerCapture(e.pointerId); });
+  cv3.addEventListener('pointermove', e=>{
+    if(!dragging) return;
+    yaw += (e.clientX-lx)*0.01; pitch += (e.clientY-ly)*0.01;
+    pitch = Math.max(-1.4, Math.min(1.4, pitch));
+    lx=e.clientX; ly=e.clientY;
+  });
+  cv3.addEventListener('pointerup', ()=>dragging=false);
+  cv3.addEventListener('pointercancel', ()=>dragging=false);
+
+  // ================= go =================
+  setA([[2,1],[1,2]]);
+  loop();
+})();
+</script>
+
+</div>
+</body>
+</html>
