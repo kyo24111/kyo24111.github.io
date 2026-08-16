@@ -3960,7 +3960,7 @@
       <div class="chapter-meta">
         <div class="chapter-label">Chapter</div>
         <div class="chapter-status">📝 これから学ぶ</div>
-        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-08-13</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-08-16</div>
       </div>
       <div class="chapter-title"><span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span>（Determinant）</div>
 
@@ -4371,6 +4371,146 @@
           ・<strong>サラス</strong> … 3×3 専用・暗算向き。4×4 以上では<span class="hl">使えない</span>。<br>
           ・<strong>余因子展開</strong> … 任意 n×n。ただし手計算は n が増えると爆発的に重い（n! 項）。<br>
           ・実用では大きい行列は<a href="#gauss-jordan" onclick="gotoSection('gauss-jordan');return false;">掃き出し法</a>で三角化してから<span class="hl">対角成分の積</span>で出すのが速い。
+        </div>
+      </div>
+
+      <div class="section" id="det-permutation">
+        <h2>偶置換・奇置換 — サラスの ± はどこから来るのか</h2>
+
+        <p>サラスの6項も、余因子展開の <code>(−1)<sup>i+j</sup></code> も、<span class="hl">「± の正体は何なのか」</span>を説明していない。その根っこが<b>置換の偶奇</b>。ここを押さえると、det の定義そのものが1行で書けるようになる。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">置換と互換</h3>
+
+        <p><b>置換（permutation）</b>とは <code>1, 2, …, n</code> の<b>並べ替え</b>のこと。記号は σ（シグマ）。<code>n</code> 個の並べ替えは全部で <code>n!</code> 通りある（3個なら <code>3! = 6</code> 通り）。</p>
+        <p style="margin-top:8px"><b>互換（transposition）</b>とは、そのうち<span class="hl">2つだけを入れ替える</span>最小の操作。<code>(1,2,3) → (2,1,3)</code> のように、他はそのまま。</p>
+
+        <div class="formula" style="border-left-color:#1d4e89">
+          <span class="key">出発点となる事実：</span>どんな置換も、<b>互換を何回か繰り返せば必ず作れる</b>。<br>
+          例：<code>(1,2,3) → (3,1,2)</code> は「1と3を入れ替え → 2と3を入れ替え」の<b>2回</b>で作れる。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">核心：回数は変わっても、偶奇は変わらない</h3>
+
+        <p>互換への分解の仕方は<b>一通りではない</b>。同じ置換を 2回で作ることも 4回で作ることも 100回で作ることもできる。ところが——</p>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89">
+          <span class="key">定理：</span>どう分解しても、<span class="hl" style="font-weight:700">必要な互換の回数の偶奇（偶数か奇数か）は必ず一定</span>。<br>
+          2回で作れる置換を 3回で作ることは<b>絶対にできない</b>。5回でも 7回でもいいが、偶数回にはならない。
+        </div>
+
+        <p style="margin-top:12px">回数そのものはブレるのに、<b>偶奇だけは置換ごとに決まっている</b>。だからこの2種類に名前を付ける意味がある。</p>
+
+        <div class="formula" style="border-left-color:#888">
+          ・<strong>偶置換（even permutation）</strong> … 偶数回の互換で作れる置換。符号 <code>sgn(σ) = +1</code><br>
+          ・<strong>奇置換（odd permutation）</strong> … 奇数回の互換で作れる置換。符号 <code>sgn(σ) = −1</code>
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">数え方 — あみだくじの交差本数</h3>
+
+        <p>いちいち互換に分解しなくても、<span class="hl">上下2段に並べて線でつなぎ、線の交差の数を数えるだけ</span>で偶奇が分かる。この交差の数を<b>転倒数（inversion number）</b>という。</p>
+
+        <div class="figbox">
+          <svg viewBox="0 0 420 246" xmlns="http://www.w3.org/2000/svg" font-family="Poppins, sans-serif">
+            <!-- ===== 偶置換（上段） ===== -->
+            <g stroke="#1d4e89" stroke-width="1.6" fill="none" opacity=".9">
+              <path d="M42 26 L42 64"/><path d="M70 26 L70 64"/><path d="M98 26 L98 64"/>
+              <path d="M182 26 L210 64"/><path d="M210 26 L238 64"/><path d="M238 26 L182 64"/>
+              <path d="M322 26 L378 64"/><path d="M350 26 L322 64"/><path d="M378 26 L350 64"/>
+            </g>
+            <!-- ===== 奇置換（下段） ===== -->
+            <g stroke="#d62828" stroke-width="1.6" fill="none" opacity=".9">
+              <path d="M42 146 L42 184"/><path d="M70 146 L98 184"/><path d="M98 146 L70 184"/>
+              <path d="M182 146 L210 184"/><path d="M210 146 L182 184"/><path d="M238 146 L238 184"/>
+              <path d="M322 146 L378 184"/><path d="M350 146 L350 184"/><path d="M378 146 L322 184"/>
+            </g>
+            <!-- 点 -->
+            <g fill="#111">
+              <circle cx="42" cy="26" r="2.6"/><circle cx="70" cy="26" r="2.6"/><circle cx="98" cy="26" r="2.6"/>
+              <circle cx="42" cy="64" r="2.6"/><circle cx="70" cy="64" r="2.6"/><circle cx="98" cy="64" r="2.6"/>
+              <circle cx="182" cy="26" r="2.6"/><circle cx="210" cy="26" r="2.6"/><circle cx="238" cy="26" r="2.6"/>
+              <circle cx="182" cy="64" r="2.6"/><circle cx="210" cy="64" r="2.6"/><circle cx="238" cy="64" r="2.6"/>
+              <circle cx="322" cy="26" r="2.6"/><circle cx="350" cy="26" r="2.6"/><circle cx="378" cy="26" r="2.6"/>
+              <circle cx="322" cy="64" r="2.6"/><circle cx="350" cy="64" r="2.6"/><circle cx="378" cy="64" r="2.6"/>
+              <circle cx="42" cy="146" r="2.6"/><circle cx="70" cy="146" r="2.6"/><circle cx="98" cy="146" r="2.6"/>
+              <circle cx="42" cy="184" r="2.6"/><circle cx="70" cy="184" r="2.6"/><circle cx="98" cy="184" r="2.6"/>
+              <circle cx="182" cy="146" r="2.6"/><circle cx="210" cy="146" r="2.6"/><circle cx="238" cy="146" r="2.6"/>
+              <circle cx="182" cy="184" r="2.6"/><circle cx="210" cy="184" r="2.6"/><circle cx="238" cy="184" r="2.6"/>
+              <circle cx="322" cy="146" r="2.6"/><circle cx="350" cy="146" r="2.6"/><circle cx="378" cy="146" r="2.6"/>
+              <circle cx="322" cy="184" r="2.6"/><circle cx="350" cy="184" r="2.6"/><circle cx="378" cy="184" r="2.6"/>
+            </g>
+            <!-- 上下の番号 -->
+            <g font-size="8" text-anchor="middle" fill="#a8a8a8">
+              <text x="42" y="17">1</text><text x="70" y="17">2</text><text x="98" y="17">3</text>
+              <text x="182" y="17">1</text><text x="210" y="17">2</text><text x="238" y="17">3</text>
+              <text x="322" y="17">1</text><text x="350" y="17">2</text><text x="378" y="17">3</text>
+              <text x="42" y="75">1</text><text x="70" y="75">2</text><text x="98" y="75">3</text>
+              <text x="182" y="75">1</text><text x="210" y="75">2</text><text x="238" y="75">3</text>
+              <text x="322" y="75">1</text><text x="350" y="75">2</text><text x="378" y="75">3</text>
+              <text x="42" y="137">1</text><text x="70" y="137">2</text><text x="98" y="137">3</text>
+              <text x="182" y="137">1</text><text x="210" y="137">2</text><text x="238" y="137">3</text>
+              <text x="322" y="137">1</text><text x="350" y="137">2</text><text x="378" y="137">3</text>
+              <text x="42" y="195">1</text><text x="70" y="195">2</text><text x="98" y="195">3</text>
+              <text x="182" y="195">1</text><text x="210" y="195">2</text><text x="238" y="195">3</text>
+              <text x="322" y="195">1</text><text x="350" y="195">2</text><text x="378" y="195">3</text>
+            </g>
+            <!-- ラベル：偶置換 -->
+            <g text-anchor="middle">
+              <g font-size="10.5" font-weight="700" fill="#111">
+                <text x="70" y="90">σ = (1,2,3)</text><text x="210" y="90">σ = (2,3,1)</text><text x="350" y="90">σ = (3,1,2)</text>
+              </g>
+              <g font-size="9.5" font-weight="700" fill="#1d4e89">
+                <text x="70" y="104">交差 0 → 偶置換 ＋</text><text x="210" y="104">交差 2 → 偶置換 ＋</text><text x="350" y="104">交差 2 → 偶置換 ＋</text>
+              </g>
+              <g font-size="9" fill="#9a9a9a">
+                <text x="70" y="117">a₁₁a₂₂a₃₃</text><text x="210" y="117">a₁₂a₂₃a₃₁</text><text x="350" y="117">a₁₃a₂₁a₃₂</text>
+              </g>
+            </g>
+            <!-- ラベル：奇置換 -->
+            <g text-anchor="middle">
+              <g font-size="10.5" font-weight="700" fill="#111">
+                <text x="70" y="210">σ = (1,3,2)</text><text x="210" y="210">σ = (2,1,3)</text><text x="350" y="210">σ = (3,2,1)</text>
+              </g>
+              <g font-size="9.5" font-weight="700" fill="#d62828">
+                <text x="70" y="224">交差 1 → 奇置換 −</text><text x="210" y="224">交差 1 → 奇置換 −</text><text x="350" y="224">交差 3 → 奇置換 −</text>
+              </g>
+              <g font-size="9" fill="#9a9a9a">
+                <text x="70" y="237">a₁₁a₂₃a₃₂</text><text x="210" y="237">a₁₂a₂₁a₃₃</text><text x="350" y="237">a₁₃a₂₂a₃₁</text>
+              </g>
+            </g>
+          </svg>
+          <div class="figcap">上の点が<b>行番号</b>、下の点が<b>列番号</b>。<code>i</code> 行目から <code>σ(i)</code> 列目へ線を引き、交差の本数を数えるだけ。<br>
+          <span class="hl">3文字の置換は 6 個。偶が3個・奇が3個</span>で、これがそのまま<b>サラスの ＋3項 と −3項</b>になる。</div>
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">これで det の定義が1行になる</h3>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;text-align:center;font-size:14.5px">
+          det(A) = <span style="font-size:17px">Σ</span><sub style="font-size:11px">σ</sub>&nbsp; sgn(σ) · a<sub>1σ(1)</sub> a<sub>2σ(2)</sub> ⋯ a<sub>nσ(n)</sub>
+        </div>
+
+        <p style="margin-top:12px">読み方：<span class="hl">「各行から1個ずつ、列がかぶらないように成分を選んで掛ける」を全パターン（n! 通り）やり、置換の偶奇に応じて ± を付けて足す</span>。それだけ。</p>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px">
+          ・<strong>n = 2</strong> → <code>2! = 2</code> 項。偶 <code>(1,2)</code> が <code>+ad</code>、奇 <code>(2,1)</code> が <code>−bc</code> ⇒ <span class="hl">ad − bc</span><br>
+          ・<strong>n = 3</strong> → <code>3! = 6</code> 項。偶3個が ＋、奇3個が − ⇒ <span class="hl">サラスの6項</span><br>
+          ・<strong>n = 4</strong> → <code>4! = 24</code> 項。ここでサラス（6項の斜め線）が<b>破綻する</b>理由もこれで分かる — 項数がそもそも合わない。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">効いてくる場面</h3>
+
+        <p><span class="key">① 行を1つ入れ替えると det の符号が反転する理由</span><br>
+        2行を入れ替えるということは、<b>すべての置換 σ に互換を1回追加する</b>のと同じ。互換1回で偶奇はひっくり返るので、<span class="hl">n! 個の項の符号が全部いっせいに反転</span>する。だから <code>det → −det</code>。</p>
+
+        <p style="margin-top:12px"><span class="key">② 同じ行が2本あると det = 0 になる理由</span><br>
+        その2行を入れ替えると、①より <code>det → −det</code>。ところが行列そのものは<b>まったく同じ</b>なので値も同じはず。<code>det = −det</code> を満たすのは <code>det = 0</code> のみ。<br>
+        <span class="hl">「行が従属なら det = 0」の一番シンプルなケースが、置換の偶奇だけから出てくる。</span></p>
+
+        <p style="margin-top:12px"><span class="key">③ 余因子展開の <code>(−1)<sup>i+j</sup></code> の正体</span><br>
+        <code>i</code> 行 <code>j</code> 列の成分を左上へ運ぶには、行を <code>i−1</code> 回、列を <code>j−1</code> 回ずらす必要がある。ずらす操作は互換なので、合計 <code>(i−1)+(j−1)</code> 回ぶん偶奇が動く。だから符号は <code>(−1)<sup>i+j</sup></code>。<span class="hl">チェック模様 + − + はここから来ている</span>。</p>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px;margin-top:14px">
+          <span class="key">手触り：</span>あみだくじで「横棒を1本足すたびに上下が入れ替わる」あの感覚がそのまま互換。<b>横棒の本数の偶奇が、どう引いても変わらない</b>のが偶置換・奇置換の中身。<br>
+          15パズルで「1マスだけ入れ替わった配置」に絶対できないのも同じ理由（奇置換には到達できない）。<span class="hl">偶奇は、操作をどう遠回りしても壊せない不変量</span>。
         </div>
       </div>
 
