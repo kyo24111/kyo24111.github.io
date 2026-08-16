@@ -22,15 +22,15 @@
     line-height: 1.85;
     font-size: 16px;
   }
-  .page { max-width: 800px; margin: 0 auto; padding: 56px 32px 100px; }
+  .page { max-width: 800px; margin: 0 auto; padding: 96px 32px 100px; }
 
   /* ===== SIDE NAV (Wikipedia-style) ===== */
   .side-nav {
     position: fixed;
     left: 24px;
-    top: 56px;
+    top: 84px;
     width: 220px;
-    max-height: calc(100vh - 80px);
+    max-height: calc(100vh - 108px);
     overflow-y: auto;
     padding: 16px 0 40px;
     font-size: 12px;
@@ -75,7 +75,7 @@
     background: var(--surface);
   }
   /* Add scroll-margin to sections for better anchor positioning */
-  .section, .chapter { scroll-margin-top: 24px; }
+  .section, .chapter { scroll-margin-top: 76px; }
   html { scroll-behavior: smooth; }
 
   /* ===== Learning status tags ===== */
@@ -251,34 +251,57 @@
   }
   .subtitle { color: var(--muted); font-size: 13px; margin-bottom: 32px; }
 
-  /* ===== TABS ===== */
-  .tabs {
-    display: flex;
-    gap: 4px;
+  /* ===== FIXED HEADER ===== */
+  .site-header {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+    background: rgba(255, 255, 255, .88);
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
     border-bottom: 1px solid var(--border);
-    margin-bottom: 32px;
   }
-  .tab {
-    padding: 10px 20px;
-    cursor: pointer;
-    font-family: 'Poppins', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--muted);
-    border: 1px solid transparent;
-    border-bottom: none;
-    border-radius: 6px 6px 0 0;
-    background: transparent;
-    transition: all .15s;
-    margin-bottom: -1px;
+  .sh-inner {
+    max-width: 1180px; margin: 0 auto; padding: 0 24px;
+    height: 54px; display: flex; align-items: center; gap: 20px;
   }
-  .tab:hover:not(.active) { color: var(--text); }
-  .tab.active {
-    color: var(--text);
-    border-color: var(--border);
-    background: var(--bg);
-    border-bottom: 1px solid var(--bg);
+  .sh-brand {
+    flex: none; display: flex; align-items: baseline; gap: 10px;
+    font-family: 'Poppins', sans-serif; font-size: 15px; font-weight: 700;
+    letter-spacing: -.01em; color: var(--text); text-decoration: none; white-space: nowrap;
   }
+  .sh-brand:hover { opacity: .68; }
+  .sh-brand .sh-sub {
+    font-family: 'Noto Sans JP', sans-serif; font-size: 11.5px; font-weight: 400; color: var(--muted);
+  }
+  .hnav {
+    margin-left: auto; min-width: 0;
+    display: flex; align-items: center; gap: 2px;
+    overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .hnav::-webkit-scrollbar { display: none; }
+  .hnav a {
+    flex: none;
+    font-family: 'Poppins', sans-serif; font-size: 12.5px; font-weight: 600;
+    color: var(--muted); text-decoration: none; white-space: nowrap;
+    padding: 7px 12px; border-radius: 7px; transition: background .15s, color .15s;
+  }
+  .hnav a:hover { color: var(--text); background: var(--surface); }
+  .hnav a.active { color: var(--text); background: #ececec; }
+  @media (max-width: 760px) {
+    .sh-inner { padding: 0 14px; gap: 10px; height: 50px; }
+    .sh-brand .sh-sub { display: none; }
+    .hnav a { padding: 6px 9px; font-size: 12px; }
+    /* 横スクロールできることを右端のフェードで示す */
+    .hnav {
+      -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+      mask-image: linear-gradient(to right, #000 calc(100% - 22px), transparent);
+    }
+    .page { padding-top: 74px; }
+  }
+  @media (max-width: 420px) {
+    .sh-brand { font-size: 13px; }
+    .hnav a { padding: 6px 7px; font-size: 11.5px; }
+  }
+
   .view { display: none; }
   .view.active { display: block; }
 
@@ -829,18 +852,20 @@
 </style>
 </head>
 <body>
+<header class="site-header">
+  <div class="sh-inner">
+    <a class="sh-brand" href="#" onclick="gotoTop(); return false;">Linear Algebra<span class="sh-sub">Kyo の復習ノート</span></a>
+    <nav class="hnav">
+      <a href="#" class="active" data-tab="notes" onclick="switchTab('notes', this); return false;">Notes</a>
+      <a href="#" data-tab="exercises" onclick="switchTab('exercises', this); return false;">演習</a>
+      <a href="#" data-tab="toc" onclick="switchTab('toc', this); return false;">目次</a>
+      <a href="#" data-tab="vocab" onclick="switchTab('vocab', this); return false;">Vocabulary</a>
+      <a href="#" data-tab="notation" onclick="switchTab('notation', this); return false;">Notation</a>
+    </nav>
+  </div>
+</header>
 <aside class="side-nav" id="sideNav"></aside>
 <div class="page">
-  <h1>Linear Algebra</h1>
-  <div class="subtitle">Kyo の線形代数 復習ノート</div>
-
-  <div class="tabs">
-    <div class="tab" data-tab="toc" onclick="switchTab('toc', this)">目次</div>
-    <div class="tab active" data-tab="notes" onclick="switchTab('notes', this)">Notes</div>
-    <div class="tab" data-tab="exercises" onclick="switchTab('exercises', this)">演習</div>
-    <div class="tab" data-tab="vocab" onclick="switchTab('vocab', this)">Vocabulary</div>
-    <div class="tab" data-tab="notation" onclick="switchTab('notation', this)">Notation</div>
-  </div>
 
   <!-- ===== NOTES TAB ===== -->
   <div class="view active" id="view-notes">
@@ -5627,6 +5652,207 @@
       </div>
     </section>
 
+    <!-- ============ 領域09 行列式 ============ -->
+    <section class="domain">
+      <h2><span class="no">09</span>行列式（3×3）</h2>
+      <p class="sub">2×2 の <code>ad − bc</code> の次。3×3 には道具が3つあり、<b>問題ごとに一番ラクなものを選ぶ</b>のがこの領域の練習。</p>
+
+      <div class="figbox">
+        <p style="font-size:13.5px;font-weight:700;margin-bottom:6px">道具①　サラスの規則（3×3 だけの裏技）</p>
+        <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" font-family="Poppins, sans-serif">
+          <!-- 拡張した2列の背景 -->
+          <rect x="220" y="34" width="80" height="108" fill="#fafafa"/>
+          <line x1="220" y1="30" x2="220" y2="146" stroke="#c9c9c9" stroke-width="1" stroke-dasharray="4 3"/>
+          <!-- 元の3×3 の括弧 -->
+          <path d="M96 34 L91 34 L91 142 L96 142" fill="none" stroke="#111" stroke-width="1.3"/>
+          <path d="M224 34 L229 34 L229 142 L224 142" fill="none" stroke="#111" stroke-width="1.3"/>
+          <!-- ＋ の3本（右下がり・実線） -->
+          <g stroke="#2e7d5b" stroke-width="1.6" fill="none" opacity=".85">
+            <path d="M120 52 L200 124"/><path d="M160 52 L240 124"/><path d="M200 52 L280 124"/>
+          </g>
+          <!-- − の3本（左下がり・破線） -->
+          <g stroke="#c0392b" stroke-width="1.6" fill="none" opacity=".85" stroke-dasharray="5 4">
+            <path d="M200 52 L120 124"/><path d="M240 52 L160 124"/><path d="M280 52 L200 124"/>
+          </g>
+          <g font-size="12" text-anchor="middle" fill="#111" stroke="#ffffff" stroke-width="3.5" paint-order="stroke fill">
+            <text x="120" y="56">a₁₁</text><text x="160" y="56">a₁₂</text><text x="200" y="56">a₁₃</text>
+            <text x="240" y="56" fill="#a8a8a8">a₁₁</text><text x="280" y="56" fill="#a8a8a8">a₁₂</text>
+            <text x="120" y="92">a₂₁</text><text x="160" y="92">a₂₂</text><text x="200" y="92">a₂₃</text>
+            <text x="240" y="92" fill="#a8a8a8">a₂₁</text><text x="280" y="92" fill="#a8a8a8">a₂₂</text>
+            <text x="120" y="128">a₃₁</text><text x="160" y="128">a₃₂</text><text x="200" y="128">a₃₃</text>
+            <text x="240" y="128" fill="#a8a8a8">a₃₁</text><text x="280" y="128" fill="#a8a8a8">a₃₂</text>
+          </g>
+          <text x="140" y="172" text-anchor="middle" font-size="11" font-weight="700" fill="#2e7d5b">実線 3本 ＝ ＋</text>
+          <text x="262" y="172" text-anchor="middle" font-size="11" font-weight="700" fill="#c0392b">破線 3本 ＝ −</text>
+          <text x="200" y="190" text-anchor="middle" font-size="10.5" fill="#9a9a9a" font-family="'Noto Sans JP', sans-serif">右2列をコピーして並べると、6本の斜め線がそのまま6項になる</text>
+        </svg>
+        <div class="figcap"><code>det = a₁₁a₂₂a₃₃ + a₁₂a₂₃a₃₁ + a₁₃a₂₁a₃₂ − a₁₃a₂₂a₃₁ − a₁₁a₂₃a₃₂ − a₁₂a₂₁a₃₃</code><br>
+        <b>3×3 でしか使えない</b>。4×4 以上では成立しないので、サラスに頼りすぎると先で詰まる。</div>
+      </div>
+
+      <div class="figbox">
+        <p style="font-size:13.5px;font-weight:700;margin-bottom:8px">道具②　余因子展開　／　道具③　行基本変形（det の3性質）</p>
+        <p class="step" style="margin:4px 0 12px"><b>道具②</b>：<b>0 が一番多い行か列</b>を選んで、そこで展開すれば 2×2 が1〜2個で済む。0 が2個あれば1個の 2×2 に落ちる。</p>
+        <p class="step" style="margin:4px 0 6px"><b>道具③</b>：0 が無いなら<b>作ればいい</b>。det には次の3つの性質がある。</p>
+        <div class="pl" style="font-size:13.5px">① <b>行の共通因数はくくり出せる</b>：<span class="mtx"><table><tr><td>2a</td><td>2b</td><td>2c</td></tr><tr><td>d</td><td>e</td><td>f</td></tr><tr><td>g</td><td>h</td><td>i</td></tr></table></span> = 2 × <span class="mtx"><table><tr><td>a</td><td>b</td><td>c</td></tr><tr><td>d</td><td>e</td><td>f</td></tr><tr><td>g</td><td>h</td><td>i</td></tr></table></span></div>
+        <p class="step" style="margin:0 0 12px 16px">3行ぜんぶくくれば <code>2·5·3</code> のようにまとめて外に出る（Q5・Q6）。</p>
+        <div class="pl" style="font-size:13.5px">② <b>2行を入れ替えると符号が反転</b>：<code>det → −det</code>　<span style="color:var(--muted);font-size:12.5px">（向きが裏返るから。同じ行が2本あれば det = 0 もここから出る）</span></div>
+        <div class="pl" style="font-size:13.5px">③ <b>ある行に他の行の定数倍を足しても det は変わらない</b>：<code>R₁ → R₁ − 3R₂</code> で <span class="hl">det はそのまま</span>　<span style="color:var(--muted);font-size:12.5px">（平行六面体を斜めにずらしても体積は不変＝カヴァリエリの原理）</span></div>
+        <div class="figcap" style="margin-top:12px">③ で <b>0 を作ってから</b> ② で展開する、が実戦の主力。数字が大きい問題ほど効く。</div>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>2</td><td>1</td><td>-4</td></tr><tr><td>0</td><td>2</td><td>19</td></tr><tr><td>0</td><td>0</td><td>3</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = 12</span></p>
+          <p class="step"><b>サラスを書き始める前に形を見る。</b>左下が全部 0 ＝<b>上三角行列</b>。三角行列の det は<span class="res">対角成分の積</span>なので <code>2 · 2 · 3 = 12</code>。1秒で終わる。</p>
+          <p class="step"><b>なぜ他の項が消えるか。</b>サラスの6項のうち、対角の積 <code>a₁₁a₂₂a₃₃</code> 以外はすべて<b>下三角側の成分を1つ以上含む</b>。そこが 0 なので項ごと消える。だから対角の積だけが残る。</p>
+          <p class="step"><b>手触り：</b>右上の <code>1, −4, 19</code> は det に<b>一切効かない</b>。同じ理由で、三角行列は固有値も対角成分そのまま（→ 領域10 Q6）。<span class="hl">「三角を見たら対角を掛ける」</span>は det でも λ でも共通の反射神経。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>5</td><td>8</td><td>13</td></tr><tr><td>2</td><td>4</td><td>6</td></tr><tr><td>3</td><td>0</td><td>1</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = −8</span></p>
+          <p class="step"><b>0 を探す。</b>第3行に <code>0</code> が1個（<code>a₃₂ = 0</code>）。ここで展開すれば項が3つ→2つに減る。</p>
+          <div class="pl"><code>det = 3·C₃₁ + 0·C₃₂ + 1·C₃₃</code><br>
+          <code>C₃₁ = +</code><span class="mtx"><table><tr><td>8</td><td>13</td></tr><tr><td>4</td><td>6</td></tr></table></span><code> = 48 − 52 = −4</code>　　<code>C₃₃ = +</code><span class="mtx"><table><tr><td>5</td><td>8</td></tr><tr><td>2</td><td>4</td></tr></table></span><code> = 20 − 16 = 4</code><br>
+          <code>det = 3(−4) + 4 = −12 + 4 = </code><span class="res">−8</span></div>
+          <p class="step"><b>別ルート：くくり出し。</b>第2行 <code>(2,4,6) = 2·(1,2,3)</code> なので <code>det = 2 ×</code> <span class="mtx"><table><tr><td>5</td><td>8</td><td>13</td></tr><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>3</td><td>0</td><td>1</td></tr></table></span> <code>= 2 × (−4) = −8</code>。数字が小さくなって暗算しやすい。</p>
+          <p class="step"><b>手触り：</b>符号 <code>(−1)^(i+j)</code> に注意。第3行での展開は <code>+ − +</code> なので、C₃₂ の符号はマイナスだが今回は成分が 0 なので出番なし。<span class="hl">0 のある位置の符号は覚えなくていい</span>——それが 0 を選ぶ実利のひとつ。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>2</td><td>7</td><td>9</td></tr><tr><td>3</td><td>5</td><td>4</td></tr><tr><td>6</td><td>7</td><td>2</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = 9</span></p>
+          <p class="step"><b>0 も共通因数も無い。</b>こういうときは素直にサラス。純粋な手計算の練習。</p>
+          <div class="pl"><code>＋：2·5·2 + 7·4·6 + 9·3·7 = 20 + 168 + 189 = 377</code><br>
+          <code>−：9·5·6 + 2·4·7 + 7·3·2 = 270 + 56 + 42 = 368</code><br>
+          <code>det = 377 − 368 = </code><span class="res">9</span></div>
+          <p class="step"><b>別解：0 を作る。</b>第3行に注目すると <code>R₃ − 3R₁ = (6−6, 7−21, 2−27) = (0, −14, −25)</code>。det は変わらないので<br>
+          <code>det = </code><span class="mtx"><table><tr><td>2</td><td>7</td><td>9</td></tr><tr><td>3</td><td>5</td><td>4</td></tr><tr><td>0</td><td>-14</td><td>-25</td></tr></table></span> → 第1列で展開 → <code>2(5·(−25) − 4·(−14)) − 3(7·(−25) − 9·(−14)) = 2(−69) − 3(−49) = −138 + 147 = </code><span class="res">9</span> ✓</p>
+          <p class="step"><b>手触り：</b>サラスは「6項の足し算引き算」なので、<b>途中で符号を1つ間違えると全滅</b>する。±をそれぞれ先に合計してから最後に引く（377 と 368 を作ってから引く）と、ミスに気づきやすい。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q4</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>12</td><td>5</td><td>13</td></tr><tr><td>5</td><td>7</td><td>8</td></tr><tr><td>9</td><td>6</td><td>8</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = −173</span></p>
+          <p class="step"><b>数字が大きい＝サラスは事故る。</b>ここは道具③で<b>数を小さくする</b>のが正解。似た大きさの行どうしを引くと一気に縮む。</p>
+          <div class="pl"><code>R₁ → R₁ − R₂ = (7, −2, 5)</code>、<code>R₃ → R₃ − R₂ = (4, −1, 0)</code>（det は不変）<br>
+          <code>det = </code><span class="mtx"><table><tr><td>7</td><td>-2</td><td>5</td></tr><tr><td>5</td><td>7</td><td>8</td></tr><tr><td>4</td><td>-1</td><td>0</td></tr></table></span> → 第3行に 0 ができたのでそこで展開</div>
+          <div class="pl"><code>det = 4·C₃₁ + (−1)·C₃₂ + 0</code><br>
+          <code>C₃₁ = +</code><span class="mtx"><table><tr><td>-2</td><td>5</td></tr><tr><td>7</td><td>8</td></tr></table></span><code> = −16 − 35 = −51</code>　　<code>C₃₂ = −</code><span class="mtx"><table><tr><td>7</td><td>5</td></tr><tr><td>5</td><td>8</td></tr></table></span><code> = −(56 − 25) = −31</code><br>
+          <code>det = 4(−51) + (−1)(−31) = −204 + 31 = </code><span class="res">−173</span></div>
+          <p class="step"><b>手触り：</b>「まず 0 を作る」を1手挟むだけで、扱う数字が <code>12, 13</code> 級から <code>7, −2</code> 級に落ちる。<span class="hl">行基本変形は det を変えない</span>ので、いくらやってもタダ。大きい数を見たら反射的にこれ。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q5</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>4</td><td>2</td><td>6</td></tr><tr><td>15</td><td>35</td><td>20</td></tr><tr><td>8</td><td>7</td><td>5</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = −740</span></p>
+          <p class="step"><b>行ごとに共通因数を探す。</b>第1行 <code>(4,2,6) = 2·(2,1,3)</code>、第2行 <code>(15,35,20) = 5·(3,7,4)</code>。両方くくり出せる。</p>
+          <div class="pl"><code>det = 2 · 5 ·</code> <span class="mtx"><table><tr><td>2</td><td>1</td><td>3</td></tr><tr><td>3</td><td>7</td><td>4</td></tr><tr><td>8</td><td>7</td><td>5</td></tr></table></span> <code>= 10 × det'</code></div>
+          <div class="pl"><code>det' = 2(7·5 − 4·7) − 1(3·5 − 4·8) + 3(3·7 − 7·8) = 2(7) − (−17) + 3(−35) = 14 + 17 − 105 = −74</code><br>
+          <code>det = 10 × (−74) = </code><span class="res">−740</span></div>
+          <p class="step"><b>なぜくくり出せるのか。</b>det は<b>各行について線形</b>。第1行を 2 倍すれば、その行が張る辺が2倍になる＝体積も2倍。だから <code>2</code> をそのまま外に出せる。<span class="hl">「行を k 倍 ⇒ det も k 倍」</span>。行が3本あるので、3行ぜんぶ 2 倍したら det は <code>2³ = 8</code> 倍になる（ここは間違えやすい）。</p>
+          <p class="step"><b>手触り：</b>くくり出しは<b>計算をラクにするためだけの技</b>ではない。「この行列は本質的には (2,1,3),(3,7,4),(8,7,5) だ」という<b>構造の見立て</b>でもある。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q6</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>14</td><td>7</td><td>35</td></tr><tr><td>8</td><td>4</td><td>6</td></tr><tr><td>9</td><td>3</td><td>3</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = −294</span></p>
+          <p class="step"><b>Q5 の強化版：3行とも括れる。</b><code>R₁ = 7·(2,1,5)</code>、<code>R₂ = 2·(4,2,3)</code>、<code>R₃ = 3·(3,1,1)</code>。</p>
+          <div class="pl"><code>det = 7 · 2 · 3 ·</code> <span class="mtx"><table><tr><td>2</td><td>1</td><td>5</td></tr><tr><td>4</td><td>2</td><td>3</td></tr><tr><td>3</td><td>1</td><td>1</td></tr></table></span> <code>= 42 × det'</code></div>
+          <div class="pl"><code>det' = 2(2·1 − 3·1) − 1(4·1 − 3·3) + 5(4·1 − 2·3) = 2(−1) − (−5) + 5(−2) = −2 + 5 − 10 = −7</code><br>
+          <code>det = 42 × (−7) = </code><span class="res">−294</span></div>
+          <p class="step"><b>検算：</b>直接サラスでも <code>14(12−18) − 7(24−54) + 35(24−36) = −84 + 210 − 420 = −294</code> ✓。ただし扱う数が <code>420</code> 級になるので、くくり出したほうが明らかに安全。</p>
+          <p class="step"><b>手触り：</b>行の共通因数は<b>行ごとに独立に</b>外へ出せる（列でも同じ）。<span class="hl">42 という係数を先に確定させてしまえば、あとは小さい 3×3 が1個残るだけ</span>。「重い部分を先に切り離す」という、行列式に限らない計算の作法。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q7</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>0</td><td>8</td><td>12</td></tr><tr><td>3</td><td>9</td><td>2</td></tr><tr><td>5</td><td>5</td><td>3</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = −352</span></p>
+          <p class="step"><b>0 が1個あるので、その行（第1行）で展開。</b>3項のうち1項がタダで消える。</p>
+          <div class="pl"><code>det = 0·C₁₁ + 8·C₁₂ + 12·C₁₃</code><br>
+          <code>C₁₂ = −</code><span class="mtx"><table><tr><td>3</td><td>2</td></tr><tr><td>5</td><td>3</td></tr></table></span><code> = −(9 − 10) = 1</code>　　<code>C₁₃ = +</code><span class="mtx"><table><tr><td>3</td><td>9</td></tr><tr><td>5</td><td>5</td></tr></table></span><code> = 15 − 45 = −30</code><br>
+          <code>det = 8(1) + 12(−30) = 8 − 360 = </code><span class="res">−352</span></div>
+          <p class="step"><b>符号でつまずきやすい点。</b><code>C₁₂</code> の符号は <code>(−1)^(1+2) = −1</code>。<b>小行列式そのものは −1 だが、符号を掛けて +1 になる</b>。ここを飛ばすと答えが <code>−8 − 360 = −368</code> になり、16 ずれる。チェック模様 <code>+ − +</code> を毎回書いてから始めるのが安全。</p>
+          <p class="step"><b>手触り：</b>0 が<b>1個</b>だと項は2つ残る。0 が<b>2個</b>並んで初めて 2×2 一発になる（→ 領域10 Q7・Q8）。「0 の個数＝サボれる量」と覚えておく。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q8</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>5</td><td>9</td><td>9</td></tr><tr><td>2</td><td>6</td><td>3</td></tr><tr><td>8</td><td>11</td><td>6</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = −111</span></p>
+          <p class="step"><b>0 を2個作りにいく。</b>第3列が <code>(9, 3, 6)</code> ＝ すべて 3 の倍数で、真ん中の <code>3</code> が一番小さい。<b>第2行を使って他の2行の第3列を消す</b>。</p>
+          <div class="pl"><code>R₁ → R₁ − 3R₂ = (5−6, 9−18, 9−9) = (−1, −9, 0)</code><br>
+          <code>R₃ → R₃ − 2R₂ = (8−4, 11−12, 6−6) = (4, −1, 0)</code>（det は不変）<br>
+          <code>det = </code><span class="mtx"><table><tr><td>-1</td><td>-9</td><td>0</td></tr><tr><td>2</td><td>6</td><td>3</td></tr><tr><td>4</td><td>-1</td><td>0</td></tr></table></span> → 第3列に 0 が2個</div>
+          <div class="pl">第3列で展開すると残るのは <code>a₂₃ = 3</code> のみ。符号は <code>(−1)^(2+3) = −1</code>。<br>
+          <code>det = −3 ×</code> <span class="mtx"><table><tr><td>-1</td><td>-9</td></tr><tr><td>4</td><td>-1</td></tr></table></span> <code>= −3 × (1 + 36) = −3 × 37 = </code><span class="res">−111</span></div>
+          <p class="step"><b>検算：</b>元の行列に直接サラスをかけても <code>5(36−33) − 9(12−24) + 9(22−48) = 15 + 108 − 234 = −111</code> ✓</p>
+          <p class="step"><b>手触り：</b>これが<b>掃き出し法の考え方そのもの</b>。「基準にする行を1本決めて、他の行から引いて 0 を作る」。det でも逆行列でも連立方程式でも、やっていることは同じ操作。<span class="hl">2手かけて 0 を2個作れば、3×3 は 2×2 一発に落ちる</span>。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q9</span><div class="qbody"><div class="pl"><span class="key">【トラップ】</span>行列式を求めよ。<span class="mtx"><table><tr><td>2</td><td>1</td><td>4</td></tr><tr><td>3</td><td>5</td><td>1</td></tr><tr><td>0</td><td>7</td><td>-10</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = 0</span></p>
+          <p class="step"><b>まず計算。</b>第3行に 0 があるのでそこで展開。</p>
+          <div class="pl"><code>det = 0·C₃₁ + 7·C₃₂ + (−10)·C₃₃</code><br>
+          <code>C₃₂ = −</code><span class="mtx"><table><tr><td>2</td><td>4</td></tr><tr><td>3</td><td>1</td></tr></table></span><code> = −(2 − 12) = 10</code>　　<code>C₃₃ = +</code><span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>3</td><td>5</td></tr></table></span><code> = 10 − 3 = 7</code><br>
+          <code>det = 7(10) + (−10)(7) = 70 − 70 = </code><span class="res">0</span></div>
+          <p><b>なぜ 0 になったのか——偶然ではない</b></p>
+          <p class="step">3本の行が<b>一次従属</b>だから。実際 <code>R₃ = −3R₁ + 2R₂</code>：<br>
+          <code>−3(2,1,4) + 2(3,5,1) = (−6+6, −3+10, −12+2) = (0, 7, −10)</code> ✓<br>
+          第3行は最初の2行から作れる＝<span class="hl">新しい方向を1つも持っていない</span>。</p>
+          <p class="step"><b>幾何：</b>det は3本の行ベクトルが張る平行六面体の体積。3本目が最初の2本と<b>同じ平面に寝ている</b>ので、立体に厚みが出ない＝体積 0。この行列は R³ を<b>平面に潰す</b>変換。</p>
+          <p class="step"><b>つながる話：</b><code>det = 0</code> ⟺ 行が従属 ⟺ <code>rank ≤ 2</code>（フルランクでない）⟺ <b>核が {0} より大きい</b>（潰される方向が存在する）⟺ <b>逆行列が存在しない</b>。ぜんぶ同じことを別の言葉で言っている（→ 領域07 Q4 の 2×2 版と同じ構図）。</p>
+          <p class="step"><b>手触り：</b>答えが 0 になったら計算ミスを疑う前に<b>行の関係を探す</b>。きれいに 0 が出る問題は、たいてい従属が仕込まれている。逆に「行が明らかに従属」と先に気づけば、<span class="res">計算せずに det = 0 と即答できる</span>。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q10</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>8</td><td>2</td><td>9</td></tr><tr><td>7</td><td>5</td><td>3</td></tr><tr><td>4</td><td>6</td><td>7</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = 260</span></p>
+          <p class="step"><b>0 も共通因数も無い。</b>Q3 と同じくサラスで正面から。</p>
+          <div class="pl"><code>＋：8·5·7 + 2·3·4 + 9·7·6 = 280 + 24 + 378 = 682</code><br>
+          <code>−：9·5·4 + 8·3·6 + 2·7·7 = 180 + 144 + 98 = 422</code><br>
+          <code>det = 682 − 422 = </code><span class="res">260</span></div>
+          <p class="step"><b>別解：0 を作る。</b><code>R₁ − 2R₃ = (8−8, 2−12, 9−14) = (0, −10, −5)</code>。<br>
+          <code>det = </code><span class="mtx"><table><tr><td>0</td><td>-10</td><td>-5</td></tr><tr><td>7</td><td>5</td><td>3</td></tr><tr><td>4</td><td>6</td><td>7</td></tr></table></span> → 第1行で展開 → <code>(−10)·(−(49−12)) + (−5)·(42−20) = 370 − 110 = </code><span class="res">260</span> ✓</p>
+          <p class="step"><b>手触り：</b>2通りで同じ数が出れば、まず間違っていない。<span class="hl">サラスと余因子展開はお互いの検算になる</span>——別ルートで一致することが、手計算での唯一の保険。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q11</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>2</td><td>5</td><td>3</td></tr><tr><td>0</td><td>9</td><td>4</td></tr><tr><td>6</td><td>10</td><td>3</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">det = −68</span></p>
+          <p class="step"><b>0 は <code>a₂₁</code> の1個。</b>第2行（または第1列）で展開。</p>
+          <div class="pl"><code>det = 0·C₂₁ + 9·C₂₂ + 4·C₂₃</code><br>
+          <code>C₂₂ = +</code><span class="mtx"><table><tr><td>2</td><td>3</td></tr><tr><td>6</td><td>3</td></tr></table></span><code> = 6 − 18 = −12</code>　　<code>C₂₃ = −</code><span class="mtx"><table><tr><td>2</td><td>5</td></tr><tr><td>6</td><td>10</td></tr></table></span><code> = −(20 − 30) = 10</code><br>
+          <code>det = 9(−12) + 4(10) = −108 + 40 = </code><span class="res">−68</span></div>
+          <p class="step"><b>検算（第1行で展開）：</b><code>2(27 − 40) − 5(0 − 24) + 3(0 − 54) = −26 + 120 − 162 = −68</code> ✓。<span class="hl">どの行・どの列で展開しても必ず同じ値になる</span>——これは定理として保証されている。だからこそ「一番ラクな線を自由に選んでよい」。</p>
+          <p class="step"><b>ヒヤリポイント：</b><code>C₂₃</code> の小行列式 <span class="mtx"><table><tr><td>2</td><td>5</td></tr><tr><td>6</td><td>10</td></tr></table></span> は <code>20 − 30 = −10</code>。<b>符号 <code>(−1)^(2+3) = −1</code> を掛けて +10</b>。第2行は符号が <code>− + −</code> と並ぶので、1列目と3列目でひっくり返る。ここが 3×3 の一番のミス多発地帯。</p>
+          <p class="step"><b>手触り：</b>ちなみに第1列 <code>(2, 0, 6)</code> にも 0 が1個あるので、そちらで展開しても手間は同じ。<b>0 の個数が並んだら、残る成分が小さいほうを選ぶ</b>と暗算がラク。</p>
+        </div></details>
+      </div>
+    </section>
+
     <!-- ============ 領域10 固有値 ============ -->
     <section class="domain">
       <h2><span class="no">10</span>固有値・固有ベクトル</h2>
@@ -6139,13 +6365,18 @@
 </div>
 
 <script>
+function gotoTop() {
+  switchTab('notes', document.querySelector('[data-tab="notes"]'));
+}
+
 function switchTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('[data-tab]').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('view-' + name).classList.add('active');
   const sideNav = document.getElementById('sideNav');
   if (sideNav) sideNav.classList.toggle('hidden', name !== 'notes');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ===== EXERCISES =====
@@ -6438,9 +6669,9 @@ function buildTOC() {
 
 function gotoSection(id) {
   // Switch to Notes tab
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('[data-tab]').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  const notesTab = document.querySelector('.tab[data-tab="notes"]');
+  const notesTab = document.querySelector('[data-tab="notes"]');
   if (notesTab) notesTab.classList.add('active');
   const notesView = document.getElementById('view-notes');
   if (notesView) notesView.classList.add('active');
