@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>キングダム リサーチDB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --panel:#ffffff; --line:#e8e8e8; --line2:#d4d4d4;
+    --txt:#111111; --muted:#888888; --accent:#111111; --head:#f7f7f5; --soft:#fbfbfa;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg); color:var(--txt);
+    font-family:"Poppins","Noto Sans JP",sans-serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:28px 20px 80px;}
+  @media (min-width:1280px){ .wrap{ max-width:min(1500px,94vw); } }
+  @media (max-width:640px){ .wrap{ padding:18px 12px 64px; } }
+
+  header{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  h1{font-size:1.5rem; font-weight:700; margin:0; letter-spacing:.02em;}
+  .sub{color:var(--muted); font-size:.82rem;}
+  .meta{color:var(--muted); font-size:.78rem; margin:6px 0 18px; line-height:1.5;}
+  .meta b{font-weight:600; color:var(--txt);}
+
+  /* ── ツールバー ── */
+  .tools{position:sticky; top:0; z-index:20; background:var(--bg); padding:10px 0 8px; border-bottom:1px solid var(--line);}
+  .row{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .row + .row{margin-top:8px;}
+  .search{position:relative; flex:1 1 260px; min-width:0;}
+  .search input{
+    width:100%; padding:9px 34px 9px 34px; font-size:.92rem; color:var(--txt);
+    font-family:inherit; background:var(--panel); border:1px solid var(--line2); border-radius:999px; outline:none;
+  }
+  .search input:focus{border-color:var(--accent);}
+  .search .ico{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.85rem;}
+  .search .clr{position:absolute; right:8px; top:50%; transform:translateY(-50%); border:0; background:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:2px 6px; display:none;}
+  .search.has .clr{display:block;}
+  .chip{
+    font-family:inherit; font-size:.76rem; color:var(--txt); background:var(--panel);
+    border:1px solid var(--line2); border-radius:999px; padding:5px 11px; cursor:pointer; white-space:nowrap;
+  }
+  .chip:hover{background:var(--head);}
+  .chip.on{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .chip .n{opacity:.55; margin-left:5px; font-size:.72rem;}
+  .chipset{display:flex; gap:6px; flex-wrap:wrap; align-items:center;}
+  .chiplabel{font-size:.72rem; color:var(--muted); margin-right:2px;}
+  .tabs{display:flex; gap:6px;}
+  .tab{
+    font-family:inherit; font-size:.85rem; font-weight:600; padding:7px 16px; cursor:pointer;
+    background:var(--panel); border:1px solid var(--line2); border-radius:999px; color:var(--muted);
+  }
+  .tab.on{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .count{font-size:.75rem; color:var(--muted); margin-left:auto;}
+
+  /* ── 国バッジ（意味を持つラベルなので配色あり） ── */
+  .bdg{display:inline-block; font-size:.7rem; font-weight:600; padding:2px 8px; border-radius:999px; border:1px solid transparent; white-space:nowrap;}
+  .s-秦{background:#ececea; color:#111; border-color:#dcdcd8;}
+  .s-趙{background:#e8f0fb; color:#1a4d8f; border-color:#d3e2f6;}
+  .s-魏{background:#e6f4ea; color:#1a6b36; border-color:#d1e9d9;}
+  .s-山界{background:#fdf5da; color:#7a5c00; border-color:#f4e7b8;}
+  .s-蚩尤{background:#f2e9fa; color:#63308c; border-color:#e5d6f3;}
+  .s-楚{background:#f8ece0; color:#8a4f1c; border-color:#f0dcc6;}
+  .s-韓{background:#ecedf8; color:#3d4488; border-color:#dde0f0;}
+  .s-燕{background:#e6f2f3; color:#1f5f66; border-color:#d3e7e9;}
+  .s-other{background:#f2f2f0; color:#666; border-color:#e4e4e0;}
+  .bdg.k{background:var(--panel); color:var(--muted); border-color:var(--line2); font-weight:500;}
+  .bdg.st-戦死{background:#fbeaea; color:#a3252c; border-color:#f2d5d5;}
+  .bdg.st-進行中{background:#eef1f6; color:#33507a; border-color:#dde3ec;}
+
+  /* ── グラフ ── */
+  .graphcard{position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); margin-top:14px;}
+  #svg{display:block; width:100%; height:66vh; min-height:380px; touch-action:none; background:
+     radial-gradient(circle at 1px 1px, #efefec 1px, transparent 0) 0 0/22px 22px;}
+  @media (max-width:640px){ #svg{height:58vh; min-height:320px;} }
+  .gctl{position:absolute; right:10px; top:10px; display:flex; flex-direction:column; gap:6px; z-index:2;}
+  .gbtn{width:30px; height:30px; border:1px solid var(--line2); background:rgba(255,255,255,.94); border-radius:8px; cursor:pointer; font-size:.9rem; color:var(--txt); font-family:inherit; line-height:1; padding:0;}
+  .gbtn:hover{background:var(--head);}
+  .glegend{position:absolute; left:10px; bottom:10px; z-index:2; background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-size:.68rem; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap; max-width:calc(100% - 60px);}
+  .glegend span{display:inline-flex; align-items:center; gap:4px;}
+  .lg-dot{width:9px; height:9px; border-radius:50%; border:1px solid #999; display:inline-block;}
+  .lg-sq{width:9px; height:9px; border:1px solid #999; display:inline-block; transform:rotate(45deg);}
+  .lg-ri{width:9px; height:9px; border-radius:50%; border:1px dashed #999; display:inline-block;}
+  .ghint{position:absolute; left:10px; top:10px; z-index:2; font-size:.68rem; color:var(--muted); background:rgba(255,255,255,.9); border:1px solid var(--line); border-radius:8px; padding:5px 8px;}
+  .n-lbl{font-size:10px; font-family:"Poppins","Noto Sans JP",sans-serif; fill:#333; paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round; pointer-events:none; user-select:none;}
+  .n-lbl.big{font-size:12px; font-weight:600; fill:#111;}
+  .node{cursor:pointer;}
+  .node .shp{stroke:#8a8a8a; stroke-width:1.2px;}
+  .node.sel .shp{stroke:#111; stroke-width:2.5px;}
+  .node.hit .shp{stroke:#111; stroke-width:2.2px;}
+  .dim{opacity:.12;}
+  .lnk{stroke:#c9c9c4; stroke-width:1px; fill:none;}
+  .lnk.act{stroke:#555; stroke-width:1.8px;}
+  .lnk-lbl{font-size:10px; fill:#999; paint-order:stroke; stroke:#fff; stroke-width:2.5px; pointer-events:none; opacity:0;}
+  .lnk-lbl.act{opacity:1; fill:#555;}
+
+  /* ── テーブル ── */
+  .tablecard{border:1px solid var(--line); border-radius:12px; overflow:auto; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); max-height:74vh; margin-top:14px;}
+  table{border-collapse:separate; border-spacing:0; width:100%; min-width:820px;}
+  th,td{padding:10px 14px; text-align:left; border-bottom:1px solid var(--line); font-size:.88rem; white-space:nowrap;}
+  thead th{background:var(--head); color:var(--muted); font-weight:500; font-size:.78rem; position:sticky; top:0; z-index:2; border-bottom:1px solid var(--line2); cursor:pointer; user-select:none;}
+  thead th:hover{background:#efefec;}
+  thead th .ar{opacity:.35; font-size:.7rem; margin-left:3px;}
+  thead th.sorted{color:var(--txt);} thead th.sorted .ar{opacity:1;}
+  th.nm, td.nm{position:sticky; left:0; z-index:1; background:var(--panel); font-weight:600; border-right:1px solid var(--line2); min-width:140px;}
+  thead th.nm{z-index:3; background:var(--head);}
+  tbody tr{cursor:pointer;}
+  tbody tr:hover td{background:var(--head);}
+  tbody tr:hover td.nm{background:#f0f0ee;}
+  td.sm{color:var(--muted); font-size:.82rem; white-space:normal; min-width:240px;}
+  .empty{padding:40px 16px; text-align:center; color:var(--muted); font-size:.85rem;}
+  @media (max-width:640px){ th,td{padding:9px 10px; font-size:.83rem;} th.nm,td.nm{min-width:112px;} }
+
+  /* ── あらすじ ── */
+  .story{margin-top:16px;}
+  .arc{border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); padding:18px 20px 16px; margin-bottom:14px;}
+  .arc.now{background:var(--soft); border-color:var(--line2);}
+  .ahead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .ano{font-size:.72rem; font-weight:700; letter-spacing:.1em; color:var(--muted); border:1px solid var(--line2); border-radius:6px; padding:1px 7px;}
+  .arc h2{font-size:1.05rem; font-weight:700; margin:0; letter-spacing:.01em;}
+  .avol{font-size:.74rem; color:var(--muted);}
+  .alead{font-size:.9rem; font-weight:500; margin:9px 0 12px; padding:10px 12px; background:var(--soft); border:1px solid var(--line); border-radius:9px;}
+  .arc.now .alead{background:#fff;}
+  .beat{display:grid; grid-template-columns:126px 1fr; gap:0 16px; padding:10px 0; border-top:1px solid var(--line);}
+  .beat .bh{font-size:.8rem; font-weight:600;}
+  .beat .bb{font-size:.86rem; color:#333; margin:0;}
+  @media (max-width:640px){ .beat{grid-template-columns:1fr; gap:3px;} .beat .bh{color:var(--muted);} }
+  .arcfoot{margin-top:13px; padding-top:12px; border-top:1px solid var(--line);}
+  .arcfoot + .arcfoot{margin-top:9px; padding-top:9px; border-top:0;}
+  .fl{font-size:.72rem; color:var(--muted); margin-bottom:5px;}
+
+  /* ── 詳細ドロワー ── */
+  .drawerhost{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:50;}
+  .drawerhost .drawer{pointer-events:auto;}
+  .scrim{position:fixed; inset:0; background:rgba(17,17,17,.28); opacity:0; pointer-events:none; transition:opacity .18s; z-index:40;}
+  .scrim.on{opacity:1; pointer-events:auto;}
+  .drawer{
+    position:fixed; top:0; right:0; height:100%; width:min(460px,92vw); background:var(--panel);
+    border-left:1px solid var(--line2); box-shadow:-8px 0 28px rgba(0,0,0,.10);
+    transform:translateX(101%); transition:transform .22s ease, visibility .22s; visibility:hidden;
+    z-index:50; display:flex; flex-direction:column;
+  }
+  .drawer.on{transform:translateX(0); visibility:visible;}
+  .dhead{padding:18px 20px 12px; border-bottom:1px solid var(--line); position:relative;}
+  .dhead h2{margin:0; font-size:1.25rem; font-weight:700; letter-spacing:.01em; padding-right:34px;}
+  .dhead .yomi{color:var(--muted); font-size:.75rem; margin-top:1px;}
+  .dhead .bdgs{margin-top:9px; display:flex; gap:5px; flex-wrap:wrap;}
+  .dclose{position:absolute; right:12px; top:14px; border:1px solid var(--line2); background:var(--panel); border-radius:8px; width:28px; height:28px; cursor:pointer; color:var(--muted); font-size:1rem; line-height:1; padding:0;}
+  .dclose:hover{background:var(--head); color:var(--txt);}
+  .dbody{padding:16px 20px 40px; overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch;}
+  .dsum{font-size:.92rem; font-weight:500; margin:0 0 14px; padding:11px 13px; background:var(--soft); border:1px solid var(--line); border-radius:9px;}
+  .dgrid{display:grid; grid-template-columns:auto 1fr; gap:5px 14px; font-size:.82rem; margin-bottom:16px;}
+  .dgrid dt{color:var(--muted);}
+  .dgrid dd{margin:0;}
+  .dsec{margin-bottom:14px;}
+  .dsec h3{font-size:.8rem; font-weight:600; margin:0 0 4px; letter-spacing:.03em; color:var(--txt); display:flex; align-items:center; gap:7px;}
+  .dsec h3::after{content:""; flex:1; height:1px; background:var(--line);}
+  .dsec p{margin:0; font-size:.86rem; color:#333;}
+  .rels{display:flex; gap:6px; flex-wrap:wrap;}
+  .rel{font-family:inherit; font-size:.75rem; padding:4px 10px; border:1px solid var(--line2); border-radius:999px; background:var(--panel); cursor:pointer; color:var(--txt);}
+  .rel:hover{background:var(--head); border-color:var(--accent);}
+  .rel .rl{color:var(--muted); margin-left:5px; font-size:.68rem;}
+  @media (max-width:640px){
+    .drawer{width:100%; height:88%; top:auto; bottom:0; border-left:0; border-top:1px solid var(--line2); border-radius:14px 14px 0 0; transform:translateY(101%);}
+    .drawer.on{transform:translateY(0);}
+  }
+  .foot{margin-top:18px; color:var(--muted); font-size:.72rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>キングダム リサーチDB</h1>
+    <span class="sub" id="range"></span>
+  </header>
+  <div class="meta" id="note"></div>
+
+  <div class="tools">
+    <div class="row">
+      <div class="tabs">
+        <button class="tab on" data-view="graph">グラフ</button>
+        <button class="tab" data-view="table">テーブル</button>
+        <button class="tab" data-view="story">あらすじ</button>
+      </div>
+      <div class="search" id="searchbox">
+        <span class="ico">⌕</span>
+        <input id="q" type="search" placeholder="人物・戦い・所属・タグで検索（例: 廉頗 / 馬陽 / 飛信隊 / 四天王）" autocomplete="off">
+        <button class="clr" id="clr" aria-label="クリア">×</button>
+      </div>
+    </div>
+    <div class="row" id="filterrow">
+      <div class="chipset" id="kindchips"><span class="chiplabel">種別</span></div>
+      <div class="chipset" id="statechips"><span class="chiplabel">国</span></div>
+      <span class="count" id="count"></span>
+    </div>
+  </div>
+
+  <div id="view-graph">
+    <div class="graphcard">
+      <svg id="svg"></svg>
+      <div class="ghint">ノードをタップで詳細 / ドラッグで移動</div>
+      <div class="gctl">
+        <button class="gbtn" id="zin" title="拡大">＋</button>
+        <button class="gbtn" id="zout" title="縮小">－</button>
+        <button class="gbtn" id="zfit" title="全体表示">⤢</button>
+      </div>
+      <div class="glegend">
+        <span><i class="lg-dot"></i>人物</span>
+        <span><i class="lg-sq"></i>戦い</span>
+        <span><i class="lg-ri"></i>勢力</span>
+        <span>色 = 国</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-table" style="display:none">
+    <div class="tablecard">
+      <table id="tbl">
+        <thead><tr>
+          <th class="nm" data-k="name">名前<span class="ar">↕</span></th>
+          <th data-k="kind">種別<span class="ar">↕</span></th>
+          <th data-k="state">国・勢力<span class="ar">↕</span></th>
+          <th data-k="group">所属<span class="ar">↕</span></th>
+          <th data-k="klass">分類<span class="ar">↕</span></th>
+          <th data-k="role">立場 / 結果<span class="ar">↕</span></th>
+          <th data-k="firstn">初登場<span class="ar">↕</span></th>
+          <th data-k="status">状態<span class="ar">↕</span></th>
+          <th data-k="summary">概要<span class="ar">↕</span></th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="tempty" style="display:none">該当なし</div>
+    </div>
+  </div>
+
+  <div id="view-story" style="display:none">
+    <div class="story" id="story"></div>
+    <div class="empty" id="sempty" style="display:none">該当なし</div>
+  </div>
+
+  <div class="foot">データ: <code>260823_kingdom_data.js</code> — 追記するとグラフ・テーブル・詳細に自動反映。</div>
+</div>
+
+<div class="scrim" id="scrim"></div>
+<div class="drawerhost">
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="dhead">
+    <button class="dclose" id="dclose" aria-label="閉じる">×</button>
+    <h2 id="d-name"></h2>
+    <div class="yomi" id="d-yomi"></div>
+    <div class="bdgs" id="d-bdgs"></div>
+  </div>
+  <div class="dbody" id="d-body"></div>
+</aside>
+</div>
+
+<script src="260823_kingdom_data.js"></script>
+<script>
+(function(){
+  "use strict";
+  const N = KINGDOM.nodes;
+  const byId = Object.fromEntries(N.map(n => [n.id, n]));
+  const KIND_LABEL = {person:"人物", battle:"戦い", faction:"勢力"};
+  const STATE_FILL = {"秦":"#e2e2de","趙":"#dbe8f8","魏":"#dcefe3","山界":"#faeec6","蚩尤":"#ebdcf7",
+                      "楚":"#f4e2cd","韓":"#e2e4f4","燕":"#d9ecee"};
+  const stateKey = s => (STATE_FILL[s] ? s : "other");
+
+  document.getElementById("range").textContent = "収録範囲: " + KINGDOM.meta.range;
+  document.getElementById("note").innerHTML =
+    KINGDOM.meta.note + " &nbsp;/&nbsp; 更新: <b>" + KINGDOM.meta.updated + "</b>";
+
+  /* ── 索引: 逆参照（戦い→参加者） ── */
+  N.forEach(n => { n._in = []; });
+  N.forEach(n => (n.battles||[]).forEach(b => { if (byId[b]) byId[b]._in.push(n.id); }));
+  N.forEach(n => {
+    n.firstn = parseInt(String(n.first).replace(/[^0-9]/g,""), 10) || 999;
+    n._hay = [n.name, n.yomi, n.state, n.group, n.role, n.klass, n.arc, n.status,
+              n.summary, (n.tags||[]).join(" "),
+              (n.detail||[]).map(d => d.h + d.body).join(" ")].join(" ").toLowerCase();
+  });
+
+  /* ── あらすじの索引 ── */
+  const ARCS = KINGDOM.arcs || [];
+  ARCS.forEach(a => {
+    a._hay = [a.name, a.vols, a.era, a.lead,
+              (a.beats||[]).map(b => b.h + b.body).join(" "),
+              [...(a.keys||[]), ...(a.battles||[])].map(k => byId[k] ? byId[k].name + " " + byId[k].yomi : "").join(" ")
+             ].join(" ").toLowerCase();
+  });
+
+  /* ── エッジ（無向・重複排除） ── */
+  const EDGES = [];
+  const seen = new Set();
+  function addEdge(a, b, label){
+    if (!byId[a] || !byId[b] || a === b) return;
+    const k = a < b ? a+"|"+b : b+"|"+a;
+    if (seen.has(k)) return;
+    seen.add(k);
+    EDGES.push({a, b, label: label || ""});
+  }
+  N.forEach(n => {
+    (n.rel||[]).forEach(r => addEdge(n.id, r.to, r.label));
+    (n.battles||[]).forEach(b => addEdge(n.id, b, "参戦"));
+  });
+  const deg = {};
+  EDGES.forEach(e => { deg[e.a]=(deg[e.a]||0)+1; deg[e.b]=(deg[e.b]||0)+1; });
+  const neigh = {};
+  N.forEach(n => neigh[n.id] = new Set());
+  EDGES.forEach(e => { neigh[e.a].add(e.b); neigh[e.b].add(e.a); });
+
+  /* ── 状態 ── */
+  const S = { view:"graph", q:"", kind:"all", state:"all", sortK:"firstn", sortD:1, sel:null };
+
+  /* ── フィルタチップ ── */
+  function buildChips(el, key, entries){
+    entries.forEach(([val, label, n]) => {
+      const b = document.createElement("button");
+      b.className = "chip" + (S[key] === val ? " on" : "");
+      b.dataset.val = val;
+      b.innerHTML = label + (n != null ? '<span class="n">' + n + "</span>" : "");
+      b.onclick = () => {
+        S[key] = val;
+        [...el.querySelectorAll(".chip")].forEach(c => c.classList.toggle("on", c.dataset.val === val));
+        render();
+      };
+      el.appendChild(b);
+    });
+  }
+  const cnt = (f) => N.filter(f).length;
+  buildChips(document.getElementById("kindchips"), "kind", [
+    ["all","すべて",N.length],
+    ["person","人物",cnt(n=>n.kind==="person")],
+    ["battle","戦い",cnt(n=>n.kind==="battle")],
+    ["faction","勢力",cnt(n=>n.kind==="faction")]
+  ]);
+  const states = [...new Set(N.map(n => n.state))].filter(s => STATE_FILL[s]);
+  buildChips(document.getElementById("statechips"), "state",
+    [["all","すべて",null]].concat(states.map(s => [s, s, cnt(n=>n.state===s)])));
+
+  /* ── 検索 ── */
+  const qEl = document.getElementById("q"), sbox = document.getElementById("searchbox");
+  qEl.addEventListener("input", () => {
+    S.q = qEl.value.trim().toLowerCase();
+    sbox.classList.toggle("has", !!S.q);
+    render();
+  });
+  document.getElementById("clr").onclick = () => { qEl.value=""; S.q=""; sbox.classList.remove("has"); render(); qEl.focus(); };
+
+  const passFilter = n => (S.kind === "all" || n.kind === S.kind) && (S.state === "all" || n.state === S.state);
+  const passSearch  = n => !S.q || n._hay.indexOf(S.q) >= 0;
+
+  /* ── タブ ── */
+  document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+    S.view = t.dataset.view;
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
+    ["graph","table","story"].forEach(v => {
+      document.getElementById("view-" + v).style.display = S.view === v ? "" : "none";
+    });
+    // 種別・国フィルタは人物/戦い一覧にだけ効くので、あらすじでは隠す
+    document.querySelectorAll("#filterrow .chipset").forEach(c => c.style.display = S.view === "story" ? "none" : "");
+    render();
+    if (S.view === "graph") { sim.alpha = .35; tick(); }
+  });
+
+  /* ============ グラフ ============ */
+  const SVG = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById("svg");
+  const gRoot = document.createElementNS(SVG,"g");
+  const gLink = document.createElementNS(SVG,"g");
+  const gLabl = document.createElementNS(SVG,"g");
+  const gNode = document.createElementNS(SVG,"g");
+  gRoot.appendChild(gLink); gRoot.appendChild(gLabl); gRoot.appendChild(gNode);
+  svg.appendChild(gRoot);
+
+  const P = {};      // id -> {x,y,vx,vy,fixed}
+  const view = {x:0, y:0, k:1};
+  let W = 900, H = 560;
+  function measure(){ const r = svg.getBoundingClientRect(); W = r.width || 900; H = r.height || 560; }
+
+  // 初期配置: 国ごとにゆるくクラスタ
+  const clusterAt = {};
+  (function seed(){
+    const groups = [...new Set(N.map(n => n.state))];
+    groups.forEach((g, i) => {
+      const a = (i / groups.length) * Math.PI * 2;
+      clusterAt[g] = {x: Math.cos(a) * 330, y: Math.sin(a) * 150};
+    });
+    N.forEach((n, i) => {
+      const c = clusterAt[n.state] || {x:0,y:0};
+      P[n.id] = {x: c.x + Math.cos(i*2.399)*70, y: c.y + Math.sin(i*2.399)*70, vx:0, vy:0};
+    });
+  })();
+
+  const radius = n => n.kind === "battle" ? 15 : n.kind === "faction" ? 13 : Math.min(15, 6 + (deg[n.id]||0) * 1.1);
+  // ラベルが長い／大きいノードほど強く反発させ、文字の重なりを減らす
+  const charge = n => 9 + radius(n) * 3 + String(n.name).length * 3.2;
+  const isBig  = n => n.kind !== "person" || (deg[n.id]||0) >= 5;
+  function boxOf(n){
+    const r = radius(n), cw = isBig(n) ? 12 : 10;
+    return {hw: Math.max(r, String(n.name).length * cw / 2) + 5, hh: r + 15};
+  }
+
+  const sim = {alpha:1, nodes:[], links:[]};
+  function step(){
+    const ns = sim.nodes, ls = sim.links, a = sim.alpha;
+    for (let i=0;i<ns.length;i++){
+      const A = P[ns[i].id];
+      for (let j=i+1;j<ns.length;j++){
+        const B = P[ns[j].id];
+        let dx = B.x-A.x, dy = B.y-A.y, d2 = dx*dx+dy*dy;
+        if (d2 < 1) { dx = (i-j)*.6 + .3; dy = (j-i)*.4 + .2; d2 = dx*dx+dy*dy; }
+        if (d2 > 420000) continue;
+        const f = ns[i]._c * ns[j]._c * 1.0 / d2 * a;
+        const d = Math.sqrt(d2), fx = dx/d*f, fy = dy/d*f;
+        A.vx -= fx; A.vy -= fy; B.vx += fx; B.vy += fy;
+      }
+    }
+    ls.forEach(l => {
+      const A = P[l.a], B = P[l.b];
+      const dx = B.x-A.x, dy = B.y-A.y, d = Math.sqrt(dx*dx+dy*dy) || .01;
+      const f = (d - 108) * .032 * a, fx = dx/d*f, fy = dy/d*f;
+      A.vx += fx; A.vy += fy; B.vx -= fx; B.vy -= fy;
+    });
+    ns.forEach(n => {
+      const p = P[n.id];
+      const c = clusterAt[n.state] || {x:0,y:0};
+      p.vx += (c.x - p.x) * .0020 * a;
+      p.vy += (c.y - p.y) * .0026 * a;
+      if (p.fixed) { p.vx = p.vy = 0; return; }
+      p.vx *= .82; p.vy *= .82;
+      p.x += Math.max(-24, Math.min(24, p.vx));
+      p.y += Math.max(-24, Math.min(24, p.vy));
+    });
+    collide(ns);
+    sim.alpha *= .988;
+  }
+
+  // ラベル込みの矩形として重なりを押し出す（文字の被りを防ぐ）
+  function collide(ns){
+    for (let i=0;i<ns.length;i++){
+      const ai = ns[i], A = P[ai.id];
+      for (let j=i+1;j<ns.length;j++){
+        const bj = ns[j], B = P[bj.id];
+        const dx = B.x - A.x, dy = B.y - A.y;
+        const ox = (ai._hw + bj._hw) - Math.abs(dx); if (ox <= 0) continue;
+        const oy = (ai._hh + bj._hh) - Math.abs(dy); if (oy <= 0) continue;
+        if (ox < oy){
+          const s = (dx >= 0 ? 1 : -1) * ox * .25;
+          if (!A.fixed) A.x -= s; if (!B.fixed) B.x += s;
+        } else {
+          const s = (dy >= 0 ? 1 : -1) * oy * .25;
+          if (!A.fixed) A.y -= s; if (!B.fixed) B.y += s;
+        }
+      }
+    }
+  }
+
+  let raf = null;
+  function tick(){
+    if (raf) return;
+    const loop = () => {
+      raf = null;
+      if (S.view !== "graph") return;
+      for (let i=0;i<2;i++) step();
+      draw();
+      if (sim.alpha > .02 || dragging) raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+  }
+
+  const el = {};   // id -> {g, shp, lbl}
+  function buildGraph(vis){
+    gLink.textContent = ""; gNode.textContent = ""; gLabl.textContent = "";
+    Object.keys(el).forEach(k => delete el[k]);
+    const set = new Set(vis.map(n => n.id));
+    vis.forEach(n => { n._c = charge(n); const b = boxOf(n); n._hw = b.hw; n._hh = b.hh; });
+    sim.nodes = vis;
+    sim.links = EDGES.filter(e => set.has(e.a) && set.has(e.b));
+
+    sim.links.forEach(l => {
+      const ln = document.createElementNS(SVG,"line");
+      ln.setAttribute("class","lnk");
+      l._el = ln; gLink.appendChild(ln);
+      const lb = document.createElementNS(SVG,"text");
+      lb.setAttribute("class","lnk-lbl"); lb.setAttribute("text-anchor","middle");
+      lb.textContent = l.label; l._lb = lb; gLabl.appendChild(lb);
+    });
+
+    vis.forEach(n => {
+      const g = document.createElementNS(SVG,"g");
+      g.setAttribute("class","node"); g.dataset.id = n.id;
+      const r = radius(n);
+      let shp;
+      if (n.kind === "battle"){
+        shp = document.createElementNS(SVG,"rect");
+        shp.setAttribute("x",-r); shp.setAttribute("y",-r);
+        shp.setAttribute("width",r*2); shp.setAttribute("height",r*2);
+        shp.setAttribute("rx",3); shp.setAttribute("transform","rotate(45)");
+      } else {
+        shp = document.createElementNS(SVG,"circle");
+        shp.setAttribute("r", r);
+        if (n.kind === "faction") shp.setAttribute("stroke-dasharray","3 2.5");
+      }
+      shp.setAttribute("class","shp");
+      shp.setAttribute("fill", STATE_FILL[n.state] || "#f0f0ee");
+      g.appendChild(shp);
+      const t = document.createElementNS(SVG,"text");
+      t.setAttribute("class","n-lbl" + (n.kind !== "person" || (deg[n.id]||0) >= 5 ? " big" : ""));
+      t.setAttribute("text-anchor","middle");
+      t.setAttribute("y", r + 11);
+      t.textContent = n.name;
+      g.appendChild(t);
+      el[n.id] = {g, shp};
+      gNode.appendChild(g);
+    });
+  }
+
+  function draw(){
+    sim.nodes.forEach(n => {
+      const p = P[n.id];
+      el[n.id].g.setAttribute("transform","translate(" + p.x.toFixed(1) + "," + p.y.toFixed(1) + ")");
+    });
+    sim.links.forEach(l => {
+      const A = P[l.a], B = P[l.b];
+      l._el.setAttribute("x1",A.x); l._el.setAttribute("y1",A.y);
+      l._el.setAttribute("x2",B.x); l._el.setAttribute("y2",B.y);
+      l._lb.setAttribute("x",(A.x+B.x)/2); l._lb.setAttribute("y",(A.y+B.y)/2 - 3);
+    });
+    applyTransform();
+  }
+  function applyTransform(){
+    gRoot.setAttribute("transform","translate(" + (W/2 + view.x) + "," + (H/2 + view.y) + ") scale(" + view.k + ")");
+  }
+
+  function paintGraphState(){
+    const hits = new Set(sim.nodes.filter(passSearch).map(n => n.id));
+    const focus = S.sel && el[S.sel] ? new Set([S.sel, ...neigh[S.sel]]) : null;
+    sim.nodes.forEach(n => {
+      const g = el[n.id].g;
+      const isHit = !S.q || hits.has(n.id);
+      const inFocus = !focus || focus.has(n.id);
+      g.classList.toggle("dim", !(isHit && inFocus));
+      g.classList.toggle("hit", !!S.q && hits.has(n.id));
+      g.classList.toggle("sel", S.sel === n.id);
+    });
+    sim.links.forEach(l => {
+      const act = S.sel && (l.a === S.sel || l.b === S.sel);
+      l._el.classList.toggle("act", !!act);
+      l._el.classList.toggle("dim", !!(focus && !act) || !!(S.q && !(hits.has(l.a) && hits.has(l.b))));
+      l._lb.classList.toggle("act", !!act);
+    });
+  }
+
+  function fit(){
+    measure();
+    if (!sim.nodes.length) return;
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    sim.nodes.forEach(n => { const p=P[n.id]; x0=Math.min(x0,p.x); y0=Math.min(y0,p.y); x1=Math.max(x1,p.x); y1=Math.max(y1,p.y); });
+    const pad = 60, w = (x1-x0)+pad*2, h = (y1-y0)+pad*2;
+    const kraw = Math.min(W/w, H/h);
+    // 画面が狭いときは縮めすぎず、主要ハブ（信）を中心に置いてパンで見せる
+    const floor = W < 700 ? .82 : .5;
+    view.k = Math.max(floor, Math.min(1.2, kraw));
+    let cx = (x0+x1)/2, cy = (y0+y1)/2;
+    if (kraw < floor){
+      const hub = sim.nodes.slice().sort((a,b) => (deg[b.id]||0) - (deg[a.id]||0))[0];
+      if (hub){ cx = P[hub.id].x; cy = P[hub.id].y; }
+    }
+    view.x = -cx * view.k;
+    view.y = -cy * view.k;
+    applyTransform();
+  }
+
+  /* パン・ズーム・ドラッグ */
+  let dragging = null, panning = null;
+  svg.addEventListener("pointerdown", e => {
+    const g = e.target.closest(".node");
+    svg.setPointerCapture(e.pointerId);
+    if (g){
+      dragging = {id:g.dataset.id, moved:0};
+      P[dragging.id].fixed = true;
+    } else {
+      panning = {x:e.clientX, y:e.clientY, vx:view.x, vy:view.y};
+    }
+  });
+  svg.addEventListener("pointermove", e => {
+    if (dragging){
+      const p = P[dragging.id];
+      p.x += e.movementX / view.k; p.y += e.movementY / view.k;
+      dragging.moved += Math.abs(e.movementX) + Math.abs(e.movementY);
+      sim.alpha = Math.max(sim.alpha, .25); tick();
+    } else if (panning){
+      view.x = panning.vx + (e.clientX - panning.x);
+      view.y = panning.vy + (e.clientY - panning.y);
+      applyTransform();
+    }
+  });
+  svg.addEventListener("pointerup", e => {
+    if (dragging){
+      const d = dragging; dragging = null;
+      P[d.id].fixed = false;
+      if (d.moved < 5) open(d.id);
+      sim.alpha = Math.max(sim.alpha, .12); tick();
+    } else if (panning && Math.abs(e.clientX-panning.x) + Math.abs(e.clientY-panning.y) < 5){
+      // 背景タップ = 選択解除
+      if (S.sel){ S.sel = null; paintGraphState(); }
+    }
+    panning = null;
+  });
+  svg.addEventListener("pointercancel", () => { if (dragging) P[dragging.id].fixed = false; dragging = null; panning = null; });
+  svg.addEventListener("wheel", e => {
+    e.preventDefault();
+    const f = Math.exp(-e.deltaY * .0015);
+    const r = svg.getBoundingClientRect();
+    const cx = e.clientX - r.left - W/2, cy = e.clientY - r.top - H/2;
+    const k2 = Math.max(.2, Math.min(3.2, view.k * f));
+    view.x = cx - (cx - view.x) * (k2/view.k);
+    view.y = cy - (cy - view.y) * (k2/view.k);
+    view.k = k2; applyTransform();
+  }, {passive:false});
+  const zoomBy = f => { view.k = Math.max(.2, Math.min(3.2, view.k*f)); view.x*=f; view.y*=f; applyTransform(); };
+  document.getElementById("zin").onclick  = () => zoomBy(1.25);
+  document.getElementById("zout").onclick = () => zoomBy(.8);
+  document.getElementById("zfit").onclick = () => fit();
+
+  /* ============ テーブル ============ */
+  const tbody = document.getElementById("tbody");
+  document.querySelectorAll("#tbl thead th").forEach(th => th.onclick = () => {
+    const k = th.dataset.k;
+    if (S.sortK === k) S.sortD *= -1; else { S.sortK = k; S.sortD = 1; }
+    render();
+  });
+  function renderTable(rows){
+    document.querySelectorAll("#tbl thead th").forEach(th => {
+      const on = th.dataset.k === S.sortK;
+      th.classList.toggle("sorted", on);
+      th.querySelector(".ar").textContent = on ? (S.sortD > 0 ? "↑" : "↓") : "↕";
+    });
+    const k = S.sortK, d = S.sortD;
+    const sorted = rows.slice().sort((a,b) => {
+      let va = a[k], vb = b[k];
+      if (k === "firstn") return (va - vb) * d || a.name.localeCompare(b.name,"ja");
+      va = String(va == null ? "" : va); vb = String(vb == null ? "" : vb);
+      return va.localeCompare(vb, "ja") * d || a.firstn - b.firstn;
+    });
+    tbody.textContent = "";
+    sorted.forEach(n => {
+      const tr = document.createElement("tr");
+      tr.onclick = () => open(n.id);
+      tr.innerHTML =
+        '<td class="nm">' + esc(n.name) + '</td>' +
+        '<td><span class="bdg k">' + KIND_LABEL[n.kind] + '</span></td>' +
+        '<td><span class="bdg s-' + stateKey(n.state) + '">' + esc(n.state) + '</span></td>' +
+        '<td>' + esc(n.group || "—") + '</td>' +
+        '<td>' + esc(n.klass) + '</td>' +
+        '<td>' + esc(n.role) + '</td>' +
+        '<td>' + esc(n.first) + '</td>' +
+        '<td><span class="bdg' + (["戦死","進行中"].includes(n.status) ? " st-" + n.status : " k") + '">' + esc(n.status) + '</span></td>' +
+        '<td class="sm">' + esc(n.summary) + '</td>';
+      tbody.appendChild(tr);
+    });
+    document.getElementById("tempty").style.display = sorted.length ? "none" : "";
+  }
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+  /* ============ あらすじ ============ */
+  const storyEl = document.getElementById("story");
+  function renderStory(){
+    const rows = ARCS.filter(a => !S.q || a._hay.indexOf(S.q) >= 0);
+    storyEl.innerHTML = rows.map(a => {
+      const now = /進行中/.test(a.vols);
+      const keys = (a.keys||[]).filter(k => byId[k]);
+      const bats = (a.battles||[]).filter(k => byId[k]);
+      return '<section class="arc' + (now ? " now" : "") + '">' +
+        '<div class="ahead"><span class="ano">' + esc(a.no) + '</span>' +
+          '<h2>' + esc(a.name) + '</h2>' +
+          '<span class="avol">' + esc(a.vols) + (a.era ? " ・ " + esc(a.era) : "") + '</span></div>' +
+        '<p class="alead">' + esc(a.lead) + '</p>' +
+        (a.beats||[]).map(b => '<div class="beat"><div class="bh">' + esc(b.h) + '</div><p class="bb">' + esc(b.body) + '</p></div>').join("") +
+        (bats.length ? '<div class="arcfoot"><div class="fl">この章の戦い</div><div class="rels">' +
+          bats.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+        (keys.length ? '<div class="arcfoot"><div class="fl">主要人物</div><div class="rels">' +
+          keys.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+      '</section>';
+    }).join("");
+    storyEl.querySelectorAll(".rel").forEach(b => b.onclick = () => open(b.dataset.id));
+    document.getElementById("sempty").style.display = rows.length ? "none" : "";
+    return rows.length;
+  }
+
+  /* ============ 詳細ドロワー ============ */
+  const drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim");
+  function open(id){
+    const n = byId[id]; if (!n) return;
+    S.sel = id;
+    document.getElementById("d-name").textContent = n.name;
+    document.getElementById("d-yomi").textContent = n.yomi || "";
+    document.getElementById("d-bdgs").innerHTML =
+      '<span class="bdg k">' + KIND_LABEL[n.kind] + '</span>' +
+      '<span class="bdg s-' + stateKey(n.state) + '">' + esc(n.state) + '</span>' +
+      '<span class="bdg k">' + esc(n.klass) + '</span>' +
+      '<span class="bdg' + (["戦死","進行中"].includes(n.status) ? " st-" + n.status : " k") + '">' + esc(n.status) + '</span>' +
+      (n.tags||[]).map(t => '<span class="bdg k">#' + esc(t) + '</span>').join("");
+
+    let h = '<p class="dsum">' + esc(n.summary) + '</p>';
+    h += '<dl class="dgrid">' +
+      row("所属", n.group) + row("立場 / 結果", n.role) +
+      row("初登場", n.first) + row("登場編", n.arc) + '</dl>';
+    (n.detail||[]).forEach(d => {
+      h += '<div class="dsec"><h3>' + esc(d.h) + '</h3><p>' + esc(d.body) + '</p></div>';
+    });
+
+    // 登場する戦い / 参加者
+    const bat = (n.battles||[]).filter(b => byId[b]);
+    if (bat.length) h += relBlock("登場する戦い", bat.map(b => ({id:b, label:""})));
+    if (n.kind === "battle" && n._in.length) h += relBlock("参加者", n._in.map(i => ({id:i, label:""})));
+
+    const rel = (n.rel||[]).filter(r => byId[r.to]);
+    const back = N.filter(o => (o.rel||[]).some(r => r.to === n.id) && !rel.some(r => r.to === o.id))
+                  .map(o => ({id:o.id, label:(o.rel.find(r => r.to === n.id)||{}).label}));
+    const all = rel.map(r => ({id:r.to, label:r.label})).concat(back);
+    if (all.length) h += relBlock("関連", all);
+
+    document.getElementById("d-body").innerHTML = h;
+    document.getElementById("d-body").scrollTop = 0;
+    document.getElementById("d-body").querySelectorAll(".rel").forEach(b => b.onclick = () => open(b.dataset.id));
+    drawer.classList.add("on"); scrim.classList.add("on"); drawer.setAttribute("aria-hidden","false");
+    if (history.replaceState) history.replaceState(null, "", "#" + id);
+    if (S.view === "graph") paintGraphState();
+  }
+  const row = (k,v) => v && v !== "—" ? "<dt>" + esc(k) + "</dt><dd>" + esc(v) + "</dd>" : "";
+  function relBlock(title, items){
+    return '<div class="dsec"><h3>' + title + '</h3><div class="rels">' +
+      items.map(i => '<button class="rel" data-id="' + i.id + '">' + esc(byId[i.id].name) +
+        (i.label ? '<span class="rl">' + esc(i.label) + '</span>' : "") + '</button>').join("") +
+      '</div></div>';
+  }
+  function close(){
+    drawer.classList.remove("on"); scrim.classList.remove("on"); drawer.setAttribute("aria-hidden","true");
+    S.sel = null;
+    if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);
+    if (S.view === "graph") paintGraphState();
+  }
+  document.getElementById("dclose").onclick = close;
+  scrim.onclick = close;
+  document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+
+  /* ============ 描画 ============ */
+  function render(){
+    const rows = N.filter(n => passFilter(n) && (S.view === "table" ? passSearch(n) : true));
+    const vis  = N.filter(passFilter);
+    document.getElementById("count").textContent =
+      (S.view === "table" ? rows.length + " 件" : vis.length + " ノード / " + sim.links.length + " 関係");
+    if (S.view === "story"){
+      document.getElementById("count").textContent = renderStory() + " / " + ARCS.length + " 章";
+      return;
+    }
+    if (S.view === "table"){
+      renderTable(rows);
+    } else {
+      const sig = vis.map(n => n.id).join(",");
+      if (sig !== render._sig){ render._sig = sig; buildGraph(vis); sim.alpha = .8; }
+      document.getElementById("count").textContent = vis.length + " ノード / " + sim.links.length + " 関係";
+      paintGraphState(); draw(); tick();
+    }
+  }
+
+  measure();
+  render();
+  setTimeout(() => {
+    for (let i=0;i<600;i++) step();
+    for (let i=0;i<120;i++) collide(sim.nodes);   // 最後にラベルの重なりだけを解く
+    draw(); fit();
+  }, 30);
+  window.addEventListener("resize", () => { measure(); applyTransform(); });
+  if (location.hash && byId[location.hash.slice(1)]) setTimeout(() => open(location.hash.slice(1)), 80);
+})();
+</script>
+</body>
+</html>
