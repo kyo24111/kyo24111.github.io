@@ -2,7 +2,8 @@
    REGIONS / PARTS / SKIN は 260824_body_3d_data.js（先行する classic script）で定義 */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { buildSpec } from './260824_body_3d_geom.js';
 
 const D = Math.PI / 180;
 const stage = document.getElementById('stage');
@@ -30,9 +31,18 @@ controls.rotateSpeed = 0.85;
 if ('zoomToCursor' in controls) controls.zoomToCursor = true;   // Google Earth 風のカーソル寄せズーム
 controls.autoRotateSpeed = 0.9;
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0xb9b4ae, 1.05));
-const key = new THREE.DirectionalLight(0xffffff, 1.35); key.position.set(90, 200, 180); scene.add(key);
-const rim = new THREE.DirectionalLight(0xffffff, 0.5);  rim.position.set(-120, 90, -160); scene.add(rim);
+scene.add(new THREE.HemisphereLight(0xffffff, 0xbdb7b0, 0.55));
+const key = new THREE.DirectionalLight(0xffffff, 1.05); key.position.set(90, 200, 180); scene.add(key);
+const fill = new THREE.DirectionalLight(0xffffff, 0.35); fill.position.set(-140, 60, 120); scene.add(fill);
+const rim = new THREE.DirectionalLight(0xffffff, 0.45);  rim.position.set(-120, 110, -170); scene.add(rim);
+
+if (renderer) {                                        // 室内環境マップで陰影と艶を出す
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.06;
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.03).texture;
+  pmrem.dispose();
+}
 
 /* 接地影（板ポリ＋放射グラデーション） */
 (function shadow() {
@@ -48,41 +58,14 @@ const rim = new THREE.DirectionalLight(0xffffff, 0.5);  rim.position.set(-120, 9
   scene.add(m);
 })();
 
-/* ───────── geometry builders ───────── */
-function blob(b) {
-  let g;
-  if (b.t === 'c') {
-    const A = new THREE.Vector3(...b.a), B = new THREE.Vector3(...b.b);
-    const dir = B.clone().sub(A), len = dir.length();
-    g = new THREE.CapsuleGeometry(b.r, len, 6, 14);
-    g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize()));
-    const mid = A.add(B).multiplyScalar(0.5);
-    g.translate(mid.x, mid.y, mid.z);
-    return g;
-  }
-  if (b.t === 'r') {
-    g = new THREE.TorusGeometry(b.R, b.tb, 8, 44);
-    if (b.s) g.scale(b.s[0], b.s[1], b.s[2]);
-  } else {
-    g = new THREE.SphereGeometry(1, 20, 14);
-    g.scale(b.r[0], b.r[1], b.r[2]);
-  }
-  if (b.q) { g.rotateX(b.q[0] * D); g.rotateY(b.q[1] * D); g.rotateZ(b.q[2] * D); }
-  g.translate(b.p[0], b.p[1], b.p[2]);
-  return g;
-}
-const build = (spec) => {
-  const gs = spec.map(blob);
-  return gs.length === 1 ? gs[0] : mergeGeometries(gs, false);
-};
-
 /* ───────── materials / colors ───────── */
 const BASE = { muscle: 0xb06055, bone: 0xcdc6b4, organ: 0x8a7480 };
 const SEL = 0x201d1c;
 const tint = (lay, i) => {
   const c = new THREE.Color(BASE[lay]);
-  const j = ((i * 2654435761) % 1000) / 1000;              // 決定的なばらつき（明度のみ）
-  c.offsetHSL(0, 0, (j - 0.5) * 0.11);
+  const j = ((i * 2654435761) % 1000) / 1000;              // 決定的なばらつき
+  const k = ((i * 40503 + 7) % 997) / 997;
+  c.offsetHSL((k - 0.5) * 0.028, (k - 0.5) * 0.10, (j - 0.5) * 0.20);  // 隣接筋を見分けるため
   return c;
 };
 
@@ -92,9 +75,11 @@ const rec = {};            // id → { part, meshes[], mat, box, center, radius 
 const pickables = [];
 
 PARTS.forEach((part, i) => {
-  const geo = build(part.g);
+  const geo = buildSpec(part.g);
   const mat = new THREE.MeshStandardMaterial({
-    color: tint(part.lay, i + 3), roughness: 0.62, metalness: 0.02,
+    color: tint(part.lay, i + 3),
+    roughness: part.lay === 'bone' ? 0.5 : part.lay === 'organ' ? 0.42 : 0.56,
+    metalness: 0.0, envMapIntensity: 0.55,
     transparent: true, opacity: 1, side: THREE.DoubleSide, flatShading: false
   });
   mat.userData.base = mat.color.clone();
@@ -113,16 +98,16 @@ PARTS.forEach((part, i) => {
 });
 
 /* skin shell */
-const skin = new THREE.Mesh(build(SKIN), new THREE.MeshStandardMaterial({
-  color: 0xd8cdc6, roughness: 0.85, transparent: true, opacity: 0.17,
-  depthWrite: false, side: THREE.DoubleSide
+const skin = new THREE.Mesh(buildSpec(SKIN), new THREE.MeshStandardMaterial({
+  color: 0xdacfc7, roughness: 0.9, metalness: 0, envMapIntensity: 0.3,
+  transparent: true, opacity: 0.15, depthWrite: false, side: THREE.DoubleSide
 }));
 skin.visible = false;
 scene.add(skin);
 
 /* ───────── state ───────── */
 const layers = { muscle: true, bone: false, organ: false, skin: true, deep: false };
-let selected = null, hovered = null, focusMode = true, regionFilter = null, query = '';
+let selected = null, hovered = null, focusMode = true, regionFilter = null, query = '', flag = null;
 
 const shown = (p) => layers[p.lay] && (!p.deep || layers.deep);
 function applyLayers() {
@@ -223,6 +208,7 @@ const ORDER = { muscle: 0, bone: 1, organ: 2 };
 function matches(p) {
   if (!layers[p.lay]) return false;
   if (p.deep && !layers.deep && !query) return false;   // 検索語があれば深層もヒットさせる
+  if (flag && !p[flag]) return false;
   if (regionFilter && p.rg !== regionFilter) return false;
   if (!query) return true;
   const rg = REGIONS.find(r => r.id === p.rg);
@@ -259,15 +245,24 @@ function refreshList() {
       const n = PARTS.filter(p => p.rg === r.id).length;
       return `<button class="chip" data-rg="${r.id}">${r.jp}<span class="n">${n}</span></button>`;
     }).join('') +
+    `<button class="chip" data-rg="__iu">インナーユニット<span class="n">${PARTS.filter(p => p.iu).length}</span></button>` +
+    `<button class="chip" data-rg="__deep">深層のみ<span class="n">${PARTS.filter(p => p.deep).length}</span></button>` +
     `<button class="chip" data-rg="__key">★ 呼吸<span class="n">${PARTS.filter(p => p.key).length}</span></button>`;
   el.querySelectorAll('.chip').forEach(c => c.onclick = () => {
     el.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
     c.classList.add('on');
     const v = c.dataset.rg;
-    if (v === '__key') {
-      regionFilter = null; document.getElementById('q').value = '呼吸'; query = '呼吸';
-      ['muscle', 'organ'].forEach(l => layers[l] = true); syncLayerBtns(); applyLayers();
-      frameAll(); return;
+    flag = null;
+    if (v === '__key' || v === '__iu' || v === '__deep') {
+      flag = { __key: 'key', __iu: 'iu', __deep: 'deep' }[v];
+      regionFilter = null;
+      layers.muscle = true; layers.deep = true;
+      if (flag === 'key') layers.organ = true;
+      syncLayerBtns(); applyLayers();
+      const b = new THREE.Box3();
+      PARTS.filter(p => p[flag]).forEach(p => b.union(rec[p.id].box));
+      if (!b.isEmpty()) flyTo(b.getCenter(new THREE.Vector3()), b.getSize(new THREE.Vector3()), 720, 2.2);
+      refreshList(); return;
     }
     regionFilter = v || null;
     refreshList();
