@@ -47,6 +47,9 @@ Dwarkesh系ファイルは5セクション構成：原文（verbatim）／英語
 
 | ファイル | 種別 | 題名 | 公開日 | 依頼日 |
 |--------|------|------|--------|--------|
+| [260824_dempsey_dear_vcs_just_give_up.html](260824_dempsey_dear_vcs_just_give_up.html) | エッセイ | Dear VCs, Just Give Up — 全編が反語で書かれたVC業界批評（M. Dempsey / Compound） | 2026-08-18 | 2026-08-24 |
+| [260731_situational_awareness_aschenbrenner.html](260731_situational_awareness_aschenbrenner.html) | エッセイ | Situational Awareness（状況認識）— L. Aschenbrenner エッセイ深掘り分析 | 2024-06 | 2026-07-31 |
+| [260721_pivot_tech_right_mishima.html](260721_pivot_tech_right_mishima.html) | YouTube | なぜテック右派は三島由紀夫に惹かれるのか — 日本2050（PIVOT・先崎彰容） | 2026-06 | 2026-07-21 |
 | [260709_panasonic_dc_cooling.html](260709_panasonic_dc_cooling.html) | 記事 | パナソニックHD、DC冷却の新技術 — 消費電力60%減（吸収式チラー・日経） | 2026-07-09 | 2026-07-09 |
 | [260709_pivot_cultural_anthropology.html](260709_pivot_cultural_anthropology.html) | YouTube | 世界のエリートはなぜ文化人類学を学ぶのか（PIVOT BUSINESS・大川内直子） | 2026-07-02 | 2026-07-09 |
 | [260707_pivot_us_midterms_maga.html](260707_pivot_us_midterms_maga.html) | YouTube | MAGA分裂と隠れトランプ — 2026中間選挙（PIVOT） | 2026-07-06 | 2026-07-07 |
