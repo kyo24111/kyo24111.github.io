@@ -59,7 +59,7 @@ if (renderer) {                                        // 室内環境マップ�
 })();
 
 /* ───────── materials / colors ───────── */
-const BASE = { muscle: 0xb06055, bone: 0xcdc6b4, organ: 0x8a7480 };
+const BASE = { muscle: 0xb06055, tendon: 0xd8dad4, bone: 0xcdc6b4, organ: 0x8a7480 };
 const SEL = 0x201d1c;
 const tint = (lay, i) => {
   const c = new THREE.Color(BASE[lay]);
@@ -78,7 +78,8 @@ PARTS.forEach((part, i) => {
   const geo = buildSpec(part.g);
   const mat = new THREE.MeshStandardMaterial({
     color: tint(part.lay, i + 3),
-    roughness: part.lay === 'bone' ? 0.5 : part.lay === 'organ' ? 0.42 : 0.56,
+    roughness: part.lay === 'bone' ? 0.5 : part.lay === 'organ' ? 0.42
+             : part.lay === 'tendon' ? 0.32 : 0.56,
     metalness: 0.0, envMapIntensity: 0.55,
     transparent: true, opacity: 1, side: THREE.DoubleSide, flatShading: false
   });
@@ -106,7 +107,7 @@ skin.visible = false;
 scene.add(skin);
 
 /* ───────── state ───────── */
-const layers = { muscle: true, bone: false, organ: false, skin: true, deep: false };
+const layers = { muscle: true, tendon: false, bone: false, organ: false, skin: true, deep: false };
 let selected = null, hovered = null, focusMode = true, regionFilter = null, query = '', flag = null;
 
 const shown = (p) => layers[p.lay] && (!p.deep || layers.deep);
@@ -193,7 +194,7 @@ function renderDetail() {
   }
   const p = rec[selected].part;
   const rg = REGIONS.find(r => r.id === p.rg);
-  const layJp = { muscle: '筋肉', bone: '骨格', organ: '内臓' }[p.lay];
+  const layJp = { muscle: '筋肉', tendon: '腱・靭帯', bone: '骨格', organ: '内臓' }[p.lay];
   ix.textContent = (PARTS.indexOf(p) + 1) + ' / ' + PARTS.length;
   el.innerHTML =
     `<div class="det-lay lay-${p.lay}">${layJp}${p.deep ? ' · 深層' : ''}${p.sym ? ' · 左右' : ''}</div>
@@ -205,7 +206,7 @@ function renderDetail() {
 }
 
 /* ───────── list & search ───────── */
-const ORDER = { muscle: 0, bone: 1, organ: 2 };
+const ORDER = { muscle: 0, tendon: 1, bone: 2, organ: 3 };
 function matches(p) {
   if (!layers[p.lay]) return false;
   if (p.deep && !layers.deep && !query) return false;   // 検索語があれば深層もヒットさせる
@@ -214,7 +215,7 @@ function matches(p) {
   if (!query) return true;
   const rg = REGIONS.find(r => r.id === p.rg);
   const hay = [p.jp, p.en, p.al || '', rg ? rg.jp : '', p.lay,
-    { muscle: '筋肉', bone: '骨格 骨', organ: '内臓 臓器' }[p.lay],
+    { muscle: '筋肉', tendon: '腱 靭帯 筋膜', bone: '骨格 骨', organ: '内臓 臓器' }[p.lay],
     p.deep ? '深層' : '', ...p.f.map(f => f[0] + f[1])].join(' ').toLowerCase();
   return query.toLowerCase().split(/\s+/).filter(Boolean).every(t => hay.includes(t));
 }
@@ -443,6 +444,7 @@ if (renderer) renderer.setAnimationLoop(() => {
 document.getElementById('kMus').textContent = PARTS.filter(p => p.lay === 'muscle').length;
 document.getElementById('kBon').textContent = PARTS.filter(p => p.lay === 'bone').length;
 document.getElementById('kOrg').textContent = PARTS.filter(p => p.lay === 'organ').length;
+document.getElementById('kTen').textContent = PARTS.filter(p => p.lay === 'tendon').length;
 document.getElementById('kReg').textContent = REGIONS.length;
 syncLayerBtns(); applyLayers(); renderDetail();
 const loadEl = document.getElementById('loading');
