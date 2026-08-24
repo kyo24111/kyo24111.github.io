@@ -26,10 +26,10 @@ controls.dampingFactor = 0.075;
 controls.target.set(0, 92, 0);
 controls.minDistance = 16;
 controls.maxDistance = 640;
-controls.zoomSpeed = 0.9;
 controls.rotateSpeed = 0.85;
-if ('zoomToCursor' in controls) controls.zoomToCursor = true;   // Google Earth 風のカーソル寄せズーム
 controls.autoRotateSpeed = 0.9;
+controls.enableZoom = false;      // dolly は damping の対象外で階段状に動くため自前で持つ
+controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0xbdb7b0, 0.55));
 const key = new THREE.DirectionalLight(0xffffff, 1.05); key.position.set(90, 200, 180); scene.add(key);
@@ -146,11 +146,12 @@ function fitDist(size, pad = 1.9) {
   return Math.max(dV, dH) * pad + 6;
 }
 function flyTo(center, size, ms = 720, pad = 1.9) {
-  const dist = THREE.MathUtils.clamp(fitDist(size, pad), controls.minDistance, controls.maxDistance);
+  zoomGoal = null; zoomPivot = null;
+  const d0 = THREE.MathUtils.clamp(fitDist(size, pad), controls.minDistance, controls.maxDistance);
   const dir = camera.position.clone().sub(controls.target).normalize();
   fly = {
     t0: performance.now(), ms,
-    p0: camera.position.clone(), p1: center.clone().add(dir.multiplyScalar(dist)),
+    p0: camera.position.clone(), p1: center.clone().add(dir.multiplyScalar(d0)),
     g0: controls.target.clone(), g1: center.clone()
   };
 }
@@ -292,20 +293,15 @@ qEl.onkeydown = (e) => {
 };
 document.getElementById('qClear').onclick = () => { qEl.value = ''; query = ''; refreshList(); qEl.focus(); };
 document.getElementById('bReset').onclick = () => { selected = null; paint(); renderDetail(); refreshList(); frameAll(); };
-document.getElementById('bIn').onclick = () => zoomBy(0.72);
-document.getElementById('bOut').onclick = () => zoomBy(1 / 0.72);
-function zoomBy(f) {
-  const off = camera.position.clone().sub(controls.target);
-  const d = THREE.MathUtils.clamp(off.length() * f, controls.minDistance, controls.maxDistance);
-  camera.position.copy(controls.target).add(off.setLength(d));
-}
+document.getElementById('bIn').onclick = () => zoomBy(0.62);
+document.getElementById('bOut').onclick = () => zoomBy(1 / 0.62);
 document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => {
-  const d = camera.position.distanceTo(controls.target);
+  const cur = camera.position.distanceTo(controls.target);
   const v = { front: [0, 0, 1], back: [0, 0, -1], side: [1, 0, 0.02] }[b.dataset.view];
   const t = selected ? rec[selected].center.clone() : new THREE.Vector3(0, 92, 0);
-  const dist = selected ? d : 296;
-  camera.position.set(t.x + v[0] * dist, t.y + (selected ? 0 : 26), t.z + v[2] * dist);
-  controls.target.copy(t); fly = null;
+  const d2 = selected ? cur : 296;
+  camera.position.set(t.x + v[0] * d2, t.y + (selected ? 0 : 26), t.z + v[2] * d2);
+  controls.target.copy(t); fly = null; zoomGoal = null; zoomPivot = null;
 });
 
 const bFocus = document.getElementById('bFocus');
@@ -326,9 +322,64 @@ function pick(ev) {
   const hit = ray.intersectObjects(pickables.filter(m => m.visible), false)[0];
   return hit ? hit.object.userData.pid : null;
 }
+/* ───────── smooth zoom ─────────
+   OrbitControls の dolly は enableDamping の対象外で、ホイール1ノッチごとに
+   距離が飛ぶ。目標距離 zoomGoal を持ち、毎フレーム指数的に近づけて滑らかにする。
+   カーソル下の点(zoomPivot)を画面上に留めるので Google Earth 風に寄れる。      */
+let zoomGoal = null, zoomPivot = null;
+const dist = () => camera.position.distanceTo(controls.target);
+
+function zoomBy(f, pivot) {
+  const base = zoomGoal ?? dist();
+  zoomGoal = THREE.MathUtils.clamp(base * f, controls.minDistance, controls.maxDistance);
+  zoomPivot = pivot || null;
+  fly = null;
+}
+
+/* カーソル下のモデル上の点。当たらなければ注視点を通る面との交点 */
+const _plane = new THREE.Plane(), _hit = new THREE.Vector3();
+function cursorPoint(ev) {
+  const r = canvas.getBoundingClientRect();
+  ndc.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  const h = ray.intersectObjects(pickables.filter(m => m.visible), false)[0];
+  if (h) return h.point.clone();
+  _plane.setFromNormalAndCoplanarPoint(camera.getWorldDirection(new THREE.Vector3()), controls.target);
+  return ray.ray.intersectPlane(_plane, _hit) ? _hit.clone() : null;
+}
+
+/* stage の capture 段で受けて OrbitControls までイベントを流さない */
+stage.addEventListener('wheel', (e) => {
+  e.preventDefault(); e.stopPropagation();
+  const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 380 : 1;   // 行/ページ単位の差を吸収
+  const d = THREE.MathUtils.clamp(e.deltaY * unit, -320, 320);
+  zoomBy(Math.pow(1.0016, d), cursorPoint(e));   // 1ノッチ ≒ 20%
+}, { passive: false, capture: true });
+
+/* ピンチ（2本指）も同じモデルに載せる */
+const touch = new Map();
+let pinch0 = 0, pinchBase = 0;
+canvas.addEventListener('pointermove', e => {
+  if (e.pointerType !== 'touch' || !touch.has(e.pointerId)) return;
+  touch.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (touch.size !== 2) return;
+  const [a, b] = [...touch.values()];
+  const d = Math.hypot(a.x - b.x, a.y - b.y);
+  if (!pinch0) { pinch0 = d; pinchBase = zoomGoal ?? dist(); return; }
+  zoomGoal = THREE.MathUtils.clamp(pinchBase * (pinch0 / Math.max(d, 1)),
+                                   controls.minDistance, controls.maxDistance);
+  zoomPivot = null; fly = null;
+}, { passive: true });
+const dropTouch = e => { touch.delete(e.pointerId); if (touch.size < 2) pinch0 = 0; };
+
 let down = null;
-canvas.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY, t: performance.now() }; });
+canvas.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'touch') touch.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  down = { x: e.clientX, y: e.clientY, t: performance.now() };
+});
+canvas.addEventListener('pointercancel', dropTouch);
 canvas.addEventListener('pointerup', e => {
+  dropTouch(e);
   if (!down) return;
   const moved = Math.hypot(e.clientX - down.x, e.clientY - down.y);
   const quick = performance.now() - down.t < 450;
@@ -363,12 +414,26 @@ function resize() {
 new ResizeObserver(resize).observe(stage);
 resize();
 
+const clock = new THREE.Clock();
 if (renderer) renderer.setAnimationLoop(() => {
+  const dt = Math.min(clock.getDelta(), 0.05);
   if (fly) {
     const t = Math.min((performance.now() - fly.t0) / fly.ms, 1), k = ease(t);
     camera.position.lerpVectors(fly.p0, fly.p1, k);
     controls.target.lerpVectors(fly.g0, fly.g1, k);
     if (t >= 1) fly = null;
+  } else if (zoomGoal !== null) {
+    const cur = dist();
+    if (Math.abs(zoomGoal - cur) < 0.03) { zoomGoal = null; zoomPivot = null; }
+    else {
+      const k = 1 - Math.pow(0.002, dt);              // 時定数 ≒ 160ms（フレームレート非依存）
+      const next = cur + (zoomGoal - cur) * k;
+      const ratio = next / cur;
+      const off = camera.position.clone().sub(controls.target);   // 先に向きを取る
+      if (zoomPivot)                                   // カーソル下の点を画面に留める
+        controls.target.addScaledVector(zoomPivot.clone().sub(controls.target), (1 - ratio) * 0.85);
+      camera.position.copy(controls.target).add(off.setLength(next));
+    }
   }
   controls.update();
   renderer.render(scene, camera);
@@ -391,7 +456,11 @@ if (renderer) {
   stage.style.height = '160px';
 }
 
-window.__atlas = { camera, controls, scene, rec, select, layers, applyLayers };   // デバッグ用フック
+window.__atlas = { camera, controls, scene, rec, select, layers, applyLayers,
+  pickAt: (fx, fy) => {                                // デバッグ用: 画面比率でレイキャスト
+    const r = canvas.getBoundingClientRect();
+    return pick({ clientX: r.left + r.width * fx, clientY: r.top + r.height * fy });
+  } };   // デバッグ用フック
 
 const hash = location.hash.replace('#', '');
 if (hash && rec[hash]) select(hash);
