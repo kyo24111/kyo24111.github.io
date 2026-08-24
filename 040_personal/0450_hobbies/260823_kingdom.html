@@ -74,6 +74,16 @@
   .bdg.st-戦死{background:#fbeaea; color:#a3252c; border-color:#f2d5d5;}
   .bdg.st-進行中{background:#eef1f6; color:#33507a; border-color:#dde3ec;}
 
+  /* ── 顔アバター（画像が無ければ頭文字にフォールバック） ── */
+  .avw{position:relative; display:inline-block; border-radius:50%; overflow:hidden; vertical-align:middle;
+       border:1px solid var(--line2); background:var(--head); flex:0 0 auto;}
+  .avw img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+  .avw .mono{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+             font-weight:700; color:#555; letter-spacing:0;}
+  .av-s{width:26px; height:26px;} .av-s .mono{font-size:.72rem;}
+  .av-l{width:64px; height:64px;} .av-l .mono{font-size:1.25rem;}
+  @media (max-width:640px){ .av-s{width:22px;height:22px;} }
+
   /* ── グラフ ── */
   .graphcard{position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); margin-top:14px;}
   #svg{display:block; width:100%; height:66vh; min-height:380px; touch-action:none; background:
@@ -108,7 +118,10 @@
   thead th:hover{background:#efefec;}
   thead th .ar{opacity:.35; font-size:.7rem; margin-left:3px;}
   thead th.sorted{color:var(--txt);} thead th.sorted .ar{opacity:1;}
-  th.nm, td.nm{position:sticky; left:0; z-index:1; background:var(--panel); font-weight:600; border-right:1px solid var(--line2); min-width:140px;}
+  th.nm, td.nm{position:sticky; left:0; z-index:1; background:var(--panel); font-weight:600; border-right:1px solid var(--line2); min-width:168px;}
+  td.nm{display:table-cell;}
+  td.nm .nmbox{display:flex; align-items:center; gap:9px;}
+  @media (max-width:640px){ th.nm,td.nm{min-width:136px;} td.nm .nmbox{gap:7px;} }
   thead th.nm{z-index:3; background:var(--head);}
   tbody tr{cursor:pointer;}
   tbody tr:hover td{background:var(--head);}
@@ -151,6 +164,7 @@
   }
   .drawer.on{transform:translateX(0); visibility:visible;}
   .dhead{padding:18px 20px 12px; border-bottom:1px solid var(--line); position:relative;}
+  .dhead .htop{display:flex; align-items:center; gap:12px;}
   .dhead h2{margin:0; font-size:1.25rem; font-weight:700; letter-spacing:.01em; padding-right:34px;}
   .dhead .yomi{color:var(--muted); font-size:.75rem; margin-top:1px;}
   .dhead .bdgs{margin-top:9px; display:flex; gap:5px; flex-wrap:wrap;}
@@ -255,8 +269,13 @@
 <aside class="drawer" id="drawer" aria-hidden="true">
   <div class="dhead">
     <button class="dclose" id="dclose" aria-label="閉じる">×</button>
-    <h2 id="d-name"></h2>
-    <div class="yomi" id="d-yomi"></div>
+    <div class="htop">
+      <span id="d-av"></span>
+      <div>
+        <h2 id="d-name"></h2>
+        <div class="yomi" id="d-yomi"></div>
+      </div>
+    </div>
     <div class="bdgs" id="d-bdgs"></div>
   </div>
   <div class="dbody" id="d-body"></div>
@@ -273,6 +292,27 @@
   const STATE_FILL = {"秦":"#e2e2de","趙":"#dbe8f8","魏":"#dcefe3","山界":"#faeec6","蚩尤":"#ebdcf7",
                       "楚":"#f4e2cd","韓":"#e2e4f4","燕":"#d9ecee"};
   const stateKey = s => (STATE_FILL[s] ? s : "other");
+
+  /* 顔画像。manifest にある node だけ <img> を出し、読み込めなければ頭文字が残る */
+  const FDIR  = (KINGDOM.faces && KINGDOM.faces.dir) || "";
+  const FACES = new Set((KINGDOM.faces && KINGDOM.faces.ids) || []);
+  const faceURL = id => FDIR + id + ".jpg";
+  window.KDavFallback = el => {                     // 画像が無い環境では頭文字に差し替える
+    const w = el.parentNode; if (!w) return;
+    w.innerHTML = "";
+    const sp = document.createElement("span");
+    sp.className = "mono"; sp.textContent = w.dataset.mono || "";
+    w.appendChild(sp);
+  };
+  function avatarHTML(n, size){
+    const bg = STATE_FILL[n.state] || "#f0f0ee";
+    const ch = esc(String(n.name).replace(/[（(].*$/,"").slice(0,1));
+    return '<span class="avw av-' + size + '" data-mono="' + ch + '" style="background:' + bg + '">' +
+           (FACES.has(n.id)
+             ? '<img src="' + faceURL(n.id) + '" alt="" loading="lazy" onerror="KDavFallback(this)">'
+             : '<span class="mono">' + ch + '</span>') +
+           '</span>';
+  }
 
   document.getElementById("range").textContent = "収録範囲: " + KINGDOM.meta.range;
   document.getElementById("note").innerHTML =
@@ -383,8 +423,9 @@
   const gLink = document.createElementNS(SVG,"g");
   const gLabl = document.createElementNS(SVG,"g");
   const gNode = document.createElementNS(SVG,"g");
+  const gDefs = document.createElementNS(SVG,"defs");
   gRoot.appendChild(gLink); gRoot.appendChild(gLabl); gRoot.appendChild(gNode);
-  svg.appendChild(gRoot);
+  svg.appendChild(gDefs); svg.appendChild(gRoot);
 
   const P = {};      // id -> {x,y,vx,vy,fixed}
   const view = {x:0, y:0, k:1};
@@ -405,7 +446,9 @@
     });
   })();
 
-  const radius = n => n.kind === "battle" ? 15 : n.kind === "faction" ? 13 : Math.min(15, 6 + (deg[n.id]||0) * 1.1);
+  const radius = n => n.kind === "battle" ? 15 : n.kind === "faction" ? 13
+                   : FACES.has(n.id) ? Math.min(19, 11 + (deg[n.id]||0) * 0.9)
+                   : Math.min(15, 6 + (deg[n.id]||0) * 1.1);
   // ラベルが長い／大きいノードほど強く反発させ、文字の重なりを減らす
   const charge = n => 9 + radius(n) * 3 + String(n.name).length * 3.2;
   const isBig  = n => n.kind !== "person" || (deg[n.id]||0) >= 5;
@@ -484,7 +527,7 @@
 
   const el = {};   // id -> {g, shp, lbl}
   function buildGraph(vis){
-    gLink.textContent = ""; gNode.textContent = ""; gLabl.textContent = "";
+    gLink.textContent = ""; gNode.textContent = ""; gLabl.textContent = ""; gDefs.textContent = "";
     Object.keys(el).forEach(k => delete el[k]);
     const set = new Set(vis.map(n => n.id));
     vis.forEach(n => { n._c = charge(n); const b = boxOf(n); n._hw = b.hw; n._hh = b.hh; });
@@ -518,6 +561,23 @@
       shp.setAttribute("class","shp");
       shp.setAttribute("fill", STATE_FILL[n.state] || "#f0f0ee");
       g.appendChild(shp);
+      // 顔画像を円でクリップして重ねる（読み込めなければ国の色だけが残る）
+      if (n.kind === "person" && FACES.has(n.id)){
+        const cid = "cp-" + n.id;
+        const cp = document.createElementNS(SVG,"clipPath");
+        cp.setAttribute("id", cid);
+        const cc = document.createElementNS(SVG,"circle");
+        cc.setAttribute("r", r - 1);
+        cp.appendChild(cc); gDefs.appendChild(cp);
+        const im = document.createElementNS(SVG,"image");
+        im.setAttribute("x", -r); im.setAttribute("y", -r);
+        im.setAttribute("width", r*2); im.setAttribute("height", r*2);
+        im.setAttribute("preserveAspectRatio","xMidYMid slice");
+        im.setAttribute("clip-path","url(#" + cid + ")");
+        im.setAttribute("href", faceURL(n.id));
+        im.addEventListener("error", () => im.remove());
+        g.appendChild(im);
+      }
       const t = document.createElementNS(SVG,"text");
       t.setAttribute("class","n-lbl" + (n.kind !== "person" || (deg[n.id]||0) >= 5 ? " big" : ""));
       t.setAttribute("text-anchor","middle");
@@ -662,7 +722,8 @@
       const tr = document.createElement("tr");
       tr.onclick = () => open(n.id);
       tr.innerHTML =
-        '<td class="nm">' + esc(n.name) + '</td>' +
+        '<td class="nm"><span class="nmbox">' + (n.kind === "person" ? avatarHTML(n,"s") : "") +
+          '<span>' + esc(n.name) + '</span></span></td>' +
         '<td><span class="bdg k">' + KIND_LABEL[n.kind] + '</span></td>' +
         '<td><span class="bdg s-' + stateKey(n.state) + '">' + esc(n.state) + '</span></td>' +
         '<td>' + esc(n.group || "—") + '</td>' +
@@ -724,6 +785,7 @@
   function open(id){
     const n = byId[id]; if (!n) return;
     S.sel = id;
+    document.getElementById("d-av").innerHTML = n.kind === "person" ? avatarHTML(n,"l") : "";
     document.getElementById("d-name").textContent = n.name;
     document.getElementById("d-yomi").textContent = n.yomi || "";
     document.getElementById("d-bdgs").innerHTML =

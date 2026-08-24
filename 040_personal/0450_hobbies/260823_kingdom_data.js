@@ -30,6 +30,26 @@ const KINGDOM = {
     updated: "2026-08-24"
   },
 
+  /* 顔画像: kingdom_faces/<node id>.jpg があるノードの一覧。
+     出典は Fandom Wiki のキャラクター記事（アニメ立ち絵／原作コマ）。著作物なので
+     kingdom_faces/ は gitignore のまま＝ローカル限定。無い環境では頭文字アバターにフォールバック。 */
+  faces: {
+    dir: "kingdom_faces/",
+    ids: ["akakin", "akou", "bajio", "bakukoshin", "banaji", "bankyoku", "banyou", "chougaryuu",
+      "chousou", "choutou", "chuutetsu", "denei", "denrimi", "denyuu", "en", "futei",
+      "fuuki", "gaimou", "gakurai", "garo", "genpou", "gohoumei", "gokei", "gyouun",
+      "hairou", "heki", "houken", "hyou", "hyoukou", "kaine", "kaishibou", "kan'ou",
+      "kanki", "kanmei", "kanto", "keisha", "ketsushi", "kisui", "kochou", "kokuou",
+      "kyogai", "kyou", "kyouen", "kyoukai", "kyoushou", "kyuugen", "makou", "maron",
+      "moubu", "mougou", "mouten", "naki", "obei", "obito", "ogiko", "orudo",
+      "ouhon", "ouki", "ousen", "raido", "rakushou", "rankai", "renpa", "riboku",
+      "rinbukun", "ringyoku", "rinko", "risi", "rokuomi", "ryofui", "ryusen", "ryuyuu",
+      "saitaku", "saji", "sei", "seikai", "seikyou", "shibashou", "shiishi", "shika",
+      "shin", "shoubunkun", "shouheikun", "shousa", "shunmen", "shunshinkun", "shunsuiju", "soou",
+      "sosui", "suugen", "tajifu", "takuke", "tenn", "tou", "youtanwa", "yuren",
+      "zenou"]
+  },
+
   nodes: [
 
   /* ═══════════ 追加: 戦い（黒羊丘以降） ═══════════ */
