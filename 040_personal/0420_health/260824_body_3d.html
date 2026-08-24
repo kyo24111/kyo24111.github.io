@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Body Atlas 3D</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --surface:#f5f5f5; --card:#f0f0f0; --card2:#e8e8e8;
+  --border:#d8d8d8; --accent:#111111; --mid:#444444; --muted:#888888;
+  --dim:#bbbbbb; --text:#111111; --white:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:14px;line-height:1.7;-webkit-text-size-adjust:100%}
+.page{max-width:1180px;margin:0 auto;padding:32px 20px 80px}
+
+/* ── HERO ── */
+.hero{background:var(--accent);color:var(--white);border-radius:12px;padding:16px 22px 14px;margin-bottom:14px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;bottom:-50px;right:-50px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+.hero-tag{font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px}
+.hero h1{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.hero-sub{font-size:.72rem;color:rgba(255,255,255,.55);margin-top:4px}
+.kpi-row{display:flex;gap:22px;flex-wrap:wrap;padding-top:12px;margin-top:12px;border-top:1px solid rgba(255,255,255,.15)}
+.kpi .val{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+.kpi .lbl{font-size:9px;color:rgba(255,255,255,.4);letter-spacing:.08em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.search-wrap{position:relative;flex:1 1 240px;min-width:0}
+@media (max-width:560px){
+  .search-wrap{flex:1 1 100%}
+  .btn{flex:1 1 0;padding:8px 6px;text-align:center}
+  .stage{height:clamp(380px,60vh,560px)}
+}
+#q{width:100%;padding:9px 32px 9px 12px;border:1px solid var(--border);border-radius:8px;font-family:'Noto Sans JP',sans-serif;font-size:13px;background:var(--surface);color:var(--text);outline:none}
+#q:focus{border-color:var(--accent);background:#fff}
+.search-clear{position:absolute;right:6px;top:50%;transform:translateY(-50%);border:none;background:none;color:var(--muted);cursor:pointer;font-size:15px;line-height:1;padding:4px}
+.btn{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:8px 12px;border:1px solid var(--border);background:var(--surface);color:var(--mid);border-radius:8px;cursor:pointer;white-space:nowrap}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{font-size:11px;padding:5px 11px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--mid);cursor:pointer;white-space:nowrap;transition:all .12s}
+.chip:hover{border-color:var(--accent);color:var(--accent)}
+.chip.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.chip .n{font-family:'Poppins',sans-serif;font-size:9px;opacity:.5;margin-left:5px}
+
+/* ── LAYOUT ── */
+.app{display:grid;grid-template-columns:1fr 320px;gap:14px;align-items:start}
+@media (max-width:860px){.app{grid-template-columns:1fr}}
+
+.stage{position:relative;background:linear-gradient(180deg,#fafafa,#efefef);border:1px solid var(--border);border-radius:12px;overflow:hidden;height:clamp(420px,68vh,720px);touch-action:none}
+#cv{display:block;width:100%;height:100%}
+.stage-hint{position:absolute;left:12px;bottom:10px;font-family:'Poppins',sans-serif;font-size:9px;letter-spacing:.06em;color:var(--muted);background:rgba(255,255,255,.78);border:1px solid var(--border);border-radius:6px;padding:4px 8px;pointer-events:none}
+.stage-tools{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.sbtn{width:32px;height:32px;border:1px solid var(--border);background:rgba(255,255,255,.9);border-radius:8px;cursor:pointer;font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;color:var(--mid);line-height:1;display:flex;align-items:center;justify-content:center}
+.sbtn:hover{border-color:var(--accent);color:var(--accent)}
+.sbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tip{position:absolute;pointer-events:none;background:var(--accent);color:#fff;font-size:11px;padding:4px 8px;border-radius:6px;transform:translate(-50%,-140%);white-space:nowrap;opacity:0;transition:opacity .12s;z-index:5}
+.tip.show{opacity:1}
+.loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.1em;color:var(--muted);background:#fafafa}
+
+/* ── SIDE ── */
+.side{display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.card-h{font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center}
+.list{max-height:300px;overflow-y:auto;margin:-4px -6px}
+.item{display:flex;align-items:baseline;gap:8px;padding:7px 8px;border-radius:7px;cursor:pointer;border:1px solid transparent}
+.item:hover{background:#fff;border-color:var(--border)}
+.item.on{background:var(--accent);border-color:var(--accent)}
+.item.on .i-jp,.item.on .i-en,.item.on .i-rg{color:#fff;opacity:.9}
+.i-jp{font-size:13px;font-weight:500;flex:1;min-width:0}
+.i-en{font-family:'Poppins',sans-serif;font-size:9.5px;color:var(--muted);letter-spacing:.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:44%}
+.i-rg{font-family:'Poppins',sans-serif;font-size:8.5px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+.empty{font-size:12px;color:var(--muted);padding:10px 8px}
+
+.det-lay{display:inline-block;font-family:'Poppins',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:4px;margin-bottom:8px}
+.lay-muscle{background:#f0dcd9;color:#7d3c33}
+.lay-bone{background:#eae6da;color:#6b6350}
+.lay-organ{background:#e4dbe0;color:#6b5460}
+.det-jp{font-size:1.15rem;font-weight:700;letter-spacing:-.01em;line-height:1.3}
+.det-en{font-family:'Poppins',sans-serif;font-size:.72rem;color:var(--muted);margin-bottom:4px}
+.det-rg{font-size:11px;color:var(--mid);border-top:1px solid var(--border);padding-top:8px;margin-top:8px}
+.f{margin-top:9px}
+.f-k{font-family:'Poppins',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.f-v{font-size:12.5px;line-height:1.65}
+.det-empty{font-size:12.5px;color:var(--muted)}
+.note{background:#fff;border-left:2px solid var(--accent);padding:8px 10px;margin-top:10px;font-size:12px;line-height:1.6}
+.note b{font-family:'Poppins',sans-serif;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:11px;color:var(--mid)}
+.legend i{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle}
+</style>
+  <!-- snav -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<!-- snav:bar -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec">
+    <div class="snav-sec-label">030 Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a>
+    <a class="snav-a" href="/030_research/035_startup/index.html">startup</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">040 Personal</div>
+    <a class="snav-a" href="/040_personal/profile/index.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-tag">040 Personal / 0420 Health</div>
+    <h1>Body Atlas 3D</h1>
+    <div class="hero-sub">人体を回して寄って、タップで筋肉・骨・内臓を読む。検索は部位でも単体でも。</div>
+    <div class="kpi-row">
+      <div class="kpi"><div class="val" id="kMus">0</div><div class="lbl">Muscles</div></div>
+      <div class="kpi"><div class="val" id="kBon">0</div><div class="lbl">Bones</div></div>
+      <div class="kpi"><div class="val" id="kOrg">0</div><div class="lbl">Organs</div></div>
+      <div class="kpi"><div class="val" id="kReg">0</div><div class="lbl">Regions</div></div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <input id="q" type="search" placeholder="筋肉・骨・臓器・部位を検索（例: 腹横筋 / lats / ハム / 呼吸）" autocomplete="off">
+      <button class="search-clear" id="qClear" aria-label="clear">×</button>
+    </div>
+    <button class="btn on" data-layer="muscle">筋肉</button>
+    <button class="btn" data-layer="bone">骨格</button>
+    <button class="btn" data-layer="organ">内臓</button>
+    <button class="btn" data-layer="deep">深層</button>
+    <button class="btn on" data-layer="skin">体の輪郭</button>
+  </div>
+
+  <div class="chips" id="chips"></div>
+
+  <div class="app">
+    <div class="stage" id="stage">
+      <canvas id="cv"></canvas>
+      <div class="stage-tools">
+        <button class="sbtn" id="bIn" title="ズームイン">+</button>
+        <button class="sbtn" id="bOut" title="ズームアウト">−</button>
+        <button class="sbtn" id="bReset" title="視点リセット">⟲</button>
+        <button class="sbtn on" id="bFocus" title="選択中を強調（周囲を半透明）">◎</button>
+        <button class="sbtn" id="bSpin" title="自動回転">↻</button>
+        <button class="sbtn" data-view="front" title="正面">前</button>
+        <button class="sbtn" data-view="back" title="背面">後</button>
+        <button class="sbtn" data-view="side" title="側面">横</button>
+      </div>
+      <div class="tip" id="tip"></div>
+      <div class="stage-hint">ドラッグ=回転 / ホイール・ピンチ=ズーム / タップ=選択 / ダブルタップ=寄る</div>
+      <div class="loading" id="loading">LOADING MODEL…</div>
+    </div>
+
+    <div class="side">
+      <div class="card">
+        <div class="card-h"><span>Detail</span><span id="detIdx"></span></div>
+        <div id="det"><div class="det-empty">モデルをタップ、または下のリストから選択すると解説が出ます。</div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><span>List / Search</span><span id="listN"></span></div>
+        <div class="list" id="list"></div>
+      </div>
+      <div class="card">
+        <div class="card-h">Legend</div>
+        <div class="legend">
+          <span><i style="background:#b06055"></i>筋肉</span>
+          <span><i style="background:#cdc6b4"></i>骨</span>
+          <span><i style="background:#8a7480"></i>内臓</span>
+          <span><i style="background:#111"></i>選択中</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="./260824_body_3d_data.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+<script type="module" src="./260824_body_3d_app.js"></script>
+<!-- snav:footer -->
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</footer>
+</body>
+</html>
