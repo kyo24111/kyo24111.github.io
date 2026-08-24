@@ -29,7 +29,38 @@ controls.maxDistance = 640;
 controls.rotateSpeed = 0.85;
 controls.autoRotateSpeed = 0.9;
 controls.enableZoom = false;      // dolly は damping の対象外で階段状に動くため自前で持つ
-controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;
+controls.enablePan = true;
+controls.screenSpacePanning = true;              // スライドは画面と平行に（Earth と同じ体感）
+controls.panSpeed = 0.9;
+controls.minPolarAngle = Math.PI * 0.03;         // 真上・真下でのジンバル暴れを防ぐ
+controls.maxPolarAngle = Math.PI * 0.97;
+controls.mouseButtons = { LEFT: THREE.MOUSE.ROTATE, MIDDLE: THREE.MOUSE.PAN, RIGHT: THREE.MOUSE.PAN };
+controls.touches.ONE = THREE.TOUCH.ROTATE;
+controls.touches.TWO = THREE.TOUCH.DOLLY_PAN;    // 2本指: ピンチ=ズーム / ドラッグ=スライド
+controls.keyPanSpeed = 18;
+controls.listenToKeyEvents(window);              // 矢印キーでスライド
+
+/* 修飾キーで割り当てを切り替える（Google Earth と同じ）
+   Ctrl/⌘+ドラッグ = スライド / Shift+ドラッグ = 傾きのみ（方位を固定） */
+let azLock = false;
+function applyModifiers(e) {
+  const pan = e.ctrlKey || e.metaKey;
+  controls.mouseButtons.LEFT = pan ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE;
+  if (e.shiftKey && !azLock) {                   // 方位をその場で固定 → 上下の傾きだけ動く
+    const a = controls.getAzimuthalAngle();
+    controls.minAzimuthAngle = controls.maxAzimuthAngle = a;
+    azLock = true;
+  } else if (!e.shiftKey && azLock) {
+    controls.minAzimuthAngle = -Infinity;
+    controls.maxAzimuthAngle = Infinity;
+    azLock = false;
+  }
+}
+addEventListener('keydown', applyModifiers, true);
+addEventListener('keyup', applyModifiers, true);
+addEventListener('pointerdown', applyModifiers, true);
+canvas.addEventListener('pointerdown', applyModifiers, true);
+addEventListener('blur', () => applyModifiers({ ctrlKey:false, metaKey:false, shiftKey:false }));
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0xbdb7b0, 0.55));
 const key = new THREE.DirectionalLight(0xffffff, 1.05); key.position.set(90, 200, 180); scene.add(key);
@@ -158,7 +189,7 @@ function flyTo(center, size, ms = 720, pad = 1.9) {
 }
 const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 
-function frameAll() { flyTo(new THREE.Vector3(0, 92, 0), new THREE.Vector3(62, 194, 40), 600); }
+function frameAll() { flyTo(new THREE.Vector3(0, 92, 0), new THREE.Vector3(62, 194, 40), 600, 1.0); }
 
 function regionBox(rgId) {
   const box = new THREE.Box3();
@@ -305,6 +336,33 @@ document.querySelectorAll('[data-view]').forEach(b => b.onclick = () => {
   controls.target.copy(t); fly = null; zoomGoal = null; zoomPivot = null;
 });
 
+document.querySelectorAll('[data-pan]').forEach(b => b.onclick = () => {
+  const v = { up:[0,0.22], down:[0,-0.22], left:[-0.22,0], right:[0.22,0], home:[0,0] }[b.dataset.pan];
+  if (b.dataset.pan === 'home') { selected ? select(selected) : frameAll(); return; }
+  slideBy(v[0], v[1]);                            // Earth と同じく「視点」が矢印の向きへ動く
+});
+
+addEventListener('keydown', (e) => {
+  if (/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) return;
+  const k = e.key;
+  if (e.shiftKey && k.startsWith('Arrow')) {      // Shift+矢印 = 回転
+    const az = { ArrowLeft: 0.10, ArrowRight: -0.10 }[k] || 0;
+    const pol = { ArrowUp: -0.08, ArrowDown: 0.08 }[k] || 0;
+    const sph = new THREE.Spherical().setFromVector3(camera.position.clone().sub(controls.target));
+    sph.theta += az; sph.phi = THREE.MathUtils.clamp(sph.phi + pol, 0.1, Math.PI - 0.1);
+    camera.position.copy(controls.target).add(new THREE.Vector3().setFromSpherical(sph));
+    e.preventDefault(); return;
+  }
+  if (k === '+' || k === '=' ) { zoomBy(0.78); e.preventDefault(); }
+  else if (k === '-' || k === '_') { zoomBy(1 / 0.78); e.preventDefault(); }
+  else if (k === 'n' || k === 'N') {               // 正面（Earth の「北を上に」相当）
+    const d0 = dist(); const t = controls.target;
+    camera.position.set(t.x, t.y + d0 * 0.09, t.z + d0);
+    fly = null; zoomGoal = null; panGoal = null;
+  }
+  else if (k === 'r' || k === 'R') { selected = null; paint(); renderDetail(); refreshList(); frameAll(); }
+});
+
 const bFocus = document.getElementById('bFocus');
 bFocus.onclick = () => { focusMode = !focusMode; bFocus.classList.toggle('on', focusMode); paint(); };
 const bSpin = document.getElementById('bSpin');
@@ -328,7 +386,21 @@ function pick(ev) {
    距離が飛ぶ。目標距離 zoomGoal を持ち、毎フレーム指数的に近づけて滑らかにする。
    カーソル下の点(zoomPivot)を画面上に留めるので Google Earth 風に寄れる。      */
 let zoomGoal = null, zoomPivot = null;
+let panGoal = null;                              // 平行移動の残り（毎フレーム減衰させる）
 const dist = () => camera.position.distanceTo(controls.target);
+
+/* 画面比 (fx, fy) ぶんスライドする。fx=1 で画面幅ぶん */
+function slideBy(fx, fy) {
+  const h = 2 * Math.tan(camera.fov * D / 2) * dist();
+  const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
+  const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
+  const off = right.multiplyScalar(fx * h * camera.aspect).add(up.multiplyScalar(fy * h));
+  panGoal = (panGoal || new THREE.Vector3()).add(off);
+  fly = null;
+}
+
+/* 注視点が体から離れすぎないように箱で押さえる */
+const TARGET_BOX = new THREE.Box3(new THREE.Vector3(-90, -20, -90), new THREE.Vector3(90, 220, 90));
 
 function zoomBy(f, pivot) {
   const base = zoomGoal ?? dist();
@@ -376,7 +448,8 @@ const dropTouch = e => { touch.delete(e.pointerId); if (touch.size < 2) pinch0 =
 let down = null;
 canvas.addEventListener('pointerdown', e => {
   if (e.pointerType === 'touch') touch.set(e.pointerId, { x: e.clientX, y: e.clientY });
-  down = { x: e.clientX, y: e.clientY, t: performance.now() };
+  down = (e.button === 0 && !e.ctrlKey && !e.metaKey)      // 左クリックだけ選択の候補
+    ? { x: e.clientX, y: e.clientY, t: performance.now() } : null;
 });
 canvas.addEventListener('pointercancel', dropTouch);
 canvas.addEventListener('pointerup', e => {
@@ -423,7 +496,15 @@ if (renderer) renderer.setAnimationLoop(() => {
     camera.position.lerpVectors(fly.p0, fly.p1, k);
     controls.target.lerpVectors(fly.g0, fly.g1, k);
     if (t >= 1) fly = null;
-  } else if (zoomGoal !== null) {
+  }
+  if (panGoal) {                                  // スライドを指数的に消化
+    const k = 1 - Math.pow(0.002, dt);
+    const step = panGoal.clone().multiplyScalar(k);
+    controls.target.add(step); camera.position.add(step);
+    panGoal.sub(step);
+    if (panGoal.lengthSq() < 0.0004) panGoal = null;
+  }
+  if (fly) { /* fly 中はズーム補間しない */ } else if (zoomGoal !== null) {
     const cur = dist();
     if (Math.abs(zoomGoal - cur) < 0.03) { zoomGoal = null; zoomPivot = null; }
     else {
@@ -437,6 +518,9 @@ if (renderer) renderer.setAnimationLoop(() => {
     }
   }
   controls.update();
+  const t = controls.target, before = t.clone();
+  t.clamp(TARGET_BOX.min, TARGET_BOX.max);        // 体を見失わないように
+  if (!before.equals(t)) camera.position.add(t.clone().sub(before));
   renderer.render(scene, camera);
 });
 
