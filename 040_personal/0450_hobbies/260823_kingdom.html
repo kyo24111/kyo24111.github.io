@@ -124,7 +124,10 @@
   .ahead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
   .ano{font-size:.72rem; font-weight:700; letter-spacing:.1em; color:var(--muted); border:1px solid var(--line2); border-radius:6px; padding:1px 7px;}
   .arc h2{font-size:1.05rem; font-weight:700; margin:0; letter-spacing:.01em;}
+  .aep{font-size:.72rem; font-weight:600; border:1px solid var(--line2); border-radius:999px; padding:2px 10px; white-space:nowrap;}
   .avol{font-size:.74rem; color:var(--muted);}
+  .bep{display:block; font-weight:400; font-size:.68rem; color:var(--muted); margin-top:1px; letter-spacing:.02em;}
+  @media (max-width:640px){ .bep{display:inline; margin-left:7px;} }
   .alead{font-size:.9rem; font-weight:500; margin:9px 0 12px; padding:10px 12px; background:var(--soft); border:1px solid var(--line); border-radius:9px;}
   .arc.now .alead{background:#fff;}
   .beat{display:grid; grid-template-columns:126px 1fr; gap:0 16px; padding:10px 0; border-top:1px solid var(--line);}
@@ -288,8 +291,11 @@
   /* ── あらすじの索引 ── */
   const ARCS = KINGDOM.arcs || [];
   ARCS.forEach(a => {
-    a._hay = [a.name, a.vols, a.era, a.lead,
-              (a.beats||[]).map(b => b.h + b.body).join(" "),
+    const m = String(a.ep||"").match(/第(\d+)(?:〜(\d+))?話/);
+    a._epMin = m ? +m[1] : null;
+    a._epMax = m ? +(m[2] || m[1]) : null;
+    a._hay = [a.name, a.ep, a.vols, a.era, a.lead,
+              (a.beats||[]).map(b => (b.ep||"") + b.h + b.body).join(" "),
               [...(a.keys||[]), ...(a.battles||[])].map(k => byId[k] ? byId[k].name + " " + byId[k].yomi : "").join(" ")
              ].join(" ").toLowerCase();
   });
@@ -672,7 +678,12 @@
   /* ============ あらすじ ============ */
   const storyEl = document.getElementById("story");
   function renderStory(){
-    const rows = ARCS.filter(a => !S.q || a._hay.indexOf(S.q) >= 0);
+    const epq = S.q.match(/^第?(\d+)話?$/);
+    const rows = ARCS.filter(a => {
+      if (!S.q) return true;
+      if (epq && a._epMin != null) return a._epMin <= +epq[1] && +epq[1] <= a._epMax;
+      return a._hay.indexOf(S.q) >= 0;
+    });
     storyEl.innerHTML = rows.map(a => {
       const now = /進行中/.test(a.vols);
       const keys = (a.keys||[]).filter(k => byId[k]);
@@ -680,9 +691,12 @@
       return '<section class="arc' + (now ? " now" : "") + '">' +
         '<div class="ahead"><span class="ano">' + esc(a.no) + '</span>' +
           '<h2>' + esc(a.name) + '</h2>' +
+          (a.ep ? '<span class="aep">' + esc(a.ep) + '</span>' : "") +
           '<span class="avol">' + esc(a.vols) + (a.era ? " ・ " + esc(a.era) : "") + '</span></div>' +
         '<p class="alead">' + esc(a.lead) + '</p>' +
-        (a.beats||[]).map(b => '<div class="beat"><div class="bh">' + esc(b.h) + '</div><p class="bb">' + esc(b.body) + '</p></div>').join("") +
+        (a.beats||[]).map(b => '<div class="beat"><div class="bh">' + esc(b.h) +
+            (b.ep && b.ep !== "—" ? '<span class="bep">' + esc(b.ep) + '</span>' : "") +
+          '</div><p class="bb">' + esc(b.body) + '</p></div>').join("") +
         (bats.length ? '<div class="arcfoot"><div class="fl">この章の戦い</div><div class="rels">' +
           bats.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
         (keys.length ? '<div class="arcfoot"><div class="fl">主要人物</div><div class="rels">' +
