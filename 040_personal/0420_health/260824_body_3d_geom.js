@@ -86,8 +86,12 @@ function interpSt(st, t) {
    縁と両端は薄くテーパーさせ、板ではなく筋腹に見せる                        */
 export function shellGeo(spec) {
   const st = spec.st, NV = spec.nv || 18, NU = spec.nu || 22;
-  const pos = [], idx = [];
+  const pos = [], idx = [], uv = [], col = [];
   const rowsO = [], rowsI = [];
+  const paleAt = (u, v) => {                            // 縁と両端は腱・筋膜なので淡くする
+    const e = Math.min(Math.min(u, 1 - u) / 0.13, Math.min(v, 1 - v) / 0.13, 1);
+    return 1 + (spec.pale ?? 0.42) * Math.pow(1 - e, 2.6);
+  };
   for (let iv = 0; iv <= NV; iv++) {
     const v = iv / NV;
     const s = interpSt(st, v);
@@ -101,12 +105,21 @@ export function shellGeo(spec) {
       const fadeU = Math.pow(Math.sin(Math.PI * clamp(u, 0.001, 0.999)), spec.tu ?? 0.42);
       const p = sect(y, phi, base), n = sectN(y, phi, base);
       const t = th * fadeU * fadeV;
-      ro.push([p.x + n.x * (off + t), y, p.y + n.y * (off + t)]);
-      ri.push([p.x + n.x * off, y, p.y + n.y * off]);
+      ro.push([p.x + n.x * (off + t), y, p.y + n.y * (off + t), u, v]);
+      ri.push([p.x + n.x * off, y, p.y + n.y * off, u, v]);
     }
     rowsO.push(ro); rowsI.push(ri);
   }
-  const push = (rows) => { const start = pos.length / 3; rows.forEach(r => r.forEach(p => pos.push(p[0], p[1], p[2]))); return start; };
+  const push = (rows) => {
+    const start = pos.length / 3;
+    rows.forEach(r => r.forEach(p => {
+      pos.push(p[0], p[1], p[2]);
+      uv.push(p[3], p[4]);
+      const g = paleAt(p[3], p[4]);
+      col.push(g, g, g);
+    }));
+    return start;
+  };
   const O = push(rowsO), I = push(rowsI);
   const W = NU + 1;
   const quad = (a, b, c, d) => idx.push(a, b, c, a, c, d);
@@ -129,6 +142,8 @@ export function shellGeo(spec) {
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
   g.setIndex(idx);
   g.computeVertexNormals();
   return g;
@@ -141,8 +156,12 @@ export function loftGeo(spec) {
   const curve = new THREE.CatmullRomCurve3(pts, false, 'catmullrom', spec.tension ?? 0.4);
   const NV = spec.nv || 26, NU = spec.nu || 18;
   const up0 = new THREE.Vector3(...(spec.up || [0, 0, 1])).normalize();
-  const pos = [], idx = [];
+  const pos = [], idx = [], uv = [], col = [];
   const twist = spec.twist || 0;
+  const paleAt = (t) => {                               // 両端は腱に向かうので淡く
+    const e = Math.min(Math.min(t, 1 - t) / 0.13, 1);
+    return 1 + (spec.pale ?? 1.05) * Math.pow(1 - e, 2.6);
+  };
   for (let iv = 0; iv <= NV; iv++) {
     const t = iv / NV;
     const c = curve.getPointAt(t), T = curve.getTangentAt(t).normalize();
@@ -158,6 +177,9 @@ export function loftGeo(spec) {
         .add(N.clone().multiplyScalar(Math.max(d, 0.02) * Math.cos(th)))
         .add(B.clone().multiplyScalar(Math.max(w, 0.02) * Math.sin(th)));
       pos.push(p.x, p.y, p.z);
+      uv.push(t, iu / NU);
+      const g = paleAt(t);
+      col.push(g, g, g);
     }
   }
   const W = NU + 1;
@@ -165,8 +187,10 @@ export function loftGeo(spec) {
     const a = iv * W + iu;
     idx.push(a, a + W, a + W + 1, a, a + W + 1, a + 1);
   }
-  const capA = pos.length / 3; const pa = curve.getPointAt(0); pos.push(pa.x, pa.y, pa.z);
-  const capB = pos.length / 3; const pb = curve.getPointAt(1); pos.push(pb.x, pb.y, pb.z);
+  const capA = pos.length / 3; const pa = curve.getPointAt(0);
+  pos.push(pa.x, pa.y, pa.z); uv.push(0, 0.5); col.push(paleAt(0), paleAt(0), paleAt(0));
+  const capB = pos.length / 3; const pb = curve.getPointAt(1);
+  pos.push(pb.x, pb.y, pb.z); uv.push(1, 0.5); col.push(paleAt(1), paleAt(1), paleAt(1));
   for (let iu = 0; iu < NU; iu++) {
     idx.push(capA, iu + 1, iu);
     const o = NV * W;
@@ -174,6 +198,8 @@ export function loftGeo(spec) {
   }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2));
+  g.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
   g.setIndex(idx);
   g.computeVertexNormals();
   return g;
@@ -247,9 +273,14 @@ const BUILDERS = { s: shellGeo, l: loftGeo, e: ellGeo, c: capGeo, p: plateGeo, d
 
 /* 属性を position/normal だけに揃える。
    ビルトイン形状(uv付き)と自作形状(uv無し)は、揃えないと merge できない */
+const KEEP = new Set(['position', 'normal', 'uv', 'color']);
 function normalize(g) {
-  Object.keys(g.attributes).forEach(k => { if (k !== 'position' && k !== 'normal') g.deleteAttribute(k); });
+  Object.keys(g.attributes).forEach(k => { if (!KEEP.has(k)) g.deleteAttribute(k); });
   if (!g.attributes.normal) g.computeVertexNormals();
+  const n = g.attributes.position.count;
+  if (!g.attributes.uv) g.setAttribute('uv', new THREE.Float32BufferAttribute(new Float32Array(n * 2), 2));
+  if (!g.attributes.color) g.setAttribute('color',
+    new THREE.Float32BufferAttribute(new Float32Array(n * 3).fill(1), 3));
   if (!g.index) {                                       // 非indexed(ExtrudeGeometry等)に自明なindexを付ける
     const n = g.attributes.position.count;
     const arr = n > 65535 ? new Uint32Array(n) : new Uint16Array(n);

@@ -70,12 +70,23 @@ addEventListener('blur', () => applyModifiers({ ctrlKey:false, metaKey:false, sh
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0xbdb7b0, 0.55));
 const key = new THREE.DirectionalLight(0xffffff, 1.05); key.position.set(90, 200, 180); scene.add(key);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.camera.near = 60; key.shadow.camera.far = 620;
+key.shadow.camera.left = -110; key.shadow.camera.right = 110;
+key.shadow.camera.top = 200; key.shadow.camera.bottom = -60;
+key.shadow.bias = -0.0012; key.shadow.normalBias = 0.55;
+key.shadow.radius = 2.2;
 const fill = new THREE.DirectionalLight(0xffffff, 0.35); fill.position.set(-140, 60, 120); scene.add(fill);
 const rim = new THREE.DirectionalLight(0xffffff, 0.45);  rim.position.set(-120, 110, -170); scene.add(rim);
 
 if (renderer) {                                        // 室内環境マップで陰影と艶を出す
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.06;
+  renderer.toneMappingExposure = 0.99;
+  const heavyOK = innerWidth >= 700 && !/Android|iPhone|iPad/i.test(navigator.userAgent);
+  renderer.shadowMap.enabled = heavyOK;             // 影は負荷が高いので小画面・モバイルでは切る
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  key.castShadow = heavyOK;
   const pmrem = new THREE.PMREMGenerator(renderer);
   scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.03).texture;
   pmrem.dispose();
@@ -95,8 +106,37 @@ if (renderer) {                                        // 室内環境マップ�
   scene.add(m);
 })();
 
+/* ───────── 筋繊維の縞テクスチャ ─────────
+   uv.x が繊維方向なので、y 方向に細い線を並べると繊維の走行に見える。
+   凹凸(bump)と粗さ(roughness)の両方に使って、濡れた筋肉の見え方に寄せる。 */
+function fiberTexture(lines, contrast) {
+  const c = document.createElement('canvas');
+  c.width = 256; c.height = 256;
+  const x = c.getContext('2d');
+  x.fillStyle = '#808080'; x.fillRect(0, 0, 256, 256);
+  for (let i = 0; i < lines; i++) {
+    const y = (i / lines) * 256;
+    const w = 0.6 + ((i * 37) % 11) / 11 * 1.9;
+    const v = 128 + (((i * 53) % 17) / 17 - 0.5) * 255 * contrast;
+    x.strokeStyle = 'rgb(' + [v, v, v].map(n => Math.round(THREE.MathUtils.clamp(n, 0, 255))).join(',') + ')';
+    x.lineWidth = w;
+    x.beginPath();
+    for (let px = 0; px <= 256; px += 8) {                   // わずかに蛇行させる
+      const yy = y + Math.sin((px / 256) * Math.PI * 2 + i) * 0.8;
+      px === 0 ? x.moveTo(px, yy) : x.lineTo(px, yy);
+    }
+    x.stroke();
+  }
+  const t = new THREE.CanvasTexture(c);
+  t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  t.anisotropy = 4;
+  return t;
+}
+const FIBER = fiberTexture(46, 0.55);
+const FIBER_FINE = fiberTexture(90, 0.3);
+
 /* ───────── materials / colors ───────── */
-const BASE = { muscle: 0xb06055, tendon: 0xd8dad4, bone: 0xcdc6b4, organ: 0x8a7480 };
+const BASE = { muscle: 0x9c473c, tendon: 0xd6d8d2, bone: 0xcdc6b4, organ: 0x86707a };
 const SEL = 0x201d1c;
 const tint = (lay, i) => {
   const c = new THREE.Color(BASE[lay]);
@@ -113,13 +153,30 @@ const pickables = [];
 
 PARTS.forEach((part, i) => {
   const geo = buildSpec(part.g);
-  const mat = new THREE.MeshStandardMaterial({
+  const isMuscle = part.lay === 'muscle';
+  const isTendon = part.lay === 'tendon';
+  const mat = new THREE.MeshPhysicalMaterial({
     color: tint(part.lay, i + 3),
-    roughness: part.lay === 'bone' ? 0.5 : part.lay === 'organ' ? 0.42
-             : part.lay === 'tendon' ? 0.32 : 0.56,
-    metalness: 0.0, envMapIntensity: 0.55,
+    roughness: part.lay === 'bone' ? 0.52 : part.lay === 'organ' ? 0.38
+             : isTendon ? 0.3 : 0.48,
+    metalness: 0.0, envMapIntensity: isMuscle ? 0.5 : 0.5,
+    clearcoat: isMuscle ? 0.22 : part.lay === 'organ' ? 0.42 : isTendon ? 0.4 : 0.08,
+    clearcoatRoughness: isMuscle ? 0.45 : 0.3,
+    sheen: isMuscle ? 0.16 : 0,
+    sheenColor: new THREE.Color(0xff9b86),
+    sheenRoughness: 0.7,
+    vertexColors: true,                                     // 腱←→筋腹のグラデーション
+    map: null,
+    bumpMap: isMuscle ? FIBER : (isTendon ? FIBER_FINE : null),
+    bumpScale: isMuscle ? 0.65 : 0.3,
     transparent: true, opacity: 1, side: THREE.DoubleSide, flatShading: false
   });
+  if (mat.bumpMap) {                                        // 繊維の細かさを部位ごとに変える
+    mat.bumpMap = mat.bumpMap.clone();
+    mat.bumpMap.needsUpdate = true;
+    mat.bumpMap.repeat.set(1, isMuscle ? 2.2 : 1.4);
+  }
+
   mat.userData.base = mat.color.clone();
   const meshes = [];
   const m = new THREE.Mesh(geo, mat); m.userData.pid = part.id; meshes.push(m);
@@ -127,7 +184,7 @@ PARTS.forEach((part, i) => {
     const m2 = new THREE.Mesh(geo, mat);
     m2.scale.x = -1; m2.userData.pid = part.id; meshes.push(m2);
   }
-  meshes.forEach(x => { group.add(x); pickables.push(x); });
+  meshes.forEach(x => { x.castShadow = true; x.receiveShadow = true; group.add(x); pickables.push(x); });
 
   const box = new THREE.Box3();
   meshes.forEach(x => { x.updateMatrixWorld(); box.expandByObject(x); });
@@ -136,9 +193,10 @@ PARTS.forEach((part, i) => {
 });
 
 /* skin shell */
-const skin = new THREE.Mesh(buildSpec(SKIN), new THREE.MeshStandardMaterial({
-  color: 0xdacfc7, roughness: 0.9, metalness: 0, envMapIntensity: 0.3,
-  transparent: true, opacity: 0.15, depthWrite: false, side: THREE.DoubleSide
+const skin = new THREE.Mesh(buildSpec(SKIN), new THREE.MeshPhysicalMaterial({
+  color: 0xdccfc6, roughness: 0.85, metalness: 0, envMapIntensity: 0.35,
+  clearcoat: 0.16, clearcoatRoughness: 0.6,
+  transparent: true, opacity: 0.11, depthWrite: false, side: THREE.DoubleSide
 }));
 skin.visible = false;
 scene.add(skin);
