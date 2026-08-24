@@ -41,11 +41,17 @@ controls.keyPanSpeed = 18;
 controls.listenToKeyEvents(window);              // 矢印キーでスライド
 
 /* 修飾キーで割り当てを切り替える（Google Earth と同じ）
-   Ctrl/⌘+ドラッグ = スライド / Shift+ドラッグ = 傾きのみ（方位を固定） */
+   Ctrl/⌘+ドラッグ = スライド / Shift+ドラッグ = 傾きのみ（方位を固定）
+
+   注意: OrbitControls は ctrl/meta/shift のいずれかが押されていると
+   ROTATE と PAN を内部で入れ替える（_onMouseDown 内のハードコード）。
+   その入れ替えを見込んで、こちらは «欲しい挙動の逆» を指定する:
+     修飾なし  → LEFT=ROTATE → 入れ替えなし → 回転
+     Ctrl/⌘   → LEFT=ROTATE → 入れ替え     → スライド
+     Shift     → LEFT=PAN    → 入れ替え     → 回転（＋方位ロック＝傾きのみ） */
 let azLock = false;
 function applyModifiers(e) {
-  const pan = e.ctrlKey || e.metaKey;
-  controls.mouseButtons.LEFT = pan ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE;
+  controls.mouseButtons.LEFT = e.shiftKey ? THREE.MOUSE.PAN : THREE.MOUSE.ROTATE;
   if (e.shiftKey && !azLock) {                   // 方位をその場で固定 → 上下の傾きだけ動く
     const a = controls.getAzimuthalAngle();
     controls.minAzimuthAngle = controls.maxAzimuthAngle = a;
