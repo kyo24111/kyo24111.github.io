@@ -31,8 +31,9 @@ const KINGDOM = {
   },
 
   /* 顔画像: kingdom_faces/<node id>.jpg があるノードの一覧。
-     出典は Fandom Wiki のキャラクター記事（アニメ立ち絵／原作コマ）。著作物なので
-     kingdom_faces/ は gitignore のまま＝ローカル限定。無い環境では頭文字アバターにフォールバック。 */
+     出典は Fandom Wiki のキャラクター記事（アニメ立ち絵／原作コマ）。著作権は原泰久／集英社および
+     各アニメ製作委員会に帰属。ページ側にクレジットを記載し、noindex で公開している。
+     画像が無い環境では頭文字アバターに自動フォールバックする。 */
   faces: {
     dir: "kingdom_faces/",
     ids: ["akakin", "akou", "bajio", "bakukoshin", "banaji", "bankyoku", "banyou", "chougaryuu",
