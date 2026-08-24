@@ -193,7 +193,7 @@
       </div>
       <div class="search" id="searchbox">
         <span class="ico">⌕</span>
-        <input id="q" type="search" placeholder="人物・戦い・所属・タグで検索（例: 廉頗 / 馬陽 / 飛信隊 / 四天王）" autocomplete="off">
+        <input id="q" type="search" placeholder="人物・戦い・所属・タグ・話数で検索（例: 廉頗 / 馬陽 / 飛信隊 / 2期13話）" autocomplete="off">
         <button class="clr" id="clr" aria-label="クリア">×</button>
       </div>
     </div>
@@ -294,6 +294,8 @@
     const m = String(a.ep||"").match(/第(\d+)(?:〜(\d+))?話/);
     a._epMin = m ? +m[1] : null;
     a._epMax = m ? +(m[2] || m[1]) : null;
+    const sm = String(a.ep||"").match(/第(\d+)シリーズ/);
+    a._season = sm ? +sm[1] : null;
     a._hay = [a.name, a.ep, a.vols, a.era, a.lead,
               (a.beats||[]).map(b => (b.ep||"") + b.h + b.body).join(" "),
               [...(a.keys||[]), ...(a.battles||[])].map(k => byId[k] ? byId[k].name + " " + byId[k].yomi : "").join(" ")
@@ -678,10 +680,19 @@
   /* ============ あらすじ ============ */
   const storyEl = document.getElementById("story");
   function renderStory(){
-    const epq = S.q.match(/^第?(\d+)話?$/);
+    // 話数検索: 「13話」= 全シリーズ横断 / 「2期13話」「s2e13」「2-13」= シリーズ指定
+    const q = S.q.replace(/[\s　]+/g, "");
+    let season = null, ep = null, mm;
+    if ((mm = q.match(/^第?([1-4])(?:期|シリーズ)第?(\d+)話?$/))) { season = +mm[1]; ep = +mm[2]; }
+    else if ((mm = q.match(/^s([1-4])e(\d+)$/i)))               { season = +mm[1]; ep = +mm[2]; }
+    else if ((mm = q.match(/^([1-4])-(\d+)$/)))                 { season = +mm[1]; ep = +mm[2]; }
+    else if ((mm = q.match(/^第?(\d+)話?$/)))                    { ep = +mm[1]; }
     const rows = ARCS.filter(a => {
       if (!S.q) return true;
-      if (epq && a._epMin != null) return a._epMin <= +epq[1] && +epq[1] <= a._epMax;
+      if (ep != null && a._epMin != null){
+        if (season != null && a._season !== season) return false;
+        return a._epMin <= ep && ep <= a._epMax;
+      }
       return a._hay.indexOf(S.q) >= 0;
     });
     storyEl.innerHTML = rows.map(a => {
