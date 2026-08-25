@@ -149,6 +149,11 @@
   .beat .bh{font-size:.8rem; font-weight:600;}
   .beat .bb{font-size:.86rem; color:#333; margin:0;}
   @media (max-width:640px){ .beat{grid-template-columns:1fr; gap:3px;} .beat .bh{color:var(--muted);} }
+  .ameta{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:.78rem; margin:10px 0 12px;
+         padding:10px 12px; border:1px solid var(--line); border-radius:9px; background:var(--panel);}
+  .ameta dt{color:var(--muted);} .ameta dd{margin:0;}
+  .aquote{margin:0 0 12px; padding:9px 13px; border-left:3px solid var(--line2); font-size:.86rem; color:#333;}
+  .aquote b{display:block; font-weight:400; font-size:.72rem; color:var(--muted); margin-top:3px;}
   .arcfoot{margin-top:13px; padding-top:12px; border-top:1px solid var(--line);}
   .arcfoot + .arcfoot{margin-top:9px; padding-top:9px; border-top:0;}
   .fl{font-size:.72rem; color:var(--muted); margin-bottom:5px;}
@@ -360,12 +365,18 @@
   /* ── あらすじの索引 ── */
   const ARCS = KINGDOM.arcs || [];
   ARCS.forEach(a => {
-    const m = String(a.ep||"").match(/第(\d+)(?:〜(\d+))?話/);
-    a._epMin = m ? +m[1] : null;
-    a._epMax = m ? +(m[2] || m[1]) : null;
-    const sm = String(a.ep||"").match(/第(\d+)シリーズ/);
-    a._season = sm ? +sm[1] : null;
-    a._hay = [a.name, a.ep, a.vols, a.era, a.lead,
+    // アニメ話数の区間を解析（「第4シリーズ 第26話 〜 第5シリーズ 第13話」のような跨ぎにも対応）
+    const es = String(a.ep||"");
+    a._segs = [...es.matchAll(/第(\d)シリーズ[^第]*?第(\d+)(?:〜(\d+))?話/g)]
+                .map(x => ({s:+x[1], a:+x[2], b:+(x[3] || x[2])}));
+    a._open = /話〜/.test(es) || /放送中/.test(es);
+    const cm = String(a.chapters||"").match(/第(\d+)(?:〜(\d+))?話/);   // 原作の話数レンジ
+    a._chA = cm ? +cm[1] : null;
+    a._chB = cm ? +(cm[2] || cm[1]) : (cm ? +cm[1] : null);
+    if (cm && !cm[2] && /話〜/.test(String(a.chapters))) a._chB = 99999;
+    a._hay = [a.name, a.ep, a.vols, a.chapters, a.era, a.sides, a.result, a.rank, a.lead,
+              a.quote ? a.quote.t + a.quote.by : "",
+              [...(a.newcomers||[]), ...(a.deaths||[])].map(k => byId[k] ? byId[k].name : "").join(" "),
               (a.beats||[]).map(b => (b.ep||"") + b.h + b.body).join(" "),
               [...(a.keys||[]), ...(a.battles||[])].map(k => byId[k] ? byId[k].name + " " + byId[k].yomi : "").join(" ")
              ].join(" ").toLowerCase();
@@ -782,28 +793,49 @@
     // 話数検索: 「13話」= 全シリーズ横断 / 「2期13話」「s2e13」「2-13」= シリーズ指定
     const q = S.q.replace(/[\s　]+/g, "");
     let season = null, ep = null, mm;
-    if ((mm = q.match(/^第?([1-4])(?:期|シリーズ)第?(\d+)話?$/))) { season = +mm[1]; ep = +mm[2]; }
-    else if ((mm = q.match(/^s([1-4])e(\d+)$/i)))               { season = +mm[1]; ep = +mm[2]; }
-    else if ((mm = q.match(/^([1-4])-(\d+)$/)))                 { season = +mm[1]; ep = +mm[2]; }
+    if ((mm = q.match(/^第?([1-9])(?:期|シリーズ)第?(\d+)話?$/))) { season = +mm[1]; ep = +mm[2]; }
+    else if ((mm = q.match(/^s([1-9])e(\d+)$/i)))               { season = +mm[1]; ep = +mm[2]; }
+    else if ((mm = q.match(/^([1-9])-(\d+)$/)))                 { season = +mm[1]; ep = +mm[2]; }
     else if ((mm = q.match(/^第?(\d+)話?$/)))                    { ep = +mm[1]; }
+    const hitEp = a => {
+      const g = a._segs || [];
+      if (!g.length) return false;
+      const first = g[0], last = g[g.length-1];
+      if (season == null) return g.some(x => ep >= x.a && ep <= x.b);
+      if (g.length === 1){
+        if (season !== first.s) return false;
+        return a._open ? ep >= first.a : (ep >= first.a && ep <= first.b);
+      }
+      if (season === first.s) return ep >= first.a;
+      if (season === last.s)  return ep <= last.b;
+      return season > first.s && season < last.s;
+    };
     const rows = ARCS.filter(a => {
       if (!S.q) return true;
-      if (ep != null && a._epMin != null){
-        if (season != null && a._season !== season) return false;
-        return a._epMin <= ep && ep <= a._epMax;
+      if (ep != null){
+        // シリーズ指定なしの数字は「アニメ話数」と「原作話数」の両方で探す
+        if (season == null && a._chA != null && ep >= a._chA && ep <= a._chB) return true;
+        return (a._segs||[]).length ? hitEp(a) : false;
       }
       return a._hay.indexOf(S.q) >= 0;
     });
     storyEl.innerHTML = rows.map(a => {
-      const now = /進行中/.test(a.vols);
+      const now = /進行中|放送中/.test(String(a.ep) + a.vols + (a.result||""));
       const keys = (a.keys||[]).filter(k => byId[k]);
       const bats = (a.battles||[]).filter(k => byId[k]);
+      const nc   = (a.newcomers||[]).filter(k => byId[k]);
+      const dd   = (a.deaths||[]).filter(k => byId[k]);
+      const meta = [["原作", a.chapters], ["対戦", a.sides], ["結果", a.result], ["信の立場", a.rank]]
+        .filter(x => x[1] && x[1] !== "—")
+        .map(x => "<dt>" + x[0] + "</dt><dd>" + esc(x[1]) + "</dd>").join("");
       return '<section class="arc' + (now ? " now" : "") + '">' +
         '<div class="ahead"><span class="ano">' + esc(a.no) + '</span>' +
           '<h2>' + esc(a.name) + '</h2>' +
           (a.ep ? '<span class="aep">' + esc(a.ep) + '</span>' : "") +
           '<span class="avol">' + esc(a.vols) + (a.era ? " ・ " + esc(a.era) : "") + '</span></div>' +
         '<p class="alead">' + esc(a.lead) + '</p>' +
+        (meta ? '<dl class="ameta">' + meta + '</dl>' : "") +
+        (a.quote ? '<blockquote class="aquote">「' + esc(a.quote.t) + '」<b>— ' + esc(a.quote.by) + '</b></blockquote>' : "") +
         (a.beats||[]).map(b => '<div class="beat"><div class="bh">' + esc(b.h) +
             (b.ep && b.ep !== "—" ? '<span class="bep">' + esc(b.ep) + '</span>' : "") +
           '</div><p class="bb">' + esc(b.body) + '</p></div>').join("") +
@@ -811,6 +843,10 @@
           bats.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
         (keys.length ? '<div class="arcfoot"><div class="fl">主要人物</div><div class="rels">' +
           keys.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+        (nc.length ? '<div class="arcfoot"><div class="fl">この章で初登場（原作基準）</div><div class="rels">' +
+          nc.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+        (dd.length ? '<div class="arcfoot"><div class="fl">この章で退場</div><div class="rels">' +
+          dd.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
       '</section>';
     }).join("");
     storyEl.querySelectorAll(".rel").forEach(b => b.onclick = () => open(b.dataset.id));
