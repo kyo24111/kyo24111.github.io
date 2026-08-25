@@ -115,6 +115,7 @@
   .tablecard{border:1px solid var(--line); border-radius:12px; overflow:auto; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); max-height:74vh; margin-top:14px;}
   table{border-collapse:separate; border-spacing:0; width:100%; min-width:820px;}
   th,td{padding:10px 14px; text-align:left; border-bottom:1px solid var(--line); font-size:.88rem; white-space:nowrap;}
+  th.num,td.num{text-align:right; font-variant-numeric:tabular-nums;}
   thead th{background:var(--head); color:var(--muted); font-weight:500; font-size:.78rem; position:sticky; top:0; z-index:2; border-bottom:1px solid var(--line2); cursor:pointer; user-select:none;}
   thead th:hover{background:#efefec;}
   thead th .ar{opacity:.35; font-size:.7rem; margin-left:3px;}
@@ -151,6 +152,18 @@
   .arcfoot{margin-top:13px; padding-top:12px; border-top:1px solid var(--line);}
   .arcfoot + .arcfoot{margin-top:9px; padding-top:9px; border-top:0;}
   .fl{font-size:.72rem; color:var(--muted); margin-bottom:5px;}
+
+  /* ── 能力値（公式ガイドブック） ── */
+  .stats{margin:0 0 16px; border:1px solid var(--line); border-radius:9px; padding:11px 13px 9px; background:var(--soft);}
+  .stats .sthead{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px;}
+  .stats .sttitle{font-size:.78rem; font-weight:600; letter-spacing:.03em;}
+  .stats .stsrc{font-size:.68rem; color:var(--muted);}
+  .strow{display:grid; grid-template-columns:56px 1fr 46px; align-items:center; gap:9px; padding:2px 0;}
+  .strow .k{font-size:.74rem; color:var(--muted);}
+  .strow .bar{height:6px; background:#e9e9e6; border-radius:3px; overflow:hidden;}
+  .strow .bar i{display:block; height:100%; background:#333; border-radius:3px;}
+  .strow .v{font-size:.8rem; font-weight:600; text-align:right; font-variant-numeric:tabular-nums;}
+  .strow.grade .v{font-size:.85rem;}
 
   /* ── 詳細ドロワー ── */
   .drawerhost{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:50;}
@@ -246,6 +259,9 @@
           <th data-k="state">国・勢力<span class="ar">↕</span></th>
           <th data-k="group">所属<span class="ar">↕</span></th>
           <th data-k="klass">分類<span class="ar">↕</span></th>
+          <th data-k="bu" class="num">武力<span class="ar">↕</span></th>
+          <th data-k="chi" class="num">知力<span class="ar">↕</span></th>
+          <th data-k="cv">声優<span class="ar">↕</span></th>
           <th data-k="role">立場 / 結果<span class="ar">↕</span></th>
           <th data-k="firstn">初登場<span class="ar">↕</span></th>
           <th data-k="status">状態<span class="ar">↕</span></th>
@@ -296,6 +312,11 @@
                       "楚":"#f4e2cd","韓":"#e2e4f4","燕":"#d9ecee"};
   const stateKey = s => (STATE_FILL[s] ? s : "other");
 
+  /* 人物プロフィール（能力値・CV・階級など） */
+  const PROF = KINGDOM.profiles || {};
+  const prof = id => PROF[id] || null;
+  const STAT_LABEL = {bu:"武力", shiki:"指揮力", chi:"知力", miryoku:"魅力"};
+
   /* 顔画像。manifest にある node だけ <img> を出し、読み込めなければ頭文字が残る */
   const FDIR  = (KINGDOM.faces && KINGDOM.faces.dir) || "";
   const FACES = new Set((KINGDOM.faces && KINGDOM.faces.ids) || []);
@@ -326,8 +347,13 @@
   N.forEach(n => (n.battles||[]).forEach(b => { if (byId[b]) byId[b]._in.push(n.id); }));
   N.forEach(n => {
     n.firstn = parseInt(String(n.first).replace(/[^0-9]/g,""), 10) || 999;
+    const pf = PROF[n.id] || {};
+    n.bu  = pf.stats && typeof pf.stats.bu  === "number" ? pf.stats.bu  : null;
+    n.chi = pf.stats && typeof pf.stats.chi === "number" ? pf.stats.chi : null;
+    n.cv  = pf.cv || "";
     n._hay = [n.name, n.yomi, n.state, n.group, n.role, n.klass, n.arc, n.status,
               n.summary, (n.tags||[]).join(" "),
+              pf.cv, pf.epithet, pf.rank, pf.cls, pf.arms, pf.age, pf.debutManga, pf.debutAnime,
               (n.detail||[]).map(d => d.h + d.body).join(" ")].join(" ").toLowerCase();
   });
 
@@ -716,6 +742,12 @@
     const k = S.sortK, d = S.sortD;
     const sorted = rows.slice().sort((a,b) => {
       let va = a[k], vb = b[k];
+      if (k === "bu" || k === "chi"){
+        if (va == null && vb == null) return a.name.localeCompare(b.name,"ja");
+        if (va == null) return 1;
+        if (vb == null) return -1;
+        return (vb - va) * d || a.name.localeCompare(b.name,"ja");
+      }
       if (k === "firstn") return (va - vb) * d || a.name.localeCompare(b.name,"ja");
       va = String(va == null ? "" : va); vb = String(vb == null ? "" : vb);
       return va.localeCompare(vb, "ja") * d || a.firstn - b.firstn;
@@ -731,6 +763,9 @@
         '<td><span class="bdg s-' + stateKey(n.state) + '">' + esc(n.state) + '</span></td>' +
         '<td>' + esc(n.group || "—") + '</td>' +
         '<td>' + esc(n.klass) + '</td>' +
+        '<td class="num">' + (n.bu  != null ? n.bu  + ((PROF[n.id].stats.buP)  || "") : "—") + '</td>' +
+        '<td class="num">' + (n.chi != null ? n.chi + ((PROF[n.id].stats.chiP) || "") : "—") + '</td>' +
+        '<td>' + (n.cv ? esc(n.cv) : "—") + '</td>' +
         '<td>' + esc(n.role) + '</td>' +
         '<td>' + esc(n.first) + '</td>' +
         '<td><span class="bdg' + (["戦死","進行中"].includes(n.status) ? " st-" + n.status : " k") + '">' + esc(n.status) + '</span></td>' +
@@ -798,10 +833,18 @@
       '<span class="bdg' + (["戦死","進行中"].includes(n.status) ? " st-" + n.status : " k") + '">' + esc(n.status) + '</span>' +
       (n.tags||[]).map(t => '<span class="bdg k">#' + esc(t) + '</span>').join("");
 
+    const pf = prof(n.id);
     let h = '<p class="dsum">' + esc(n.summary) + '</p>';
+    if (pf && pf.stats) h += statsHTML(pf);
     h += '<dl class="dgrid">' +
       row("所属", n.group) + row("立場 / 結果", n.role) +
-      row("初登場", n.first) + row("登場編", n.arc) + '</dl>';
+      (pf ? row("異名", pf.epithet) + row("階級", pf.rank) + row("兵種・立場", pf.cls) +
+            row("武器", pf.arms) + row("年齢", pf.age) + row("性別", pf.gender) +
+            row("声優", pf.cv) : "") +
+      row("初登場", n.first) +
+      (pf ? row("初登場（原作）", pf.debutManga) + row("初登場（アニメ）", pf.debutAnime) : "") +
+      row("登場編", n.arc) +
+      (pf ? row("出典", pf.src ? "Fandom: " + pf.src : "") : "") + '</dl>';
     (n.detail||[]).forEach(d => {
       h += '<div class="dsec"><h3>' + esc(d.h) + '</h3><p>' + esc(d.body) + '</p></div>';
     });
@@ -825,6 +868,20 @@
     if (S.view === "graph") paintGraphState();
   }
   const row = (k,v) => v && v !== "—" ? "<dt>" + esc(k) + "</dt><dd>" + esc(v) + "</dd>" : "";
+  function statsHTML(pf){
+    const s = pf.stats;
+    let h = '<div class="stats"><div class="sthead"><span class="sttitle">能力値</span>' +
+            '<span class="stsrc">' + esc(pf.statsSrc || "公式ガイドブック") + '</span></div>';
+    ["bu","shiki","chi","miryoku"].forEach(k => {
+      if (typeof s[k] !== "number") return;
+      h += '<div class="strow"><span class="k">' + STAT_LABEL[k] + '</span>' +
+           '<span class="bar"><i style="width:' + Math.max(2, Math.min(100, s[k])) + '%"></i></span>' +
+           '<span class="v">' + s[k] + esc(s[k+"P"] || "") + '</span></div>';
+    });
+    if (s.kei) h += '<div class="strow grade"><span class="k">経験</span><span class="bar" style="background:none"></span>' +
+                    '<span class="v">' + esc(s.kei) + '</span></div>';
+    return h + '</div>';
+  }
   function relBlock(title, items){
     return '<div class="dsec"><h3>' + title + '</h3><div class="rels">' +
       items.map(i => '<button class="rel" data-id="' + i.id + '">' + esc(byId[i.id].name) +
