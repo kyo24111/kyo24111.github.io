@@ -38,17 +38,18 @@ const KINGDOM = {
     dir: "kingdom_faces/",
     ids: ["akakin", "akou", "bajio", "bakukoshin", "banaji", "bankyoku", "banyou", "chougaryuu",
       "chousou", "choutou", "chuutetsu", "denei", "denrimi", "denyuu", "en", "futei",
-      "fuuki", "gaimou", "gakurai", "garo", "genpou", "gohoumei", "gokei", "gyouun",
-      "hairou", "heki", "houken", "hyou", "hyoukou", "kaine", "kaishibou", "kan'ou",
-      "kanki", "kanmei", "kanto", "keisha", "ketsushi", "kisui", "kochou", "kokuou",
-      "kyogai", "kyou", "kyouen", "kyoukai", "kyoushou", "kyuugen", "makou", "maron",
+      "fuuki", "gaimou", "gakurai", "garo", "gekishin", "genpou", "genu", "gohoumei",
+      "gokei", "goumasho", "gyouun", "hairou", "hakurei", "heki", "houken", "hyou",
+      "hyoukou", "kaine", "kaishibou", "kan'ou", "kanki", "kanmei", "kanpishi", "kanto",
+      "karin", "keisha", "ketsushi", "kisui", "kochou", "kokuou", "kouyoku", "kyogai",
+      "kyou", "kyouen", "kyoukai", "kyoushou", "kyuugen", "makou", "manu", "maron",
       "moubu", "mougou", "mouten", "naki", "obei", "obito", "ogiko", "orudo",
       "ouhon", "ouki", "ousen", "raido", "rakushou", "rankai", "renpa", "riboku",
       "rinbukun", "ringyoku", "rinko", "risi", "rokuomi", "ryofui", "ryusen", "ryuyuu",
-      "saitaku", "saji", "sei", "seikai", "seikyou", "shibashou", "shiishi", "shika",
-      "shin", "shoubunkun", "shouheikun", "shousa", "shunmen", "shunshinkun", "shunsuiju", "soou",
-      "sosui", "suugen", "tajifu", "takuke", "tenn", "tou", "youtanwa", "yuren",
-      "zenou"]
+      "saitaku", "saji", "sei", "seikai", "seikyou", "sentoun", "shibashou", "shiishi",
+      "shika", "shin", "shoubunkun", "shouheikun", "shousa", "shunmen", "shunshinkun", "shunsuiju",
+      "soou", "sosui", "suugen", "tajifu", "takuke", "tenn", "tou", "youtanwa",
+      "yuren", "zenou"]
   },
 
   /* 人物プロフィール（node id → 詳細）
@@ -153,6 +154,16 @@ const KINGDOM = {
     "rakushou": {gender:"男", rank:"将軍", cls:"将軍", arms:"矛", debutManga:"原作 第701話", src:"Gaku Shou"},
     "gaimou": {cv:"大塚明夫", gender:"男", rank:"大将軍", cls:"隊長 / 騎兵", arms:"朴刀 / 剣", debutManga:"原作 第379話", debutAnime:"アニメ 第4期 第6話", stats:{bu:97, shiki:85, chi:80, kei:"S"}, statsSrc:"公式ガイドブック3", src:"Gai Mou"},
     "chougaryuu": {cv:"東地宏樹", gender:"男", age:"50代", rank:"将軍", cls:"将軍", debutManga:"原作 第516話", debutAnime:"アニメ 通算 第149話", stats:{bu:85, shiki:90, chi:93, kei:"A"}, statsSrc:"公式ガイドブック3", src:"Chou Ga Ryuu"},
+    "kouyoku": {cv:"鈴木達央", epithet:"雷", rank:"将軍", arms:"弓矢", debutManga:"原作 第253話", debutAnime:"アニメ 第3期 第1話", stats:{bu:93, shiki:88, chi:79, kei:"A"}, statsSrc:"公式ガイドブック", src:"Kou Yoku"},
+    "hakurei": {cv:"上村祐翔", epithet:"十弓の二", rank:"将軍", arms:"弓矢", debutManga:"原作 第253話", debutAnime:"アニメ 第3期 第1話", stats:{bu:92, shiki:86, chi:85, kei:"B"}, statsSrc:"公式ガイドブック", src:"Haku Rei"},
+    "karin": {cv:"田中敦子", epithet:"楚軍総司令第二位", age:"30代", rank:"大将軍", arms:"剣", debutManga:"原作 第289話", debutAnime:"アニメ 第3期 第8話", stats:{bu:94, shiki:94, chi:98, kei:"A"}, statsSrc:"公式ガイドブック", src:"Ka Rin"},
+    "manu": {epithet:"武の化身", arms:"矛", debutManga:"原作 第650話", stats:{bu:97, shiki:90, chi:85, kei:"A"}, statsSrc:"公式ガイドブック", src:"Man'U"},
+    "kouen": {epithet:"楚の虎", rank:"大将軍", debutManga:"原作 第311話", debutAnime:"アニメ 第3期 第13話", src:"Kou En"},
+    "sentoun": {arms:"朴刀", debutManga:"原作 第650話", stats:{bu:95, shiki:85, chi:80, kei:"A"}, statsSrc:"公式ガイドブック", src:"Sen To'Un"},
+    "genu": {age:"40代", rank:"将軍", arms:"剣", debutManga:"原作 第650話", stats:{bu:88, shiki:88, chi:90, kei:"A"}, statsSrc:"公式ガイドブック", src:"Gen'U"},
+    "goumasho": {age:"40代", rank:"将軍", arms:"剣", debutManga:"原作 第295話", debutAnime:"アニメ 第3期 第9話", stats:{bu:80, shiki:86, chi:89, kei:"B"}, statsSrc:"公式ガイドブック", src:"Gou Ma Sho"},
+    "gekishin": {epithet:"燕の救世主", rank:"大将軍", arms:"矛", debutManga:"原作 第114話", debutAnime:"アニメ 第2期 第37話", stats:{bu:90, shiki:95, chi:92, kei:"A"}, statsSrc:"公式ガイドブック", src:"Geki Shin"},
+    "kanpishi": {age:"40代", debutManga:"原作 第495話", debutAnime:"アニメ 第6期 第2話", src:"Kan Pishi"}
   },
 
   nodes: [
@@ -1546,7 +1557,7 @@ const KINGDOM = {
       {h:"最期", body:"函谷関で蒙武と一騎打ちになり、力比べの末に討たれる。蒙武が『武でしか語れない男』から一段上がる契機になる。"}
     ],
     battles:["b_kankoku"],
-    rel:[{to:"moubu", label:"死闘"},{to:"shunshinkun", label:"主君"},{to:"f_so", label:"所属"}]
+    rel:[{to:"moubu", label:"死闘"},{to:"shunshinkun", label:"主君"},{to:"f_so", label:"所属"},{to:"kouyoku", label:"配下"},{to:"hakurei", label:"配下"}]
   },
   {
     id:"rinbukun", name:"臨武君", yomi:"りんぶくん", kind:"person", state:"楚", group:"合従軍",
@@ -1734,10 +1745,128 @@ const KINGDOM = {
       {h:"沈黙の狩人", body:"慶舎は網を張って待つ罠の名手。飛信隊は読み合いの土俵に引きずり込まれ、河了貂の軍師としての力量が正面から試される。"},
       {h:"桓騎のやり方", body:"桓騎は住民を巻き込む非道な手を平然と選び、勝ちを引き寄せる。信は勝利そのものではなく『どう勝つか』を突きつけられ、上官と正面から対立する。"},
       {h:"決着", body:"信が慶舎を討ち取り、秦は黒羊丘を奪う。信は五千人将へ。桓騎軍から那貴が飛信隊に加わる。"},
-      {h:"収録範囲メモ", body:"単行本35〜40巻あたり。このDBはここまでを収録。"}
+      {h:"収録範囲メモ", body:"単行本41〜45巻あたり（アニメ第4シリーズ終盤〜第5シリーズ）。"}
     ],
     battles:[],
     rel:[{to:"kanki",label:"主将"},{to:"keisha",label:"敵将"},{to:"kisui",label:"敵将"},{to:"shin",label:"参戦"},{to:"tenn",label:"参戦"},{to:"kyoukai",label:"参戦"},{to:"naki",label:"参戦"},{to:"riboku",label:"敵軍"},{to:"f_chou",label:"対戦国"}]
+  },
+
+  /* ───────────── 楚（合従軍〜三国戦） ───────────── */
+  {
+    id:"kouyoku", name:"項翼", yomi:"こうよく", kind:"person", state:"楚", group:"合従軍",
+    role:"楚の将軍 / 汗明の下の若手", klass:"武将", first:"25巻", arc:"合従軍編", status:"存命",
+    tags:["楚","合従軍","函谷関","雷","若手"],
+    summary:"『雷』の異名を持つ楚の若き猛将。汗明とともに函谷関へ攻め上る。",
+    detail:[
+      {h:"人物", body:"楚の名門・項一族に連なる若い将。直情的で戦を楽しむ質だが、武の伸びしろは楚軍でも屈指。白麗と二人で『楚の次の世代』として扱われる。"},
+      {h:"函谷関", body:"汗明の指揮下で秦の関に取り付き、蒙武軍と正面から噛み合う。単騎の突破力で秦兵を薙ぎ倒し、若さゆえの粗さも含めて強い印象を残す。"},
+      {h:"その後", body:"合従軍が崩れた後も生き延び、楚が再び秦と刃を交える戦いに姿を見せる。"}
+    ],
+    battles:["b_kankoku"],
+    rel:[{to:"kanmei", label:"上官"},{to:"hakurei", label:"同僚"},{to:"moubu", label:"交戦"},{to:"f_so", label:"所属"},{to:"f_gassho", label:"参加"},{to:"kouen", label:"同族"}]
+  },
+  {
+    id:"hakurei", name:"白麗", yomi:"はくれい", kind:"person", state:"楚", group:"合従軍",
+    role:"楚の将軍 / 弓の名手", klass:"武将", first:"25巻", arc:"合従軍編", status:"存命",
+    tags:["楚","合従軍","函谷関","弓","若手"],
+    summary:"『十弓』の二位を自称する楚の弓将。項翼と並ぶ楚の次世代。",
+    detail:[
+      {h:"人物", body:"中華の弓の名手を並べた『十弓』で自分は二番目だと言い切る、冷静で自信家の将。突っ込む項翼とは正反対に、距離を取って戦う。"},
+      {h:"函谷関", body:"高所から秦兵を精確に射抜き、関の守りを削る。武で押す楚軍の中で唯一『間合いを支配する』タイプとして機能する。"},
+      {h:"その後", body:"合従軍の失敗後も楚軍に残り、項翼とともに後の戦線へ出てくる。"}
+    ],
+    battles:["b_kankoku"],
+    rel:[{to:"kanmei", label:"上官"},{to:"kouyoku", label:"同僚"},{to:"f_so", label:"所属"},{to:"f_gassho", label:"参加"}]
+  },
+  {
+    id:"karin", name:"媧燐", yomi:"かりん", kind:"person", state:"楚", group:"楚軍",
+    role:"楚の大将軍 / 軍総司令第二位", klass:"軍師", first:"29巻", arc:"合従軍編〜三国戦", status:"存命",
+    tags:["楚","大将軍","知略","女将軍"],
+    summary:"知略98を誇る楚の大将軍。武ではなく算術で戦を組み立てる女将。",
+    detail:[
+      {h:"人物", body:"楚軍の序列で総司令に次ぐ位置にいる大将軍。豪快な見た目に反して思考は徹底して計算的で、戦を『損得の勘定』として捉える。"},
+      {h:"合従軍編", body:"連合の中で姿を見せるが、この時点では前面に出てこない。楚が汗明のような武だけの国ではないことを示す存在。"},
+      {h:"三国戦", body:"秦・魏の連合が楚の要衝を攻めた戦いで本格的に指揮を執り、秦の将たちと知略をぶつけ合う。"}
+    ],
+    battles:[],
+    rel:[{to:"f_so", label:"大将軍"},{to:"shunshinkun", label:"同国"},{to:"kouen", label:"同格"},{to:"manu", label:"配下"},{to:"f_gassho", label:"参加"}]
+  },
+  {
+    id:"kouen", name:"項燕", yomi:"こうえん", kind:"person", state:"楚", group:"楚軍",
+    role:"楚の大将軍 / 項一族の当主格", klass:"武将", first:"31巻", arc:"合従軍編〜", status:"存命",
+    tags:["楚","大将軍","項一族","楚の虎"],
+    summary:"『楚の虎』と呼ばれる大将軍。楚軍の頂点に立つ将。",
+    detail:[
+      {h:"人物", body:"楚の武の象徴で、名門・項一族を束ねる立場にある大将軍。中華全体で見ても最上位に数えられ、その名が出るだけで盤面の重さが変わる。"},
+      {h:"位置づけ", body:"合従軍の時点では楚の後方にいて、直接は秦と刃を交えない。楚が本気で動いたときに何が出てくるのかを示す『まだ抜いていない札』として置かれている。"}
+    ],
+    battles:[],
+    rel:[{to:"f_so", label:"大将軍"},{to:"kouyoku", label:"同族"},{to:"karin", label:"同格"},{to:"shunshinkun", label:"同国"}]
+  },
+  {
+    id:"goumasho", name:"剛摩諸", yomi:"ごうましょ", kind:"person", state:"楚", group:"合従軍",
+    role:"楚の将軍", klass:"軍師", first:"30巻", arc:"合従軍編", status:"存命",
+    tags:["楚","合従軍","知略型"],
+    summary:"武より読みで戦う楚の将。合従軍の一角を担う。",
+    detail:[{h:"役割", body:"力押しの多い楚軍の中で、戦況を読んで部隊を動かすタイプ。寄り合い所帯の連合の中で、楚の損得を計算しながら動く。"}],
+    battles:["b_kankoku"],
+    rel:[{to:"f_so", label:"所属"},{to:"f_gassho", label:"参加"},{to:"shunshinkun", label:"配下"}]
+  },
+  {
+    id:"manu", name:"満羽", yomi:"まんう", kind:"person", state:"楚", group:"楚軍",
+    role:"楚の将軍 / 武の化身", klass:"武将", first:"60巻", arc:"三国戦", status:"存命",
+    tags:["楚","三国戦","武力97","蒙武"],
+    summary:"武力97を誇る楚の猛将。蒙武と真正面からぶつかる男。",
+    detail:[
+      {h:"武", body:"楚軍でも別格の膂力を持ち、正面からの押し合いで相手を壊す純粋な武の将。蒙武・汗明と同じ系統の強さでありながら、その戦い方には別の陰がある。"},
+      {h:"蒙武との死闘", body:"秦・魏連合が楚の要衝を攻めた戦いで蒙武と一騎打ちに入る。武でしか語れなかった蒙武が、もう一段先へ行くための相手になる。"}
+    ],
+    battles:[],
+    rel:[{to:"moubu", label:"死闘"},{to:"karin", label:"上官"},{to:"f_so", label:"所属"}]
+  },
+  {
+    id:"sentoun", name:"千斗雲", yomi:"せんとうん", kind:"person", state:"楚", group:"楚軍",
+    role:"楚の将軍", klass:"武将", first:"60巻", arc:"三国戦", status:"存命",
+    tags:["楚","三国戦","武力95"],
+    summary:"武力95の楚将。満羽と並ぶ楚の攻め手。",
+    detail:[{h:"戦い方", body:"速さと膂力で敵陣を割るタイプ。楚が『武の国』と呼ばれる所以を体現する将の一人。"}],
+    battles:[],
+    rel:[{to:"karin", label:"上官"},{to:"f_so", label:"所属"},{to:"manu", label:"同僚"}]
+  },
+  {
+    id:"genu", name:"玄右", yomi:"げんう", kind:"person", state:"楚", group:"楚軍",
+    role:"楚の将軍（元大将軍）", klass:"軍師", first:"60巻", arc:"三国戦", status:"存命",
+    tags:["楚","三国戦","知略型","元大将軍"],
+    summary:"かつて大将軍位にあった楚の老練な将。",
+    detail:[{h:"人物", body:"大将軍を退いた後も前線に立ち続ける古参。武で押す若手の後ろで、戦全体の形を整える役目を担う。"}],
+    battles:[],
+    rel:[{to:"karin", label:"同陣"},{to:"f_so", label:"所属"}]
+  },
+
+  /* ───────────── 燕・韓（追加） ───────────── */
+  {
+    id:"gekishin", name:"劇辛", yomi:"げきしん", kind:"person", state:"燕", group:"燕軍",
+    role:"燕の大将軍", klass:"武将", first:"12巻", arc:"馬陽の戦い（言及）", status:"戦死",
+    tags:["燕","大将軍","龐煖","救世主"],
+    summary:"『燕の救世主』と呼ばれた大将軍。龐煖に討たれた過去を持つ。",
+    detail:[
+      {h:"人物", body:"元は趙の出でありながら燕に迎えられ、傾いた国を立て直した名将。指揮95・知略92と、武偏重の中華では珍しくバランスの取れた将だった。"},
+      {h:"龐煖との因縁", body:"武神・龐煖に討たれ、燕は最大の柱を失う。龐煖という怪物が『国を一つ傾ける』規模の存在であることを示す前史になっている。"}
+    ],
+    battles:[],
+    rel:[{to:"houken", label:"討たれた"},{to:"f_en", label:"大将軍"},{to:"orudo", label:"同国"}]
+  },
+  {
+    id:"kanpishi", name:"韓非子", yomi:"かんぴし", kind:"person", state:"韓", group:"—",
+    role:"韓の思想家（法家）", klass:"文官", first:"46巻", arc:"官吏編〜", status:"死亡",
+    tags:["韓","法家","思想","李斯"],
+    summary:"法によって国を治める思想を説いた韓の公子。政が招こうとした男。",
+    detail:[
+      {h:"思想", body:"人は善では動かない、法と仕組みで動かすべきだという法家の思想を突き詰めた人物。秦が中華統一の後に何をするのかという問いに直接つながる。"},
+      {h:"秦との関わり", body:"嬴政はその著述に強く惹かれ、彼を朝廷に招こうとする。信と騰が韓へ向かう理由にもなる。"}
+    ],
+    battles:[],
+    rel:[{to:"sei", label:"招かれる"},{to:"risi", label:"同門"},{to:"f_kan", label:"公子"},{to:"shin", label:"接点"},{to:"tou", label:"接点"}]
   }
 
   ],
@@ -1876,7 +2005,7 @@ const KINGDOM = {
     ],
     keys:["ouki", "shin", "tou", "kyou", "houken", "chousou", "bankyoku", "fuuki", "moubu", "hyoukou", "obito", "tenn", "kyogai", "f_hishin"],
     battles:["b_bayou"],
-    newcomers:["choutou", "houken", "bankyoku", "denei", "kyogai", "kyou", "ryusen", "ryuyuu", "shousa", "suugen", "chousou", "fuuki", "kan'ou", "shunshinkun"],
+    newcomers:["choutou", "houken", "bankyoku", "denei", "kyogai", "kyou", "ryusen", "ryuyuu", "shousa", "suugen", "chousou", "fuuki", "kan'ou", "shunshinkun", "gekishin"],
     deaths:["ouki", "obito", "chousou", "fuuki", "bankyoku", "kyou"]
   },
   {
@@ -1932,7 +2061,7 @@ const KINGDOM = {
     ],
     keys:["mougou", "moubu", "tou", "shin", "ouhon", "mouten", "renpa", "rinko", "genpou", "kaishibou", "kyouen", "rokuomi", "tenn"],
     battles:["b_sanyou"],
-    newcomers:["renpa", "genpou", "kaishibou", "kyouen", "rinko", "kanki", "ousen", "sosui", "kokuou", "maron", "raido", "keisha", "rinbukun"],
+    newcomers:["renpa", "genpou", "kaishibou", "kyouen", "rinko", "kanki", "ousen", "sosui", "kokuou", "maron", "raido", "keisha", "rinbukun", "kouyoku", "hakurei"],
     deaths:["rinko", "genpou"]
   },
   {
@@ -1962,9 +2091,9 @@ const KINGDOM = {
       {ep:"25〜26話", h:"決着", body:"数日の総攻撃に耐え切り、援軍の到着を前に李牧は撤退を選ぶ。楊端和も駆けつけ、連合は崩れ、秦は滅亡の淵から生還した。"},
       {ep:"—", h:"この束のテーマ", body:"理念は言葉だけでは終わらない、という証明。政が掲げてきたものが、実際に国を救う形で回収される。"}
     ],
-    keys:["sei", "shin", "kyoukai", "tenn", "shouheikun", "moubu", "tou", "ousen", "choutou", "hyoukou", "heki", "youtanwa", "riboku", "houken", "kaine", "shunshinkun", "kanmei", "rinbukun", "seikai", "orudo", "gohoumei", "kanto"],
+    keys:["sei", "shin", "kyoukai", "tenn", "shouheikun", "moubu", "tou", "ousen", "choutou", "hyoukou", "heki", "youtanwa", "riboku", "houken", "kaine", "shunshinkun", "kanmei", "rinbukun", "seikai", "orudo", "gohoumei", "kanto", "kouyoku", "hakurei", "karin", "kouen", "goumasho"],
     battles:["b_kankoku", "b_sai"],
-    newcomers:["gohoumei", "kanmei", "orudo", "seikai", "ogiko", "futei", "gakurai", "garo"],
+    newcomers:["gohoumei", "kanmei", "orudo", "seikai", "ogiko", "futei", "gakurai", "garo", "karin", "goumasho", "kouen"],
     deaths:["hyoukou", "choutou", "kanmei", "rinbukun", "seikai"]
   },
   {
@@ -2115,7 +2244,7 @@ const KINGDOM = {
     ],
     keys:["shin", "tenn", "obei", "en", "shouheikun", "sei", "kanto"],
     battles:[],
-    newcomers:["kanto"],
+    newcomers:["kanto", "kanpishi"],
     deaths:[]
   },
   {
@@ -2162,9 +2291,9 @@ const KINGDOM = {
       {ep:"—", h:"秦・魏の同盟", body:"三年の同盟を結んだ秦と魏が、楚の要衝を共同で攻める。蒙武が楚の猛将・満羽と真正面からぶつかり、武で押し切る将の到達点が描かれる。"},
       {ep:"—", h:"蚩尤、再び", body:"羌瘣を名指しで訪ねてくる蚩尤族の剣士が現れる。終わったはずの過去が、別の形で飛信隊の前に戻ってくる。"}
     ],
-    keys:["riboku", "moubu", "kyoukai", "shin", "f_shiyuu", "f_so"],
+    keys:["riboku", "moubu", "kyoukai", "shin", "f_shiyuu", "f_so", "karin", "manu", "sentoun", "genu", "kouen"],
     battles:[],
-    newcomers:[],
+    newcomers:["manu", "sentoun", "genu"],
     deaths:[]
   },
   {
@@ -2210,7 +2339,7 @@ const KINGDOM = {
       {ep:"—", h:"桓騎軍の壊滅", body:"雷土、黒桜、ゼノウ——黒羊から見てきた顔が次々に落ち、最後に桓騎自身が討たれる。勝ち方を問われ続けた男の退場が、信に別の答えを残す。"},
       {ep:"—", h:"国の空気", body:"六大将軍の一人を失った秦は重い空気に包まれる。政は信と騰を韓へ送り、思想家・韓非子を招くという別の一手を打つ。"}
     ],
-    keys:["kanki", "raido", "kokuou", "zenou", "maron", "riboku", "shibashou", "ousen", "shouheikun", "shin", "tou", "joukaryuu", "rakushou"],
+    keys:["kanki", "raido", "kokuou", "zenou", "maron", "riboku", "shibashou", "ousen", "shouheikun", "shin", "tou", "joukaryuu", "rakushou", "kanpishi"],
     battles:["b_gian"],
     newcomers:[],
     deaths:["kanki", "raido", "kokuou", "zenou", "joukaryuu"]
