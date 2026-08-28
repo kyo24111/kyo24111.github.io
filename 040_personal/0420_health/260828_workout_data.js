@@ -174,15 +174,15 @@ const WORKOUTS = [
       root:{x:76, y:-90, pz:-11}, spine:{x:0}, chest:{x:0}, neck:{x:0, z:-8}, head:{z:-4},
       armL:{z:84, x:-6}, foreL:{x:-72}, handL:{x:-10},
       armR:{z:22, x:-30}, foreR:{x:-100}, handR:{x:-10},
-      thighL:{x:2}, shinL:{x:0}, footL:{x:20},
-      thighR:{z:62, x:-26}, shinR:{x:52}, footR:{x:10}
+      thighL:{x:2}, shinL:{x:11}, footL:{x:26},
+      thighR:{z:58, x:-18}, shinR:{x:84}, footR:{x:46}
     },
     rollDist:{                                  /* ローラーが膝側 */
       root:{x:76, y:-90, pz:11}, spine:{x:0}, chest:{x:0}, neck:{x:0, z:-8}, head:{z:-4},
       armL:{z:84, x:-6}, foreL:{x:-72}, handL:{x:-10},
       armR:{z:22, x:-30}, foreR:{x:-100}, handR:{x:-10},
-      thighL:{x:2}, shinL:{x:0}, footL:{x:20},
-      thighR:{z:62, x:-26}, shinR:{x:52}, footR:{x:10}
+      thighL:{x:2}, shinL:{x:11}, footL:{x:26},
+      thighR:{z:58, x:-18}, shinR:{x:84}, footR:{x:46}
     }
   },
 
@@ -198,6 +198,7 @@ const WORKOUTS = [
     {t:0.52, pose:'rollDist', a:1, label:'膝の上まで'},
     {t:1.00, pose:'rollProx', a:0, label:'股関節側へ戻す'}
   ],
+  ground:['foreL','handL'],            /* 床に着くのは支えている前腕（＋ローラー） */
   fixedSide:{ arm:'L', leg:'L' },
   guide:false,
 

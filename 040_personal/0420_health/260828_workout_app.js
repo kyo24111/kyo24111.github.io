@@ -166,18 +166,19 @@ const rec = {};          // part id → { part, items:[{mesh, side, mat}] }
 const pickables = [];
 
 PARTS.forEach((part, i) => {
-  if (part.lay === 'organ' || part.lay === 'tendon') return;      // 動作解説では骨と筋だけ
+  if (part.lay === 'organ') return;                               // 内臓は動作解説では使わない
   const geo = buildSpec(part.g);
   const box = new THREE.Box3().setFromBufferAttribute(geo.attributes.position);
   const c = box.getCenter(new THREE.Vector3());
   const isMus = part.lay === 'muscle';
+  const isTen = part.lay === 'tendon';
   const items = [];
   const sides = part.sym ? [1, -1] : [1];
   sides.forEach(sg => {
     const m = new THREE.MeshPhysicalMaterial({
-      color: isMus ? REST.clone() : new THREE.Color(0xcdc6b4),
-      roughness: isMus ? 0.48 : 0.55, metalness: 0, envMapIntensity: 0.5,
-      clearcoat: isMus ? 0.22 : 0.08, clearcoatRoughness: 0.45,
+      color: isMus ? REST.clone() : new THREE.Color(isTen ? 0xd6d8d2 : 0xcdc6b4),
+      roughness: isMus ? 0.48 : isTen ? 0.3 : 0.55, metalness: 0, envMapIntensity: 0.5,
+      clearcoat: isMus ? 0.22 : isTen ? 0.4 : 0.08, clearcoatRoughness: 0.45,
       vertexColors: true,
       bumpMap: isMus ? FIBER : null, bumpScale: 0.6,
       transparent: true, opacity: 1, side: THREE.DoubleSide
@@ -191,7 +192,7 @@ PARTS.forEach((part, i) => {
     mesh.userData = { pid: part.id, side: sg > 0 ? 'L' : 'R' };
     g.add(mesh);
     items.push({ mesh, side: sg > 0 ? 'L' : 'R', mat: m, seg });
-    if (isMus) pickables.push(mesh);
+    if (isMus || isTen) pickables.push(mesh);
   });
   rec[part.id] = { part, items, base: null };
 });
@@ -213,6 +214,31 @@ SKIN.forEach(b => {
   joint[seg].add(mesh);
   skinMats.push(m);
 });
+
+/* ───────── 道具（フォームローラーなど） ───────── */
+const propRoot = new THREE.Group();
+scene.add(propRoot);
+function buildProps() {
+  propRoot.clear();
+  (EX.props || []).forEach(pr => {
+    const g = new THREE.Mesh(
+      new THREE.CylinderGeometry(pr.r, pr.r, pr.len, 40, 1),
+      new THREE.MeshPhysicalMaterial({ color: pr.color ?? 0x2f3a5e, roughness: 0.55, metalness: 0,
+                                       clearcoat: 0.3, clearcoatRoughness: 0.5, envMapIntensity: 0.5 })
+    );
+    g.rotation.z = Math.PI / 2;                        // 体の左右方向（x軸）に寝かせる
+    g.castShadow = g.receiveShadow = true;
+    if (pr.autoUnder && joint[pr.autoUnder]) {         // 指定した体節の真下に潜り込ませる
+      const bb = new THREE.Box3();
+      joint[pr.autoUnder].children.forEach(m => { if (m.isMesh) bb.expandByObject(m); });
+      if (!bb.isEmpty()) {
+        const c = bb.getCenter(new THREE.Vector3());
+        g.position.set(0, Math.max(bb.min.y - pr.r + 1.2, pr.r * 0.55), c.z);
+      }
+    } else if (pr.p) g.position.set(...pr.p);
+    propRoot.add(g);
+  });
+}
 
 /* 一直線ガイド（肩→伸ばした踵） */
 const guideGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]);
@@ -243,16 +269,23 @@ function blend(a, b, k) {
 }
 const ease = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
-/* 床に接地させる縦オフセットを最初に測る */
+/* 床に接地させる縦オフセットを種目ごとに測り直す（姿勢が変わると最下点が変わる） */
 let floorY = 0;
 let EX = WORKOUTS[0];
-applyPose(EX.poses[EX.timeline[0].pose]);
-scene.updateMatrixWorld(true);
-{
+function groundBody() {
+  floorY = 0;
+  applyPose(EX.poses[EX.timeline[0].pose]);
+  scene.updateMatrixWorld(true);
+  /* 既定は体全体の最下点。EX.ground で「床に着く体節」を指定できる
+     （横向きで肘だけ着くような姿勢では、全体最下点だと上側の脚が突っ張って浮く） */
+  const segs = EX.ground || Object.keys(joint);
   const bb = new THREE.Box3();
-  Object.values(joint).forEach(g => g.children.forEach(m => { if (m.isMesh) bb.expandByObject(m); }));
-  floorY = -bb.min.y;
+  segs.forEach(n => joint[n] && joint[n].children.forEach(m => { if (m.isMesh) bb.expandByObject(m); }));
+  if (!bb.isEmpty()) floorY = -bb.min.y;
+  applyPose(EX.poses[EX.timeline[0].pose]);
+  scene.updateMatrixWorld(true);
 }
+groundBody();
 
 /* ───────── 状態 ───────── */
 let playing = true, phase = 0, speed = 1, solo = null;
@@ -267,12 +300,12 @@ function sampleTimeline(p) {
   const a = tl[i], b = tl[Math.min(i + 1, tl.length - 1)];
   const span = Math.max(b.t - a.t, 1e-6);
   const k = ease(THREE.MathUtils.clamp((p - a.t) / span, 0, 1));
-  const extOf = n => (n === 'quad' ? 0 : 1);
+  const amtOf = f => (f.a !== undefined ? f.a : (f.pose === 'quad' ? 0 : 1));
   const named = a.pose !== 'quad' ? a.pose : b.pose;
-  const side = named === 'extR' ? { arm: 'R', leg: 'L' } : { arm: 'L', leg: 'R' };
+  const side = EX.fixedSide || (named === 'extR' ? { arm: 'R', leg: 'L' } : { arm: 'L', leg: 'R' });
   return {
     pose: blend(EX.poses[a.pose], EX.poses[b.pose], k),
-    amt: THREE.MathUtils.lerp(extOf(a.pose), extOf(b.pose), k),
+    amt: THREE.MathUtils.lerp(amtOf(a), amtOf(b), k),
     side, label: k < 0.5 ? a.label : b.label
   };
 }
@@ -280,6 +313,10 @@ function sampleTimeline(p) {
 /* 部位ごとの「今の働き具合」 */
 function activation(t) {
   const { amt, arm, leg } = extNow;
+  /* リリース種目: ローラーの位置(amt: 0=股関節側 / 1=膝側)で圧のかかる場所が動く */
+  if (t.side === 'proximal') return t.w * (1 - 0.75 * amt);
+  if (t.side === 'distal')   return t.w * (0.25 + 0.75 * amt);
+  if (t.side === 'hold')     return t.w * 0.92;
   if (t.side === 'core') return t.w * (0.3 + 0.7 * amt);
   if (t.side === 'legExt') return t.w * (0.05 + 0.95 * amt);
   if (t.side === 'armExt') return t.w * (0.05 + 0.95 * amt);
@@ -288,6 +325,7 @@ function activation(t) {
   return t.w * amt;
 }
 function sideOfTarget(t) {                                  // その筋が光る側
+  if (t.on) return t.on;                                   // 種目側で明示指定
   if (t.side === 'legExt') return extNow.leg;
   if (t.side === 'armExt') return extNow.arm;
   if (t.side === 'legSup') return extNow.leg === 'L' ? 'R' : 'L';
@@ -300,12 +338,11 @@ function paint() {
   if (showHighlight) EX.targets.forEach(t => map.set(t.id, t));
   PARTS.forEach(p => {
     const r = rec[p.id]; if (!r) return;
-    const isMus = p.lay === 'muscle';
     const t = map.get(p.id);
     r.items.forEach(it => {
-      if (!isMus) { it.mesh.visible = showBone; it.mat.color.set(0xcdc6b4); it.mat.opacity = 0.9; return; }
-      /* 深層筋は使用筋のときだけ出す（全部出すと中が見えない） */
-      it.mesh.visible = showDeep || !p.deep || !!t;
+      if (p.lay === 'bone') { it.mesh.visible = showBone; it.mat.color.set(0xcdc6b4); it.mat.opacity = 0.9; return; }
+      /* 深層筋と腱・靭帯は、使用筋になっているときだけ出す（全部出すと中が見えない） */
+      it.mesh.visible = showDeep || (p.lay === 'muscle' && !p.deep) || !!t;
       const soloMiss = solo && solo !== p.id;
       if (!t || soloMiss) {
         it.mat.color.copy(showHighlight ? COLD : REST);
@@ -334,7 +371,13 @@ exBar.querySelectorAll('[data-ex]').forEach(b => b.onclick = () => {
   exBar.querySelectorAll('.ex-btn').forEach(x => x.classList.remove('on'));
   b.classList.add('on');
   EX = WORKOUTS.find(w => w.id === b.dataset.ex);
-  phase = 0; solo = null; renderInfo(); renderMuscles();
+  phase = 0; solo = null;
+  groundBody();
+  buildProps();
+  const V = viewsOf();
+  vi = 0; camera.position.set(...V[0].p); controls.target.set(...V[0].t);
+  bSide.textContent = V[1].n;
+  renderInfo(); renderMuscles(); paint();
 });
 
 function renderInfo() {
@@ -361,6 +404,8 @@ function renderInfo() {
 
 function renderMuscles() {
   const el = document.getElementById('musList');
+  const h = document.querySelector('.side .card:last-child .card-h');
+  if (h) h.textContent = EX.barLabel || '効いている筋肉';
   el.innerHTML = EX.targets.map(t => {
     const jp = rec[t.id] ? rec[t.id].part.jp : t.id;
     return `<div class="mrow ${solo === t.id ? 'on' : ''}" data-m="${t.id}" title="${t.why}">
@@ -397,6 +442,16 @@ const bBone = document.getElementById('bBone');
 bBone.onclick = () => { showBone = !showBone; bBone.classList.toggle('on', showBone); paint(); };
 const bSkin = document.getElementById('bSkin'); bSkin.classList.add('on');
 bSkin.onclick = () => { showSkin = !showSkin; bSkin.classList.toggle('on', showSkin); paint(); };
+const VIEWS_BY_EX = {
+  /* 横向きに寝る種目は、体の正面（-x側）から見る */
+  tflrelease: [
+    { n: '横', p: [-300, 70, 10],   t: [0, 26, 0] },
+    { n: '斜', p: [-230, 150, 150], t: [0, 24, 0] },
+    { n: '上', p: [-30, 380, 40],   t: [0, 8, 0] },
+    { n: '足', p: [-40, 80, -330],  t: [0, 26, 0] },
+  ]
+};
+const viewsOf = () => VIEWS_BY_EX[EX.id] || VIEWS;
 const VIEWS = [
   { n: '横', p: [330, 56, 6],    t: [0, 30, 0] },  // 写真と同じ真横（頭が左）
   { n: '斜', p: [250, 156, 170], t: [0, 28, 0] },
@@ -406,14 +461,15 @@ const VIEWS = [
 let vi = 0;
 const bSide = document.getElementById('bSide');
 bSide.onclick = () => {
-  vi = (vi + 1) % VIEWS.length;
-  const v = VIEWS[vi];
-  bSide.textContent = VIEWS[(vi + 1) % VIEWS.length].n;
-  camera.position.set(...v.p); controls.target.set(...v.t);
+  const V = viewsOf();
+  vi = (vi + 1) % V.length;
+  bSide.textContent = V[(vi + 1) % V.length].n;
+  camera.position.set(...V[vi].p); controls.target.set(...V[vi].t);
 };
 document.getElementById('bReset').onclick = () => {
-  vi = 0; bSide.textContent = VIEWS[1].n;
-  camera.position.set(...VIEWS[0].p); controls.target.set(...VIEWS[0].t);
+  const V = viewsOf();
+  vi = 0; bSide.textContent = V[1].n;
+  camera.position.set(...V[0].p); controls.target.set(...V[0].t);
 };
 
 /* 筋肉のタップ・ホバー */
@@ -502,7 +558,8 @@ if (renderer) renderer.setAnimationLoop(() => {
 renderInfo();
 renderMuscles();
 paint();
-bSide.textContent = VIEWS[1].n;
+buildProps();
+bSide.textContent = viewsOf()[1].n;
 const load = document.getElementById('loading');
 if (renderer) load.style.display = 'none';
 else {
