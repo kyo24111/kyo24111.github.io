@@ -11,11 +11,31 @@ const canvas = document.getElementById('cv');
 const tipEl = document.getElementById('tip');
 
 /* ───────── scene ───────── */
-let renderer = null;                                   // WebGL が無い端末でも検索と解説は動かす
-try {
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-} catch (e) { renderer = null; }
+/* WebGL が無い端末でも検索と解説は動かす */
+let renderer = null, glError = '';
+(function makeRenderer() {
+  /* 条件を落としながら数回試す。
+     ・antialias や alpha が原因で落ちる端末がある
+     ・3Dページを複数開いているとブラウザのWebGLコンテキスト上限で失敗する */
+  const tries = [
+    { antialias: true,  alpha: true },
+    { antialias: false, alpha: true },
+    { antialias: false, alpha: true, powerPreference: 'low-power' },
+    { antialias: false, alpha: false, failIfMajorPerformanceCaveat: false },
+  ];
+  for (const o of tries) {
+    try { renderer = new THREE.WebGLRenderer(Object.assign({ canvas }, o)); break; }
+    catch (e) { glError = (e && e.message) ? e.message : String(e); }
+  }
+  if (!renderer) {
+    const probe = document.createElement('canvas');
+    const has = !!(probe.getContext('webgl2') || probe.getContext('webgl'));
+    glError = (has ? 'WebGLは有効だがコンテキストを作れませんでした（3Dページを複数開いていると上限に達します）'
+                   : 'このブラウザでWebGLが無効になっています（ハードウェアアクセラレーションの設定を確認）')
+              + (glError ? ' / ' + glError : '');
+  }
+})();
+if (renderer) renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(34, 1, 1, 2000);
 camera.position.set(112, 118, 296);
@@ -599,7 +619,11 @@ const loadEl = document.getElementById('loading');
 if (renderer) {
   loadEl.style.display = 'none';
 } else {
-  loadEl.innerHTML = '<div style="text-align:center;padding:0 24px;line-height:1.9">この端末では3D表示（WebGL）が使えません。<br>下の検索・リスト・解説はそのまま使えます。</div>';
+  loadEl.innerHTML = '<div style="text-align:center;padding:0 24px;line-height:1.9">'
+    + '3D表示を開始できませんでした。<br>下の検索・リスト・解説はそのまま使えます。<br>'
+    + '<span style="font-size:9px;color:#aaa">' + glError + '</span><br>'
+    + '<button onclick="location.reload()" style="margin-top:8px;font-size:11px;padding:5px 12px;border:1px solid #d8d8d8;background:#fff;border-radius:7px;cursor:pointer">再読み込み</button>'
+    + '</div>';
   canvas.style.display = 'none';
   document.querySelector('.stage-tools').style.display = 'none';
   document.querySelector('.stage-hint').style.display = 'none';

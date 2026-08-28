@@ -13,11 +13,30 @@ const canvas = document.getElementById('cv');
 const tipEl = document.getElementById('tip');
 
 /* ───────── scene ───────── */
-let renderer = null;
-try {
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-} catch (e) { renderer = null; }
+let renderer = null, glError = '';
+(function makeRenderer() {
+  /* 条件を落としながら数回試す。
+     ・antialias や alpha が原因で落ちる端末がある
+     ・3Dページを複数開いているとブラウザのWebGLコンテキスト上限で失敗する */
+  const tries = [
+    { antialias: true,  alpha: true },
+    { antialias: false, alpha: true },
+    { antialias: false, alpha: true, powerPreference: 'low-power' },
+    { antialias: false, alpha: false, failIfMajorPerformanceCaveat: false },
+  ];
+  for (const o of tries) {
+    try { renderer = new THREE.WebGLRenderer(Object.assign({ canvas }, o)); break; }
+    catch (e) { glError = (e && e.message) ? e.message : String(e); }
+  }
+  if (!renderer) {
+    const probe = document.createElement('canvas');
+    const has = !!(probe.getContext('webgl2') || probe.getContext('webgl'));
+    glError = (has ? 'WebGLは有効だがコンテキストを作れませんでした（3Dページを複数開いていると上限に達します）'
+                   : 'このブラウザでWebGLが無効になっています（ハードウェアアクセラレーションの設定を確認）')
+              + (glError ? ' / ' + glError : '');
+  }
+})();
+if (renderer) renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(32, 1, 1, 2000);
@@ -487,7 +506,9 @@ bSide.textContent = VIEWS[1].n;
 const load = document.getElementById('loading');
 if (renderer) load.style.display = 'none';
 else {
-  load.innerHTML = 'この端末では3D表示（WebGL）が使えません。<br>右のテキストはそのまま読めます。';
+  load.innerHTML = '3D表示を開始できませんでした。<br>右のテキスト（狙い・やり方・意識すること・使用筋）はそのまま読めます。<br>'
+    + '<span style="font-size:9px;color:#aaa">' + glError + '</span><br>'
+    + '<button onclick="location.reload()" style="margin-top:8px;font-size:11px;padding:5px 12px;border:1px solid #d8d8d8;background:#fff;border-radius:7px;cursor:pointer">再読み込み</button>';
   canvas.style.display = 'none';
   document.querySelector('.playbar').style.display = 'none';
   document.querySelector('.stage-tools').style.display = 'none';
