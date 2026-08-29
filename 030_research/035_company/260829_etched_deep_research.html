@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Etched — Transformer専用ASIC「Sohu」で$21Bに達したHarvard中退3人組</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa details[open]{background:var(--bg);border-color:var(--accent)}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:flex-start;gap:10px;line-height:1.65}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{background:var(--card2)}
+  .qa details[open] summary:hover{background:var(--surface)}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .qa summary::after{content:'+';margin-left:auto;padding-left:10px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem;line-height:1;flex-shrink:0}
+  .qa details[open] summary::after{content:'\2212'}
+  /* 回答本文。qa-a を付け忘れた <p> でも崩れないよう summary 以外の直下要素すべてに効かせる */
+  .qa details>*:not(summary){margin:0 0 10px;padding:0 18px 0 48px;font-size:13.5px;color:var(--mid);line-height:1.85;overflow-wrap:anywhere}
+  .qa details>*:not(summary):last-child{margin-bottom:16px}
+  .qa details>*:not(summary) b,.qa details>*:not(summary) strong{color:var(--text);font-weight:700}
+  .qa details>*:not(summary) a{color:var(--text)}
+  .qa details>ul,.qa details>ol{padding-left:66px}
+  .col-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin:22px 0}
+  .col-box .col-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--accent);display:inline-block;padding:3px 10px;border-radius:4px;margin-bottom:14px}
+  .col-box h3{margin-top:0;margin-bottom:12px;font-size:1.05rem}
+  .col-box p{font-size:13.5px;line-height:1.9}
+  .col-box .col-sub{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:20px 0 8px;padding-top:16px;border-top:1px solid var(--border)}
+  .col-box blockquote{margin:14px 0;padding:12px 18px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.85;color:var(--text)}
+  .col-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+  .col-num .n{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+  .col-num .n .v{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;line-height:1.1;margin-bottom:3px}
+  .col-num .n .l{font-size:11px;color:var(--muted);line-height:1.5}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.qa details>*:not(summary){padding-left:18px}.qa details>ul,.qa details>ol{padding-left:36px}.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">AI Semiconductor</span>
+    <span class="badge badge-white">Private</span>
+    <span class="badge badge-solid">Transformer ASIC</span>
+  </div>
+  <h1>Etched</h1>
+  <p class="hero-sub">
+    「Transformer は当分ひっくり返らない」——その一点に賭けて汎用性を捨て、
+    Transformer 推論だけに特化した ASIC「<strong>Sohu</strong>」を作った Harvard 中退の3人組。
+    長く懐疑論に晒されたが、2026年6月にステルスを脱して <strong>$1B超の受注残</strong>を公表、
+    8月には初号ラックを Jane Street に納入し、<strong>1ヶ月で評価額が $10.3B → $21B に倍増</strong>した。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$21B</div><div class="lbl">Valuation (Aug 2026)</div></div>
+    <div class="kpi"><div class="val">$700M</div><div class="lbl">Latest Round</div></div>
+    <div class="kpi"><div class="val">$1B+</div><div class="lbl">Signed Contracts</div></div>
+    <div class="kpi"><div class="val">400</div><div class="lbl">Employees</div></div>
+    <div class="kpi"><div class="val">2022</div><div class="lbl">Founded</div></div>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#s1">Overview</a></li>
+    <li><a href="#s2">賭けの構造 — なぜ汎用性を捨てるのか</a></li>
+    <li><a href="#s3">Sohu — チップとラックの中身</a></li>
+    <li><a href="#s4">創業逸話 — Math 55 から寮を出るまで</a></li>
+    <li><a href="#s5">Prod とのつながり</a></li>
+    <li><a href="#s6">Funding &amp; Investors</a></li>
+    <li><a href="#s7">Traction — $1B受注と初号ラック</a></li>
+    <li><a href="#s8">競合比較 — NVIDIA / Groq / TPU</a></li>
+    <li><a href="#s9">Timeline</a></li>
+    <li><a href="#s10">日本・アジアとの繋がり</a></li>
+    <li><a href="#s11">Risks &amp; Open Questions</a></li>
+    <li><a href="#s12">Valuation分析（NFA）</a></li>
+    <li><a href="#s13">Q&amp;A</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="s1">
+  <div class="sec-label"><span class="num">1</span> Overview</div>
+  <h2>「汎用性を捨てる」という一点賭けが、4年かけて通った</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Company</div><div class="v">Etched (Etched.ai)</div></div>
+    <div class="kv-item"><div class="k">Founded</div><div class="v">2022年</div></div>
+    <div class="kv-item"><div class="k">Headquarters</div><div class="v">San Jose, CA（旧 Cupertino）</div></div>
+    <div class="kv-item"><div class="k">Founders</div><div class="v">Gavin Uberti（CEO）/ Chris Zhu / Robert Wachen（COO）</div></div>
+    <div class="kv-item"><div class="k">Product</div><div class="v">Sohu — Transformer推論特化ASIC＋ラック型システム</div></div>
+    <div class="kv-item"><div class="k">Foundry</div><div class="v">TSMC N4P（4nm）</div></div>
+    <div class="kv-item"><div class="k">Total Raised</div><div class="v">約 $1.6B（Seed $5.36M → $700M まで5ラウンド）</div></div>
+    <div class="kv-item"><div class="k">Valuation</div><div class="v">$5B（2025/12）→ $10.3B（2026/07）→ <strong>$21B</strong>（2026/08）</div></div>
+    <div class="kv-item"><div class="k">Bookings</div><div class="v">$1B超の署名済み契約</div></div>
+    <div class="kv-item"><div class="k">Headcount</div><div class="v">約400名（うち約15%が元NVIDIA）</div></div>
+  </div>
+  <p>
+    Etched がやっているのは、AI半導体としては極端に振り切った賭けである。
+    NVIDIA の GPU は「あらゆるモデルを動かせる」ことに価値がある。Etched はその汎用性を捨て、
+    <strong>Transformer の推論だけを、シリコンに焼き付けた（etched）</strong>。
+    アーキテクチャが変われば石ごと無価値になる代わりに、当たれば桁違いの効率が出る。
+  </p>
+  <p>
+    2024年に Sohu を発表してから約2年、業界の反応は<strong>ほぼ懐疑一色</strong>だった。
+    「モデルの進化が速すぎて専用ASICは陳腐化する」「CUDA のエコシステムを越えられない」という批判である。
+    その空気が変わったのが2026年で、6月30日にステルスを脱し、
+    <strong>動くシリコン・ラック製品・$1B超の受注残</strong>を同時に公表した。
+  </p>
+  <div class="callout">
+    <strong>2026年の3ヶ月で起きたこと：</strong>
+    6月30日にステルス脱出（累計 $800M 調達・$1B超の受注を公表）→
+    7月23日に Sequoia 主導で $300M・評価額 <strong>$10.3B</strong> →
+    8月18日に Jane Street 主導で $700M・評価額 <strong>$21B</strong>、同日に<strong>初号ラックを Jane Street へ納入</strong>。
+    <strong>1ヶ月で評価額が倍</strong>になっている。
+  </div>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sec-label"><span class="num">2</span> 賭けの構造</div>
+  <h2>汎用性を捨てると何が起きるか</h2>
+  <p>
+    GPU は「何でも動く」ために、Transformer 推論の実行時にも大量のトランジスタを制御・スケジューリング・柔軟性のために使っている。
+    Etched の主張は単純で、<strong>Transformer しか動かさないと決めれば、その分をすべて演算とメモリ帯域に回せる</strong>というものだ。
+  </p>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">前提：Transformer は当面ひっくり返らない</div>
+        <div class="ind-desc">創業の出発点がここ。学生時代に「AI をスケールさせると何が起きるか」を追ううちに、Transformer が事実上の標準として固定化すると読んだ。<strong>この前提が外れたら会社ごと外れる</strong>という、極めて明快な一点賭けである。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">推論に絞る（学習はやらない）</div>
+        <div class="ind-desc">学習市場は NVIDIA の牙城で、柔軟性が必須。一方で<strong>推論はワークロードが固定的で、規模は学習を上回っていく</strong>。狙う市場を推論に絞ることで、専用化の利得が最大化される。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">チップではなくラックを売る</div>
+        <div class="ind-desc">製品は単体のシリコンではなく <strong>Frontier Inference Clusters（FIC）</strong> と呼ばれるラック単位の統合システム。基板・冷却・ネットワークまで自社で協調設計する。これは「チップだけ渡されても顧客は使えない」という現実への回答であり、同時に<strong>粗利を取れる場所を増やす</strong>設計でもある。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">"Production is the product"</div>
+        <div class="ind-desc">社内のモットー。設計と量産を最初から一体で回すという意味で、実際に<strong>自社オフィス内に 2MW のデータセンターを建て</strong>、診断装置や専用サーバーラックを製造前に自作していた。半導体スタートアップの典型的な死因である「動いたが量産できない」を潰しにいっている。</div>
+      </div>
+    </div>
+  </div>
+  <div class="warn-box">
+    <div class="w-title">賭けの代償（構造的な弱点）</div>
+    <ul>
+      <li><b>アーキテクチャ・ロックイン：</b>Transformer 以外に舵を切れない。当初の Sohu 設計では、Vision エンコーダ、拡散モデル、State Space Model、そして学習・ファインチューニングが対象外とされていた</li>
+      <li><b>ソフトウェアの断絶：</b>Etched 独自コンパイラが必要で、vLLM / TensorRT-LLM / SGLang からの移行パスがない。<b>NVIDIA の18年分の CUDA 資産に対して、ゼロから積み上げる</b>ことになる</li>
+      <li><b>バッチが大きいと逆転される：</b>バッチ1のデコード速度では強いが、バッチ32以上のスループットでは H100 / B200 が有利という分析がある</li>
+    </ul>
+  </div>
+  <div class="callout">
+    <strong>ただし2026年版は当初より柔軟になっている。</strong>
+    最新の報道では、<strong>MoE（DeepSeek・Qwen）や非Transformer系の Mamba でも動作</strong>すると説明されている。
+    2024年時点の「Transformer 専用・それ以外は一切動かない」という説明とは食い違いがあり、
+    <strong>2世代目で対応範囲を広げた（あるいは当初の説明が厳しすぎた）</strong>と読むのが妥当。ここは一次情報での確認余地がある。
+  </div>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sec-label"><span class="num">3</span> Sohu</div>
+  <h2>チップとラックの中身</h2>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>項目</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>プロセス</td><td>TSMC <strong>N4P（4nm）</strong></td></tr>
+      <tr><td>テープアウト</td><td><strong>A0 で一発成功（first-pass silicon success）</strong>。半導体スタートアップとしては極めて珍しい</td></tr>
+      <tr><td>メモリ</td><td>1チップあたり <strong>144GB HBM3E</strong>（H100 の 80GB に対して約1.8倍）。帯域も H100 SXM5 比で約1.8倍</td></tr>
+      <tr><td>システム</td><td>8チップ構成のラック型推論システム。製品名は <strong>Frontier Inference Clusters（FIC）</strong></td></tr>
+      <tr><td>性能主張</td><td>8チップサーバーで <strong>Llama 70B を 500,000 tokens/秒</strong>（同等構成の H100 が約 25,000 tokens/秒）。<strong>約20倍</strong>という主張。バッチ1条件・第三者検証なし</td></tr>
+      <tr><td>対応モデル</td><td>Llama / DeepSeek / Qwen / Mamba での動作を検証と説明（2026年時点）</td></tr>
+      <tr><td>ソフトウェア</td><td>自社開発のコンパイラ。既存フレームワークからの移行パスは無し</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>2026年版の2つのコア技術</h3>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">A</div>
+      <div>
+        <div class="ind-title">Low-Voltage Inference（LVI）— prefill 側</div>
+        <div class="ind-desc">演算ブロックを<strong>競合AIチップの半分以下の電圧</strong>で動かす。通常のAIチップは発熱でクロックを落とされ、実効性能がピークFLOPsの<strong>50%未満</strong>に落ちるが、Sohu は<strong>80%以上を持続</strong>できるという主張。専用化の利得を「性能」ではなく<strong>電力効率と実効稼働率</strong>で取りにいっている点が本質的。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">B</div>
+      <div>
+        <div class="ind-title">Cluster-Scale Memory（CSM）— decode 側</div>
+        <div class="ind-desc">独自の超低レイテンシ・インターコネクトと HBM/SRAM のハイブリッド構成で、<strong>クラスタ全体に共有メモリプールを張る</strong>。推論のボトルネックである「メモリの壁」を、チップ単体ではなくクラスタ単位で解こうとしている。prefill（高スループット）と decode（対話的な低レイテンシ）という性質の違う2フェーズを、それぞれ別の設計で最適化するという構成。</div>
+      </div>
+    </div>
+  </div>
+  <div class="callout">
+    <strong>読みどころ：</strong>初代 Sohu の売りは「Transformer 専用だから速い」という単純な話だった。
+    2026年の製品は <strong>prefill と decode を別チップ・別最適化に分ける</strong>という、
+    推論ワークロードの構造そのものに合わせた設計になっている。
+    <strong>「専用ASIC」から「推論システム屋」へ、賭け方が一段洗練されている。</strong>
+  </div>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sec-label"><span class="num">4</span> 創業逸話</div>
+  <h2>Math 55 から寮を出るまで</h2>
+  <p>
+    創業者3人は全員 Harvard 中退で、2026年時点で<strong>24歳</strong>である。
+  </p>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>Name</th><th>Role</th><th>Background</th></tr></thead>
+    <tbody>
+      <tr><td>Gavin Uberti</td><td>Co-founder / CEO</td><td>Harvard 中退。<strong>Thiel Fellow</strong>。夏のインターンでコンパイラを担当したことが、低レイヤのハードウェアへの入口になった</td></tr>
+      <tr><td>Chris Zhu</td><td>Co-founder</td><td>Harvard で Uberti と<strong>Math 55</strong>（同大で最も過酷とされる数学講義）で出会う</td></tr>
+      <tr><td>Robert Wachen</td><td>Co-founder / COO</td><td><strong>Uberti のルームメイト</strong>。あとから合流。対外的な発信を担う</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>
+    始まりは寮のプロジェクトだった。Uberti と Zhu は<strong>一日おきに Zoom で話し続け</strong>、
+    翌春に対面で一緒に手を動かしたことで「これは大学に残ったままやる規模ではない」と確信する。
+    3人が共通して持っていた読みが、<strong>「AI をスケールさせると Transformer が支配的になる。そして汎用GPUではその速度に追いつけない」</strong>という一点だった。
+  </p>
+  <p>
+    2023年3月の時点では、まだ Harvard で数学と計算機科学の授業を取っていた。
+    その翌月に <strong>Primary Venture Partners 主導で $5.36M のシードを クローズし、大学を辞めてベイエリアへ移った</strong>。
+    <strong>授業を取っている状態から、退学してシリコンバレーで半導体会社を始めるまで、実質1ヶ月である。</strong>
+    3人は2024年に揃って <strong>Thiel Fellow</strong> に選出されている。
+  </p>
+  <div class="callout">
+    <strong>そして速度は今も社の特徴になっている。</strong>
+    2026年の報道によれば、TSMC からテストチップを受け取ってから
+    <strong>44日で実際の推論ワークロードを動かした</strong>（業界の常識では6ヶ月以上かかる工程）。
+    「アイデアから動くシリコンまで4ヶ月」という表現も使われている。
+    採用面でも、20年以上のチップ設計経験を持つシニアを揃えつつ、
+    <strong>従業員400名の約15%が元NVIDIA</strong>、ほかに Google TPU チーム、Broadcom、SK Hynix の出身者が集まっている。
+  </div>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sec-label"><span class="num">5</span> Prod とのつながり</div>
+  <h2>Etched は「学生非営利団体」から出てきた会社である</h2>
+  <p>
+    Etched を単体で見ると「Harvard 中退の天才3人組」で終わるが、背景には <strong>Prod</strong> という装置がある。
+    Prod は2021年に <a href="260829_flapping_airplanes_deep_research.html">Ben Spector</a> が MIT・Harvard で立ち上げた
+    <strong>学生運営の非営利インキュベーター</strong>で、株式を一切取らずに、
+    優秀な学生を投資銀行やヘッジファンドの既定路線から引き剥がし、起業側へ押し出すことを目的にしている。
+  </p>
+  <p>
+    ミッションは <strong>“We help outlier students build outlier companies”</strong>。
+    <strong>Etched の創業者は、この Prod の出身である。</strong>
+    Prod の元プレジデントが現在 CEO を務める企業として名前が挙がるのがこの Etched であり、
+    Cursor・Mercor と並んで <strong>Prod 卒業企業3社だけで合計約 $45B</strong> という数字を構成している。
+  </p>
+  <div class="callout">
+    <strong>示唆：</strong>Etched の「Harvard を辞めて1ヶ月でベイエリアへ」という異常な意思決定速度は、
+    個人の資質だけでなく<strong>そう振る舞うことが当たり前とされるコミュニティの圧力</strong>によって作られている可能性が高い。
+    投資家が Prod を「野心的な創業者を見つけるための holy grail」と呼ぶのは、
+    <strong>人を選んでいるのではなく、人が変わる場所を押さえている</strong>という認識に近い。
+    Prod の運営実態については <a href="260829_flapping_airplanes_deep_research.html#s5">Flapping Airplanes のページのコラム</a>に詳述した。
+  </div>
+</div>
+
+<div class="sec" id="s6">
+  <div class="sec-label"><span class="num">6</span> Funding &amp; Investors</div>
+  <h2>$5.36M から $21B まで</h2>
+  <div class="f-stack">
+    <div class="f-card">
+      <div class="r-badge">Seed</div>
+      <div class="f-detail">
+        <div class="f-date">2023年4〜5月</div>
+        <div class="f-amount">$5.36M</div>
+        <div class="f-desc"><strong>Primary Venture Partners</strong> 主導。この調達を機に3人は Harvard を退学し、ベイエリアへ移住。</div>
+      </div>
+    </div>
+    <div class="f-card">
+      <div class="r-badge">Series A</div>
+      <div class="f-detail">
+        <div class="f-date">2024年6月</div>
+        <div class="f-amount">$120M</div>
+        <div class="f-desc"><strong>Primary Venture Partners</strong> と <strong>Positive Sum</strong> が主導。「Harvard中退組がNVIDIAに挑む」として大きく報じられた一方、専用ASICへの懐疑論も同時に噴出した。</div>
+      </div>
+    </div>
+    <div class="f-card">
+      <div class="r-badge">Series B</div>
+      <div class="f-detail">
+        <div class="f-date">2025年12月</div>
+        <div class="f-amount">$500M / Valuation $5B</div>
+        <div class="f-desc"><strong>Stripes</strong> 主導、<strong>Ribbit Capital・Radical Ventures</strong> 参加。<strong>公表せずに静かにクローズ</strong>し、2026年6月のステルス脱出まで伏せられていた。</div>
+      </div>
+    </div>
+    <div class="f-card">
+      <div class="r-badge">Series C</div>
+      <div class="f-detail">
+        <div class="f-date">2026年7月23日</div>
+        <div class="f-amount">$300M / Valuation $10.3B</div>
+        <div class="f-desc"><strong>Sequoia Capital</strong> 主導。<strong>Andreessen Horowitz・SK Hynix・Jane Street・Diffusion Capital</strong> が参加。半年で評価額が2倍に。</div>
+      </div>
+    </div>
+    <div class="f-card">
+      <div class="r-badge">Series D</div>
+      <div class="f-detail">
+        <div class="f-date">2026年8月18日</div>
+        <div class="f-amount">$700M / Valuation $21B</div>
+        <div class="f-desc"><strong>Jane Street</strong> 主導。<strong>同日に初号ラックを Jane Street へ納入</strong>したことを発表。前ラウンドから<strong>わずか1ヶ月で評価額が倍</strong>。</div>
+      </div>
+    </div>
+  </div>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>区分</th><th>名前</th></tr></thead>
+    <tbody>
+      <tr><td>リード経験のあるVC</td><td>Primary Venture Partners, Positive Sum, Stripes, Sequoia Capital, Jane Street</td></tr>
+      <tr><td>参加VC・事業会社</td><td>Andreessen Horowitz, Ribbit Capital, Radical Ventures, <strong>SK Hynix</strong>, Diffusion Capital, <strong>VentureTech Alliance（TSMC系）</strong></td></tr>
+      <tr><td>金融・トレーディング勢</td><td><strong>Jane Street（累計$100M超）</strong>, Hudson River Trading, Two Sigma, Jump Trading</td></tr>
+      <tr><td>個人投資家</td><td><strong>Peter Thiel</strong>, <strong>Geoffrey Hinton</strong>, <strong>Andrej Karpathy</strong>, <strong>Fei-Fei Li</strong>, Dylan Field（Figma）, Amjad Masad（Replit）</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>投資家構成の読み方：</strong>Jane Street・HRT・Two Sigma・Jump という<strong>高頻度取引勢が並んでいる</strong>のが特徴的である。
+    彼らはレイテンシに金を払うことに慣れており、<strong>バッチ1・低レイテンシに強いという Sohu の性質と利害が完全に一致する</strong>。
+    さらに <strong>SK Hynix</strong>（HBM供給）と <strong>VentureTech Alliance</strong>（TSMC系）が入っていることは、
+    半導体スタートアップ最大の関門である<strong>HBM調達枠とファウンドリ枠</strong>を資本で押さえにいっていることを意味する。
+  </div>
+</div>
+
+<div class="sec" id="s7">
+  <div class="sec-label"><span class="num">7</span> Traction</div>
+  <h2>$1B の受注残と、初号ラックの行き先</h2>
+  <p>
+    2026年6月30日のステルス脱出時点で、<strong>量産ラックを1台も出荷していない状態で $1B 超の署名済み契約</strong>を持っていた。
+    これが評価額の再評価を引き起こした最大の要因である。
+    顧客は「最大級のAI企業数社」とされるが、名前は伏せられている。
+  </p>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026/06/30</span><span class="tl-title">ステルス脱出</span></div>
+        <div class="tl-body">累計 <b>$800M</b> 調達、動作する Sohu、8チップのラック型推論システム、<b>$1B超の署名済み契約</b>を同時公表。初号ラックは「2026年夏に出荷」、<b>2027年にギガワット級</b>へスケールと表明。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026/07/23</span><span class="tl-title">Series C・$10.3B</span></div>
+        <div class="tl-body">Sequoia 主導で $300M。「顧客のもとで実機テスト中」「今日ラボでトークンを流している」（Wachen）。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026/08/18</span><span class="tl-title">初号ラック納入 ＋ $21B</span></div>
+        <div class="tl-body"><b>Jane Street に初号の推論ラックを納入</b>。同日に Jane Street 主導の $700M・評価額 $21B を発表。<b>Jane Street は現時点で唯一の「ハードウェアを受け取ったことが公表されている顧客」</b>。</div>
+      </div>
+    </div>
+  </div>
+  <div class="warn-box">
+    <div class="w-title">ここは冷静に見るべき点</div>
+    <ul>
+      <li><b>唯一の公表済み納入先が、そのラウンドのリード投資家でもある。</b>Jane Street は顧客であり、$100M超を投じた投資家でもある。<b>需要の独立した検証には、まだなっていない</b></li>
+      <li>$1B の「署名済み契約」の中身（前払い比率、キャンセル条項、納期条件）は非公開</li>
+      <li>第三者による独立ベンチマークが存在しない。性能主張はすべて自社発表</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sec-label"><span class="num">8</span> 競合比較</div>
+  <h2>NVIDIA / Groq / Cerebras / TPU</h2>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>プレイヤー</th><th>アプローチ</th><th>Etched との関係</th></tr></thead>
+    <tbody>
+      <tr><td><strong>NVIDIA</strong></td><td>汎用GPU＋CUDA。学習と推論の両方を押さえる</td><td>本丸。ハードの性能差より <strong>18年分のCUDA資産</strong>が壁。バッチ32以上のスループットでは依然として優位という分析もある</td></tr>
+      <tr><td><strong>Groq</strong></td><td>LPU。大容量オンチップSRAM（約500MB）で低レイテンシを取る</td><td>「推論特化・低レイテンシ」で最も近い。ただし <strong>Sohu はオンチップSRAMを持たず HBM3E 144GB に振っている</strong>という設計思想の違いがある</td></tr>
+      <tr><td><strong>Cerebras</strong></td><td>ウェハスケールの巨大チップ</td><td>同じ「非GPU」陣営だが、方向は真逆（巨大単一チップ vs クラスタ協調）</td></tr>
+      <tr><td><strong>Google TPU</strong></td><td>垂直統合の自社ASIC</td><td>「専用ASICは成立する」ことの<strong>最大の実証例</strong>。ただし自社利用が主で、外販市場での競合ではない。Etched は TPU 出身者を採用している</td></tr>
+      <tr><td><strong>AWS Trainium / Inferentia 等</strong></td><td>クラウド自社ASIC</td><td>ハイパースケーラーが自前で作る領域。Etched の顧客になりうる層でもあり、最大の代替でもある</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>本質的な勝負所はベンチマークではなく「切り替えコスト」。</strong>
+    顧客はモデルとソフトウェア資産を CUDA 上に積み上げている。
+    Etched が勝つには、<strong>移行の痛みを上回るだけの経済性（トークンあたりコストと電力）</strong>を示す必要がある。
+    ラック単位で売り、電力効率を前面に出しているのは、<strong>比較の土俵を「チップ性能」から「データセンターの総コスト」へ移すため</strong>と読める。
+  </div>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sec-label"><span class="num">9</span> Timeline</div>
+  <h2>沿革</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2021頃</span><span class="tl-title">Math 55 での出会い</span></div>
+      <div class="tl-body">Gavin Uberti と Chris Zhu が Harvard の Math 55 で出会う。Uberti はコンパイラのインターンを通じて低レイヤのハードウェアに接近。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2022</span><span class="tl-title">寮のプロジェクトとして始動</span></div>
+      <div class="tl-body">一日おきの Zoom で構想を詰め、翌春に対面で作業して確信を得る。Uberti のルームメイト Robert Wachen が合流。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2023/03–05</span><span class="tl-title">授業を取っている状態から、1ヶ月で退学・移住</span></div>
+      <div class="tl-body">3月時点ではまだ Harvard で受講中。4〜5月に <b>$5.36M</b> のシードを Primary Venture Partners 主導でクローズし、退学してベイエリアへ。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2024/06</span><span class="tl-title">Series A $120M ＋ Sohu 発表</span></div>
+      <div class="tl-body">「Harvard中退組がNVIDIAに挑む」と報じられる。3人は同年 <b>Thiel Fellow</b> に選出。同時に「専用ASICは陳腐化する」という懐疑論が業界に広がる。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2025/12</span><span class="tl-title">$500M を「静かに」調達（$5B）</span></div>
+      <div class="tl-body">Stripes 主導。<b>公表しないまま</b>半年間ステルスで開発を続ける。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2026/06/30</span><span class="tl-title">ステルス脱出</span></div>
+      <div class="tl-body">累計 $800M、動く Sohu、ラック製品、<b>$1B超の受注残</b>を一挙公表。A0テープアウト一発成功も明かす。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2026/07/23</span><span class="tl-title">Series C $300M・$10.3B</span></div>
+      <div class="tl-body">Sequoia 主導、a16z・SK Hynix・Jane Street 参加。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2026/08/18</span><span class="tl-title">初号ラック納入 ＋ $700M・$21B</span></div>
+      <div class="tl-body">Jane Street へ初号ラックを納入し、同社主導で $700M を調達。<b>1ヶ月で評価額が倍増。</b></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="sec" id="s10">
+  <div class="sec-label"><span class="num">10</span> 日本・アジアとの繋がり</div>
+  <h2>直接の接点は無い。ただし供給網では確実に触れている</h2>
+  <p>
+    <strong>2026年8月時点で、Etched に日本企業の出資・提携・顧客としての公表事例は見当たらない。</strong>
+    一方で、この会社が動くかどうかはアジアの製造網に完全に依存している。
+  </p>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>相手</th><th>関係</th><th>意味</th></tr></thead>
+    <tbody>
+      <tr><td><strong>TSMC</strong>（台湾）</td><td>N4P でSohuを製造。<strong>VentureTech Alliance</strong>（TSMC系VC）が株主</td><td>ファウンドリ枠を資本関係で確保。台湾に24時間稼働の製造オペレーションを置いている</td></tr>
+      <tr><td><strong>SK Hynix</strong>（韓国）</td><td>Series C に出資。同社出身のエンジニアも在籍</td><td><strong>HBM3E の調達枠</strong>。AI半導体の律速はロジックよりHBMであり、ここを押さえた意味は大きい</td></tr>
+      <tr><td>日本の装置・材料メーカー</td><td>直接の関係は非公表</td><td>4nm ＋ HBM3E の製造工程を通じて、検査・露光周辺・材料で<strong>間接的に日本企業が関与している</strong>のは構造上ほぼ確実。ただし Etched 名指しの取引開示はない</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>日本から見た含意：</strong>Etched は「日本と組んでいる会社」ではなく、
+    <strong>日本が握っている工程の上に乗っている会社</strong>である。
+    AI半導体スタートアップが $21B まで来られるかどうかは、
+    設計の巧拙よりも <strong>TSMC の枠と HBM の枠を取れるか</strong>で決まる、という現実を最もはっきり示す事例になっている。
+  </div>
+</div>
+
+<div class="sec" id="s11">
+  <div class="sec-label"><span class="num">11</span> Risks &amp; Open Questions</div>
+  <h2>この賭けが外れる筋</h2>
+  <div class="warn-box">
+    <div class="w-title">Risks</div>
+    <ul>
+      <li><b>アーキテクチャ転換：</b>最大かつ構造的なリスク。Transformer が主流から外れれば、焼き付けたシリコンは価値を失う。会社の名前どおり「etched（刻まれた）」ことの代償</li>
+      <li><b>CUDA の堀：</b>NVIDIA の優位はハードではなくソフト資産。独自コンパイラしか無く、vLLM / TensorRT-LLM / SGLang からの移行パスがない</li>
+      <li><b>顧客の集中と循環性：</b>公表済みの納入先は Jane Street 1社のみで、同社は最新ラウンドのリード投資家。<b>投資家＝顧客</b>という構図は、需要の独立検証としては弱い</li>
+      <li><b>評価額の加速度：</b>$5B（2025/12）→ $10.3B（2026/07）→ $21B（2026/08）。<b>1ヶ月で倍</b>は事業進捗より資金需給で説明される部分が大きい</li>
+      <li><b>量産と歩留まり：</b>A0一発成功は素晴らしいが、それと<b>ギガワット級の量産</b>は別問題。2027年のスケール計画は極めて攻撃的</li>
+      <li><b>供給網の依存：</b>TSMC の枠と SK Hynix の HBM に生殺与奪を握られている。NVIDIA と同じ資源を奪い合う構図</li>
+      <li><b>ハイパースケーラーの内製：</b>Google TPU、AWS Trainium など、最大の潜在顧客が同時に最大の代替手段を持っている</li>
+    </ul>
+  </div>
+  <div class="warn-box">
+    <div class="w-title">Open Questions</div>
+    <ul>
+      <li>$1B の受注残の内訳。顧客名、前払い比率、キャンセル条項</li>
+      <li>Jane Street 以外に実機が渡っている顧客はいるのか</li>
+      <li>2026年版が本当に MoE・Mamba に対応しているのか（初代の「Transformer専用」説明との整合）</li>
+      <li>第三者による独立ベンチマークはいつ出るのか。バッチサイズを上げたときの挙動</li>
+      <li>トークンあたりの実売価格。H100 クラウドとの経済性比較</li>
+      <li>2027年「ギガワット級」の裏付けとなる TSMC / HBM の確保枠</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec" id="s12">
+  <div class="sec-label"><span class="num">12</span> Valuation分析（NFA）</div>
+  <h2>$21B は何に対する値段か</h2>
+  <p>
+    2026年6月までの Etched は「懐疑論の対象」だった。それが3ヶ月で $21B になった。
+    値段を動かしたのは技術ではなく、<strong>不確実性が3つ剥がれたこと</strong>である。
+  </p>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>剥がれた不確実性</th><th>証拠</th><th>効き方</th></tr></thead>
+    <tbody>
+      <tr><td><strong>①「そもそも作れるのか」</strong></td><td>A0テープアウトの一発成功。TSMCからのテストチップ受領後<strong>44日</strong>で推論ワークロードが動作</td><td>半導体スタートアップが最も多く死ぬ地点を通過。ここが最大の再評価要因</td></tr>
+      <tr><td><strong>②「誰か買うのか」</strong></td><td>出荷前に<strong>$1B超の署名済み契約</strong></td><td>需要の存在証明。ただし顧客名は非開示で、検証は不完全</td></tr>
+      <tr><td><strong>③「本当に納品できるのか」</strong></td><td>2026/08/18、<strong>Jane Street へ初号ラック納入</strong></td><td>紙の契約から実物へ。この日に評価額が倍になった</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>
+    残っている不確実性は<strong>「スケールできるのか」</strong>と<strong>「Transformer が続くのか」</strong>の2つで、
+    どちらも今の価格には織り込みきれていない。
+    $21B という数字は、<strong>2027年のギガワット級量産が実現する前提</strong>で先に払われた値段である。
+  </p>
+  <div class="callout">
+    <strong>見方：</strong>投資家構成が示唆的で、Jane Street・HRT・Two Sigma・Jump という<strong>レイテンシに金を払う文化の会社</strong>が並んでいる。
+    彼らにとって Sohu は「投資先」であると同時に「自分たちが欲しい道具」である。
+    つまりこの評価額の一部は、<strong>財務リターンではなく調達枠の確保に払われている</strong>可能性がある。
+    次に見るべきは売上でも次のラウンドでもなく、<strong>Jane Street 以外の実機納入と、第三者ベンチマーク</strong>である。
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:16px">
+    ※ Not Financial Advice。非上場企業であり、記載の評価額・調達額は報道ベース。
+  </p>
+</div>
+
+<div class="sec qa" id="s13">
+  <div class="sec-label"><span class="num">13</span> Q&amp;A</div>
+  <h2>事業理解のための問答</h2>
+  <details>
+    <summary>Etched は結局何を売っているのか？</summary>
+    <div class="qa-a">チップ単体ではなく、<strong>ラック単位の推論システム</strong>（Frontier Inference Clusters）である。中身は Transformer 推論に特化した自社ASIC「Sohu」＋専用基板＋冷却＋ネットワークを協調設計したもの。顧客はこれをデータセンターに置いて推論を回す。学習用途は狙っていない。</div>
+  </details>
+  <details>
+    <summary>なぜ汎用性を捨てるのか。危険ではないのか？</summary>
+    <div class="qa-a">危険である。そこが賭けの本体。GPU は「何でも動く」ために制御と柔軟性に大量のトランジスタを使う。Transformer しか動かさないと決めれば、その分を演算とメモリ帯域に回せる。代償は、アーキテクチャが変わったときに石ごと無価値になること。社名の Etched（刻まれた）はそのまま賭けの性質を表している。</div>
+  </details>
+  <details>
+    <summary>性能はどのくらい速いのか？</summary>
+    <div class="qa-a">自社発表では、8チップのサーバーで <strong>Llama 70B を 500,000 tokens/秒</strong>（同等構成の H100 は約 25,000 tokens/秒）で約20倍。ただし<strong>バッチ1条件での主張で、第三者の独立検証はまだ存在しない</strong>。バッチ32以上のスループットでは H100/B200 が有利という分析もあり、得意領域は<strong>低レイテンシ・対話的な推論</strong>と見るべき。</div>
+  </details>
+  <details>
+    <summary>2026年版で何が変わったのか？</summary>
+    <div class="qa-a">推論の2フェーズを別々に最適化する構成になった。prefill 側は <strong>Low-Voltage Inference（LVI）</strong>——競合の半分以下の電圧で動かし、発熱によるクロック低下を避けてピーク性能の80%以上を持続する。decode 側は <strong>Cluster-Scale Memory（CSM）</strong>——独自インターコネクトでクラスタ全体に共有メモリプールを張る。「専用だから速い」から「推論システムとして設計する」へ一段進んでいる。</div>
+  </details>
+  <details>
+    <summary>NVIDIA に勝てるのか？</summary>
+    <div class="qa-a">正面からは勝てない。NVIDIA の堀はハードではなく<strong>18年分の CUDA エコシステム</strong>で、Etched は独自コンパイラしか持たず、vLLM や TensorRT-LLM からの移行パスもない。勝ち筋は「性能で上回る」ではなく、<strong>移行の痛みを上回るだけのトークン単価と電力効率を、特定の推論ワークロードで示す</strong>こと。ラック単位で売っているのは、比較の土俵をチップ性能からデータセンターの総コストへ移すためと読める。</div>
+  </details>
+  <details>
+    <summary>なぜ1ヶ月で評価額が倍になったのか？</summary>
+    <div class="qa-a">2026年8月18日に <strong>Jane Street へ初号ラックを納入</strong>し、同日に同社主導で $700M を調達したため。それまでの $1B の受注は「紙の契約」だったが、実物が顧客のデータセンターに入ったことで「本当に納品できるのか」という最後の大きな不確実性が剥がれた。</div>
+  </details>
+  <details>
+    <summary>Jane Street が顧客というのは、良いニュースなのか？</summary>
+    <div class="qa-a">両面ある。高頻度取引の会社はレイテンシに金を払う文化があり、Sohu の得意分野と完全に一致するので<strong>顧客としては筋が良い</strong>。一方で Jane Street は累計 $100M 超を投じた投資家であり、かつ最新ラウンドのリードでもある。<strong>唯一の公表済み納入先が最大の投資家</strong>という構図は、需要の独立した証明にはなっていない。次に見るべきは Jane Street 以外への納入である。</div>
+  </details>
+  <details>
+    <summary>Prod との関係は？</summary>
+    <div class="qa-a">Etched の創業者は、Ben Spector が2021年に MIT・Harvard で立ち上げた学生非営利インキュベーター <strong>Prod</strong> の出身。Prod は株式を取らず、優秀な学生を投資銀行やヘッジファンドの既定路線から引き剥がして起業側に押し出すことを目的にしている。Cursor・Mercor・Etched の3社だけで合計約 $45B。「Harvard を辞めて1ヶ月でベイエリアへ」という速度は、個人の資質だけでなくこのコミュニティの規範が作っている面が大きい。詳しくは <a href="260829_flapping_airplanes_deep_research.html#s5">Flapping Airplanes ページのコラム</a>を参照。</div>
+  </details>
+  <details>
+    <summary>日本企業との関係はあるのか？</summary>
+    <div class="qa-a">公表されている出資・提携・顧客の事例は<strong>ない</strong>。ただし製造は <strong>TSMC の N4P</strong>、メモリは <strong>SK Hynix の HBM3E</strong>（同社は株主でもある）に依存しており、その工程の検査・材料まで遡れば日本企業は間接的に関与している。要するに Etched は「日本と組んでいる会社」ではなく<strong>日本が握る工程の上に乗っている会社</strong>である。</div>
+  </details>
+  <details>
+    <summary>この会社が失敗するとしたらどういう形か？</summary>
+    <div class="qa-a">最も蓋然性が高いのは<strong>量産でつまずく</strong>形。A0 一発成功とギガワット級の量産は全く別の難易度で、2027年の計画は攻撃的すぎる。次に、<strong>Transformer 以外のアーキテクチャが主流化する</strong>形。これは会社の前提そのものが外れるので回復不能に近い。3つ目は、CUDA からの移行コストを顧客が飲まず、<strong>Jane Street のような特殊な顧客の外に広がらない</strong>形。</div>
+  </details>
+</div>
+
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://x.com/Etched/status/2089729087732605282" target="_blank" rel="noopener">@Etched — 初号ラック納入・$700M/$21B の告知（2026/08/18）</a></li>
+    <li><a href="https://techcrunch.com/2026/07/23/ai-chip-startup-etched-defies-skeptics-hits-10-3b-valuation-from-big-name-investors/" target="_blank" rel="noopener">TechCrunch — Series C $300M・$10.3B（2026/07/23）</a></li>
+    <li><a href="https://www.semiconductorreports.com/p/etched-comes-out-of-stealth-again-2026-inference-rack" target="_blank" rel="noopener">Semiconductor Reports — Etched Comes out of Stealth, Again（技術・投資家の詳細）</a></li>
+    <li><a href="https://cryptobriefing.com/etched-sohu-chip-inference-system/" target="_blank" rel="noopener">Crypto Briefing — Sohu チップと初の推論システム発表</a></li>
+    <li><a href="https://www.spheron.network/blog/etched-ai-sohu-vs-nvidia-transformer-asic-inference/" target="_blank" rel="noopener">Spheron — Sohu vs NVIDIA（スペック比較と限界の分析）</a></li>
+    <li><a href="https://www.cnbc.com/2024/06/25/etched-raises-120-million-to-build-chip-to-take-on-nvidia-in-ai.html" target="_blank" rel="noopener">CNBC — Series A $120M（2024/06）</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/etchedai-raises-500m-for-a-5bn-valuation-report/" target="_blank" rel="noopener">DCD — $500M・$5B（2025/12）</a></li>
+    <li><a href="https://americanbazaaronline.com/2026/08/19/how-3-harvard-dropouts-etched-a-20b-company-in-just-4-months-486656/" target="_blank" rel="noopener">American Bazaar — 創業者3人と開発速度（2026/08/19）</a></li>
+    <li><a href="https://www.techtimes.com/articles/325048/20260819/etched-ships-first-rack-jane-street-valuation-doubles-21b-one-month.htm" target="_blank" rel="noopener">TechTimes — 初号ラック納入と$21B（2026/08/19）</a></li>
+    <li><a href="https://www.govtech.com/education/higher-ed/ivy-league-student-groups-help-members-launch-startups-court-vcs" target="_blank" rel="noopener">GovTech — Prod と学生インキュベーターの実態</a></li>
+  </ul>
+  <p style="font-size:11px;color:var(--muted);margin-top:14px">Last updated: 2026-08-29</p>
+</div>
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+</body>
+</html>
