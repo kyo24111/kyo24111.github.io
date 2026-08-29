@@ -294,6 +294,7 @@ main {
 .shoplist.price .s-time { display: block; margin-left: 0; white-space: normal; margin-top: 2px; }
 
 .src {
+  margin-top: 12px;
   font-size: 0.68rem;
   color: var(--dim);
   letter-spacing: 0.03em;
@@ -314,6 +315,18 @@ main {
 }
 .mlink:hover { color: var(--ink); border-bottom-color: var(--ink); }
 
+.actlink {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 9px 16px;
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+}
+.actlink:hover { background: var(--ink); color: var(--bg); }
+
 .move {
   padding: 0 0 0 86px;
   margin: -8px 0 8px;
@@ -332,26 +345,79 @@ footer {
   letter-spacing: 0.04em;
 }
 
-@media (max-width: 560px) {
-  header .inner { padding: 60px 20px 32px; }
-  header h1 { font-size: 2rem; }
-  main { padding: 30px 20px 80px; }
-  #map { height: 280px; }
-  .timeline::before { left: 61px; }
-  .slot > .head { grid-template-columns: 48px 26px 1fr 18px; padding: 17px 0; }
-  .slot .time { font-size: 0.86rem; }
-  .slot .num { margin-left: 3px; width: 20px; height: 20px; line-height: 19px; font-size: 0.64rem; }
-  .slot .arrow { margin-left: 3px; width: 20px; height: 20px; line-height: 18px; font-size: 0.66rem; }
-  .slot .title { font-size: 0.94rem; }
-  .slot .body { padding-left: 74px; }
-  .move { padding-left: 74px; }
+@media (max-width: 640px) {
+  header .inner { padding: 56px 20px 30px; }
+  header h1 { font-size: 2.05rem; }
+  header .kicker { margin-bottom: 16px; }
+  header .route { margin-top: 20px; font-size: 0.68rem; line-height: 1.9; }
+
+  main { padding: 26px 20px 76px; }
+
+  .mapbox { margin-bottom: 26px; }
+  #map { height: 320px; }
+  .maphint { padding: 9px 12px; font-size: 0.66rem; line-height: 1.7; }
+  .hint { font-size: 0.7rem; margin-bottom: 14px; }
+
+  /* 縦線のスパインは畳んで、時刻を見出しの上に置く積み上げ型にする */
+  .timeline::before { display: none; }
+
+  .slot > .head {
+    grid-template-columns: auto auto 1fr 20px;
+    grid-template-areas:
+      "num  time .     mark"
+      "ttl  ttl  ttl   ttl";
+    align-items: center;
+    gap: 0 8px;
+    padding: 16px 0 15px;
+  }
+  .slot .dotcol { grid-area: num; }
+  .slot .time   { grid-area: time; }
+  .slot .title  { grid-area: ttl; }
+  .slot .mark   { grid-area: mark; margin-top: 0; justify-self: end; }
+
+  .slot .time {
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--muted);
+    padding-top: 0;
+  }
+  .slot .num,
+  .slot .arrow {
+    margin-left: 0;
+    width: 19px;
+    height: 19px;
+    line-height: 17px;
+    font-size: 0.6rem;
+  }
+  .slot .title { margin-top: 7px; font-size: 1.02rem; line-height: 1.5; }
+  .slot .sub { margin-top: 4px; }
+  .mlink { margin-left: 5px; padding: 4px 3px; }
+
+  .slot.leg > .head { padding: 13px 0 12px; }
+  .slot.leg .title { font-size: 0.9rem; margin-top: 5px; }
+
+  .slot .body { padding: 2px 0 20px; }
+  .slot .body ul.items { padding-left: 13px; }
+
+  .move { padding-left: 0; margin: -4px 0 6px; font-size: 0.66rem; }
+
+  .card { padding: 14px 15px; }
+  .shoplist li { padding: 9px 12px; }
+  .shoplist .flr { padding: 7px 12px; }
+  .shoplist .s-time { margin-left: auto; }
+  .src { line-height: 1.8; }
+
+  footer { margin-top: 30px; }
 }
 
-@media (max-width: 400px) {
-  .slot .body { padding-left: 0; }
-  .move { padding-left: 0; }
-  .shoplist .s-time { margin-left: 0; width: 100%; }
+@media (max-width: 360px) {
+  header h1 { font-size: 1.8rem; }
+  main { padding: 24px 16px 70px; }
+  .slot .title { font-size: 0.96rem; }
+  .mlink { margin-left: 6px; }
 }
+
 </style>
 </head>
 <body>
@@ -489,7 +555,7 @@ footer {
             <dt class="mono">Tel</dt>
             <dd>043-307-3826</dd>
           </dl>
-          <a class="mlink mono" href="https://beauty.hotpepper.jp/CSP/kr/reserve/?storeId=H000641797&amp;ch=5&amp;vos=cpshbkprocap0140516001" target="_blank" rel="noopener" style="margin-left:0">（予約する）</a>
+          <a class="actlink mono" href="https://beauty.hotpepper.jp/CSP/kr/reserve/?storeId=H000641797&amp;ch=5&amp;vos=cpshbkprocap0140516001" target="_blank" rel="noopener">予約する →</a>
         </div>
 
         <div class="shoplist price">
@@ -644,7 +710,8 @@ footer {
       });
   });
 
-  map.fitBounds(L.latLngBounds(pts), { padding: [34, 34] });
+  var mp = window.innerWidth < 640 ? 24 : 34;
+  map.fitBounds(L.latLngBounds(pts), { padding: [mp, mp] });
 </script>
 
 </body>
