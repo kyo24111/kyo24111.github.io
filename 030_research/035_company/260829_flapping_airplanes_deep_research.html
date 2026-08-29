@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flapping Airplanes — 「データ効率1000倍」に賭ける25歳のAGIラボ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .qa summary::after{content:'+';margin-left:auto;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem}
+  .qa details[open] summary::after{content:'\2212'}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">Frontier AI Lab</span>
+    <span class="badge badge-white">Private</span>
+    <span class="badge badge-solid">Data Efficiency</span>
+  </div>
+  <h1>Flapping Airplanes</h1>
+  <p class="hero-sub">
+    「今のシステムは巨大なボーイング787だ。我々は鳥を作ろうとしているわけではない」——
+    スケーリング一辺倒のAI業界に対し、<strong>データ効率1000倍</strong>という一点だけを狙って
+    2025年に立ち上がった研究ラボ。創業者は25歳と26歳の兄弟、そして元Neuralinkのthielフェロー。
+    プロダクトも売上もないまま、シードで $180M・評価額 $1.5B、その半年後には $5B での調達交渉が報じられた。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$180M</div><div class="lbl">Seed (Jan 2026)</div></div>
+    <div class="kpi"><div class="val">$1.5B</div><div class="lbl">Seed Valuation</div></div>
+    <div class="kpi"><div class="val">$5B</div><div class="lbl">Reported Talks (Jul 2026)</div></div>
+    <div class="kpi"><div class="val">2025</div><div class="lbl">Founded</div></div>
+    <div class="kpi"><div class="val">SF</div><div class="lbl">Headquarters</div></div>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#s1">Overview</a></li>
+    <li><a href="#s2">社名の由来 — なぜ「羽ばたく飛行機」なのか</a></li>
+    <li><a href="#s3">Thesis — データ効率という一点賭け</a></li>
+    <li><a href="#s4">Founders</a></li>
+    <li><a href="#s5">Prod — $50B超を生んだ学生インキュベーター</a></li>
+    <li><a href="#s6">Funding &amp; Investors</a></li>
+    <li><a href="#s7">Hiring — 「博士号は2つも要らない」</a></li>
+    <li><a href="#s8">競合地図 — Frontier vs Insurgent</a></li>
+    <li><a href="#s9">Timeline</a></li>
+    <li><a href="#s10">Risks &amp; Open Questions</a></li>
+    <li><a href="#s11">Valuation分析（NFA）</a></li>
+    <li><a href="#s12">Q&amp;A</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="s1">
+  <div class="sec-label"><span class="num">1</span> Overview</div>
+  <h2>プロダクトを1つも出さずに $5B と言われているラボ</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Company</div><div class="v">Flapping Airplanes</div></div>
+    <div class="kv-item"><div class="k">Founded</div><div class="v">2025年（公式ローンチ 2026/01/28）</div></div>
+    <div class="kv-item"><div class="k">Headquarters</div><div class="v">San Francisco, CA</div></div>
+    <div class="kv-item"><div class="k">Category</div><div class="v">Foundational AI research lab</div></div>
+    <div class="kv-item"><div class="k">Founders</div><div class="v">Ben Spector / Asher Spector / Aidan Smith</div></div>
+    <div class="kv-item"><div class="k">Total Raised</div><div class="v">$180M（Seed, 1 round）</div></div>
+    <div class="kv-item"><div class="k">Valuation</div><div class="v">$1.5B（2026/01）→ $5B（2026/07 報道・交渉中）</div></div>
+    <div class="kv-item"><div class="k">Revenue</div><div class="v">なし（商用化していない）</div></div>
+    <div class="kv-item"><div class="k">Products Shipped</div><div class="v">なし（2026年前半時点）</div></div>
+    <div class="kv-item"><div class="k">Headcount</div><div class="v">公開DB上は一桁台。実態は非公開の小規模チーム</div></div>
+  </div>
+  <p>
+    Flapping Airplanes は、AIの<strong>データ効率（data efficiency）</strong>という単一の問題だけを解くために作られた研究ラボである。
+    現在のフロンティアモデルは「人類の知識の総体」を丸ごと学習に使う。一方で人間は、その何桁も少ないデータで言語と推論を獲得する。
+    ならば<strong>まだ発見されていない学習パラダイムが存在するはずだ</strong>——という一点に賭けている。
+  </p>
+  <p>
+    特異なのは、この会社が<strong>製品も売上もベンチマークスコアも持たないまま</strong>、
+    Sequoia・Index Ventures・GV という一線級のVCから $180M を調達し、半年後には3倍超の評価額での追加調達が報じられている点だ。
+    投資対象は事実上「創業者の質」と「テーゼの差別性」のみである。
+  </p>
+  <div class="callout">
+    <strong>Sequoia の David Cahn による形容：</strong>“a young person’s AGI lab”（若者版のAGIラボ）。
+    創業者は25歳と26歳、採用しているのは学部生・高校生・オリンピアドのメダリスト。
+    「実績ある研究者」ではなく「まだ既存パラダイムに染まっていない頭脳」を意図的に集めている。
+  </div>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sec-label"><span class="num">2</span> 社名の由来</div>
+  <h2>「鳥を作りたいわけではない」——生物模倣でも純粋工学でもない第三の立ち位置</h2>
+  <p>
+    AI業界には長く続く比喩がある。「飛行機は鳥のように羽ばたかない。だから知能も脳を模倣する必要はない」というものだ。
+    スケーリング派の標準的な立場であり、実際 Transformer は脳に似ていない。
+  </p>
+  <p>
+    Ben Spector の説明はこの比喩を正面から捻る。
+  </p>
+  <div class="callout">
+    「今のシステムは<strong>大きなボーイング787</strong>だと思ってほしい。我々は<strong>鳥を作ろうとしているわけではない</strong>」
+  </div>
+  <p>
+    つまり彼らの立ち位置は、鳥（生物の完全模倣）でも787（純粋なスケーリング）でもない。
+    生物から着想は得るが、シリコンという別の物理制約に合わせて作り直す——その中間物が
+    <strong>「羽ばたく飛行機（flapping airplane）」</strong>である。
+    脳は模倣の対象ではなく、<strong>「別のアルゴリズムが存在しうる」ことの存在証明（existence proof）</strong>として扱われる。
+  </p>
+  <p>
+    社名がそのまま研究方針の宣言になっており、かつ「変なことをやる」という自己申告にもなっている。
+    ラボの名前としてはかなり自覚的な設計だと言える。
+  </p>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sec-label"><span class="num">3</span> Thesis</div>
+  <h2>「ボトルネックは計算ではなくデータだ」</h2>
+  <p>
+    Sequoia が投資理由に挙げた一文が、このラボのテーゼを最も端的に表している——
+    <strong>“data is the bottleneck today to further AI scaling, not compute”</strong>。
+    業界の資本が GPU クラスタとデータセンターに集中している最中に、真逆の側にボトルネックがあると賭けている。
+  </p>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">1</div>
+      <div>
+        <div class="ind-title">狙いはインクリメンタルではなく1000倍</div>
+        <div class="ind-desc">Asher Spector：「我々は<strong>データ効率で1000倍の勝ち</strong>を探している。漸進的な改善を狙っているのではない」。10%や2倍の改善であれば既存ラボの内部最適化で潰される。桁で違う勝ち方でなければ、独立したラボとして存在する意味がないという整理。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">2</div>
+      <div>
+        <div class="ind-title">「インターネット全部が必要なはずがない」</div>
+        <div class="ind-desc">人間は数年間の限られた入力で言語と推論を獲得する。人間並みの知能を得るためにウェブ全体を消費しなければならない、という現状は<strong>アルゴリズムの欠陥の証拠</strong>であって自然法則ではない、という読み。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">3</div>
+      <div>
+        <div class="ind-title">逆説 — 根本研究のほうが「安い」</div>
+        <div class="ind-desc">通常、フロンティア研究は巨額の計算資源を要すると思われている。だが彼らの主張は逆で、<strong>過激なアーキテクチャ案は小規模ですぐ失敗するので検証が速く安い</strong>。大規模スケーリング実験に金を払うのは、既存パラダイムを磨く側のコストである。$180M で数年戦えるという資金設計はここから来ている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">4</div>
+      <div>
+        <div class="ind-title">単一手法に縛られない</div>
+        <div class="ind-desc">創業時点で技術的アプローチを1つに固定しないことを明言している。特定アーキテクチャの会社ではなく、<strong>問題に対して張った会社</strong>という設計。射程は5〜10年。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">5</div>
+      <div>
+        <div class="ind-title">出口として想定する応用</div>
+        <div class="ind-desc">データ効率が桁で改善した場合に最初に効くのは、<strong>データが希少な領域</strong>——ロボティクス、科学的発見、そして学習データが揃わないエンタープライズ用途。言語モデルの延長線ではなく、これまで機械学習が届かなかった領域が開くという読み方をしている。</div>
+      </div>
+    </div>
+  </div>
+  <div class="warn-box">
+    <div class="w-title">テーゼの裏側にあるリスク（本人たちも認めている）</div>
+    <ul>
+      <li>Aidan Smith：「<b>本当に過激なことをやりたい。そして過激なことは、たいてい既存パラダイムより単純に悪い</b>」</li>
+      <li>Asher Spector：「<b>タイムラインは出せない。我々は答えを持っていない。真実を探しているだけだ</b>」</li>
+      <li>David Cahn（Sequoia）自身も「計算資源派が正しくて、狂ったようなサーバー建設以外に注力するのは無意味、という可能性はある」と書いている</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sec-label"><span class="num">4</span> Founders</div>
+  <h2>兄弟 ＋ 元Neuralink</h2>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>Name</th><th>Age</th><th>Background</th><th>Role</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>Ben Spector</td>
+        <td>25</td>
+        <td>ニューヨーク出身。MIT で CS＋数学 学士 → CS 修士。Stanford CS 博士課程（指導教員 <strong>Chris Ré</strong> / Hazy Research）を経て離脱。<strong>Hertz Fellow（2023）</strong>。学部時代から VLDB・NeurIPS で発表し、APS プラズマ物理部会でも計算物理の発表歴。GPUカーネルDSL <strong>ThunderKittens</strong>（ICLR 2025）の主著者。</td>
+        <td>Co-founder / CEO</td>
+      </tr>
+      <tr>
+        <td>Asher Spector</td>
+        <td>26</td>
+        <td>Ben の兄。<strong>Stanford 統計学 PhD 修了</strong>。<strong>北米ディベート王者</strong>。Ben のビジョン先行型の思考を、構造的推論と統計的厳密さで裏打ちする役回りと評される。</td>
+        <td>Co-founder</td>
+      </tr>
+      <tr>
+        <td>Aidan Smith</td>
+        <td>—</td>
+        <td><strong>Thiel Fellow</strong>。Georgia Tech 在学中に <strong>Neuralink で3年間</strong> 研究に従事。過去に自ら会社を創業した経験も持つ。Index Ventures は「伝染するエネルギーと誠実さ」と評した。</td>
+        <td>Co-founder</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>Ben Spector の実体は「システムとMLの境界の実装者」：</strong>
+    ThunderKittens は warp 単位の 16×16 タイルを基本データ構造に置き、PyTorch のような記法で高速GPUカーネルを書けるようにした埋め込みDSL。
+    Blackwell 対応版では H100 の cuBLAS GEMM に対し最大2倍。Apple Silicon 移植の ThunderMittens、AMD 向け HipKittens、
+    マルチGPU 向け ParallelKittens、Llama-3.2-1B を極限まで低レイテンシで回す「メガカーネル」まで一連の仕事がある。
+    <strong>「小規模で速く回して速く失敗させる」という Flapping Airplanes の戦略は、この出自と地続きである。</strong>
+  </div>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sec-label"><span class="num">5</span> Prod</div>
+  <h2>創業前史 — $50B超の企業群を生んだ「秘密結社」</h2>
+  <p>
+    Ben Spector が Flapping Airplanes 以前に作ったものが <strong>Prod</strong> である。
+    2021年に MIT・Harvard で立ち上がった<strong>学生運営の非営利インキュベーター</strong>で、
+    株式を一切取らずに、メンタリング・ハッカソン・定例会・ディナー・ワークショップを通じて
+    「卒業する学生を、面白くて意味のあることに人生を賭ける側へ引きずり込む」ことを目的にしている。
+  </p>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>項目</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>設立</td><td>2021年（MIT / Harvard、のちに Stanford の学部生も対象）</td></tr>
+      <tr><td>形態</td><td>学生運営の非営利。<strong>エクイティを取らない</strong></td></tr>
+      <tr><td>関与企業</td><td><strong>Cursor / Mercor / Etched / Decart / Decagon</strong> ほか</td></tr>
+      <tr><td>卒業企業の合計評価額</td><td><strong>$50B 超</strong></td></tr>
+      <tr><td>Ben 在籍時のコホート調達額</td><td>$25M（初期の公表値）</td></tr>
+      <tr><td>評判</td><td>一部の投資家から「<strong>secret society（秘密結社）</strong>」と呼ばれ、大学発の起業エコシステムで最も影響力のある組織のひとつと評される</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p>
+    ここが Flapping Airplanes の資金調達を理解する鍵になる。Ben は「まだ有名でない段階の人材を見抜き、集め、動かす」ことを
+    <strong>すでに一度、検証可能な形で証明している</strong>。VC が張っているのは技術シーズではなく、この
+    <strong>タレント・アグリゲーション能力</strong>のほうだと読むのが自然である。
+  </p>
+</div>
+
+<div class="sec" id="s6">
+  <div class="sec-label"><span class="num">6</span> Funding &amp; Investors</div>
+  <h2>$180M シード → 半年で $5B の交渉へ</h2>
+  <div class="f-stack">
+    <div class="f-card">
+      <div class="r-badge">Seed</div>
+      <div class="f-detail">
+        <div class="f-date">2026年1月</div>
+        <div class="f-amount">$180M / Valuation $1.5B</div>
+        <div class="f-desc">
+          <strong>Sequoia Capital（David Cahn）・Index Ventures・GV（Dave Munichiello）</strong>が共同リード、
+          <strong>Menlo Ventures</strong> も参加。1月28日に3社が同時にブログを公開して公式ローンチ。
+          製品・売上・公開ベンチマークのいずれもない状態での調達。
+        </div>
+      </div>
+    </div>
+    <div class="f-card">
+      <div class="r-badge">交渉中</div>
+      <div class="f-detail">
+        <div class="f-date">2026年7月末（報道）</div>
+        <div class="f-amount">数億ドル規模 / Valuation $5B</div>
+        <div class="f-desc">
+          Forbes 報道。<strong>Index Ventures と Lux Capital がリード</strong>、<strong>GV・Kleiner Perkins</strong> が参加。
+          シードから約6ヶ月で<strong>評価額3倍超</strong>。
+          <strong>本ページ作成時点（2026/08/29）でクローズの公式発表は確認できていない。</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>Investor</th><th>Round</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>Sequoia Capital</td><td>Seed（co-lead）</td><td>担当は David Cahn。“young person’s AGI lab” という形容の発信源。AIインフラ投資の是非を論じた「$600B question」で知られる</td></tr>
+      <tr><td>Index Ventures</td><td>Seed（co-lead）／新ラウンド lead</td><td>2ラウンド連続でリード。継続的な強い確信を示すシグナル</td></tr>
+      <tr><td>GV (Google Ventures)</td><td>Seed（co-lead）／新ラウンド参加</td><td>Dave Munichiello が執筆。「次の飛躍はより大きなクラスタからは来ない」という論調</td></tr>
+      <tr><td>Menlo Ventures</td><td>Seed（参加）</td><td>—</td></tr>
+      <tr><td>Lux Capital</td><td>新ラウンド（lead・報道）</td><td>ディープテック／逆張り志向で知られる</td></tr>
+      <tr><td>Kleiner Perkins</td><td>新ラウンド（参加・報道）</td><td>—</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>読み筋：</strong>シードで3社が共同リードするのは異例で、通常は1社が主導権を取る。
+    それを許してでも入りたい枠だったこと、そして<strong>Index が次ラウンドでも再びリードを取っている</strong>ことは、
+    外部から見える数少ない「中で何かが起きている」シグナルである（研究成果自体は非公開のため）。
+  </div>
+</div>
+
+<div class="sec" id="s7">
+  <div class="sec-label"><span class="num">7</span> Hiring</div>
+  <h2>「博士号は2つも要らない」——反・資格主義の採用</h2>
+  <p>
+    このラボで最も模倣困難なのは技術ではなく採用方針かもしれない。
+    彼らは<strong>既存のスケーリング・パラダイムに深く適応した人材を意図的に避ける</strong>。
+  </p>
+  <div class="ind-list">
+    <div class="ind-item">
+      <div class="ind-num">A</div>
+      <div>
+        <div class="ind-title">対象は「まだ染まっていない頭脳」</div>
+        <div class="ind-desc">学部生、さらには<strong>高校生</strong>まで採用対象に含める。チームには <strong>IMO（数学）・IOI（情報）・IPhO（物理）のメダリスト</strong>、および<strong>全米ディベート王者</strong>が含まれると報じられている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">B</div>
+      <div>
+        <div class="ind-title">評価軸は創造性</div>
+        <div class="ind-desc">Ben の基準は「一緒に時間を過ごすと<strong>自分が何か新しいことを教わる</strong>人かどうか」。経験年数や在籍ラボではない。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">C</div>
+      <div>
+        <div class="ind-title">売り文句は「博士課程の理想形」</div>
+        <div class="ind-desc">Sequoia の表現では、提供しているのは <strong>“a Ph.D.-like experience — true research independence, long-time horizons”</strong>。アカデミアから生の才能を引き抜くための商品設計そのものが、報酬ではなく<strong>研究の自由と長い時間軸</strong>になっている。</div>
+      </div>
+    </div>
+    <div class="ind-item">
+      <div class="ind-num">D</div>
+      <div>
+        <div class="ind-title">Avengers 型の編成</div>
+        <div class="ind-desc">Index の表現では「特定のスーパーパワーごとに採る」編成。世界水準の研究者と、突出した新人をペアで組ませる。</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sec-label"><span class="num">8</span> 競合地図</div>
+  <h2>Frontier labs との「非競合」というポジショニング</h2>
+  <p>
+    Flapping Airplanes は OpenAI / Anthropic / Google DeepMind と同じ土俵には立っていない。
+    出荷された能力（shipped capability）で正面から競っておらず、
+    <strong>「スケーリングが行き詰まったときの保険」</strong>としての位置づけに近い。
+  </p>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>Lab</th><th>基本戦略</th><th>Flapping Airplanes との関係</th></tr></thead>
+    <tbody>
+      <tr><td>OpenAI / Anthropic / Google DeepMind</td><td>スケール＋製品化。巨大クラスタと膨大なデータ</td><td>正面衝突はしていない。むしろ「彼らが正しければ我々は不要」という関係</td></tr>
+      <tr><td>Thinking Machines Lab</td><td>元OpenAI幹部による研究先行ラボ。巨額調達</td><td><strong>最も近い同類（insurgent lab）</strong>。ただし人材は「実績あるスター研究者」型で、こちらの「無名の若手」型とは真逆</td></tr>
+      <tr><td>Reflection AI / Magic ほか</td><td>特定領域での差別化を狙う新興ラボ</td><td>資本規模・注目度で同じ層</td></tr>
+      <tr><td>Stanford AI Lab / MIT CSAIL</td><td>アカデミア</td><td><strong>人材獲得の直接の競合</strong>。「博士課程の理想形」を売っている以上、比較対象はVCではなく大学院である</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>本質的な競合はデータ効率を研究している他ラボではなく、「スケールし続ければ届く」という業界の既定路線そのもの。</strong>
+    もしスケーリングが素直に続いてAGIに到達するなら、このラボの存在意義は消える。逆にスケーリングが壁に当たった瞬間、
+    数少ない「別の道を数年かけて掘っていた組織」として一気に価値が跳ねる。<strong>構造的にはオプションの買い持ちに近い。</strong>
+  </div>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sec-label"><span class="num">9</span> Timeline</div>
+  <h2>沿革</h2>
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2021</span><span class="tl-title">Prod 設立</span></div>
+        <div class="tl-body">Ben Spector が MIT／Harvard で学生運営の非営利インキュベーターを立ち上げ。のちに <b>Cursor・Mercor・Etched・Decart</b> などの初期形成に関与し、卒業企業の合計評価額は <b>$50B 超</b> に。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2023</span><span class="tl-title">Hertz Fellow 選出</span></div>
+        <div class="tl-body">Ben が Fannie and John Hertz Foundation のフェローに。Stanford で <b>Chris Ré</b> のもと、システム × ML の研究に従事。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2024–2025</span><span class="tl-title">ThunderKittens 系の仕事</span></div>
+        <div class="tl-body">GPUカーネルDSL <b>ThunderKittens</b>（ICLR 2025）、fp8対応、Apple Silicon 移植の <b>ThunderMittens</b>、AMD向け <b>HipKittens</b>、Llama-1B の低レイテンシ<b>メガカーネル</b>。GPU最適化コミュニティで名前が通る。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2025</span><span class="tl-title">Flapping Airplanes 創業</span></div>
+        <div class="tl-body">Ben・Asher 兄弟と Aidan Smith が創業。Ben は Stanford の博士課程を離脱（GitHub の自己紹介は現在 “a pilot and former grad student”）。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026/01/28</span><span class="tl-title">$180M シードで公式ローンチ</span></div>
+        <div class="tl-body">Sequoia・Index・GV が同日にブログを公開。評価額 <b>$1.5B</b>。Menlo Ventures も参加。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026/02/16</span><span class="tl-title">TechCrunch インタビュー</span></div>
+        <div class="tl-body">創業3人が方針を公開で語る。「1000倍のデータ効率」「根本研究のほうが安い」「博士号は2つも要らない」など、現時点で最も情報量のある一次情報。</div>
+      </div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-dot filled"></div>
+      <div class="tl-content">
+        <div class="tl-header"><span class="tl-date">2026/07/31</span><span class="tl-title">$5B での調達交渉が報道</span></div>
+        <div class="tl-body">Forbes。<b>Index Ventures・Lux Capital</b> がリード、GV・Kleiner Perkins が参加。数億ドル規模。<b>半年で評価額3倍超。</b></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="s10">
+  <div class="sec-label"><span class="num">10</span> Risks &amp; Open Questions</div>
+  <h2>この賭けが外れる筋</h2>
+  <div class="warn-box">
+    <div class="w-title">Risks</div>
+    <ul>
+      <li><b>検証不能性：</b>研究成果が非公開で、論文もモデルもベンチマークも出ていない。外部から進捗を測る手段が事実上ゼロ。評価額は「創業者の質」だけで動いている。</li>
+      <li><b>スケーリングが素直に効き続ける：</b>Cahn 自身が認めるとおり、計算資源派が正しい可能性は消えていない。その場合このラボの存在意義は薄れる。</li>
+      <li><b>「過激な案はたいてい悪い」：</b>Aidan の自己申告どおり、探索空間が広いぶん外れ続けるリスクが構造的に高い。ヒット率ではなく1発の大きさに賭けている。</li>
+      <li><b>タイムライン無し：</b>本人たちが期限を明言していない。数年後も何も出ないまま次の調達が必要になる可能性。</li>
+      <li><b>若さの裏返し：</b>25歳・26歳・学部生中心の組織で、大規模化と長期プロジェクト管理の実績はまだない。オペレーションの規律は未検証。</li>
+      <li><b>人材流出：</b>採った才能が有名になるほど、フロンティアラボからの高額オファーに晒される。研究の自由と長い時間軸だけで何年繋ぎ止められるか。</li>
+      <li><b>評価額の先行：</b>売上ゼロで $5B は、AIラボのプレミアムがフルに乗った価格。市況が冷えたときの下方リスクが大きい。</li>
+    </ul>
+  </div>
+  <div class="warn-box">
+    <div class="w-title">Open Questions</div>
+    <ul>
+      <li>$5B ラウンドは実際にクローズしたのか（2026/08 時点で公式発表なし）</li>
+      <li>技術的アプローチの中身。ニューロサイエンス由来なのか、新しい目的関数なのか、アーキテクチャなのかが一切開示されていない</li>
+      <li>実際のヘッドカウントと、誰を採ったのか（既存ラボからの引き抜きはあるのか）</li>
+      <li>「データ効率1000倍」をどう測るのか。評価指標の定義自体が未公開</li>
+      <li>商用化の形。ライセンスか、自社製品か、ロボティクス等への垂直展開か</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec" id="s11">
+  <div class="sec-label"><span class="num">11</span> Valuation分析（NFA）</div>
+  <h2>何に対して $5B を払っているのか</h2>
+  <p>
+    非上場・売上ゼロ・プロダクトゼロなので、通常のバリュエーション手法は一切効かない。
+    この価格は<strong>3つの要素の合成</strong>と読むのが妥当である。
+  </p>
+  <div class="t-wrap">
+  <table class="t">
+    <thead><tr><th>価格の構成要素</th><th>中身</th><th>評価</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>タレント・アグリゲーション</td>
+        <td>Prod で $50B 超のエコシステムを生んだ実績。「無名のうちに才能を見抜いて集める」能力の再現性</td>
+        <td>ここが最も実証済み。<strong>価格の主成分はここだと考えるのが自然</strong></td>
+      </tr>
+      <tr>
+        <td>逆張りオプション</td>
+        <td>スケーリングが壁に当たった場合にだけ跳ねる、非対称なペイオフ</td>
+        <td>失敗確率は高いが、当たったときの倍率が極端。ポートフォリオのヘッジとして機能する</td>
+      </tr>
+      <tr>
+        <td>AIラボ・プレミアム</td>
+        <td>2025–2026年の市況で「フロンティアラボ」ラベルに乗っている一般的な上乗せ</td>
+        <td>最も脆い部分。市況が変われば真っ先に剥がれる</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="callout">
+    <strong>見方：</strong>これは「技術に張った投資」ではなく「<strong>人と、パラダイム転換の保険に張った投資</strong>」である。
+    半年で3倍という値動きも、事業進捗ではなく <em>他のVCも同じ保険を買いたがった</em> ことの結果と解釈するほうが整合する。
+    したがって次の重要イベントは売上でも製品でもなく、<strong>最初の研究成果の公開</strong>と<strong>主要な人材の出入り</strong>である。
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-top:16px">
+    ※ Not Financial Advice。非上場企業であり、記載の評価額は報道ベース。個人が直接投資できる対象ではない。
+  </p>
+</div>
+
+<div class="sec qa" id="s12">
+  <div class="sec-label"><span class="num">12</span> Q&amp;A</div>
+  <h2>事業理解のための問答</h2>
+  <details>
+    <summary>結局この会社は何を作っているのか？</summary>
+    <p>2026年前半時点で<strong>何も出していない</strong>。プロダクトもモデルも公開論文もない。やっているのは「今のAIより桁違いに少ないデータで学習させる方法」の基礎研究のみで、成果は非公開。この状態で $180M を調達し $5B の交渉に入っているという事実そのものが、この会社の特異性である。</p>
+  </details>
+  <details>
+    <summary>なぜ「データ効率」なのか。計算資源ではないのか？</summary>
+    <p>業界の資本の大半が GPU とデータセンターに向かっている。彼らの主張は「ボトルネックは計算ではなくデータ」。人間は圧倒的に少ない入力で言語と推論を獲得するのに、モデルはウェブ全体を必要とする——その差分は<strong>アルゴリズムの欠陥</strong>であって物理法則ではない、という読み。ここが正しければ、必要な計算資源も同時に激減する。</p>
+  </details>
+  <details>
+    <summary>なぜ研究ラボなのに資金が「安く済む」と言えるのか？</summary>
+    <p>過激なアーキテクチャの案は、小規模な実験ですぐ失敗するから。大規模スケーリング実験に何億ドルも払うのは、既存パラダイムを最後の一滴まで絞る側のコストであって、根本から違う案を試す側ではない、という整理。ただしスケールは「検証の道具箱の一つ」として残している。</p>
+  </details>
+  <details>
+    <summary>なぜ高校生や学部生を採るのか？</summary>
+    <p>「既存パラダイムに染まっていない」ことを積極的な資産として扱っているから。Ben の採用基準は「一緒にいると自分が何か新しいことを教わる人か」。提供しているのは高給ではなく<strong>「博士課程の理想形」——真の研究独立性と長い時間軸</strong>で、つまり採用上の競合はフロンティアラボというより大学院である。</p>
+  </details>
+  <details>
+    <summary>社名の「羽ばたく飛行機」はどういう意味？</summary>
+    <p>AI業界の古典的比喩「飛行機は鳥のように羽ばたかない＝知能も脳を模倣しなくていい」を捻ったもの。Ben の説明は「今のシステムは大きなボーイング787。我々は鳥を作ろうとしているわけではない」。生物から着想を得つつシリコンの制約に合わせて作り直す中間物、というポジション宣言になっている。脳は模倣対象ではなく「別のアルゴリズムが存在しうる」ことの<strong>存在証明</strong>として扱われる。</p>
+  </details>
+  <details>
+    <summary>Prod とは何で、なぜ重要なのか？</summary>
+    <p>Ben が2021年に MIT／Harvard で立ち上げた学生運営の非営利インキュベーター。エクイティを取らず、メンタリングとイベントで学生を起業側に引き込む。Cursor・Mercor・Etched・Decart・Decagon などの初期形成に関与し、<strong>卒業企業の合計評価額は $50B 超</strong>。一部投資家から「秘密結社」と呼ばれる。VC が張っているのは技術シーズよりこの<strong>タレント・アグリゲーション能力の再現性</strong>だと読むのが自然。</p>
+  </details>
+  <details>
+    <summary>$5B のラウンドはもうクローズしたのか？</summary>
+    <p><strong>本ページ作成時点（2026/08/29）では未確認。</strong>2026年7月31日の Forbes 報道で「Index Ventures と Lux Capital がリードし、GV・Kleiner Perkins が参加、数億ドル規模、評価額 $5B で交渉中」と報じられた段階。公式発表は出ていない。</p>
+  </details>
+  <details>
+    <summary>この会社が失敗するとしたらどういう形か？</summary>
+    <p>最も蓋然性が高いのは「スケーリングが素直に効き続け、数年後も何も出せないまま資金が尽きる」形。Sequoia の David Cahn 自身が「計算資源派が正しい可能性はある」と書いている。次に、採った才能がフロンティアラボの高額オファーで抜けていく形。研究の自由と長い時間軸だけで何年繋ぎ止められるかは未検証。</p>
+  </details>
+  <details>
+    <summary>日本から見て、何が学べるか？</summary>
+    <p>2点ある。①<strong>資本の使い方</strong>——製品も売上もない基礎研究に $180M が付くのは、テーゼの差別性と創業者の人材集約実績だけで価格が付く市場が存在するから。②<strong>採用の設計</strong>——「実績ある研究者」ではなく「まだ染まっていない頭脳」に、金ではなく<strong>研究の自由と長い時間軸</strong>を売る。日本で同種の人材を採る場合にも、報酬以外の通貨で戦えることを示す実例になっている。</p>
+  </details>
+</div>
+
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://sequoiacap.com/article/partnering-with-flapping-airplanes" target="_blank" rel="noopener">Sequoia Capital — Partnering With Flapping Airplanes（2026/01/28）</a></li>
+    <li><a href="https://www.indexventures.com/perspectives/taking-flight-our-investment-in-flapping-airplanes/" target="_blank" rel="noopener">Index Ventures — Taking Flight（2026/01/28）</a></li>
+    <li><a href="https://www.gv.com/news/why-we-invested-in-flapping-airplanes" target="_blank" rel="noopener">GV — Better Wings: Why We Invested in Flapping Airplanes（2026/01/28）</a></li>
+    <li><a href="https://techcrunch.com/2026/02/16/flapping-airplanes-on-the-future-of-ai-we-want-to-try-really-radically-different-things/" target="_blank" rel="noopener">TechCrunch — インタビュー（2026/02/16）</a></li>
+    <li><a href="https://www.forbes.com/sites/rashishrivastava/2026/07/31/ai-startup-flapping-airplanes-is-in-talks-to-raise-funding-at-a-5-billion-valuation/" target="_blank" rel="noopener">Forbes — $5B での調達交渉報道（2026/07/31）</a></li>
+    <li><a href="https://www.hertzfoundation.org/people/benjamin-spector/" target="_blank" rel="noopener">Hertz Foundation — Benjamin Spector</a></li>
+    <li><a href="https://arxiv.org/abs/2410.20399" target="_blank" rel="noopener">arXiv:2410.20399 — ThunderKittens: Simple, Fast, and Adorable AI Kernels</a></li>
+    <li><a href="https://hazyresearch.stanford.edu/blog/2025-05-27-no-bubbles" target="_blank" rel="noopener">Hazy Research — Low-Latency Megakernel for Llama-1B</a></li>
+    <li><a href="https://flappingairplanes.com/" target="_blank" rel="noopener">Flapping Airplanes 公式サイト</a></li>
+    <li><a href="https://github.com/benjaminfspector" target="_blank" rel="noopener">GitHub — benjaminfspector</a></li>
+  </ul>
+  <p style="font-size:11px;color:var(--muted);margin-top:14px">Last updated: 2026-08-29</p>
+</div>
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+</body>
+</html>

@@ -15,3 +15,4 @@
 | ファイル | 企業 | セクター | 調査日 |
 |--------|------|---------|--------|
 | [260417_kobold_metals_deep_research.html](260417_kobold_metals_deep_research.html) | KoBold Metals | AI × クリティカルミネラル探索 | 2026-04-17 |
+| [260829_flapping_airplanes_deep_research.html](260829_flapping_airplanes_deep_research.html) | Flapping Airplanes | AI基礎研究（データ効率） | 2026-08-29 |
