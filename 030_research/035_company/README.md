@@ -33,6 +33,21 @@
 - 開いた状態は「背景=白 / 枠線=黒」に変わる。閉じている間はグレーカード。
 - 640px以下では回答の左インデントを 48px → 18px に落とす（@media に記載済み）。
 
+### 創業者プロフィール（.person）
+創業者は**このページ内に細かく書く**のが既定。`033_legend/` に本人ページがある場合だけ、
+そちらへ `../033_legend/<name>.html` で飛ばす（例：Peter Thiel）。
+
+```html
+<div class="person">
+  <div class="p-head"><span class="p-name">名前</span><span class="p-role">Co-founder / CEO</span></div>
+  <div class="p-line">年齢／出身／学歴の一行サマリ</div>
+  <ul>
+    <li><b>見出し：</b>本文。高校時代→大学→前職→現職の順に、<b>固有名詞と数字</b>で書く</li>
+  </ul>
+  <div class="p-quote">本人の発言か、第三者の評</div>
+</div>
+```
+
 ### コラム
 本文の途中に挿し込む読み物ブロックは `.col-box`。`<span class="col-lbl">Column</span>` + `<h3>` +
 小見出し `.col-sub` + 引用 `blockquote` + 数字グリッド `.col-num` で構成する。
