@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aug 30th</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff;
+  --panel: #f7f7f5;
+  --line: #e8e8e8;
+  --ink: #111111;
+  --muted: #555555;
+  --dim: #888888;
+}
+
+body {
+  font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.9;
+  -webkit-font-smoothing: antialiased;
+}
+
+.mono { letter-spacing: 0.04em; }
+
+/* ===== header ===== */
+header { background: #111111; color: #ffffff; }
+header .inner {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 76px 24px 40px;
+}
+header .kicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+header h1 {
+  font-size: 2.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+header .lead {
+  font-size: 0.9rem;
+  color: #cccccc;
+  font-weight: 300;
+}
+header .route {
+  margin-top: 24px;
+  font-size: 0.72rem;
+  color: #999999;
+  letter-spacing: 0.06em;
+  line-height: 1.8;
+}
+
+/* ===== main ===== */
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 40px 24px 100px;
+}
+
+.hint {
+  font-size: 0.74rem;
+  color: var(--dim);
+  letter-spacing: 0.04em;
+  margin-bottom: 20px;
+}
+
+/* ===== map ===== */
+.mapbox {
+  border: 1px solid var(--line);
+  margin-bottom: 34px;
+}
+#map {
+  height: 340px;
+  width: 100%;
+  background: var(--panel);
+}
+.leaflet-container { font-family: inherit; }
+.pin {
+  background: var(--ink);
+  color: #ffffff;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  line-height: 22px;
+  text-align: center;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.35);
+}
+.leaflet-popup-content-wrapper { border-radius: 2px; }
+.leaflet-popup-content {
+  margin: 10px 14px;
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+.leaflet-popup-content b { display: block; font-size: 0.86rem; }
+.leaflet-popup-content .t {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: #888888;
+}
+.maphint {
+  border-top: 1px solid var(--line);
+  padding: 10px 14px;
+  font-size: 0.7rem;
+  color: var(--dim);
+  letter-spacing: 0.04em;
+}
+
+/* ===== timeline ===== */
+.timeline { position: relative; }
+.timeline::before {
+  content: "";
+  position: absolute;
+  left: 71px;
+  top: 20px;
+  bottom: 20px;
+  width: 1px;
+  background: var(--line);
+}
+
+.slot { position: relative; }
+
+.slot > .head {
+  display: grid;
+  grid-template-columns: 56px 30px 1fr 20px;
+  align-items: start;
+  width: 100%;
+  appearance: none;
+  background: none;
+  border: none;
+  border-top: 1px solid var(--line);
+  font-family: inherit;
+  text-align: left;
+  color: inherit;
+  padding: 20px 0;
+  cursor: pointer;
+}
+.slot:first-child > .head { border-top: none; }
+
+.slot .time {
+  font-size: 0.94rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding-top: 2px;
+}
+
+.slot .dotcol { position: relative; }
+.slot .num {
+  position: relative;
+  z-index: 1;
+  display: block;
+  margin-left: 4px;
+  width: 22px;
+  height: 22px;
+  line-height: 21px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px solid var(--ink);
+  color: var(--ink);
+  text-align: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+.slot[data-open="true"] .num { background: var(--ink); color: #ffffff; }
+
+.slot.leg > .head { padding: 16px 0; }
+.slot.leg .time { font-weight: 500; color: var(--muted); }
+.slot .arrow {
+  display: block;
+  margin-left: 4px;
+  width: 22px;
+  height: 22px;
+  line-height: 20px;
+  border-radius: 50%;
+  background: var(--bg);
+  border: 1.5px dashed var(--dim);
+  color: var(--dim);
+  text-align: center;
+  font-size: 0.7rem;
+}
+.slot.leg .title { font-size: 0.88rem; font-weight: 500; color: var(--muted); }
+.slot.leg .sub { font-size: 0.74rem; color: var(--dim); }
+
+.slot .title {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.slot .sub {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 400;
+  color: var(--muted);
+  margin-top: 3px;
+}
+
+.slot .mark {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  margin-top: 5px;
+}
+.slot .mark::before,
+.slot .mark::after {
+  content: "";
+  position: absolute;
+  background: var(--dim);
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+.slot .mark::before { left: 4px; top: 9px; width: 12px; height: 1.5px; }
+.slot .mark::after  { left: 9px; top: 4px; width: 1.5px; height: 12px; }
+.slot[data-open="true"] .mark::after { transform: scaleY(0); opacity: 0; }
+
+.slot .body { padding: 0 0 24px 86px; }
+.slot .body[hidden] { display: none; }
+
+.slot .body ul.items { list-style: none; border-left: 2px solid var(--line); padding-left: 16px; }
+.slot .body ul.items li {
+  font-size: 0.86rem;
+  color: var(--muted);
+  margin-bottom: 7px;
+}
+.slot .body ul.items li:last-child { margin-bottom: 0; }
+.slot .body ul.items li strong { color: var(--ink); font-weight: 600; }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+.card .name { font-size: 0.92rem; font-weight: 700; line-height: 1.6; }
+.card .place { font-size: 0.76rem; color: var(--dim); margin-top: 2px; }
+.card dl { margin-top: 12px; }
+.card dt {
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--dim);
+  margin-top: 10px;
+}
+.card dl > dt:first-child { margin-top: 0; }
+.card dd { font-size: 0.85rem; color: var(--muted); line-height: 1.8; }
+
+/* ===== shop list ===== */
+.shoplist { border: 1px solid var(--line); margin: 14px 0 8px; }
+.shoplist .flr {
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 14px;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.shoplist .flr + .flr { border-top: 1px solid var(--line); }
+.shoplist ul { list-style: none; }
+.shoplist li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding: 9px 14px;
+  border-bottom: 1px solid var(--line);
+  line-height: 1.6;
+}
+.shoplist li:last-child { border-bottom: none; }
+.shoplist .s-name { font-size: 0.85rem; font-weight: 600; }
+.shoplist .s-genre { font-size: 0.72rem; color: var(--dim); }
+.shoplist .s-time {
+  margin-left: auto;
+  font-size: 0.72rem;
+  color: var(--muted);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+.shoplist.price li { display: block; }
+.shoplist.price .s-time { display: block; margin-left: 0; white-space: normal; margin-top: 2px; }
+
+.src {
+  font-size: 0.68rem;
+  color: var(--dim);
+  letter-spacing: 0.03em;
+  margin-bottom: 14px;
+}
+.src a { color: var(--dim); }
+
+.mlink {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--dim);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  vertical-align: 1px;
+  white-space: nowrap;
+}
+.mlink:hover { color: var(--ink); border-bottom-color: var(--ink); }
+
+.move {
+  padding: 0 0 0 86px;
+  margin: -8px 0 8px;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+footer {
+  border-top: 1px solid var(--line);
+  margin-top: 40px;
+  padding-top: 22px;
+  font-size: 0.7rem;
+  color: var(--dim);
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 560px) {
+  header .inner { padding: 60px 20px 32px; }
+  header h1 { font-size: 2rem; }
+  main { padding: 30px 20px 80px; }
+  #map { height: 280px; }
+  .timeline::before { left: 61px; }
+  .slot > .head { grid-template-columns: 48px 26px 1fr 18px; padding: 17px 0; }
+  .slot .time { font-size: 0.86rem; }
+  .slot .num { margin-left: 3px; width: 20px; height: 20px; line-height: 19px; font-size: 0.64rem; }
+  .slot .arrow { margin-left: 3px; width: 20px; height: 20px; line-height: 18px; font-size: 0.66rem; }
+  .slot .title { font-size: 0.94rem; }
+  .slot .body { padding-left: 74px; }
+  .move { padding-left: 74px; }
+}
+
+@media (max-width: 400px) {
+  .slot .body { padding-left: 0; }
+  .move { padding-left: 0; }
+  .shoplist .s-time { margin-left: 0; width: 100%; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="inner">
+    <div class="kicker mono">Day Plan</div>
+    <h1 class="mono">Aug 30th</h1>
+    <div class="lead">2026年8月30日（日）・ドライブ</div>
+    <div class="route mono">亀戸 → 海ほたる → 袖ヶ浦 → 幕張 → 千葉みなと → 幕張 → 川口</div>
+  </div>
+</header>
+
+<main>
+
+  <div class="mapbox">
+    <div id="map"></div>
+    <div class="maphint mono">ピンの番号は下のタイムテーブルと対応。タップすると詳細が開きます。</div>
+  </div>
+
+  <div class="hint">各項目をタップすると詳細が開きます。</div>
+
+  <div class="timeline">
+
+    <div class="slot" id="s1" data-open="false">
+      <div class="head" role="button" tabindex="0" aria-expanded="false" aria-controls="d1">
+        <span class="time mono">11:00</span>
+        <span class="dotcol"><span class="num mono">1</span></span>
+        <span class="title">亀戸でピックアップ<a class="mlink mono" href="https://www.google.com/maps/search/?api=1&query=%E4%BA%80%E6%88%B8%E9%A7%85" target="_blank" rel="noopener">（map）</a><span class="sub">出発</span></span>
+        <span class="mark"></span>
+      </div>
+      <div class="body" id="d1" hidden>
+        <ul class="items">
+          <li>亀戸で車に乗って出発</li>
+          <li>そのまま首都高 → アクアラインへ</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="move mono">↓ &nbsp;移動</div>
+
+    <div class="slot" id="s2" data-open="false">
+      <div class="head" role="button" tabindex="0" aria-expanded="false" aria-controls="d2">
+        <span class="time mono">12:00</span>
+        <span class="dotcol"><span class="num mono">2</span></span>
+        <span class="title">海ほたるで昼ご飯<a class="mlink mono" href="https://www.google.com/maps/search/?api=1&query=%E6%B5%B7%E3%81%BB%E3%81%9F%E3%82%8B" target="_blank" rel="noopener">（map）</a><span class="sub">東京湾アクアライン・海ほたるPA</span></span>
+        <span class="mark"></span>
+      </div>
+      <div class="body" id="d2" hidden>
+        <ul class="items">
+          <li><strong>お店はmahoが好きなのにする</strong>（当日、現地で見てから決めるのでもOK）</li>
+          <li>海の上のパーキングエリア。展望デッキから東京湾を一周見渡せる</li>
+        </ul>
+
+        <div class="shoplist">
+          <div class="flr mono">5F ── レストラン・フードコート</div>
+          <ul>
+            <li><span class="s-name">回転寿司 みさき</span><span class="s-genre">寿司</span><span class="s-time">11:00–22:00</span></li>
+            <li><span class="s-name">房総海鮮処 木更津庵</span><span class="s-genre">海鮮</span><span class="s-time">8:30–22:00</span></li>
+            <li><span class="s-name">オーシャン・キッチン</span><span class="s-genre">レストラン</span><span class="s-time">11:00–21:00</span></li>
+            <li><span class="s-name">炙亭 とんぎゅう</span><span class="s-genre">どんぶり</span><span class="s-time">10:00–20:30</span></li>
+            <li><span class="s-name">ち〜ば丼</span><span class="s-genre">どんぶり</span><span class="s-time">10:00–20:30</span></li>
+            <li><span class="s-name">あさりらーめん 波市</span><span class="s-genre">ラーメン</span><span class="s-time">9:00–24:00</span></li>
+            <li><span class="s-name">神様ちゃんぽん</span><span class="s-genre">ちゃんぽん</span><span class="s-time">10:00–20:30</span></li>
+            <li><span class="s-name">蕎麦 港屋</span><span class="s-genre">そば・うどん</span><span class="s-time">24時間</span></li>
+            <li><span class="s-name">海ほたるゴーゴーカレー</span><span class="s-genre">カレー</span><span class="s-time">10:00–20:30</span></li>
+            <li><span class="s-name">あさりや café</span><span class="s-genre">軽食</span><span class="s-time">7:00–20:30</span></li>
+          </ul>
+          <div class="flr mono">4F ── カフェ・軽食</div>
+          <ul>
+            <li><span class="s-name">スターバックス コーヒー</span><span class="s-genre">カフェ</span><span class="s-time">7:00–22:00</span></li>
+            <li><span class="s-name">IDEBOK Sweets Cafe</span><span class="s-genre">カフェ・スイーツ</span><span class="s-time">8:00–21:00</span></li>
+            <li><span class="s-name">シーフェアリー</span><span class="s-genre">軽食</span><span class="s-time">8:00–21:00</span></li>
+            <li><span class="s-name">富士波珈琲</span><span class="s-genre">カフェ</span><span class="s-time">11:00–20:00</span></li>
+            <li><span class="s-name">おにぎり屋 結丸</span><span class="s-genre">おにぎり</span><span class="s-time">8:00–18:00</span></li>
+            <li><span class="s-name">うみぱん</span><span class="s-genre">ベーカリー</span><span class="s-time">8:00–20:00</span></li>
+          </ul>
+        </div>
+        <div class="src">営業時間は土日祝のもの。出典：<a href="https://www.driveplaza.com/sapa/214H/214H006/1/" target="_blank" rel="noopener">ドラぷら（NEXCO東日本）</a>／<a href="https://www.umihotaru.com/" target="_blank" rel="noopener">海ほたる公式</a>（当日変更の可能性あり）</div>
+
+      </div>
+    </div>
+
+    <div class="move mono">↓ &nbsp;移動</div>
+
+    <div class="slot" id="s3" data-open="false">
+      <div class="head" role="button" tabindex="0" aria-expanded="false" aria-controls="d3">
+        <span class="time mono">13:30</span>
+        <span class="dotcol"><span class="num mono">3</span></span>
+        <span class="title">三井アウトレット 袖ヶ浦<a class="mlink mono" href="https://www.google.com/maps/search/?api=1&query=%E4%B8%89%E4%BA%95%E3%82%A2%E3%82%A6%E3%83%88%E3%83%AC%E3%83%83%E3%83%88%E3%83%91%E3%83%BC%E3%82%AF%E6%9C%A8%E6%9B%B4%E6%B4%A5" target="_blank" rel="noopener">（map）</a><span class="sub">ショッピング</span></span>
+        <span class="mark"></span>
+      </div>
+      <div class="body" id="d3" hidden>
+        <ul class="items">
+          <li>ゆっくりショッピング</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="slot leg" id="leg34" data-open="false">
+      <div class="head" role="button" tabindex="0" aria-expanded="false" aria-controls="dleg34">
+        <span class="time mono">16:00</span>
+        <span class="dotcol"><span class="arrow mono">↓</span></span>
+        <span class="title">ドライブ<a class="mlink mono" href="https://www.google.com/maps/dir/?api=1&origin=%E4%B8%89%E4%BA%95%E3%82%A2%E3%82%A6%E3%83%88%E3%83%AC%E3%83%83%E3%83%88%E3%83%91%E3%83%BC%E3%82%AF%E6%9C%A8%E6%9B%B4%E6%B4%A5&destination=%E3%82%A4%E3%82%AA%E3%83%B3%E3%83%A2%E3%83%BC%E3%83%AB%E5%B9%95%E5%BC%B5%E6%96%B0%E9%83%BD%E5%BF%83" target="_blank" rel="noopener">（map）</a><span class="sub">袖ヶ浦 → 幕張・約45分（目安）</span></span>
+        <span class="mark"></span>
+      </div>
+      <div class="body" id="dleg34" hidden>
+        <ul class="items">
+          <li>ここは <strong>移動そのものがイベント</strong>。45分ほどのドライブ（目安）</li>
+          <li>東京湾の東岸を北上。工場地帯を抜けて幕張へ</li>
+          <li>音楽はその場で決める</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="slot" id="s4" data-open="false">
+      <div class="head" role="button" tabindex="0" aria-expanded="false" aria-controls="d4">
+        <span class="time mono">16:50</span>
+        <span class="dotcol"><span class="num mono">4</span></span>
+        <span class="title">幕張でSpa<a class="mlink mono" href="https://www.google.com/maps/search/?api=1&query=%E3%83%8F%E3%83%AF%E3%82%A4%E3%82%A2%E3%83%B3%E3%83%95%E3%82%A9%E3%83%AC%E3%82%B9%E3%83%88Spa%20%E5%B9%95%E5%BC%B5%E6%96%B0%E9%83%BD%E5%BF%83%E5%BA%97%20%E3%82%A4%E3%82%AA%E3%83%B3%E3%83%A2%E3%83%BC%E3%83%AB%E5%B9%95%E5%BC%B5%E6%96%B0%E9%83%BD%E5%BF%83" target="_blank" rel="noopener">（map）</a><span class="sub">ハワイアンフォレストSpa 幕張新都心店</span></span>
+        <span class="mark"></span>
+      </div>
+      <div class="body" id="d4" hidden>
+        <ul class="items">
+          <li>16:50イン → <strong>60分コースでも17:50に出られて、ポートタワーの夕日に間に合う</strong>（日没は18時ごろ）</li>
+          <li>要予約。イオンモール内なので駐車場はそのまま使える</li>
+        </ul>
+
+        <div class="card">
+          <div class="name">ハワイアンフォレストSpa 幕張新都心店</div>
+          <div class="place">イオンモール幕張新都心 グランドモール 3F／千葉市美浜区豊砂1-1</div>
+          <dl>
+            <dt class="mono">Hours</dt>
+            <dd>10:00–21:00（受付終了 20:30）・駐車場あり</dd>
+            <dt class="mono">Tel</dt>
+            <dd>043-307-3826</dd>
+          </dl>
+          <a class="mlink mono" href="https://beauty.hotpepper.jp/CSP/kr/reserve/?storeId=H000641797&amp;ch=5&amp;vos=cpshbkprocap0140516001" target="_blank" rel="noopener" style="margin-left:0">（予約する）</a>
+        </div>
+
+        <div class="shoplist price">
+          <div class="flr mono">Menu ── 税込</div>
+          <ul>
+            <li><span class="s-name">ロミロミアロマボディ</span><span class="s-time">30分 ¥5,500 ／ 60分 ¥11,000 ／ 90分 ¥16,500 ／ 120分 ¥22,000</span></li>
+            <li><span class="s-name">フェイシャル＆アロマボディ</span><span class="s-time">90分 ¥16,500 ／ 120分 ¥22,000 ／ 150分 ¥27,500</span></li>
+            <li><span class="s-name">リンパデトックス</span><span class="s-time">90分 ¥16,500 ／ 120分 ¥22,000 ／ 150分 ¥27,500</span></li>
+            <li><span class="s-name">アロハスペシャル</span><span class="s-time">180分 ¥33,000</span></li>
+            <li><span class="s-name">オプション／延長</span><span class="s-time">オプション ¥3,300〜 ／ 延長10分 ¥2,200</span></li>
+          </ul>
+        </div>
+        <div class="src">出典：<a href="https://hawafore.com/menu-price/" target="_blank" rel="noopener">ハワイアンフォレストSpa 公式</a></div>
+      </div>
+    </div>
+
+    <div class="move mono">↓ &nbsp;移動</div>
+
+    <div class="slot" id="s5" data-open="false">
+      <div class="head" role="button" tabindex="0" aria-expanded="false" aria-controls="d5">
+        <span class="time mono">18:05</span>
+        <span class="dotcol"><span class="num mono">5</span></span>
+        <span class="title">千葉ポートタワー<a class="mlink mono" href="https://www.google.com/maps/search/?api=1&query=%E5%8D%83%E8%91%89%E3%83%9D%E3%83%BC%E3%83%88%E3%82%BF%E3%83%AF%E3%83%BC" target="_blank" rel="noopener">（map）</a><span class="sub">千葉みなと・展望</span></span>
+        <span class="mark"></span>
+      </div>
+      <div class="body" id="d5" hidden>
+        <ul class="items">
+          <li><strong>kyoの目当ては、夕日と工業地帯を見渡すこと</strong></li>
+          <li>展望フロアから東京湾と京葉工業地帯を一望できる</li>
+          <li>この時期の日没は18時ごろ（目安）。ちょうど夕暮れ〜日が落ちる時間帯</li>
+          <li>足元の千葉ポートパークも海沿いを歩ける</li>
+          <li><strong>ディナーの後に回してもOK</strong>。その場合は夕日ではなく夜景。夏期は21:00まで開いていて、<strong>最終入館は20:30</strong></li>
+          <li>開館 9:00–21:00（夏期 6/1–9/30）・入館料 大人 ¥420</li>
+        </ul>
+        <div class="src">出典：<a href="https://chiba-porttower.com/guide.php" target="_blank" rel="noopener">千葉ポートタワー 公式（施設案内・料金）</a></div>
+      </div>
+    </div>
+
+    <div class="move mono">↓ &nbsp;移動</div>
+
+    <div class="slot" id="s6" data-open="false">
+      <div class="head" role="button" tabindex="0" aria-expanded="false" aria-controls="d6">
+        <span class="time mono">19:00</span>
+        <span class="dotcol"><span class="num mono">6</span></span>
+        <span class="title">幕張で夜ご飯<a class="mlink mono" href="https://www.google.com/maps/search/?api=1&query=%E3%82%B9%E3%82%AB%E3%82%A4%E3%82%AF%E3%83%AB%E3%83%BC%E3%82%BA%E3%83%9E%E3%82%AF%E3%83%8F%E3%83%AA%20%E3%82%A2%E3%83%91%E3%83%9B%E3%83%86%E3%83%AB%26%E3%83%AA%E3%82%BE%E3%83%BC%E3%83%88%E6%9D%B1%E4%BA%AC%E3%83%99%E3%82%A4%E5%B9%95%E5%BC%B5" target="_blank" rel="noopener">（map）</a><span class="sub">ディナービュッフェ</span></span>
+        <span class="mark"></span>
+      </div>
+      <div class="body" id="d6" hidden>
+        <div class="card">
+          <div class="name">ダイニング＆バー　スカイクルーズマクハリ</div>
+          <div class="place">アパホテル＆リゾート 東京ベイ幕張</div>
+          <dl>
+            <dt class="mono">Menu</dt>
+            <dd>【土日祝日限定ディナービュッフェ／時間制限なし】<br>バーテンダーによるカクテル飲み放題付き</dd>
+            <dt class="mono">Parking</dt>
+            <dd>先着500台まで無料。満車の場合は近くの駐車場を利用する</dd>
+          </dl>
+        </div>
+        <ul class="items">
+          <li>ポートタワーから約15分（目安）</li>
+          <li>時間制限なしなので、ゆっくり食べて飲める</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="move mono">↓ &nbsp;移動</div>
+
+    <div class="slot" id="s7" data-open="false">
+      <div class="head" role="button" tabindex="0" aria-expanded="false" aria-controls="d7">
+        <span class="time mono">22:00</span>
+        <span class="dotcol"><span class="num mono">7</span></span>
+        <span class="title">川口で解散<a class="mlink mono" href="https://www.google.com/maps/search/?api=1&query=%E5%B7%9D%E5%8F%A3%E9%A7%85" target="_blank" rel="noopener">（map）</a><span class="sub">おわり</span></span>
+        <span class="mark"></span>
+      </div>
+      <div class="body" id="d7" hidden>
+        <ul class="items">
+          <li>川口まで送って解散</li>
+        </ul>
+      </div>
+    </div>
+
+
+  </div>
+
+  <footer class="mono">Last updated: 2026-08-30</footer>
+</main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+  /* ---- toggle ---- */
+  function setOpen(slot, open) {
+    var head = slot.querySelector('.head');
+    var body = document.getElementById(head.getAttribute('aria-controls'));
+    slot.dataset.open = open ? 'true' : 'false';
+    head.setAttribute('aria-expanded', open ? 'true' : 'false');
+    body.hidden = !open;
+  }
+
+  document.querySelectorAll('.slot .head').forEach(function (head) {
+    head.addEventListener('click', function (e) {
+      if (e.target.closest('a')) return;   /* （map）リンクは開閉させない */
+      var slot = head.closest('.slot');
+      setOpen(slot, slot.dataset.open !== 'true');
+    });
+    head.addEventListener('keydown', function (e) {
+      if (e.target.closest('a')) return;
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        var slot = head.closest('.slot');
+        setOpen(slot, slot.dataset.open !== 'true');
+      }
+    });
+  });
+
+  /* ---- map ---- */
+  var STOPS = [
+    { n: 1, t: '11:00', name: '亀戸でピックアップ',        lat: 35.6976, lng: 139.8267 },
+    { n: 2, t: '12:00', name: '海ほたるPA',                lat: 35.4638, lng: 139.8752 },
+    { n: 3, t: '13:30', name: '三井アウトレット 袖ヶ浦',   lat: 35.4275, lng: 139.9238 },
+    { n: 4, t: '16:50', name: '幕張でSpa',                 lat: 35.6437, lng: 140.0483 },
+    { n: 5, t: '18:05', name: '千葉ポートタワー',          lat: 35.6008, lng: 140.1046 },
+    { n: 6, t: '19:00', name: 'スカイクルーズマクハリ',    lat: 35.6494, lng: 140.0349 },
+    { n: 7, t: '22:00', name: '川口で解散',                lat: 35.8073, lng: 139.7239 }
+  ];
+
+  var map = L.map('map', { scrollWheelZoom: false });
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+    maxZoom: 19
+  }).addTo(map);
+
+  var pts = STOPS.map(function (s) { return [s.lat, s.lng]; });
+
+  L.polyline(pts, { color: '#111111', weight: 2, opacity: 0.7, dashArray: '4 5' }).addTo(map);
+
+
+  STOPS.forEach(function (s) {
+    var icon = L.divIcon({
+      className: '',
+      html: '<div class="pin">' + s.n + '</div>',
+      iconSize: [26, 26],
+      iconAnchor: [13, 13],
+      popupAnchor: [0, -14]
+    });
+    L.marker([s.lat, s.lng], { icon: icon })
+      .addTo(map)
+      .bindPopup('<span class="t">' + s.t + '</span><b>' + s.name + '</b>')
+      .on('click', function () {
+        var slot = document.getElementById('s' + s.n);
+        setOpen(slot, true);
+        slot.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
+  });
+
+  map.fitBounds(L.latLngBounds(pts), { padding: [34, 34] });
+</script>
+
+</body>
+</html>
