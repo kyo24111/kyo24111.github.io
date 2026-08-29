@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Base Power — 家庭の蓄電池で「電力を卸す」テキサス発ディープリサーチ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:10px}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .qa summary::after{content:'+';margin-left:auto;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem}
+  .qa details[open] summary::after{content:'\2212'}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-white">Deep Research</span>
+    <span class="badge badge-white">Distributed Energy</span>
+    <span class="badge badge-white">Private / Series D</span>
+    <span class="badge badge-solid">$13B Valuation（2026/8）</span>
+  </div>
+  <h1>Base Power</h1>
+  <p class="hero-sub">
+    テキサス発、<strong>「家庭の壁際に置いた蓄電池」を1万台単位で束ねて電力を卸す</strong>会社。発電所も送電線も建てずに、需要側から系統に容量を差し込む。<br>
+    創業2023年。<strong>Michael Dellの息子 Zach Dell</strong>と<strong>SpaceX・Anduril出身の Justin Lopas</strong>が立ち上げ、3年で <strong>Series D $1B・バリュエーション $13B</strong>。設備は自社保有・顧客からは初期$695＋月$19しか取らず、稼ぎの本体は<strong>卸電力のアービトラージ</strong>という、電力会社の損益構造を裏返したモデル。
+  </p>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$13B</div><div class="lbl">Valuation (2026/8, post)</div></div>
+    <div class="kpi"><div class="val">$2.5B+</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">23,000+</div><div class="lbl">設置台数 (2026/8)</div></div>
+    <div class="kpi"><div class="val">500MWh+</div><div class="lbl">Fleet Capacity</div></div>
+    <div class="kpi"><div class="val">~$70M</div><div class="lbl">Revenue (2026E)</div></div>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#origin">創業逸話 — Anduril工場の見学ツアー</a></li>
+    <li><a href="#model">Business Model — 「電力を卸す」の構造</a></li>
+    <li><a href="#product">Product — Base Core と世代進化</a></li>
+    <li><a href="#traction">Traction &amp; Financials</a></li>
+    <li><a href="#funding">Funding &amp; Investors</a></li>
+    <li><a href="#customers">主要顧客・パートナー</a></li>
+    <li><a href="#peers">競合の決算読み比べ</a></li>
+    <li><a href="#japan">日本企業の繋がり — 日本で成立するか</a></li>
+    <li><a href="#risks">Risks &amp; Thesis</a></li>
+    <li><a href="#valuation">Valuation分析（NFA）</a></li>
+    <li><a href="#why-now">なぜ今見るべきか</a></li>
+    <li><a href="#qa">Q&amp;A</a></li>
+  </ol>
+</div>
+
+<!-- 1 OVERVIEW -->
+<div class="sec" id="overview">
+  <div class="sec-label"><span class="num">1</span> Overview</div>
+  <h2>会社概要</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">社名</div><div class="v">Base Power Company</div></div>
+    <div class="kv-item"><div class="k">設立</div><div class="v">2023年</div></div>
+    <div class="kv-item"><div class="k">本社</div><div class="v">Austin, TX, USA</div></div>
+    <div class="kv-item"><div class="k">CEO / Co-founder</div><div class="v">Zach Dell</div></div>
+    <div class="kv-item"><div class="k">COO / Co-founder</div><div class="v">Justin Lopas（ex-SpaceX / Anduril）</div></div>
+    <div class="kv-item"><div class="k">事業</div><div class="v">家庭用蓄電池のサブスク設置＋小売電気事業（REP）＋卸市場運用</div></div>
+    <div class="kv-item"><div class="k">営業エリア</div><div class="v">テキサス（ERCOT）／イリノイ（PJM・シカゴ圏）</div></div>
+    <div class="kv-item"><div class="k">Total Raised</div><div class="v">$2.5B+（Series D まで）</div></div>
+    <div class="kv-item"><div class="k">Valuation</div><div class="v">$13B（2026/8, post-money）</div></div>
+    <div class="kv-item"><div class="k">Revenue</div><div class="v">~$12M（2025 annualized）→ ~$70M（2026E）</div></div>
+    <div class="kv-item"><div class="k">Fleet</div><div class="v">23,000台超 / 500MWh超（2026/8）</div></div>
+    <div class="kv-item"><div class="k">製造</div><div class="v">Base Factory 1（Austin）— 月数千台規模</div></div>
+  </div>
+
+  <div class="callout">
+    <strong>一行で言うと</strong>：Base Powerは「バッテリー会社」ではなく <strong>gentailer（generator + retailer）</strong>。顧客の家に自社所有の蓄電池を置き、電気の小売契約とセットで売る。集まった蓄電池群をERCOTの卸市場で<strong>ひとつの発電所として運用</strong>し、そこで得た価格差が本体の利益になる。顧客が払うのは初期<strong>$695</strong>＋月<strong>$19</strong>だけ。
+  </div>
+</div>
+
+<!-- 2 ORIGIN -->
+<div class="sec" id="origin">
+  <div class="sec-label"><span class="num">2</span> Founding Story</div>
+  <h2>創業逸話 — Anduril工場の見学ツアーから始まった</h2>
+  <p>
+    2022年末、Zach DellはThrive Capitalの<strong>Andurilへの投資</strong>に関わってカリフォルニア州Costa Mesaの工場を訪ねた。案内役を務めたのが、当時Andurilの<strong>製造責任者</strong>だったJustin Lopas。工場を歩きながら2人は意気投合し、「エネルギー領域で何かを作りたい」という同じ関心を見つける。
+  </p>
+  <p>
+    そこで彼らが出した結論が、この会社の全ての前提になっている ——<strong>エネルギー豊富化のボトルネックは「発電」ではなく「系統（グリッド）」であり、その制約を外す鍵はバッテリーである</strong>。
+  </p>
+
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2019</span><span class="tl-title">Dell、Blackstoneのインターンでリチウム鉱山案件を評価</span></div>
+      <div class="tl-body">大学4年になる前の夏。鉱山買収の評価を通じて「<b>米国は蓄電インフラが決定的に未整備で、そこが最大の成長源</b>」と気づいたのが原点。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2020–2023</span><span class="tl-title">Lopas、SpaceX → Anduril で「量産」を叩き込まれる</span></div>
+      <div class="tl-body">SpaceXで約4年、<b>Falconの推力構造の製造エンジニア</b>から<b>Starship製造のリードエンジニア</b>へ。その後Andurilで150人超の製造組織を統括。<a href="260411_anduril_deep_research.html">Anduril</a>の垂直統合と内製の思想を、そのままエネルギーに持ち込むことになる。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2022年末</span><span class="tl-title">Costa Mesa工場で2人が出会う</span></div>
+      <div class="tl-body">投資家として訪問したDellを、製造責任者のLopasが案内。ここで共同創業の話が始まる。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2023</span><span class="tl-title">Base Power をオースティンで創業</span></div>
+      <div class="tl-body">テキサス＝<b>米国で唯一まともに自由化され、かつ卸価格が日中10倍動く市場</b>という条件を選んで拠点を置いた。</div>
+    </div></div>
+  </div>
+
+  <div class="callout">
+    a16zはこの座組みを <strong>「SpaceXが航空宇宙に、Andurilが防衛にやったことを、まだ誰も電力系統にやっていない」</strong> と表現している。実際、経営陣の出自（航空宇宙・防衛の量産畑）と、規制で守られたユーティリティ（コストを積むほど儲かる<em>cost-plus</em>）との対比が、そのままこの会社のピッチになっている。
+  </div>
+</div>
+
+<!-- 3 MODEL -->
+<div class="sec" id="model">
+  <div class="sec-label"><span class="num">3</span> Business Model</div>
+  <h2>「電力を卸す」の構造 — 顧客からはほとんど取らない</h2>
+
+  <h3>顧客が払うもの</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Upfront</div><div class="v">$695（設置費。2025年2月に$4,000から引き下げ）</div></div>
+    <div class="kv-item"><div class="k">Monthly</div><div class="v">$19〜29（メンバーシップ）</div></div>
+    <div class="kv-item"><div class="k">Energy Rate</div><div class="v">~8.5¢/kWh 固定（プラン・エリアによる）</div></div>
+    <div class="kv-item"><div class="k">Ownership</div><div class="v">バッテリーはBase所有（顧客は買わない）</div></div>
+  </div>
+  <p>
+    設置費を<strong>$4,000 → $695</strong>に下げた2025年2〜3月、契約数は<strong>前月比+30%</strong>に跳ねた。「停電対策の設備を実質タダ同然で置ける」という提案は、年に何度も停電するテキサスの戸建てには効く。顧客は電気代も月10〜20%下がると説明されている。
+  </p>
+
+  <h3>Baseが稼ぐもの — 収益は3本</h3>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">Subscription（月額）</div><div class="ind-desc">$19〜29/月 × 世帯数。安定はするが規模としては小さい。1台あたり年<b>$228〜348</b>。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">Retail Margin（小売マージン）</div><div class="ind-desc">卸で仕入れて固定料金で売る、通常のREP（Retail Electric Provider）としての差益。ERCOTには<b>140社超のREP</b>がひしめく激戦区。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">Wholesale Arbitrage（卸アービトラージ）★本体</div><div class="ind-desc">夜間 <b>~$0.10/kWh</b> で充電し、夕方のピークに放電する。ERCOTは<b>15分ごと</b>に価格が動き、日中で<b>10倍</b>の変動が起きる。Base自身は<b>年$40/kWh</b>の収益を見込むとしており、30kWhの1台で年<b>~$1,200</b>の計算になる。</div></div></div>
+  </div>
+
+  <div class="callout">
+    <strong>この構造の妙</strong>：普通の蓄電池ビジネスは「顧客に売る」ので、<em>大きい電池ほど顧客の負担が増える</em>ため小さく作る力学が働く。Baseは自社保有＋アービトラージ収益なので、<strong>電池が大きいほどBaseも顧客も得をする</strong>。顧客は長時間のバックアップが欲しい、Baseは取引できるkWhが欲しい ——<strong>利害が同じ方向を向く</strong>。ここがモデル設計の核心。
+  </div>
+
+  <h3>Unit Economics（推定・確度中）</h3>
+  <div class="t-wrap"><table class="t">
+    <tr><th>項目</th><th>金額</th><th>備考</th></tr>
+    <tr><td>Capex / unit</td><td>~$10,000</td><td>設置込みのBase側コスト</td></tr>
+    <tr><td>IRA Tax Credit</td><td>~$3,000（30%）</td><td>OBBBAで2033年まで延長。譲渡可</td></tr>
+    <tr><td>Net Capex</td><td>~$7,000</td><td></td></tr>
+    <tr><td>年間収益 / unit</td><td>~$1,400〜1,600</td><td>アービトラージ~$1,200＋サブスク~$228＋小売マージン</td></tr>
+    <tr><td>Payback</td><td>Gen1 ~4年 / Gen2 ~3年</td><td>Base側の説明ベース</td></tr>
+    <tr><td>Warranty</td><td>15年（メンテはBase負担）</td><td>回収後10年以上が実質の利益期間</td></tr>
+  </table></div>
+  <p style="font-size:12.5px;color:var(--muted)">
+    ※ 回収3〜4年・寿命15年なら理屈は通る。ただし後述の通り、<strong>アービトラージ収益は蓄電池が増えるほど縮む</strong>という自己否定的な性質を持つ。ここが評価の最大の分岐点。
+  </p>
+</div>
+
+<!-- 4 PRODUCT -->
+<div class="sec" id="product">
+  <div class="sec-label"><span class="num">4</span> Product</div>
+  <h2>Base Core — 3年で容量2倍、コストは横ばい</h2>
+  <div class="t-wrap"><table class="t">
+    <tr><th>世代</th><th>形態</th><th>容量</th><th>備考</th></tr>
+    <tr><td>Gen 1</td><td>壁掛け</td><td>20 kWh</td><td>インバータ11.4kW。回収~4年</td></tr>
+    <tr><td>Gen 2</td><td>地置き（1基）</td><td>25 kWh</td><td>回収~3年</td></tr>
+    <tr><td>Gen 3</td><td>地置き（2基）</td><td>50 kWh</td><td>最大48時間バックアップ</td></tr>
+    <tr><td>Base Core</td><td>地置き（1〜2基）</td><td>39.2 / 78.4 kWh</td><td>2026年8月発表。Base Factory 1（Austin）で内製</td></tr>
+  </table></div>
+
+  <h3>Base Core のスペック</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Capacity</div><div class="v">39.2 kWh（2基連結で 78.4 kWh）</div></div>
+    <div class="kv-item"><div class="k">Backup</div><div class="v">単体で最大36時間 / 2基で最大72時間</div></div>
+    <div class="kv-item"><div class="k">Chemistry</div><div class="v">LFP（リン酸鉄リチウム）</div></div>
+    <div class="kv-item"><div class="k">Temp Range</div><div class="v">-22°F 〜 122°F（-30℃〜50℃）</div></div>
+    <div class="kv-item"><div class="k">Ingress</div><div class="v">IP67（約90cm水没に耐える）／鉄砲水試験済み</div></div>
+    <div class="kv-item"><div class="k">Switchover</div><div class="v">50ミリ秒</div></div>
+    <div class="kv-item"><div class="k">Install Time</div><div class="v">1時間未満</div></div>
+    <div class="kv-item"><div class="k">Made in</div><div class="v">USA（Base Factory 1, Austin）</div></div>
+  </div>
+
+  <div class="callout">
+    Gen2の25kWh → Base Coreの39.2kWhで<strong>容量+57%、それでいて1台あたりのコストはほぼ横ばい</strong>とされる。これが「値下げ→需要増→量産→さらに原価低下」というフライホイールの実弾。なお<strong>セルは内製しない</strong>方針で、セルはコモディティ化すると見て<strong>パック統合に絞る</strong>（新しい化学系が来たら乗り換えられる、という設計思想）。テキサスの<a href="260412_redwood_materials_deep_research.html">Redwood Materials</a>のようなセル・素材側とは、意図的に役割を分けている。
+  </div>
+</div>
+
+<!-- 5 TRACTION -->
+<div class="sec" id="traction">
+  <div class="sec-label"><span class="num">5</span> Traction &amp; Financials</div>
+  <h2>1,500台 → 23,000台、15ヶ月の立ち上がり</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date muted">2025/02</span><span class="tl-title">設置費を$4,000 → $695へ</span></div>
+      <div class="tl-body">2〜3月で契約数が<b>前月比+30%</b>。ここが最初の変曲点。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date muted">2025/04</span><span class="tl-title">Lennar（住宅大手）と組み200台超を新築に標準搭載</span></div>
+      <div class="tl-body">同月、<b>Series B $200M</b>（post $841M）。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date muted">2025/07–08</span><span class="tl-title">1,500台（~30MWh）、設置ペース1日20台</span></div>
+      <div class="tl-body">8月にダラス・フォートワースへ展開。月次売上 $500K（5月）→ $700K（6月）。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2025/10</span><span class="tl-title">Series C $1B（post $4B）</span></div>
+      <div class="tl-body">Series Bからわずか6ヶ月。Addition主導、a16z・Valorら既存投資家が全員フォロー。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date muted">2025/12</span><span class="tl-title">7,000世帯 / 月20MWの設置ペース</span></div>
+      <div class="tl-body">Revenue は annualized <b>~$12M</b>。</div>
+    </div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content">
+      <div class="tl-header"><span class="tl-date">2026/08</span><span class="tl-title">Series D $1B（post $13B）＋ Base Core 発表</span></div>
+      <div class="tl-body">Ribbit・Addition・Valor・<b>JPMorganChase Strategic Investment Group</b>が主導。設置<b>23,000台超</b>（テキサス＋シカゴ圏）、<b>500MWh超</b>、月<b>~40MW</b>ペース。2026E Revenue <b>~$70M</b>。</div>
+    </div></div>
+  </div>
+
+  <div class="callout">
+    <strong>スケールの実感</strong>：月40MWの新設は年換算で <strong>米国の2025年グリッド新設容量の約2%</strong> に相当する。1社の家庭用蓄電池が、国全体の新設電源の50分の1を積んでいる計算になる。10ヶ月で<strong>評価額 $4B → $13B（3.25倍）</strong>という値付けは、この設置ペースの傾きに対して払われている。
+  </div>
+</div>
+
+<!-- 6 FUNDING -->
+<div class="sec" id="funding">
+  <div class="sec-label"><span class="num">6</span> Funding &amp; Investors</div>
+  <h2>18ヶ月で $200M → $2.5B</h2>
+  <div class="f-stack">
+    <div class="f-card corp">
+      <span class="r-badge">Series D</span>
+      <span class="f-amount">$1B</span>
+      <div class="f-detail"><div class="f-date">2026年8月 &nbsp;/&nbsp; post-money $13B</div>
+      <div class="f-desc">Ribbit、Addition、Valor Equity Partners、JPMorganChase Strategic Investment Group が主導。既存投資家も参加。同時にBase Coreを発表。</div></div>
+    </div>
+    <div class="f-card corp">
+      <span class="r-badge">Series C</span>
+      <span class="f-amount">$1B</span>
+      <div class="f-detail"><div class="f-date">2025年10月 &nbsp;/&nbsp; post-money $4B</div>
+      <div class="f-desc">Addition主導。a16z、Valor、Thrive、Lightspeed など<b>既存投資家が全員リアップ</b>。Series Bから6ヶ月。</div></div>
+    </div>
+    <div class="f-card gov">
+      <span class="r-badge">Series B</span>
+      <span class="f-amount">$200M</span>
+      <div class="f-detail"><div class="f-date">2025年4月 &nbsp;/&nbsp; post-money $841M</div>
+      <div class="f-desc">設置費$695への値下げが効き始めた直後。ここから成長が加速。</div></div>
+    </div>
+  </div>
+
+  <h3>主要投資家</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead"><span class="lead-tag">Lead</span>
+      <div class="vc-name">Addition</div><div class="vc-role">Series C / D lead</div>
+      <div class="vc-desc">Lee Fixel。Series C・Dを連続でリード。ハード＋ソフト混成の資本集約モデルに継続でベット。</div></div>
+    <div class="vc-card lead"><span class="lead-tag">Lead</span>
+      <div class="vc-name">Ribbit Capital</div><div class="vc-role">Series D lead</div>
+      <div class="vc-desc">フィンテック投資の名門。Baseを「電力を原資産にしたトレーディング／ファイナンス事業」と見ている、と読める布陣。</div></div>
+    <div class="vc-card">
+      <div class="vc-name">Valor Equity Partners</div><div class="vc-role">B / C / D</div>
+      <div class="vc-desc">Tesla・SpaceXの初期から量産スケールに張ってきた投資家。製造フェーズの伴走役。</div></div>
+    <div class="vc-card">
+      <div class="vc-name">Andreessen Horowitz (a16z)</div><div class="vc-role">American Dynamism</div>
+      <div class="vc-desc">「SpaceX/Andurilの手法をグリッドへ」という論陣を張り、テーゼの言語化を担っている。</div></div>
+    <div class="vc-card">
+      <div class="vc-name">JPMorganChase SIG</div><div class="vc-role">Series D</div>
+      <div class="vc-desc">戦略投資部門の参加は、<b>設備ファイナンス（1台$10Kの資金調達）</b>という次の勝負所を睨んだ布石と読める。</div></div>
+    <div class="vc-card">
+      <div class="vc-name">Thrive Capital / Lightspeed</div><div class="vc-role">Early</div>
+      <div class="vc-desc">Thriveは創業のきっかけ（Anduril投資）そのもの。Dellはここ出身。</div></div>
+  </div>
+</div>
+
+<!-- 7 CUSTOMERS -->
+<div class="sec" id="customers">
+  <div class="sec-label"><span class="num">7</span> Customers &amp; Partners</div>
+  <h2>主要顧客・パートナー</h2>
+  <div class="t-wrap"><table class="t">
+    <tr><th>相手</th><th>種別</th><th>内容</th></tr>
+    <tr><td>戸建て世帯</td><td>Direct</td><td>23,000台超（テキサス／シカゴ圏）。契約者は電気代10〜20%減と説明される</td></tr>
+    <tr><td>Lennar</td><td>住宅ビルダー</td><td>2025年4月時点で新築200台超に標準搭載。<b>1棟ずつ営業しなくていい</b>チャネル</td></tr>
+    <tr><td>El Paso Electric</td><td>電力会社</td><td>10MWパイロット。<b>規制州でも組める</b>ことの実証</td></tr>
+    <tr><td>Austin Energy</td><td>市営電力</td><td>地元・オースティンの公営ユーティリティとの連携</td></tr>
+    <tr><td>CoServ</td><td>電力協同組合</td><td>上記3社合計で<b>200MW超</b>の容量パートナーシップ</td></tr>
+  </table></div>
+  <div class="callout">
+    顧客ポートフォリオの読みどころは、<strong>「自由化市場では自分が小売業者として売り、規制市場ではユーティリティのパートナーとして入る」</strong>という二正面戦略。前者はマージンが厚いが<strong>16州しかない</strong>。後者はマージンが薄い代わりに<strong>米国全土が対象になる</strong>。$13Bの値付けは、後者が回ることを前提にしている。
+  </div>
+</div>
+
+<!-- 8 PEERS -->
+<div class="sec" id="peers">
+  <div class="sec-label"><span class="num">8</span> Peer Comparison</div>
+  <h2>競合の決算読み比べ（Q2 2026）</h2>
+  <div class="t-wrap"><table class="t">
+    <tr><th>企業</th><th>Revenue (Q2 FY26)</th><th>Net Income</th><th>Storage 実績</th><th>モデルの違い</th></tr>
+    <tr><td>Tesla（Energy）</td><td>—（全社に内包）</td><td>—</td><td>四半期<b>13.5 GWh</b>（+41% YoY、過去2番目）</td><td>機器を<b>売る</b>。Powerwall/Megapackの製造販売。VPPは付随サービス</td></tr>
+    <tr><td>Sunrun (RUN)</td><td><b>$870.0M</b></td><td>$115.2M（$0.42/dil.）</td><td>Q2設置 332MWh / ネットワーク<b>4.6 GWh</b>／契約者 1,034,738</td><td>太陽光＋蓄電のリース。<b>最も近い先行モデル</b>。蓄電池付帯率は過去最高74%</td></tr>
+    <tr><td>Enphase (ENPH)</td><td><b>$291.9M</b></td><td>—</td><td>IQ Battery 出荷 113.8MWh（Q1: 103.1MWh）</td><td>部品（マイクロインバータ／蓄電）を<b>売る</b>。系統運用は他社任せ</td></tr>
+    <tr><td>Generac (GNRC)</td><td>—</td><td>—</td><td>PWRcell 2（3–36kWh、$14K–25K設置込み）</td><td>発電機の会社。停電対策市場での正面の競合</td></tr>
+    <tr><td>Base Power</td><td>~$70M（<b>通年2026E</b>）</td><td>非公開（赤字前提）</td><td>累計 <b>500MWh超</b> / 月~40MW</td><td>機器を<b>売らない</b>。所有したまま卸市場で回す</td></tr>
+  </table></div>
+
+  <div class="callout">
+    <strong>読み比べのポイント</strong>：Sunrunは契約者<strong>103万</strong>・ネットワーク蓄電<strong>4.6GWh</strong>で四半期売上$870M。Baseはまだ<strong>2.3万台・0.5GWh</strong>で通年$70M —— 規模では<strong>1桁以上の差</strong>がある。にもかかわらずBaseの評価額<strong>$13B</strong>は、Sunrunの時価総額<strong>~$2.4B</strong>（2026年8月）の<strong>5倍超</strong>。市場が値付けしているのは<strong>今の売上ではなく、①設置ペースの傾き ②「機器を売らない」構造の粗利の質 ③製造内製化によるコストカーブ</strong>の3点。<br>
+    また、Teslaの家庭用（Powerwall 3、~13.5–15kWh、設置込み~$15K）に対し、BaseはBase Coreで<strong>39.2kWhを初期$695</strong>で置く。<strong>「同じ土俵で価格勝負をしていない」</strong>——顧客から回収しないぶんを卸市場で取り返す設計になっている。
+  </div>
+
+  <h3>家庭用蓄電池の価格帯（参考）</h3>
+  <div class="t-wrap"><table class="t">
+    <tr><th>製品</th><th>容量</th><th>顧客負担</th></tr>
+    <tr><td>Tesla Powerwall 3</td><td>~13.5–15 kWh/台</td><td>~$15,000（設置込み）</td></tr>
+    <tr><td>sonnen ecoLinx</td><td>10–60 kWh（積層）</td><td>~$11,500〜</td></tr>
+    <tr><td>Enphase IQ Battery</td><td>10 kWh モジュール</td><td>~$2,000/モジュール</td></tr>
+    <tr><td>Generac PWRcell 2</td><td>3–36 kWh</td><td>$14,000–25,000</td></tr>
+    <tr><td><b>Base Core</b></td><td><b>39.2 / 78.4 kWh</b></td><td><b>$695 ＋ $19/月</b></td></tr>
+  </table></div>
+</div>
+
+<!-- 9 JAPAN -->
+<div class="sec" id="japan">
+  <div class="sec-label"><span class="num">9</span> Japan</div>
+  <h2>日本企業の繋がり — 資本関係は無い。ただし「2026年4月」が効いてくる</h2>
+  <p>
+    現時点で<strong>Base Powerに日本企業の出資・供給関係は確認できない</strong>（投資家は米系VCとJPMorgan、製造はオースティン内製、セルは外部調達だが日本勢ではない）。したがってここは「繋がり」ではなく、<strong>日本側に同じ構造があるか</strong>という読み比べになる。
+  </p>
+
+  <h3>最も近い日本のプレイヤー</h3>
+  <div class="t-wrap"><table class="t">
+    <tr><th>企業</th><th>取り組み</th><th>Baseとの差</th></tr>
+    <tr><td>伊藤忠商事</td><td>家庭用蓄電池「Smart Star」＋AI制御ソフト「グリッドシェア」。<b>累計約60,000台（約700MWh / 180MW相当、2025年1月末）</b></td><td>台数ではBase（2.3万台/500MWh）を<b>上回る</b>。ただし<b>機器は顧客が買う</b>ので、卸で回して稼ぐ構造にはなっていない</td></tr>
+    <tr><td><a href="260627_nichicon_deep_research.html">ニチコン</a></td><td>国内家庭用蓄電池・V2Hの最大手メーカー</td><td>あくまで<b>機器メーカー</b>。小売電気事業と一体ではない</td></tr>
+    <tr><td>新電力各社</td><td>小売電気事業（REP相当）</td><td>2016年の全面自由化以降も、<b>ハードを配って囲い込む</b>モデルはほぼ出ていない</td></tr>
+  </table></div>
+
+  <h3>なぜ日本でBase型が出てこなかったか</h3>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">卸価格のボラティリティが小さい</div><div class="ind-desc">Baseの利益源はERCOTの<b>日中10倍・$4+/kWh級</b>のスパイク。JEPXにも高騰局面はあるが、常態としてのスプレッドはテキサスほど厚くない。<b>アービトラージが太らない</b>。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">停電が少ない</div><div class="ind-desc">「年に何度も停電する」というBaseの営業フックが、日本では効かない。バックアップ需要の切迫度が違う。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">低圧リソースが市場に入れなかった</div><div class="ind-desc">家庭用の蓄電池・EVを束ねて<b>需給調整市場</b>で売る道が、制度的に開いていなかった。</div></div></div>
+  </div>
+
+  <div class="callout">
+    <strong>ただし③は2026年4月に変わった</strong>。家庭用蓄電池・EV・V2H機器といった<strong>低圧リソースがアグリゲーター経由で需給調整市場へ参入解禁</strong>された。矢野経済研究所はERAB（エネルギー・リソース・アグリゲーション・ビジネス）市場が<strong>2025年度 約255億円 → 2030年度 430億円超</strong>に拡大すると見る。<br>
+    ——とはいえ<strong>430億円（~$290M）は、Base 1社の2026年見込 $70M と同じオーダー</strong>。日本の制度上の窓は開いたが、<strong>市場そのものの厚みがまだ2桁足りない</strong>というのが正直な読み。日本でやるなら「卸アービトラージ」ではなく、<strong>調整力の容量価値＋停電以外の便益（自家消費最適化・電気代削減）</strong>を主軸に組み替える必要がある。
+  </div>
+</div>
+
+<!-- 10 RISKS -->
+<div class="sec" id="risks">
+  <div class="sec-label"><span class="num">10</span> Risks &amp; Thesis</div>
+  <h2>リスクと論点</h2>
+
+  <div class="warn-box">
+    <div class="w-title">Risks</div>
+    <ul>
+      <li><b>自己否定的な収益構造（最大の論点）</b> — アービトラージ益は<b>卸価格のスプレッド</b>が源泉。ところが蓄電池が系統に増えるほどスプレッドは潰れる。実際、2026年7月のテキサス需要記録日には蓄電池がピークで<b>12GW</b>（2年前の3倍）を供給し、卸価格は<b>$0.30/kWh</b>まで低下した（2023–24年のピークは$4+、<b>約93%の下落</b>）。<b>Baseが成功すればするほど、Baseの主収益源が縮む。</b></li>
+      <li><b>資本集約</b> — 1台のNet Capexが~$7K。100万台なら<b>$7B規模</b>の設備資金が要る。JPMorganの参加はここへの布石だが、金利環境と設備ファイナンスの調達力が成長速度を直接縛る。</li>
+      <li><b>市場の限界</b> — 小売自由化は<b>16州のみ</b>。規制州ではユーティリティのパートナーとしてしか入れず、マージンは薄い。Contraryも「自由化市場の外で成立しないなら、良いビジネスではなくなる」と指摘している。</li>
+      <li><b>系統側の物理制約</b> — 近隣の柱上変圧器の増強に<b>1台~$2K</b>。全ての配電設備が家庭蓄電池の一斉放電に耐えるわけではない。</li>
+      <li><b>制度依存</b> — IRAの30%控除（OBBBAで2033年まで延長）が前提。政権交代で税額控除が縮めば回収年数が伸びる。</li>
+      <li><b>顧客体験</b> — Googleレビューは4.8/5と高いがBBBに苦情4件。内容は主に<b>電話サポートのつながりにくさ</b>。契約前の確認点として「系統緊急時に保証される最低残量%」「撤去費用」「悪天候時にグリッド供出を拒否できるか」が挙げられている。<b>停電時に電池が空だった</b>という事故が一度でも大きく報じられれば、営業フックそのものが折れる。</li>
+    </ul>
+  </div>
+
+  <h3>強気側のテーゼ</h3>
+  <p>
+    a16zの整理が最も筋が通っている ——<strong>発電コストは崩落した（太陽光は2010年比で90%減）が、届けるコスト（送配電）が高騰している</strong>。2025年、米国の電気料金はインフレの2倍超で上昇したが、原因は発電の不足ではなく<strong>老朽化した系統</strong>だ。そして<strong>2026年7月時点で約2,600GWが系統接続の順番待ち</strong>——既存の系統容量1,279GWの2倍がキューに詰まっている。
+  </p>
+  <p>
+    ここでBaseの構造的優位が効く。<strong>家庭の壁際には、接続順待ちも、用地も、送電線も要らない</strong>。site・grid connection・宅内配線を<strong>顧客が無償で提供している</strong>のと同じであり、設置は1時間未満。系統用蓄電池が2〜5年かかる接続キューを、<strong>丸ごと迂回する</strong>。
+  </p>
+</div>
+
+<!-- 11 VALUATION -->
+<div class="sec" id="valuation">
+  <div class="sec-label"><span class="num">11</span> Valuation分析（NFA）</div>
+  <h2>$13B は何に対して払われているか</h2>
+  <p>
+    2026E Revenue ~$70M に対して post-money $13B。単純計算で <strong>~185× forward revenue</strong>。SaaSの尺度なら異常値で、これは<strong>売上倍率で議論する対象ではない</strong>ことを意味する。値付けの実体は「今のP/L」ではなく「<strong>設置ペースの傾き × 1台あたりの生涯価値</strong>」に対する賭けになっている。
+  </p>
+
+  <h3>Bull</h3>
+  <div class="callout">
+    1台のNet Capex ~$7K に対して年間収益 ~$1.4–1.6K、寿命15年。<strong>回収後の10年以上はほぼ丸ごと利益</strong>で、しかも資産は自社に残る（電力会社と同じ<em>rate base</em>的な性質）。<br>
+    Sunrunの契約者<strong>103万世帯</strong>を到達可能な規模の目安とすれば、100万台 × 年$1.5K ＝ <strong>年$1.5B規模の収益</strong>。粗利率がユーティリティ並みでも、$13Bは前倒しに過ぎないとは言い切れない水準に入る。加えて、<strong>Base Factory 1の内製化でコストカーブを自分で握る</strong>（Gen2→Coreで容量+57%・コスト横ばい）。設置ペースは<strong>月20台/日 → 月40MW</strong>と1年で桁が変わった。この傾きが続くなら、$13Bは「2028年の姿」への前払いになる。
+  </div>
+
+  <h3>Bear</h3>
+  <div class="callout">
+    <strong>①スプレッド消滅</strong>：主収益のアービトラージは、テキサスで既に<strong>$4+/kWh → $0.30/kWh（-93%）</strong>と潰れ始めている。Base自身がその原因の一部だ。年$40/kWhという前提が半分になれば、回収年数は3年から6年に伸び、ユニットエコノミクスの前提が崩れる。<br>
+    <strong>②$7B級の設備資金</strong>：スケールにはバランスシートが要る。エクイティで賄えばダイリューション、デットで賄えば金利リスク。<strong>成長速度が資本市場の機嫌に直結する</strong>。<br>
+    <strong>③TAMの天井</strong>：自由化16州。規制州はユーティリティ経由で薄利。$13Bは「全米で回る」前提の値付けであり、そこが崩れると倍率は一気に重くなる。<br>
+    <strong>④参入障壁の質</strong>：セルを作らない＝ハードの堀は「パック統合と設置オペレーション」。Tesla・Sunrun・NRGが同じサブスク型に本気で降りてきたとき、何年ぶんのリードがあるかは未検証。
+  </div>
+
+  <p style="font-size:12.5px;color:var(--muted)">
+    ※ NFA（Not Financial Advice）。未上場のため一般投資家が買える対象ではない。見るべきは株価ではなく、<strong>「設置ペース（月MW）」と「1kWhあたり年間収益」の2指標</strong>。後者が$40/kWhから崩れ始めたら、このモデルの前提が変わったサインになる。
+  </p>
+</div>
+
+<!-- 12 WHY NOW -->
+<div class="sec" id="why-now">
+  <div class="sec-label"><span class="num">12</span> Why Now</div>
+  <h2>なぜ今見るべきか</h2>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">AIの電力需要が「系統」で詰まっている</div><div class="ind-desc">ERCOTの接続キューには約2,000件・<b>466,497MW</b>の申請が積み上がり、その<b>9割がデータセンター</b>。これは現在のピーク需要記録の5倍超にあたる。発電を建てても<b>繋がらない</b>。この構図は<a href="260401_power_dc_startups.html">電力・DC領域スタートアップ</a>の全社に共通する制約で、Baseは<b>需要側から解く</b>唯一に近い解答。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">「Power / Cooling / Location」のうち2つに効く</div><div class="ind-desc">AIインフラの3制約のうち、Baseは<b>Power（ピーク時の容量）</b>と<b>Location（送電を要さず需要地に置ける）</b>に同時に効く。核融合やSMRが2030年代の解であるのに対し、こちらは<b>今日設置して今日効く</b>。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">ハードのサブスク化が電力に到達した</div><div class="ind-desc">「機器を売らず、所有したまま稼働で回収する」——SaaSでもリースでもない、<b>資産を持ったまま市場で運用する</b>形。Ribbit（フィンテック投資家）のリードは、これが<b>エネルギーを原資産にした金融事業</b>として見られていることを示している。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">日本にも2026年4月に窓が開いた</div><div class="ind-desc">低圧リソースの需給調整市場参入が解禁。<b>制度は追いついた</b>が、市場規模（ERAB 2030年度430億円超）はまだ小さい。日本版を考えるなら、収益源をアービトラージから<b>調整力＋自家消費最適化</b>に組み替える設計が要る。</div></div></div>
+  </div>
+</div>
+
+<!-- 13 QA -->
+<div class="sec qa" id="qa">
+  <div class="sec-label"><span class="num">13</span> Q&amp;A</div>
+  <h2>よくある疑問</h2>
+  <details>
+    <summary>Base Powerは電力会社？ それともバッテリー会社？</summary>
+    <div class="qa-a">両方で、そこが肝。テキサスでは<b>REP（小売電気事業者）</b>として登録して電気を売り、同時に<b>顧客の家に自社所有の蓄電池を置く</b>。集まった電池を卸市場で運用するので<b>発電事業者</b>でもある。この「発電＋小売」の一体型を<b>gentailer</b>と呼ぶ。バッテリーは商品ではなく<b>自社の生産設備</b>で、顧客の敷地を無償で借りて設置している、と捉えると構造が見える。</div>
+  </details>
+  <details>
+    <summary>なぜ$10,000する設備を$695で置けるの？</summary>
+    <div class="qa-a">顧客から回収しないから。IRAの税額控除で<b>~30%（~$3K）</b>が戻り、残り~$7Kは<b>卸市場での運用益（年~$1,200）＋月額$19＋小売マージン</b>で<b>3〜4年</b>で回収する設計。保証は15年なので、回収後の10年以上が利益期間になる。要するに<b>顧客に売る商売ではなく、顧客の家を発電所の敷地として使う商売</b>。</div>
+  </details>
+  <details>
+    <summary>蓄電池が普及したら、価格差がなくなって儲からなくなるのでは？</summary>
+    <div class="qa-a"><b>その通りで、これがこの会社の最大のリスク</b>。2026年7月のテキサスの需要記録日、蓄電池はピークで<b>12GW</b>（2年前の3倍）を供給し、卸価格は<b>$0.30/kWh</b>に収まった。2023–24年のピークは<b>$4+/kWh</b>だったので<b>約93%の下落</b>。Baseは自分の収益源を自分で潰しながら成長している。<br>反論としては、①スプレッドが縮んでも<b>回数（サイクル）</b>で取り返せる ②収益を<b>容量価値・調整力</b>など他のレイヤーへ移せる ③そもそもBaseは<b>電気を売る小売の顧客基盤</b>を持っているのでARPUの取り方を変えられる、といった線。どれが効くかはまだ検証されていない。</div>
+  </details>
+  <details>
+    <summary>Teslaのパワーウォールと何が違う？</summary>
+    <div class="qa-a">売り方が根本的に違う。Powerwall 3は<b>~13.5–15kWhを設置込み~$15,000で買う</b>製品。Base Coreは<b>39.2kWhを$695＋月$19で「置いてもらう」</b>。<br>この差は利害の向きを変える。機器を売るモデルでは<b>大容量＝顧客の負担増</b>なので小さく作る力学が働くが、Baseは<b>大きいほど取引できるkWhが増えて自社が儲かる</b>。だから容量を積極的に増やす（Gen2の25kWh→Coreの39.2kWhで+57%、コストは横ばい）。ただしTeslaは<b>製造規模が桁違い</b>（四半期13.5GWh）で、本気でサブスク型に降りてきたときの脅威は残る。</div>
+  </details>
+  <details>
+    <summary>なぜテキサスから始めたの？ 他の州には広げられる？</summary>
+    <div class="qa-a">テキサス（ERCOT）は<b>約8割が自由化</b>され、REPが<b>140社超</b>ひしめき、卸価格が<b>15分ごとに、日中10倍</b>動く。さらに2000–2023年で<b>210回</b>の気象起因の停電がある。<b>アービトラージの旨みと、停電対策の切実さが同時に揃う</b>唯一に近い市場だった。<br>拡大は2ルート。①<b>自由化州</b>（全米16州）へ自社REPとして展開——2026年に<b>イリノイ（PJM）</b>へ進出済み。②<b>規制州</b>ではユーティリティのパートナーとして入る——El Paso Electric・Austin Energy・CoServと合計<b>200MW超</b>。②が本当に回るかが$13Bの前提。</div>
+  </details>
+  <details>
+    <summary>日本で同じことはできる？</summary>
+    <div class="qa-a">制度の窓は<b>2026年4月に開いた</b>——家庭用蓄電池・EV・V2Hといった<b>低圧リソースの需給調整市場参入が解禁</b>された。ただし収益構造はそのままでは移植できない。①JEPXのスプレッドがERCOTほど厚くない ②停電が少なく「バックアップが欲しい」という営業フックが弱い ③ERAB市場全体でも<b>2030年度430億円超</b>（Base 1社の2026年見込$70Mと同オーダー）。<br>日本版を組むなら、稼ぎ頭を<b>アービトラージから「調整力の容量価値＋自家消費最適化による電気代削減」</b>に置き換える設計になる。プレイヤーとしては伊藤忠（Smart Star＋グリッドシェア、累計約6万台/700MWh）が最も近い位置にいるが、<b>機器を顧客に売っている</b>点でBaseとは構造が違う。</div>
+  </details>
+</div>
+
+<!-- SOURCES -->
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li>Base Power — Businesswire PR「$1B Series D / Base Core」（2026/8/3）</li>
+    <li>Electrek — Base Core スペック・Factory 1・パートナー（2026/8/3）</li>
+    <li>pv magazine USA — 39.2kWh Base Core / $1B（2026/8/4）</li>
+    <li>Sacra — Base Power revenue / valuation / 展開（2026）</li>
+    <li>Contrary Research — Business Breakdown &amp; Founding Story</li>
+    <li>a16z — Base Power &amp; the Future of Electricity</li>
+    <li>Wikipedia — Base Power (company)</li>
+    <li>TechCrunch / Canary Media — Series C $1B（2025/10/8）</li>
+    <li>Texas Monthly — 「Michael Dell's Son Raised $1 Billion...」</li>
+    <li>Sunrun — Q2 2026 Financial Results（2026/8/5）/ stockanalysis 時価総額</li>
+    <li>Enphase / Tesla — Q2 2026 実績（IQ Battery 出荷 / 13.5GWh）</li>
+    <li>伊藤忠商事 — Smart Star・グリッドシェア 事業ページ</li>
+    <li>SOLAR JOURNAL / 矢野経済研究所 — 2026年4月 低圧リソース解禁・ERAB市場</li>
+    <li>ElectricityPlans / BBB — Base Power 顧客評価・苦情</li>
+    <li>Texas Tribune / ERCOT — 接続キュー・データセンター需要</li>
+  </ul>
+</div>
+
+<p style="font-size:11px;color:var(--dim);margin-top:24px;text-align:center;overflow-wrap:anywhere">
+  Researched 2026-08-29 &nbsp;·&nbsp; Web調査（創業・製品・調達・競合決算・日本の制度）、推定値には確度を明記 &nbsp;·&nbsp; 030_research/035_company/260829_base_power_deep_research.html
+</p>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+</body>
+</html>
