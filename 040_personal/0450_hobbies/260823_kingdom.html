@@ -170,6 +170,29 @@
   .strow .v{font-size:.8rem; font-weight:600; text-align:right; font-variant-numeric:tabular-nums;}
   .strow.grade .v{font-size:.85rem;}
 
+  /* ── 詳解タブ ── */
+  .dd{margin-top:16px;}
+  .ddhead{border:1px solid var(--line); border-radius:12px; background:var(--panel); padding:18px 20px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .ddhead h2{margin:0; font-size:1.15rem; font-weight:700; letter-spacing:.01em;}
+  .ddhead .ddsub{font-size:.76rem; color:var(--muted); margin-top:4px;}
+  .ddhead .ddlead{font-size:.9rem; font-weight:500; margin-top:11px; padding:10px 12px; background:var(--soft); border:1px solid var(--line); border-radius:9px;}
+  .ddpart{border:1px solid var(--line); border-radius:12px; background:var(--panel); padding:16px 20px 14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .ddpart > h3{margin:0 0 2px; font-size:1rem; font-weight:700; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .ddpart .ddep{font-size:.72rem; font-weight:500; color:var(--muted); border:1px solid var(--line2); border-radius:999px; padding:1px 9px;}
+  .ddpart p{font-size:.88rem; color:#333; margin:9px 0 0;}
+  .ddpart .ddnote{font-size:.8rem; color:var(--muted); margin-top:9px; padding-left:11px; border-left:2px solid var(--line2);}
+  .dditem{display:grid; grid-template-columns:132px 1fr; gap:0 16px; padding:9px 0; border-top:1px solid var(--line); margin-top:9px;}
+  .dditem:first-of-type{margin-top:11px;}
+  .dditem .ih{font-size:.82rem; font-weight:600;}
+  .dditem .ib{font-size:.87rem; color:#333; margin:0;}
+  @media (max-width:640px){ .dditem{grid-template-columns:1fr; gap:3px;} .dditem .ih{color:var(--muted);} }
+  .ddtable{margin-top:11px; border:1px solid var(--line); border-radius:9px; overflow-x:auto;}
+  .ddtable table{min-width:420px; width:100%;}
+  .ddtable th{background:var(--head); color:var(--muted); font-size:.76rem; font-weight:500; white-space:nowrap;}
+  .ddtable td{font-size:.85rem; white-space:normal; vertical-align:top;}
+  .ddtable td:first-child{white-space:nowrap; font-weight:600; width:1%;}
+  .ddsrc{font-size:.72rem; color:var(--muted); margin:4px 0 0;}
+
   /* ── 詳細ドロワー ── */
   .drawerhost{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:50;}
   .drawerhost .drawer{pointer-events:auto;}
@@ -223,6 +246,7 @@
         <button class="tab on" data-view="graph">グラフ</button>
         <button class="tab" data-view="table">テーブル</button>
         <button class="tab" data-view="story">あらすじ</button>
+        <button class="tab" data-view="deep">詳解</button>
       </div>
       <div class="search" id="searchbox">
         <span class="ico">⌕</span>
@@ -276,6 +300,11 @@
       </table>
       <div class="empty" id="tempty" style="display:none">該当なし</div>
     </div>
+  </div>
+
+  <div id="view-deep" style="display:none">
+    <div class="dd" id="deep"></div>
+    <div class="empty" id="dempty" style="display:none">該当なし</div>
   </div>
 
   <div id="view-story" style="display:none">
@@ -447,11 +476,11 @@
   document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
     S.view = t.dataset.view;
     document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
-    ["graph","table","story"].forEach(v => {
+    ["graph","table","story","deep"].forEach(v => {
       document.getElementById("view-" + v).style.display = S.view === v ? "" : "none";
     });
     // 種別・国フィルタは人物/戦い一覧にだけ効くので、あらすじでは隠す
-    document.querySelectorAll("#filterrow .chipset").forEach(c => c.style.display = S.view === "story" ? "none" : "");
+    document.querySelectorAll("#filterrow .chipset").forEach(c => c.style.display = (S.view === "story" || S.view === "deep") ? "none" : "");
     render();
     if (S.view === "graph") { sim.alpha = .35; tick(); }
   });
@@ -854,6 +883,52 @@
     return rows.length;
   }
 
+  /* ============ 詳解 ============ */
+  const DEEP = KINGDOM.deepdives || [];
+  DEEP.forEach(d => {
+    d._hay = [d.title, d.sub, d.lead,
+      (d.parts||[]).map(p => [p.h, p.ep, (p.body||[]).join(" "), (p.items||[]).map(i => i.join(" ")).join(" "),
+        p.table ? p.table.head.join(" ") + p.table.rows.map(r => r.join(" ")).join(" ") : "", p.note||""].join(" ")).join(" "),
+      [...(d.keys||[]), ...(d.battles||[])].map(k => byId[k] ? byId[k].name + " " + byId[k].yomi : "").join(" ")
+    ].join(" ").toLowerCase();
+  });
+  const deepEl = document.getElementById("deep");
+  function renderDeep(){
+    let shown = 0;
+    deepEl.innerHTML = DEEP.map(d => {
+      const parts = (d.parts||[]).filter(p => {
+        if (!S.q) return true;
+        const hay = [p.h, p.ep, (p.body||[]).join(" "), (p.items||[]).map(i => i.join(" ")).join(" "),
+                     p.table ? p.table.head.join(" ") + p.table.rows.map(r => r.join(" ")).join(" ") : "", p.note||""].join(" ").toLowerCase();
+        return hay.indexOf(S.q) >= 0;
+      });
+      if (S.q && !parts.length && d._hay.indexOf(S.q) < 0) return "";
+      shown += parts.length;
+      const chips = ids => ids.filter(k => byId[k])
+        .map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("");
+      return '<section><div class="ddhead"><h2>' + esc(d.title) + '</h2>' +
+          '<div class="ddsub">' + esc(d.sub) + '</div>' +
+          '<p class="ddlead">' + esc(d.lead) + '</p></div>' +
+        parts.map(p =>
+          '<div class="ddpart"><h3>' + esc(p.h) + (p.ep ? '<span class="ddep">' + esc(p.ep) + '</span>' : "") + '</h3>' +
+          (p.body||[]).map(b => '<p>' + esc(b) + '</p>').join("") +
+          (p.table ? '<div class="ddtable"><table><thead><tr>' +
+              p.table.head.map(h => '<th>' + esc(h) + '</th>').join("") + '</tr></thead><tbody>' +
+              p.table.rows.map(r => '<tr>' + r.map(c => '<td>' + esc(c) + '</td>').join("") + '</tr>').join("") +
+            '</tbody></table></div>' : "") +
+          (p.items||[]).map(i => '<div class="dditem"><div class="ih">' + esc(i[0]) + '</div><p class="ib">' + esc(i[1]) + '</p></div>').join("") +
+          (p.note ? '<p class="ddnote">' + esc(p.note) + '</p>' : "") +
+          '</div>').join("") +
+        ((d.battles||[]).length ? '<div class="ddpart"><div class="fl">この章の戦い</div><div class="rels">' + chips(d.battles) + '</div></div>' : "") +
+        ((d.keys||[]).length ? '<div class="ddpart"><div class="fl">登場人物</div><div class="rels">' + chips(d.keys) + '</div>' +
+            (d.src ? '<p class="ddsrc">' + esc(d.src) + '</p>' : "") + '</div>' : "") +
+        '</section>';
+    }).join("");
+    deepEl.querySelectorAll(".rel").forEach(b => b.onclick = () => open(b.dataset.id));
+    document.getElementById("dempty").style.display = deepEl.textContent.trim() ? "none" : "";
+    return shown;
+  }
+
   /* ============ 詳細ドロワー ============ */
   const drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim");
   function open(id){
@@ -940,6 +1015,11 @@
     const vis  = N.filter(passFilter);
     document.getElementById("count").textContent =
       (S.view === "table" ? rows.length + " 件" : vis.length + " ノード / " + sim.links.length + " 関係");
+    if (S.view === "deep"){
+      const n = renderDeep();
+      document.getElementById("count").textContent = n + " / " + DEEP.reduce((a,d) => a + (d.parts||[]).length, 0) + " パート";
+      return;
+    }
     if (S.view === "story"){
       document.getElementById("count").textContent = renderStory() + " / " + ARCS.length + " 章";
       return;
