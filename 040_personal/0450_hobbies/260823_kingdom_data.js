@@ -37,19 +37,19 @@ const KINGDOM = {
   faces: {
     dir: "kingdom_faces/",
     ids: ["akakin", "akou", "bajio", "bakukoshin", "banaji", "bankyoku", "banyou", "chougaryuu",
-      "chousou", "choutou", "chuutetsu", "denei", "denrimi", "denyuu", "en", "futei",
-      "fuuki", "gaimou", "gakurai", "garo", "gekishin", "genpou", "genu", "gohoumei",
-      "gokei", "goumasho", "gyouun", "hairou", "hakurei", "heki", "houken", "hyou",
-      "hyoukou", "kaine", "kaishibou", "kan'ou", "kanki", "kanmei", "kanpishi", "kanto",
-      "karin", "keisha", "ketsushi", "kisui", "kochou", "kokuou", "kouyoku", "kyogai",
-      "kyou", "kyouen", "kyoukai", "kyoushou", "kyuugen", "makou", "manu", "maron",
-      "moubu", "mougou", "mouten", "naki", "obei", "obito", "ogiko", "orudo",
-      "ouhon", "ouki", "ousen", "raido", "rakushou", "rankai", "renpa", "riboku",
-      "rinbukun", "ringyoku", "rinko", "risi", "rokuomi", "ryofui", "ryusen", "ryuyuu",
-      "saitaku", "saji", "sei", "seikai", "seikyou", "sentoun", "shibashou", "shiishi",
-      "shika", "shin", "shoubunkun", "shouheikun", "shousa", "shunmen", "shunshinkun", "shunsuiju",
-      "soou", "sosui", "suugen", "tajifu", "takuke", "tenn", "tou", "youtanwa",
-      "yuren", "zenou"]
+      "chousou", "choutou", "chuutetsu", "denei", "denrimi", "denyuu", "en", "entei",
+      "futei", "fuuki", "gaimou", "gakurai", "gakyou", "garo", "gekishin", "genpou",
+      "genu", "gohoumei", "gokei", "goumasho", "gyouun", "hairou", "hakurei", "heki",
+      "houken", "hyou", "hyoukou", "kaine", "kaishibou", "kan'ou", "kanki", "kanmei",
+      "kanpishi", "kanto", "karin", "keisha", "ketsushi", "kisui", "kochou", "kokuou",
+      "kouyoku", "kyogai", "kyou", "kyouen", "kyoukai", "kyoumei", "kyoushou", "kyuugen",
+      "makou", "manu", "maron", "moubu", "mougou", "mouten", "naki", "obei",
+      "obito", "ogiko", "orudo", "ouhon", "ouki", "ousen", "raido", "rakushou",
+      "rankai", "renpa", "riboku", "rinbukun", "ringyoku", "rinko", "risi", "rokuomi",
+      "ryofui", "ryusen", "ryuyuu", "saitaku", "saji", "sei", "seikai", "seikyou",
+      "sentoun", "shibashou", "shiishi", "shika", "shin", "shoubunkun", "shouheikun", "shousa",
+      "shunmen", "shunshinkun", "shunsuiju", "soou", "sosui", "suugen", "tajifu", "takuke",
+      "tenn", "tou", "youtanwa", "yuren", "zenou"]
   },
 
   /* 人物プロフィール（node id → 詳細）
@@ -269,7 +269,10 @@ const KINGDOM = {
     "genu": {age:"40代", rank:"将軍", arms:"剣", debutManga:"原作 第650話", stats:{bu:88, shiki:88, chi:90, kei:"A"}, statsSrc:"公式ガイドブック", src:"Gen'U"},
     "goumasho": {age:"40代", rank:"将軍", arms:"剣", debutManga:"原作 第295話", debutAnime:"アニメ 第3期 第9話", stats:{bu:80, shiki:86, chi:89, kei:"B"}, statsSrc:"公式ガイドブック", src:"Gou Ma Sho"},
     "gekishin": {epithet:"燕の救世主", rank:"大将軍", arms:"矛", debutManga:"原作 第114話", debutAnime:"アニメ 第2期 第37話", stats:{bu:90, shiki:95, chi:92, kei:"A"}, statsSrc:"公式ガイドブック", src:"Geki Shin"},
-    "kanpishi": {age:"40代", debutManga:"原作 第495話", debutAnime:"アニメ 第6期 第2話", src:"Kan Pishi"}
+    "kanpishi": {age:"40代", debutManga:"原作 第495話", debutAnime:"アニメ 第6期 第2話", src:"Kan Pishi"},
+    "kyoumei": {epithet:"儀式から逃げた者", debutManga:"原作 第357話", src:"Kyou Mei"},
+    "gakyou": {debutManga:"原作 第94話（回想）", src:"Ga Kyou"},
+    "entei": {stats:{bu:88, shiki:70, chi:75, kei:"D"}, statsSrc:"公式ガイドブック", debutManga:"原作 第82話", src:"En Tei"}
   },
 
   nodes: [
@@ -826,7 +829,14 @@ const KINGDOM = {
     summary:"歴代『蚩尤』の座を継承儀式で争う、山中の暗殺者一族。",
     detail:[
       {h:"儀式", body:"数十年に一度、一族の精鋭が殺し合い、最後の一人が『蚩尤』を襲名する。羌瘣の過去そのもの。"},
-      {h:"武", body:"呼吸を用いた『巫舞』により、一時的に人間離れした速度を得る。"}
+      {h:"武", body:"呼吸を用いた『巫舞』により、一時的に人間離れした速度を得る。"},
+      {h:"千年の一族", body:"戦国の世よりはるか以前から活動してきた暗殺者の一族で、千年以上にわたって鬼と恐れられてきた。秦と魏の山中に散らばりながら、どの国にも属していない。"},
+      {h:"十九の族", body:"歴史のある時点で十九の族に分かれ、それぞれが蚩尤の名を継ぐ者を育てることに一族の全部を懸けている。作中で名が出るのは羌族・幽族・峨族の三つ。族ごとに衣装も鉢巻の紋様も違う。"},
+      {h:"剣は神具だった", body:"元来は舞で神を祀る巫女の一族で、剣は人を斬る道具ではなく天を敬うための神具だった。やがて人が天より人の強さを恐れるようになり、一族は闇へ降りて別のものに変わっていった。"},
+      {h:"儀式の設計", body:"情は強さに要らないという教えのもと、あえて仲の良い二人を同じ族の候補に選ぶ。そのうえで一人しか生き残れない儀式に放り込む。候補同士の共闘は禁じられているが、長老の同意があれば例外が認められる。"},
+      {h:"蚩尤の条件", body:"蚩尤と呼ばれる条件は二つ。人間離れした剣技と、行く手を阻む者なら肉親でも斬れる非情さ。幽連はその両方を満たして名を継いだ。"},
+      {h:"武神との関係", body:"武神の側からは神降ろしと呼ばれている。両者の流派は五百年以上前に同じ一本から分かれたとされ、羌瘣と龐煖の対立は、その分岐した二つの道の衝突でもある。"},
+      {h:"朱凶という配下", body:"のちに朱凶となる一族は、二百年以上にわたって蚩尤に仕えてきた。蚩尤の巫女に強い敬意を払う立場で、暗殺集団としての朱凶の背景はここにある。"}
     ],
     rel:[]
   },
@@ -1435,7 +1445,8 @@ const KINGDOM = {
     detail:[{h:"役割", body:"逃亡中の政・信・河了貂を執拗に追う序盤の脅威。"},
       {h:"その後", body:"王都奪還の過程で退けられ、以後は表に出てこない。呂不韋派が刺客を放てるという事実だけが後の章に残る。"},
       {h:"集団", body:"呂氏陣営の要請で嬴政の暗殺を請け負った刺客集団。族長は物静かだが実力は確かな燕程で、実働の一人が徐完。"},
-      {h:"何をしたか", body:"政と信を執拗に追い、黒卑村では里典の息子・有の脚を刺して信の行き先を尋問した。暗殺そのものは号馬の乱入によって機を失い、燕程は一度捕縛されるも脱走している。"}],
+      {h:"何をしたか", body:"政と信を執拗に追い、黒卑村では里典の息子・有の脚を刺して信の行き先を尋問した。暗殺そのものは号馬の乱入によって機を失い、燕程は一度捕縛されるも脱走している。"},
+      {h:"蚩尤の配下だった一族", body:"朱凶はもともと蚩尤に二百年以上仕えてきた一族で、蚩尤の巫女に対して強い敬意を持っていた。序盤では単なる刺客集団に見えるが、羌瘣の一族と主従で繋がっている背景がある。"}],
     battles:["b_outo"],
     rel:[{to:"sei", label:"標的"},{to:"shin", label:"交戦"},{to:"ryofui", label:"依頼を受ける"}]
   },
@@ -1472,7 +1483,10 @@ const KINGDOM = {
     detail:[{h:"意味", body:"羌瘣が復讐に取り憑かれる理由そのもの。二人で里を出る約束が果たされなかった。"},
       {h:"人物像", body:"面倒見がよく優しい一方、自分の腕には強い自信を持っていた。羌瘣にとっては姉であり、里の外の世界を教えてくれた唯一の相手。"},
       {h:"小ネタ", body:"子どもの生まれ方について、羌瘣にでたらめを教え込んでいたことがある。"},
-      {h:"最期", body:"蚩尤となって外の世界を見たいという気持ちと、妹同然の羌瘣を殺めたくないという気持ちが葛藤し、“祭”の日に羌瘣を香で眠らせて一人で挑むが、幽連に謀殺された。白鳳はのちに羌礼へ受け継がれる。"}],
+      {h:"最期", body:"蚩尤となって外の世界を見たいという気持ちと、妹同然の羌瘣を殺めたくないという気持ちが葛藤し、“祭”の日に羌瘣を香で眠らせて一人で挑むが、幽連に謀殺された。白鳳はのちに羌礼へ受け継がれる。"},
+      {h:"二歳上の姉貴分", body:"羌瘣より二歳上で、里では姉のように振る舞っていた。十五で死にたくない、外の世界を見てから死にたいと願う一方、羌瘣の手にかかるならそれでもいいとまで思っていた。"},
+      {h:"眠り薬", body:"儀式の前夜、羌象は羌瘣に眠り薬を盛って儀式に出られないようにした。自分が勝って蚩尤になり、そのうえで二人で里を出るというのが本来の計画だった。"},
+      {h:"包囲", body:"計画は幽連に読まれる。最大の脅威として全候補の包囲を受け、それでも一人で全員を相手に持ちこたえた末に討たれた。羌瘣を除けば、候補の中で頭ひとつ抜けた腕前だったと語られている。"}],
     battles:[],
     rel:[{to:"kyoukai", label:"妹分"},{to:"yuren", label:"殺された"},{to:"f_shiyuu", label:"一族"}]
   },
@@ -1484,9 +1498,54 @@ const KINGDOM = {
     detail:[{h:"因縁", body:"羌瘣が飛信隊を一時離れてまで追う相手。巫舞の練度は羌瘣を上回る。"},
       {h:"決着", body:"羌瘣との死闘の末に討たれる。これにより羌瘣は復讐から解放され、飛信隊へ戻る。"},
       {h:"人物像", body:"暗殺者として育てられ、情を断つために実の姉妹まで手にかけた。冷酷で傲慢、手段も選ばない。異名は蚩尤。"},
-      {h:"最期", body:"楼山（ろうざん）で羌瘣に討たれる。"}],
+      {h:"最期", body:"楼山（ろうざん）で羌瘣に討たれる。"},
+      {h:"正式な蚩尤", body:"幽連は儀式を勝ち抜いて蚩尤の名を正式に継いだ人物。腕だけでなく策で勝った点が特徴で、暗殺という仕事に合わせて、影に潜み相手を欺くための訓練を積み重ねてきた。"},
+      {h:"掟の抜け道", body:"候補同士の共闘は掟で禁じられているが、長老の同意があれば例外が認められる。幽連はこれを利用し、最大の脅威である羌象を全員で潰すよう他の候補たちを説得した。羌象を仕留めた後、残りの候補も自分で片付けている。"},
+      {h:"妹殺し", body:"究極の蚩尤に至るため、最後に残った実の妹を自らの手にかけた。情を断って空になることが強さだという一族の教えを、誰よりも忠実に実行した人物だった。"},
+      {h:"最期の問い", body:"羌瘣に敗れて死ぬ間際、巫舞の思想と蚩尤の教えに対する反証が存在することに恐怖する。自分が最強でないなら、これまでやってきたことは何だったのかと問い、羌瘣も同じ場所に堕ちると言い残して息絶えた。"}],
     battles:[],
     rel:[{to:"kyoukai", label:"仇敵"},{to:"kyoushou", label:"殺害"},{to:"f_shiyuu", label:"一族"}]
+  },
+
+  /* ───────────── 蚩尤族（羌瘣の一族） ───────────── */
+  {
+    id:"kyoumei", name:"羌明", yomi:"きょうめい", kind:"person", state:"蚩尤", group:"羌族",
+    role:"蚩尤族の元候補", klass:"刺客", first:"34巻", arc:"羌瘣の復讐編", status:"存命",
+    tags:["蚩尤","儀式","逃亡"],
+    summary:"儀式の前夜に恐怖から逃げ出した候補。追手を斬り殺して生き延びた。",
+    detail:[
+      {h:"逃亡",body:"十五の時、自分は誰にも負けないと信じていたが、各族の候補が次々に集まってくるのを見て、自分の順位がどれほど低いかを思い知る。勝ち目がないと悟った儀式の前夜、羌明は里から逃げ出した。"},
+      {h:"追手を斬る",body:"追ってきた同族八人のうち七人を斬り殺して逃げ延びる。正気を失いかけた獣のような生存本能で、里の掟より自分の命を選んだ。"},
+      {h:"意味",body:"儀式に出て死んだ者、勝って蚩尤になった者、そして逃げた者。羌明は三つ目の道を示す存在で、羌瘣が選ばなかった選択肢そのものとして置かれている。"}
+    ],
+    battles:[],
+    rel:[{to:"f_shiyuu", label:"羌族"},{to:"kyoukai", label:"同族"},{to:"yuren", label:"同期の候補"}]
+  },
+  {
+    id:"gakyou", name:"峨郷", yomi:"がきょう", kind:"person", state:"蚩尤", group:"峨族",
+    role:"蚩尤族 峨族の候補", klass:"刺客", first:"10巻（回想）", arc:"蚩尤編（回想）", status:"戦死",
+    tags:["蚩尤","峨族","儀式"],
+    summary:"峨族から儀式に出た剣士。羌象を潰すための包囲に加わった一人。",
+    detail:[
+      {h:"峨族",body:"蚩尤の十九の族のうち、作中で名前が出る三族のひとつ峨族の候補。族ごとに衣装も鉢巻の紋様も異なり、峨郷もその族の印を背負って儀式に臨んだ。"},
+      {h:"儀式",body:"幽連の説得に乗り、最大の脅威だった羌象へ全員で襲いかかる側に回る。掟では候補同士の共闘は禁じられているが、長老の同意があれば例外が認められるという抜け道が使われた。"},
+      {h:"最期",body:"羌象を仕留めた後、幽連によって残りの候補もろとも片付けられる。共闘を持ちかけた側が最後に全部を刈り取るという構図だった。"}
+    ],
+    battles:[],
+    rel:[{to:"yuren", label:"共闘"},{to:"kyoushou", label:"襲撃"},{to:"f_shiyuu", label:"峨族"}]
+  },
+  {
+    id:"entei", name:"円貞", yomi:"えんてい", kind:"person", state:"蚩尤", group:"朱凶",
+    role:"朱凶の刺客", klass:"刺客", first:"9巻", arc:"暗殺者編", status:"存命",
+    tags:["朱凶","蚩尤","刺客","暗殺者編"],
+    summary:"朱凶に属する刺客。武力88の使い手で、蚩尤の系譜に連なる。",
+    detail:[
+      {h:"朱凶と蚩尤",body:"朱凶はもともと二百年以上にわたって蚩尤に仕えてきた一族で、蚩尤の巫女に強い敬意を払ってきた。円貞はその朱凶の刺客であり、羌瘣の一族とは主従の側から繋がっている。"},
+      {h:"腕",body:"武力88と、名のある将にも届く水準の使い手。暗殺という仕事に最適化された動きで、正面からの戦いを前提とする武将とは戦い方の質が違う。"},
+      {h:"暗殺者編",body:"呂不韋側の意を受けて政の命を狙う一連の動きの中で姿を見せる。朱凶という集団が単なる雑兵ではなく、背景を持った一族であることを示す人物。"}
+    ],
+    battles:[],
+    rel:[{to:"shukyou", label:"所属"},{to:"f_shiyuu", label:"仕える"},{to:"sei", label:"標的"},{to:"kyoukai", label:"同系譜"}]
   },
 
   /* ───────────── 趙 ───────────── */
@@ -2887,7 +2946,10 @@ const KINGDOM = {
       {h:"人物", body:"羌族の少女で現・蚩尤。羌瘣の側近で、得物は羌象の形見でもある「白鳳」。15巻の巻末おまけ漫画で初登場し、663話で本編に登場した。"},
       {h:"祭", body:"幽連の死が知れ渡って行われた“祭”で、姉貴分の羌識とともに最後まで勝ち残る。一騎討ちの寸前で羌識が斬るのを止めた隙に勢いで刺し殺してしまい、蚩尤となった。しかしそのことで精神に異常をきたし、殺すことを楽しむ残忍な性格に変貌する。"},
       {h:"飛信隊へ", body:"鄴編後に邯鄲南部戦線に突如現れ、趙兵を殺し回って飛信隊のもとに来る。捕虜も平然と殺す軍律違反を重ねて崇原に追放を言い渡され、真の目的は羌瘣を殺すことだと明かす。羌瘣との決闘の最中に羌識の最期の言葉を思い出して正気に戻り、和解した。"},
-      {h:"その後", body:"以降は明朗な性格に戻り、羌瘣の側近として歩兵隊の主力に。影丘では瀕死の王賁を救い、難所攻めでは先陣を切って拠点確保に貢献した。尾平の結婚披露宴のあと、昂に求婚されている。存命。"}
+      {h:"その後", body:"以降は明朗な性格に戻り、羌瘣の側近として歩兵隊の主力に。影丘では瀕死の王賁を救い、難所攻めでは先陣を切って拠点確保に貢献した。尾平の結婚披露宴のあと、昂に求婚されている。存命。"},
+      {h:"四人の里", body:"羌族の里では、羌象・羌瘣・羌識とともに長老に育てられた。幼い頃の回想では、食事当番なのに蛙を一匹しか獲ってこなかった羌瘣を、三人がかりで責めている場面がある。殺し屋の養成所であると同時に、姉妹の家でもあった。"},
+      {h:"腕", body:"公式の数値では武力93に伸びしろの記号が付く、蚩尤の名に恥じない使い手。巫舞を扱える体質と、そのための修練を幼少期から積んでいる。"},
+      {h:"外の世界", body:"蚩尤の里の外に対する好奇心が異常に強く、見るもの触れるものを片端から面白がる。里に閉じ込められた候補たちが本当は何を見たかったのかを、そのまま体現している人物でもある。"}
     ],
     battles:["b_heiyou","b_gian","b_bango"],
     rel:[{to:"kyoukai",label:"側近"},{to:"kyoushiki",label:"姉貴分を殺す"},{to:"kyoushou",label:"形見を継ぐ"},{to:"kou",label:"求婚される"},{to:"suugen",label:"追放を言い渡される"},{to:"ouhon",label:"救う"},{to:"fuon",label:"斬る"}]
@@ -2899,7 +2961,8 @@ const KINGDOM = {
     summary:"斬るのを躊躇って羌礼に刺された姉貴分。その最期の一言が羌礼を正気に戻した。",
     detail:[
       {h:"人物", body:"羌族の次の代の蚩尤候補で、羌礼の姉貴分。非常に寡黙だが、外の世界に少なからず興味を抱いていた。"},
-      {h:"最期", body:"“祭”では羌礼とともに最後まで残り一騎討ちになるが、寸前で羌礼を斬るのを躊躇って止めたことで、逆に刺されて死亡。死の間際、羌礼に生き延びてほしかったと告げて息を引き取った。この言葉が、後に狂った羌礼を正気に戻すきっかけになる。"}
+      {h:"最期", body:"“祭”では羌礼とともに最後まで残り一騎討ちになるが、寸前で羌礼を斬るのを躊躇って止めたことで、逆に刺されて死亡。死の間際、羌礼に生き延びてほしかったと告げて息を引き取った。この言葉が、後に狂った羌礼を正気に戻すきっかけになる。"},
+      {h:"四人の里", body:"羌象・羌瘣・羌礼とともに長老に育てられた四人のうちの一人。寡黙だが妹分の羌礼を誰より気にかけており、羌瘣に対して、自分ではなく羌礼に技を教えてやってほしいと頼んだこともある。"}
     ],
     battles:[],
     rel:[{to:"kyourei",label:"妹分に討たれる"},{to:"f_shiyuu",label:"羌族"}]
@@ -3969,9 +4032,9 @@ const KINGDOM = {
       {ep:"23話", h:"次の階段", body:"百人将になった信は、武功の先にあるものを意識し始める。剣の腕だけでは隊は動かせず、隊を動かせなければ将にはなれない。"},
       {ep:"24話", h:"来たる大戦の影", body:"趙が動き出す気配が濃くなる。次の戦は国境の小競り合いではなく、両国の主力がぶつかる規模になる。"}
     ],
-    keys:["shin", "kyoukai", "sei", "ryofui", "moubu", "shouheikun", "risi", "saitaku", "en", "rokuomi", "kyoushou", "yuren"],
+    keys:["shin", "kyoukai", "sei", "ryofui", "moubu", "shouheikun", "risi", "saitaku", "en", "rokuomi", "kyoushou", "yuren", "entei"],
     battles:[],
-    newcomers:["kyoushou", "yuren", "moubu", "risi", "saitaku", "shouheikun", "en", "rokuomi"],
+    newcomers:["kyoushou", "yuren", "moubu", "risi", "saitaku", "shouheikun", "en", "rokuomi", "entei", "gakyou"],
     deaths:[]
   },
   {
@@ -4134,9 +4197,9 @@ const KINGDOM = {
       {ep:"26話", h:"幽連との決着", body:"羌象を手にかけた幽連との死闘。復讐が終わったあと、羌瘣に残るのは目的のない自由と、帰る場所としての飛信隊だった。"},
       {ep:"26話", h:"帰る場所", body:"復讐が終わったあとに残るのは、目的のない自由と、帰る場所としての飛信隊だった。以後の羌瘣は『誰かのために戦う』側に立つ。"}
     ],
-    keys:["kyoukai", "kyoushou", "yuren", "shin", "tenn", "f_shiyuu"],
+    keys:["kyoukai", "kyoushou", "yuren", "shin", "tenn", "f_shiyuu", "kyoumei", "gakyou"],
     battles:[],
-    newcomers:[],
+    newcomers:["kyoumei"],
     deaths:["yuren"]
   },
   {
@@ -4310,7 +4373,7 @@ const KINGDOM = {
       {ep:"—", h:"秦・魏の同盟", body:"三年の同盟を結んだ秦と魏が、楚の要衝を共同で攻める。蒙武が楚の猛将・満羽と真正面からぶつかり、武で押し切る将の到達点が描かれる。"},
       {ep:"—", h:"蚩尤、再び", body:"羌瘣を名指しで訪ねてくる蚩尤族の剣士が現れる。終わったはずの過去が、別の形で飛信隊の前に戻ってくる。"}
     ],
-    keys:["riboku", "moubu", "kyoukai", "shin", "f_shiyuu", "f_so", "karin", "manu", "sentoun", "genu", "kouen"],
+    keys:["riboku", "moubu", "kyoukai", "shin", "f_shiyuu", "f_so", "karin", "manu", "sentoun", "genu", "kouen", "kyourei", "kyoushiki"],
     battles:[],
     newcomers:["manu", "sentoun", "genu"],
     deaths:[]
