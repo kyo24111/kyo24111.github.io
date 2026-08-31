@@ -40,16 +40,16 @@ const KINGDOM = {
       "chousou", "choutou", "chuutetsu", "denei", "denrimi", "denyuu", "en", "entei",
       "futei", "fuuki", "gaimou", "gakurai", "gakyou", "garo", "gekishin", "genpou",
       "genu", "gohoumei", "gokei", "goumasho", "gyouun", "hairou", "hakurei", "heki",
-      "houken", "hyou", "hyoukou", "kaine", "kaishibou", "kan'ou", "kanki", "kanmei",
-      "kanpishi", "kanto", "karin", "keisha", "ketsushi", "kisui", "kochou", "kokuou",
-      "kouyoku", "kyogai", "kyou", "kyouen", "kyoukai", "kyoumei", "kyoushou", "kyuugen",
-      "makou", "manu", "maron", "moubu", "mougou", "mouten", "naki", "obei",
-      "obito", "ogiko", "orudo", "ouhon", "ouki", "ousen", "raido", "rakushou",
-      "rankai", "renpa", "riboku", "rinbukun", "ringyoku", "rinko", "risi", "rokuomi",
-      "ryofui", "ryusen", "ryuyuu", "saitaku", "saji", "sei", "seikai", "seikyou",
-      "sentoun", "shibashou", "shiishi", "shika", "shin", "shoubunkun", "shouheikun", "shousa",
-      "shunmen", "shunshinkun", "shunsuiju", "soou", "sosui", "suugen", "tajifu", "takuke",
-      "tenn", "tou", "youtanwa", "yuren", "zenou"]
+      "houken", "hyou", "hyoukou", "jokan", "kaine", "kaishibou", "kan'ou", "kanki",
+      "kanmei", "kanpishi", "kanto", "karin", "keisha", "ketsushi", "kisui", "kochou",
+      "kokuou", "kouyoku", "kyogai", "kyou", "kyouen", "kyoukai", "kyoumei", "kyoushou",
+      "kyuugen", "makou", "manu", "maron", "moubu", "mougou", "mouten", "muta",
+      "naki", "obei", "obito", "ogiko", "orudo", "ouhon", "ouki", "ousen",
+      "raido", "rakushou", "rankai", "renpa", "riboku", "rinbukun", "ringyoku", "rinko",
+      "risi", "rokuomi", "ryofui", "ryusen", "ryuyuu", "saitaku", "saji", "sei",
+      "seikai", "seikyou", "sentoun", "shibashou", "shiishi", "shika", "shin", "shoubunkun",
+      "shouheikun", "shousa", "shunmen", "shunshinkun", "shunsuiju", "soou", "sosui", "suugen",
+      "tajifu", "takuke", "tenn", "tou", "youtanwa", "yuren", "zenou"]
   },
 
   /* 人物プロフィール（node id → 詳細）
@@ -272,7 +272,9 @@ const KINGDOM = {
     "kanpishi": {age:"40代", debutManga:"原作 第495話", debutAnime:"アニメ 第6期 第2話", src:"Kan Pishi"},
     "kyoumei": {epithet:"儀式から逃げた者", debutManga:"原作 第357話", src:"Kyou Mei"},
     "gakyou": {debutManga:"原作 第94話（回想）", src:"Ga Kyou"},
-    "entei": {stats:{bu:88, shiki:70, chi:75, kei:"D"}, statsSrc:"公式ガイドブック", debutManga:"原作 第82話", src:"En Tei"}
+    "entei": {stats:{bu:88, shiki:70, chi:75, kei:"D"}, statsSrc:"公式ガイドブック", debutManga:"原作 第82話", src:"En Tei"},
+    "jokan": {epithet:"漂を討った刺客", debutManga:"原作 第5話", src:"Jo Kan"},
+    "muta": {epithet:"毒使い", debutManga:"原作 第7話", debutAnime:"アニメ 第1期 第3話", src:"Muta"}
   },
 
   nodes: [
@@ -1546,6 +1548,134 @@ const KINGDOM = {
     ],
     battles:[],
     rel:[{to:"shukyou", label:"所属"},{to:"f_shiyuu", label:"仕える"},{to:"sei", label:"標的"},{to:"kyoukai", label:"同系譜"}]
+  },
+
+  /* ───────────── 蚩尤の族 ───────────── */
+  {
+    id:"f_kyouzoku", name:"羌族", yomi:"きょうぞく", kind:"faction", state:"蚩尤", group:"蚩尤の十九族",
+    role:"蚩尤族の一族", klass:"勢力", first:"9巻", arc:"蚩尤編", status:"—",
+    tags:["蚩尤","羌瘣","十九族"],
+    summary:"羌瘣・羌象・羌礼・羌識を育てた族。作中でもっとも深く描かれる蚩尤の一族。",
+    detail:[
+      {h:"育て方", body:"長老が幼い娘たちを引き取り、巫舞・剣術・暗殺術を叩き込む。羌象・羌瘣・羌識・羌礼の四人は姉妹のように育てられ、そのうえで一人しか生き残れない儀式に送り出される。"},
+      {h:"儀式で失ったもの", body:"羌象を儀式で失い、後年の祭では羌識も失った。族としては蚩尤を二度輩出しながら、その代償に何人もの娘を失っている。"},
+      {h:"現在", body:"羌瘣は秦の将となり、羌礼は現・蚩尤として羌瘣のもとにいる。里の外へ出た二人が族の系譜をそのまま平地へ持ち出した形になっている。"}
+    ],
+    rel:[{to:"f_shiyuu", label:"十九族の一"},{to:"kyoukai", label:"出身"},{to:"kyoushou", label:"出身"},{to:"kyourei", label:"出身"},{to:"kyoushiki", label:"出身"},{to:"kyoumei", label:"出身"}]
+  },
+  {
+    id:"f_yuuzoku", name:"幽族", yomi:"ゆうぞく", kind:"faction", state:"蚩尤", group:"蚩尤の十九族",
+    role:"蚩尤族の一族", klass:"勢力", first:"17巻", arc:"蚩尤編", status:"—",
+    tags:["蚩尤","幽連","楼山","十九族"],
+    summary:"先代の蚩尤・幽連を出した族。趙の楼山に本拠を置く。",
+    detail:[
+      {h:"本拠", body:"趙の楼山に拠点を構えており、羌瘣が仇を追ってたどり着いたのもこの山。あの山が今の蚩尤・幽連の本拠だ、という言い方で作中に登場する。"},
+      {h:"幽連の代", body:"幽連が蚩尤の名を継いだことで、族としての力も一族の中で大きくなった。蚩尤という称号が、単なる個人の名誉ではなく族の勢力に直結することが分かる。"},
+      {h:"終わり方", body:"羌瘣が楼山で幽連を討ったことで、幽族が握っていた蚩尤の座は空く。次にその座を継ぐのは羌族の羌礼になる。"}
+    ],
+    rel:[{to:"f_shiyuu", label:"十九族の一"},{to:"yuren", label:"出身"},{to:"kyoukai", label:"討たれる"}]
+  },
+  {
+    id:"f_gazoku", name:"峨族", yomi:"がぞく", kind:"faction", state:"蚩尤", group:"蚩尤の十九族",
+    role:"蚩尤族の一族", klass:"勢力", first:"10巻（回想）", arc:"蚩尤編（回想）", status:"—",
+    tags:["蚩尤","峨郷","十九族"],
+    summary:"峨郷を儀式に送り出した族。作中で名前の出る三族のひとつ。",
+    detail:[
+      {h:"位置づけ", body:"羌族・幽族と並んで作中で名前が確認できる蚩尤の族。族ごとに候補者の衣装も鉢巻の紋様も異なり、峨郷もその印を背負って儀式に出た。"},
+      {h:"儀式での役回り", body:"峨郷は幽連の説得に乗り、最大の脅威だった羌象を全員で潰す側に加わる。族の垣根を越えた共闘が、掟の例外として認められた場面でもある。"}
+    ],
+    rel:[{to:"f_shiyuu", label:"十九族の一"},{to:"gakyou", label:"出身"}]
+  },
+
+  /* ───────────── 蚩尤以外の暗殺者一族 ───────────── */
+  {
+    id:"f_shukyou", name:"朱凶一族", yomi:"しゅきょう", kind:"faction", state:"複数", group:"暗殺者一族",
+    role:"暗殺者の氏族", klass:"勢力", first:"2巻", arc:"王都奪還編〜", status:"—",
+    tags:["暗殺者","蚩尤","破門","円貞"],
+    summary:"二百年以上蚩尤に仕え、のちに破門された暗殺者一族。頭領は円貞。",
+    detail:[
+      {h:"蚩尤との関係", body:"二百年以上前から蚩尤に仕えてきた一族で、いまも蚩尤の巫女には強い敬意を払う。秦での氏族会合では、他の一族が見ている前で羌瘣に膝をついたほど。"},
+      {h:"破門", body:"ある時点で理由の明かされないまま蚩尤から破門され、追放された。にもかかわらず敬意だけは残しているという、ねじれた関係が続いている。"},
+      {h:"見た目", body:"深紅と黒の長衣をまとい、目の周りに紋様を入れる。作中で確認できるのは男性の構成員のみ。"},
+      {h:"作中での役回り", body:"序盤では成蟜派や呂不韋派に雇われて政の命を狙う実行部隊として現れる。頭領の円貞は、かなりの遣い手だと噂される人物。"}
+    ],
+    rel:[{to:"f_shiyuu", label:"元・臣従"},{to:"entei", label:"頭領"},{to:"shukyou", label:"同一勢力"},{to:"jokan", label:"構成員"},{to:"kyoukai", label:"敬意"}]
+  },
+  {
+    id:"f_kensen", name:"剣仙一族", yomi:"けんせん", kind:"faction", state:"複数", group:"暗殺者一族",
+    role:"暗殺者の氏族", klass:"勢力", first:"9巻", arc:"暗殺者編", status:"—",
+    tags:["暗殺者","誇り","暗殺者編"],
+    summary:"暗殺者は影で働くべきという信条を持つ主要氏族。蚩尤にだけは敬意を払う。",
+    detail:[
+      {h:"信条", body:"暗殺者は影で仕事をするものであり、戦場に出るべきではないという考えを持つ。自分たちの腕への誇りが強く、他の氏族には敵意を向けるが、蚩尤に対してだけは一定の敬意を示す。"},
+      {h:"暗殺者編", body:"呂不韋に雇われ、蚩尤・朱凶・剛摩・赫力とともに王宮へ潜入する。しかし信に真正面から七人を斬られ、残った二人は態勢を立て直すために退いた。"},
+      {h:"意味", body:"暗殺者という職能が一つの巨大な世界を成していることを示す一族。羌瘣の異常さが、その世界の中でどれだけ突出しているかを測る物差しにもなっている。"}
+    ],
+    rel:[{to:"f_shiyuu", label:"敬意"},{to:"shin", label:"交戦"},{to:"ryofui", label:"雇われる"}]
+  },
+  {
+    id:"f_gouma", name:"剛摩一族", yomi:"ごうま", kind:"faction", state:"複数", group:"暗殺者一族",
+    role:"暗殺者の氏族", klass:"勢力", first:"9巻", arc:"暗殺者編", status:"—",
+    tags:["暗殺者","選民意識","暗殺者編"],
+    summary:"闇に溶ける装束をまとう氏族。他の暗殺者を格下と見なす選民意識が強い。",
+    detail:[
+      {h:"装束", body:"背景に溶ける暗色の衣をまとい、口と鼻を覆う面をつける。髪は後ろで束ね、剣は背中に負う。"},
+      {h:"気質", body:"他の暗殺者一族を格下と見下す傲慢さがある一方、警戒すべき相手には全力を出す慎重さも持つ。標的を潰すためなら数の有利を平然と使う。"},
+      {h:"蚩尤への態度", body:"見下し癖のある一族だが、蚩尤に対してだけは相応の敬意を示す。暗殺者の世界における蚩尤の別格ぶりが、ここでも確認できる。"}
+    ],
+    rel:[{to:"f_shiyuu", label:"敬意"},{to:"ryofui", label:"雇われる"},{to:"f_kensen", label:"同席"}]
+  },
+  {
+    id:"f_kakuriki", name:"赫力一族", yomi:"かくりき", kind:"faction", state:"複数", group:"暗殺者一族",
+    role:"暗殺者の氏族", klass:"勢力", first:"9巻", arc:"暗殺者編", status:"—",
+    tags:["暗殺者","怪力","暗殺者編"],
+    summary:"筋骨隆々の男たちで構成される力任せの氏族。技より膂力で殺す。",
+    detail:[
+      {h:"見た目", body:"眉のない坊主頭で、衣の下に異様に発達した肉体を持つ。力を出すときは顔に血管が浮き上がる。"},
+      {h:"やり方", body:"言葉づかいは粗く、目の前の敵には即座に襲いかかる。技巧で仕留める他の一族と違い、単純な膂力で標的を潰しにいく。"},
+      {h:"暗殺者編", body:"王宮に潜入した際、迷い込んできた河了貂の首を掴んで殺そうとしたところへ羌瘣が現れる。この場面が、羌瘣という個人と暗殺者一族の格差をはっきり見せた。"}
+    ],
+    rel:[{to:"f_shiyuu", label:"同席"},{to:"tenn", label:"襲う"},{to:"kyoukai", label:"制圧される"},{to:"ryofui", label:"雇われる"}]
+  },
+  {
+    id:"f_bessa", name:"伯紗族", yomi:"はくさぞく", kind:"faction", state:"楚", group:"南方の部族",
+    role:"南方の毒の部族", klass:"勢力", first:"1巻", arc:"王都奪還編", status:"—",
+    tags:["毒","楚","南方","ムタ"],
+    summary:"かすり傷でも人が死ぬ毒を扱う、楚の南東に住む部族。",
+    detail:[
+      {h:"毒", body:"吹き矢に塗られた毒は、かすっただけで命を奪う。技でも力でもなく毒で殺すという、暗殺者の世界でも異質な手段を持つ。"},
+      {h:"土地", body:"かつて越と呼ばれた地域の南、楚の南東の海沿いに住む。中華の戦乱からは距離のある場所で、外から来た依頼を受けて動く。"},
+      {h:"作中での登場", body:"王都奪還編で、ムタが政・信・河了貂を追う刺客として現れる。匂いで標的を追う嗅覚と追跡能力を見せた。後年、秦が楚を攻めた際には楚の側で戦っている。"}
+    ],
+    rel:[{to:"muta", label:"出身"},{to:"f_so", label:"協力"},{to:"sei", label:"標的"}]
+  },
+
+  /* ───────────── 刺客（個人） ───────────── */
+  {
+    id:"jokan", name:"徐完", yomi:"じょかん", kind:"person", state:"複数", group:"朱凶",
+    role:"朱凶の刺客", klass:"刺客", first:"1巻", arc:"王都奪還編", status:"戦死",
+    tags:["朱凶","刺客","漂","初戦"],
+    summary:"漂を死に至らしめた刺客。信が生涯で最初に討った敵。",
+    detail:[
+      {h:"何をした男か", body:"成蟜派に雇われて政の暗殺を請け負った朱凶の刺客。王騎軍が王の護衛部隊を襲った混乱の中で、影武者だった漂に致命傷を与えた張本人にあたる。"},
+      {h:"人物", body:"自分の腕に自信を持つ一方、追い込まれると搦め手に走る。同情を引いて相手の警戒を緩めさせようとするなど、狡猾で傲慢な質だった。"},
+      {h:"最期", body:"信との命のやり取りに敗れて討たれる。信が生死を賭けた戦いで倒した最初の相手であり、この一戦から信の戦歴が始まる。"}
+    ],
+    battles:["b_outo"],
+    rel:[{to:"hyou", label:"討った"},{to:"shin", label:"討たれた"},{to:"f_shukyou", label:"所属"},{to:"seikyou", label:"雇われる"},{to:"sei", label:"標的"}]
+  },
+  {
+    id:"muta", name:"ムタ", yomi:"むた", kind:"person", state:"楚", group:"伯紗族",
+    role:"伯紗族の刺客", klass:"刺客", first:"1巻", arc:"王都奪還編", status:"戦死",
+    tags:["毒","伯紗族","刺客","王都奪還編"],
+    summary:"楚の南から来た毒使い。逃亡中の政たちを執拗に追った。",
+    detail:[
+      {h:"毒使い", body:"我が毒に敵はいないと言い切る吹き矢の使い手。かすり傷でも致命傷になる伯紗族の毒を武器に、正面からの戦闘力とは別の脅威として立ちはだかる。"},
+      {h:"人物", body:"自分の部族と戦い方に強い誇りを持ち、伯紗族の流儀が他のどの流派にも劣らないと繰り返し証明しようとした。標的に至る道を塞ぐ者は誰であれ殺す。"},
+      {h:"見た目", body:"蓑のような外套を羽織り、顔には塗料を入れている。河了貂の格好とよく似ており、中華の外から来た者という印象を強く与える。"}
+    ],
+    battles:["b_outo"],
+    rel:[{to:"f_bessa", label:"出身"},{to:"sei", label:"標的"},{to:"shin", label:"交戦"},{to:"tenn", label:"交戦"}]
   },
 
   /* ───────────── 趙 ───────────── */
@@ -3956,9 +4086,9 @@ const KINGDOM = {
       {ep:"11話", h:"成蟜との対決", body:"『王族の血こそすべて』と信じる王弟・成蟜に対し、政は別の物差しを突きつける。王座は政の手に戻り、信は下僕の身分から武功による士官へ。二人の少年が、それぞれの立ち位置で最初の一段を上がる。"},
       {ep:"—", h:"この束のテーマ", body:"血筋か、それを超えるものか。王も将も生まれで決まらない、という物語全体の前提がこの章で置かれる。"}
     ],
-    keys:["shin", "hyou", "sei", "tenn", "seikyou", "youtanwa", "bajio", "tajifu", "shunmen", "shoubunkun", "heki", "rankai", "saji", "ketsushi", "shiishi"],
+    keys:["shin", "hyou", "sei", "tenn", "seikyou", "youtanwa", "bajio", "tajifu", "shunmen", "shoubunkun", "heki", "rankai", "saji", "ketsushi", "shiishi", "jokan", "muta", "f_shukyou", "f_bessa"],
     battles:["b_outo"],
-    newcomers:["hyou", "shin", "shoubunkun", "mougou", "sei", "tenn", "ketsushi", "rankai", "seikyou", "ouki", "shiishi", "heki", "ryofui", "bajio", "tajifu", "youtanwa", "saji", "shunmen", "tou"],
+    newcomers:["hyou", "shin", "shoubunkun", "mougou", "sei", "tenn", "ketsushi", "rankai", "seikyou", "ouki", "shiishi", "heki", "ryofui", "bajio", "tajifu", "youtanwa", "saji", "shunmen", "tou", "jokan", "muta"],
     deaths:["hyou"]
   },
   {
@@ -4032,7 +4162,7 @@ const KINGDOM = {
       {ep:"23話", h:"次の階段", body:"百人将になった信は、武功の先にあるものを意識し始める。剣の腕だけでは隊は動かせず、隊を動かせなければ将にはなれない。"},
       {ep:"24話", h:"来たる大戦の影", body:"趙が動き出す気配が濃くなる。次の戦は国境の小競り合いではなく、両国の主力がぶつかる規模になる。"}
     ],
-    keys:["shin", "kyoukai", "sei", "ryofui", "moubu", "shouheikun", "risi", "saitaku", "en", "rokuomi", "kyoushou", "yuren", "entei"],
+    keys:["shin", "kyoukai", "sei", "ryofui", "moubu", "shouheikun", "risi", "saitaku", "en", "rokuomi", "kyoushou", "yuren", "entei", "f_kensen", "f_gouma", "f_kakuriki", "f_shukyou"],
     battles:[],
     newcomers:["kyoushou", "yuren", "moubu", "risi", "saitaku", "shouheikun", "en", "rokuomi", "entei", "gakyou"],
     deaths:[]
@@ -4197,7 +4327,7 @@ const KINGDOM = {
       {ep:"26話", h:"幽連との決着", body:"羌象を手にかけた幽連との死闘。復讐が終わったあと、羌瘣に残るのは目的のない自由と、帰る場所としての飛信隊だった。"},
       {ep:"26話", h:"帰る場所", body:"復讐が終わったあとに残るのは、目的のない自由と、帰る場所としての飛信隊だった。以後の羌瘣は『誰かのために戦う』側に立つ。"}
     ],
-    keys:["kyoukai", "kyoushou", "yuren", "shin", "tenn", "f_shiyuu", "kyoumei", "gakyou"],
+    keys:["kyoukai", "kyoushou", "yuren", "shin", "tenn", "f_shiyuu", "kyoumei", "gakyou", "f_yuuzoku"],
     battles:[],
     newcomers:["kyoumei"],
     deaths:["yuren"]
@@ -4373,7 +4503,7 @@ const KINGDOM = {
       {ep:"—", h:"秦・魏の同盟", body:"三年の同盟を結んだ秦と魏が、楚の要衝を共同で攻める。蒙武が楚の猛将・満羽と真正面からぶつかり、武で押し切る将の到達点が描かれる。"},
       {ep:"—", h:"蚩尤、再び", body:"羌瘣を名指しで訪ねてくる蚩尤族の剣士が現れる。終わったはずの過去が、別の形で飛信隊の前に戻ってくる。"}
     ],
-    keys:["riboku", "moubu", "kyoukai", "shin", "f_shiyuu", "f_so", "karin", "manu", "sentoun", "genu", "kouen", "kyourei", "kyoushiki"],
+    keys:["riboku", "moubu", "kyoukai", "shin", "f_shiyuu", "f_so", "karin", "manu", "sentoun", "genu", "kouen", "kyourei", "kyoushiki", "f_kyouzoku"],
     battles:[],
     newcomers:["manu", "sentoun", "genu"],
     deaths:[]
