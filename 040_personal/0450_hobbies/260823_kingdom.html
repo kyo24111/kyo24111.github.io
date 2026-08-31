@@ -197,8 +197,6 @@
   /* ── 詳細ドロワー ── */
   .drawerhost{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:50;}
   .drawerhost .drawer{pointer-events:auto;}
-  .scrim{position:fixed; inset:0; background:rgba(17,17,17,.28); opacity:0; pointer-events:none; transition:opacity .18s; z-index:40;}
-  .scrim.on{opacity:1; pointer-events:auto;}
   .drawer{
     position:fixed; top:0; right:0; height:100%; width:min(460px,92vw); background:var(--panel);
     border-left:1px solid var(--line2); box-shadow:-8px 0 28px rgba(0,0,0,.10);
@@ -226,9 +224,16 @@
   .rel{font-family:inherit; font-size:.75rem; padding:4px 10px; border:1px solid var(--line2); border-radius:999px; background:var(--panel); cursor:pointer; color:var(--txt);}
   .rel:hover{background:var(--head); border-color:var(--accent);}
   .rel .rl{color:var(--muted); margin-left:5px; font-size:.68rem;}
+  /* ドロワーは非モーダル。開いている間も本文を触れるよう、広い画面では本文を左へ寄せる */
+  body.dopen .wrap{ padding-right:20px; }
+  @media (min-width:900px){
+    .wrap{ transition:margin-right .22s ease; }
+    body.dopen .wrap{ margin-right:min(460px,92vw); }
+  }
   @media (max-width:640px){
-    .drawer{width:100%; height:88%; top:auto; bottom:0; border-left:0; border-top:1px solid var(--line2); border-radius:14px 14px 0 0; transform:translateY(101%);}
+    .drawer{width:100%; height:72%; top:auto; bottom:0; border-left:0; border-top:1px solid var(--line2); border-radius:14px 14px 0 0; transform:translateY(101%);}
     .drawer.on{transform:translateY(0);}
+    body.dopen .wrap{ padding-bottom:0; }
   }
   .foot{margin-top:18px; color:var(--muted); font-size:.72rem;}
 </style>
@@ -405,7 +410,6 @@
     『キングダム』の著作権は原泰久／集英社および各アニメ製作委員会に帰属します。個人の学習・整理目的の非営利ページです。</div>
 </div>
 
-<div class="scrim" id="scrim"></div>
 <div class="drawerhost">
 <aside class="drawer" id="drawer" aria-hidden="true">
   <div class="dhead">
@@ -806,7 +810,7 @@
   let dragging = null, panning = null;
   svg.addEventListener("pointerdown", e => {
     const g = e.target.closest(".node");
-    svg.setPointerCapture(e.pointerId);
+    try { svg.setPointerCapture(e.pointerId); } catch (_) {}
     if (g){
       dragging = {id:g.dataset.id, moved:0};
       P[dragging.id].fixed = true;
@@ -973,7 +977,7 @@
 
 
   /* ============ 詳細ドロワー ============ */
-  const drawer = document.getElementById("drawer"), scrim = document.getElementById("scrim");
+  const drawer = document.getElementById("drawer");
   function open(id){
     const n = byId[id]; if (!n) return;
     S.sel = id;
@@ -1017,7 +1021,8 @@
     document.getElementById("d-body").innerHTML = h;
     document.getElementById("d-body").scrollTop = 0;
     document.getElementById("d-body").querySelectorAll(".rel").forEach(b => b.onclick = () => open(b.dataset.id));
-    drawer.classList.add("on"); scrim.classList.add("on"); drawer.setAttribute("aria-hidden","false");
+    drawer.classList.add("on"); drawer.setAttribute("aria-hidden","false");
+    document.body.classList.add("dopen"); reflowAfterDrawer();
     if (history.replaceState) history.replaceState(null, "", "#" + id);
     if (S.view === "graph") paintGraphState();
   }
@@ -1042,14 +1047,21 @@
         (i.label ? '<span class="rl">' + esc(i.label) + '</span>' : "") + '</button>').join("") +
       '</div></div>';
   }
+  function reflowAfterDrawer(){
+    // 本文の幅が変わるので、遷移後にグラフを測り直して中心を合わせる
+    [60, 260].forEach(t => setTimeout(() => {
+      if (S.view !== "graph") return;
+      measure(); applyTransform();
+    }, t));
+  }
   function close(){
-    drawer.classList.remove("on"); scrim.classList.remove("on"); drawer.setAttribute("aria-hidden","true");
+    drawer.classList.remove("on"); drawer.setAttribute("aria-hidden","true");
+    document.body.classList.remove("dopen"); reflowAfterDrawer();
     S.sel = null;
     if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);
     if (S.view === "graph") paintGraphState();
   }
   document.getElementById("dclose").onclick = close;
-  scrim.onclick = close;
   document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
 
   /* ============ 描画 ============ */
