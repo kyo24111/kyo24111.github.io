@@ -5402,7 +5402,320 @@
         </div>
         <p style="font-size:13px;color:var(--muted)">P の列＝固有ベクトル、D の対角＝固有値。べき乗 <code>A<sup>k</sup> = P D<sup>k</sup> P<sup>-1</sup></code> が一瞬で計算できるなど、応用が一気に開ける。</p>
 
-        <p style="margin-top:12px">固有ベクトルが足りず対角化できない場合の「妥協形」が、終着点の <a href="#jordan-normal-form" onclick="gotoSection('jordan-normal-form'); return false;">ジョルダン標準形</a>。<span class="hl">この章は、その山頂へ登るための最後のベースキャンプ</span>。</p>
+        <p style="margin-top:12px">この分解を正面から扱うのが次章の <a href="#diagonalization" onclick="gotoSection('diagonalization'); return false;">対角化</a>（手順・成立条件・応用）。固有ベクトルが足りず対角化できない場合の「妥協形」が、終着点の <a href="#jordan-normal-form" onclick="gotoSection('jordan-normal-form'); return false;">ジョルダン標準形</a>。<span class="hl">この章は、その山頂へ登るための最後のベースキャンプ</span>。</p>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+    </div>
+
+    <div class="chapter" id="diagonalization">
+      <div class="chapter-meta">
+        <div class="chapter-label">Chapter</div>
+        <div class="chapter-status pending">📝 これから学ぶ</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-09-02</div>
+      </div>
+      <div class="chapter-title"><span class="vt" data-vocab="diagonalization" data-ja="対角化">対角化</span>（Diagonalization）</div>
+
+      <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;margin-bottom:28px">
+        <span class="key">この章の位置づけ：</span><br>
+        <span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>・<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span>で「傾かない方向とその倍率」が手に入った。<span class="hl">その方向を座標軸として採用してしまえば、A はただの「各軸を λ 倍」に見える</span> — それが対角化。<br>
+        流れは「<span class="key">何をしているのか（座標系の取り替え）</span> → <span class="key">手順（P と D の作り方）</span> → <span class="key">いつできて、いつできないか</span> → <span class="key">何が嬉しいか（べき乗・行列関数・幾何）</span> → <span class="key">相似の不変量</span> → <span class="key">つまずき集</span>」。ここができないケースの受け皿が、次章の<a href="#jordan-normal-form" onclick="gotoSection('jordan-normal-form');return false;">ジョルダン標準形</a>。
+      </div>
+
+      <div class="section" id="diag-meaning">
+        <h2>そもそも何をしているか — <span class="key">A = P D P⁻¹</span> は「翻訳 → 計算 → 翻訳し戻す」<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>対角化の式は2通りに書ける。<span class="hl">同じことを、どちらを主役にするかだけの違い</span>で言っている。</p>
+
+        <div class="formula" style="text-align:center;font-size:17px;line-height:2">
+          <span class="key">D = P⁻¹ A P</span>　<span style="font-size:13px;color:var(--muted)">（A を対角にする ＝ 座標を取り替えて見る）</span><br>
+          <span class="key">A = P D P⁻¹</span>　<span style="font-size:13px;color:var(--muted)">（A を分解する ＝ 対角の仕事に翻訳をかぶせる）</span>
+        </div>
+
+        <p><span class="key">読む向きは右から左</span>。<code>A = P D P⁻¹</code> をベクトル <code>x</code> に作用させると、次の3工程になる。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:2">
+          ① <span class="key">P⁻¹ x</span> … x を<span class="hl">固有ベクトルを軸にした座標に翻訳</span>する（「(1,1) 方向に 3 目盛、(1,−1) 方向に 2 目盛」のような成分に読み替える）<br>
+          ② <span class="key">D (…)</span> … その座標では変換は<span class="hl">各軸を λ 倍するだけ</span>。混ざらないので成分ごとに独立に掛け算<br>
+          ③ <span class="key">P (…)</span> … 結果を<span class="hl">元の座標の言葉に翻訳し戻す</span>
+        </div>
+
+        <p><span class="key">大事な読み替え：</span>対角化は<span class="hl">行列を書き換えているのではなく、見る座標系を変えている</span>だけ。A のやっている仕事は最初から最後まで同じで、<span class="key">それが一番単純に見える物差しに持ち替えた</span>というのが全部。この「同じ変換を別の基底で書き直した関係」を <span class="key">相似（similar）</span> という。</p>
+
+        <div style="margin:18px 0;overflow-x:auto">
+        <svg viewBox="0 0 640 210" style="width:100%;max-width:640px;height:auto;display:block;margin:0 auto" role="img" aria-label="対角化の可換図式">
+          <g font-family="'Noto Sans JP',sans-serif" font-size="12" fill="#333">
+            <!-- nodes -->
+            <g font-family="Poppins, sans-serif" font-size="15" font-weight="700" text-anchor="middle" fill="#111">
+              <text x="110" y="50">x</text>
+              <text x="470" y="50">A x</text>
+              <text x="110" y="172">c = P⁻¹x</text>
+              <text x="470" y="172">D c</text>
+            </g>
+            <!-- top arrow -->
+            <line x1="150" y1="45" x2="420" y2="45" stroke="#111" stroke-width="1.6" marker-end="url(#dgA)"/>
+            <text x="285" y="32" text-anchor="middle" font-size="13" font-weight="700" fill="#111" font-family="Poppins, sans-serif">A</text>
+            <text x="285" y="17" text-anchor="middle" font-size="11" fill="#888">元の座標で見た変換（1発）</text>
+            <!-- bottom arrow -->
+            <line x1="170" y1="166" x2="420" y2="166" stroke="#111" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#dgA)"/>
+            <text x="295" y="155" text-anchor="middle" font-size="13" font-weight="700" fill="#111" font-family="Poppins, sans-serif">D</text>
+            <text x="295" y="192" text-anchor="middle" font-size="11" fill="#888">固有座標では「各軸を λ 倍」だけ</text>
+            <!-- left down arrow -->
+            <line x1="105" y1="66" x2="105" y2="146" stroke="#111" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#dgA)"/>
+            <text x="94" y="112" text-anchor="end" font-size="13" font-weight="700" fill="#111" font-family="Poppins, sans-serif">P⁻¹</text>
+            <text x="94" y="128" text-anchor="end" font-size="10.5" fill="#888">固有座標へ翻訳</text>
+            <!-- right up arrow -->
+            <line x1="478" y1="146" x2="478" y2="66" stroke="#111" stroke-width="1.6" stroke-dasharray="6 4" marker-end="url(#dgA)"/>
+            <text x="488" y="112" font-size="13" font-weight="700" fill="#111" font-family="Poppins, sans-serif">P</text>
+            <text x="488" y="128" font-size="10.5" fill="#888">元の座標へ戻す</text>
+            <defs><marker id="dgA" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 z" fill="#111"/></marker></defs>
+          </g>
+        </svg>
+        <div class="figcap" style="text-align:center">上を1発で行くのが A、下を遠回りするのが P D P⁻¹。<b>どちらを通っても同じ場所に着く</b>のが対角化という主張。</div>
+        </div>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">順序を間違えないコツ：</span><a href="#inv-properties" onclick="gotoSection('inv-properties');return false;">逆行列の性質</a>でやった「靴下→靴を履いたら、脱ぐのは靴→靴下」と同じ。<span class="hl">最後に着るもの（P）が、いちばん外側</span>。<br>
+          <code>A = P D P⁻¹</code> と <code>D = P⁻¹ A P</code> は同値だが、<code>A = P⁻¹ D P</code> は<b>別物</b>（P の列が固有ベクトルなら成立しない）。<span class="key">P の列が固有ベクトル ⇒ P は「固有座標 → 元の座標」の翻訳機</span>、と覚えると向きを間違えない。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="diag-recipe">
+        <h2>手順 — P と D の作り方（4ステップ）<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+
+        <div class="formula" style="font-size:13.5px;line-height:2">
+          <span class="key">① λ を出す</span>… <code>det(A − λI) = 0</code><br>
+          <span class="key">② 各 λ の固有ベクトルを出す</span>… <code>(A − λI)v = 0</code> を解く<br>
+          <span class="key">③ P を作る</span>… 固有ベクトルを<span class="hl">列として横に並べる</span>（行ではない）<br>
+          <span class="key">④ D を作る</span>… <span class="hl">P の列と同じ順番</span>で λ を対角に並べる
+        </div>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+          <span class="key">③④ の対応がすべて：</span>P の <code>k</code> 列目が λ<sub>k</sub> の固有ベクトルなら、D の <code>(k,k)</code> は λ<sub>k</sub>。<span class="hl">順番を入れ替えれば両方入れ替わる</span>ので、対角化の答えは<b>一意ではない</b>（列の並べ替えと、各固有ベクトルのスケール倍ぶんの自由がある）。だから「私の P と教科書の P が違う」は普通に起きる。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例題1（2×2）— 最後まで手で回す</h3>
+
+        <div class="pl">A = <span class="matrix"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>2</td></tr></table></span> を対角化せよ。</div>
+
+        <p class="step"><b>① λ：</b><code>det(A−λI) = (2−λ)² − 1 = 0</code> → <code>2−λ = ±1</code> → <span class="key">λ = 3, 1</span>。<span style="color:var(--muted)">（<code>[[a,b],[b,a]]</code> 型なので λ = a±b で即答してもよい）</span></p>
+        <p class="step"><b>② v：</b>λ=3 → <code>(A−3I)</code>=<span class="matrix"><table><tr><td>−1</td><td>1</td></tr><tr><td>1</td><td>−1</td></tr></table></span> → <code>x=y</code> → <code>v₁=(1,1)</code>。λ=1 → <code>(A−I)</code>=<span class="matrix"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>1</td></tr></table></span> → <code>x=−y</code> → <code>v₂=(1,−1)</code>。</p>
+        <p class="step"><b>③④ P と D：</b></p>
+        <div class="matrix-row">
+          <span>P =</span><div class="matrix"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>−1</td></tr></table></div>
+          <span>&nbsp;, &nbsp;D =</span><div class="matrix"><table><tr><td>3</td><td>0</td></tr><tr><td>0</td><td>1</td></tr></table></div>
+          <span>&nbsp;, &nbsp;det P = −2 ≠ 0（→ 正則なので対角化成立）</span>
+        </div>
+        <div class="matrix-row">
+          <span>P⁻¹ = (1/−2)</span><div class="matrix"><table><tr><td>−1</td><td>−1</td></tr><tr><td>−1</td><td>1</td></tr></table></div>
+          <span>&nbsp;=&nbsp;(1/2)</span><div class="matrix"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>−1</td></tr></table></div>
+        </div>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">検算は <code>P⁻¹AP</code> を計算するより <code>AP = PD</code> を見るのが速い：</span><br>
+          <code>AP</code> の1列目 <code>= A v₁ = (3,3)</code>、<code>PD</code> の1列目 <code>= 3 v₁ = (3,3)</code> ✓<br>
+          <code>AP</code> の2列目 <code>= A v₂ = (1,−1)</code>、<code>PD</code> の2列目 <code>= 1 v₂ = (1,−1)</code> ✓<br>
+          <span class="step" style="display:block;margin-top:6px"><code>AP = PD</code> は<span class="hl">「列ごとに Av = λv を書き並べただけ」</span>。つまり対角化の式は、n本の固有方程式を1本の行列式にまとめた表記に過ぎない。P⁻¹ を掛けるのは最後の整形。</span>
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">例題2（3×3）— P⁻¹ が整数になる作り</h3>
+
+        <div class="pl">A = <span class="matrix"><table><tr><td>2</td><td>1</td><td>0</td></tr><tr><td>0</td><td>3</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></table></span> （<a href="#" onclick="switchTab('exercises', document.querySelector('[data-tab=exercises]'));return false;">演習 領域10 Q7</a> の行列）</div>
+
+        <p class="step">第3列に 0 が2つあるので <code>det(A−λI) = (1−λ)(2−λ)(3−λ)</code> → <span class="key">λ = 1, 2, 3</span>。固有ベクトルは <code>v₁=(0,0,1)</code>、<code>v₂=(1,0,1)</code>、<code>v₃=(1,1,1)</code>。</p>
+
+        <div class="matrix-row">
+          <span>P =</span><div class="matrix"><table><tr><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>0</td><td>1</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></table></div>
+          <span>&nbsp;, &nbsp;D =</span><div class="matrix"><table><tr><td>1</td><td>0</td><td>0</td></tr><tr><td>0</td><td>2</td><td>0</td></tr><tr><td>0</td><td>0</td><td>3</td></tr></table></div>
+          <span>&nbsp;, &nbsp;P⁻¹ =</span><div class="matrix"><table><tr><td>−1</td><td>0</td><td>1</td></tr><tr><td>1</td><td>−1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td></tr></table></div>
+        </div>
+        <p class="step"><code>det P = 1</code> なので P⁻¹ が<span class="hl">分数なしの整数行列</span>になる。検算：<code>A v₁ = 1·v₁</code>、<code>A v₂ = (2,0,2) = 2 v₂</code>、<code>A v₃ = (3,3,3) = 3 v₃</code> ✓</p>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+          <span class="key">実務メモ：</span>手計算では <code>det P = ±1</code> になるように固有ベクトルのスケールを選ぶと P⁻¹ が整数で出て一気にラクになる。<span class="hl">固有ベクトルは定数倍が自由</span>という性質は、こういう所で使う。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="diag-condition">
+        <h2>いつできて、いつできないか — 判定の全体像<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;text-align:center;font-size:14.5px;line-height:1.9">
+          <span class="hl">A（n×n）が対角化可能 ⟺ 一次独立な固有ベクトルが n 本取れる</span><br>
+          <span style="font-size:13px;color:var(--muted)">（＝ P が正則になる ＝ P⁻¹ が存在する）</span>
+        </div>
+
+        <p style="margin-top:12px">これがすべて。<span class="key">λ の個数ではなく、固有ベクトルの本数</span>で決まる点が肝。判定は上から順に見ればよい。</p>
+
+        <div style="overflow-x:auto;margin:14px 0">
+        <table style="width:100%;border-collapse:collapse;font-size:13px;min-width:420px">
+          <thead><tr>
+            <th style="padding:8px 12px;border-bottom:2px solid var(--accent);text-align:left;font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">状況</th>
+            <th style="padding:8px 12px;border-bottom:2px solid var(--accent);text-align:left;font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">結論</th>
+            <th style="padding:8px 12px;border-bottom:2px solid var(--accent);text-align:left;font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)">例</th>
+          </tr></thead>
+          <tbody>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">λ が<span class="key">全部相異なる</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="hl">必ず対角化可能</span>（考えなくてよい）</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code>[[2,1],[1,2]]</code></td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="key">対称行列</span>（A = Aᵀ）</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="hl">必ず対角化可能</span>。しかも P を<b>直交行列</b>に取れる</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code>[[3,1],[1,3]]</code></td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">重解あり、その λ の<br><span class="key">固有空間の次元 = 重複度</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="hl">対角化可能</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code>2I</code>（λ=2 が2重、固有空間は平面）</td></tr>
+            <tr><td style="padding:8px 12px;border-bottom:1px solid var(--border)">重解あり、<br><span class="key">固有空間の次元 &lt; 重複度</span></td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><span class="hl">対角化できない</span>（欠損 / defective）→ ジョルダン形へ</td><td style="padding:8px 12px;border-bottom:1px solid var(--border)"><code>[[2,1],[0,2]]</code></td></tr>
+            <tr><td style="padding:8px 12px">λ が<span class="key">複素数</span></td><td style="padding:8px 12px">実数の範囲では不可、<span class="hl">複素数まで許せば可能</span></td><td style="padding:8px 12px">回転行列 <code>[[0,−1],[1,0]]</code></td></tr>
+          </tbody>
+        </table>
+        </div>
+
+        <div class="formula" style="border-left-color:#d62828;background:#fff5f5;font-size:13.5px">
+          <span class="key" style="color:#d62828">最重要の勘違い：</span>「<span class="hl">重解が出たら対角化できない</span>」は<b>誤り</b>。<code>2I</code> は λ=2 の2重解だが、固有空間が平面まるごと（dim 2）なので固有ベクトルが2本取れて対角化可能——というより<b>最初から対角</b>。<br>
+          <span class="key">分岐しているのは「重複度」ではなく「固有空間の次元」。</span>この2つの数を <span class="key">代数的重複度</span>（特性方程式での重なり回数）と <span class="key">幾何的重複度</span>（固有空間の次元）と呼び、<span class="hl">幾何 &lt; 代数 になった瞬間に対角化が壊れる</span>。差の分だけジョルダンブロックが立つ。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">できない例を1つ、手で確認する</h3>
+
+        <div class="pl">A = <span class="matrix"><table><tr><td>2</td><td>1</td></tr><tr><td>0</td><td>2</td></tr></table></span> （<a href="#" onclick="switchTab('exercises', document.querySelector('[data-tab=exercises]'));return false;">演習 領域10 Q3</a> と同じ行列）</div>
+
+        <p class="step">λ：三角行列なので <code>λ = 2（2重）</code>。固有ベクトル：<code>(A−2I)</code>=<span class="matrix"><table><tr><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td></tr></table></span> → 条件は <code>y = 0</code> の<b>1本だけ</b>。自由変数は x のみなので固有空間は <span class="key">x軸という直線（dim 1）</span>。</p>
+        <p class="step">2本必要なのに1本しか出ない ⇒ P が作れない（列が足りない／2本目を入れると従属になり <code>det P = 0</code>）⇒ <span class="res">対角化不可</span>。代数的重複度 2 に対し幾何的重複度 1 で、<span class="hl">差 1 のぶんだけ「対角に載らない残骸」が出る</span>。それを 1 として右上に置いたのがジョルダン形 <code>[[2,1],[0,2]]</code>——つまり<b>この行列はもう既にジョルダン形</b>。</p>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">スペクトル定理（対称行列の特権）：</span>実対称行列は ① 固有値が必ず<span class="hl">実数</span> ② 異なる λ の固有ベクトルが必ず<span class="hl">直交</span> ③ よって正規化すれば <span class="key">P⁻¹ = Pᵀ</span> になる（直交行列）。<br>
+          例題1 の <code>[[2,1],[1,2]]</code> は対称なので、<code>v₁=(1,1)</code> と <code>v₂=(1,−1)</code> は直交（内積 0）。長さ √2 で割って<br>
+          <code>P = (1/√2)</code><span class="matrix"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>−1</td></tr></table></span> とすれば <code>P⁻¹ = Pᵀ</code> で、<span class="hl">逆行列を計算する必要すらなくなる</span>。共分散行列・二次形式・PCA が全部この特権の上に乗っている。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="diag-power">
+        <h2>何が嬉しいか① — べき乗と「行列の関数」<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+
+        <p>対角化のいちばん直接的な見返りが<span class="key">べき乗</span>。<code>P⁻¹P = I</code> が中で次々に潰れるので、</p>
+
+        <div class="formula" style="text-align:center;font-size:15px;line-height:2">
+          A² = (PDP⁻¹)(PDP⁻¹) = P D <span style="color:#888">(P⁻¹P)</span> D P⁻¹ = P D² P⁻¹<br>
+          → &nbsp;<span class="key">A<sup>k</sup> = P D<sup>k</sup> P⁻¹</span>、&nbsp;<span class="hl">D<sup>k</sup> = diag(λ₁<sup>k</sup>, …, λ<sub>n</sub><sup>k</sup>)</span>
+        </div>
+
+        <p><span class="key">効き方：</span>素朴に A を k 回掛けると <code>k</code> 回の行列積（各回 <code>n³</code> 級）。対角化しておけば<span class="hl">数の k 乗を n 個やるだけ</span>で、k がいくら大きくても計算量が増えない。</p>
+
+        <p class="step"><b>例題1 の続き：</b><code>A³</code> を出す。<code>D³ = diag(27, 1)</code> なので</p>
+        <div class="matrix-row">
+          <span>A³ = P</span><div class="matrix"><table><tr><td>27</td><td>0</td></tr><tr><td>0</td><td>1</td></tr></table></div>
+          <span>P⁻¹ =</span><div class="matrix"><table><tr><td>14</td><td>13</td></tr><tr><td>13</td><td>14</td></tr></table></div>
+        </div>
+        <p class="step" style="color:var(--muted)">検算：<code>A² = [[5,4],[4,5]]</code>、<code>A³ = A²A = [[14,13],[13,14]]</code> ✓</p>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px;line-height:1.95">
+          <span class="key">同じ理屈で作れるもの（全部「D の対角に関数をかけるだけ」）：</span><br>
+          ・<span class="key">逆行列</span> … <code>A⁻¹ = P D⁻¹ P⁻¹</code>、<code>D⁻¹ = diag(1/λᵢ)</code>　<span style="color:var(--muted)">（λ に 0 があると作れない＝<code>det A = ∏λ = 0</code> と同じ話）</span><br>
+          ・<span class="key">平方根</span> … <code>A^(1/2) = P diag(√λᵢ) P⁻¹</code>　<span style="color:var(--muted)">（共分散行列の白色化などで使う）</span><br>
+          ・<span class="key">行列指数関数</span> … <code>e<sup>A</sup> = P diag(e<sup>λᵢ</sup>) P⁻¹</code>。微分方程式 <code>x' = Ax</code> の解 <code>x(t) = e<sup>At</sup>x(0)</code> がこれで書ける<br>
+          ・<span class="key">多項式</span> … <code>f(A) = P f(D) P⁻¹</code>（<code>f</code> が何であっても対角成分に効かせるだけ）
+        </div>
+
+        <div class="formula" style="background:#fff8e1;border-left-color:#e6a700;font-size:13.5px">
+          <span class="key">フィボナッチが閉じた式になる理由：</span><code>F = [[1,1],[1,0]]</code> の固有値は <code>λ = (1±√5)/2</code>。<code>Fᵏ = P Dᵏ P⁻¹</code> の成分を書き下すと、そのまま <span class="hl">ビネの公式 <code>Fₙ = (φⁿ − ψⁿ)/√5</code></span> が出てくる。<br>
+          <span class="hl">「漸化式を解く」＝「その行列を対角化する」</span>——同じ作業の別の顔。<a href="260808_fibonacci_eigen.html" style="font-weight:700">アニメーションで見る →</a>
+        </div>
+
+        <div class="formula" style="border-left-color:#d62828;background:#fff5f5;font-size:13px">
+          <span class="key" style="color:#d62828">実務の注意：</span><a href="#inv-applications" onclick="gotoSection('inv-applications');return false;">逆行列の章</a>と同じ構図で、<span class="hl">数値計算で対角化を使って <code>A^k</code> を出すことは普通しない</span>。P が悪条件（固有ベクトルが互いにほぼ平行）だと P⁻¹ が暴れる。実装は Schur 分解や直接のべき乗が主流。対角化は<b>「なぜそうなるか」を語る言語</b>としてほぼ無敵、という位置づけ。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="diag-geometry">
+        <h2>何が嬉しいか② — 変換の正体が1行で読める<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+
+        <p>D を見るだけで、その変換が空間に何をするかが分かる。<span class="hl">n 個の λ に、変換の全情報が要約されている</span>。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.95">
+          ・<code>|λ| &gt; 1</code> の軸 … その方向に<span class="hl">伸びる</span>　／　<code>|λ| &lt; 1</code> … <span class="hl">縮む</span><br>
+          ・<code>λ &lt; 0</code> の軸 … <span class="hl">折り返す</span>（原点をまたぐ）<br>
+          ・<code>λ = 0</code> の軸 … <span class="hl">潰れる</span>（＝核がある＝<code>det = 0</code>＝逆行列なし）<br>
+          ・<code>det A = λ₁λ₂⋯λₙ</code>（<span class="hl">体積倍率</span>）、<code>trace A = λ₁+⋯+λₙ</code>
+        </div>
+
+        <p><span class="key">det = ∏λ が「あたりまえ」に見える瞬間：</span><a href="#inv-why-lower-left" onclick="gotoSection('inv-why-lower-left');return false;">「なぜ左下を0にするのか」</a>で見たとおり、対角行列の det は対角の積＝各軸の厚みの積。<span class="hl">対角化とは、体積倍率が「軸ごとの倍率の掛け算」として素直に見える座標を選ぶこと</span>。<code>det(PDP⁻¹) = det D</code> なので、座標を変えても体積倍率は変わらない。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">二次形式・主軸変換 — 楕円の軸を見つける作業と同じ</h3>
+
+        <p>対称行列 <code>A</code> に対する <code>q(x) = xᵀAx</code> を<span class="key">二次形式</span>という。例題1 の <code>A = [[2,1],[1,2]]</code> なら</p>
+
+        <div class="formula" style="text-align:center;font-size:14.5px">
+          q(x, y) = 2x² + <span class="hl">2xy</span> + 2y² = 1
+        </div>
+
+        <p class="step">交差項 <code>2xy</code> があるので、この楕円は<span class="hl">座標軸に対して傾いている</span>。ところが固有座標 <code>(u, v)</code>（u は (1,1) 方向、v は (1,−1) 方向）に取り替えると、λ が並ぶだけの形になる：</p>
+
+        <div class="formula" style="text-align:center;font-size:14.5px">
+          q = <span class="key">3</span>u² + <span class="key">1</span>v² = 1　<span style="font-size:13px;color:var(--muted)">（交差項が消えた）</span>
+        </div>
+
+        <p class="step">つまり <span class="hl">この楕円の軸は (1,1) と (1,−1) 方向</span>で、半径はそれぞれ <code>1/√3</code> と <code>1</code>（λ が大きい軸ほど短い）。<span class="key">対角化 ＝ 楕円の傾きを取って「素の形」を読む作業</span>で、これを<span class="key">主軸変換</span>という。</p>
+
+        <div class="formula" style="border-left-color:#888;font-size:13.5px;line-height:1.95">
+          <span class="key">この形で世の中に出てくるもの：</span><br>
+          ・<span class="key">PCA（主成分分析）</span> … 共分散行列を対角化し、λ の大きい軸＝分散の大きい方向を主成分に取る。<span class="hl">「データの楕円の軸を見つける」がそのまま対角化</span><br>
+          ・<span class="key">凸性・最適化</span> … ヘッセ行列の λ が全部正なら谷（極小）、全部負なら山、混在なら鞍点。<span class="hl">符号を見るだけで形が確定する</span><br>
+          ・<span class="key">慣性テンソル・応力</span> … 主軸を取ると回転が独立に扱える（物理の「主軸」も同じ言葉）<br>
+          ・<span class="key">正定値性</span> … <code>λ &gt; 0 すべて ⟺ 正定値</code>。共分散行列やカーネル行列で常に問われる性質
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="diag-similar">
+        <h2>相似で変わらないもの — 座標を変えても消えない情報<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+
+        <p><code>B = P⁻¹AP</code> の関係（相似）にある行列は「同じ変換を別の物差しで書いたもの」。だから<span class="hl">物差しに依存しない量は必ず一致する</span>。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.95">
+          <span class="key">相似で不変：</span>固有値（重複度こめ）・特性多項式・<code>det</code>・<code>trace</code>・<code>rank</code>・核の次元・ジョルダン形<br>
+          <span class="key">相似で変わる：</span>成分そのもの・固有ベクトルの座標表示・対称性（対称行列と相似でも対称とは限らない）
+        </div>
+
+        <p class="step"><b>なぜ det と trace が不変か（1行で出る）：</b><br>
+        <code>det(P⁻¹AP) = det(P⁻¹)·det A·det P = (1/det P)·det A·det P = det A</code>　<span style="color:var(--muted)">（<a href="#inv-properties" onclick="gotoSection('inv-properties');return false;">det(A⁻¹)=1/det A</a> を使う）</span><br>
+        <code>trace(P⁻¹AP) = trace(A P P⁻¹) = trace A</code>　<span style="color:var(--muted)">（<code>trace(XY) = trace(YX)</code> の巡回性）</span></p>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">検算に使える形で覚える：</span>λ を出したら必ず<br>
+          <code>Σλᵢ = trace A</code>　と　<code>∏λᵢ = det A</code><br>
+          を当てる。2×2 なら特性多項式が <code>λ² − (trace)λ + (det) = 0</code> と書けるので、<span class="hl">trace と det だけで λ が出る</span>。3×3 でも2本の制約が効くので、符号ミス・取り違えはほぼここで捕まる。
+        </div>
+
+        <div class="formula" style="border-left-color:#d62828;background:#fff5f5;font-size:13.5px">
+          <span class="key" style="color:#d62828">逆は成り立たない：</span><code>[[2,0],[0,2]]</code> と <code>[[2,1],[0,2]]</code> は<span class="hl">特性多項式・trace・det・固有値がすべて同じ</span>（λ=2 が2重、trace 4、det 4）。しかし相似ではない——前者は 2I なので <code>P⁻¹(2I)P = 2I</code> でどう座標を変えても対角のまま、後者は絶対に対角にならない。<br>
+          <span class="key">違いを分けているのは固有空間の次元</span>（2 と 1）。<span class="hl">「固有値のリストは行列を決めない」</span>——ここがジョルダン標準形が必要になる理由そのもの。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="diag-pitfalls">
+        <h2>つまずき集 — ここで間違える<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+
+        <div class="formula" style="font-size:13.5px;line-height:2">
+          ① <span class="key">P の列と D の順番がズレる</span> … 3列目の固有ベクトルに対応する λ を <code>(3,3)</code> に入れる。並べ替えるなら両方同時に<br>
+          ② <span class="key">固有ベクトルを「行」に並べる</span> … P は<span class="hl">列</span>に並べる。行に並べたものは <code>P⁻¹</code> 側（対称行列なら転置で済むので気づきにくい）<br>
+          ③ <span class="key">A = P⁻¹DP と書いてしまう</span> … 正しくは <code>A = PDP⁻¹</code>。「P の列が固有ベクトル ⇒ P は固有座標から元の座標への翻訳機」で毎回向きを確認<br>
+          ④ <span class="key">重解を見た瞬間に「対角化不可」と決める</span> … 判定は<span class="hl">固有空間の次元</span>。<code>2I</code> は重解でも可能<br>
+          ⑤ <span class="key">P を直交行列だと思い込む</span> … <code>P⁻¹ = Pᵀ</code> が使えるのは<span class="hl">対称行列のときだけ</span>。一般の P は直交しないので、ちゃんと P⁻¹ を計算する<br>
+          ⑥ <span class="key">固有ベクトルを正規化しないと減点だと思う</span> … 対角化に正規化は<b>不要</b>。むしろ <code>det P = ±1</code> になるスケールを選ぶと手計算がラク（正規化が要るのは「直交行列にしたい」ときだけ）<br>
+          ⑦ <span class="key">λ = 0 があるのに D⁻¹ を作る</span> … <code>det A = ∏λ = 0</code> なので逆行列は存在しない。対角化はできても逆行列は別問題
+        </div>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+          <span class="key">数値の落とし穴：</span>2つの λ が<span class="hl">近い</span>と、対応する固有ベクトルがほぼ平行になり P が特異に近づく（<code>det P ≈ 0</code>）。<a href="#inv-why-lower-left" onclick="gotoSection('inv-why-lower-left');return false;">ピボットが細いと逆行列が暴れる</a>のと同じ現象が、こちらでは<b>「対角化可能／不可能」が二値ではなく連続的にグラデーションになる</b>形で現れる。理論上は対角化できても、実際には「ほぼ欠損」で計算が信用できないケースがある。
+        </div>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;font-size:13.5px">
+          <span class="key">次章への接続：</span>対角化できない行列に対して「<span class="hl">対角に一番近い形</span>」を作るのが <a href="#jordan-normal-form" onclick="gotoSection('jordan-normal-form');return false;">ジョルダン標準形</a>。欠損の量（代数的重複度 − 幾何的重複度）が、そのままブロックの形になる。<span class="key">対角化は「ブロックが全部 1×1 だったジョルダン形」</span>——特別に運が良かったケース、と読み直せる。
+        </div>
         </div><!-- /.subsection-pending -->
       </div>
 
@@ -6039,98 +6352,99 @@
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>2</td><td>7</td><td>9</td></tr><tr><td>3</td><td>5</td><td>4</td></tr><tr><td>6</td><td>7</td><td>2</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>2</td><td>1</td><td>3</td></tr><tr><td>1</td><td>3</td><td>2</td></tr><tr><td>3</td><td>2</td><td>1</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">det = 9</span></p>
+          <p><span class="res">det = −18</span></p>
           <p class="step"><b>0 も共通因数も無い。</b>こういうときは素直にサラス。純粋な手計算の練習。</p>
-          <div class="pl"><code>＋：2·5·2 + 7·4·6 + 9·3·7 = 20 + 168 + 189 = 377</code><br>
-          <code>−：9·5·6 + 2·4·7 + 7·3·2 = 270 + 56 + 42 = 368</code><br>
-          <code>det = 377 − 368 = </code><span class="res">9</span></div>
-          <p class="step"><b>別解：0 を作る。</b>第3行に注目すると <code>R₃ − 3R₁ = (6−6, 7−21, 2−27) = (0, −14, −25)</code>。det は変わらないので<br>
-          <code>det = </code><span class="mtx"><table><tr><td>2</td><td>7</td><td>9</td></tr><tr><td>3</td><td>5</td><td>4</td></tr><tr><td>0</td><td>-14</td><td>-25</td></tr></table></span> → 第1列で展開 → <code>2(5·(−25) − 4·(−14)) − 3(7·(−25) − 9·(−14)) = 2(−69) − 3(−49) = −138 + 147 = </code><span class="res">9</span> ✓</p>
-          <p class="step"><b>手触り：</b>サラスは「6項の足し算引き算」なので、<b>途中で符号を1つ間違えると全滅</b>する。±をそれぞれ先に合計してから最後に引く（377 と 368 を作ってから引く）と、ミスに気づきやすい。</p>
+          <div class="pl"><code>＋：2·3·1 + 1·2·3 + 3·1·2 = 6 + 6 + 6 = 18</code><br>
+          <code>−：3·3·3 + 2·2·2 + 1·1·1 = 27 + 8 + 1 = 36</code><br>
+          <code>det = 18 − 36 = </code><span class="res">−18</span></div>
+          <p class="step"><b>別解：0 を作る。</b><code>R₁ → R₁ − 2R₂ = (2−2, 1−6, 3−4) = (0, −5, −1)</code>。det は変わらないので<br>
+          <code>det = </code><span class="mtx"><table><tr><td>0</td><td>-5</td><td>-1</td></tr><tr><td>1</td><td>3</td><td>2</td></tr><tr><td>3</td><td>2</td><td>1</td></tr></table></span> → 第1行で展開 → <code>(−5)·(−(1−6)) + (−1)·(2−9) = (−5)(5) + (−1)(−7) = −25 + 7 = </code><span class="res">−18</span> ✓</p>
+          <p class="step"><b>手触り：</b>サラスは「6項の足し算引き算」なので、<b>途中で符号を1つ間違えると全滅</b>する。±をそれぞれ先に合計してから最後に引く（18 と 36 を作ってから引く）と、ミスに気づきやすい。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q4</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>12</td><td>5</td><td>13</td></tr><tr><td>5</td><td>7</td><td>8</td></tr><tr><td>9</td><td>6</td><td>8</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q4</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>13</td><td>8</td><td>9</td></tr><tr><td>11</td><td>7</td><td>8</td></tr><tr><td>12</td><td>8</td><td>8</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">det = −173</span></p>
-          <p class="step"><b>数字が大きい＝サラスは事故る。</b>ここは道具③で<b>数を小さくする</b>のが正解。似た大きさの行どうしを引くと一気に縮む。</p>
-          <div class="pl"><code>R₁ → R₁ − R₂ = (7, −2, 5)</code>、<code>R₃ → R₃ − R₂ = (4, −1, 0)</code>（det は不変）<br>
-          <code>det = </code><span class="mtx"><table><tr><td>7</td><td>-2</td><td>5</td></tr><tr><td>5</td><td>7</td><td>8</td></tr><tr><td>4</td><td>-1</td><td>0</td></tr></table></span> → 第3行に 0 ができたのでそこで展開</div>
-          <div class="pl"><code>det = 4·C₃₁ + (−1)·C₃₂ + 0</code><br>
-          <code>C₃₁ = +</code><span class="mtx"><table><tr><td>-2</td><td>5</td></tr><tr><td>7</td><td>8</td></tr></table></span><code> = −16 − 35 = −51</code>　　<code>C₃₂ = −</code><span class="mtx"><table><tr><td>7</td><td>5</td></tr><tr><td>5</td><td>8</td></tr></table></span><code> = −(56 − 25) = −31</code><br>
-          <code>det = 4(−51) + (−1)(−31) = −204 + 31 = </code><span class="res">−173</span></div>
-          <p class="step"><b>手触り：</b>「まず 0 を作る」を1手挟むだけで、扱う数字が <code>12, 13</code> 級から <code>7, −2</code> 級に落ちる。<span class="hl">行基本変形は det を変えない</span>ので、いくらやってもタダ。大きい数を見たら反射的にこれ。</p>
+          <p><span class="res">det = −4</span></p>
+          <p class="step"><b>数字が大きい＝サラスは事故る。</b>ここは道具③で<b>数を小さくする</b>のが正解。<span class="hl">3行が似た大きさ</span>なので、引き算すると一気に縮む。</p>
+          <div class="pl"><code>R₁ → R₁ − R₂ = (2, 1, 1)</code>、<code>R₃ → R₃ − R₂ = (1, 1, 0)</code>（det は不変）<br>
+          <code>det = </code><span class="mtx"><table><tr><td>2</td><td>1</td><td>1</td></tr><tr><td>11</td><td>7</td><td>8</td></tr><tr><td>1</td><td>1</td><td>0</td></tr></table></span> → 第3行に 0 ができたのでそこで展開</div>
+          <div class="pl"><code>det = 1·C₃₁ + 1·C₃₂ + 0</code><br>
+          <code>C₃₁ = +</code><span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>7</td><td>8</td></tr></table></span><code> = 8 − 7 = 1</code>　　<code>C₃₂ = −</code><span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>11</td><td>8</td></tr></table></span><code> = −(16 − 11) = −5</code><br>
+          <code>det = 1 + (−5) = </code><span class="res">−4</span></div>
+          <p class="step"><b>手触り：</b>「まず 0 を作る」を1手挟むだけで、扱う数字が <code>13, 12</code> 級から <code>2, 1</code> 級に落ちる。<span class="hl">行基本変形は det を変えない</span>ので、いくらやってもタダ。大きい数を見たら反射的にこれ。<br>
+          ちなみに直接サラスをやると <code>13(56−64) − 8(88−96) + 9(88−84) = −104 + 64 + 36 = −4</code>。答えは同じだが <code>104</code> 級の数を3つ扱うことになる。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q5</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>4</td><td>2</td><td>6</td></tr><tr><td>15</td><td>35</td><td>20</td></tr><tr><td>8</td><td>7</td><td>5</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q5</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>4</td><td>2</td><td>6</td></tr><tr><td>5</td><td>10</td><td>5</td></tr><tr><td>3</td><td>1</td><td>2</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">det = −740</span></p>
-          <p class="step"><b>行ごとに共通因数を探す。</b>第1行 <code>(4,2,6) = 2·(2,1,3)</code>、第2行 <code>(15,35,20) = 5·(3,7,4)</code>。両方くくり出せる。</p>
-          <div class="pl"><code>det = 2 · 5 ·</code> <span class="mtx"><table><tr><td>2</td><td>1</td><td>3</td></tr><tr><td>3</td><td>7</td><td>4</td></tr><tr><td>8</td><td>7</td><td>5</td></tr></table></span> <code>= 10 × det'</code></div>
-          <div class="pl"><code>det' = 2(7·5 − 4·7) − 1(3·5 − 4·8) + 3(3·7 − 7·8) = 2(7) − (−17) + 3(−35) = 14 + 17 − 105 = −74</code><br>
-          <code>det = 10 × (−74) = </code><span class="res">−740</span></div>
+          <p><span class="res">det = −80</span></p>
+          <p class="step"><b>行ごとに共通因数を探す。</b>第1行 <code>(4,2,6) = 2·(2,1,3)</code>、第2行 <code>(5,10,5) = 5·(1,2,1)</code>。両方くくり出せる。</p>
+          <div class="pl"><code>det = 2 · 5 ·</code> <span class="mtx"><table><tr><td>2</td><td>1</td><td>3</td></tr><tr><td>1</td><td>2</td><td>1</td></tr><tr><td>3</td><td>1</td><td>2</td></tr></table></span> <code>= 10 × det'</code></div>
+          <div class="pl"><code>det' = 2(2·2 − 1·1) − 1(1·2 − 1·3) + 3(1·1 − 2·3) = 2(3) − (−1) + 3(−5) = 6 + 1 − 15 = −8</code><br>
+          <code>det = 10 × (−8) = </code><span class="res">−80</span></div>
           <p class="step"><b>なぜくくり出せるのか。</b>det は<b>各行について線形</b>。第1行を 2 倍すれば、その行が張る辺が2倍になる＝体積も2倍。だから <code>2</code> をそのまま外に出せる。<span class="hl">「行を k 倍 ⇒ det も k 倍」</span>。行が3本あるので、3行ぜんぶ 2 倍したら det は <code>2³ = 8</code> 倍になる（ここは間違えやすい）。</p>
-          <p class="step"><b>手触り：</b>くくり出しは<b>計算をラクにするためだけの技</b>ではない。「この行列は本質的には (2,1,3),(3,7,4),(8,7,5) だ」という<b>構造の見立て</b>でもある。</p>
+          <p class="step"><b>手触り：</b>くくり出しは<b>計算をラクにするためだけの技</b>ではない。「この行列は本質的には (2,1,3),(1,2,1),(3,1,2) だ」という<b>構造の見立て</b>でもある。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q6</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>14</td><td>7</td><td>35</td></tr><tr><td>8</td><td>4</td><td>6</td></tr><tr><td>9</td><td>3</td><td>3</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q6</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>6</td><td>2</td><td>4</td></tr><tr><td>3</td><td>6</td><td>3</td></tr><tr><td>10</td><td>5</td><td>5</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">det = −294</span></p>
-          <p class="step"><b>Q5 の強化版：3行とも括れる。</b><code>R₁ = 7·(2,1,5)</code>、<code>R₂ = 2·(4,2,3)</code>、<code>R₃ = 3·(3,1,1)</code>。</p>
-          <div class="pl"><code>det = 7 · 2 · 3 ·</code> <span class="mtx"><table><tr><td>2</td><td>1</td><td>5</td></tr><tr><td>4</td><td>2</td><td>3</td></tr><tr><td>3</td><td>1</td><td>1</td></tr></table></span> <code>= 42 × det'</code></div>
-          <div class="pl"><code>det' = 2(2·1 − 3·1) − 1(4·1 − 3·3) + 5(4·1 − 2·3) = 2(−1) − (−5) + 5(−2) = −2 + 5 − 10 = −7</code><br>
-          <code>det = 42 × (−7) = </code><span class="res">−294</span></div>
-          <p class="step"><b>検算：</b>直接サラスでも <code>14(12−18) − 7(24−54) + 35(24−36) = −84 + 210 − 420 = −294</code> ✓。ただし扱う数が <code>420</code> 級になるので、くくり出したほうが明らかに安全。</p>
-          <p class="step"><b>手触り：</b>行の共通因数は<b>行ごとに独立に</b>外へ出せる（列でも同じ）。<span class="hl">42 という係数を先に確定させてしまえば、あとは小さい 3×3 が1個残るだけ</span>。「重い部分を先に切り離す」という、行列式に限らない計算の作法。</p>
+          <p><span class="res">det = −60</span></p>
+          <p class="step"><b>Q5 の強化版：3行とも括れる。</b><code>R₁ = 2·(3,1,2)</code>、<code>R₂ = 3·(1,2,1)</code>、<code>R₃ = 5·(2,1,1)</code>。</p>
+          <div class="pl"><code>det = 2 · 3 · 5 ·</code> <span class="mtx"><table><tr><td>3</td><td>1</td><td>2</td></tr><tr><td>1</td><td>2</td><td>1</td></tr><tr><td>2</td><td>1</td><td>1</td></tr></table></span> <code>= 30 × det'</code></div>
+          <div class="pl"><code>det' = 3(2·1 − 1·1) − 1(1·1 − 1·2) + 2(1·1 − 2·2) = 3(1) − (−1) + 2(−3) = 3 + 1 − 6 = −2</code><br>
+          <code>det = 30 × (−2) = </code><span class="res">−60</span></div>
+          <p class="step"><b>検算：</b>直接サラスでも <code>6(30−15) − 2(15−30) + 4(15−60) = 90 + 30 − 180 = −60</code> ✓。ただし扱う数が <code>180</code> 級になるので、くくり出したほうが明らかに安全。</p>
+          <p class="step"><b>手触り：</b>行の共通因数は<b>行ごとに独立に</b>外へ出せる（列でも同じ）。<span class="hl">30 という係数を先に確定させてしまえば、あとは小さい 3×3 が1個残るだけ</span>。「重い部分を先に切り離す」という、行列式に限らない計算の作法。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q7</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>0</td><td>8</td><td>12</td></tr><tr><td>3</td><td>9</td><td>2</td></tr><tr><td>5</td><td>5</td><td>3</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q7</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>0</td><td>3</td><td>2</td></tr><tr><td>4</td><td>1</td><td>3</td></tr><tr><td>2</td><td>5</td><td>1</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">det = −352</span></p>
+          <p><span class="res">det = 42</span></p>
           <p class="step"><b>0 が1個あるので、その行（第1行）で展開。</b>3項のうち1項がタダで消える。</p>
-          <div class="pl"><code>det = 0·C₁₁ + 8·C₁₂ + 12·C₁₃</code><br>
-          <code>C₁₂ = −</code><span class="mtx"><table><tr><td>3</td><td>2</td></tr><tr><td>5</td><td>3</td></tr></table></span><code> = −(9 − 10) = 1</code>　　<code>C₁₃ = +</code><span class="mtx"><table><tr><td>3</td><td>9</td></tr><tr><td>5</td><td>5</td></tr></table></span><code> = 15 − 45 = −30</code><br>
-          <code>det = 8(1) + 12(−30) = 8 − 360 = </code><span class="res">−352</span></div>
-          <p class="step"><b>符号でつまずきやすい点。</b><code>C₁₂</code> の符号は <code>(−1)^(1+2) = −1</code>。<b>小行列式そのものは −1 だが、符号を掛けて +1 になる</b>。ここを飛ばすと答えが <code>−8 − 360 = −368</code> になり、16 ずれる。チェック模様 <code>+ − +</code> を毎回書いてから始めるのが安全。</p>
+          <div class="pl"><code>det = 0·C₁₁ + 3·C₁₂ + 2·C₁₃</code><br>
+          <code>C₁₂ = −</code><span class="mtx"><table><tr><td>4</td><td>3</td></tr><tr><td>2</td><td>1</td></tr></table></span><code> = −(4 − 6) = 2</code>　　<code>C₁₃ = +</code><span class="mtx"><table><tr><td>4</td><td>1</td></tr><tr><td>2</td><td>5</td></tr></table></span><code> = 20 − 2 = 18</code><br>
+          <code>det = 3(2) + 2(18) = 6 + 36 = </code><span class="res">42</span></div>
+          <p class="step"><b>符号でつまずきやすい点。</b><code>C₁₂</code> の符号は <code>(−1)^(1+2) = −1</code>。<b>小行列式そのものは −2 だが、符号を掛けて +2 になる</b>。ここを飛ばすと答えが <code>−6 + 36 = 30</code> になり、12 ずれる。チェック模様 <code>+ − +</code> を毎回書いてから始めるのが安全。</p>
           <p class="step"><b>手触り：</b>0 が<b>1個</b>だと項は2つ残る。0 が<b>2個</b>並んで初めて 2×2 一発になる（→ 領域10 Q7・Q8）。「0 の個数＝サボれる量」と覚えておく。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q8</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>5</td><td>9</td><td>9</td></tr><tr><td>2</td><td>6</td><td>3</td></tr><tr><td>8</td><td>11</td><td>6</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q8</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>4</td><td>7</td><td>3</td></tr><tr><td>1</td><td>2</td><td>1</td></tr><tr><td>5</td><td>3</td><td>2</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">det = −111</span></p>
-          <p class="step"><b>0 を2個作りにいく。</b>第3列が <code>(9, 3, 6)</code> ＝ すべて 3 の倍数で、真ん中の <code>3</code> が一番小さい。<b>第2行を使って他の2行の第3列を消す</b>。</p>
-          <div class="pl"><code>R₁ → R₁ − 3R₂ = (5−6, 9−18, 9−9) = (−1, −9, 0)</code><br>
-          <code>R₃ → R₃ − 2R₂ = (8−4, 11−12, 6−6) = (4, −1, 0)</code>（det は不変）<br>
-          <code>det = </code><span class="mtx"><table><tr><td>-1</td><td>-9</td><td>0</td></tr><tr><td>2</td><td>6</td><td>3</td></tr><tr><td>4</td><td>-1</td><td>0</td></tr></table></span> → 第3列に 0 が2個</div>
-          <div class="pl">第3列で展開すると残るのは <code>a₂₃ = 3</code> のみ。符号は <code>(−1)^(2+3) = −1</code>。<br>
-          <code>det = −3 ×</code> <span class="mtx"><table><tr><td>-1</td><td>-9</td></tr><tr><td>4</td><td>-1</td></tr></table></span> <code>= −3 × (1 + 36) = −3 × 37 = </code><span class="res">−111</span></div>
-          <p class="step"><b>検算：</b>元の行列に直接サラスをかけても <code>5(36−33) − 9(12−24) + 9(22−48) = 15 + 108 − 234 = −111</code> ✓</p>
-          <p class="step"><b>手触り：</b>これが<b>掃き出し法の考え方そのもの</b>。「基準にする行を1本決めて、他の行から引いて 0 を作る」。det でも逆行列でも連立方程式でも、やっていることは同じ操作。<span class="hl">2手かけて 0 を2個作れば、3×3 は 2×2 一発に落ちる</span>。</p>
+          <p><span class="res">det = 4</span></p>
+          <p class="step"><b>0 を2個作りにいく。</b>第3列が <code>(3, 1, 2)</code> で、真ん中の <code>1</code> が一番小さい。<b>第2行を使って他の2行の第3列を消す</b>。</p>
+          <div class="pl"><code>R₁ → R₁ − 3R₂ = (4−3, 7−6, 3−3) = (1, 1, 0)</code><br>
+          <code>R₃ → R₃ − 2R₂ = (5−2, 3−4, 2−2) = (3, −1, 0)</code>（det は不変）<br>
+          <code>det = </code><span class="mtx"><table><tr><td>1</td><td>1</td><td>0</td></tr><tr><td>1</td><td>2</td><td>1</td></tr><tr><td>3</td><td>-1</td><td>0</td></tr></table></span> → 第3列に 0 が2個</div>
+          <div class="pl">第3列で展開すると残るのは <code>a₂₃ = 1</code> のみ。符号は <code>(−1)^(2+3) = −1</code>。<br>
+          <code>det = −1 ×</code> <span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>3</td><td>-1</td></tr></table></span> <code>= −1 × (−1 − 3) = </code><span class="res">4</span></div>
+          <p class="step"><b>検算：</b>元の行列に直接サラスをかけても <code>4(4−3) − 7(2−5) + 3(3−10) = 4 + 21 − 21 = 4</code> ✓</p>
+          <p class="step"><b>手触り：</b>これが<b>掃き出し法の考え方そのもの</b>。「基準にする行を1本決めて、他の行から引いて 0 を作る」。<span class="hl">基準にはその列で一番小さい成分（できれば 1）を選ぶ</span>と分数が出ない。det でも逆行列でも連立方程式でも、やっていることは同じ操作。2手かけて 0 を2個作れば、3×3 は 2×2 一発に落ちる。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q9</span><div class="qbody"><div class="pl"><span class="key">【トラップ】</span>行列式を求めよ。<span class="mtx"><table><tr><td>2</td><td>1</td><td>4</td></tr><tr><td>3</td><td>5</td><td>1</td></tr><tr><td>0</td><td>7</td><td>-10</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q9</span><div class="qbody"><div class="pl"><span class="key">【トラップ】</span>行列式を求めよ。<span class="mtx"><table><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>2</td><td>1</td><td>1</td></tr><tr><td>0</td><td>-3</td><td>-5</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p><span class="res">det = 0</span></p>
           <p class="step"><b>まず計算。</b>第3行に 0 があるのでそこで展開。</p>
-          <div class="pl"><code>det = 0·C₃₁ + 7·C₃₂ + (−10)·C₃₃</code><br>
-          <code>C₃₂ = −</code><span class="mtx"><table><tr><td>2</td><td>4</td></tr><tr><td>3</td><td>1</td></tr></table></span><code> = −(2 − 12) = 10</code>　　<code>C₃₃ = +</code><span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>3</td><td>5</td></tr></table></span><code> = 10 − 3 = 7</code><br>
-          <code>det = 7(10) + (−10)(7) = 70 − 70 = </code><span class="res">0</span></div>
+          <div class="pl"><code>det = 0·C₃₁ + (−3)·C₃₂ + (−5)·C₃₃</code><br>
+          <code>C₃₂ = −</code><span class="mtx"><table><tr><td>1</td><td>3</td></tr><tr><td>2</td><td>1</td></tr></table></span><code> = −(1 − 6) = 5</code>　　<code>C₃₃ = +</code><span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>2</td><td>1</td></tr></table></span><code> = 1 − 4 = −3</code><br>
+          <code>det = (−3)(5) + (−5)(−3) = −15 + 15 = </code><span class="res">0</span></div>
           <p><b>なぜ 0 になったのか——偶然ではない</b></p>
-          <p class="step">3本の行が<b>一次従属</b>だから。実際 <code>R₃ = −3R₁ + 2R₂</code>：<br>
-          <code>−3(2,1,4) + 2(3,5,1) = (−6+6, −3+10, −12+2) = (0, 7, −10)</code> ✓<br>
+          <p class="step">3本の行が<b>一次従属</b>だから。実際 <code>R₃ = −2R₁ + R₂</code>：<br>
+          <code>−2(1,2,3) + (2,1,1) = (−2+2, −4+1, −6+1) = (0, −3, −5)</code> ✓<br>
           第3行は最初の2行から作れる＝<span class="hl">新しい方向を1つも持っていない</span>。</p>
           <p class="step"><b>幾何：</b>det は3本の行ベクトルが張る平行六面体の体積。3本目が最初の2本と<b>同じ平面に寝ている</b>ので、立体に厚みが出ない＝体積 0。この行列は R³ を<b>平面に潰す</b>変換。</p>
           <p class="step"><b>つながる話：</b><code>det = 0</code> ⟺ 行が従属 ⟺ <code>rank ≤ 2</code>（フルランクでない）⟺ <b>核が {0} より大きい</b>（潰される方向が存在する）⟺ <b>逆行列が存在しない</b>。ぜんぶ同じことを別の言葉で言っている（→ 領域07 Q4 の 2×2 版と同じ構図）。</p>
@@ -6139,30 +6453,31 @@
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q10</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>8</td><td>2</td><td>9</td></tr><tr><td>7</td><td>5</td><td>3</td></tr><tr><td>4</td><td>6</td><td>7</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q10</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>3</td><td>1</td><td>2</td></tr><tr><td>2</td><td>4</td><td>1</td></tr><tr><td>1</td><td>2</td><td>3</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">det = 260</span></p>
+          <p><span class="res">det = 25</span></p>
           <p class="step"><b>0 も共通因数も無い。</b>Q3 と同じくサラスで正面から。</p>
-          <div class="pl"><code>＋：8·5·7 + 2·3·4 + 9·7·6 = 280 + 24 + 378 = 682</code><br>
-          <code>−：9·5·4 + 8·3·6 + 2·7·7 = 180 + 144 + 98 = 422</code><br>
-          <code>det = 682 − 422 = </code><span class="res">260</span></div>
-          <p class="step"><b>別解：0 を作る。</b><code>R₁ − 2R₃ = (8−8, 2−12, 9−14) = (0, −10, −5)</code>。<br>
-          <code>det = </code><span class="mtx"><table><tr><td>0</td><td>-10</td><td>-5</td></tr><tr><td>7</td><td>5</td><td>3</td></tr><tr><td>4</td><td>6</td><td>7</td></tr></table></span> → 第1行で展開 → <code>(−10)·(−(49−12)) + (−5)·(42−20) = 370 − 110 = </code><span class="res">260</span> ✓</p>
-          <p class="step"><b>手触り：</b>2通りで同じ数が出れば、まず間違っていない。<span class="hl">サラスと余因子展開はお互いの検算になる</span>——別ルートで一致することが、手計算での唯一の保険。</p>
+          <div class="pl"><code>＋：3·4·3 + 1·1·1 + 2·2·2 = 36 + 1 + 8 = 45</code><br>
+          <code>−：2·4·1 + 3·1·2 + 1·2·3 = 8 + 6 + 6 = 20</code><br>
+          <code>det = 45 − 20 = </code><span class="res">25</span></div>
+          <p class="step"><b>別解：0 を<u>2個</u>作る。</b>第2行と第3行が近いので <code>R₂ → R₂ − 2R₃ = (2−2, 4−4, 1−6) = (0, 0, −5)</code>。<br>
+          <code>det = </code><span class="mtx"><table><tr><td>3</td><td>1</td><td>2</td></tr><tr><td>0</td><td>0</td><td>-5</td></tr><tr><td>1</td><td>2</td><td>3</td></tr></table></span> → 第2行に 0 が2個。残るのは <code>a₂₃ = −5</code> だけ、符号は <code>(−1)^(2+3) = −1</code><br>
+          <code>det = −(−5) ×</code> <span class="mtx"><table><tr><td>3</td><td>1</td></tr><tr><td>1</td><td>2</td></tr></table></span> <code>= 5 × (6 − 1) = </code><span class="res">25</span> ✓</p>
+          <p class="step"><b>手触り：</b>2通りで同じ数が出れば、まず間違っていない。<span class="hl">サラスと余因子展開はお互いの検算になる</span>——別ルートで一致することが、手計算での唯一の保険。しかもこの問題は、1手 0 を作るだけでサラスの6項が 2×2 ひとつに落ちる。<b>「まず引き算できる似た行を探す」が常に先</b>。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q11</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>2</td><td>5</td><td>3</td></tr><tr><td>0</td><td>9</td><td>4</td></tr><tr><td>6</td><td>10</td><td>3</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q11</span><div class="qbody"><div class="pl">行列式を求めよ。<span class="mtx"><table><tr><td>3</td><td>2</td><td>1</td></tr><tr><td>0</td><td>4</td><td>2</td></tr><tr><td>2</td><td>1</td><td>3</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">det = −68</span></p>
+          <p><span class="res">det = 30</span></p>
           <p class="step"><b>0 は <code>a₂₁</code> の1個。</b>第2行（または第1列）で展開。</p>
-          <div class="pl"><code>det = 0·C₂₁ + 9·C₂₂ + 4·C₂₃</code><br>
-          <code>C₂₂ = +</code><span class="mtx"><table><tr><td>2</td><td>3</td></tr><tr><td>6</td><td>3</td></tr></table></span><code> = 6 − 18 = −12</code>　　<code>C₂₃ = −</code><span class="mtx"><table><tr><td>2</td><td>5</td></tr><tr><td>6</td><td>10</td></tr></table></span><code> = −(20 − 30) = 10</code><br>
-          <code>det = 9(−12) + 4(10) = −108 + 40 = </code><span class="res">−68</span></div>
-          <p class="step"><b>検算（第1行で展開）：</b><code>2(27 − 40) − 5(0 − 24) + 3(0 − 54) = −26 + 120 − 162 = −68</code> ✓。<span class="hl">どの行・どの列で展開しても必ず同じ値になる</span>——これは定理として保証されている。だからこそ「一番ラクな線を自由に選んでよい」。</p>
-          <p class="step"><b>ヒヤリポイント：</b><code>C₂₃</code> の小行列式 <span class="mtx"><table><tr><td>2</td><td>5</td></tr><tr><td>6</td><td>10</td></tr></table></span> は <code>20 − 30 = −10</code>。<b>符号 <code>(−1)^(2+3) = −1</code> を掛けて +10</b>。第2行は符号が <code>− + −</code> と並ぶので、1列目と3列目でひっくり返る。ここが 3×3 の一番のミス多発地帯。</p>
-          <p class="step"><b>手触り：</b>ちなみに第1列 <code>(2, 0, 6)</code> にも 0 が1個あるので、そちらで展開しても手間は同じ。<b>0 の個数が並んだら、残る成分が小さいほうを選ぶ</b>と暗算がラク。</p>
+          <div class="pl"><code>det = 0·C₂₁ + 4·C₂₂ + 2·C₂₃</code><br>
+          <code>C₂₂ = +</code><span class="mtx"><table><tr><td>3</td><td>1</td></tr><tr><td>2</td><td>3</td></tr></table></span><code> = 9 − 2 = 7</code>　　<code>C₂₃ = −</code><span class="mtx"><table><tr><td>3</td><td>2</td></tr><tr><td>2</td><td>1</td></tr></table></span><code> = −(3 − 4) = 1</code><br>
+          <code>det = 4(7) + 2(1) = 28 + 2 = </code><span class="res">30</span></div>
+          <p class="step"><b>検算（第1行で展開）：</b><code>3(12 − 2) − 2(0 − 4) + 1(0 − 8) = 30 + 8 − 8 = 30</code> ✓。<span class="hl">どの行・どの列で展開しても必ず同じ値になる</span>——これは定理として保証されている。だからこそ「一番ラクな線を自由に選んでよい」。</p>
+          <p class="step"><b>ヒヤリポイント：</b><code>C₂₃</code> の小行列式 <span class="mtx"><table><tr><td>3</td><td>2</td></tr><tr><td>2</td><td>1</td></tr></table></span> は <code>3 − 4 = −1</code>。<b>符号 <code>(−1)^(2+3) = −1</code> を掛けて +1</b>。第2行は符号が <code>− + −</code> と並ぶので、1列目と3列目でひっくり返る。ここが 3×3 の一番のミス多発地帯。</p>
+          <p class="step"><b>手触り：</b>ちなみに第1列 <code>(3, 0, 2)</code> にも 0 が1個あるので、そちらで展開しても手間は同じ。<b>0 の個数が並んだら、残る成分が小さいほうを選ぶ</b>と暗算がラク。</p>
         </div></details>
       </div>
     </section>
@@ -6416,9 +6731,9 @@
       <p class="sub" style="margin:26px 0 6px"><b>ここから 3×3。</b>3次の特性方程式を正面から展開すると3次式で辛い。実際に使うのは「<b>0 が並んでいる行／列を探して 2×2 に落とす</b>」の一手だけ。Q6〜Q8 はその型を 3 パターンで通す。</p>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q6</span><div class="qbody"><div class="pl">固有値を求めよ。<span class="mtx"><table><tr><td>5</td><td>9</td><td>-2</td></tr><tr><td>0</td><td>3</td><td>1</td></tr><tr><td>0</td><td>0</td><td>2</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q6</span><div class="qbody"><div class="pl">固有値を求めよ。<span class="mtx"><table><tr><td>3</td><td>1</td><td>1</td></tr><tr><td>0</td><td>2</td><td>1</td></tr><tr><td>0</td><td>0</td><td>1</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">λ = 5, 3, 2</span></p>
+          <p><span class="res">λ = 3, 2, 1</span></p>
 
           <p><b>① 形を見る：左下が全部 0 ＝ 上三角行列</b></p>
           <p class="step">2×2 のときと同じで、<b>三角行列は対角成分がそのまま固有値</b>。3×3 でも n×n でも変わらない。特性方程式を展開する必要はない。</p>
@@ -6438,40 +6753,41 @@
               <path d="M36 26 L31 26 L31 116 L36 116" fill="none" stroke="#111" stroke-width="1.3"/>
               <path d="M176 26 L181 26 L181 116 L176 116" fill="none" stroke="#111" stroke-width="1.3"/>
               <g font-size="11.5" text-anchor="middle" fill="#111">
-                <text x="62" y="45" font-weight="700" fill="#b8860b">5−λ</text><text x="106" y="45">9</text><text x="150" y="45">−2</text>
-                <text x="62" y="75" fill="#9a9a9a">0</text><text x="106" y="75" font-weight="700" fill="#b8860b">3−λ</text><text x="150" y="75">1</text>
-                <text x="62" y="105" fill="#9a9a9a">0</text><text x="106" y="105" fill="#9a9a9a">0</text><text x="150" y="105" font-weight="700" fill="#b8860b">2−λ</text>
+                <text x="62" y="45" font-weight="700" fill="#b8860b">3−λ</text><text x="106" y="45">1</text><text x="150" y="45">1</text>
+                <text x="62" y="75" fill="#9a9a9a">0</text><text x="106" y="75" font-weight="700" fill="#b8860b">2−λ</text><text x="150" y="75">1</text>
+                <text x="62" y="105" fill="#9a9a9a">0</text><text x="106" y="105" fill="#9a9a9a">0</text><text x="150" y="105" font-weight="700" fill="#b8860b">1−λ</text>
               </g>
               <text x="106" y="134" text-anchor="middle" font-size="10.5" fill="#9a9a9a" font-family="'Noto Sans JP', sans-serif">左下は 0 のまま</text>
               <path d="M196 71 L226 71" stroke="#888" stroke-width="1.2" marker-end="url(#q6a)"/>
               <defs><marker id="q6a" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="#888"/></marker></defs>
-              <text x="240" y="65" font-size="12.5" fill="#111">det = (5−λ)(3−λ)(2−λ)</text>
-              <text x="240" y="88" font-size="12.5" font-weight="700" fill="#b8860b">λ = 5, 3, 2</text>
+              <text x="240" y="65" font-size="12.5" fill="#111">det = (3−λ)(2−λ)(1−λ)</text>
+              <text x="240" y="88" font-size="12.5" font-weight="700" fill="#b8860b">λ = 3, 2, 1</text>
             </svg>
             <div class="figcap">上三角なら <code>A−λI</code> も上三角。det は対角の積になるので、0 になる λ ＝ 対角成分そのもの。</div>
           </div>
 
           <p><b>② 検算（trace と det）</b></p>
-          <p class="step"><code>trace = 5+3+2 = 10 = λ₁+λ₂+λ₃</code>、<code>det = 5·3·2 = 30 = λ₁λ₂λ₃</code>。3×3 でもこの2本は成り立つので、λ を出したら必ず当てておく。</p>
+          <p class="step"><code>trace = 3+2+1 = 6 = λ₁+λ₂+λ₃</code>、<code>det = 3·2·1 = 6 = λ₁λ₂λ₃</code>。3×3 でもこの2本は成り立つので、λ を出したら必ず当てておく。</p>
 
           <p><b>③ 固有ベクトルは対角行列と違って「座標軸」ではない</b></p>
-          <div class="pl">λ=5：<code>A−5I</code>=<span class="mtx"><table><tr><td>0</td><td>9</td><td>-2</td></tr><tr><td>0</td><td>-2</td><td>1</td></tr><tr><td>0</td><td>0</td><td>-3</td></tr></table></span> → 下から <code>z=0</code>、<code>y=0</code>、x 自由 → <span class="res">v=(1,0,0)</span></div>
-          <div class="pl">λ=3：<code>A−3I</code>=<span class="mtx"><table><tr><td>2</td><td>9</td><td>-2</td></tr><tr><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td><td>-1</td></tr></table></span> → <code>z=0</code>、<code>2x+9y=0</code> → <span class="res">v=(9,−2,0)</span></div>
-          <div class="pl">λ=2：<code>A−2I</code>=<span class="mtx"><table><tr><td>3</td><td>9</td><td>-2</td></tr><tr><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>0</td><td>0</td></tr></table></span> → <code>y=−z</code>、<code>3x+9y−2z=0</code> → <code>3x=11z</code> → <span class="res">v=(11,−3,3)</span></div>
-          <p class="step">検算：<code>A(11,−3,3) = (55−27−6, −9+3, 6) = (22,−6,6) = 2·(11,−3,3)</code> ✓</p>
+          <div class="pl">λ=3：<code>A−3I</code>=<span class="mtx"><table><tr><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>-1</td><td>1</td></tr><tr><td>0</td><td>0</td><td>-2</td></tr></table></span> → 下から <code>z=0</code>、<code>y=0</code>、x 自由 → <span class="res">v=(1,0,0)</span></div>
+          <div class="pl">λ=2：<code>A−2I</code>=<span class="mtx"><table><tr><td>1</td><td>1</td><td>1</td></tr><tr><td>0</td><td>0</td><td>1</td></tr><tr><td>0</td><td>0</td><td>-1</td></tr></table></span> → <code>z=0</code>、<code>x+y=0</code> → <span class="res">v=(1,−1,0)</span></div>
+          <div class="pl">λ=1：<code>A−I</code>=<span class="mtx"><table><tr><td>2</td><td>1</td><td>1</td></tr><tr><td>0</td><td>1</td><td>1</td></tr><tr><td>0</td><td>0</td><td>0</td></tr></table></span> → <code>y+z=0</code>、<code>2x+y+z=2x=0</code> → <span class="res">v=(0,1,−1)</span></div>
+          <p class="step">検算：<code>A(0,1,−1) = (0+1−1, 0+2−1, −1) = (0,1,−1) = 1·(0,1,−1)</code> ✓　<code>A(1,−1,0) = (3−1, −2, 0) = (2,−2,0) = 2·(1,−1,0)</code> ✓</p>
 
-          <p class="step"><b>手触り：</b>上側の <code>9, −2, 1</code> は<b>固有値にはまったく効かない</b>（左下の 0 と掛かるだけで det に残らない）が、<b>固有ベクトルは思い切り歪める</b>。もし上側も全部 0 の対角行列なら固有ベクトルは座標軸 e₁,e₂,e₃ ちょうどだが、今回は (9,−2,0) や (11,−3,3) という斜めの3本になる。<span class="hl">λ は対角だけで決まる／v は非対角にも依存する</span>という 2×2 のときの話が、そのまま3次に伸びただけ。</p>
+          <p class="step"><b>手触り：</b>上側の <code>1, 1, 1</code> は<b>固有値にはまったく効かない</b>（左下の 0 と掛かるだけで det に残らない）が、<b>固有ベクトルは思い切り歪める</b>。もし上側も全部 0 の対角行列なら固有ベクトルは座標軸 e₁,e₂,e₃ ちょうどだが、今回は <code>(1,−1,0)</code> や <code>(0,1,−1)</code> という斜めの3本になる。<span class="hl">λ は対角だけで決まる／v は非対角にも依存する</span>という 2×2 のときの話が、そのまま3次に伸びただけ。</p>
+          <p class="step"><b>解く向き：</b>上三角の <code>A−λI</code> は<b>一番下の行から読む</b>のが定石。下の行はいちばん変数が少ないので、そこで確定した値を上へ代入していける（＝後退代入）。<span class="hl">左下が 0 だからこの一方通行が使える</span>。</p>
           <p class="step"><b>対角化可否：</b>λ が 3 つとも相異なる ⇒ 固有ベクトルが 3 本独立に取れる ⇒ <span class="res">対角化可能</span>。重解が出た Q3・Q4 のような心配は要らない。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q7</span><div class="qbody"><div class="pl">固有値を求めよ。<span class="mtx"><table><tr><td>4</td><td>2</td><td>0</td></tr><tr><td>0</td><td>6</td><td>0</td></tr><tr><td>-2</td><td>1</td><td>2</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q7</span><div class="qbody"><div class="pl">固有値を求めよ。<span class="mtx"><table><tr><td>2</td><td>1</td><td>0</td></tr><tr><td>0</td><td>3</td><td>0</td></tr><tr><td>1</td><td>1</td><td>1</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">λ = 2, 4, 6</span></p>
+          <p><span class="res">λ = 1, 2, 3</span></p>
 
           <p><b>① 三角ではない。でも 0 が2つ並んだ列がある</b></p>
-          <p class="step">左下に <code>−2</code> があるので上三角ではなく、右上に <code>2</code> があるので下三角でもない。ここで<b>行・列ごとに 0 の個数を数える</b>と、<span class="hl">第3列が (0, 0, 2) で 0 が2つ</span>。余因子展開は<b>0 が多い行／列に沿ってやると項がほとんど消える</b>ので、そこを使う。</p>
+          <p class="step">左下に <code>1</code> があるので上三角ではなく、右上に <code>1</code> があるので下三角でもない。ここで<b>行・列ごとに 0 の個数を数える</b>と、<span class="hl">第3列が (0, 0, 1) で 0 が2つ</span>。余因子展開は<b>0 が多い行／列に沿ってやると項がほとんど消える</b>ので、そこを使う。</p>
 
           <div class="figbox">
             <svg viewBox="0 0 440 145" xmlns="http://www.w3.org/2000/svg" font-family="Poppins, sans-serif">
@@ -6484,14 +6800,14 @@
               <path d="M26 26 L21 26 L21 116 L26 116" fill="none" stroke="#111" stroke-width="1.3"/>
               <path d="M166 26 L171 26 L171 116 L166 116" fill="none" stroke="#111" stroke-width="1.3"/>
               <g font-size="11.5" text-anchor="middle" fill="#111">
-                <text x="52" y="45">4−λ</text><text x="96" y="45">2</text><text x="140" y="45" fill="#9a9a9a">0</text>
-                <text x="52" y="75" fill="#9a9a9a">0</text><text x="96" y="75">6−λ</text><text x="140" y="75" fill="#9a9a9a">0</text>
-                <text x="52" y="105">−2</text><text x="96" y="105">1</text><text x="140" y="105" font-weight="700" fill="#2f5d8a">2−λ</text>
+                <text x="52" y="45">2−λ</text><text x="96" y="45">1</text><text x="140" y="45" fill="#9a9a9a">0</text>
+                <text x="52" y="75" fill="#9a9a9a">0</text><text x="96" y="75">3−λ</text><text x="140" y="75" fill="#9a9a9a">0</text>
+                <text x="52" y="105">1</text><text x="96" y="105">1</text><text x="140" y="105" font-weight="700" fill="#2f5d8a">1−λ</text>
               </g>
               <text x="140" y="134" text-anchor="middle" font-size="10.5" fill="#2f5d8a" font-family="'Noto Sans JP', sans-serif">この列で展開</text>
               <path d="M186 71 L214 71" stroke="#888" stroke-width="1.2" marker-end="url(#q7a)"/>
               <defs><marker id="q7a" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="#888"/></marker></defs>
-              <text x="228" y="76" font-size="12.5" font-weight="700" fill="#2f5d8a">(2−λ)</text>
+              <text x="228" y="76" font-size="12.5" font-weight="700" fill="#2f5d8a">(1−λ)</text>
               <text x="272" y="76" font-size="13" fill="#111">×</text>
               <g stroke="#e4e4e4" stroke-width="1">
                 <line x1="334" y1="41" x2="334" y2="101"/><line x1="290" y1="71" x2="378" y2="71"/>
@@ -6499,38 +6815,38 @@
               <path d="M286 41 L281 41 L281 101 L286 101" fill="none" stroke="#b8860b" stroke-width="1.3"/>
               <path d="M382 41 L387 41 L387 101 L382 101" fill="none" stroke="#b8860b" stroke-width="1.3"/>
               <g font-size="11.5" text-anchor="middle" fill="#111">
-                <text x="312" y="60">4−λ</text><text x="356" y="60">2</text>
-                <text x="312" y="90" fill="#9a9a9a">0</text><text x="356" y="90">6−λ</text>
+                <text x="312" y="60">2−λ</text><text x="356" y="60">1</text>
+                <text x="312" y="90" fill="#9a9a9a">0</text><text x="356" y="90">3−λ</text>
               </g>
               <text x="334" y="120" text-anchor="middle" font-size="10.5" fill="#b8860b" font-family="'Noto Sans JP', sans-serif">残った 2×2 も上三角</text>
             </svg>
-            <div class="figcap">第3列で余因子展開すると (2−λ) だけが生き残り、残りは 2×2。しかもその 2×2 がまた上三角なので、そこも対角を読むだけ。</div>
+            <div class="figcap">第3列で余因子展開すると (1−λ) だけが生き残り、残りは 2×2。しかもその 2×2 がまた上三角なので、そこも対角を読むだけ。</div>
           </div>
 
           <p><b>② 実際の展開</b></p>
-          <p class="step"><code>det(A−λI) = (2−λ)·det[[4−λ, 2], [0, 6−λ]] = (2−λ)(4−λ)(6−λ)</code> → <span class="res">λ = 2, 4, 6</span>。<br>
+          <p class="step"><code>det(A−λI) = (1−λ)·det[[2−λ, 1], [0, 3−λ]] = (1−λ)(2−λ)(3−λ)</code> → <span class="res">λ = 1, 2, 3</span>。<br>
           第3列の上2つが 0 なので、その2項は最初から消える。符号も <code>(−1)^(3+3) = +1</code> なのでそのまま。</p>
 
           <p><b>③ 検算</b></p>
-          <p class="step"><code>trace = 4+6+2 = 12 = 2+4+6</code> ✓、<code>det = 2·4·6 = 48</code>（元の行列でも第3列展開で <code>2·(4·6−2·0) = 48</code>）✓。</p>
+          <p class="step"><code>trace = 2+3+1 = 6 = 1+2+3</code> ✓、<code>det = 1·2·3 = 6</code>（元の行列でも第3列展開で <code>1·(2·3−1·0) = 6</code>）✓。</p>
 
           <p><b>④ 固有ベクトル</b></p>
-          <div class="pl">λ=2：<code>A−2I</code>=<span class="mtx"><table><tr><td>2</td><td>2</td><td>0</td></tr><tr><td>0</td><td>4</td><td>0</td></tr><tr><td>-2</td><td>1</td><td>0</td></tr></table></span> → <code>y=0</code>、<code>x=0</code>、z 自由 → <span class="res">v=(0,0,1)</span></div>
-          <div class="pl">λ=4：<code>A−4I</code>=<span class="mtx"><table><tr><td>0</td><td>2</td><td>0</td></tr><tr><td>0</td><td>2</td><td>0</td></tr><tr><td>-2</td><td>1</td><td>-2</td></tr></table></span> → <code>y=0</code>、<code>−2x−2z=0</code> → <span class="res">v=(1,0,−1)</span></div>
-          <div class="pl">λ=6：<code>A−6I</code>=<span class="mtx"><table><tr><td>-2</td><td>2</td><td>0</td></tr><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>-2</td><td>1</td><td>-4</td></tr></table></span> → <code>y=x</code>、<code>−2x+y−4z=0</code> → <code>x=−4z</code> → <span class="res">v=(4,4,−1)</span></div>
-          <p class="step">検算：<code>A(4,4,−1) = (16+8, 24, −8+4−2) = (24,24,−6) = 6·(4,4,−1)</code> ✓</p>
+          <div class="pl">λ=1：<code>A−I</code>=<span class="mtx"><table><tr><td>1</td><td>1</td><td>0</td></tr><tr><td>0</td><td>2</td><td>0</td></tr><tr><td>1</td><td>1</td><td>0</td></tr></table></span> → <code>y=0</code>、<code>x=0</code>、z 自由 → <span class="res">v=(0,0,1)</span></div>
+          <div class="pl">λ=2：<code>A−2I</code>=<span class="mtx"><table><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>0</td><td>1</td><td>0</td></tr><tr><td>1</td><td>1</td><td>-1</td></tr></table></span> → <code>y=0</code>、<code>x−z=0</code> → <span class="res">v=(1,0,1)</span></div>
+          <div class="pl">λ=3：<code>A−3I</code>=<span class="mtx"><table><tr><td>-1</td><td>1</td><td>0</td></tr><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>1</td><td>-2</td></tr></table></span> → <code>y=x</code>、<code>x+y−2z=0</code> → <code>x=z</code> → <span class="res">v=(1,1,1)</span></div>
+          <p class="step">検算：<code>A(1,1,1) = (2+1, 3, 1+1+1) = (3,3,3) = 3·(1,1,1)</code> ✓　<code>A(1,0,1) = (2, 0, 1+1) = (2,0,2) = 2·(1,0,1)</code> ✓</p>
 
-          <p class="step"><b>手触り：</b>この行列は<b>ブロック三角</b>——「上2行・左2列の 2×2 ブロック」と「右下の 1×1（＝2）」に分かれていて、右上のブロックが 0 だから det がブロックごとの積になる。<span class="hl">3×3 を見たら、まず「0 が並んでいる行か列はどれか」を探す</span>のが実戦の手順。見つかればその場で 2×2 に落ちて、ここまでの 2×2 の道具がそのまま使える。</p>
+          <p class="step"><b>手触り：</b>この行列は<b>ブロック三角</b>——「上2行・左2列の 2×2 ブロック」と「右下の 1×1（＝1）」に分かれていて、右上のブロックが 0 だから det がブロックごとの積になる。<span class="hl">3×3 を見たら、まず「0 が並んでいる行か列はどれか」を探す</span>のが実戦の手順。見つかればその場で 2×2 に落ちて、ここまでの 2×2 の道具がそのまま使える。</p>
         </div></details>
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q8</span><div class="qbody"><div class="pl">固有値を求めよ。<span class="mtx"><table><tr><td>-2</td><td>0</td><td>4</td></tr><tr><td>0</td><td>7</td><td>0</td></tr><tr><td>1</td><td>0</td><td>6</td></tr></table></span></div></div></div>
+        <div class="qhead"><span class="qno">Q8</span><div class="qbody"><div class="pl">固有値を求めよ。<span class="mtx"><table><tr><td>2</td><td>0</td><td>3</td></tr><tr><td>0</td><td>5</td><td>0</td></tr><tr><td>2</td><td>0</td><td>1</td></tr></table></span></div></div></div>
         <details><summary>解答・解説</summary><div class="ans">
-          <p><span class="res">λ = 7, 2+2√5, 2−2√5</span>（後ろ2つは <code>≈ 6.472</code> と <code>≈ −2.472</code>）</p>
+          <p><span class="res">λ = 5, 4, −1</span></p>
 
           <p><b>① 0 が並んでいるのは第2行（かつ第2列）</b></p>
-          <p class="step">第2行が <code>(0, 7, 0)</code>、第2列も <code>(0, 7, 0)</code>。つまり <b>y 方向が他の座標とまったく混ざらない</b>。この行で展開すれば <code>7−λ</code> だけが残り、あとは x と z の 2×2。</p>
+          <p class="step">第2行が <code>(0, 5, 0)</code>、第2列も <code>(0, 5, 0)</code>。つまり <b>y 方向が他の座標とまったく混ざらない</b>。この行で展開すれば <code>5−λ</code> だけが残り、あとは x と z の 2×2。</p>
 
           <div class="figbox">
             <svg viewBox="0 0 460 145" xmlns="http://www.w3.org/2000/svg" font-family="Poppins, sans-serif">
@@ -6546,14 +6862,14 @@
               <path d="M22 26 L17 26 L17 116 L22 116" fill="none" stroke="#111" stroke-width="1.3"/>
               <path d="M180 26 L185 26 L185 116 L180 116" fill="none" stroke="#111" stroke-width="1.3"/>
               <g font-size="11.5" text-anchor="middle" fill="#111">
-                <text x="51" y="45">−2−λ</text><text x="101" y="45" fill="#9a9a9a">0</text><text x="151" y="45">4</text>
-                <text x="51" y="75" fill="#9a9a9a">0</text><text x="101" y="75" font-weight="700" fill="#2f5d8a">7−λ</text><text x="151" y="75" fill="#9a9a9a">0</text>
-                <text x="51" y="105">1</text><text x="101" y="105" fill="#9a9a9a">0</text><text x="151" y="105">6−λ</text>
+                <text x="51" y="45">2−λ</text><text x="101" y="45" fill="#9a9a9a">0</text><text x="151" y="45">3</text>
+                <text x="51" y="75" fill="#9a9a9a">0</text><text x="101" y="75" font-weight="700" fill="#2f5d8a">5−λ</text><text x="151" y="75" fill="#9a9a9a">0</text>
+                <text x="51" y="105">2</text><text x="101" y="105" fill="#9a9a9a">0</text><text x="151" y="105">1−λ</text>
               </g>
               <text x="101" y="134" text-anchor="middle" font-size="10.5" fill="#2f5d8a" font-family="'Noto Sans JP', sans-serif">この行で展開（列でも同じ）</text>
               <path d="M198 71 L226 71" stroke="#888" stroke-width="1.2" marker-end="url(#q8a)"/>
               <defs><marker id="q8a" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0 0 L7 3 L0 6 z" fill="#888"/></marker></defs>
-              <text x="240" y="76" font-size="12.5" font-weight="700" fill="#2f5d8a">(7−λ)</text>
+              <text x="240" y="76" font-size="12.5" font-weight="700" fill="#2f5d8a">(5−λ)</text>
               <text x="284" y="76" font-size="13" fill="#111">×</text>
               <g stroke="#e4e4e4" stroke-width="1">
                 <line x1="352" y1="41" x2="352" y2="101"/><line x1="302" y1="71" x2="402" y2="71"/>
@@ -6561,31 +6877,135 @@
               <path d="M298 41 L293 41 L293 101 L298 101" fill="none" stroke="#b8860b" stroke-width="1.3"/>
               <path d="M406 41 L411 41 L411 101 L406 101" fill="none" stroke="#b8860b" stroke-width="1.3"/>
               <g font-size="11.5" text-anchor="middle" fill="#111">
-                <text x="327" y="60">−2−λ</text><text x="377" y="60">4</text>
-                <text x="327" y="90">1</text><text x="377" y="90">6−λ</text>
+                <text x="327" y="60">2−λ</text><text x="377" y="60">3</text>
+                <text x="327" y="90">2</text><text x="377" y="90">1−λ</text>
               </g>
               <text x="352" y="120" text-anchor="middle" font-size="10.5" fill="#b8860b" font-family="'Noto Sans JP', sans-serif">こちらは三角じゃない</text>
             </svg>
-            <div class="figcap">残る 2×2 は上三角でも下三角でもないので、ここだけは 2次方程式を正面から解くことになる。</div>
+            <div class="figcap">残る 2×2 は上三角でも下三角でもないので、ここだけは 2次方程式を解くことになる。</div>
           </div>
 
           <p><b>② 展開して2次方程式へ</b></p>
-          <p class="step"><code>det(A−λI) = (7−λ)·det[[−2−λ, 4], [1, 6−λ]] = (7−λ)·[(−2−λ)(6−λ) − 4]</code><br>
-          <code>(−2−λ)(6−λ) = λ² − 4λ − 12</code> なので、中身は <code>λ² − 4λ − 16</code>。<br>
-          <code>λ = (4 ± √(16+64))/2 = (4 ± √80)/2 = 2 ± 2√5</code> → <span class="res">λ = 7, 2+2√5, 2−2√5</span>。</p>
+          <p class="step"><code>det(A−λI) = (5−λ)·det[[2−λ, 3], [2, 1−λ]] = (5−λ)·[(2−λ)(1−λ) − 6]</code><br>
+          <code>(2−λ)(1−λ) = λ² − 3λ + 2</code> なので、中身は <code>λ² − 3λ − 4 = (λ−4)(λ+1)</code>。<br>
+          → <span class="res">λ = 5, 4, −1</span>。<span class="hl">解の公式を出す前に因数分解を試す</span>のが速い（積が −4・和が 3 の2数＝4 と −1）。</p>
 
           <p><b>③ 検算</b></p>
-          <p class="step"><code>trace = −2+7+6 = 11</code>。一方 <code>7 + (2+2√5) + (2−2√5) = 11</code> ✓（√5 が打ち消える）。<br>
-          <code>det</code>：第2行展開で <code>7·((−2)(6) − 4·1) = 7·(−16) = −112</code>。一方 <code>7·(2+2√5)(2−2√5) = 7·(4−20) = −112</code> ✓。<span class="hl">無理数が出たときほど trace/det 検算が効く</span>——ここが合えば符号ミス・√の取り違えはまず無い。</p>
+          <p class="step"><code>trace = 2+5+1 = 8</code>。一方 <code>5 + 4 + (−1) = 8</code> ✓<br>
+          <code>det</code>：第2行展開で <code>5·(2·1 − 3·2) = 5·(−4) = −20</code>。一方 <code>5·4·(−1) = −20</code> ✓。<span class="hl">λ を出したら trace/det の2本を必ず当てる</span>——ここが合えば符号ミスはまず無い。</p>
 
           <p><b>④ 固有ベクトル</b></p>
-          <div class="pl">λ=7：<code>A−7I</code>=<span class="mtx"><table><tr><td>-9</td><td>0</td><td>4</td></tr><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>1</td><td>0</td><td>-1</td></tr></table></span> → <code>x=z</code> かつ <code>−9x+4z=0</code> → <code>x=z=0</code>、y 自由 → <span class="res">v=(0,1,0)</span></div>
-          <p class="step">残り2つは y 成分が 0（<code>(7−λ)y=0</code> で <code>λ≠7</code> だから）。x-z 平面の中で <code>(−2−λ)x + 4z = 0</code> を解くと <code>z = (2+λ)x/4</code> なので、<br>
-          λ=2+2√5 → <span class="res">v=(2, 0, 2+√5)</span>、λ=2−2√5 → <span class="res">v=(2, 0, 2−√5)</span>。</p>
+          <div class="pl">λ=5：<code>A−5I</code>=<span class="mtx"><table><tr><td>-3</td><td>0</td><td>3</td></tr><tr><td>0</td><td>0</td><td>0</td></tr><tr><td>2</td><td>0</td><td>-4</td></tr></table></span> → <code>x=z</code> かつ <code>x=2z</code> → <code>x=z=0</code>、y 自由 → <span class="res">v=(0,1,0)</span></div>
+          <p class="step">残り2つは y 成分が 0（<code>(5−λ)y=0</code> で <code>λ≠5</code> だから）。x-z 平面の中で <code>(2−λ)x + 3z = 0</code> を解くと、<br>
+          λ=4：<code>−2x+3z=0</code> → <span class="res">v=(3, 0, 2)</span>　　λ=−1：<code>3x+3z=0</code> → <span class="res">v=(1, 0, −1)</span></p>
+          <p class="step">検算：<code>A(3,0,2) = (6+6, 0, 6+2) = (12,0,8) = 4·(3,0,2)</code> ✓　<code>A(1,0,−1) = (2−3, 0, 2−1) = (−1,0,1) = −1·(1,0,−1)</code> ✓</p>
 
-          <p class="step"><b>手触り①：整数で割り切れないのが普通。</b>ここまでがきれいな整数だったのは問題がそう作られていただけで、一般の行列の固有値は<b>無理数や複素数になるほうが多数派</b>。「割り切れないから計算ミス」と疑う前に trace/det を当てる。</p>
-          <p class="step"><b>手触り②：y軸は完全に独立した軸。</b>第2行も第2列も 0 なので、y は他と一切やりとりしない。<span class="hl">y軸だけを見れば「7倍に伸ばすだけ」、x-z平面だけを見れば独立に別の変換</span>が走っている。こういう「混ざらない部分空間」が<b>不変部分空間</b>で、行列をブロックに分けて考える発想の入口になる。</p>
-          <p class="step"><b>手触り③：負の固有値が1つ。</b><code>2−2√5 ≈ −2.47</code> なので、その固有ベクトル <code>(2,0,2−√5)</code> の方向は<b>約2.47倍に伸びたうえで反転</b>する。<span class="hl">負の固有値＝その軸で原点をまたいで折り返す</span>。3つの固有値が正・正・負なので、この変換は det が負（<code>−112</code>）＝<b>向きが反転する変換</b>だと det からも読める。</p>
+          <p class="step"><b>手触り①：y軸は完全に独立した軸。</b>第2行も第2列も 0 なので、y は他と一切やりとりしない。<span class="hl">y軸だけを見れば「5倍に伸ばすだけ」、x-z平面だけを見れば独立に別の変換</span>が走っている。こういう「混ざらない部分空間」が<b>不変部分空間</b>で、行列をブロックに分けて考える発想の入口になる。</p>
+          <p class="step"><b>手触り②：負の固有値が1つ。</b><code>λ = −1</code> なので、その固有ベクトル <code>(1,0,−1)</code> の方向は<b>長さそのままで反転</b>する。<span class="hl">負の固有値＝その軸で原点をまたいで折り返す</span>。固有値が正・正・負なので det が負（<code>−20</code>）＝<b>向きが反転する変換</b>だと det からも読める。</p>
+          <p class="step"><b>手触り③：整数で割り切れるのは問題がそう作られているから。</b>ここまで全問きれいな整数だったのは練習用にそう選んだだけで、一般の行列の固有値は<b>無理数や複素数になるほうが多数派</b>（例：<code>[[−2,4],[1,6]]</code> なら <code>2±2√5</code>）。割り切れない値が出ても計算ミスとは限らないので、疑う前に trace/det を当てる。</p>
+        </div></details>
+      </div>
+    </section>
+
+    <!-- ============ 領域11 対角化 ============ -->
+    <section class="domain">
+      <h2><span class="no">11</span>対角化（P と D を作る）</h2>
+      <p class="sub">手順は4つ：① <code>det(A−λI)=0</code> で λ ② 各 λ の固有ベクトル ③ それを<b>列</b>に並べて P ④ 同じ順で λ を対角に並べて D。検算は <code>P⁻¹AP</code> ではなく <span class="hl"><code>AP = PD</code> の列ごと比較</span>が速い。</p>
+
+      <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13px">
+        <span class="key">Tip — 数字の作り：</span>この領域は<span class="hl">固有値が全部整数、固有ベクトルの成分も1桁</span>になる行列だけを選んでいる。固有ベクトルは定数倍が自由なので、<span class="key"><code>det P = ±1</code> になるスケールを選ぶと P⁻¹ が分数なしで出る</span>。手順を体に入れるまでは、この形で回すのが速い。
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><div class="pl">対角化せよ。<span class="mtx"><table><tr><td>3</td><td>0</td></tr><tr><td>0</td><td>5</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">P = I、D = A（もう対角なので何もしなくてよい）</span></p>
+          <p class="step">対角行列の固有値は対角成分そのもの（<code>λ = 3, 5</code>）で、固有ベクトルは座標軸 <code>(1,0)</code>、<code>(0,1)</code>。それを列に並べると <code>P = I</code>、<code>P⁻¹ = I</code> なので <code>A = I·A·I</code>。</p>
+          <p class="step"><b>手触り：</b><span class="hl">「対角行列＝すでに固有座標で書かれている行列」</span>。対角化とは、この状態に<b>座標を取り替えて持っていく</b>作業だと分かると、以降の問題の目的がはっきりする。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q2</span><div class="qbody"><div class="pl">対角化せよ。<span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>2</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <div class="pl"><span class="res">P = <span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>-1</td></tr></table></span>、D = <span class="mtx"><table><tr><td>3</td><td>0</td></tr><tr><td>0</td><td>1</td></tr></table></span></span></div>
+          <p class="step"><b>λ：</b><code>[[a,b],[b,a]]</code> 型なので <code>λ = a±b = 3, 1</code>（領域10 Q2 の型）。<br>
+          <b>v：</b>λ=3 → <code>x=y</code> → <code>(1,1)</code>。λ=1 → <code>x=−y</code> → <code>(1,−1)</code>。</p>
+          <div class="pl">det P = <code>1·(−1) − 1·1 = −2</code> ≠ 0 なので対角化成立。<code>P⁻¹ = (1/2)</code><span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>-1</td></tr></table></span></div>
+          <p class="step"><b>検算（<code>AP = PD</code> の列比較）：</b><code>Av₁ = (3,3) = 3v₁</code> ✓、<code>Av₂ = (1,−1) = 1·v₂</code> ✓。<span class="hl">列ごとに Av = λv を確認するだけ</span>で、P⁻¹ を掛ける計算をしなくても対角化の正しさが確定する。</p>
+          <p class="step"><b>対称行列の特権：</b>A は対称なので <code>v₁·v₂ = 1−1 = 0</code> で直交。√2 で割って <code>P = (1/√2)[[1,1],[1,−1]]</code> にすれば <span class="res">P⁻¹ = Pᵀ</span> で、逆行列の計算が消える。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q3</span><div class="qbody"><div class="pl">対角化せよ（対称ではない例）。<span class="mtx"><table><tr><td>4</td><td>2</td></tr><tr><td>1</td><td>3</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <div class="pl"><span class="res">P = <span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>-1</td></tr></table></span>、D = <span class="mtx"><table><tr><td>5</td><td>0</td></tr><tr><td>0</td><td>2</td></tr></table></span></span></div>
+          <p class="step"><b>λ：</b><code>trace = 7</code>、<code>det = 12−2 = 10</code> なので特性方程式は <code>λ² − 7λ + 10 = (λ−5)(λ−2) = 0</code> → <code>λ = 5, 2</code>。<span class="hl">2×2 は trace と det だけで λ が出る</span>ので、<code>det(A−λI)</code> を展開する必要はない。</p>
+          <p class="step"><b>v：</b>λ=5 → <code>(A−5I) = [[−1,2],[1,−2]]</code> → <code>x = 2y</code> → <code>(2,1)</code>。λ=2 → <code>(A−2I) = [[2,2],[1,1]]</code> → <code>x = −y</code> → <code>(1,−1)</code>。</p>
+          <div class="pl">det P = <code>2·(−1) − 1·1 = −3</code>。<code>P⁻¹ = (1/3)</code><span class="mtx"><table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>-2</td></tr></table></span></div>
+          <p class="step"><b>検算：</b><code>A(2,1) = (8+2, 2+3) = (10,5) = 5·(2,1)</code> ✓、<code>A(1,−1) = (4−2, 1−3) = (2,−2) = 2·(1,−1)</code> ✓。<code>trace = 5+2 = 7</code> ✓、<code>det = 5·2 = 10</code> ✓</p>
+          <p class="step"><b>手触り：</b>A が対称ではないので <code>v₁·v₂ = 2−1 = 1 ≠ 0</code> で<span class="hl">直交しない</span>。よって <code>P⁻¹ ≠ Pᵀ</code>。<span class="key">直交で済むのは対称のときだけ</span>という線引きが、ここで具体的に見える。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q4</span><div class="qbody"><div class="pl">Q3 の A を使って <code>A⁻¹</code> を対角化経由で求めよ。<span class="mtx"><table><tr><td>4</td><td>2</td></tr><tr><td>1</td><td>3</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <div class="pl"><span class="res">A⁻¹ = (1/10)<span class="mtx"><table><tr><td>3</td><td>-2</td></tr><tr><td>-1</td><td>4</td></tr></table></span></span></div>
+          <p class="step"><b>使う式：</b><code>A = PDP⁻¹</code> なら <code>A⁻¹ = P D⁻¹ P⁻¹</code>。対角行列の逆は<span class="hl">対角成分を逆数にするだけ</span>なので <code>D⁻¹ = diag(1/5, 1/2)</code>。</p>
+          <p class="step">Q3 の P, P⁻¹ を使って計算すると <code>A⁻¹ = (1/10)[[3,−2],[−1,4]]</code>。<b>2×2 公式でも同じ</b>：<code>det = 10</code> なので <code>A⁻¹ = (1/10)[[3,−2],[−1,4]]</code> ✓</p>
+          <p class="step"><b>手触り：</b>2×2 なら公式のほうが速い。この問題の価値は<span class="hl">「対角化しておけば、逆行列・べき乗・平方根・指数関数が全部『D の対角に関数をかけるだけ』になる」</span>という構造を確認すること。<code>λ</code> に 0 が混ざっていたら <code>1/λ</code> が作れない＝<code>det = ∏λ = 0</code>＝逆行列なし、も同じ式から読める。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q5</span><div class="qbody"><div class="pl">Q2 の A について <code>A³</code> を対角化で求めよ。<span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>1</td><td>2</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <div class="pl"><span class="res">A³ = <span class="mtx"><table><tr><td>14</td><td>13</td></tr><tr><td>13</td><td>14</td></tr></table></span></span></div>
+          <p class="step"><code>A³ = P D³ P⁻¹</code>、<code>D³ = diag(3³, 1³) = diag(27, 1)</code>。<br>
+          <code>P D³ = [[27, 1],[27, −1]]</code> に <code>P⁻¹ = (1/2)[[1,1],[1,−1]]</code> を掛けて <code>[[14,13],[13,14]]</code>。</p>
+          <p class="step"><b>検算（素朴に掛ける）：</b><code>A² = [[5,4],[4,5]]</code>、<code>A³ = A²A = [[14,13],[13,14]]</code> ✓</p>
+          <p class="step"><b>手触り：</b>ここでは素朴計算のほうが速いが、<span class="hl"><code>A¹⁰⁰</code> を聞かれた瞬間に立場が逆転する</span>。対角化なら <code>3¹⁰⁰</code> と <code>1¹⁰⁰</code> を置くだけで、<b>k がいくら大きくても手数が増えない</b>。「繰り返し掛ける」を「数のべき乗」に翻訳する装置が対角化。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q6</span><div class="qbody"><div class="pl">対角化せよ（3×3・上三角）。<span class="mtx"><table><tr><td>3</td><td>1</td><td>1</td></tr><tr><td>0</td><td>2</td><td>1</td></tr><tr><td>0</td><td>0</td><td>1</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <div class="pl"><span class="res">P = <span class="mtx"><table><tr><td>1</td><td>1</td><td>0</td></tr><tr><td>0</td><td>-1</td><td>1</td></tr><tr><td>0</td><td>0</td><td>-1</td></tr></table></span>、D = <span class="mtx"><table><tr><td>3</td><td>0</td><td>0</td></tr><tr><td>0</td><td>2</td><td>0</td></tr><tr><td>0</td><td>0</td><td>1</td></tr></table></span></span></div>
+          <p class="step"><b>λ：</b>上三角なので対角そのまま <code>λ = 3, 2, 1</code>（領域10 Q6 と同じ行列）。<br>
+          <b>v：</b><code>v₃=(1,0,0)</code>、<code>v₂=(1,−1,0)</code>、<code>v₁=(0,1,−1)</code>。<span class="hl">上三角の <code>A−λI</code> は一番下の行から読む</span>のが定石。</p>
+          <div class="pl">det P = <code>1·(−1)·(−1) = 1</code>（上三角なので対角の積）→ <code>P⁻¹</code> は整数：<span class="mtx"><table><tr><td>1</td><td>1</td><td>1</td></tr><tr><td>0</td><td>-1</td><td>-1</td></tr><tr><td>0</td><td>0</td><td>-1</td></tr></table></span></div>
+          <p class="step"><b>検算：</b><code>A(1,0,0) = (3,0,0) = 3v</code> ✓、<code>A(1,−1,0) = (2,−2,0) = 2v</code> ✓、<code>A(0,1,−1) = (0,1,−1) = 1·v</code> ✓。<code>trace = 6 = 3+2+1</code> ✓、<code>det = 6 = 3·2·1</code> ✓</p>
+          <p class="step"><b>手触り：</b>λ が3つとも相異なるので<span class="res">考えるまでもなく対角化可能</span>。<span class="hl">上三角なのに P が上三角になる</span>のも見どころ——固有ベクトルが「前の軸が張る部分空間から一段ずつ外へ出る」形（フラグ構造）に並ぶため。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q7</span><div class="qbody"><div class="pl"><span class="key">【トラップ】</span>対角化せよ。<span class="mtx"><table><tr><td>3</td><td>1</td></tr><tr><td>0</td><td>3</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">対角化できない（欠損 / defective）</span></p>
+          <p class="step"><b>λ：</b>三角行列なので <code>λ = 3（2重解）</code>。<br>
+          <b>v：</b><code>(A−3I) = [[0,1],[0,0]]</code> → 条件は <code>y = 0</code> の<b>1本だけ</b>。自由変数は x のみで、固有空間は <span class="key">x軸という直線（dim 1）</span>。</p>
+          <p class="step">2×2 なので固有ベクトルが<b>2本</b>必要だが1本しか取れない ⇒ P の2列目が作れない（無理に何か入れれば <code>det P = 0</code>）⇒ <span class="res">対角化不可</span>。</p>
+          <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+            <span class="key">重複度の言葉で：</span><b>代数的重複度</b>（特性方程式での重なり）= 2、<b>幾何的重複度</b>（固有空間の次元）= 1。<span class="hl">幾何 &lt; 代数 になった瞬間に対角化が壊れる</span>。差 1 のぶんだけ「対角に載らない残骸」が出て、それを右上の 1 として置いたのがジョルダン形——つまり<b>この行列はもう既にジョルダン形</b>。
+          </div>
+          <p class="step"><b>手触り：</b>この <code>[[3,1],[0,3]]</code> は「3倍に伸ばす」だけの <code>3I</code> に、<span class="hl">せん断（shear）が1粒だけ混ざった</span>もの。せん断は固有値を1つも変えない（<a href="#inv-why-lower-left" onclick="gotoSection('inv-why-lower-left');return false;">右上成分は det にも λ にも効かない</a>）が、<b>固有ベクトルの本数を1本奪う</b>。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q8</span><div class="qbody"><div class="pl"><span class="key">【トラップ】</span>重解だが対角化できるか。<span class="mtx"><table><tr><td>3</td><td>0</td></tr><tr><td>0</td><td>3</td></tr></table></span></div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p><span class="res">対角化できる（というより最初から対角）</span></p>
+          <p class="step"><code>λ = 3（2重解）</code>だが、<code>(A−3I) = O</code>（零行列）なので<span class="hl">条件式が1本も残らない</span>。x も y も自由 ⇒ 固有空間は<span class="key">平面まるごと（dim 2）</span>。つまり<b>すべての方向が固有ベクトル</b>。</p>
+          <p class="step">代数的重複度 2 ＝ 幾何的重複度 2 なので条件を満たし、固有ベクトルは好きな独立2本（例：<code>(1,0)</code> と <code>(0,1)</code>）を取れば <code>P = I</code>、<code>D = 3I</code>。</p>
+          <div class="formula" style="border-left-color:#d62828;background:#fff5f5;font-size:13px">
+            <span class="key" style="color:#d62828">Q7 との対比が本題：</span>どちらも <code>λ = 3</code> の2重解、<code>trace = 6</code>、<code>det = 9</code>、特性多項式 <code>(λ−3)²</code> まで<span class="hl">完全に同じ</span>。それでも一方は対角化でき、他方はできない。<br>
+            ⇒ <span class="key">「重解が出たら対角化できない」は誤り</span>、そして <span class="key">「固有値のリストは行列を決めない」</span>。両者を区別するのは<span class="hl">固有空間の次元</span>だけで、これがジョルダン標準形が必要になる理由そのもの。
+          </div>
         </div></details>
       </div>
     </section>
