@@ -4533,7 +4533,7 @@
       <div class="chapter-meta">
         <div class="chapter-label">Chapter</div>
         <div class="chapter-status pending">📝 これから学ぶ</div>
-        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-07-21</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-09-02</div>
       </div>
       <div class="chapter-title"><span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span>（Inverse Matrix）</div>
 
@@ -4664,6 +4664,180 @@
           ・<span class="key">2×2</span> → 公式（一瞬）<br>
           ・<span class="key">3×3 で det が既知/きれい</span> → 余因子法（理論の確認にも良い）<br>
           ・<span class="key">4×4 以上・実務・プログラム</span> → 掃き出し法（計算量が素直）
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+
+      <div class="section" id="inv-why-lower-left">
+        <h2>なぜ「階段より左下」を 0 にしたいのか — 掃き出しの本質<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>手順としては覚えられるが「<span class="hl">なぜ左下ばかり狙うのか</span>」が腑に落ちないと、掃き出し法はただの作業になる。ここは<span class="key">3つの問い</span>を1本の線でつなぐ節。</p>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          ① なぜ<span class="key">左下</span>を 0 にするのか（＝右上ではダメなのか）<br>
+          ② 最後の行が <code>[0, 0, 1]</code> で<span class="key">生き残る</span>と、なぜ「3次元を張れている証拠」になるのか<br>
+          ③ 三角行列の<span class="key">右上成分</span>（1, −4, 19 など）が det に一切効かないのを、幾何でどう見るか<br>
+          <span class="step" style="display:block;margin-top:8px">結論を先に言うと、3つとも <span class="hl">「対角＝新しく獲得した厚み」「右上＝ただの傾き」</span> という1つの絵で説明できる。</span>
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">① 目的は「三角形」ではなく「依存を一方通行にする」こと</h3>
+
+        <p>連立方程式の3本の式は、はじめは<span class="hl">互いに絡み合っている</span>。どの式もどの変数も含んでいるので、どこから手を付けても他が動く（循環参照）。掃き出し法がやっているのは、この絡まりを<span class="key">一方通行の順序</span>に組み替える作業。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.9">
+          <span class="key">絡まった状態（左下に非ゼロがある）：</span>x₁ は x₂,x₃ に依存し、x₂ も x₁,x₃ に依存し… → <span class="hl">どこも先に確定できない</span><br>
+          <span class="key">上三角にした状態（左下が全部0）：</span>x₃ は<span class="hl">単独で確定</span> → それを使って x₂ → それを使って x₁
+        </div>
+
+        <p>つまり <span class="key">左下を0にする ＝ 依存グラフから循環を切って、確定できる順番（トポロジカル順序）を作る</span>。三角形という<em>形</em>が目的ではなく、「最後の行だけで1変数が決まる」という<span class="hl">入口を1つ作ること</span>が目的で、三角形はその副産物。だから<span class="key">後退代入</span>（下から遡る）が成立する。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">なぜ「右上を先」ではダメか — 順序は好みではなく唯一解</h3>
+
+        <p>ここが一番効く感覚。<span class="hl">左下消しは、すでに 0 にした場所を絶対に壊さない</span>が、右上消しは壊す。理由は「引き算に使う行がどんな形か」の一点。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.9">
+          <span class="key">左下 (i, j)（j &lt; i）を消す：</span>使うのは<span class="hl">上の行 j</span>。行 j は<span class="key">列 1…j−1 がすでに 0</span> → 引いても左側は汚れない（0 − 0 = 0）。<span class="hl">進捗が単調に増える</span><br>
+          <span class="key">右上 (i, j)（j &gt; i）を消す：</span>使うのは<span class="hl">下の行 j</span>。まだ上三角化されていない段階の行 j は<span class="key">左側に非ゼロを抱えている</span> → 引いた瞬間に<span class="hl">消したはずの左下が復活する</span>
+        </div>
+
+        <div class="pl">実演：A = <span class="matrix"><table><tr><td>1</td><td>1</td><td>1</td></tr><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>1</td><td>3</td><td>6</td></tr></table></span> で、先に右上 (1,3) を消しにいくと…</div>
+
+        <p class="step">R₁ ← R₁ − (1/6)R₃ で (1,3) は消えて R₁ = (5/6, 1/2, 0)。次に (1,2) を消すには R₂ = (1,2,3) を使うしかないが、<span class="hl">R₂ の3列目は 3 で非ゼロ</span> → 引いた瞬間に R₁ の3列目に非ゼロが戻る。<span class="key">いたちごっこで収束しない。</span></p>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">本質：</span>右上消し（RREF にする後退消去）が<span class="hl">安全にできるのは、上三角化が終わった後だけ</span>。そのとき行 j は列 1…j−1 が 0 なので、引いても左側を汚さない。<br>
+          <span class="hl">「左下 → 右上」という順序は、選好ではなく物理的に唯一可能な順序</span>。掃き出し法の手順書がどの本でもこの順なのは、これが理由。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">行列で言うと：左下を掃く ＝ 下三角行列を左から掛けている</h3>
+
+        <p><a href="#gj-row-ops" onclick="gotoSection('gj-row-ops');return false;">基本行列の節</a>で見たとおり、「行 i から行 j の c 倍を引く」（j &lt; i）に対応する基本行列 E は<span class="key">下三角</span>。下三角どうしの積も下三角なので、前進消去全体は</p>
+
+        <div class="formula" style="text-align:center;font-size:15px">
+          L⁻¹ A = U &nbsp;&nbsp;⟺&nbsp;&nbsp; <span class="hl">A = L U</span> &nbsp;（下三角 × 上三角）
+        </div>
+
+        <p><span class="key">＝ LU 分解</span>。左下を掃く<span class="hl">手つき自体が L の記録</span>になっている。そして逆行列を求める <code>[A | I]</code> の I 側は、この<span class="key">操作の履歴を貯める帳簿</span>。左が I になった時点で、帳簿に溜まった積 Eₖ⋯E₁ がそのまま A⁻¹。</p>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+          <span class="key">逆行列の文脈で「左下だけ先に」やる実利：</span><br>
+          ・<span class="hl">存在判定が先に終わる</span> — 左下を掃いた時点（REF）でゼロ行が出れば即 rank 落ち＝逆行列なし。右上消去に進む手間がゼロで済む<br>
+          ・<span class="hl">det が同時に読める</span> — 上三角になれば det = 対角の積（× 行交換の符号）。可逆性の判定と det が1回の掃き出しで両方出る<br>
+          ・<span class="hl">計算量が最小</span> — 前進消去だけなら約 n³/3。両側消去（Gauss-Jordan）は約 n³ なので、解が欲しいだけなら「左下だけ＋後退代入」が最速
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:28px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">② 最後の行が [0, 0, 1] で「生き残る」ことの意味</h3>
+
+        <p>掃き出しがやっている操作は<span class="key">「上の行の線形結合を引く」だけ</span>。ということは —</p>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">もし3本目が1・2本目の線形結合なら</span>、その結合をぴったり引く操作が<span class="hl">必ず存在する</span>ので、最後の行は<span class="key">完全に 0 になる</span>。<br>
+          <span class="key">0 にならなかった</span>＝どんな引き算をしても消えなかった＝<span class="hl">1・2本目の組み合わせでは絶対に作れない方向を持っている</span>＝<span class="key">一次独立</span>。<br>
+          <span class="step" style="display:block;margin-top:8px">掃き出し法は「従属関係の総当たり探索」を有限手順でやっている装置。<span class="hl">ゼロ行は、見つかった従属関係の領収書</span>。</span>
+        </div>
+
+        <p><span class="key">1成分だけ違う2つの行列で比べる</span>と、この境界が肌で分かる。</p>
+
+        <div class="matrix-row">
+          <span>A =</span>
+          <div class="matrix"><table><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>2</td><td>5</td><td>7</td></tr><tr><td>3</td><td>7</td><td>10</td></tr></table></div>
+          <span>&nbsp;／&nbsp; B =</span>
+          <div class="matrix"><table><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>2</td><td>5</td><td>7</td></tr><tr><td>3</td><td>7</td><td>11</td></tr></table></div>
+          <span>&nbsp;… 違いは右下の <span class="key">10 か 11</span> だけ</span>
+        </div>
+
+        <p class="step">A：R₂ ← R₂ − 2R₁ = (0,1,1)、R₃ ← R₃ − 3R₁ = (0,1,1)、R₃ ← R₃ − R₂ = <span class="hl">(0, 0, 0)</span>。実際 3行目 = 1行目 + 2行目（(1,2,3)+(2,5,7) = (3,7,10)）で、掃き出しはこの隠れた関係を<span class="key">自力で掘り当てて</span>0行にした。det(A) = 0、rank 2、逆行列なし。</p>
+
+        <p class="step">B：同じ操作で R₃ = (0,1,2) → R₃ − R₂ = <span class="hl">(0, 0, 1)</span>。<span class="key">1 が残った</span>。det(B) = 1·1·1 = <span class="key">1</span>、rank 3、逆行列あり。</p>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+          <span class="key">残った「1」は何者か：</span>3本目から<span class="hl">1・2本目の方向成分を全部抜き取った残りかす（residual）</span>。これが 0 なら平面に載っていた、0 でないなら平面から浮いていた。<br>
+          <span class="step" style="display:block;margin-top:6px">この「射影して残りを見る」思想は <span class="key">Gram-Schmidt 直交化</span>とまったく同じ。掃き出し法は、直交化を “直交性を気にせず” 安く済ませた版と言える。</span>
+        </div>
+
+        <p><span class="key">段の数が次元</span>：1行目のピボットで1つ目の方向を確保、2行目のピボットで「その直線に含まれない新方向」を確保、3行目で「その平面に含まれない新方向」を確保。<span class="hl">段が1つ下がるたびに次元が1増える</span>。だから <span class="key">rank ＝ ピボットの個数 ＝ 段の数</span>。最後の行まで段が立った＝3方向ぶんの厚みがある＝立体。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:28px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">③ 右上成分が det に効かない理由 — 「傾けても体積は変わらない」</h3>
+
+        <p>上三角行列 <span class="matrix"><table><tr><td>2</td><td>1</td><td>−4</td></tr><tr><td>0</td><td>2</td><td>19</td></tr><tr><td>0</td><td>0</td><td>3</td></tr></table></span> の det が 2·2·3 = 12 で、右上の 1, −4, 19 が<span class="hl">まったく効かない</span>のはなぜか。<span class="key">列ベクトルとして見る</span>と一瞬で見える。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.9">
+          1列目 = (2, 0, 0) → <span class="hl">x 軸の上だけ</span><br>
+          2列目 = (1, 2, 0) → <span class="hl">xy 平面の中だけ</span>（z 成分が 0）<br>
+          3列目 = (−4, 19, 3) → はじめて<span class="hl">空間へ出る</span>
+        </div>
+
+        <p><span class="key">これが上三角の幾何的な正体</span>：「第 k 列が、最初の k 本の軸が張る部分空間に収まっている」という入れ子構造（<span class="key">フラグ</span> 直線 ⊂ 平面 ⊂ 空間）。この形だと体積が <span class="hl">底辺 × 高さ の再帰</span>でほぐれる。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.9">
+          <span class="key">Step 1（1次元の“体積”＝長さ）：</span>x 軸上の長さ = <span class="hl">2</span>&nbsp;← 対角 a₁₁<br>
+          <span class="key">Step 2（面積 = 底辺 × 高さ）：</span>底辺は 2、高さは 2列目の「x 軸に垂直な成分」= y 成分 = <span class="hl">2</span>&nbsp;← 対角 a₂₂。<span class="key">x 成分の 1 は平行四辺形を横にずらすだけ</span> → 面積 2 × 2 = 4<br>
+          <span class="key">Step 3（体積 = 底面積 × 高さ）：</span>底面積は 4、高さは 3列目の「xy 平面からの距離」= z 成分 = <span class="hl">3</span>&nbsp;← 対角 a₃₃。<span class="key">x,y 成分 (−4, 19) は柱を斜めに倒すだけ</span> → 体積 4 × 3 = <span class="key">12</span>
+        </div>
+
+        <div style="margin:18px 0;overflow-x:auto">
+        <svg viewBox="0 0 660 210" style="width:100%;max-width:660px;height:auto;display:block;margin:0 auto" role="img" aria-label="せん断しても面積・体積は変わらないことを示す図">
+          <g font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#555">
+            <!-- Panel A: 2D shear -->
+            <text x="10" y="16" font-size="11" font-weight="700" fill="#333">A. 傾けても面積は同じ（2列目の x 成分 = 1 は効かない）</text>
+            <g transform="translate(20,32)">
+              <rect x="0" y="20" width="90" height="90" fill="#eee" stroke="#bbb" stroke-width="1"/>
+              <polygon points="0,110 90,110 145,20 55,20" fill="none" stroke="#333" stroke-width="1.6" stroke-dasharray="5 3"/>
+              <line x1="0" y1="110" x2="175" y2="110" stroke="#999" stroke-width="1"/>
+              <line x1="165" y1="110" x2="165" y2="20" stroke="#333" stroke-width="1" stroke-dasharray="3 3"/>
+              <text x="170" y="66" fill="#333">高さ = 2</text>
+              <text x="170" y="82" fill="#888">→ 面積 4</text>
+              <text x="30" y="126" fill="#333">底辺 = 2</text>
+              <text x="98" y="60" fill="#333">→ ずれるだけ</text>
+            </g>
+            <!-- divider -->
+            <line x1="330" y1="20" x2="330" y2="190" stroke="#ddd" stroke-width="1"/>
+            <!-- Panel B: 3D flag -->
+            <text x="348" y="16" font-size="11" font-weight="700" fill="#333">B. 列は 直線 → 平面 → 空間 と一段ずつ外へ出る</text>
+            <g transform="translate(360,34)">
+              <polygon points="10,120 130,120 165,88 45,88" fill="#eee" stroke="#bbb" stroke-width="1"/>
+              <text x="96" y="103" fill="#888">底面積 4</text>
+              <!-- col1 arrow along x -->
+              <line x1="10" y1="120" x2="118" y2="120" stroke="#333" stroke-width="2"/>
+              <polygon points="118,120 110,117 110,123" fill="#333"/>
+              <text x="22" y="137" fill="#333">1列目（直線）</text>
+              <!-- col2 arrow in plane -->
+              <line x1="10" y1="120" x2="50" y2="88" stroke="#333" stroke-width="2"/>
+              <polygon points="50,88 46,95 54,93" fill="#333"/>
+              <text x="-8" y="76" fill="#333">2列目（平面内）</text>
+              <!-- col3 tilted out of plane -->
+              <line x1="10" y1="120" x2="120" y2="34" stroke="#333" stroke-width="2" stroke-dasharray="5 3"/>
+              <polygon points="120,34 113,38 118,42" fill="#333"/>
+              <text x="126" y="32" fill="#333">3列目（空間へ）</text>
+              <line x1="120" y1="34" x2="120" y2="98" stroke="#333" stroke-width="1" stroke-dasharray="3 3"/>
+              <text x="126" y="72" fill="#333">高さ = 3</text>
+              <text x="126" y="88" fill="#888">（傾きは無関係）</text>
+            </g>
+          </g>
+        </svg>
+        </div>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">手触り：</span>トランプの束を斜めに崩しても<span class="hl">厚みは変わらない</span>（＝カヴァリエリの原理）。右上成分は「束をどれだけ斜めに崩したか」＝<span class="key">せん断（shear）</span>で、体積に一切効かない。対角成分だけが「その次元で新たに稼いだ厚み」。<br>
+          <span class="step" style="display:block;margin-top:8px">サラスの6項のうち対角の積以外が消えるのは<span class="key">計算上の結果</span>、体積が対角の積になるのは<span class="hl">その幾何的な理由</span>。同じことを2つの言語で見ている。</span>
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">3つの問いが1つに合流する</h3>
+
+        <p>ここまでを重ねると、掃き出し法の全体像が1文になる。</p>
+
+        <div class="formula" style="text-align:center;font-size:14.5px;line-height:1.9;background:#fff;border-left-color:#1d4e89">
+          <span class="hl">左下を 0 にする</span>＝「直線 ⊂ 平面 ⊂ 空間」の入れ子（フラグ）に並べ替える作業<br>
+          → <span class="key">対角（ピボット）</span>＝各段で<span class="hl">新たに獲得した厚み</span> → 掛け合わせると <span class="key">det ＝ 体積</span><br>
+          → <span class="key">右上</span>＝ただの<span class="hl">傾き（せん断）</span>、体積に無関係<br>
+          → 最後の行に <code>[0,0,1]</code> が残る ＝ <span class="hl">3段目の厚みが 0 でない</span> ＝ 潰れていない ＝ <span class="key">正則・逆行列あり</span>
+        </div>
+
+        <p style="margin-top:14px">そして<span class="key">せん断が体積を変えない</span>という事実こそが、<a href="#det-properties" onclick="gotoSection('det-properties');return false;">「行の定数倍を引いても det は変わらない」</a>という性質の中身。<span class="hl">左下を掃いて対角を掛ける</span>という手順が det の計算として正当なのは、この一点に支えられている。</p>
+
+        <div class="formula" style="border-left-color:#888;background:#fafafa;font-size:13px">
+          <span class="key">実務への橋渡し：</span>「残るか 0 か」は理論上は二択だが、計算機の中では<span class="hl">ピボットの大きさという連続量</span>。ピボットが 0 に近い＝ほぼ従属＝<a href="#rank-intuition-ds" onclick="gotoSection('rank-intuition-ds');return false;">多重共線性</a>で、逆行列の値が暴走する領域。<span class="key">最後の 1 がどれだけ太いか</span>が、そのまま数値的な信頼度になる。
         </div>
         </div><!-- /.subsection-pending -->
       </div>
