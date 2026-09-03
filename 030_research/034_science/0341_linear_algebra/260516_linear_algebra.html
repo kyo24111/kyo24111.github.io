@@ -4903,7 +4903,7 @@
       <div class="chapter-meta">
         <div class="chapter-label">Chapter</div>
         <div class="chapter-status pending">📝 これから学ぶ</div>
-        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-08-13</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-09-04</div>
       </div>
       <div class="chapter-title"><span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>・<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span>（Eigenvalue / Eigenvector）</div>
 
@@ -5402,12 +5402,349 @@
         </div>
         <p style="font-size:13px;color:var(--muted)">P の列＝固有ベクトル、D の対角＝固有値。べき乗 <code>A<sup>k</sup> = P D<sup>k</sup> P<sup>-1</sup></code> が一瞬で計算できるなど、応用が一気に開ける。</p>
 
-        <p style="margin-top:12px">この分解を正面から扱うのが次章の <a href="#diagonalization" onclick="gotoSection('diagonalization'); return false;">対角化</a>（手順・成立条件・応用）。固有ベクトルが足りず対角化できない場合の「妥協形」が、終着点の <a href="#jordan-normal-form" onclick="gotoSection('jordan-normal-form'); return false;">ジョルダン標準形</a>。<span class="hl">この章は、その山頂へ登るための最後のベースキャンプ</span>。</p>
+        <p style="margin-top:12px">この分解が「座標の取り替え」だという直感を作るのが次章の <a href="#basis-change" onclick="gotoSection('basis-change'); return false;">対角化の正体 — 基底変換</a>、手順・成立条件・応用を正面から扱うのがその次の <a href="#diagonalization" onclick="gotoSection('diagonalization'); return false;">対角化</a>。固有ベクトルが足りず対角化できない場合の「妥協形」が、終着点の <a href="#jordan-normal-form" onclick="gotoSection('jordan-normal-form'); return false;">ジョルダン標準形</a>。<span class="hl">この章は、その山頂へ登るための最後のベースキャンプ</span>。</p>
         </div><!-- /.subsection-pending -->
       </div>
 
     </div>
 
+    <div class="chapter" id="basis-change">
+      <div class="chapter-meta">
+        <div class="chapter-label">Chapter</div>
+        <div class="chapter-status pending">📝 これから学ぶ</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-09-04</div>
+      </div>
+      <div class="chapter-title"><span class="vt" data-vocab="diagonalization" data-ja="対角化">対角化</span>の正体 — <span class="vt" data-vocab="basis" data-ja="基底">基底</span>変換（Change of Basis）</div>
+
+      <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;margin-bottom:28px">
+        <span class="key">この章の位置づけ：</span><br>
+        次章の<a href="#diagonalization" onclick="gotoSection('diagonalization');return false;">対角化</a>は「手順・成立条件・応用」を扱う。<span class="hl">その手前で、そもそも対角化が何をやっている操作なのかを、基底変換という一本の軸で通しておく</span>のがこの章。<br>
+        順番は「<span class="key">① 対角化とは＝対角行列を作ること</span> → <span class="key">② 基底変換とは</span> → <span class="key">③「いい感じの基底変換」とは</span> → <span class="key">④ いい基底＝固有ベクトル、はなぜか</span> → <span class="key">⑤ 基底変換後の行列の本質</span>」。<br>
+        <span style="font-size:12.5px;color:var(--muted)">※ ②「基底変換とは」を先に置いた。③④が②の上に乗る話なので、この順のほうが積み上がる。</span>
+      </div>
+
+      <div class="formula" style="font-size:13.5px">
+        <span class="key">この章ずっと使う具体例：</span>
+        <code>A = [[2, 1], [1, 2]]</code>（<span class="vt" data-vocab="symmetric-matrix" data-ja="対称行列">対称行列</span>）。<span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>は <code>λ₁ = 3</code>（<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span> <code>v₁ = (1, 1)</code>）と <code>λ₂ = 1</code>（<code>v₂ = (1, −1)</code>）。<br>
+        検算：<code>A(1,1) = (2+1, 1+2) = (3,3) = 3·(1,1)</code>　／　<code>A(1,−1) = (2−1, 1−2) = (1,−1) = 1·(1,−1)</code>
+      </div>
+
+      <div class="section" id="bc-what-diag">
+        <h2>① <span class="vt" data-vocab="diagonalization" data-ja="対角化">対角化</span>とは — ゴールは「<span class="vt" data-vocab="diagonal-matrix" data-ja="対角行列">対角行列</span>を作ること」<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>言葉どおり、<span class="hl">与えられた行列 A を、対角行列 D にすること</span>がゴール。ただし「A の非対角成分を消しゴムで消す」わけではない（それは別の行列になってしまう）。<span class="key">A のやっている変換はそのままに、見え方だけを対角にする</span>。</p>
+
+        <p><a href="#diag-def" onclick="gotoSection('diag-def');return false;">対角行列の章</a>で見たとおり、対角行列は「各軸を独立に λ 倍するだけ」の、線形変換の中でいちばん単純な形。</p>
+
+        <div class="matrix-row">
+          <div class="matrix">
+            <table>
+              <tr><td>2</td><td>1</td></tr>
+              <tr><td>1</td><td>2</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">A：非対角に 1 がいる＝軸が混ざる</span>
+          <span class="op">⟶</span>
+          <div class="matrix">
+            <table>
+              <tr><td>3</td><td>0</td></tr>
+              <tr><td>0</td><td>1</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag" style="background:#fff3a0;color:var(--text);border-color:#e0c050">D：混ざりゼロ＝3倍と1倍だけ</span>
+        </div>
+
+        <p><span class="key">非対角成分の意味</span>：<code>A</code> の <code>(2,1)</code> 成分 <code>= 1</code> は「<span class="hl">x 軸方向に入れたのに、y 成分が 1 だけ生まれる</span>」という<span class="key">漏れ／混ざり</span>を表す。実際 <code>A·(1,0) = (2, 1)</code> で、まっすぐ入れた矢印が傾いて出てくる。</p>
+
+        <p>対角行列にはこの漏れがない。<code>D·(1,0) = (3,0)</code>、<code>D·(0,1) = (0,1)</code>。<span class="hl">各軸が自分の中で完結している</span>。だから <code>D<sup>k</sup></code> も <code>det D</code> も <code>D<sup>-1</sup></code> も暗算でき、<a href="#diag-why-nice" onclick="gotoSection('diag-why-nice');return false;">計算が極端に簡単</a>になる。</p>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">この章で答える問い：</span>A の中身は変えられない。では<span class="hl">何を変えれば「混ざり」が消えるのか</span>？<br>
+          → 答えは <span class="key">物差し（基底）のほう</span>を変える、である。それが ② 以降。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="bc-change-of-basis">
+        <h2>② <span class="vt" data-vocab="basis" data-ja="基底">基底</span>変換とは — 同じ矢印を、別の物差しで読み直すこと<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p><span class="key">前提の確認</span>：<code>(3, 1)</code> という数字の組は、それ自体では矢印ではない。<span class="hl">「<span class="vt" data-vocab="standard-basis" data-ja="標準基底">標準基底</span> e₁=(1,0), e₂=(0,1) を 3本と1本ぶん足したもの」という読み方とセットで初めて矢印になる</span>。座標とは「基底ベクトルを何本ぶん使うか」の指示書でしかない。</p>
+
+        <p>ということは、<span class="key">基底を別の組に取り替えれば、同じ矢印に別の数字が付く</span>。これが基底変換。矢印（物理的な実体）は1ミリも動いていない。動いたのは物差しだけ。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.9">
+          同じ1本の矢印を、2つの言葉で言う：<br>
+          <span class="key">標準基底の言葉</span>：<code>x = 3·e₁ + 1·e₂</code> → 座標は <code>(3, 1)</code><br>
+          <span class="key">固有基底の言葉</span>：<code>x = 2·v₁ + 1·v₂ = 2·(1,1) + 1·(1,−1) = (3, 1)</code> → 座標は <code>(2, 1)</code><br>
+          <span style="color:var(--muted);font-size:12.5px">同じ矢印なのに <code>(3,1)</code> と <code>(2,1)</code>。数字が違うのは、数えている単位が違うから。</span>
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">翻訳機は行列 P — 新基底を列に並べるだけ</h3>
+
+        <p>新しい基底ベクトルを<span class="hl">列として並べた行列</span>を <code>P</code> と置く。</p>
+
+        <div class="matrix-row">
+          <span class="key">P =</span>
+          <div class="matrix">
+            <table>
+              <tr><td>1</td><td>1</td></tr>
+              <tr><td>1</td><td>-1</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">1列目 = v₁ = (1,1)、2列目 = v₂ = (1,−1)</span>
+        </div>
+
+        <p>この <code>P</code> を新座標に掛けると、標準座標が返ってくる。<code>P·(2,1) = 2·(1,1) + 1·(1,−1) = (3,1)</code> —— <span class="hl">行列とベクトルの積は「列ベクトルの<span class="vt" data-vocab="linear-combination" data-ja="線形結合">線形結合</span>」</span>だったので、これは定義そのまま。</p>
+
+        <div class="formula" style="text-align:center;font-size:16px;line-height:2">
+          <span class="key">x = P c</span>　<span style="font-size:13px;color:var(--muted)">（新座標 c → 標準座標 x）</span><br>
+          <span class="key">c = P<sup>-1</sup> x</span>　<span style="font-size:13px;color:var(--muted)">（標準座標 x → 新座標 c）</span>
+        </div>
+
+        <div class="formula" style="border-left-color:#b04a2a;background:#fdf3ef;font-size:13.5px">
+          <span class="key">向きを間違えやすいポイント：</span><code>P</code> の列は新基底なのに、<code>P</code> は「新 → 標準」の翻訳機になる。<span class="hl">「標準の言葉に直す辞書」を作るには、新基底を標準の言葉で書き出すしかない</span>——だから列が新基底で、掛けると標準に戻る。逆向き（標準 → 新）が <code><span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span> P<sup>-1</sup></code>。
+        </div>
+
+        <p><span class="key">P が可逆であること</span>が条件。列（＝新基底）が<span class="vt" data-vocab="linear-independence" data-ja="線形独立">線形独立</span>でなければそもそも基底ではないし、<code><span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span> det P = 0</code> になって翻訳が戻せない。ここでは <code>det P = 1·(−1) − 1·1 = −2 ≠ 0</code> なので OK。</p>
+
+        <div class="matrix-row">
+          <span class="key">P<sup>-1</sup> =</span>
+          <span style="font-size:15px">−1/2</span>
+          <div class="matrix">
+            <table>
+              <tr><td>-1</td><td>-1</td></tr>
+              <tr><td>-1</td><td>1</td></tr>
+            </table>
+          </div>
+          <span class="op">=</span>
+          <span style="font-size:15px">1/2</span>
+          <div class="matrix">
+            <table>
+              <tr><td>1</td><td>1</td></tr>
+              <tr><td>1</td><td>-1</td></tr>
+            </table>
+          </div>
+          <span class="dim-tag">検算：P<sup>-1</sup>(3,1) = ½(3+1, 3−1) = (2, 1) ✓</span>
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="bc-good-basis">
+        <h2>③「いい感じの<span class="vt" data-vocab="basis" data-ja="基底">基底</span>変換」とは — 混ざりが消える座標を選ぶこと<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>基底は<span class="hl">無数に選べる</span>。<code>(1,0),(0,1)</code> でも <code>(5,2),(−1,3)</code> でも、独立でさえあれば基底になる。ということは <code>A</code> の見え方も無数にある。<span class="key">その中に1つだけ、特別に単純に見える座標がある</span>——それを選ぶのが「いい感じの基底変換」。</p>
+
+        <p>「いい」の基準ははっきりしている。① で見たとおり、<span class="hl">単純さ＝非対角成分がゼロ＝軸どうしが混ざらない</span>こと。では、混ざらないとは基底ベクトルにとってどういう状態か。</p>
+
+        <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;font-size:14px">
+          <span class="key">混ざらない ⇔ 基底ベクトルが、A を通しても自分の直線から出ない</span><br>
+          <span style="font-size:13px">基底 <code>p</code> が A で <code>2p</code> や <code>−0.5p</code> に写るなら、その軸の成分は他の軸に一切こぼれない。<br>
+          逆に <code>p</code> が別の方向へ倒れるなら、その倒れぶんが非対角成分として記録される。</span>
+        </div>
+
+        <p>標準基底で見ると <code>A</code> は<span class="key">混ざる</span>：<code>A·e₁ = (2, 1)</code>。x 軸に入れたのに y 成分 1 が生まれた。これが <code>A</code> の <code>(2,1)</code> 成分の正体。</p>
+        <p>固有ベクトルで見ると<span class="key">混ざらない</span>：<code>A·v₁ = 3v₁</code>。<code>v₁</code> は <code>v₁</code> の直線上に留まる。<code>v₂</code> も同じ。</p>
+
+        <div style="margin:20px 0;overflow-x:auto">
+        <svg viewBox="0 0 660 300" style="width:100%;max-width:660px;height:auto;display:block;margin:0 auto" role="img" aria-label="標準基底では混ざり、固有基底では混ざらないことを示す図">
+          <defs>
+            <marker id="bcArrK" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 z" fill="#111"/></marker>
+            <marker id="bcArrR" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 z" fill="#c0392b"/></marker>
+            <marker id="bcArrB" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0 0 L8 3 L0 6 z" fill="#2f5d8a"/></marker>
+          </defs>
+          <g font-family="'Noto Sans JP',sans-serif" font-size="11.5" fill="#333">
+
+            <!-- ===== LEFT PANEL : standard basis ===== -->
+            <text x="150" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#111">標準基底で見る　→　混ざる</text>
+            <!-- grid -->
+            <g stroke="#e6e6e6" stroke-width="1">
+              <line x1="50" y1="60" x2="280" y2="60"/><line x1="50" y1="106" x2="280" y2="106"/>
+              <line x1="50" y1="152" x2="280" y2="152"/><line x1="50" y1="244" x2="280" y2="244"/>
+              <line x1="95" y1="45" x2="95" y2="255"/><line x1="141" y1="45" x2="141" y2="255"/>
+              <line x1="187" y1="45" x2="187" y2="255"/><line x1="233" y1="45" x2="233" y2="255"/>
+            </g>
+            <!-- axes -->
+            <line x1="50" y1="198" x2="280" y2="198" stroke="#999" stroke-width="1.2"/>
+            <line x1="95" y1="45" x2="95" y2="255" stroke="#999" stroke-width="1.2"/>
+            <!-- e1 -->
+            <line x1="95" y1="198" x2="139" y2="198" stroke="#111" stroke-width="2.4" marker-end="url(#bcArrK)"/>
+            <text x="120" y="215" text-anchor="middle" font-size="11" font-weight="700" fill="#111">e₁</text>
+            <!-- A e1 -->
+            <line x1="95" y1="198" x2="184" y2="154" stroke="#c0392b" stroke-width="2.4" marker-end="url(#bcArrR)"/>
+            <text x="196" y="146" font-size="11" font-weight="700" fill="#c0392b">A e₁ = (2, 1)</text>
+            <!-- leak indicator -->
+            <line x1="187" y1="198" x2="187" y2="155" stroke="#c0392b" stroke-width="1.2" stroke-dasharray="4 3"/>
+            <text x="193" y="182" font-size="10.5" fill="#c0392b">y が 1 生まれた</text>
+            <text x="150" y="278" text-anchor="middle" font-size="11" fill="#666">x 軸に入れたのに y へこぼれる ＝ 非対角成分</text>
+
+            <!-- divider -->
+            <line x1="325" y1="35" x2="325" y2="265" stroke="#ddd" stroke-width="1"/>
+
+            <!-- ===== RIGHT PANEL : eigen basis ===== -->
+            <text x="500" y="22" text-anchor="middle" font-size="12.5" font-weight="700" fill="#111">固有基底で見る　→　混ざらない</text>
+            <!-- invariant lines -->
+            <line x1="390" y1="253" x2="600" y2="43" stroke="#c0392b" stroke-width="1" stroke-dasharray="5 4" opacity=".55"/>
+            <line x1="390" y1="143" x2="500" y2="253" stroke="#2f5d8a" stroke-width="1" stroke-dasharray="5 4" opacity=".55"/>
+            <!-- axes -->
+            <line x1="380" y1="198" x2="620" y2="198" stroke="#ddd" stroke-width="1"/>
+            <line x1="445" y1="45" x2="445" y2="255" stroke="#ddd" stroke-width="1"/>
+            <!-- v1 -->
+            <line x1="445" y1="198" x2="487" y2="156" stroke="#111" stroke-width="2.6" marker-end="url(#bcArrK)"/>
+            <text x="452" y="150" font-size="11" font-weight="700" fill="#111">v₁</text>
+            <!-- 3 v1 -->
+            <line x1="445" y1="198" x2="577" y2="66" stroke="#c0392b" stroke-width="2.2" marker-end="url(#bcArrR)"/>
+            <text x="524" y="60" font-size="11" font-weight="700" fill="#c0392b">A v₁ = 3 v₁</text>
+            <!-- v2 -->
+            <line x1="445" y1="198" x2="487" y2="240" stroke="#2f5d8a" stroke-width="2.6" marker-end="url(#bcArrB)"/>
+            <text x="494" y="246" font-size="11" font-weight="700" fill="#2f5d8a">A v₂ = 1 v₂（動かない）</text>
+            <text x="500" y="278" text-anchor="middle" font-size="11" fill="#666">どちらも自分の点線から出ない ＝ 対角だけで書ける</text>
+          </g>
+        </svg>
+        <div style="text-align:center;font-size:12.5px;color:#3c424b;margin-top:8px">同じ変換 A を、左は標準の目盛で、右は固有の目盛で見ているだけ。<b>変換は同じ、見え方だけが違う。</b></div>
+        </div>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">「いい基底」の定義（この時点での言い換え）：</span><br>
+          <span class="hl">A を掛けても向きが変わらないベクトルを、n 本そろえて基底にしたもの</span>。<br>
+          そういう基底で見たとき、A の表示は対角行列になる。—— この「向きが変わらないベクトル」の正式名称が、次の ④。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="bc-eigen-is-good">
+        <h2>④ いい<span class="vt" data-vocab="basis" data-ja="基底">基底</span>＝<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span> — なぜそれが答えになるのか<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>③ で出した条件「<span class="key">A を掛けても向きが変わらない</span>」を式にすると、そのまま <a href="#eigen" onclick="gotoSection('eigen');return false;">固有ベクトルの定義</a>になる。</p>
+
+        <div class="formula" style="text-align:center;font-size:17px;line-height:1.9">
+          <span class="key">A v = λ v</span>　<span style="font-size:12.5px;color:var(--muted)">（v ≠ 0）</span><br>
+          <span style="font-size:13px;color:var(--muted)">向きはそのまま（v の定数倍）、変わるのは長さ λ 倍だけ</span>
+        </div>
+
+        <p>つまり<span class="hl">「対角化するための基底を探す」問題と「固有ベクトルを探す」問題は、最初から同じ問題</span>だった。固有値・固有ベクトルという道具立てを学ぶ理由がこれ。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">逆算で確かめる — AP = PD の列を1本ずつ読む</h3>
+
+        <p>「なんとなくそうなりそう」ではなく、式から強制的に出る。<span class="key">P⁻¹AP を対角行列 D にしたい</span>と要求するところから始める。</p>
+
+        <div class="formula" style="font-size:14px;line-height:2">
+          <code>P<sup>-1</sup> A P = D</code>　<span style="color:var(--muted);font-size:12.5px">（要求）</span><br>
+          両辺に左から P を掛ける → <code><span class="key">A P = P D</span></code>
+        </div>
+
+        <p>この <code>AP = PD</code> を、<span class="hl">列ごとに</span>見るのがポイント。<code>P</code> の第 j 列を <code>pⱼ</code>、<code>D</code> の第 j 対角成分を <code>λⱼ</code> と置く。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.95">
+          <span class="key">左辺 AP の第 j 列</span> = <code>A pⱼ</code>　<span style="color:var(--muted);font-size:12.5px">（行列を右から掛けるのは「列ごとに変換を通す」操作）</span><br>
+          <span class="key">右辺 PD の第 j 列</span> = <code>λⱼ pⱼ</code>　<span style="color:var(--muted);font-size:12.5px">（<a href="#diag-times-matrix" onclick="gotoSection('diag-times-matrix');return false;">右から対角行列＝列スケール</a>。j 列目が λⱼ 倍される）</span><br>
+          <span class="key">両辺が等しい</span> ⇒ <code style="background:#fff3a0">A pⱼ = λⱼ pⱼ</code>　<span style="font-size:12.5px">（j = 1 … n すべてで）</span>
+        </div>
+
+        <p><span class="key">結論</span>：<span class="hl">P の列は固有ベクトルでなければならず、D の対角はその固有値でなければならない</span>。選択の余地はない。「固有ベクトルを使うと上手くいく」のではなく、<span class="key">対角にしたいと要求した時点で、固有ベクトル以外あり得ない</span>。</p>
+
+        <div class="matrix-row" style="margin-top:18px">
+          <span class="key">P =</span>
+          <div class="matrix">
+            <table><tr><td>1</td><td>1</td></tr><tr><td>1</td><td>-1</td></tr></table>
+          </div>
+          <span class="dim-tag">列 = v₁, v₂</span>
+          <span class="op">,</span>
+          <span class="key">D =</span>
+          <div class="matrix">
+            <table><tr><td>3</td><td>0</td></tr><tr><td>0</td><td>1</td></tr></table>
+          </div>
+          <span class="dim-tag">対角 = λ₁, λ₂（P の列順と揃える）</span>
+        </div>
+
+        <div class="formula" style="border-left-color:#b04a2a;background:#fdf3ef;font-size:13.5px">
+          <span class="key">並び順は連動する：</span>P の1列目を <code>v₂</code> にしたら、D の1番目の対角は <code>1</code> にしなければならない。<span class="hl">P と D はペアで意味を持つ</span>ので、片方だけ並べ替えると <code>AP = PD</code> が壊れる。
+        </div>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">「n 本そろわない」ときは？</span> 独立な固有ベクトルが n 本に足りないと <code>P</code> が可逆にならず、対角化は<span class="hl">できない</span>。その判定を扱うのが次章の<a href="#diag-condition" onclick="gotoSection('diag-condition');return false;">成立条件</a>、できない場合の妥協形が<a href="#jordan-normal-form" onclick="gotoSection('jordan-normal-form');return false;">ジョルダン標準形</a>。
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="bc-after">
+        <h2>⑤ <span class="vt" data-vocab="basis" data-ja="基底">基底</span>変換後の<span class="vt" data-vocab="matrix" data-ja="行列">行列</span>の本質 — <span class="key">P⁻¹AP</span> は何を表しているか<span class="status-tag tag-not-learned">未履修</span></h2>
+        <div class="subsection-pending">
+        <p>最後に、<code>B = P<sup>-1</sup> A P</code> という式そのものの読み方。ここが腹落ちすると、対角化は「テクニック」ではなく「当たり前の帰結」になる。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:22px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">本質①：行列は変換そのものではなく、「変換 × 座標系」の表示</h3>
+
+        <p>いちばん効く読み替えがこれ。<span class="hl">A という数字の並びは、変換の正体ではない。「その変換を、標準基底という言語で書き起こした翻訳文」</span>にすぎない。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:2">
+          <span class="key">変換（実体）</span>… 平面を伸ばす／回す、という物理的な操作。座標とは無関係に存在する。<br>
+          <span class="key">行列（表示）</span>… その操作を、選んだ基底の言葉で書いた文章。<span class="hl">基底を変えれば文章は変わるが、内容は変わらない</span>。
+        </div>
+
+        <p>だから <code>A</code> と <code>D</code> は<span class="key">別の行列だが、同じ変換</span>。日本語と英語で書かれた同じ文章のような関係。この関係を <span class="key">相似（similar）</span>と呼ぶ。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">本質②：3工程のサンドイッチ（翻訳 → 作業 → 翻訳し戻す）</h3>
+
+        <p><code>B = P<sup>-1</sup> A P</code> を右から読む。新座標のベクトル <code>c</code> を入れたときに何が起きるか。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:2">
+          <span class="key">① P c</span>　… 新座標 c を、A が読める標準座標に翻訳する<br>
+          <span class="key">② A (…)</span>　… 標準座標の世界で、いつもどおり A を作用させる<br>
+          <span class="key">③ P<sup>-1</sup> (…)</span>　… 出てきた結果を、新座標の言葉に翻訳し戻す
+        </div>
+
+        <p><span class="key">数値で追う</span>（<code>c = (2, 1)</code>、つまり <code>x = (3,1)</code> のこと）：</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:2">
+          ① <code>P·(2,1) = (3, 1)</code>　　② <code>A·(3,1) = (2·3+1·1, 1·3+2·1) = (7, 5)</code>　　③ <code>P<sup>-1</sup>·(7,5) = ½(7+5, 7−5) = (6, 1)</code><br>
+          一方 <code>D·(2,1) = (3·2, 1·1) = (6, 1)</code>　→　<span class="hl">一致</span>。遠回りしても、対角行列1発でも、着地は同じ。
+        </div>
+
+        <p>そして <code>(6,1)</code> を標準座標に戻せば <code>6·(1,1) + 1·(1,−1) = (7, 5)</code> で、<code>Ax</code> と一致する。<span class="key">どの言語で計算しても、指している矢印は同じ</span>。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">本質③：B の第 j 列は「新基底 pⱼ の行き先を、新基底で書いた座標」</h3>
+
+        <p>行列の列の意味は基底が変わっても同じ。<span class="hl">第 j 列 ＝ 第 j 基底ベクトルの行き先</span>。ただし<span class="key">行き先も新基底の言葉で書く</span>のがポイント。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.95">
+          対角化できた場合：<code>v₁</code> の行き先は <code>3v₁</code> ＝ 新座標で <code>(3, 0)</code> → これが D の1列目。<br>
+          <code>v₂</code> の行き先は <code>1·v₂</code> ＝ 新座標で <code>(0, 1)</code> → これが D の2列目。<br>
+          <span class="hl">行き先が自分自身の定数倍だから、他の成分が 0 になる ＝ 対角になる</span>。①〜④が1本につながる。
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">本質④：どんな P でも成立する。対角は「その中の当たり」</h3>
+
+        <p>見落としやすいが、<code>B = P<sup>-1</sup>AP</code> は<span class="hl">固有ベクトル専用の式ではない</span>。<span class="key">可逆な P なら何でもよく、常に「同じ変換の別表示」を返す</span>。</p>
+
+        <div class="formula" style="font-size:13.5px">
+          例：<code>P = [[1,0],[1,1]]</code>（固有ベクトルではない）でも <code>P<sup>-1</sup>AP = [[3,1],[0,1]]</code> は A と同じ変換の表示。<br>
+          <span style="color:var(--muted);font-size:12.5px">検算：P<sup>-1</sup> = [[1,0],[−1,1]]。AP = [[3,1],[3,2]]、P<sup>-1</sup>(AP) = [[3,1],[−3+3, −1+2]] = [[3,1],[0,1]]。対角ではないが、トレース 4・行列式 3 は A と一致。</span>
+        </div>
+
+        <p>だから正しい理解はこう：<span class="hl">基底変換は無数にできる。そのうち「たまたま非対角が全部消える」当たりの基底が固有ベクトルであり、それを引き当てる作業が対角化</span>。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">本質⑤：変わるもの・変わらないもの</h3>
+
+        <p>表示が変わっても、変換の実体が同じである以上、<span class="key">実体に属する量は保存される</span>。相似変換で何が残るかを見ると、「本質」がどこにあるかがはっきりする。</p>
+
+        <div class="formula" style="font-size:13.5px;line-height:1.95">
+          <span class="key">変わる（表示に属する）</span>… 各成分の値、非対角が 0 かどうか、見た目の対称性<br>
+          <span class="key">変わらない（実体に属する）</span>… <span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>の組、<span class="vt" data-vocab="determinant" data-ja="行列式">行列式</span>、<span class="vt" data-vocab="trace" data-ja="トレース">トレース</span>、<span class="vt" data-vocab="rank" data-ja="階数">rank</span>、<span class="vt" data-vocab="characteristic-polynomial" data-ja="特性多項式">特性多項式</span><br>
+          <span style="color:var(--muted);font-size:12.5px">確認：A は tr = 2+2 = 4、det = 4−1 = 3。D は tr = 3+1 = 4、det = 3·1 = 3。上の非対角な例も tr = 4、det = 3。</span>
+        </div>
+
+        <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13.5px">
+          <span class="key">この章のまとめ（1行ずつ）：</span><br>
+          ① 対角化のゴールは<span class="hl">対角行列を作ること</span>。対角＝軸が混ざらない＝計算が自明。<br>
+          ② 基底変換とは<span class="hl">矢印を動かさず、物差しだけ取り替える</span>こと。翻訳機が P（列＝新基底）。<br>
+          ③ いい基底とは<span class="hl">A を掛けても向きが変わらないベクトルの組</span>。それなら混ざりが生じない。<br>
+          ④ その条件を式にすると <code>A pⱼ = λⱼ pⱼ</code>、すなわち<span class="hl">固有ベクトル以外あり得ない</span>。<br>
+          ⑤ <code>P<sup>-1</sup>AP</code> は<span class="hl">同じ変換の別言語での表示</span>。固有値・det・trace は言語に依らず残る＝そこが本質。<br>
+          <span style="font-size:12.5px;color:var(--muted)">→ 手順・成立条件・応用は次章 <a href="#diagonalization" onclick="gotoSection('diagonalization');return false;">対角化</a> へ。</span>
+        </div>
+        </div><!-- /.subsection-pending -->
+      </div>
+
+    </div>
     <div class="chapter" id="diagonalization">
       <div class="chapter-meta">
         <div class="chapter-label">Chapter</div>
@@ -5419,7 +5756,7 @@
       <div class="formula" style="background:#f0f4ff;border-left-color:#1d4e89;margin-bottom:28px">
         <span class="key">この章の位置づけ：</span><br>
         <span class="vt" data-vocab="eigenvalue" data-ja="固有値">固有値</span>・<span class="vt" data-vocab="eigenvector" data-ja="固有ベクトル">固有ベクトル</span>で「傾かない方向とその倍率」が手に入った。<span class="hl">その方向を座標軸として採用してしまえば、A はただの「各軸を λ 倍」に見える</span> — それが対角化。<br>
-        流れは「<span class="key">何をしているのか（座標系の取り替え）</span> → <span class="key">手順（P と D の作り方）</span> → <span class="key">いつできて、いつできないか</span> → <span class="key">何が嬉しいか（べき乗・行列関数・幾何）</span> → <span class="key">相似の不変量</span> → <span class="key">つまずき集</span>」。ここができないケースの受け皿が、次章の<a href="#jordan-normal-form" onclick="gotoSection('jordan-normal-form');return false;">ジョルダン標準形</a>。
+        流れは「<span class="key">何をしているのか（座標系の取り替え）</span> → <span class="key">手順（P と D の作り方）</span> → <span class="key">いつできて、いつできないか</span> → <span class="key">何が嬉しいか（べき乗・行列関数・幾何）</span> → <span class="key">相似の不変量</span> → <span class="key">つまずき集</span>」。ここができないケースの受け皿が、次章の<a href="#jordan-normal-form" onclick="gotoSection('jordan-normal-form');return false;">ジョルダン標準形</a>。<br><span style="font-size:12.5px;color:var(--muted)">※「そもそも基底変換とは何か／なぜ固有ベクトルが答えなのか」は前章 <a href="#basis-change" onclick="gotoSection('basis-change');return false;">対角化の正体 — 基底変換</a> に分離した。</span>
       </div>
 
       <div class="section" id="diag-meaning">
