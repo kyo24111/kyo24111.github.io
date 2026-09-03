@@ -81,9 +81,18 @@
   .box.amber{background:#fff8e1;border-color:#e6a700}
 
   footer{border-top:1px solid var(--line);background:var(--card);margin-top:44px;padding:28px 0 46px}
-  footer p{font-size:12.5px;color:var(--muted)}
+  footer p{font-size:12.5px;color:var(--muted);overflow-wrap:anywhere;word-break:break-word}
   footer a{color:var(--accent)}
-  @media(max-width:560px){h1{font-size:23px}}
+  @media(max-width:560px){
+    h1{font-size:23px}
+    .stage{padding:6px}
+    canvas{min-width:0}
+    .mtx table{min-width:0}
+    .eiginfo{gap:8px}
+    .slider{flex-wrap:wrap}
+    .slider .readout:last-child{flex-basis:100%;white-space:normal;text-align:right}
+    .seg{flex-wrap:wrap}
+  }
 </style>
 </head>
 <body>
@@ -96,6 +105,7 @@
     <div class="toc">
       <a href="#anim-eigflow"><span class="n">01</span>固有ベクトルの流れ</a>
       <a href="#anim-basis"><span class="n">02</span>基底ベクトル a,b の変化</a>
+      <a href="#anim-rubber"><span class="n">03</span>ゴムシートを斜めの軸で見る</a>
     </div>
   </div>
 </header>
@@ -166,6 +176,41 @@
     <div class="note bb"><b>繰り返すと a も b も (0.5, 0.5) へ collapse。</b>両方とも <code>(1,1)</code> 成分（保存）＋<code>(1,−1)</code> 成分（0.8ⁿで消滅）に分解でき、偏りが消えて (1,1) 線上の同じ点に集まる。単位正方形は<span class="hl">(1,1) 線上の線分へぺしゃんこ</span>。</div>
     <div class="box"><b>det=0.8 とのつながり：</b>単位正方形の面積は毎回 <code>det(A)=0.9·0.9−0.1·0.1=0.8</code> 倍。n 回で <code>0.8ⁿ→0</code> なので、面積は 0 へ（＝(1,1)線に潰れる）。9章「det＝面積拡大率」がそのまま動きに見える。</div>
     <div class="box amber"><b>2つのアニメの関係：</b>章01 が「個々のベクトルの軌跡」、章02 が「基底＋正方形（＝空間全体の格子）の変形」。同じ変換を、点で見るか・枠で見るかの違い。固有ベクトル (1,1) が生き残り (1,−1) が潰れる、という同じ結論に至る。</div>
+  </section>
+
+  <!-- ========================= 章03 ゴムシートを斜めの軸で見る ========================= -->
+  <section class="chapter" id="anim-rubber">
+    <div class="chapter-no">Animation 03</div>
+    <h2>ゴムシートを斜めの軸で見る</h2>
+    <p class="desc">原点を中心にした正方形のゴムシートに A を掛けると斜めに歪む。ところが「首をかしげて」斜め45°の軸で見ると、ただ縦横に引っ張っただけの単純な拡大に見える。対角化＝いい基底、を目で確かめる。</p>
+    <div class="eiginfo">
+      <div>A = <span class="mtx"><table><tr><td>3</td><td>1</td></tr><tr><td>1</td><td>3</td></tr></table></span></div>
+      <span class="pill shr">λ=4 ・ v₁=(1, 1)</span>
+      <span class="pill" style="color:var(--gen);border-color:#c3d0e6;background:#eef2fa">λ=2 ・ v₂=(1, −1)</span>
+    </div>
+
+    <div class="stage"><canvas id="cv3" width="1000" height="1000"></canvas></div>
+    <div class="controls">
+      <button class="btn primary" id="play3">▶ 再生</button>
+      <button class="btn" id="reset3">⟲ リセット</button>
+      <div class="seg" id="mode3"><button data-m="normal" class="on">普通に見る</button><button data-m="tilt">首をかしげて見る（45°）</button></div>
+    </div>
+    <div class="controls">
+      <div class="slider"><span class="readout">変形</span><input type="range" id="t3" min="0" max="1" step="0.005" value="0"><span class="readout" id="tread3"></span></div>
+      <label class="chk"><input type="checkbox" id="field3" checked> 固有方向のメッシュ</label>
+    </div>
+    <div class="legend">
+      <span><span class="dot" style="background:#c9cdd3"></span>ゴムシート（正方形 → 菱形）</span>
+      <span><span class="dot" style="background:var(--shr)"></span>v₁=(1,1) 方向 ・ 4倍</span>
+      <span><span class="dot" style="background:var(--gen)"></span>v₂=(1,−1) 方向 ・ 2倍</span>
+    </div>
+
+    <div class="note shr"><b>普通に見ると「歪んで」見える。</b><code>A·(1,0)=(3,1)</code>、<code>A·(0,1)=(1,3)</code>。右に進むと上にも、上に進むと右にも引っ張られる。この横漏れ「1」が<span class="hl">非対角成分</span>で、灰色のメッシュ（x・y に平行な線）が斜めに倒れていくのが目に見える。</div>
+    <div class="note gen"><b>「首をかしげて見る」を押すと、画面ごと 45° 回る。</b>すると<span class="hl">赤・青のメッシュは倒れず、間隔が広がるだけ</span>になる。横に 4 倍、縦に 2 倍。歪みはどこにも無い ＝ <code>D = diag(4, 2)</code>。<b>変形は最初から単純で、見る軸が悪かっただけ</b>。</div>
+    <div class="box"><b>2方向だけで全部説明できる理由：</b>シート上のどの点も <code>c₁v₁ + c₂v₂</code> と書ける（v₁,v₂ が基底）。<code>A(c₁v₁+c₂v₂) = 4c₁v₁ + 2c₂v₂</code> で<span class="hl">各成分が独立に 4倍・2倍されるだけ</span>。混ざる余地がない。</div>
+    <div class="box amber"><b>面積で det を確かめる：</b>シートの面積は <code>det A = 3·3 − 1·1 = 8</code> 倍になる。斜めの軸で見れば <code>4 × 2 = 8</code>。<span class="hl">どの角度から見ても面積の増え方は同じ</span>＝ det が相似変換で不変であることの実感。</div>
+    <div class="box"><b>途中の状態は何か：</b>スライダーは <code>A<sup>t</sup> = P diag(4<sup>t</sup>, 2<sup>t</sup>) P⁻¹</code>（t: 0→1）を描いている。<span class="hl">対角化できているからこそ「行列の t 乗」が定義できて、変形を連続再生できる</span>——これ自体が対角化の御利益のひとつ。</div>
+    <div class="note bb"><b>本編の該当箇所：</b><a href="260516_linear_algebra.html#bc-rubber">対角化の正体 — 基底変換 ⑧ ゴムシートを引き伸ばす</a>。同じ A を、⑦では連立漸化式として解いている。</div>
   </section>
 
 </div>
@@ -298,6 +343,122 @@ function renderBasis(ctx,t,st){
 
 makeAnim({cv:'cv1',play:'play1',reset:'reset1',t:'t1',tread:'tread1',mode:'mode1',field:'field1',render:renderFlow});
 makeAnim({cv:'cv2',play:'play2',reset:'reset2',t:'t2',tread:'tread2',mode:'mode2',field:'field2',render:renderBasis});
+
+// ===== 章03: ゴムシートを斜めの軸で見る =====
+(() => {
+  const cv=document.getElementById('cv3'); if(!cv) return;
+  const ctx=cv.getContext('2d'); ctx.scale(DPR,DPR);
+  const tEl=document.getElementById('t3'), tread=document.getElementById('tread3');
+  const playBtn=document.getElementById('play3'), fieldEl=document.getElementById('field3');
+  const L1=4, L2=2;                 // 固有値（v1=(1,1) が4倍、v2=(1,-1) が2倍）
+  const R=1/Math.SQRT2, SC=unit*0.52;
+  let t=0, playing=false, mode='normal', raf=null;
+
+  // A^t v : v を v1/v2 成分に分けて、それぞれ 4^t, 2^t 倍
+  function warp(v,tt){
+    const k1=Math.pow(L1,tt), k2=Math.pow(L2,tt);
+    const s=(v[0]+v[1])/2, d=(v[0]-v[1])/2;
+    return [k1*s+k2*d, k1*s-k2*d];
+  }
+  // 表示座標。tilt では画面ごと -45° 回し、固有方向を水平・垂直に見せる
+  function Q(x,y){
+    if(mode==='tilt'){ const nx=(x+y)*R, ny=(y-x)*R; x=nx; y=ny; }
+    return [cx+x*SC, cy-y*SC];
+  }
+  function seg(a,b){ const p=Q(a[0],a[1]), q=Q(b[0],b[1]);
+    ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]); ctx.stroke(); }
+  function segW(a,b){ seg(warp(a,t), warp(b,t)); }
+
+  // 単位正方形 [-1,1]^2 を、v1=(1,1) / v2=(1,-1) に平行な弦で切る
+  function chordV1(c){ return c>=0 ? [[-1,-1+c],[1-c,1]] : [[-1-c,-1],[1,1+c]]; }
+  function chordV2(c){ return c>=0 ? [[c-1,1],[1,c-1]] : [[-1,c+1],[c+1,-1]]; }
+
+  function render(){
+    ctx.clearRect(0,0,S,S);
+
+    // 背景グリッドと軸
+    ctx.lineWidth=1; ctx.strokeStyle='#eef0f3';
+    for(let i=-6;i<=6;i++){ if(i===0) continue;
+      ctx.beginPath(); ctx.moveTo(cx+i*SC,0); ctx.lineTo(cx+i*SC,S); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,cy+i*SC); ctx.lineTo(S,cy+i*SC); ctx.stroke(); }
+    ctx.strokeStyle='#c8ccd2'; ctx.lineWidth=1.2;
+    ctx.beginPath(); ctx.moveTo(0,cy); ctx.lineTo(S,cy); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx,0); ctx.lineTo(cx,S); ctx.stroke();
+    ctx.font='12px "Share Tech Mono", monospace'; ctx.fillStyle='#9aa1ab';
+    ctx.fillText(mode==='tilt'?'X = v₁ 方向':'x', S-92, cy-10);
+    ctx.fillText(mode==='tilt'?'Y = v₂ 方向':'y', cx+9, 20);
+
+    // 固有直線（何をしても動かない2本）
+    ctx.setLineDash([7,6]); ctx.lineWidth=1.5;
+    ctx.strokeStyle=getVar('--shr'); seg([-6,-6],[6,6]);
+    ctx.strokeStyle=getVar('--gen'); seg([-6,6],[6,-6]);
+    ctx.setLineDash([]);
+
+    const sq=[[-1,-1],[1,-1],[1,1],[-1,1]];
+
+    // 変形前のシート（薄い破線）
+    ctx.setLineDash([4,4]); ctx.strokeStyle='#c9cdd3'; ctx.lineWidth=1.2;
+    ctx.beginPath(); sq.forEach((v,i)=>{const p=Q(v[0],v[1]); i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);});
+    ctx.closePath(); ctx.stroke(); ctx.setLineDash([]);
+
+    // 現在のシート
+    const w=sq.map(v=>warp(v,t));
+    ctx.beginPath(); w.forEach((v,i)=>{const p=Q(v[0],v[1]); i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);});
+    ctx.closePath();
+    ctx.fillStyle='rgba(120,128,138,.09)'; ctx.fill();
+    ctx.strokeStyle='#5b626b'; ctx.lineWidth=2; ctx.stroke();
+
+    // 灰メッシュ：x・y に平行（= 標準基底の目盛）。これは倒れる
+    ctx.lineWidth=1; ctx.strokeStyle='rgba(150,156,164,.38)';
+    for(let i=1;i<4;i++){ const u=-1+i*0.5;
+      segW([u,-1],[u,1]); segW([-1,u],[1,u]); }
+
+    // 色メッシュ：固有方向に平行。これは倒れず間隔だけ変わる
+    if(fieldEl.checked){
+      ctx.lineWidth=1.4;
+      for(let i=1;i<=3;i++){ const c=i*0.5;
+        ctx.strokeStyle=hexA(getVar('--shr'),.42);
+        [c,-c].forEach(k=>{const e=chordV1(k); segW(e[0],e[1]);});
+        ctx.strokeStyle=hexA(getVar('--gen'),.42);
+        [c,-c].forEach(k=>{const e=chordV2(k); segW(e[0],e[1]);});
+      }
+      ctx.strokeStyle=hexA(getVar('--shr'),.42); let e=chordV1(0); segW(e[0],e[1]);
+      ctx.strokeStyle=hexA(getVar('--gen'),.42); e=chordV2(0); segW(e[0],e[1]);
+    }
+
+    // 固有ベクトルの矢印と倍率
+    const a1=warp([1,1],t), a2=warp([1,-1],t);
+    ctx.strokeStyle=getVar('--shr'); ctx.fillStyle=getVar('--shr'); ctx.lineWidth=3;
+    arrow(ctx,Q(0,0),Q(a1[0],a1[1]),true);
+    ctx.strokeStyle=getVar('--gen'); ctx.fillStyle=getVar('--gen'); ctx.lineWidth=3;
+    arrow(ctx,Q(0,0),Q(a2[0],a2[1]),true);
+    ctx.font='13px "Share Tech Mono", monospace';
+    const m1=Q(a1[0]*0.55,a1[1]*0.55), m2=Q(a2[0]*0.55,a2[1]*0.55);
+    ctx.fillStyle=getVar('--shr'); ctx.fillText('v₁ ×'+Math.pow(L1,t).toFixed(2), m1[0]+10, m1[1]-8);
+    ctx.fillStyle=getVar('--gen'); ctx.fillText('v₂ ×'+Math.pow(L2,t).toFixed(2), m2[0]+10, m2[1]+16);
+
+    origin(ctx);
+  }
+
+  function setT(v){ t=Math.max(0,Math.min(1,v)); tEl.value=t;
+    tread.textContent='t='+t.toFixed(2)+' ・ v₁×'+Math.pow(L1,t).toFixed(2)+' v₂×'+Math.pow(L2,t).toFixed(2)+' ・ 面積×'+Math.pow(L1*L2,t).toFixed(2);
+    render(); }
+  function stop(){ playing=false; playBtn.textContent='▶ 再生'; playBtn.classList.add('primary'); if(raf)cancelAnimationFrame(raf); raf=null; }
+  function play(){ playing=true; playBtn.textContent='⏸ 停止'; playBtn.classList.remove('primary');
+    if(t>=1) setT(0);
+    const step=()=>{ if(!playing) return; const nt=t+0.008;
+      if(nt>=1){ setT(1); stop(); return; } setT(nt); raf=requestAnimationFrame(step); };
+    raf=requestAnimationFrame(step); }
+
+  tEl.addEventListener('input',()=>{stop();setT(+tEl.value);});
+  document.getElementById('reset3').addEventListener('click',()=>{stop();setT(0);});
+  fieldEl.addEventListener('change',render);
+  document.querySelectorAll('#mode3 button').forEach(b=>b.addEventListener('click',()=>{
+    document.querySelectorAll('#mode3 button').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on'); mode=b.dataset.m; render(); }));
+  playBtn.addEventListener('click',()=>{playing?stop():play();});
+  setT(0);
+})();
 </script>
 
 </body>
