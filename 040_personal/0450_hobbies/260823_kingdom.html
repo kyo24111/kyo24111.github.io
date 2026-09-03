@@ -158,6 +158,39 @@
   .arcfoot + .arcfoot{margin-top:9px; padding-top:9px; border-top:0;}
   .fl{font-size:.72rem; color:var(--muted); margin-bottom:5px;}
 
+  /* ── あらすじ: 章の索引 ── */
+  .arcidx{border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); padding:14px 18px 12px; margin-bottom:14px;}
+  .arcidx h2{margin:0 0 2px; font-size:.95rem; font-weight:700;}
+  .arcidx .ixsub{font-size:.74rem; color:var(--muted); margin-bottom:9px;}
+  .ixlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:5px 14px;}
+  .ixrow{display:grid; grid-template-columns:30px 1fr; gap:0 8px; align-items:baseline; text-align:left;
+         background:none; border:0; border-top:1px solid var(--line); padding:7px 2px; cursor:pointer; font:inherit; color:inherit; width:100%;}
+  .ixrow:hover{background:var(--soft);}
+  .ixrow .ixno{font-size:.68rem; font-weight:700; letter-spacing:.06em; color:var(--muted);}
+  .ixrow .ixnm{font-size:.82rem; font-weight:600;}
+  .ixrow .ixmeta{grid-column:2; font-size:.7rem; color:var(--muted); margin-top:1px;}
+
+  /* ── あらすじ: 要点 / 復習チェック ── */
+  .apoints{margin:12px 0 2px; padding:11px 13px 9px; border:1px solid var(--line2); border-radius:9px; background:var(--soft);}
+  .arc.now .apoints{background:#fff;}
+  .apoints .fl{margin-bottom:6px; font-weight:600; color:#333;}
+  .apoints ul{margin:0; padding-left:17px;}
+  .apoints li{font-size:.84rem; color:#333; margin:0 0 4px;}
+  .achecks{margin-top:13px; padding-top:12px; border-top:1px solid var(--line);}
+  .achecks .qa{border:1px solid var(--line); border-radius:8px; margin-bottom:6px; background:var(--panel); overflow:hidden;}
+  .achecks .qa > summary{list-style:none; cursor:pointer; padding:9px 12px; font-size:.84rem; font-weight:600;
+                         display:flex; gap:9px; align-items:baseline;}
+  .achecks .qa > summary::-webkit-details-marker{display:none;}
+  .achecks .qa > summary::before{content:"Q"; font-size:.66rem; font-weight:700; color:var(--muted);
+                                 border:1px solid var(--line2); border-radius:4px; padding:1px 5px; flex:0 0 auto;}
+  .achecks .qa > summary:hover{background:var(--soft);}
+  .achecks .qa[open] > summary{border-bottom:1px solid var(--line);}
+  .achecks .qa .ans{margin:0; padding:9px 12px 10px 34px; font-size:.85rem; color:#333; background:var(--soft);}
+  .achecks .qtool{display:flex; gap:8px; margin-bottom:7px;}
+  .achecks .qbtn{font:inherit; font-size:.72rem; color:var(--muted); background:none; border:1px solid var(--line2);
+                 border-radius:6px; padding:3px 10px; cursor:pointer;}
+  .achecks .qbtn:hover{background:var(--soft); color:#111;}
+
   /* ── 能力値（公式ガイドブック） ── */
   .stats{margin:0 0 16px; border:1px solid var(--line); border-radius:9px; padding:11px 13px 9px; background:var(--soft);}
   .stats .sthead{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px;}
@@ -643,7 +676,9 @@
     a._chA = cm ? +cm[1] : null;
     a._chB = cm ? +(cm[2] || cm[1]) : (cm ? +cm[1] : null);
     if (cm && !cm[2] && /話〜/.test(String(a.chapters))) a._chB = 99999;
-    a._hay = [a.name, a.ep, a.vols, a.chapters, a.era, a.sides, a.result, a.rank, a.lead,
+    a._hay = [a.name, a.ep, a.vols, a.chapters, a.year, a.era, a.sides, a.result, a.rank, a.lead,
+              (a.points||[]).join(" "),
+              (a.checks||[]).map(c => c.q + c.a).join(" "),
               a.quote ? a.quote.t + a.quote.by : "",
               [...(a.newcomers||[]), ...(a.deaths||[])].map(k => byId[k] ? byId[k].name : "").join(" "),
               (a.beats||[]).map(b => (b.ep||"") + b.h + b.body).join(" "),
@@ -1088,16 +1123,28 @@
       }
       return a._hay.indexOf(S.q) >= 0;
     });
-    storyEl.innerHTML = rows.map(a => {
+    const idx = rows.length > 1
+      ? '<div class="arcidx"><h2>章の索引</h2>' +
+        '<div class="ixsub">全' + ARCS.length + '章 / ' + rows.length + '章を表示中。行をクリックでその章へ。各章末に要点と復習チェックあり。</div>' +
+        '<div class="ixlist">' + rows.map(a =>
+          '<button class="ixrow" data-arc="' + a.id + '">' +
+            '<span class="ixno">' + esc(a.no) + '</span>' +
+            '<span class="ixnm">' + esc(a.name) + '</span>' +
+            '<span class="ixmeta">' + esc(a.vols) + (a.year && a.year !== "—" ? " ・ " + esc(a.year) : "") +
+              (a.result && a.result !== "—" ? " ・ " + esc(a.result) : "") + '</span>' +
+          '</button>').join("") +
+        '</div></div>'
+      : "";
+    storyEl.innerHTML = idx + rows.map(a => {
       const now = /進行中|放送中/.test(String(a.ep) + a.vols + (a.result||""));
       const keys = (a.keys||[]).filter(k => byId[k]);
       const bats = (a.battles||[]).filter(k => byId[k]);
       const nc   = (a.newcomers||[]).filter(k => byId[k]);
       const dd   = (a.deaths||[]).filter(k => byId[k]);
-      const meta = [["原作", a.chapters], ["対戦", a.sides], ["結果", a.result], ["信の立場", a.rank]]
+      const meta = [["原作", a.chapters], ["時期", a.year], ["対戦", a.sides], ["結果", a.result], ["信の立場", a.rank]]
         .filter(x => x[1] && x[1] !== "—")
         .map(x => "<dt>" + x[0] + "</dt><dd>" + esc(x[1]) + "</dd>").join("");
-      return '<section class="arc' + (now ? " now" : "") + '">' +
+      return '<section class="arc' + (now ? " now" : "") + '" id="arc-' + a.id + '">' +
         '<div class="ahead"><span class="ano">' + esc(a.no) + '</span>' +
           '<h2>' + esc(a.name) + '</h2>' +
           (a.ep ? '<span class="aep">' + esc(a.ep) + '</span>' : "") +
@@ -1108,17 +1155,32 @@
         (a.beats||[]).map(b => '<div class="beat"><div class="bh">' + esc(b.h) +
             (b.ep && b.ep !== "—" ? '<span class="bep">' + esc(b.ep) + '</span>' : "") +
           '</div><p class="bb">' + esc(b.body) + '</p></div>').join("") +
+        ((a.points||[]).length ? '<div class="apoints"><div class="fl">この章の要点</div><ul>' +
+          a.points.map(p => '<li>' + esc(p) + '</li>').join("") + '</ul></div>' : "") +
+        ((a.checks||[]).length ? '<div class="achecks"><div class="fl">復習チェック（クリックで答え）</div>' +
+          '<div class="qtool"><button class="qbtn" data-qa="open">全部開く</button>' +
+          '<button class="qbtn" data-qa="close">全部閉じる</button></div>' +
+          a.checks.map(c => '<details class="qa"><summary>' + esc(c.q) + '</summary>' +
+            '<p class="ans">' + esc(c.a) + '</p></details>').join("") + '</div>' : "") +
         (bats.length ? '<div class="arcfoot"><div class="fl">この章の戦い</div><div class="rels">' +
           bats.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
         (keys.length ? '<div class="arcfoot"><div class="fl">主要人物</div><div class="rels">' +
           keys.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
-        (nc.length ? '<div class="arcfoot"><div class="fl">この章で初登場（原作基準）</div><div class="rels">' +
+        (nc.length ? '<div class="arcfoot"><div class="fl">この章の主な新顔</div><div class="rels">' +
           nc.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
         (dd.length ? '<div class="arcfoot"><div class="fl">この章で退場</div><div class="rels">' +
           dd.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
       '</section>';
     }).join("");
     storyEl.querySelectorAll(".rel").forEach(b => b.onclick = () => open(b.dataset.id));
+    storyEl.querySelectorAll(".ixrow").forEach(b => b.onclick = () => {
+      const t = document.getElementById("arc-" + b.dataset.arc);
+      if (t) t.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+    storyEl.querySelectorAll(".qbtn").forEach(b => b.onclick = () => {
+      const box = b.closest(".achecks");
+      box.querySelectorAll("details.qa").forEach(d => d.open = b.dataset.qa === "open");
+    });
     document.getElementById("sempty").style.display = rows.length ? "none" : "";
     return rows.length;
   }
