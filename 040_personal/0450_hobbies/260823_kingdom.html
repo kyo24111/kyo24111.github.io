@@ -194,6 +194,41 @@
   .ddnames{font-size:.84rem; color:#333; margin:6px 0 0; line-height:1.9;}
   .ddsrc{font-size:.72rem; color:var(--muted); margin:4px 0 0;}
 
+  /* ── 地図タブ ── */
+  .maplayout{display:grid; grid-template-columns:1fr 300px; gap:14px; margin-top:16px; align-items:start;}
+  @media (max-width:900px){ .maplayout{grid-template-columns:1fr;} }
+  .mapcard{border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); padding:10px; overflow:hidden;}
+  #kmap{display:block; width:100%; height:auto;}
+  .rg{stroke:#c9c9c4; stroke-width:1.2px;}
+  .rglabel{font-size:15px; font-weight:700; fill:#5a5a55; letter-spacing:.12em; paint-order:stroke; stroke:#fff; stroke-width:4px; stroke-linejoin:round;}
+  .river{stroke:#cfd9e6; stroke-width:5px; fill:none; stroke-linecap:round;}
+  .riverlabel{font-size:10px; fill:#93a6bd;}
+  .spot{cursor:pointer;}
+  .spot .hit{fill:transparent;}
+  .spot .mk{stroke:#333; stroke-width:1.4px; fill:#fff;}
+  .spot.capital .mk{fill:#111;}
+  .spot.field .mk{fill:#fff; stroke-dasharray:none;}
+  .spot .lb{font-size:11px; fill:#222; paint-order:stroke; stroke:#fff; stroke-width:3.5px; stroke-linejoin:round;}
+  .spot.capital .lb{font-weight:700;}
+  .spot:hover .mk{stroke-width:2.6px;}
+  .spot.on .mk{fill:#111; stroke:#111; stroke-width:2.6px;}
+  .spot.on .lb{font-weight:700;}
+  .maplegend{display:flex; gap:14px; flex-wrap:wrap; font-size:.7rem; color:var(--muted); padding:6px 4px 2px;}
+  .maplegend i{display:inline-block; width:9px; height:9px; margin-right:4px; border:1px solid #333; vertical-align:-1px;}
+  .maplegend .lc{border-radius:50%; background:#111;}
+  .maplegend .lt{border-radius:50%; background:#fff;}
+  .maplegend .lf{transform:rotate(45deg); background:#fff;}
+  .mapinfo{border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); padding:15px 16px; position:sticky; top:120px;}
+  .mapinfo h3{margin:0; font-size:1.02rem; font-weight:700;}
+  .mapinfo .mi-yomi{font-size:.72rem; color:var(--muted); margin-top:1px;}
+  .mapinfo .mi-bdg{margin-top:8px; display:flex; gap:5px; flex-wrap:wrap;}
+  .mapinfo p{font-size:.85rem; color:#333; margin:11px 0 0;}
+  .mapinfo .mi-arc{margin-top:10px; padding-top:9px; border-top:1px solid var(--line); font-size:.75rem; color:var(--muted);}
+  .mapinfo .mi-empty{font-size:.82rem; color:var(--muted);}
+  .maplist{margin-top:14px; border:1px solid var(--line); border-radius:12px; background:var(--panel); padding:12px 14px;}
+  .maplist .fl{margin-bottom:6px;}
+  .maplist .rels{gap:5px;}
+
   /* ── 詳細ドロワー ── */
   .drawerhost{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:50;}
   .drawerhost .drawer{pointer-events:auto;}
@@ -253,6 +288,7 @@
         <button class="tab" data-view="table">テーブル</button>
         <button class="tab" data-view="story">あらすじ</button>
         <button class="tab" data-view="deep">詳解</button>
+        <button class="tab" data-view="map">地図</button>
       </div>
       <div class="search" id="searchbox">
         <span class="ico">⌕</span>
@@ -307,6 +343,8 @@
       <div class="empty" id="tempty" style="display:none">該当なし</div>
     </div>
   </div>
+
+  <div id="view-map" style="display:none"></div>
 
   <div id="view-deep" style="display:none">
     <section>
@@ -658,11 +696,11 @@
   document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
     S.view = t.dataset.view;
     document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
-    ["graph","table","story","deep"].forEach(v => {
+    ["graph","table","story","deep","map"].forEach(v => {
       document.getElementById("view-" + v).style.display = S.view === v ? "" : "none";
     });
     // 種別・国フィルタは人物/戦い一覧にだけ効くので、あらすじでは隠す
-    document.querySelectorAll("#filterrow .chipset").forEach(c => c.style.display = (S.view === "story" || S.view === "deep") ? "none" : "");
+    document.querySelectorAll("#filterrow .chipset").forEach(c => c.style.display = (S.view === "story" || S.view === "deep" || S.view === "map") ? "none" : "");
     render();
     if (S.view === "graph") { sim.alpha = .35; tick(); }
   });
@@ -1160,7 +1198,7 @@
     const vis  = N.filter(passFilter);
     document.getElementById("count").textContent =
       (S.view === "table" ? rows.length + " 件" : vis.length + " ノード / " + sim.links.length + " 関係");
-    if (S.view === "deep"){ document.getElementById("count").textContent = ""; return; }
+    if (S.view === "deep" || S.view === "map"){ document.getElementById("count").textContent = ""; return; }
     if (S.view === "story"){
       document.getElementById("count").textContent = renderStory() + " / " + ARCS.length + " 章";
       return;
@@ -1184,6 +1222,254 @@
   }, 30);
   window.addEventListener("resize", () => { measure(); applyTransform(); });
   if (location.hash && byId[location.hash.slice(1)]) setTimeout(() => open(location.hash.slice(1)), 80);
+})();
+</script>
+<script>
+/* ── 地図タブ（自己完結・データファイル非依存） ── */
+(function(){
+  "use strict";
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const FILL = {"秦":"#efefec","趙":"#e8f0fb","魏":"#e6f4ea","韓":"#ecedf8","楚":"#f8ece0","燕":"#e6f2f3","斉":"#f2e9fa","山界":"#fdf5da","代":"#eeeeea"};
+
+  const MAPS = {
+    china: {
+      label:"中華全図", w:1000, h:720,
+      note:"位置関係は原作の中華figureをもとにした模式図。実際の縮尺・形状ではありません。",
+      regions:[
+        {name:"山界", state:"山界", d:"M30,150 L130,120 L150,250 L120,400 L40,420 Z", lx:78, ly:270},
+        {name:"秦",   state:"秦",   d:"M130,120 L340,100 L360,330 L330,560 L150,540 L120,400 L150,250 Z", lx:205, ly:180},
+        {name:"趙",   state:"趙",   d:"M360,100 L520,55 L700,70 L690,250 L520,275 L370,260 Z", lx:678, ly:186},
+        {name:"燕",   state:"燕",   d:"M700,70 L950,45 L960,175 L730,190 L690,150 Z", lx:906, ly:152},
+        {name:"斉",   state:"斉",   d:"M730,190 L960,175 L965,380 L760,395 L700,300 Z", lx:800, ly:348},
+        {name:"魏",   state:"魏",   d:"M370,260 L520,275 L690,250 L700,300 L660,430 L470,420 L360,330 Z", lx:556, ly:398},
+        {name:"韓",   state:"韓",   d:"M400,420 L590,425 L575,510 L410,505 Z", lx:548, ly:492},
+        {name:"楚",   state:"楚",   d:"M330,560 L410,505 L575,510 L660,430 L760,395 L900,450 L880,680 L400,700 Z", lx:640, ly:580}
+      ],
+      rivers:[
+        {d:"M150,300 C300,290 480,320 700,300 C820,290 900,300 960,290", label:"黄河", lx:770, ly:283},
+        {d:"M160,360 C240,350 300,345 350,340", label:"渭水", lx:200, ly:372}
+      ],
+      spots:[
+        {id:"kanyou", n:"咸陽", yo:"かんよう", s:"秦", k:"都", x:215, y:335, dx:0, dy:-14,
+         w:"秦の王都。政と呂不韋の権力闘争の舞台で、成蟜の反乱では一度この城を奪われ、山の民とともに奪還した。合従軍のときは、ここまで抜かれれば国が終わるという最終地点だった。", a:"王都奪還編 / 朝廷の陰謀編 / 愛編"},
+        {id:"kankoku", n:"函谷関", yo:"かんこくかん", s:"秦", k:"関", x:348, y:326, dx:-12, dy:14,
+         w:"咸陽へ通じる唯一の入口で、秦の国門。合従軍編では五国連合五十万をここ一点で受け止め、蒙武が汗明を、張唐が成恢と刺し違え、王翦が燕と楚を削った。関の外では麃公が龐煖に討たれている。", a:"合従軍編"},
+        {id:"sai", n:"蕞", yo:"さい", s:"秦", k:"城", x:290, y:372, dx:8, dy:14,
+         w:"咸陽の手前に残る最後の砦。函谷関を迂回した李牧三万に対し、政が自ら入って住民に語りかけ、七日間持ちこたえた。七日目に西壁が抜けた瞬間、楊端和の三万が到着して合従軍は崩れた。", a:"合従軍編"},
+        {id:"jouto", n:"城戸村", yo:"じょうとむら", s:"秦", k:"里", x:175, y:415, dx:-6, dy:16,
+         w:"信と漂が下僕として育った村。漂が影武者として王宮へ上がり、瀕死でここへ帰って息絶えた。すべての出発点。", a:"王都奪還編"},
+        {id:"tonryu", n:"屯留", yo:"とんりゅう", s:"秦", k:"城", x:330, y:180, dx:10, dy:-12,
+         w:"合従軍を退けた直後に反乱が起きた城。鎮圧に向かった成蟜が、秦の王族としての務めを果たして死んだ場所。", a:"愛編"},
+        {id:"kanyou_reg", n:"太原", yo:"たいげん", s:"秦", k:"城", x:352, y:135, dx:12, dy:-10,
+         w:"秦が趙から得た北の要地。ここから先の西方趙侵攻（列尾・鄴）と、著雍方面の東進の起点になる。", a:"鄴攻略戦"},
+        {id:"dakan", n:"蛇甘平原", yo:"だかんへいげん", s:"魏", k:"戦場", x:392, y:298, dx:14, dy:-12,
+         w:"信の初陣。麃公が魏の総大将・呉慶を一騎打ちで討ち取り、縛虎申が丘を死守して戦死した。羌瘣が初めて姿を見せた戦場でもある。", a:"蛇甘平原の戦い"},
+        {id:"sanyou", n:"山陽", yo:"さんよう", s:"魏", k:"城", x:424, y:326, dx:14, dy:14,
+         w:"秦が魏から奪った要衝。蒙驁を総大将に、信・王賁・蒙恬という同世代の千人将が初めて同じ戦場に並んだ。信が輪虎を討ち、蒙武が廉頗を破って陥落させた。", a:"山陽攻略戦"},
+        {id:"chakuyou", n:"著雍", yo:"ちゃくよう", s:"魏", k:"城", x:462, y:372, dx:10, dy:16,
+         w:"騰が初めて方面軍の総大将を務めた地。王賁の三点同時突破で七万を三日で抜き、紫伯と霊凰を討ち取った。戦後、昌平君の密命で一年がかりの巨大要塞が築かれる。", a:"魏火竜七師編"},
+        {id:"dairyou", n:"大梁", yo:"だいりょう", s:"魏", k:"都", x:610, y:342, dx:0, dy:-14,
+         w:"魏の王都。呉鳳明がここから著雍へ出てきたことで、騰は相手が魏の序列第一位だと確信した。", a:"魏火竜七師編"},
+        {id:"kantan", n:"邯鄲", yo:"かんたん", s:"趙", k:"都", x:560, y:150, dx:0, dy:-14,
+         w:"趙の王都。秦の目標は最終的にここで、平陽・武城の攻略や番吾の決戦はすべてこの城へ近づくための戦いだった。", a:"平陽・武城攻略戦 / 番吾攻防戦"},
+        {id:"bayou", n:"馬陽", yo:"ばよう", s:"趙", k:"戦場", x:432, y:186, dx:-10, dy:-12,
+         w:"王騎が復帰し、そして散った戦場。飛信隊がここで生まれ、信は万極を討ち、尾到を失った。摎が百個目の城として攻めて死んだ地でもある。", a:"馬陽の戦い"},
+        {id:"kokuyou", n:"黒羊丘", yo:"こくようきゅう", s:"趙", k:"戦場", x:452, y:262, dx:-13, dy:-12,
+         w:"桓騎の指揮下で戦った丘。慶舎の罠と桓騎の非道に挟まれ、信は勝ち方そのものを問われた。信が慶舎を討ち、五千人将になる。", a:"黒羊丘の戦い"},
+        {id:"gyou", n:"鄴", yo:"ぎょう", s:"趙", k:"城", x:534, y:246, dx:10, dy:14,
+         w:"趙西方の大都市。列尾を抜いた王翦軍がここを狙い、朱海平原の決戦を経て陥落させた。城ひとつではなく地方まるごとを奪う規模の戦い。", a:"鄴攻略戦"},
+        {id:"shukai", n:"朱海平原", yo:"しゅかいへいげん", s:"趙", k:"戦場", x:496, y:222, dx:-16, dy:-12,
+         w:"鄴攻略の決戦場。左翼・中央・右翼で別の戦いが同時に転がり、飛信隊は趙峩龍・尭雲と削り合った。信が龐煖との因縁に決着をつけた場所。", a:"鄴攻略戦"},
+        {id:"gian", n:"宜安", yo:"ぎあん", s:"趙", k:"戦場", x:470, y:128, dx:-14, dy:-12,
+         w:"李牧が復権して秦を迎え撃った地。桓騎軍が李牧の盤面に呑まれ、雷土・黒桜・ゼノウが落ち、最後に桓騎自身が肥下で討たれた。秦最大の敗北。", a:"宜安・肥下の戦い"},
+        {id:"bango", n:"番吾", yo:"はんご", s:"趙", k:"戦場", x:512, y:92, dx:6, dy:-12,
+         w:"宜安の借りを返すために秦が総動員で臨んだ決戦。李牧と司馬尚が揃った趙に押し切られ、二年続けて敗れた。亜光と田里弥が戦死。", a:"番吾攻防戦"},
+        {id:"heiyou", n:"平陽・武城", yo:"へいよう・ぶじょう", s:"趙", k:"戦場", x:596, y:206, dx:12, dy:14,
+         w:"邯鄲の目前に残る二つの城。六大将軍が復活した秦は、桓騎を軸にここを攻め、邯鄲の守護神と呼ばれた扈輒を破った。", a:"平陽・武城攻略戦"},
+        {id:"retsubi", n:"列尾", yo:"れつび", s:"趙", k:"城", x:404, y:214, dx:-12, dy:14,
+         w:"西方趙侵攻の入口。ここを抜かなければ鄴には届かない、と昌平君が構想の起点に据えた城。", a:"鄴攻略戦"},
+        {id:"rouzan", n:"楼山", yo:"ろうざん", s:"趙", k:"山", x:640, y:96, dx:12, dy:-10,
+         w:"蚩尤・幽族の本拠がある山。羌瘣が仇の幽連を追って辿り着き、決着をつけた場所。", a:"羌瘣の復讐編"},
+        {id:"seika", n:"青歌", yo:"せいか", s:"趙", k:"城", x:664, y:120, dx:10, dy:14,
+         w:"司馬尚が治める城。失脚して行き場を失った李牧を庇護した土地でもある。", a:"宜安・肥下の戦い"},
+        {id:"shintei", n:"新鄭", yo:"しんてい", s:"韓", k:"都", x:480, y:462, dx:0, dy:-13,
+         w:"韓の王都。南陽から進んだ秦軍がここを落とし、韓は滅亡した。六国のうち最初に地図から消えた国。", a:"韓攻略戦"},
+        {id:"nanyou", n:"南陽", yo:"なんよう", s:"韓", k:"城", x:424, y:436, dx:-14, dy:-12,
+         w:"韓攻略の起点。ここを押さえてから新鄭へ向かう形が取られた。", a:"韓攻略戦"},
+        {id:"chin", n:"陳", yo:"ちん", s:"楚", k:"城", x:560, y:546, dx:8, dy:14,
+         w:"楚の要地。山陽を失った廉頗が四天王とともに最後に落ち着いた場所で、項翼・白麗・媧燐もここを拠点にしている。", a:"山陽攻略戦のその後"},
+        {id:"kei", n:"薊", yo:"けい", s:"燕", k:"都", x:812, y:100, dx:0, dy:-13,
+         w:"燕の王都。合従軍にはここからオルドが十二万を率いて参加した。", a:"合従軍編"},
+        {id:"rinshi", n:"臨淄", yo:"りんし", s:"斉", k:"都", x:868, y:270, dx:0, dy:-13,
+         w:"斉の王都。合従軍では蔡沢が斉王・王建と交渉し、国境を越える前に五万を離脱させた。", a:"合従軍編"}
+      ]
+    },
+
+    qin: {
+      label:"秦国内", w:1000, h:660,
+      note:"秦とその前線だけを抜き出した模式図。左が西（山界側）、右が東（魏・趙側）。",
+      regions:[
+        {name:"山界", state:"山界", d:"M30,120 L150,90 L170,300 L140,520 L40,540 Z", lx:88, ly:300},
+        {name:"秦", state:"秦", d:"M150,90 L560,70 L600,300 L570,560 L160,540 L140,300 L170,300 Z", lx:330, ly:130},
+        {name:"魏・趙（前線の先）", state:"魏", d:"M600,300 L950,270 L940,560 L570,560 Z", lx:790, ly:420},
+        {name:"趙（北）", state:"趙", d:"M560,70 L950,60 L950,270 L600,300 Z", lx:800, ly:150}
+      ],
+      rivers:[
+        {d:"M180,330 C300,320 420,325 560,315 C700,305 850,310 950,300", label:"黄河", lx:700, ly:292},
+        {d:"M200,400 C280,392 360,388 470,380", label:"渭水", lx:240, ly:412}
+      ],
+      spots:[
+        {id:"q_kanyou", n:"咸陽（王都）", yo:"かんよう", s:"秦", k:"都", x:300, y:380, dx:0, dy:-15,
+         w:"王宮と朝廷が置かれた秦の中心。政と呂不韋の権力闘争、加冠の儀、四柱による国政の運営、そして太后と嫪毐の毐国騒動まで、戦場でない争いはすべてここで起きた。合従軍では、この城まで抜かれれば国が終わるという最後の一線だった。", a:"王都奪還編 / 朝廷の陰謀編 / 愛編"},
+        {id:"q_jouto", n:"城戸村", yo:"じょうとむら", s:"秦", k:"里", x:210, y:452, dx:-8, dy:16,
+         w:"信と漂が下僕として育った村。二人が剣を振り、天下の大将軍を目指すと約束した場所で、漂が瀕死で戻って息を引き取った地でもある。", a:"王都奪還編"},
+        {id:"q_sankai", n:"山界との境", yo:"さんかいとのさかい", s:"山界", k:"境", x:168, y:262, dx:14, dy:-10,
+         w:"政が単身で越えて楊端和と同盟を結んだ境界。五百年前の穆公との盟約を持ち出して交渉が成立し、王都奪還の決定打になった。以後、山の民は秦の同盟勢力として何度も国境を越えてくる。", a:"王都奪還編 / 合従軍編"},
+        {id:"q_sai", n:"蕞", yo:"さい", s:"秦", k:"城", x:430, y:414, dx:-6, dy:16,
+         w:"咸陽の手前に残る最後の砦。李牧の別働隊三万に対し、政が自ら入って住民に語りかけ、北を介億・東を壁・西を昌文君・南を信が守って七日間持ちこたえた。", a:"合従軍編"},
+        {id:"q_kankoku", n:"函谷関", yo:"かんこくかん", s:"秦", k:"関", x:560, y:352, dx:10, dy:-13,
+         w:"秦の国門。咸陽へ通じる唯一の入口で、合従軍編では五国連合をここ一点で受け止めた。関の上に蒙驁・桓騎・張唐、東側に騰と蒙武、西側に王翦が並んだ。", a:"合従軍編"},
+        {id:"q_nandou", n:"南の関（南道）", yo:"みなみのかん", s:"秦", k:"戦場", x:500, y:470, dx:8, dy:16,
+         w:"函谷関を迂回して咸陽を狙う南側の道。麃公が李牧の別働隊を追ってここで龐煖と一騎打ちになり、腕一本と引き換えに相手の腕を折った末に討たれた。", a:"合従軍編"},
+        {id:"q_tonryu", n:"屯留", yo:"とんりゅう", s:"秦", k:"城", x:520, y:172, dx:10, dy:-12,
+         w:"合従軍の直後に反乱が起きた北の城。鎮圧に向かった成蟜が、血統に固執した男として最後に秦の王族の務めを選び、命を落とした。", a:"愛編"},
+        {id:"q_taigen", n:"太原", yo:"たいげん", s:"秦", k:"城", x:604, y:132, dx:10, dy:-12,
+         w:"趙から得た北の要地。ここが西方趙侵攻の足場になり、列尾を抜いて鄴へ向かう道が開く。", a:"鄴攻略戦"},
+        {id:"q_kyoyou", n:"巨陽", yo:"きょよう", s:"秦", k:"城", x:640, y:250, dx:12, dy:14,
+         w:"趙の南下を塞ぐ東側の要衝で、王翦軍が守っていた。著雍で騰が援軍を求めようとしたとき、ここが抜ければ趙が一気に南下して著雍と山陽を背後から囲えると王賁が指摘し、要請そのものを止めた。", a:"魏火竜七師編"},
+        {id:"q_sanyou", n:"山陽（獲得）", yo:"さんよう", s:"魏", k:"城", x:660, y:400, dx:-4, dy:16,
+         w:"魏から奪って秦領になった要衝。合従軍のあと趙が取り返せなかったことで、秦の国境が中華の中央へ動き始めた。", a:"山陽攻略戦"},
+        {id:"q_chakuyou", n:"著雍（要塞）", yo:"ちゃくよう", s:"魏", k:"城", x:762, y:452, dx:8, dy:16,
+         w:"騰が落とした魏の要衝。戦後、昌平君の密命で一年がかりの巨大要塞が築かれ、魏を継続的に削る前線基地になった。国が滅びる時代への入口。", a:"魏火竜七師編"},
+        {id:"q_kakuyou", n:"咸陽の兵法学校", yo:"へいほうがっこう", s:"秦", k:"施設", x:352, y:322, dx:12, dy:-11,
+         w:"昌平君が自ら開いた軍師の養成所。武ではなく戦術で戦うと決めた河了貂がここで学び、飛信隊に初めて軍師を持ち込んだ。", a:"同盟編・第三勢力編"}
+      ]
+    }
+  };
+
+  const KIND_CLASS = {"都":"capital","関":"gate","城":"city","戦場":"field","里":"village","山":"mount","境":"border","施設":"place"};
+
+  const host = document.getElementById("view-map");
+  if (!host) return;
+  host.innerHTML =
+    '<div class="row" style="margin-top:12px"><div class="chipset" id="mapchips"><span class="chiplabel">表示</span></div></div>' +
+    '<div class="maplayout">' +
+      '<div><div class="mapcard"><svg id="kmap" xmlns="http://www.w3.org/2000/svg"></svg></div>' +
+        '<div class="maplegend"><span><i class="lc"></i>王都</span><span><i class="lt"></i>城・関・里</span>' +
+        '<span><i class="lf"></i>戦場</span><span id="mapnote"></span></div>' +
+        '<div class="maplist"><div class="fl" id="maplistlabel">場所一覧（タップで詳細）</div><div class="rels" id="maplistbody"></div></div>' +
+      '</div>' +
+      '<div class="mapinfo" id="mapinfo"></div>' +
+    '</div>';
+
+  let cur = "china", sel = null;
+  const svg = document.getElementById("kmap");
+  const info = document.getElementById("mapinfo");
+  const SVGNS = "http://www.w3.org/2000/svg";
+
+  function chips(){
+    const el = document.getElementById("mapchips");
+    Object.keys(MAPS).forEach(k => {
+      const b = document.createElement("button");
+      b.className = "chip" + (k === cur ? " on" : "");
+      b.textContent = MAPS[k].label;
+      b.onclick = () => {
+        cur = k; sel = null;
+        [...el.querySelectorAll(".chip")].forEach(c => c.classList.toggle("on", c.textContent === MAPS[k].label));
+        draw(); list(); showInfo(null);
+      };
+      el.appendChild(b);
+    });
+  }
+
+  function draw(){
+    const m = MAPS[cur];
+    svg.setAttribute("viewBox", "0 0 " + m.w + " " + m.h);
+    svg.textContent = "";
+    document.getElementById("mapnote").textContent = m.note;
+    m.regions.forEach(r => {
+      const p = document.createElementNS(SVGNS,"path");
+      p.setAttribute("d", r.d); p.setAttribute("class","rg");
+      p.setAttribute("fill", FILL[r.state] || "#f2f2f0");
+      svg.appendChild(p);
+      const t = document.createElementNS(SVGNS,"text");
+      t.setAttribute("class","rglabel"); t.setAttribute("x", r.lx); t.setAttribute("y", r.ly);
+      t.setAttribute("text-anchor","middle"); t.textContent = r.name;
+      svg.appendChild(t);
+    });
+    (m.rivers||[]).forEach(r => {
+      const p = document.createElementNS(SVGNS,"path");
+      p.setAttribute("d", r.d); p.setAttribute("class","river"); svg.appendChild(p);
+      const t = document.createElementNS(SVGNS,"text");
+      t.setAttribute("class","riverlabel"); t.setAttribute("x", r.lx); t.setAttribute("y", r.ly);
+      t.textContent = r.label; svg.appendChild(t);
+    });
+    m.spots.forEach(sp => {
+      const g = document.createElementNS(SVGNS,"g");
+      g.setAttribute("class","spot " + (KIND_CLASS[sp.k] || "city"));
+      g.dataset.id = sp.id;
+      const hit = document.createElementNS(SVGNS,"circle");
+      hit.setAttribute("class","hit"); hit.setAttribute("cx",sp.x); hit.setAttribute("cy",sp.y); hit.setAttribute("r",18);
+      g.appendChild(hit);
+      let mk;
+      if (sp.k === "戦場"){
+        mk = document.createElementNS(SVGNS,"rect");
+        mk.setAttribute("x", sp.x-5); mk.setAttribute("y", sp.y-5);
+        mk.setAttribute("width",10); mk.setAttribute("height",10);
+        mk.setAttribute("transform","rotate(45 " + sp.x + " " + sp.y + ")");
+      } else {
+        mk = document.createElementNS(SVGNS,"circle");
+        mk.setAttribute("cx",sp.x); mk.setAttribute("cy",sp.y);
+        mk.setAttribute("r", sp.k === "都" ? 6.5 : 5);
+      }
+      mk.setAttribute("class","mk"); g.appendChild(mk);
+      const t = document.createElementNS(SVGNS,"text");
+      t.setAttribute("class","lb");
+      t.setAttribute("x", sp.x + (sp.dx||0)); t.setAttribute("y", sp.y + (sp.dy||0) + (sp.dy>0?6:0));
+      t.setAttribute("text-anchor", (sp.dx||0) < -6 ? "end" : ((sp.dx||0) > 6 ? "start" : "middle"));
+      t.textContent = sp.n; g.appendChild(t);
+      g.addEventListener("click", () => pick(sp.id));
+      svg.appendChild(g);
+    });
+    paint();
+  }
+
+  function list(){
+    const body = document.getElementById("maplistbody");
+    body.innerHTML = MAPS[cur].spots
+      .map(sp => '<button class="rel" data-id="' + sp.id + '">' + esc(sp.n) + '<span class="rl">' + esc(sp.k) + '</span></button>').join("");
+    body.querySelectorAll(".rel").forEach(b => b.onclick = () => pick(b.dataset.id));
+  }
+
+  function paint(){
+    svg.querySelectorAll(".spot").forEach(g => g.classList.toggle("on", g.dataset.id === sel));
+    document.querySelectorAll("#maplistbody .rel").forEach(b =>
+      b.style.borderColor = (b.dataset.id === sel ? "#111" : ""));
+  }
+
+  function pick(id){
+    sel = id; paint();
+    showInfo(MAPS[cur].spots.find(s => s.id === id));
+    if (window.matchMedia("(max-width:900px)").matches){
+      info.scrollIntoView({behavior:"smooth", block:"nearest"});
+    }
+  }
+
+  function showInfo(sp){
+    if (!sp){
+      info.innerHTML = '<p class="mi-empty">地図の印か、下の一覧をタップすると、その場所で何が起きたかが出ます。</p>';
+      return;
+    }
+    info.innerHTML =
+      '<h3>' + esc(sp.n) + '</h3>' +
+      '<div class="mi-yomi">' + esc(sp.yo) + '</div>' +
+      '<div class="mi-bdg"><span class="bdg s-' + (FILL[sp.s] ? esc(sp.s) : "other") + '">' + esc(sp.s) + '</span>' +
+        '<span class="bdg k">' + esc(sp.k) + '</span></div>' +
+      '<p>' + esc(sp.w) + '</p>' +
+      (sp.a ? '<div class="mi-arc">関連する章: ' + esc(sp.a) + '</div>' : "");
+  }
+
+  chips(); draw(); list(); showInfo(null);
 })();
 </script>
 </body>
