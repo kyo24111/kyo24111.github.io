@@ -47,6 +47,7 @@ Dwarkesh系ファイルは5セクション構成：原文（verbatim）／英語
 
 | ファイル | 種別 | 題名 | 公開日 | 依頼日 |
 |--------|------|------|--------|--------|
+| [260904_pg_yc_ambition_formidable.html](260904_pg_yc_ambition_formidable.html) | YouTube | Paul Graham On Startups, Ambition, and Great Founders — 野心・formidable・「AGIは線ではなくにじみ」（Y Combinator × PG／聞き手 Vivian Shen） | 2026-09-03 | 2026-09-04 |
 | [260831_yobinori_semiconductor.html](260831_yobinori_semiconductor.html) | YouTube | 1時間以上かけてしっかりと学ぶ半導体 — ダイオード/トランジスタ/MOSFET/CMOS/製造工程（ヨビノリ × SCREENホールディングス） | 2026-08-29 | 2026-08-31 |
 | [260824_dempsey_dear_vcs_just_give_up.html](260824_dempsey_dear_vcs_just_give_up.html) | エッセイ | Dear VCs, Just Give Up — 全編が反語で書かれたVC業界批評（M. Dempsey / Compound） | 2026-08-18 | 2026-08-24 |
 | [260731_situational_awareness_aschenbrenner.html](260731_situational_awareness_aschenbrenner.html) | エッセイ | Situational Awareness（状況認識）— L. Aschenbrenner エッセイ深掘り分析 | 2024-06 | 2026-07-31 |
