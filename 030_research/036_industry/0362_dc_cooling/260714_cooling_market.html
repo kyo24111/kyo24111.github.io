@@ -51,9 +51,77 @@
   .todo b{color:var(--ink)}
 
   footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--sub)}
+
+    /* ===== 章ごとの Last updated ===== */
+    .sec-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+    h2 .sec-updated { font-weight: 500; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec, .sec-head, h2 { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .tbl-scroll-fix { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 12px 0; }
+  .tbl-scroll-fix > table { min-width: 460px; }
 </style>
 </head>
 <body>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
 <div class="wrap">
 <header>
   <div class="kicker">Industry · AI Infrastructure</div>
@@ -71,7 +139,7 @@
 </header>
 
 <section>
-  <h2>TL;DR</h2>
+  <h2 id="isec-1">TL;DR<span class="sec-updated">Last updated: 2026-07-21</span></h2>
   <div class="tldr">
     <p>GPUの発熱密度（TDP・ラックkW）が空冷の物理限界を超え、冷却が「あれば良い」から「無いとチップが動かない」制約に変わりつつある。ここが本テーマの出発点。</p>
     <p class="todo" style="margin:0"><b>TODO:</b> 論点を確定したら3行に凝縮する（市場規模／勝ち筋の技術／日本の立ち位置）。</p>
@@ -79,7 +147,7 @@
 </section>
 
 <section>
-  <h2>目次</h2>
+  <h2 id="isec-2">目次<span class="sec-updated">Last updated: 2026-07-21</span></h2>
   <nav class="toc">
     <a href="#driver">1. なぜ今 — 需要ドライバ</a>
     <a href="#map">2. 冷却技術の地図</a>
@@ -93,7 +161,7 @@
 </section>
 
 <section id="driver">
-  <h2>1. なぜ今 — 需要ドライバ</h2>
+  <h2 id="isec-3">1. なぜ今 — 需要ドライバ<span class="sec-updated">Last updated: 2026-07-21</span></h2>
   <ul class="key">
     <li>GPU TDPの上昇（H100 700W → Blackwell → Rubin 世代）とラック密度の kW 化</li>
     <li>PUE規制・水規制（WUE）、電力ひっ迫による効率要求</li>
@@ -103,9 +171,9 @@
 </section>
 
 <section id="map">
-  <h2>2. 冷却技術の地図</h2>
+  <h2 id="isec-4">2. 冷却技術の地図<span class="sec-updated">Last updated: 2026-07-21</span></h2>
   <p>まず全体像。縦軸に「対応できるラック密度」、コスト・水・成熟度で各方式を比較する骨格。数値は追って埋める。</p>
-  <table class="data">
+  <div class="tbl-scroll-fix"><table class="data">
     <thead><tr><th>方式</th><th>概要</th><th>対応密度<br>(kW/rack)</th><th>成熟度</th><th>水使用</th><th>論点</th></tr></thead>
     <tbody>
       <tr><td>空冷（CRAC/CRAH＋アイル封じ込め）</td><td>従来型。冷気を床下・通路で管理</td><td class="n">~15–30</td><td>成熟</td><td>中</td><td>密度の天井</td></tr>
@@ -115,17 +183,17 @@
       <tr><td>液浸（single-phase immersion）</td><td>絶縁液に基板ごと浸す</td><td class="n">~100+</td><td>初期</td><td>低</td><td>流体コスト・運用文化</td></tr>
       <tr><td>液浸（two-phase immersion）</td><td>沸騰潜熱で除熱。最高効率だが</td><td class="n">高</td><td>初期</td><td>低</td><td>PFAS/フッ素系規制リスク</td></tr>
     </tbody>
-  </table>
+  </table></div>
   <div class="todo"><b>受け皿:</b> 各方式の熱伝達係数・PUE寄与・CAPEX/OPEX、two-phaseのPFAS規制動向を追記。</div>
 </section>
 
 <section id="stack">
-  <h2>3. サプライチェーン構造</h2>
+  <h2 id="isec-5">3. サプライチェーン構造<span class="sec-updated">Last updated: 2026-07-21</span></h2>
   <div class="todo"><b>受け皿:</b> 冷却板 / CDU / マニフォールド / 冷媒（誘電流体） / チラー / 施工 の層に分けて、誰が握っているか（利益プール）を書く。</div>
 </section>
 
 <section id="players">
-  <h2>4. 主要プレイヤー</h2>
+  <h2 id="isec-6">4. 主要プレイヤー<span class="sec-updated">Last updated: 2026-07-21</span></h2>
   <ul class="key">
     <li>統合系: Vertiv, Schneider Electric</li>
     <li>液冷専業: CoolIT, Asetek, Boyd, JetCool</li>
@@ -137,22 +205,22 @@
 </section>
 
 <section id="japan">
-  <h2>5. 日本の立ち位置</h2>
+  <h2 id="isec-7">5. 日本の立ち位置<span class="sec-updated">Last updated: 2026-07-21</span></h2>
   <div class="todo"><b>受け皿:</b> 素材・精密加工（冷却板、流体、配管）での勝ち筋。パナHD・富士通の技術。国内DC投資（印西・北海道・九州）との接続。</div>
 </section>
 
 <section id="market">
-  <h2>6. 市場規模・予測</h2>
+  <h2 id="isec-8">6. 市場規模・予測<span class="sec-updated">Last updated: 2026-07-21</span></h2>
   <div class="todo"><b>受け皿:</b> 液冷市場のTAM/CAGR（複数ソースを読み比べ、レンジで）。空冷→液冷の置換ペース。</div>
 </section>
 
 <section id="deals">
-  <h2>7. 投資・M&A</h2>
+  <h2 id="isec-9">7. 投資・M&A<span class="sec-updated">Last updated: 2026-07-21</span></h2>
   <div class="todo"><b>受け皿:</b> Vertiv等の買収、液冷スタートアップの調達、NVIDIAリファレンス採用。</div>
 </section>
 
 <section id="take">
-  <h2>8. 考察 / NFA</h2>
+  <h2 id="isec-10">8. 考察 / NFA<span class="sec-updated">Last updated: 2026-07-21</span></h2>
   <div class="todo"><b>受け皿:</b> 自分の仮説を書く場所。「利益プールはどこか」「日本発で取れる隙間はあるか」「次事業（ハードインフラ）との接点」。</div>
 </section>
 
@@ -160,5 +228,49 @@
   24111 / research / industry / dc cooling · Started 2026-07-14 · monochrome · NFA
 </footer>
 </div>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('h2[id^="isec"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = (':self' === ':self') ? sec : sec.querySelector(':self');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
 </body>
 </html>
