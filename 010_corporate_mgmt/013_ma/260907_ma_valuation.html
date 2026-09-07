@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>売却額シミュレーション — Wanderlust M&A</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #fafafa;
+    --paper: #ffffff;
+    --ink: #111111;
+    --ink-soft: #444444;
+    --ink-mute: #888888;
+    --ink-faint: #bbbbbb;
+    --line: #e5e5e5;
+    --line-strong: #cccccc;
+    --highlight: #f4f4f4;
+    --fill-fixed: #d8d8d8;
+    --fill-var: #111111;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans JP', 'Poppins', sans-serif;
+    font-weight: 400;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  .page { max-width: 1000px; margin: 0 auto; padding: 56px 32px 120px; }
+  .num, .meta, h1 .sub, .stat .val, .tag, .eyebrow, th, td.n {
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ===== SIDE NAV ===== */
+  .side-nav {
+    position: fixed; left: 20px; top: 84px;
+    width: 208px; max-height: calc(100vh - 120px);
+    overflow-y: auto; padding: 8px 0 40px;
+    font-size: 12px; z-index: 10; scrollbar-width: thin;
+  }
+  .side-nav::-webkit-scrollbar { width: 4px; }
+  .side-nav::-webkit-scrollbar-thumb { background: var(--line); border-radius: 2px; }
+  @media (max-width: 1280px) { .side-nav { display: none; } }
+  .side-nav-title {
+    font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700;
+    letter-spacing: .16em; text-transform: uppercase; color: var(--ink-faint);
+    padding-left: 12px; margin-bottom: 8px;
+  }
+  .side-nav-list { list-style: none; padding: 0; margin: 0; }
+  .side-nav-link {
+    display: block; color: var(--ink-faint); text-decoration: none;
+    padding: 5px 8px 5px 12px; border-left: 2px solid transparent;
+    font-size: 12px; line-height: 1.45; transition: all .15s;
+  }
+  .side-nav-link:hover { color: var(--ink); border-left-color: var(--line-strong); }
+  .side-nav-link.active {
+    color: var(--ink); font-weight: 700;
+    border-left-color: var(--ink); background: var(--highlight);
+  }
+
+  /* ===== HEAD ===== */
+  header.doc-head { border-bottom: 1px solid var(--line-strong); padding-bottom: 24px; margin-bottom: 8px; }
+  .eyebrow {
+    font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--ink-mute); margin-bottom: 10px;
+  }
+  h1 { font-size: 30px; font-weight: 700; margin: 0; letter-spacing: .02em; line-height: 1.35; }
+  h1 .sub { display: block; font-size: 13px; font-weight: 400; color: var(--ink-soft); margin-top: 10px; letter-spacing: 0; }
+  .meta { font-size: 12px; color: var(--ink-mute); margin-top: 12px; }
+  .unit-note {
+    margin: 20px 0 0; padding: 12px 16px; background: var(--paper);
+    border: 1px solid var(--line); font-size: 12.5px; color: var(--ink-soft);
+  }
+  .unit-note b { font-weight: 500; color: var(--ink); }
+
+  section { scroll-margin-top: 24px; padding-top: 52px; }
+  h2 {
+    font-size: 19px; font-weight: 700; margin: 0 0 6px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--line-strong);
+  }
+  h2 .en {
+    font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 500;
+    letter-spacing: .18em; text-transform: uppercase; color: var(--ink-faint);
+    display: block; margin-bottom: 4px;
+  }
+  h3 { font-size: 14px; font-weight: 700; margin: 32px 0 10px; letter-spacing: .02em; }
+  p { font-size: 14px; margin: 14px 0; }
+  .lead { font-size: 14px; color: var(--ink-soft); margin: 16px 0 24px; }
+  .small { font-size: 12px; color: var(--ink-mute); line-height: 1.7; }
+
+  /* ===== CARDS / STATS ===== */
+  .card { background: var(--paper); border: 1px solid var(--line); padding: 24px; margin: 20px 0; }
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .stat { background: var(--paper); padding: 18px 16px; }
+  .stat .lbl { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); font-family: 'Poppins', sans-serif; }
+  .stat .val { font-size: 25px; font-weight: 600; line-height: 1.25; margin-top: 6px; letter-spacing: -.01em; }
+  .stat .val .u { font-size: 11px; font-weight: 400; color: var(--ink-mute); margin-left: 4px; letter-spacing: .04em; }
+  .stat .note { font-size: 11px; color: var(--ink-mute); margin-top: 4px; }
+  .stat.hero .val { font-size: 34px; font-weight: 700; }
+
+  /* ===== TABLES ===== */
+  .tw { overflow-x: auto; margin: 18px 0; -webkit-overflow-scrolling: touch; }
+  table { border-collapse: collapse; width: 100%; font-size: 12.5px; background: var(--paper); min-width: 640px; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid var(--line); text-align: right; white-space: nowrap; }
+  th { font-size: 10.5px; font-weight: 600; letter-spacing: .08em; color: var(--ink-mute); text-transform: uppercase; border-bottom: 1px solid var(--line-strong); background: var(--paper); }
+  th:first-child, td:first-child { text-align: left; font-weight: 500; }
+  tbody tr:hover { background: #fbfbfb; }
+  td.fixed { background: var(--highlight); }
+  th.fixed { background: var(--highlight); color: var(--ink-soft); }
+  tr.total td { font-weight: 700; border-top: 1px solid var(--line-strong); }
+  .tag {
+    display: inline-block; font-size: 10px; letter-spacing: .1em; text-transform: uppercase;
+    border: 1px solid var(--line-strong); padding: 1px 6px; color: var(--ink-mute); margin-left: 6px; vertical-align: 2px;
+  }
+
+  /* ===== FORMULA ===== */
+  .formula {
+    background: var(--paper); border: 1px solid var(--line-strong);
+    padding: 22px 20px; margin: 20px 0;
+    font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-variant-numeric: tabular-nums;
+  }
+  .formula .row { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 10px; font-size: 15px; }
+  .formula .op { color: var(--ink-mute); font-size: 15px; }
+  .formula .term { border-bottom: 2px solid var(--ink); padding-bottom: 2px; }
+  .formula .cap { font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); margin-bottom: 12px; }
+  .formula .eq { margin-top: 14px; font-size: 13px; color: var(--ink-soft); }
+  .formula .eq b { color: var(--ink); }
+
+  /* ===== SIM CONTROLS ===== */
+  .ctrl { background: var(--paper); border: 1px solid var(--line-strong); padding: 22px 22px 8px; margin: 20px 0 0; }
+  .ctrl-row { margin-bottom: 26px; }
+  .ctrl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+  .ctrl-lbl { font-size: 12.5px; font-weight: 500; }
+  .ctrl-lbl span { color: var(--ink-mute); font-weight: 400; font-size: 11.5px; margin-left: 6px; }
+  .ctrl-val { font-family: 'Poppins', sans-serif; font-variant-numeric: tabular-nums; font-size: 21px; font-weight: 600; }
+  .ctrl-val .u { font-size: 11px; color: var(--ink-mute); font-weight: 400; margin-left: 3px; }
+  input[type=range] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 22px;
+    background: transparent; cursor: pointer; display: block; margin: 0;
+  }
+  input[type=range]::-webkit-slider-runnable-track { height: 2px; background: var(--line-strong); }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--ink); border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--ink); margin-top: -7px;
+  }
+  input[type=range]::-moz-range-track { height: 2px; background: var(--line-strong); }
+  input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: var(--ink); border: 2px solid var(--paper); box-shadow: 0 0 0 1px var(--ink); }
+  input[type=range]:focus-visible { outline: 2px solid var(--ink); outline-offset: 4px; }
+  .scale { display: flex; justify-content: space-between; font-size: 10px; color: var(--ink-faint); font-family: 'Poppins', sans-serif; margin-top: 2px; }
+  .seg { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .seg button {
+    appearance: none; background: var(--paper); border: 1px solid var(--line-strong);
+    padding: 6px 12px; font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 11.5px;
+    color: var(--ink-soft); cursor: pointer; transition: all .12s; font-variant-numeric: tabular-nums;
+  }
+  .seg button:hover { border-color: var(--ink); color: var(--ink); }
+  .seg button.on { background: var(--ink); border-color: var(--ink); color: #fff; font-weight: 500; }
+
+  /* ===== BARS ===== */
+  .chart-wrap { overflow-x: auto; margin: 22px 0 0; -webkit-overflow-scrolling: touch; }
+  .chart { min-width: 560px; }
+  .bars { display: flex; align-items: flex-end; gap: 6px; height: 170px; border-bottom: 1px solid var(--line-strong); position: relative; }
+  .bars .gl { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--line); font-size: 10px; color: var(--ink-faint); font-family: 'Poppins', sans-serif; }
+  .bars .gl span { background: var(--bg); padding: 0 4px 0 1px; position: relative; top: -2px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: stretch; height: 100%; position: relative; }
+  .bar {
+    background: var(--fill-var); border-radius: 4px 4px 0 0; min-height: 2px;
+    transition: height .18s ease; position: relative;
+  }
+  .bar.fixed { background: var(--fill-fixed); }
+  .bar-col:hover .bar { opacity: .78; }
+  .bar-val {
+    position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%);
+    font-size: 10px; font-family: 'Poppins', sans-serif; font-variant-numeric: tabular-nums;
+    color: var(--ink-soft); padding-bottom: 3px; white-space: nowrap;
+  }
+  .xlabels { display: flex; gap: 6px; margin-top: 7px; }
+  .xlabels div { flex: 1; text-align: center; font-size: 10px; color: var(--ink-mute); font-family: 'Poppins', sans-serif; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 14px; font-size: 11.5px; color: var(--ink-soft); }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+  /* ===== STACKED BREAKDOWN ===== */
+  .stack { display: flex; height: 40px; gap: 2px; margin: 16px 0 0; }
+  .stack div { position: relative; transition: flex-grow .18s ease; border-radius: 3px; }
+  .stack .s-rev { background: var(--fill-fixed); }
+  .stack .s-op { background: var(--fill-var); }
+  .stack-labels { display: flex; gap: 2px; margin-top: 8px; }
+  .stack-labels div { font-size: 11px; color: var(--ink-soft); overflow: hidden; }
+  .stack-labels b { display: block; font-family: 'Poppins', sans-serif; font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink); font-weight: 600; }
+
+  /* ===== HEATMAP ===== */
+  table.heat { min-width: 640px; }
+  table.heat td.cell {
+    text-align: center; font-family: 'Poppins', sans-serif; font-variant-numeric: tabular-nums;
+    border: 1px solid var(--paper); cursor: default; font-size: 12px;
+  }
+  table.heat td.cell.cur { outline: 2px solid var(--ink); outline-offset: -2px; font-weight: 700; }
+  table.heat th { text-align: center; }
+  table.heat th:first-child { text-align: left; }
+
+  /* ===== NOTES / LISTS ===== */
+  ul.notes { padding-left: 0; list-style: none; margin: 16px 0; }
+  ul.notes li { font-size: 13.5px; padding: 12px 0 12px 20px; border-bottom: 1px solid var(--line); position: relative; }
+  ul.notes li:before { content: ''; position: absolute; left: 0; top: 21px; width: 8px; height: 1px; background: var(--ink-mute); }
+  ul.notes li b { font-weight: 700; }
+  .kv { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); margin: 18px 0; }
+  .kv > div { background: var(--paper); padding: 14px 16px; }
+  .kv .k { font-size: 11px; color: var(--ink-mute); font-family: 'Poppins', sans-serif; letter-spacing: .06em; text-transform: uppercase; }
+  .kv .v { font-size: 15px; font-family: 'Poppins', sans-serif; font-variant-numeric: tabular-nums; font-weight: 600; margin-top: 2px; }
+  .kv .d { font-size: 11.5px; color: var(--ink-mute); margin-top: 2px; }
+
+  details.raw { border: 1px solid var(--line); background: var(--paper); margin: 18px 0; }
+  details.raw > summary {
+    cursor: pointer; padding: 13px 16px; font-size: 12.5px; font-weight: 500;
+    list-style: none; display: flex; align-items: center; gap: 8px;
+  }
+  details.raw > summary::-webkit-details-marker { display: none; }
+  details.raw > summary:before { content: '+'; font-family: 'Poppins', sans-serif; color: var(--ink-mute); font-size: 14px; }
+  details.raw[open] > summary:before { content: '−'; }
+  details.raw > summary:hover { background: var(--highlight); }
+  details.raw .body { padding: 0 16px 16px; border-top: 1px solid var(--line); }
+  details.raw .body table { min-width: 560px; }
+
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+  .links a {
+    font-size: 12.5px; color: var(--ink); text-decoration: none;
+    border: 1px solid var(--line-strong); padding: 9px 14px; background: var(--paper); transition: all .12s;
+  }
+  .links a:hover { border-color: var(--ink); background: var(--highlight); }
+  .links a .lo { font-size: 10px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-mute); margin-left: 8px; font-family: 'Poppins', sans-serif; }
+
+  footer.doc-foot { margin-top: 72px; padding-top: 20px; border-top: 1px solid var(--line-strong); font-size: 11.5px; color: var(--ink-mute); }
+
+  @media (max-width: 640px) {
+    .page { padding: 40px 20px 90px; }
+    h1 { font-size: 24px; }
+    h2 { font-size: 17px; }
+    .stat .val { font-size: 21px; }
+    .stat.hero .val { font-size: 28px; }
+    .card, .ctrl { padding: 18px 16px; }
+    .ctrl { padding-bottom: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<aside class="side-nav" id="sideNav">
+  <div class="side-nav-title">Contents</div>
+  <ul class="side-nav-list" id="sideNavList"></ul>
+</aside>
+
+<div class="page">
+
+<header class="doc-head">
+  <div class="eyebrow">Wanderlust · M&amp;A</div>
+  <h1>売却額シミュレーション
+    <span class="sub">2026/09までは確定。残り半期（26/10–27/03）の「売上の伸ばし方」と「営業利益率」の2変数で、バリュエーションがどこまで動くか。</span>
+  </h1>
+  <div class="meta">Last updated: 2026-09-07 ／ 買主提示のバリュエーション算式にもとづく試算</div>
+</header>
+
+<div class="unit-note">
+  <b>単位はすべて千円。</b>表記はスプレッドシートと同じ桁のまま（例：<span class="num">10,000</span> = 1,000万円、<span class="num">2,400,000</span> = 24億円）。数値は税前・100%株式価値ベース。
+</div>
+
+<!-- ============ 1. SUMMARY ============ -->
+<section id="summary" data-nav="結論">
+  <h2><span class="en">Summary</span>結論 — 効くのは「H2売上」ただ一つ</h2>
+  <p class="lead">
+    買主のバリュエーション算式は<b>金額の一次式</b>なので、整理すると変数はほぼ1本に潰れる。
+    H1（26/04–26/09）は確定しているため、その分はどう転んでも動かない「床」になる。
+    そこから先は <b>H2売上が1千円増えるごとに、バリュエーションが (2 + 4×営利率) 千円増える</b> — 営利率55%なら4.2倍、50%なら4.0倍、45%なら3.8倍。
+  </p>
+
+  <div class="formula">
+    <div class="cap">Reduced form</div>
+    <div class="row">
+      <span>バリュエーション</span><span class="op">=</span>
+      <span class="term">868,320</span>
+      <span class="op">+</span>
+      <span>( 2 + 4 × 営利率 )</span><span class="op">×</span>
+      <span class="term">H2売上</span>
+    </div>
+    <div class="eq">
+      <b>868,320</b> は H1 確定分だけで積み上がる下限（売上 215,280 ×2 ＋ 営利 109,440 ×4）。
+      H2 の売上が丸ごとゼロでも、この額はロジック上残る。
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="lbl">Floor (H1 only)</div><div class="val">868,320<span class="u">千円</span></div><div class="note">H2売上ゼロの理論下限</div></div>
+    <div class="stat"><div class="lbl">Low case</div><div class="val">1,736,088<span class="u">千円</span></div><div class="note">増分 0／営利率 45%</div></div>
+    <div class="stat"><div class="lbl">Mid (提示ケース)</div><div class="val">2,400,732<span class="u">千円</span></div><div class="note">増分 +6,500／営利率 55%</div></div>
+    <div class="stat"><div class="lbl">High case</div><div class="val">3,150,432<span class="u">千円</span></div><div class="note">増分 +15,000／営利率 55%</div></div>
+  </div>
+  <p class="small">Low / High は本ページのスライダー可動域の両端。実務レンジは 20〜26億（2,000,000〜2,600,000）に収まる想定。</p>
+</section>
+
+<!-- ============ 2. FORMULA ============ -->
+<section id="formula" data-nav="算式の定義">
+  <h2><span class="en">Definition</span>バリュエーション算式の定義</h2>
+  <p>買主が提示したロジックは以下。<b>半期</b>の数字にマルチプルを掛けて足し合わせる形になっている。</p>
+
+  <div class="formula">
+    <div class="cap">As presented</div>
+    <div class="row">
+      <span>Valuation</span><span class="op">=</span>
+      <span class="term">通期売上 ÷ 2</span><span class="op">×</span><span>4</span>
+      <span class="op">+</span>
+      <span class="term">通期営業利益 ÷ 2</span><span class="op">×</span><span>8</span>
+    </div>
+    <div class="eq">
+      通期に読み替えると <b>売上 ×2.0 ＋ 営業利益 ×4.0</b>。
+      「半期を年換算（×2）したうえで、売上マルチプル 2.0x ＋ 営利マルチプル 4.0x」と等価。
+    </div>
+  </div>
+
+  <div class="kv">
+    <div><div class="k">Revenue multiple</div><div class="v">2.0x</div><div class="d">通期売上に対して</div></div>
+    <div><div class="k">EBIT multiple</div><div class="v">4.0x</div><div class="d">通期営業利益に対して</div></div>
+    <div><div class="k">H2 revenue slope</div><div class="v">2 + 4m</div><div class="d">m = H2営業利益率</div></div>
+    <div><div class="k">Fixed (H1)</div><div class="v">868,320</div><div class="d">確定分の寄与</div></div>
+  </div>
+
+  <h3>算式の中身の重み</h3>
+  <p class="small">
+    営利率50%だと「売上パート」と「営利パート」がほぼ同額になり、バリュエーションの半分ずつを担う。
+    営利率が1pt上がると営利パートだけが増えるので、<b>営利率は H2売上 × 4 の係数でしか効かない</b>。
+    逆に売上を伸ばすと両方のパートが同時に増えるため、感応度は営利率より売上のほうが構造的に大きい。
+  </p>
+</section>
+
+<!-- ============ 3. FIXED ============ -->
+<section id="fixed" data-nav="確定分 H1">
+  <h2><span class="en">Fixed</span>確定分 — 26/04〜26/09</h2>
+  <p>網掛けの6ヶ月はほぼフィックス。以降のシミュレーションではこの値を固定値として扱う。</p>
+  <div class="tw">
+    <table>
+      <thead>
+        <tr><th>H1 (fixed)</th><th class="fixed">26/04</th><th class="fixed">26/05</th><th class="fixed">26/06</th><th class="fixed">26/07</th><th class="fixed">26/08</th><th class="fixed">26/09</th><th>H1 計</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>売上</td><td class="n fixed">19,330</td><td class="n fixed">30,630</td><td class="n fixed">49,170</td><td class="n fixed">37,020</td><td class="n fixed">41,070</td><td class="n fixed">38,060</td><td class="n"><b>215,280</b></td></tr>
+        <tr><td>営業利益</td><td class="n fixed">5,540</td><td class="n fixed">11,400</td><td class="n fixed">28,260</td><td class="n fixed">22,150</td><td class="n fixed">22,140</td><td class="n fixed">19,950</td><td class="n"><b>109,440</b></td></tr>
+        <tr><td>営業利益率</td><td class="n fixed">28.7%</td><td class="n fixed">37.2%</td><td class="n fixed">57.5%</td><td class="n fixed">59.8%</td><td class="n fixed">53.9%</td><td class="n fixed">52.4%</td><td class="n"><b>50.8%</b></td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="small">
+    H2の起点は <b>26/09 の売上 38,060</b>。シミュレーターの「月次増加額」は、この 38,060 に毎月いくら積み増すか（等差）を指す。
+    26/10 = 38,060 ＋ 増加額、27/03 = 38,060 ＋ 増加額×6。
+  </p>
+</section>
+
+<!-- ============ 4. SIMULATOR ============ -->
+<section id="sim" data-nav="シミュレーター">
+  <h2><span class="en">Simulator</span>シミュレーター</h2>
+  <p class="lead">2つのスライダーを動かすと、H2の月次計画・通期PL・バリュエーションが同時に更新される。</p>
+
+  <div class="ctrl">
+    <div class="ctrl-row">
+      <div class="ctrl-head">
+        <div class="ctrl-lbl">月次売上の増加額 <span>26/09 の 38,060 に毎月積み増す額（等差）</span></div>
+        <div class="ctrl-val" id="incVal">+6,500<span class="u">千円/月</span></div>
+      </div>
+      <input type="range" id="incSlider" min="0" max="15000" step="100" value="6500" aria-label="月次売上の増加額">
+      <div class="scale"><span>0</span><span>5,000</span><span>10,000</span><span>15,000</span></div>
+      <div class="seg" id="incPresets">
+        <button data-inc="0">Flat 0</button>
+        <button data-inc="2500">+2,500</button>
+        <button data-inc="5000">+5,000</button>
+        <button data-inc="6500" class="on">+6,500</button>
+        <button data-inc="7500">+7,500</button>
+        <button data-inc="10000">+10,000</button>
+      </div>
+    </div>
+
+    <div class="ctrl-row">
+      <div class="ctrl-head">
+        <div class="ctrl-lbl">H2 の営業利益率 <span>26/10 以降の各月に適用</span></div>
+        <div class="ctrl-val" id="marVal">55.0<span class="u">%</span></div>
+      </div>
+      <input type="range" id="marSlider" min="35" max="65" step="0.5" value="55" aria-label="H2の営業利益率">
+      <div class="scale"><span>35%</span><span>45%</span><span>55%</span><span>65%</span></div>
+      <div class="seg" id="marPresets">
+        <button data-mar="45">45%</button>
+        <button data-mar="50">50%</button>
+        <button data-mar="55" class="on">55%</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats" style="margin-top:1px">
+    <div class="stat hero"><div class="lbl">Valuation</div><div class="val" id="oVal">—<span class="u">千円</span></div><div class="note" id="oValRound">—</div></div>
+    <div class="stat"><div class="lbl">通期売上</div><div class="val" id="oRev">—</div><div class="note" id="oRevNote">—</div></div>
+    <div class="stat"><div class="lbl">通期営業利益</div><div class="val" id="oOp">—</div><div class="note" id="oOpNote">—</div></div>
+    <div class="stat"><div class="lbl">通期営業利益率</div><div class="val" id="oMar">—</div><div class="note">加重平均（営利 ÷ 売上）</div></div>
+  </div>
+
+  <h3>バリュエーションの内訳</h3>
+  <div class="stack" id="stack">
+    <div class="s-rev" id="sRev" style="flex-grow:1"></div>
+    <div class="s-op" id="sOp" style="flex-grow:1"></div>
+  </div>
+  <div class="stack-labels" id="stackLabels">
+    <div style="flex-grow:1"><b id="lRev">—</b>売上パート（通期売上 ×2）</div>
+    <div style="flex-grow:1"><b id="lOp">—</b>営利パート（通期営利 ×4）</div>
+  </div>
+
+  <h3>月次売上の推移</h3>
+  <div class="chart-wrap">
+    <div class="chart">
+      <div class="bars" id="bars"></div>
+      <div class="xlabels" id="xlabels"></div>
+    </div>
+  </div>
+  <div class="legend">
+    <span><i style="background:#d8d8d8"></i>H1（確定）</span>
+    <span><i style="background:#111111"></i>H2（変数）</span>
+    <span class="small" style="color:var(--ink-mute)">数値は各月の売上（千円）</span>
+  </div>
+
+  <h3>H2 月次計画</h3>
+  <div class="tw">
+    <table id="h2Table"></table>
+  </div>
+
+  <h3>通期サマリー</h3>
+  <div class="tw">
+    <table id="sumTable"></table>
+  </div>
+
+  <div class="kv" id="sensKv"></div>
+</section>
+
+<!-- ============ 5. MATRIX ============ -->
+<section id="matrix" data-nav="感応度マトリクス">
+  <h2><span class="en">Sensitivity</span>感応度マトリクス</h2>
+  <p>縦軸に営業利益率3択、横軸に月次売上の増加額。セルはバリュエーション（千円）。濃いほど高い。太枠が現在のスライダー位置に最も近いセル。</p>
+  <div class="tw">
+    <table class="heat" id="heat"></table>
+  </div>
+  <p class="small" id="heatNow" style="margin-top:12px"></p>
+  <p class="small">
+    横方向（売上を伸ばす）1マス＝増加額 +2,500千円/月 で、バリュエーションは営利率55%のとき約 <b>+220,500千円</b>（2.2億）動く。
+    縦方向（営利率 45%→55%）は約 <b>+145,900千円</b>（1.5億、増加額 +6,500 時）。<b>売上のほうが効く。</b>
+  </p>
+</section>
+
+<!-- ============ 6. REVERSE ============ -->
+<section id="reverse" data-nav="逆算">
+  <h2><span class="en">Reverse</span>逆算 — 目標バリュエーションから必要売上</h2>
+  <p class="lead">「〇〇億で売る」を先に決めて、そのために H2 でいくら売ればいいかを引く。</p>
+
+  <div class="ctrl">
+    <div class="ctrl-row">
+      <div class="ctrl-head">
+        <div class="ctrl-lbl">目標バリュエーション</div>
+        <div class="ctrl-val" id="tgtVal">2,400,000<span class="u">千円</span></div>
+      </div>
+      <input type="range" id="tgtSlider" min="1500000" max="3500000" step="10000" value="2400000" aria-label="目標バリュエーション">
+      <div class="scale"><span>15億</span><span>20億</span><span>25億</span><span>30億</span><span>35億</span></div>
+      <div class="seg" id="tgtPresets">
+        <button data-tgt="2000000">20億</button>
+        <button data-tgt="2400000" class="on">24億</button>
+        <button data-tgt="2500000">25億</button>
+        <button data-tgt="3000000">30億</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="tw">
+    <table id="revTable"></table>
+  </div>
+  <p class="small">
+    「必要H2売上」は積み上げ方（等差か一括かなど）に依存しない必要総額。
+    「必要な月次増加額」は、それを 26/09 の 38,060 からの等差で実現する場合の1ヶ月あたりの増分。マイナスなら現状維持でも到達する。
+  </p>
+</section>
+
+<!-- ============ 7. SCENARIOS ============ -->
+<section id="scenarios" data-nav="提示3ケース">
+  <h2><span class="en">Reconciliation</span>提示された3ケースの再現</h2>
+  <p>買主／社内で回っているシートの3パターンを、本ページのモデルで再計算した結果。すべて一致する。</p>
+  <div class="tw">
+    <table id="scnTable"></table>
+  </div>
+  <p class="small">
+    シート上のラベル（1,990,000 / 2,410,000 / 2,400,000）は、算出値を1万千円（1,000万円）単位で丸めた表示。
+  </p>
+
+  <details class="raw">
+    <summary>シートの Annual 営業利益率（49.13% / 51.63%）との差について</summary>
+    <div class="body">
+      <p class="small" style="margin-top:14px">
+        シートの Annual 営業利益率は <b>12ヶ月の月次%の単純平均</b>で計算されている（H1平均48.25%と H2の一律%を単純平均した値）。
+        一方 H1列の 50.8% は金額ベースの加重平均。同じ「営業利益率」の行に2つの計算方法が混在している。
+      </p>
+      <p class="small">
+        本ページは金額ベースの加重平均（通期営利 ÷ 通期売上）を採用。たとえば増加額 +6,500／営利率55% のケースで、
+        シート表示 <b>51.63%</b> に対し加重平均は <b>53.45%</b>。
+        バリュエーションは金額（売上・営利の絶対額）だけから決まるため、<b>この差は売却額に影響しない</b>。ただし「通期営利率〇%の会社」と説明するときの数字は変わる。
+      </p>
+    </div>
+  </details>
+</section>
+
+<!-- ============ 8. NOTES ============ -->
+<section id="notes" data-nav="論点メモ">
+  <h2><span class="en">Notes</span>論点メモ</h2>
+  <ul class="notes">
+    <li><b>効くのは3月の売上。</b>等差で積み上げる前提だと、増加額1単位あたりの通期売上への寄与は 1+2+3+4+5+6 = <span class="num">21</span> 倍。つまり後半月ほど重い。実質的に評価されているのは<b>27/03のランレート</b>で、そこに向けてどう傾けるかがそのままバリュエーションになる。</li>
+    <li><b>売上 &gt; 営利率。</b>売上は「売上パート ×2」と「営利パート ×4×m」の両方を押し上げるが、営利率は営利パートにしか効かない。増加額 +2,500千円/月（＝通期売上 +52,500）は約 +2.2億、営利率 +10pt は約 +1.5億。<b>コストを絞って利益率を守るより、売上を積むほうが評価に直結する。</b></li>
+    <li><b>下限は 868,320。</b>H1が確定している以上、H2がゼロでもロジック上はこの額。実務上のダウンサイドは「増加額0・営利率45%」の <span class="num">1,736,088</span>（17.4億）で、ここが交渉のフロア。</li>
+    <li><b>営利率3択の意味。</b>45/50/55% の幅（10pt）はバリュエーションで約1.5億。人員採用を前倒しして営利率を45%に落としても、それで H2売上が月+2,000千円ずつ伸びるなら<b>差し引きプラス</b>（+2,000/月 ≒ +1.6億 &gt; ▲1.5億）。採用・投資の判断はこの天秤で見る。</li>
+    <li><b>単月の凸凹は評価に効かない。</b>算式は通期（＝H2合計）の金額しか見ないので、月次の形は自由。ただし買主のDDでは持続性（ストック比率・解約率）を見られるため、<b>3月だけスポットで積む形はディスカウント材料になりうる</b>点は別途留意。</li>
+    <li><b>この算式が動く前提。</b>マルチプル（売上4x/営利8x on 半期）自体は交渉変数。半期営利マルチプルが 8x → 7x に下がるだけで、営利率55%・増加額+6,500のケースは <span class="num">2,400,732</span> → <span class="num">2,245,676</span>（▲1.6億）。<b>数字を作る努力と同じ重さでマルチプルを守る必要がある。</b></li>
+  </ul>
+
+  <h3>関連ページ（ローカル限定）</h3>
+  <div class="links">
+    <a href="260601_capital_gain.html">キャピタルゲイン試算<span class="lo">local</span></a>
+    <a href="260731_stock_valuation.html">株式価値算定 読み解き<span class="lo">local</span></a>
+  </div>
+  <p class="small">本ページは 100% 株式価値ベース。持分別の手取り・スキーム別の税前／税後はキャピタルゲイン試算側で扱う。</p>
+</section>
+
+<!-- ============ 9. RAW ============ -->
+<section id="raw" data-nav="Raw data">
+  <h2><span class="en">Appendix</span>Raw data</h2>
+
+  <details class="raw">
+    <summary>H1 実績（確定分）12ヶ月分の元データ</summary>
+    <div class="body">
+      <div class="tw"><table id="rawH1"></table></div>
+    </div>
+  </details>
+
+  <details class="raw">
+    <summary>現在の設定での通期12ヶ月（売上・営利・営利率）</summary>
+    <div class="body">
+      <div class="tw"><table id="rawFull"></table></div>
+    </div>
+  </details>
+
+  <details class="raw">
+    <summary>モデルの数式（そのまま検算できる形）</summary>
+    <div class="body">
+      <div class="tw">
+        <table style="min-width:520px">
+          <thead><tr><th>項目</th><th>式</th></tr></thead>
+          <tbody>
+            <tr><td>H2 各月売上</td><td class="n" style="text-align:left">38,060 + 増加額 × i　(i = 1..6)</td></tr>
+            <tr><td>H2 売上合計</td><td class="n" style="text-align:left">228,360 + 21 × 増加額</td></tr>
+            <tr><td>通期売上</td><td class="n" style="text-align:left">443,640 + 21 × 増加額</td></tr>
+            <tr><td>通期営業利益</td><td class="n" style="text-align:left">109,440 + m × (228,360 + 21 × 増加額)</td></tr>
+            <tr><td>バリュエーション</td><td class="n" style="text-align:left">2 × 通期売上 + 4 × 通期営業利益</td></tr>
+            <tr><td>同（縮約形）</td><td class="n" style="text-align:left">868,320 + (2 + 4m) × H2売上</td></tr>
+            <tr><td>同（増加額の式）</td><td class="n" style="text-align:left">1,325,040 + 913,440 × m + (42 + 84m) × 増加額</td></tr>
+            <tr><td>必要H2売上（目標T）</td><td class="n" style="text-align:left">(T − 868,320) ÷ (2 + 4m)</td></tr>
+            <tr><td>必要増加額（目標T）</td><td class="n" style="text-align:left">(T − 1,325,040 − 913,440m) ÷ (42 + 84m)</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </details>
+</section>
+
+<footer class="doc-foot">
+  Wanderlust M&amp;A — 売却額シミュレーション ／ 単位：千円（税前・100%株式価値） ／ 2026-09-07 作成。
+  数値は買主提示の算式にもとづく機械的試算であり、最終的な譲渡価格を約束するものではない。
+</footer>
+
+</div><!-- /.page -->
+
+<script>
+/* ============ MODEL ============ */
+var H1 = [
+  { m: '26/04', rev: 19330, op: 5540 },
+  { m: '26/05', rev: 30630, op: 11400 },
+  { m: '26/06', rev: 49170, op: 28260 },
+  { m: '26/07', rev: 37020, op: 22150 },
+  { m: '26/08', rev: 41070, op: 22140 },
+  { m: '26/09', rev: 38060, op: 19950 }
+];
+var H2_LABELS = ['26/10', '26/11', '26/12', '27/01', '27/02', '27/03'];
+var BASE = 38060;                 /* 26/09 revenue = H2 ramp base */
+var H1_REV = 215280, H1_OP = 109440;
+var MULT_HALF_REV = 4, MULT_HALF_OP = 8;   /* on half-year figures */
+
+function sim(inc, m) {
+  var h2 = H2_LABELS.map(function (label, i) {
+    var rev = BASE + inc * (i + 1);
+    return { m: label, rev: rev, op: rev * m };
+  });
+  var h2Rev = h2.reduce(function (s, x) { return s + x.rev; }, 0);
+  var h2Op = h2.reduce(function (s, x) { return s + x.op; }, 0);
+  var annRev = H1_REV + h2Rev, annOp = H1_OP + h2Op;
+  var valRev = annRev / 2 * MULT_HALF_REV;
+  var valOp = annOp / 2 * MULT_HALF_OP;
+  var sheetMar = (H1.reduce(function (s, x) { return s + x.op / x.rev; }, 0) + m * 6) / 12;
+  return {
+    inc: inc, m: m, h2: h2, h2Rev: h2Rev, h2Op: h2Op,
+    annRev: annRev, annOp: annOp, valRev: valRev, valOp: valOp,
+    val: valRev + valOp, annMar: annOp / annRev, sheetMar: sheetMar
+  };
+}
+function neededH2Rev(target, m) { return (target - 868320) / (2 + 4 * m); }
+function neededInc(target, m) { return (target - 1325040 - 913440 * m) / (42 + 84 * m); }
+
+/* ============ FORMAT ============ */
+function f(n) { return Math.round(n).toLocaleString('en-US'); }
+function pct(x, d) { return (x * 100).toFixed(d === undefined ? 1 : d) + '%'; }
+function oku(n) { return (n / 100000).toFixed(2) + '億円'; }
+
+/* ============ STATE ============ */
+var state = { inc: 6500, mar: 0.55, tgt: 2400000 };
+
+var el = function (id) { return document.getElementById(id); };
+
+/* ============ RENDER: SIM ============ */
+function renderSim() {
+  var r = sim(state.inc, state.mar);
+
+  el('incVal').innerHTML = (state.inc === 0 ? '' : '+') + f(state.inc) + '<span class="u">千円/月</span>';
+  el('marVal').innerHTML = (state.mar * 100).toFixed(1) + '<span class="u">%</span>';
+
+  el('oVal').innerHTML = f(r.val) + '<span class="u">千円</span>';
+  el('oValRound').textContent = '丸め表示 ' + f(Math.floor(r.val / 10000) * 10000) + '（' + oku(r.val) + '）';
+  el('oRev').textContent = f(r.annRev);
+  el('oRevNote').textContent = 'H1 215,280 ＋ H2 ' + f(r.h2Rev);
+  el('oOp').textContent = f(r.annOp);
+  el('oOpNote').textContent = 'H1 109,440 ＋ H2 ' + f(r.h2Op);
+  el('oMar').textContent = pct(r.annMar, 2);
+
+  /* stacked breakdown */
+  el('sRev').style.flexGrow = r.valRev;
+  el('sOp').style.flexGrow = r.valOp;
+  el('sRev').title = '売上パート ' + f(r.valRev) + ' 千円（' + pct(r.valRev / r.val) + '）';
+  el('sOp').title = '営利パート ' + f(r.valOp) + ' 千円（' + pct(r.valOp / r.val) + '）';
+  var sl = el('stackLabels').children;
+  sl[0].style.flexGrow = r.valRev; sl[1].style.flexGrow = r.valOp;
+  el('lRev').textContent = f(r.valRev) + '  (' + pct(r.valRev / r.val) + ')';
+  el('lOp').textContent = f(r.valOp) + '  (' + pct(r.valOp / r.val) + ')';
+
+  /* monthly bars */
+  var months = H1.map(function (x) { return { m: x.m, rev: x.rev, fixed: true }; })
+    .concat(r.h2.map(function (x) { return { m: x.m, rev: x.rev, fixed: false }; }));
+  var max = Math.max.apply(null, months.map(function (x) { return x.rev; }));
+  var top = Math.ceil(max / 20000) * 20000;
+  var bars = '';
+  bars += '<div class="gl" style="bottom:100%"><span>' + f(top) + '</span></div>';
+  bars += '<div class="gl" style="bottom:50%"><span>' + f(top / 2) + '</span></div>';
+  months.forEach(function (x) {
+    var h = (x.rev / top * 100).toFixed(2);
+    bars += '<div class="bar-col" title="' + x.m + '　売上 ' + f(x.rev) + ' 千円' + (x.fixed ? '（確定）' : '') + '">' +
+      ((!x.fixed || x.m === '26/09') ? '<span class="bar-val">' + f(x.rev) + '</span>' : '') +
+      '<div class="bar' + (x.fixed ? ' fixed' : '') + '" style="height:' + h + '%"></div></div>';
+  });
+  el('bars').innerHTML = bars;
+  el('xlabels').innerHTML = months.map(function (x) { return '<div>' + x.m + '</div>'; }).join('');
+
+  /* H2 table */
+  var t = '<thead><tr><th>H2 (variable)</th>' + H2_LABELS.map(function (l) { return '<th>' + l + '</th>'; }).join('') + '<th>H2 計</th></tr></thead><tbody>';
+  t += '<tr><td>売上</td>' + r.h2.map(function (x) { return '<td class="n">' + f(x.rev) + '</td>'; }).join('') + '<td class="n"><b>' + f(r.h2Rev) + '</b></td></tr>';
+  t += '<tr><td>営業利益</td>' + r.h2.map(function (x) { return '<td class="n">' + f(x.op) + '</td>'; }).join('') + '<td class="n"><b>' + f(r.h2Op) + '</b></td></tr>';
+  t += '<tr><td>営業利益率</td>' + r.h2.map(function () { return '<td class="n">' + pct(state.mar) + '</td>'; }).join('') + '<td class="n"><b>' + pct(state.mar) + '</b></td></tr>';
+  t += '<tr><td>前月比</td>' + r.h2.map(function () { return '<td class="n">' + (state.inc === 0 ? '±0' : '+' + f(state.inc)) + '</td>'; }).join('') + '<td class="n">—</td></tr>';
+  t += '</tbody>';
+  el('h2Table').innerHTML = t;
+
+  /* summary table */
+  var s = '<thead><tr><th>通期サマリー</th><th>Annual</th><th class="fixed">H1（確定）</th><th>H2（変数）</th></tr></thead><tbody>';
+  s += '<tr><td>売上</td><td class="n"><b>' + f(r.annRev) + '</b></td><td class="n fixed">215,280</td><td class="n">' + f(r.h2Rev) + '</td></tr>';
+  s += '<tr><td>営業利益</td><td class="n"><b>' + f(r.annOp) + '</b></td><td class="n fixed">109,440</td><td class="n">' + f(r.h2Op) + '</td></tr>';
+  s += '<tr><td>営業利益率（加重）</td><td class="n">' + pct(r.annMar, 2) + '</td><td class="n fixed">50.84%</td><td class="n">' + pct(state.mar, 2) + '</td></tr>';
+  s += '<tr><td>営業利益率（シート式・月次単純平均）<span class="tag">ref</span></td><td class="n">' + pct(r.sheetMar, 2) + '</td><td class="n fixed">48.25%</td><td class="n">' + pct(state.mar, 2) + '</td></tr>';
+  s += '<tr><td>売上パート（×2）</td><td class="n">' + f(r.valRev) + '</td><td class="n fixed">430,560</td><td class="n">' + f(r.h2Rev * 2) + '</td></tr>';
+  s += '<tr><td>営利パート（×4）</td><td class="n">' + f(r.valOp) + '</td><td class="n fixed">437,760</td><td class="n">' + f(r.h2Op * 4) + '</td></tr>';
+  s += '<tr class="total"><td>バリュエーション</td><td class="n">' + f(r.val) + '</td><td class="n fixed">868,320</td><td class="n">' + f(r.val - 868320) + '</td></tr>';
+  s += '</tbody>';
+  el('sumTable').innerHTML = s;
+
+  /* sensitivity kv */
+  var dInc = 42 + 84 * state.mar;              /* per 1 千円/月 */
+  var dMar = 4 * r.h2Rev / 100;                /* per 1pt */
+  var kv = '';
+  kv += '<div><div class="k">H2売上 1千円あたり</div><div class="v">×' + (2 + 4 * state.mar).toFixed(1) + '</div><div class="d">営利率 ' + pct(state.mar) + ' のとき</div></div>';
+  kv += '<div><div class="k">増加額 +1,000千円/月</div><div class="v">+' + f(dInc * 1000) + '</div><div class="d">通期売上 +21,000 の効果</div></div>';
+  kv += '<div><div class="k">営利率 +1pt</div><div class="v">+' + f(dMar) + '</div><div class="d">H2売上 ' + f(r.h2Rev) + ' に対して</div></div>';
+  kv += '<div><div class="k">27/03 ランレート</div><div class="v">' + f(r.h2[5].rev) + '</div><div class="d">年換算 ' + f(r.h2[5].rev * 12) + '</div></div>';
+  el('sensKv').innerHTML = kv;
+
+  renderRawFull(r);
+  renderHeat();
+}
+
+/* ============ RENDER: HEATMAP ============ */
+var HEAT_INCS = [0, 2500, 5000, 7500, 10000, 12500, 15000];
+var HEAT_MARS = [0.45, 0.50, 0.55];
+function renderHeat() {
+  var vals = [];
+  HEAT_MARS.forEach(function (m) { HEAT_INCS.forEach(function (i) { vals.push(sim(i, m).val); }); });
+  var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+
+  /* exact match only — 近似セルを太枠にすると現在値と別の数字を読ませてしまう */
+  var onGrid = HEAT_INCS.indexOf(state.inc) >= 0 && HEAT_MARS.some(function (m) { return Math.abs(m - state.mar) < 1e-9; });
+
+  var h = '<thead><tr><th>営利率 \\ 月次増加額</th>' + HEAT_INCS.map(function (i) { return '<th>' + (i === 0 ? '0' : '+' + f(i)) + '</th>'; }).join('') + '</tr></thead><tbody>';
+  HEAT_MARS.forEach(function (m) {
+    h += '<tr><td>' + pct(m, 0) + '</td>';
+    HEAT_INCS.forEach(function (i) {
+      var v = sim(i, m).val;
+      var t = (v - lo) / (hi - lo);                 /* 0..1 */
+      var l = Math.round(97 - t * 74);              /* 97% → 23% lightness, single hue */
+      var ink = l < 55 ? '#ffffff' : '#111111';
+      var cur = (onGrid && i === state.inc && Math.abs(m - state.mar) < 1e-9) ? ' cur' : '';
+      h += '<td class="cell' + cur + '" style="background:hsl(0 0% ' + l + '%);color:' + ink + '" ' +
+        'title="営利率 ' + pct(m, 0) + '／増加額 ' + (i === 0 ? '0' : '+' + f(i)) + ' → バリュエーション ' + f(v) + ' 千円（' + oku(v) + '）">' + f(v) + '</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody>';
+  el('heat').innerHTML = h;
+
+  var cr = sim(state.inc, state.mar);
+  el('heatNow').innerHTML = '現在の設定：増加額 ' + (state.inc === 0 ? '0' : '+' + f(state.inc)) +
+    '千円/月 ／ 営利率 ' + (state.mar * 100).toFixed(1) + '% → <b>' + f(cr.val) + '</b> 千円（' + oku(cr.val) + '）' +
+    (onGrid ? '　＝ 太枠のセル' : '　※マトリクスの列にない設定のため該当セルなし');
+}
+
+/* ============ RENDER: REVERSE ============ */
+function renderReverse() {
+  el('tgtVal').innerHTML = f(state.tgt) + '<span class="u">千円</span>';
+  var t = '<thead><tr><th>目標 ' + f(state.tgt) + ' 千円（' + oku(state.tgt) + '）</th><th>必要H2売上</th><th>必要な月次増加額</th><th>27/03 売上</th><th>必要通期売上</th><th>必要通期営利</th></tr></thead><tbody>';
+  HEAT_MARS.forEach(function (m) {
+    var need = neededH2Rev(state.tgt, m);
+    var inc = neededInc(state.tgt, m);
+    t += '<tr><td>営利率 ' + pct(m, 0) + '</td>' +
+      '<td class="n">' + f(need) + '</td>' +
+      '<td class="n">' + (inc < 0 ? '現状維持で到達' : '+' + f(inc) + ' /月') + '</td>' +
+      '<td class="n">' + (inc < 0 ? '—' : f(BASE + inc * 6)) + '</td>' +
+      '<td class="n">' + f(215280 + need) + '</td>' +
+      '<td class="n">' + f(109440 + m * need) + '</td></tr>';
+  });
+  t += '</tbody>';
+  el('revTable').innerHTML = t;
+}
+
+/* ============ RENDER: SCENARIOS ============ */
+function renderScenarios() {
+  var SCN = [
+    { label: '1,990,000', inc: 2500, m: 0.50 },
+    { label: '2,410,000', inc: 7500, m: 0.50 },
+    { label: '2,400,000', inc: 6500, m: 0.55 }
+  ];
+  var t = '<thead><tr><th>シート表示</th><th>月次増加額</th><th>H2営利率</th><th>通期売上</th><th>通期営利</th><th>算出バリュエーション</th><th>丸め</th></tr></thead><tbody>';
+  SCN.forEach(function (s) {
+    var r = sim(s.inc, s.m);
+    t += '<tr><td>' + s.label + '</td><td class="n">+' + f(s.inc) + '</td><td class="n">' + pct(s.m, 0) + '</td>' +
+      '<td class="n">' + f(r.annRev) + '</td><td class="n">' + f(r.annOp) + '</td>' +
+      '<td class="n"><b>' + f(r.val) + '</b></td><td class="n">' + f(Math.floor(r.val / 10000) * 10000) + '</td></tr>';
+  });
+  t += '</tbody>';
+  el('scnTable').innerHTML = t;
+}
+
+/* ============ RENDER: RAW ============ */
+function renderRawH1() {
+  var t = '<thead><tr><th>Month</th><th>売上</th><th>営業利益</th><th>営業利益率</th></tr></thead><tbody>';
+  H1.forEach(function (x) {
+    t += '<tr><td>' + x.m + '</td><td class="n">' + f(x.rev) + '</td><td class="n">' + f(x.op) + '</td><td class="n">' + pct(x.op / x.rev, 2) + '</td></tr>';
+  });
+  t += '<tr class="total"><td>H1 計</td><td class="n">' + f(H1_REV) + '</td><td class="n">' + f(H1_OP) + '</td><td class="n">' + pct(H1_OP / H1_REV, 2) + '</td></tr></tbody>';
+  el('rawH1').innerHTML = t;
+}
+function renderRawFull(r) {
+  var rows = H1.map(function (x) { return { m: x.m, rev: x.rev, op: x.op, fixed: true }; })
+    .concat(r.h2.map(function (x) { return { m: x.m, rev: x.rev, op: x.op, fixed: false }; }));
+  var t = '<thead><tr><th>Month</th><th>売上</th><th>営業利益</th><th>営業利益率</th><th>区分</th></tr></thead><tbody>';
+  rows.forEach(function (x) {
+    t += '<tr><td>' + x.m + '</td><td class="n' + (x.fixed ? ' fixed' : '') + '">' + f(x.rev) + '</td>' +
+      '<td class="n' + (x.fixed ? ' fixed' : '') + '">' + f(x.op) + '</td>' +
+      '<td class="n' + (x.fixed ? ' fixed' : '') + '">' + pct(x.op / x.rev, 2) + '</td>' +
+      '<td style="text-align:right;color:var(--ink-mute);font-size:11px">' + (x.fixed ? 'FIXED' : 'MODEL') + '</td></tr>';
+  });
+  t += '<tr class="total"><td>Annual</td><td class="n">' + f(r.annRev) + '</td><td class="n">' + f(r.annOp) + '</td><td class="n">' + pct(r.annMar, 2) + '</td><td></td></tr></tbody>';
+  el('rawFull').innerHTML = t;
+}
+
+/* ============ CONTROLS ============ */
+function syncSeg(container, attr, value) {
+  Array.prototype.forEach.call(container.querySelectorAll('button'), function (b) {
+    b.classList.toggle('on', Number(b.getAttribute(attr)) === value);
+  });
+}
+el('incSlider').addEventListener('input', function (e) {
+  state.inc = Number(e.target.value);
+  syncSeg(el('incPresets'), 'data-inc', state.inc);
+  renderSim();
+});
+el('marSlider').addEventListener('input', function (e) {
+  state.mar = Number(e.target.value) / 100;
+  syncSeg(el('marPresets'), 'data-mar', Number(e.target.value));
+  renderSim();
+});
+el('tgtSlider').addEventListener('input', function (e) {
+  state.tgt = Number(e.target.value);
+  syncSeg(el('tgtPresets'), 'data-tgt', state.tgt);
+  renderReverse();
+});
+el('incPresets').addEventListener('click', function (e) {
+  if (e.target.tagName !== 'BUTTON') return;
+  state.inc = Number(e.target.getAttribute('data-inc'));
+  el('incSlider').value = state.inc;
+  syncSeg(el('incPresets'), 'data-inc', state.inc);
+  renderSim();
+});
+el('marPresets').addEventListener('click', function (e) {
+  if (e.target.tagName !== 'BUTTON') return;
+  var v = Number(e.target.getAttribute('data-mar'));
+  state.mar = v / 100;
+  el('marSlider').value = v;
+  syncSeg(el('marPresets'), 'data-mar', v);
+  renderSim();
+});
+el('tgtPresets').addEventListener('click', function (e) {
+  if (e.target.tagName !== 'BUTTON') return;
+  state.tgt = Number(e.target.getAttribute('data-tgt'));
+  el('tgtSlider').value = state.tgt;
+  syncSeg(el('tgtPresets'), 'data-tgt', state.tgt);
+  renderReverse();
+});
+
+/* ============ SIDE NAV ============ */
+(function () {
+  var secs = Array.prototype.slice.call(document.querySelectorAll('section[data-nav]'));
+  el('sideNavList').innerHTML = secs.map(function (s) {
+    return '<li><a class="side-nav-link" href="#' + s.id + '">' + s.getAttribute('data-nav') + '</a></li>';
+  }).join('');
+  var links = Array.prototype.slice.call(document.querySelectorAll('.side-nav-link'));
+  function spy() {
+    var y = window.scrollY + 120, cur = secs[0];
+    secs.forEach(function (s) { if (s.offsetTop <= y) cur = s; });
+    links.forEach(function (a) { a.classList.toggle('active', a.getAttribute('href') === '#' + cur.id); });
+  }
+  window.addEventListener('scroll', spy, { passive: true });
+  window.addEventListener('resize', spy);
+  spy();
+})();
+
+/* ============ INIT ============ */
+renderRawH1();
+renderScenarios();
+renderReverse();
+renderSim();
+</script>
+</body>
+</html>
