@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, noarchive">
+<title>進撃の巨人 リサーチDB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --panel:#ffffff; --line:#e8e8e8; --line2:#d4d4d4;
+    --txt:#111111; --muted:#888888; --accent:#111111; --head:#f7f7f5; --soft:#fbfbfa;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg); color:var(--txt);
+    font-family:"Poppins","Noto Sans JP",sans-serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:28px 20px 80px;}
+  @media (min-width:1280px){ .wrap{ max-width:min(1500px,94vw); } }
+  @media (max-width:640px){ .wrap{ padding:18px 12px 64px; } }
+
+  header{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  h1{font-size:1.5rem; font-weight:700; margin:0; letter-spacing:.02em;}
+  .sub{color:var(--muted); font-size:.82rem;}
+  .meta{color:var(--muted); font-size:.78rem; margin:6px 0 18px; line-height:1.5;}
+  .meta b{font-weight:600; color:var(--txt);}
+
+  /* ── ツールバー ── */
+  .tools{position:sticky; top:0; z-index:20; background:var(--bg); padding:10px 0 8px; border-bottom:1px solid var(--line);}
+  .row{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .row + .row{margin-top:8px;}
+  .search{position:relative; flex:1 1 260px; min-width:0;}
+  .search input{
+    width:100%; padding:9px 34px 9px 34px; font-size:.92rem; color:var(--txt);
+    font-family:inherit; background:var(--panel); border:1px solid var(--line2); border-radius:999px; outline:none;
+  }
+  .search input:focus{border-color:var(--accent);}
+  .search .ico{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.85rem;}
+  .search .clr{position:absolute; right:8px; top:50%; transform:translateY(-50%); border:0; background:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:2px 6px; display:none;}
+  .search.has .clr{display:block;}
+  .chip{
+    font-family:inherit; font-size:.76rem; color:var(--txt); background:var(--panel);
+    border:1px solid var(--line2); border-radius:999px; padding:5px 11px; cursor:pointer; white-space:nowrap;
+  }
+  .chip:hover{background:var(--head);}
+  .chip.on{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .chip .n{opacity:.55; margin-left:5px; font-size:.72rem;}
+  .chipset{display:flex; gap:6px; flex-wrap:wrap; align-items:center;}
+  .chiplabel{font-size:.72rem; color:var(--muted); margin-right:2px;}
+  .tabs{display:flex; gap:6px;}
+  .tab{
+    font-family:inherit; font-size:.85rem; font-weight:600; padding:7px 16px; cursor:pointer;
+    background:var(--panel); border:1px solid var(--line2); border-radius:999px; color:var(--muted);
+  }
+  .tab.on{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .count{font-size:.75rem; color:var(--muted); margin-left:auto;}
+
+  /* ── 陣営バッジ（意味を持つラベルなので配色あり） ── */
+  .bdg{display:inline-block; font-size:.7rem; font-weight:600; padding:2px 8px; border-radius:999px; border:1px solid transparent; white-space:nowrap;}
+  .s-調査兵団{background:#e6f4ea; color:#1a6b36; border-color:#d1e9d9;}
+  .s-駐屯兵団{background:#fdf5da; color:#7a5c00; border-color:#f4e7b8;}
+  .s-憲兵団{background:#e8f0fb; color:#1a4d8f; border-color:#d3e2f6;}
+  .s-訓練兵団{background:#eeeeea; color:#4a4a44; border-color:#dedeD8;}
+  .s-王政{background:#f2e9fa; color:#63308c; border-color:#e5d6f3;}
+  .s-マーレ{background:#f9e7e2; color:#8f3a26; border-color:#f0d6ce;}
+  .s-戦士隊{background:#f8ece0; color:#8a4f1c; border-color:#f0dcc6;}
+  .s-義勇兵{background:#e6f2f3; color:#1f5f66; border-color:#d3e7e9;}
+  .s-ヒィズル{background:#fbe7ef; color:#8d3462; border-color:#f2d5e2;}
+  .s-巨人{background:#eae8e4; color:#3f3b35; border-color:#dcd9d3;}
+  .s-壁内{background:#f2eee2; color:#6b5c33; border-color:#e6e0cf;}
+  .s-other{background:#f2f2f0; color:#666; border-color:#e4e4e0;}
+  .bdg.k{background:var(--panel); color:var(--muted); border-color:var(--line2); font-weight:500;}
+  .bdg.st-戦死{background:#fbeaea; color:#a3252c; border-color:#f2d5d5;}
+  .bdg.st-死亡{background:#fbeaea; color:#a3252c; border-color:#f2d5d5;}
+  .bdg.st-消滅{background:#eef1f6; color:#33507a; border-color:#dde3ec;}
+  .bdg.st-進行中{background:#eef1f6; color:#33507a; border-color:#dde3ec;}
+
+  /* ── 顔アバター（画像が無ければ頭文字にフォールバック） ── */
+  .avw{position:relative; display:inline-block; border-radius:50%; overflow:hidden; vertical-align:middle;
+       border:1px solid var(--line2); background:var(--head); flex:0 0 auto;}
+  .avw img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+  .avw .mono{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+             font-weight:700; color:#555; letter-spacing:0;}
+  .av-s{width:26px; height:26px;} .av-s .mono{font-size:.72rem;}
+  .av-l{width:64px; height:64px;} .av-l .mono{font-size:1.25rem;}
+  @media (max-width:640px){ .av-s{width:22px;height:22px;} }
+
+  /* ── グラフ ── */
+  .graphcard{position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); margin-top:14px;}
+  #svg{display:block; width:100%; height:66vh; min-height:380px; touch-action:none; background:
+     radial-gradient(circle at 1px 1px, #efefec 1px, transparent 0) 0 0/22px 22px;}
+  @media (max-width:640px){ #svg{height:58vh; min-height:320px;} }
+  .gctl{position:absolute; right:10px; top:10px; display:flex; flex-direction:column; gap:6px; z-index:2;}
+  .gbtn{width:30px; height:30px; border:1px solid var(--line2); background:rgba(255,255,255,.94); border-radius:8px; cursor:pointer; font-size:.9rem; color:var(--txt); font-family:inherit; line-height:1; padding:0;}
+  .gbtn:hover{background:var(--head);}
+  .glegend{position:absolute; left:10px; bottom:10px; z-index:2; background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-size:.68rem; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap; max-width:calc(100% - 60px);}
+  .glegend span{display:inline-flex; align-items:center; gap:4px;}
+  .lg-dot{width:9px; height:9px; border-radius:50%; border:1px solid #999; display:inline-block;}
+  .lg-sq{width:9px; height:9px; border:1px solid #999; display:inline-block; transform:rotate(45deg);}
+  .lg-ri{width:9px; height:9px; border-radius:50%; border:1px dashed #999; display:inline-block;}
+  .ghint{position:absolute; left:10px; top:10px; z-index:2; font-size:.68rem; color:var(--muted); background:rgba(255,255,255,.9); border:1px solid var(--line); border-radius:8px; padding:5px 8px;}
+  .n-lbl{font-size:10px; font-family:"Poppins","Noto Sans JP",sans-serif; fill:#333; paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round; pointer-events:none; user-select:none;}
+  .n-lbl.big{font-size:12px; font-weight:600; fill:#111;}
+  .node{cursor:pointer;}
+  .node .shp{stroke:#8a8a8a; stroke-width:1.2px;}
+  .node.sel .shp{stroke:#111; stroke-width:2.5px;}
+  .node.hit .shp{stroke:#111; stroke-width:2.2px;}
+  .dim{opacity:.12;}
+  .lnk{stroke:#c9c9c4; stroke-width:1px; fill:none;}
+  .lnk.act{stroke:#555; stroke-width:1.8px;}
+  .lnk-lbl{font-size:10px; fill:#999; paint-order:stroke; stroke:#fff; stroke-width:2.5px; pointer-events:none; opacity:0;}
+  .lnk-lbl.act{opacity:1; fill:#555;}
+
+  /* ── テーブル ── */
+  .tablecard{border:1px solid var(--line); border-radius:12px; overflow:auto; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); max-height:74vh; margin-top:14px;}
+  table{border-collapse:separate; border-spacing:0; width:100%; min-width:820px;}
+  th,td{padding:10px 14px; text-align:left; border-bottom:1px solid var(--line); font-size:.88rem; white-space:nowrap;}
+  th.num,td.num{text-align:right; font-variant-numeric:tabular-nums;}
+  thead th{background:var(--head); color:var(--muted); font-weight:500; font-size:.78rem; position:sticky; top:0; z-index:2; border-bottom:1px solid var(--line2); cursor:pointer; user-select:none;}
+  thead th:hover{background:#efefec;}
+  thead th .ar{opacity:.35; font-size:.7rem; margin-left:3px;}
+  thead th.sorted{color:var(--txt);} thead th.sorted .ar{opacity:1;}
+  th.nm, td.nm{position:sticky; left:0; z-index:1; background:var(--panel); font-weight:600; border-right:1px solid var(--line2); min-width:168px;}
+  td.nm{display:table-cell;}
+  td.nm .nmbox{display:flex; align-items:center; gap:9px;}
+  @media (max-width:640px){ th.nm,td.nm{min-width:136px;} td.nm .nmbox{gap:7px;} }
+  thead th.nm{z-index:3; background:var(--head);}
+  tbody tr{cursor:pointer;}
+  tbody tr:hover td{background:var(--head);}
+  tbody tr:hover td.nm{background:#f0f0ee;}
+  td.sm{color:var(--muted); font-size:.82rem; white-space:normal; min-width:240px;}
+  .empty{padding:40px 16px; text-align:center; color:var(--muted); font-size:.85rem;}
+  @media (max-width:640px){ th,td{padding:9px 10px; font-size:.83rem;} th.nm,td.nm{min-width:112px;} }
+
+  /* ── あらすじ ── */
+  .story{margin-top:16px;}
+  .arc{border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); padding:18px 20px 16px; margin-bottom:14px;}
+  .arc.now{background:var(--soft); border-color:var(--line2);}
+  .ahead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .ano{font-size:.72rem; font-weight:700; letter-spacing:.1em; color:var(--muted); border:1px solid var(--line2); border-radius:6px; padding:1px 7px;}
+  .arc h2{font-size:1.05rem; font-weight:700; margin:0; letter-spacing:.01em;}
+  .aep{font-size:.72rem; font-weight:600; border:1px solid var(--line2); border-radius:999px; padding:2px 10px; max-width:100%;}
+  .avol{font-size:.74rem; color:var(--muted);}
+  .bep{display:block; font-weight:400; font-size:.68rem; color:var(--muted); margin-top:1px; letter-spacing:.02em;}
+  @media (max-width:640px){ .bep{display:inline; margin-left:7px;} }
+  .alead{font-size:.9rem; font-weight:500; margin:9px 0 12px; padding:10px 12px; background:var(--soft); border:1px solid var(--line); border-radius:9px;}
+  .arc.now .alead{background:#fff;}
+  .beat{display:grid; grid-template-columns:126px 1fr; gap:0 16px; padding:10px 0; border-top:1px solid var(--line);}
+  .beat .bh{font-size:.8rem; font-weight:600;}
+  .beat .bb{font-size:.86rem; color:#333; margin:0;}
+  @media (max-width:640px){ .beat{grid-template-columns:1fr; gap:3px;} .beat .bh{color:var(--muted);} }
+  .ameta{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:.78rem; margin:10px 0 12px;
+         padding:10px 12px; border:1px solid var(--line); border-radius:9px; background:var(--panel);}
+  .ameta dt{color:var(--muted);} .ameta dd{margin:0;}
+  .aquote{margin:0 0 12px; padding:9px 13px; border-left:3px solid var(--line2); font-size:.86rem; color:#333;}
+  .aquote b{display:block; font-weight:400; font-size:.72rem; color:var(--muted); margin-top:3px;}
+  .arcfoot{margin-top:13px; padding-top:12px; border-top:1px solid var(--line);}
+  .arcfoot + .arcfoot{margin-top:9px; padding-top:9px; border-top:0;}
+  .fl{font-size:.72rem; color:var(--muted); margin-bottom:5px;}
+
+  /* ── あらすじ: 章の索引 ── */
+  .arcidx{border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); padding:14px 18px 12px; margin-bottom:14px;}
+  .arcidx h2{margin:0 0 2px; font-size:.95rem; font-weight:700;}
+  .arcidx .ixsub{font-size:.74rem; color:var(--muted); margin-bottom:9px;}
+  .ixlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:5px 14px;}
+  .ixrow{display:grid; grid-template-columns:30px 1fr; gap:0 8px; align-items:baseline; text-align:left;
+         background:none; border:0; border-top:1px solid var(--line); padding:7px 2px; cursor:pointer; font:inherit; color:inherit; width:100%;}
+  .ixrow:hover{background:var(--soft);}
+  .ixrow .ixno{font-size:.68rem; font-weight:700; letter-spacing:.06em; color:var(--muted);}
+  .ixrow .ixnm{font-size:.82rem; font-weight:600;}
+  .ixrow .ixmeta{grid-column:2; font-size:.7rem; color:var(--muted); margin-top:1px;}
+
+  /* ── あらすじ: 要点 / 復習チェック ── */
+  .apoints{margin:12px 0 2px; padding:11px 13px 9px; border:1px solid var(--line2); border-radius:9px; background:var(--soft);}
+  .arc.now .apoints{background:#fff;}
+  .apoints .fl{margin-bottom:6px; font-weight:600; color:#333;}
+  .apoints ul{margin:0; padding-left:17px;}
+  .apoints li{font-size:.84rem; color:#333; margin:0 0 4px;}
+  .achecks{margin-top:13px; padding-top:12px; border-top:1px solid var(--line);}
+  .achecks .qa{border:1px solid var(--line); border-radius:8px; margin-bottom:6px; background:var(--panel); overflow:hidden;}
+  .achecks .qa > summary{list-style:none; cursor:pointer; padding:9px 12px; font-size:.84rem; font-weight:600;
+                         display:flex; gap:9px; align-items:baseline;}
+  .achecks .qa > summary::-webkit-details-marker{display:none;}
+  .achecks .qa > summary::before{content:"Q"; font-size:.66rem; font-weight:700; color:var(--muted);
+                                 border:1px solid var(--line2); border-radius:4px; padding:1px 5px; flex:0 0 auto;}
+  .achecks .qa > summary:hover{background:var(--soft);}
+  .achecks .qa[open] > summary{border-bottom:1px solid var(--line);}
+  .achecks .qa .ans{margin:0; padding:9px 12px 10px 34px; font-size:.85rem; color:#333; background:var(--soft);}
+  .achecks .qtool{display:flex; gap:8px; margin-bottom:7px;}
+  .achecks .qbtn{font:inherit; font-size:.72rem; color:var(--muted); background:none; border:1px solid var(--line2);
+                 border-radius:6px; padding:3px 10px; cursor:pointer;}
+  .achecks .qbtn:hover{background:var(--soft); color:#111;}
+
+  /* ── 能力値（公式ガイドブック） ── */
+  .stats{margin:0 0 16px; border:1px solid var(--line); border-radius:9px; padding:11px 13px 9px; background:var(--soft);}
+  .stats .sthead{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px;}
+  .stats .sttitle{font-size:.78rem; font-weight:600; letter-spacing:.03em;}
+  .stats .stsrc{font-size:.68rem; color:var(--muted);}
+  .strow{display:grid; grid-template-columns:56px 1fr 46px; align-items:center; gap:9px; padding:2px 0;}
+  .strow .k{font-size:.74rem; color:var(--muted);}
+  .strow .bar{height:6px; background:#e9e9e6; border-radius:3px; overflow:hidden;}
+  .strow .bar i{display:block; height:100%; background:#333; border-radius:3px;}
+  .strow .v{font-size:.8rem; font-weight:600; text-align:right; font-variant-numeric:tabular-nums;}
+  .strow.grade .v{font-size:.85rem;}
+
+  /* ── 詳解タブ ── */
+  .dd{margin-top:16px;}
+  .ddhead{border:1px solid var(--line); border-radius:12px; background:var(--panel); padding:18px 20px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .ddhead h2{margin:0; font-size:1.15rem; font-weight:700; letter-spacing:.01em;}
+  .ddhead .ddsub{font-size:.76rem; color:var(--muted); margin-top:4px;}
+  .ddhead .ddlead{font-size:.9rem; font-weight:500; margin-top:11px; padding:10px 12px; background:var(--soft); border:1px solid var(--line); border-radius:9px;}
+  .ddpart{border:1px solid var(--line); border-radius:12px; background:var(--panel); padding:16px 20px 14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .ddpart > h3{margin:0 0 2px; font-size:1rem; font-weight:700; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .ddpart .ddep{font-size:.72rem; font-weight:500; color:var(--muted); border:1px solid var(--line2); border-radius:999px; padding:1px 9px;}
+  .ddpart p{font-size:.88rem; color:#333; margin:9px 0 0;}
+  .ddpart .ddnote{font-size:.8rem; color:var(--muted); margin-top:9px; padding-left:11px; border-left:2px solid var(--line2);}
+  .dditem{display:grid; grid-template-columns:132px 1fr; gap:0 16px; padding:9px 0; border-top:1px solid var(--line); margin-top:9px;}
+  .dditem:first-of-type{margin-top:11px;}
+  .dditem .ih{font-size:.82rem; font-weight:600;}
+  .dditem .ib{font-size:.87rem; color:#333; margin:0;}
+  @media (max-width:640px){ .dditem{grid-template-columns:1fr; gap:3px;} .dditem .ih{color:var(--muted);} }
+  .ddtable{margin-top:11px; border:1px solid var(--line); border-radius:9px; overflow-x:auto;}
+  .ddtable table{min-width:420px; width:100%;}
+  .ddtable th{background:var(--head); color:var(--muted); font-size:.76rem; font-weight:500; white-space:nowrap;}
+  .ddtable td{font-size:.85rem; white-space:normal; vertical-align:top;}
+  .ddtable td:first-child{white-space:nowrap; font-weight:600; width:1%;}
+  .ddnames{font-size:.84rem; color:#333; margin:6px 0 0; line-height:1.9;}
+  .ddsrc{font-size:.72rem; color:var(--muted); margin:4px 0 0;}
+
+  /* ── 地図タブ ── */
+  .maplayout{display:grid; grid-template-columns:1fr 300px; gap:14px; margin-top:16px; align-items:start;}
+  @media (max-width:900px){ .maplayout{grid-template-columns:1fr;} }
+  .mapcard{border:1px solid var(--line); border-radius:12px; background:#fcfcfb; box-shadow:0 1px 3px rgba(0,0,0,.06); padding:8px; overflow:hidden;}
+  #kmap{display:block; width:100%; height:auto;}
+
+  .sea{stroke:#cfe0ee; stroke-width:1.2px;}
+  .sealabel{font-size:13px; fill:#8fadc7; letter-spacing:.2em; paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round;}
+  .sealabel.small{font-size:10.5px; letter-spacing:.1em;}
+  .ridgelabel{font-size:9.5px; fill:#8f8f89; letter-spacing:.06em; paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round;}
+  .rg{stroke:#b7b7b1; stroke-width:1.3px;}
+  .rglabel{font-size:16px; font-weight:700; fill:#4f4f4a; letter-spacing:.14em; paint-order:stroke; stroke:#fff; stroke-width:5px; stroke-linejoin:round;}
+  .rgcap{font-size:9.5px; fill:#8f8f89; letter-spacing:.06em; paint-order:stroke; stroke:#fff; stroke-width:3.5px; stroke-linejoin:round;}
+  .ridge{stroke:#a9a9a2; stroke-width:1.3px; fill:none; stroke-linejoin:round;}
+  .wall{stroke:#9a9a93; stroke-width:2px; fill:none; stroke-dasharray:7 4; stroke-linecap:round;}
+  .walllabel{font-size:10px; fill:#8f8f89; letter-spacing:.1em; paint-order:stroke; stroke:#fff; stroke-width:3.5px; stroke-linejoin:round;}
+  .river{stroke:#c3d6e8; stroke-width:5px; fill:none; stroke-linecap:round;}
+  .riverlabel{font-size:10px; fill:#8ea6bd; paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round;}
+
+  .spot{cursor:pointer;}
+  .spot .hit{fill:transparent;}
+  .spot .halo{fill:none; stroke:transparent; stroke-width:2px;}
+  .spot .mk{fill:#fff; stroke:#3a3a36; stroke-width:1.5px;}
+  .spot .core{fill:#111; stroke:none;}
+  .spot .gateline{stroke:#3a3a36; stroke-width:1.3px;}
+  .spot .lb{font-size:11.5px; fill:#1c1c1a; paint-order:stroke; stroke:#fff; stroke-width:4px; stroke-linejoin:round;}
+  .spot.k-capital .lb{font-weight:700; font-size:12.5px;}
+  .spot.k-country .lb{font-weight:700; font-size:15px; letter-spacing:.06em;}
+  .spot:hover .mk{stroke-width:2.4px;}
+  .spot:hover .lb{font-weight:700;}
+  .spot.on .halo{stroke:#111; stroke-dasharray:3 3;}
+  .spot.on .mk{stroke:#111; stroke-width:2.4px;}
+  .spot.on .lb{font-weight:700;}
+
+  .maplegend{display:flex; gap:13px; flex-wrap:wrap; font-size:.7rem; color:var(--muted); padding:8px 4px 2px; align-items:center;}
+  .maplegend i{display:inline-block; width:9px; height:9px; margin-right:4px; border:1px solid #3a3a36; vertical-align:-1px; background:#fff;}
+  .maplegend .lc{border-radius:50%; box-shadow:inset 0 0 0 2px #fff, inset 0 0 0 4px #111;}
+  .maplegend .lt{border-radius:50%;}
+  .maplegend .lg{border-radius:1px;}
+  .maplegend .lf{transform:rotate(45deg);}
+  .maplegend .lv{border-radius:1px; width:8px; height:8px;}
+
+  .mapinfo{border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); padding:15px 16px; position:sticky; top:120px;}
+  .mapinfo h3{margin:0; font-size:1.02rem; font-weight:700;}
+  .mapinfo .mi-yomi{font-size:.72rem; color:var(--muted); margin-top:1px;}
+  .mapinfo .mi-bdg{margin-top:8px; display:flex; gap:5px; flex-wrap:wrap;}
+  .mapinfo p{font-size:.85rem; color:#333; margin:5px 0 0;}
+  .mapinfo .mi-sec{margin-top:13px; padding-top:11px; border-top:1px solid var(--line);}
+  .mapinfo .mi-h{font-size:.72rem; font-weight:600; color:var(--muted); letter-spacing:.04em;}
+  .mapinfo{max-height:calc(100vh - 150px); overflow-y:auto;}
+  .mapinfo .mi-arc{margin-top:10px; padding-top:9px; border-top:1px solid var(--line); font-size:.75rem; color:var(--muted);}
+  .mapinfo .mi-empty{font-size:.82rem; color:var(--muted);}
+  .maplist{margin-top:12px; border:1px solid var(--line); border-radius:12px; background:var(--panel); padding:12px 14px;}
+  .maplist .rels{gap:5px;}
+  .maplist .rel.on{border-color:var(--accent); background:var(--head);}
+
+  /* ── 詳細ドロワー ── */
+  .drawerhost{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:50;}
+  .drawerhost .drawer{pointer-events:auto;}
+  .drawer{
+    position:fixed; top:0; right:0; height:100%; width:min(460px,92vw); background:var(--panel);
+    border-left:1px solid var(--line2); box-shadow:-8px 0 28px rgba(0,0,0,.10);
+    transform:translateX(101%); transition:transform .22s ease, visibility .22s; visibility:hidden;
+    z-index:50; display:flex; flex-direction:column;
+  }
+  .drawer.on{transform:translateX(0); visibility:visible;}
+  .dhead{padding:18px 20px 12px; border-bottom:1px solid var(--line); position:relative;}
+  .dhead .htop{display:flex; align-items:center; gap:12px;}
+  .dhead h2{margin:0; font-size:1.25rem; font-weight:700; letter-spacing:.01em; padding-right:34px;}
+  .dhead .yomi{color:var(--muted); font-size:.75rem; margin-top:1px;}
+  .dhead .bdgs{margin-top:9px; display:flex; gap:5px; flex-wrap:wrap;}
+  .dclose{position:absolute; right:12px; top:14px; border:1px solid var(--line2); background:var(--panel); border-radius:8px; width:28px; height:28px; cursor:pointer; color:var(--muted); font-size:1rem; line-height:1; padding:0;}
+  .dclose:hover{background:var(--head); color:var(--txt);}
+  .dbody{padding:16px 20px 40px; overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch;}
+  .dsum{font-size:.92rem; font-weight:500; margin:0 0 14px; padding:11px 13px; background:var(--soft); border:1px solid var(--line); border-radius:9px;}
+  .dgrid{display:grid; grid-template-columns:auto 1fr; gap:5px 14px; font-size:.82rem; margin-bottom:16px;}
+  .dgrid dt{color:var(--muted);}
+  .dgrid dd{margin:0;}
+  .dsec{margin-bottom:14px;}
+  .dsec h3{font-size:.8rem; font-weight:600; margin:0 0 4px; letter-spacing:.03em; color:var(--txt); display:flex; align-items:center; gap:7px;}
+  .dsec h3::after{content:""; flex:1; height:1px; background:var(--line);}
+  .dsec p{margin:0; font-size:.86rem; color:#333;}
+  .rels{display:flex; gap:6px; flex-wrap:wrap;}
+  .rel{font-family:inherit; font-size:.75rem; padding:4px 10px; border:1px solid var(--line2); border-radius:999px; background:var(--panel); cursor:pointer; color:var(--txt);}
+  .rel:hover{background:var(--head); border-color:var(--accent);}
+  .rel .rl{color:var(--muted); margin-left:5px; font-size:.68rem;}
+  /* ドロワーは非モーダル。開いている間も本文を触れるよう、広い画面では本文を左へ寄せる */
+  body.dopen .wrap{ padding-right:20px; }
+  @media (min-width:900px){
+    .wrap{ transition:margin-right .22s ease; }
+    body.dopen .wrap{ margin-right:min(460px,92vw); }
+  }
+  @media (max-width:640px){
+    .drawer{width:100%; height:72%; top:auto; bottom:0; border-left:0; border-top:1px solid var(--line2); border-radius:14px 14px 0 0; transform:translateY(101%);}
+    .drawer.on{transform:translateY(0);}
+    body.dopen .wrap{ padding-bottom:0; }
+  }
+  .foot{margin-top:18px; color:var(--muted); font-size:.72rem;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>進撃の巨人 リサーチDB</h1>
+    <span class="sub" id="range"></span>
+  </header>
+  <div class="meta" id="note"></div>
+
+  <div class="tools">
+    <div class="row">
+      <div class="tabs">
+        <button class="tab on" data-view="graph">グラフ</button>
+        <button class="tab" data-view="table">テーブル</button>
+        <button class="tab" data-view="story">あらすじ</button>
+        <button class="tab" data-view="deep">詳解</button>
+        <button class="tab" data-view="map">地図</button>
+      </div>
+      <div class="search" id="searchbox">
+        <span class="ico">⌕</span>
+        <input id="q" type="search" placeholder="人物・戦い・陣営・タグ・話数で検索（例: リヴァイ / 巨人大戦 / 調査兵団 / 4期5話 / #64 / 第122話）" autocomplete="off">
+        <button class="clr" id="clr" aria-label="クリア">×</button>
+      </div>
+    </div>
+    <div class="row" id="filterrow">
+      <div class="chipset" id="kindchips"><span class="chiplabel">種別</span></div>
+      <div class="chipset" id="statechips"><span class="chiplabel">陣営</span></div>
+      <span class="count" id="count"></span>
+    </div>
+  </div>
+
+  <div id="view-graph">
+    <div class="graphcard">
+      <svg id="svg"></svg>
+      <div class="ghint">ノードをタップで詳細 / ドラッグで移動</div>
+      <div class="gctl">
+        <button class="gbtn" id="zin" title="拡大">＋</button>
+        <button class="gbtn" id="zout" title="縮小">－</button>
+        <button class="gbtn" id="zfit" title="全体表示">⤢</button>
+      </div>
+      <div class="glegend">
+        <span><i class="lg-dot"></i>人物</span>
+        <span><i class="lg-sq"></i>戦い</span>
+        <span><i class="lg-ri"></i>勢力</span>
+        <span>色 = 陣営</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-table" style="display:none">
+    <div class="tablecard">
+      <table id="tbl">
+        <thead><tr>
+          <th class="nm" data-k="name">名前<span class="ar">↕</span></th>
+          <th data-k="kind">種別<span class="ar">↕</span></th>
+          <th data-k="state">陣営<span class="ar">↕</span></th>
+          <th data-k="group">所属<span class="ar">↕</span></th>
+          <th data-k="klass">分類<span class="ar">↕</span></th>
+          <th data-k="titan">継承した巨人<span class="ar">↕</span></th>
+          <th data-k="hcm" class="num">身長<span class="ar">↕</span></th>
+          <th data-k="cv">声優<span class="ar">↕</span></th>
+          <th data-k="role">立場 / 結果<span class="ar">↕</span></th>
+          <th data-k="firstn">初登場<span class="ar">↕</span></th>
+          <th data-k="status">状態<span class="ar">↕</span></th>
+          <th data-k="summary">概要<span class="ar">↕</span></th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="tempty" style="display:none">該当なし</div>
+    </div>
+  </div>
+
+  <div id="view-map" style="display:none"></div>
+
+  <div id="view-deep" style="display:none">
+    <section>
+      <div class="ddhead">
+        <h2>ウォール・マリア最終奪還作戦 詳解</h2>
+        <div class="ddsub">アニメ 第3期 #50〜56（Season 3 Part.2 第1〜7話） ／ 原作 18〜21巻・第70〜84話</div>
+        <p class="ddlead">硬質化を得た人類が、初めて自分から壁の外へ出た戦い。待っていたのは獣・鎧・超大型・車力の待ち伏せで、調査兵団はほぼ全滅する。エルヴィンの特攻と、注射器一本の選択までを、局面ごとに追う。</p>
+      </div>
+      <div class="ddpart">
+        <h3>1. 前提 — なぜ勝てるつもりだったのか <span class="ddep">#50 ／ 原作 第70〜72話</span></h3>
+        <p>王政編でエレンが硬質化を獲得したことで、「壁の穴を塞ぐ」という長年の課題に技術的な答えが出た。さらにハンジらは硬質化した装甲を破れる爆薬つきの槍＝雷槍を実用化していた。人類は初めて「巨人化能力者を倒す手段」と「壁を直す手段」を同時に持った。</p>
+        <div class="dditem"><div class="ih">作戦の骨子</div><p class="ib">夜間に馬でシガンシナ区へ到達し、日の出前に壁の上を確保する。エレンが硬質化で穴を塞ぎ、街に残る巨人を掃討して奪還する。三年前に不可能だったことを、装備と能力の更新だけで通す設計だった。</p></div>
+        <div class="dditem"><div class="ih">エルヴィンの本音</div><p class="ib">エルヴィンの目的は領土でも人命でもなく、イェーガー家の地下室に辿り着くことだった。少年時代、教師の父が壁の歴史に疑問を持ったために中央憲兵に殺されている。彼はその私欲を隠さないまま、兵を死地に送り続けてきた。</p></div>
+        <div class="dditem"><div class="ih">相手の事情</div><p class="ib">ライナーとベルトルトは三年前に始祖の奪還に失敗したまま帰れず、ジークが指揮に入っていた。マーレ側は「エレンを連れ帰る」ことが目的で、殺すつもりはない。この非対称が終盤の展開を左右する。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>2. 布陣 — 誰がどこで何を受けたか <span class="ddep">#50〜51 ／ 原作 第73〜76話</span></h3>
+        <div class="ddtable"><table>
+          <thead><tr><th>局面</th><th>人類側</th><th>相手</th></tr></thead>
+          <tbody>
+            <tr><td>街の内側</td><td>エレン（硬質化） ・ ミカサ ・ 104期</td><td>鎧の巨人（ライナー）</td></tr>
+            <tr><td>壁の上</td><td>エルヴィン ・ 新兵 ・ 主力</td><td>獣の巨人（ジーク）の投石</td></tr>
+            <tr><td>壁の外・森</td><td>リヴァイ（単騎）</td><td>獣の巨人（ジーク）</td></tr>
+            <tr><td>壁の内側の逃げ場</td><td>アルミン ・ ジャン ・ サシャ ・ コニー</td><td>超大型巨人（ベルトルト）</td></tr>
+            <tr><td>輸送・偵察</td><td>—</td><td>車力の巨人（ピーク）</td></tr>
+          </tbody></table></div>
+        <p class="ddnote">ジークは壁の外に、ベルトルトは壁の内側に潜んでいた。壁上に上がった兵は前後を同時に塞がれた状態で、退路そのものが存在しない布陣だった。</p>
+      </div>
+      <div class="ddpart">
+        <h3>3. 鎧の巨人 対 エレン — 雷槍の初運用 <span class="ddep">#51 ／ 原作 第76〜78話</span></h3>
+        <div class="dditem"><div class="ih">再戦の構図</div><p class="ib">三年前に格闘技術で完敗した相手に、エレンは硬質化した拳で挑む。装甲同士のぶつかり合いになり、初めて互角に殴り合えた。</p></div>
+        <div class="dditem"><div class="ih">雷槍の効き方</div><p class="ib">104期が雷槍でライナーのうなじ周りを削り、装甲を剥がしていく。刺してから起爆する仕組みのため、硬質化していても内側から壊せる。ライナーはうなじを吹き飛ばされて一度は行動不能になった。</p></div>
+        <div class="dditem"><div class="ih">だが勝っていない</div><p class="ib">この時点で人類側は「勝っている」と思っていた。そこへ壁の外から石が降ってくる。街の勝敗と壁上の壊滅が同時に進行していたのがこの回の構造。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>4. 獣の巨人の投石 — 一方的な壊滅 <span class="ddep">#52 ／ 原作 第79〜80話</span></h3>
+        <p>ジークは砕いた岩を散弾のように投げ上げ、壁上の兵を装備ごと潰していく。距離があるため立体機動では到達できず、馬で近づけば無垢の巨人に囲まれる。人類側の武器が一つも届かない状態で、調査兵団は数十人単位で削られた。</p>
+        <div class="dditem"><div class="ih">なぜ避けられないのか</div><p class="ib">壁の上という平面には遮蔽物がなく、立体機動の前提である「掴む対象」もない。装備の強みが完全に消える地形で、ジークはそこを狙って待っていた。</p></div>
+        <div class="dditem"><div class="ih">エルヴィンの計算</div><p class="ib">残った手は一つだけ。誰かが獣の注意を全部引きつけ、その隙にリヴァイが単騎で樹上を渡って到達する。囮側は全員死ぬ。エルヴィンはそれを新兵に命じることを選んだ。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>5. 心臓を捧げよ — エルヴィンの特攻 <span class="ddep">#53 ／ 原作 第80〜81話</span></h3>
+        <div class="dditem"><div class="ih">迷い</div><p class="ib">エルヴィンは一度、自分が生き残って地下室に行く道を考えた。だがそれは兵を死なせて自分の夢を取る選択でもある。リヴァイに「あんたが夢を諦めろ、俺が獣を殺す」と背中を押され、先頭に立つことを決めた。</p></div>
+        <div class="dditem"><div class="ih">演説</div><p class="ib">新兵に向けて、この突撃が死ぬための命令であることを隠さずに告げる。そして自分の私欲——父の死と壁の歴史の真実——まで晒し、「心臓を捧げよ」と叫んで馬を出した。全員が続いた。</p></div>
+        <div class="dditem"><div class="ih">効果</div><p class="ib">ジークは特攻に気を取られ、投石が囮の集団に集中する。エルヴィンは投石で致命傷を負い、マルロら新兵は全滅した。だがその数十秒でリヴァイが樹上から獣の巨人の背後に到達した。</p></div>
+        <div class="dditem"><div class="ih">リヴァイ 対 獣</div><p class="ib">リヴァイは雷槍でジークの手足を破壊し、うなじを削いで引き剥がした。とどめは刺さず、巨人化薬を持ち帰るために生かして拘束するつもりだった。だがジークは近くの巨人に喰われる形で別の体に移り、生き延びていた。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>6. 超大型巨人 対 アルミン <span class="ddep">#54 ／ 原作 第82話</span></h3>
+        <div class="dditem"><div class="ih">状況</div><p class="ib">エレンはライナーを倒した直後で、硬質化を使いすぎて動けない。ベルトルトは超大型として街を焼き、104期の装備を熱で潰していく。届く武器が無い。</p></div>
+        <div class="dditem"><div class="ih">アルミンの策</div><p class="ib">自分が囮になってベルトルトの意識を引きつけ、その隙にエレンが硬質化した拳でうなじを掴む。囮は全身を炎に焼かれる前提の作戦で、アルミン本人が「僕がやる」と言い出した。</p></div>
+        <div class="dditem"><div class="ih">結果</div><p class="ib">アルミンは全身を焼かれて瀕死になり、エレンがベルトルトを引き剥がした。104期はベルトルトを取り押さえるが、アルミンは息をしていない。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>7. 注射器一本 — 白夜 <span class="ddep">#55 ／ 原作 第83〜84話</span></h3>
+        <p>リヴァイの手元にあるのはケニーから受け取った巨人化薬が一本だけ。使えば一人だけ蘇生させ、超大型巨人を継承させられる。候補はエルヴィンとアルミンの二人。</p>
+        <div class="ddtable"><table>
+          <thead><tr><th>候補</th><th>選ぶ理由</th></tr></thead>
+          <tbody>
+            <tr><td>エルヴィン</td><td>この戦力差を覆せる指揮官は他にいない。人類が今後生き残るための合理。フロックがこれを強く主張した。</td></tr>
+            <tr><td>アルミン</td><td>ベルトルトを喰わせれば超大型を継承でき、海の向こうへ行く夢を持った人間が残る。エレンとミカサが必死に懇願した。</td></tr>
+          </tbody></table></div>
+        <div class="dditem"><div class="ih">リヴァイの判断</div><p class="ib">一度はエルヴィンに打とうとした。だが弱々しく息をするエルヴィンの姿を見て、「あんたはもう十分やった、休んでいい」と手を止め、アルミンに打った。人類のためではなく、恩人を悪夢から降ろすための判断だった。</p></div>
+        <div class="dditem"><div class="ih">継承</div><p class="ib">巨人化したアルミンがベルトルトを喰い、超大型巨人を継承する。エルヴィンは真実を目前にして死んだ。地下室が開かれるのは、その数話あとである。</p></div>
+        <div class="dditem"><div class="ih">後に残るもの</div><p class="ib">フロックはこの選択を「英雄ではなく悪魔が必要だった」と読み替え、後のイェーガー派の理屈にする。エルヴィンの死が、まったく別の人間に別の意味で受け継がれてしまう。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>8. 戦後 — 何が残ったか <span class="ddep">#56 ／ 原作 第84話</span></h3>
+        <p>シガンシナ区は奪還され、ウォール・マリアの穴は硬質化で塞がれた。人類は五年ぶりに領土を取り戻したが、調査兵団の生存者はリヴァイと104期数名、そしてフロックら僅かな新兵だけだった。ハンジが第14代団長に就く。</p>
+        <div class="dditem"><div class="ih">損害の質</div><p class="ib">失ったのは兵の数ではなく、指揮系統そのもの。以後の調査兵団は「エルヴィンがいない状態で世界の真相と向き合う」ことになる。作品後半の重さのほとんどが、この一戦の結果として生まれている。</p></div>
+        <div class="dditem"><div class="ih">そして地下室</div><p class="ib">エレンは父が「全部分かる」と言い残した家の地下室の鍵を回す。この扉の向こうで、巨人と人類という物語の前提が丸ごと入れ替わる。</p></div>
+      </div>
+      <div class="ddpart">
+        <div class="fl">この章の戦い</div><p class="ddnames">ウォール・マリア最終奪還作戦</p>
+        <div class="fl" style="margin-top:12px">登場人物</div><p class="ddnames">エルヴィン ・ リヴァイ ・ ハンジ ・ エレン ・ ミカサ ・ アルミン ・ ジャン ・ コニー ・ サシャ ・ ヒストリア ・ モブリット ・ マルロ ・ フロック ／ ジーク ・ ライナー ・ ベルトルト ・ ピーク</p>
+        <p class="ddsrc">典拠: Wikipedia「進撃の巨人」あらすじ・登場人物、および Season 3 Part.2 各話サブタイトル。</p>
+      </div>
+    </section>
+    <section>
+      <div class="ddhead">
+        <h2>地鳴らし／天と地の戦い 詳解</h2>
+        <div class="ddsub">アニメ 第4期 #80〜94（The Final Season Part.2・完結編） ／ 原作 30〜34巻・第122〜139話</div>
+        <p class="ddlead">主人公が世界を滅ぼし、仲間がそれを止める最終章。二千年前の少女の事情から、巨人の力が消えるまでの因果を順に並べる。</p>
+      </div>
+      <div class="ddpart">
+        <h3>1. 二千年前の君から — 始祖ユミルの正体 <span class="ddep">#80 ／ 原作 第122話</span></h3>
+        <p>「道」でエレンとジークが辿り着いたのは、砂の丘で延々と巨人を作り続ける少女の姿だった。神でも悪魔でもない、舌を抜かれた奴隷の少女である。</p>
+        <div class="ddtable"><table>
+          <thead><tr><th>伝えられていたこと</th><th>実際</th></tr></thead>
+          <tbody>
+            <tr><td>大地の悪魔と契約して巨人の力を得た</td><td>逃亡中に大樹の洞へ落ち、水中の脊椎生物と融合して力を得た</td></tr>
+            <tr><td>エルディア帝国を築いた始祖</td><td>初代フリッツ王の道具として使われ、13歳で王を庇って死んだ</td></tr>
+            <tr><td>死後、魂が九つに分かれた</td><td>死後も「道」に縛られ、二千年ものあいだ巨人を作り続けていた</td></tr>
+          </tbody></table></div>
+        <div class="dditem"><div class="ih">ジークの命令</div><p class="ib">王家の血を持つジークは「すべてのユミルの民から生殖能力を奪え」と命じる。ユミルは王家の命令に従うようにできているため、これが実行されかけた。</p></div>
+        <div class="dditem"><div class="ih">エレンの一言</div><p class="ib">エレンは「お前は奴隷でも神でもない。ただの人間だ」と告げる。命令ではなく彼女自身に選ばせた。ユミルはエレンを選び、壁の硬質化が解けた。</p></div>
+        <div class="dditem"><div class="ih">なぜユミルが待っていたのか</div><p class="ib">ユミルはフリッツ王を心から愛していた。その愛の苦しみから自分を解き放ってくれる誰かを二千年待っていた。エレン曰く、それがミカサである。この一点が最終回の理屈になる。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>2. 地鳴らしの発動 <span class="ddep">#81〜82 ／ 原作 第123〜125話</span></h3>
+        <div class="dditem"><div class="ih">物理的に何が起きたか</div><p class="ib">三重の壁は幾千万の超大型巨人を硬質化して並べたもの。硬質化が解けた瞬間、その全部が歩き出した。エレン自身も規格外の骨格を持つ「終尾の巨人」となり、群れの先頭に立つ。</p></div>
+        <div class="dditem"><div class="ih">エレンの理屈</div><p class="ib">壁の外の人類を根絶すれば、パラディ島は永遠に安全になる。同時に、自分が世界の敵になって討たれることで巨人の力そのものを終わらせる——という未来も彼は見ていた。</p></div>
+        <div class="dditem"><div class="ih">島の反応</div><p class="ib">イェーガー派と多くの島民は歓喜し、ヒストリアは動けない。拘束されていたハンジ、リヴァイ、104期は自力で脱する。ここから「島の外」と「島の内」の両方が敵になる。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>3. 誰がどちら側に立ったか <span class="ddep">#83〜86 ／ 原作 第126〜129話</span></h3>
+        <div class="ddtable"><table>
+          <thead><tr><th>人物</th><th>立場</th></tr></thead>
+          <tbody>
+            <tr><td>アルミン ・ ミカサ ・ ジャン ・ コニー</td><td>エレンを止める。ジャンとコニーはイェーガー派を内側から裏切る形で動いた</td></tr>
+            <tr><td>ハンジ ・ リヴァイ</td><td>止める側。ハンジは飛行艇の離陸時間を稼ぐため単騎で巨人の群れへ突っ込み戦死</td></tr>
+            <tr><td>ライナー ・ ピーク ・ アニ ・ ガビ ・ ファルコ</td><td>旧・敵。全員が止める側に回り、同じ機体に乗った</td></tr>
+            <tr><td>マガト ・ キヨミ</td><td>マーレ軍元帥とヒィズル特使。輸送と護衛を担い、マガトはキースと軍艦を自爆させて死ぬ</td></tr>
+            <tr><td>フロック ・ イェーガー派</td><td>離陸を阻止する側。フロックはガビに射抜かれて死亡</td></tr>
+            <tr><td>イェレナ</td><td>ジークの目的地を知る唯一の者として連行される。拷問にも口を割らなかった</td></tr>
+          </tbody></table></div>
+        <div class="dditem"><div class="ih">コニーとファルコ</div><p class="ib">コニーは母を人間に戻すため、巨人化したファルコを喰わせようとした。ガビの必死の抵抗とファルコ自身の言葉で我に返る。憎しみの連鎖が一度だけ手前で止まる場面。</p></div>
+        <div class="dditem"><div class="ih">アルトゥルの言葉</div><p class="ib">サシャを殺したガビに掴みかかるカヤを止めたのは、サシャの父アルトゥルだった。「森から出ろと言ったのは大人だ、子供を責めるな」。作品の憎しみに対する唯一まっすぐな回答。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>4. 天と地の戦い — 何を壊せば止まるのか <span class="ddep">#88〜91 ／ 原作 第131〜135話</span></h3>
+        <p>混成部隊は飛行艇でエレンの巨体に取りつくが、迎撃に出てくるのは歴代の九つの巨人である。物理的にはほぼ勝ち目がない。</p>
+        <div class="dditem"><div class="ih">勝ち筋の設計</div><p class="ib">地鳴らしを止めるには、エレンとジークの接続を切るか、始祖ユミルの意思を変えるしかない。アルミンは歴代の巨人に喰われて「道」に入り、ジーク本人を説得する道を選んだ。</p></div>
+        <div class="dditem"><div class="ih">アルミン 対 ジーク</div><p class="ib">アルミンはジークに、無意味に思えた人生にも「何かを愛した時間」があったと語りかける。ジークの中で、クサヴァーとキャッチボールをしていた時間が意味を持つ。ジークは投降を選び、歴代継承者の想いがそれに呼応した。</p></div>
+        <div class="dditem"><div class="ih">停止</div><p class="ib">エレンはジークの首を刎ねるが、その瞬間に地鳴らしは止まった。世界の8割はすでに踏み潰されている。</p></div>
+        <div class="dditem"><div class="ih">ガビとリヴァイ</div><p class="ib">対巨人ライフルでアルミンを捕らえた巨人の目を撃ち抜いたのはガビで、その補助をしたのはリヴァイだった。サシャを撃った子と、人類最強の兵士が組んでいる。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>5. ミカサの選択 — なぜ巨人の力が消えたのか <span class="ddep">#93〜94 ／ 原作 第137〜139話</span></h3>
+        <div class="dditem"><div class="ih">道での最後の会話</div><p class="ib">エレンはアルミンに、自分が見た未来と、ミカサやアルミンの記憶を改竄して導いていたことを明かす。ミカサに想いを寄せていたことも打ち明ける。</p></div>
+        <div class="dditem"><div class="ih">決断</div><p class="ib">最後まで受け入れられなかったミカサが、マフラーを巻いて覚悟を決める。自らエレンの首を落とし、口づけをして「いってらっしゃい、エレン…。」と送り出した。</p></div>
+        <div class="dditem"><div class="ih">因果</div><p class="ib">その決断が、二千年ぶん王を愛したまま道に留まっていた始祖ユミルの未練を断ち切った。巨人の力は消え、無垢の巨人は人に戻り、継承者も人間になった。物理でも策でもなく、感情で終わっている。</p></div>
+        <div class="dditem"><div class="ih">アルミンの役</div><p class="ib">アルミンは「エレン・イェーガーを止めた者」として名乗り出る。これはエレンが最初から用意していた役で、島が英雄を持てるようにするための筋書きだった。3年後には和平大使に就く。</p></div>
+      </div>
+      <div class="ddpart">
+        <h3>6. エピローグ — 救いで終わらない <span class="ddep">#94 ／ 原作 第139話・34巻加筆</span></h3>
+        <p>パラディ島は軍事国家として軍拡を進め、演説に熱狂する群衆が描かれる。ニコロとブラウス一家、そしてヒッチはその輪の中で悲しげな顔をしている。数十年後、島は戦火で焼かれる。</p>
+        <div class="dditem"><div class="ih">ミカサ</div><p class="ib">シガンシナ区の丘の大樹の下にエレンを埋葬し、その墓を守って生きた。年老いて天寿を全うするまでマフラーを身につけていた。</p></div>
+        <div class="dditem"><div class="ih">最後の一コマ</div><p class="ib">はるか後の時代、丘の大樹の洞に一人の子供と犬が入っていく。始祖ユミルが力を得たのと同じ構図で、物語が円環として閉じる。</p></div>
+      </div>
+      <div class="ddpart">
+        <div class="fl">この章の戦い</div><p class="ddnames">地鳴らし ・ 天と地の戦い</p>
+        <div class="fl" style="margin-top:12px">登場人物</div><p class="ddnames">エレン ・ ミカサ ・ アルミン ・ リヴァイ ・ ハンジ ・ ジャン ・ コニー ・ ヒストリア ・ フロック ／ ジーク ・ ライナー ・ ピーク ・ アニ ・ ガビ ・ ファルコ ・ マガト ・ キース ／ 始祖ユミル ・ グリシャ ・ クルーガー ・ クサヴァー ・ ベルトルト ／ イェレナ ・ オニャンコポン ・ キヨミ ・ カヤ ・ アルトゥル ・ ニコロ ・ ラムジー</p>
+        <p class="ddsrc">典拠: Wikipedia「進撃の巨人」あらすじ・登場人物・年表、および The Final Season Part.2／完結編 各話サブタイトル。</p>
+      </div>
+    </section>
+  </div>
+
+  <div id="view-story" style="display:none">
+    <div class="story" id="story"></div>
+    <div class="empty" id="sempty" style="display:none">該当なし</div>
+  </div>
+
+  <div class="foot">データ: <code>260909_shingeki_data.js</code> — 追記するとグラフ・テーブル・詳細に自動反映。<br>
+    あらすじタブの各話見出しは、アニメ『進撃の巨人』第1期〜The Final Season 完結編（通し全94話）の公式サブタイトル。
+    話数・サブタイトルは Wikipedia「進撃の巨人 (アニメ)」各話リスト、人物・用語・年表は Wikipedia「進撃の巨人」「進撃の巨人の登場人物」に準拠（本文は要約・再構成）。巻数・話数は目安です。<br>
+    『進撃の巨人』の著作権は諫山創／講談社および各アニメ製作委員会に帰属します。個人の学習・整理目的の非営利ページです。</div>
+</div>
+
+<div class="drawerhost">
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="dhead">
+    <button class="dclose" id="dclose" aria-label="閉じる">×</button>
+    <div class="htop">
+      <span id="d-av"></span>
+      <div>
+        <h2 id="d-name"></h2>
+        <div class="yomi" id="d-yomi"></div>
+      </div>
+    </div>
+    <div class="bdgs" id="d-bdgs"></div>
+  </div>
+  <div class="dbody" id="d-body"></div>
+</aside>
+</div>
+
+<script src="260909_shingeki_data.js?v=20260909"></script>
+<script>
+(function(){
+  "use strict";
+  const N = SHINGEKI.nodes;
+  const byId = Object.fromEntries(N.map(n => [n.id, n]));
+  const KIND_LABEL = {person:"人物", battle:"戦い", faction:"勢力・巨人"};
+  const STATE_FILL = {"調査兵団":"#dcefe3","駐屯兵団":"#faeec6","憲兵団":"#dbe8f8","訓練兵団":"#e6e6e2",
+                      "王政":"#ebdcf7","マーレ":"#f0dcd6","戦士隊":"#f4e2cd","義勇兵":"#d9ecee",
+                      "ヒィズル":"#f6dde7","巨人":"#e0dedb","壁内":"#e8e4d8"};
+  const stateKey = s => (STATE_FILL[s] ? s : "other");
+
+  /* 人物プロフィール（能力値・CV・階級など） */
+  const PROF = SHINGEKI.profiles || {};
+  const prof = id => PROF[id] || null;
+  const STAT_LABEL = {bu:"武力", shiki:"指揮力", chi:"知力", miryoku:"魅力"};
+
+  /* 顔画像。manifest にある node だけ <img> を出し、読み込めなければ頭文字が残る */
+  const FDIR  = (SHINGEKI.faces && SHINGEKI.faces.dir) || "";
+  const FACES = new Set((SHINGEKI.faces && SHINGEKI.faces.ids) || []);
+  const faceURL = id => FDIR + id + ".jpg";
+  window.SGavFallback = el => {                     // 画像が無い環境では頭文字に差し替える
+    const w = el.parentNode; if (!w) return;
+    w.innerHTML = "";
+    const sp = document.createElement("span");
+    sp.className = "mono"; sp.textContent = w.dataset.mono || "";
+    w.appendChild(sp);
+  };
+  function avatarHTML(n, size){
+    const bg = STATE_FILL[n.state] || "#f0f0ee";
+    const ch = esc(String(n.name).replace(/[（(].*$/,"").slice(0,1));
+    return '<span class="avw av-' + size + '" data-mono="' + ch + '" style="background:' + bg + '">' +
+           (FACES.has(n.id)
+             ? '<img src="' + faceURL(n.id) + '" alt="" loading="lazy" onerror="SGavFallback(this)">'
+             : '<span class="mono">' + ch + '</span>') +
+           '</span>';
+  }
+
+  document.getElementById("range").textContent = "収録範囲: " + SHINGEKI.meta.range;
+  document.getElementById("note").innerHTML =
+    SHINGEKI.meta.note + " &nbsp;/&nbsp; 更新: <b>" + SHINGEKI.meta.updated + "</b>";
+
+  /* ── 索引: 逆参照（戦い→参加者） ── */
+  N.forEach(n => { n._in = []; });
+  N.forEach(n => (n.battles||[]).forEach(b => { if (byId[b]) byId[b]._in.push(n.id); }));
+  N.forEach(n => {
+    n.firstn = parseInt(String(n.first).replace(/[^0-9]/g,""), 10) || 999;
+    const pf = PROF[n.id] || {};
+    n.titan = pf.titan || "";
+    n.hcm   = typeof pf.hcm === "number" ? pf.hcm : null;
+    n.cv  = pf.cv || "";
+    n._hay = [n.name, n.yomi, n.state, n.group, n.role, n.klass, n.arc, n.status,
+              n.summary, (n.tags||[]).join(" "),
+              pf.cv, pf.epithet, pf.rank, pf.cls, pf.titan, pf.age, pf.birth,
+              (n.detail||[]).map(d => d.h + d.body).join(" ")].join(" ").toLowerCase();
+  });
+
+  /* ── あらすじの索引 ── */
+  const ARCS = SHINGEKI.arcs || [];
+  ARCS.forEach(a => {
+    // アニメの通し話数（#1〜#94）の区間を解析。季ごとの話数はSEASON_BASEで通しに換算する。
+    const es = String(a.ep||"");
+    a._segs = [...es.matchAll(/#(\d+)(?:〜(\d+))?/g)]
+                .map(x => ({a:+x[1], b:+(x[2] || x[1])}));
+    const cm = String(a.chapters||"").match(/第(\d+)(?:〜(\d+))?話/);   // 原作の話数レンジ
+    a._chA = cm ? +cm[1] : null;
+    a._chB = cm ? +(cm[2] || cm[1]) : (cm ? +cm[1] : null);
+    if (cm && !cm[2] && /話〜/.test(String(a.chapters))) a._chB = 99999;
+    a._hay = [a.name, a.ep, a.vols, a.chapters, a.year, a.era, a.sides, a.result, a.rank, a.lead,
+              (a.points||[]).join(" "),
+              (a.checks||[]).map(c => c.q + c.a).join(" "),
+              a.quote ? a.quote.t + a.quote.by : "",
+              [...(a.newcomers||[]), ...(a.deaths||[])].map(k => byId[k] ? byId[k].name : "").join(" "),
+              (a.beats||[]).map(b => (b.ep||"") + b.h + b.body).join(" "),
+              [...(a.keys||[]), ...(a.battles||[])].map(k => byId[k] ? byId[k].name + " " + byId[k].yomi : "").join(" ")
+             ].join(" ").toLowerCase();
+  });
+
+  /* ── エッジ（無向・重複排除） ── */
+  const EDGES = [];
+  const seen = new Set();
+  function addEdge(a, b, label){
+    if (!byId[a] || !byId[b] || a === b) return;
+    const k = a < b ? a+"|"+b : b+"|"+a;
+    if (seen.has(k)) return;
+    seen.add(k);
+    EDGES.push({a, b, label: label || ""});
+  }
+  N.forEach(n => {
+    (n.rel||[]).forEach(r => addEdge(n.id, r.to, r.label));
+    (n.battles||[]).forEach(b => addEdge(n.id, b, "参戦"));
+  });
+  const deg = {};
+  EDGES.forEach(e => { deg[e.a]=(deg[e.a]||0)+1; deg[e.b]=(deg[e.b]||0)+1; });
+  const neigh = {};
+  N.forEach(n => neigh[n.id] = new Set());
+  EDGES.forEach(e => { neigh[e.a].add(e.b); neigh[e.b].add(e.a); });
+
+  /* ── 状態 ── */
+  const S = { view:"graph", q:"", kind:"all", state:"all", sortK:"firstn", sortD:1, sel:null };
+
+  /* ── フィルタチップ ── */
+  function buildChips(el, key, entries){
+    entries.forEach(([val, label, n]) => {
+      const b = document.createElement("button");
+      b.className = "chip" + (S[key] === val ? " on" : "");
+      b.dataset.val = val;
+      b.innerHTML = label + (n != null ? '<span class="n">' + n + "</span>" : "");
+      b.onclick = () => {
+        S[key] = val;
+        [...el.querySelectorAll(".chip")].forEach(c => c.classList.toggle("on", c.dataset.val === val));
+        render();
+      };
+      el.appendChild(b);
+    });
+  }
+  const cnt = (f) => N.filter(f).length;
+  buildChips(document.getElementById("kindchips"), "kind", [
+    ["all","すべて",N.length],
+    ["person","人物",cnt(n=>n.kind==="person")],
+    ["battle","戦い",cnt(n=>n.kind==="battle")],
+    ["faction","勢力・巨人",cnt(n=>n.kind==="faction")]
+  ]);
+  const states = [...new Set(N.map(n => n.state))].filter(s => STATE_FILL[s]);
+  buildChips(document.getElementById("statechips"), "state",
+    [["all","すべて",null]].concat(states.map(s => [s, s, cnt(n=>n.state===s)])));
+
+  /* ── 検索 ── */
+  const qEl = document.getElementById("q"), sbox = document.getElementById("searchbox");
+  qEl.addEventListener("input", () => {
+    S.q = qEl.value.trim().toLowerCase();
+    sbox.classList.toggle("has", !!S.q);
+    render();
+  });
+  document.getElementById("clr").onclick = () => { qEl.value=""; S.q=""; sbox.classList.remove("has"); render(); qEl.focus(); };
+
+  const passFilter = n => (S.kind === "all" || n.kind === S.kind) && (S.state === "all" || n.state === S.state);
+  const passSearch  = n => !S.q || n._hay.indexOf(S.q) >= 0;
+
+  /* ── タブ ── */
+  document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+    S.view = t.dataset.view;
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
+    ["graph","table","story","deep","map"].forEach(v => {
+      document.getElementById("view-" + v).style.display = S.view === v ? "" : "none";
+    });
+    // 種別・国フィルタは人物/戦い一覧にだけ効くので、あらすじでは隠す
+    document.querySelectorAll("#filterrow .chipset").forEach(c => c.style.display = (S.view === "story" || S.view === "deep" || S.view === "map") ? "none" : "");
+    render();
+    if (S.view === "graph") { sim.alpha = .35; tick(); }
+  });
+
+  /* ============ グラフ ============ */
+  const SVG = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById("svg");
+  const gRoot = document.createElementNS(SVG,"g");
+  const gLink = document.createElementNS(SVG,"g");
+  const gLabl = document.createElementNS(SVG,"g");
+  const gNode = document.createElementNS(SVG,"g");
+  const gDefs = document.createElementNS(SVG,"defs");
+  gRoot.appendChild(gLink); gRoot.appendChild(gLabl); gRoot.appendChild(gNode);
+  svg.appendChild(gDefs); svg.appendChild(gRoot);
+
+  const P = {};      // id -> {x,y,vx,vy,fixed}
+  const view = {x:0, y:0, k:1};
+  let W = 900, H = 560;
+  function measure(){ const r = svg.getBoundingClientRect(); W = r.width || 900; H = r.height || 560; }
+
+  // 初期配置: 国ごとにゆるくクラスタ
+  const clusterAt = {};
+  (function seed(){
+    const groups = [...new Set(N.map(n => n.state))];
+    groups.forEach((g, i) => {
+      const a = (i / groups.length) * Math.PI * 2;
+      clusterAt[g] = {x: Math.cos(a) * 800, y: Math.sin(a) * 250};
+    });
+    N.forEach((n, i) => {
+      const c = clusterAt[n.state] || {x:0,y:0};
+      P[n.id] = {x: c.x + Math.cos(i*2.399)*95, y: c.y + Math.sin(i*2.399)*95, vx:0, vy:0};
+    });
+  })();
+
+  const radius = n => n.kind === "battle" ? 15 : n.kind === "faction" ? 13
+                   : FACES.has(n.id) ? Math.min(19, 11 + (deg[n.id]||0) * 0.9)
+                   : Math.min(15, 6 + (deg[n.id]||0) * 1.1);
+  // ラベルが長い／大きいノードほど強く反発させ、文字の重なりを減らす
+  const charge = n => 9 + radius(n) * 3 + String(n.name).length * 3.2;
+  const isBig  = n => n.kind !== "person" || (deg[n.id]||0) >= 5;
+  function boxOf(n){
+    const r = radius(n), cw = isBig(n) ? 12 : 10;
+    return {hw: Math.max(r, String(n.name).length * cw / 2) + 5, hh: r + 15};
+  }
+
+  const sim = {alpha:1, nodes:[], links:[]};
+  function step(){
+    const ns = sim.nodes, ls = sim.links, a = sim.alpha;
+    for (let i=0;i<ns.length;i++){
+      const A = P[ns[i].id];
+      for (let j=i+1;j<ns.length;j++){
+        const B = P[ns[j].id];
+        let dx = B.x-A.x, dy = B.y-A.y, d2 = dx*dx+dy*dy;
+        if (d2 < 1) { dx = (i-j)*.6 + .3; dy = (j-i)*.4 + .2; d2 = dx*dx+dy*dy; }
+        if (d2 > 900000) continue;
+        const f = ns[i]._c * ns[j]._c * 1.35 / d2 * a;
+        const d = Math.sqrt(d2), fx = dx/d*f, fy = dy/d*f;
+        A.vx -= fx; A.vy -= fy; B.vx += fx; B.vy += fy;
+      }
+    }
+    ls.forEach(l => {
+      const A = P[l.a], B = P[l.b];
+      const dx = B.x-A.x, dy = B.y-A.y, d = Math.sqrt(dx*dx+dy*dy) || .01;
+      const f = (d - l._rest) * l._k * a, fx = dx/d*f, fy = dy/d*f;
+      A.vx += fx; A.vy += fy; B.vx -= fx; B.vy -= fy;
+    });
+    ns.forEach(n => {
+      const p = P[n.id];
+      const c = clusterAt[n.state] || {x:0,y:0};
+      p.vx += (c.x - p.x) * .0014 * a;
+      p.vy += (c.y - p.y) * .0034 * a;
+      if (p.fixed) { p.vx = p.vy = 0; return; }
+      p.vx *= .82; p.vy *= .82;
+      p.x += Math.max(-24, Math.min(24, p.vx));
+      p.y += Math.max(-24, Math.min(24, p.vy));
+    });
+    collide(ns); collide(ns);
+    sim.alpha *= .988;
+  }
+
+  // ラベル込みの矩形として重なりを押し出す（文字の被りを防ぐ）
+  function collide(ns){
+    for (let i=0;i<ns.length;i++){
+      const ai = ns[i], A = P[ai.id];
+      for (let j=i+1;j<ns.length;j++){
+        const bj = ns[j], B = P[bj.id];
+        const dx = B.x - A.x, dy = B.y - A.y;
+        const ox = (ai._hw + bj._hw) - Math.abs(dx); if (ox <= 0) continue;
+        const oy = (ai._hh + bj._hh) - Math.abs(dy); if (oy <= 0) continue;
+        if (ox < oy){
+          const s = (dx >= 0 ? 1 : -1) * ox * .25;
+          if (!A.fixed) A.x -= s; if (!B.fixed) B.x += s;
+        } else {
+          const s = (dy >= 0 ? 1 : -1) * oy * .25;
+          if (!A.fixed) A.y -= s; if (!B.fixed) B.y += s;
+        }
+      }
+    }
+  }
+
+  let raf = null;
+  function tick(){
+    if (raf) return;
+    const loop = () => {
+      raf = null;
+      if (S.view !== "graph") return;
+      for (let i=0;i<2;i++) step();
+      draw();
+      if (sim.alpha > .02 || dragging) raf = requestAnimationFrame(loop);
+      else if (!view.touched) fit();   // 収束後に一度だけ全体表示に合わせ直す
+    };
+    raf = requestAnimationFrame(loop);
+  }
+
+  const el = {};   // id -> {g, shp, lbl}
+  function buildGraph(vis){
+    gLink.textContent = ""; gNode.textContent = ""; gLabl.textContent = ""; gDefs.textContent = "";
+    Object.keys(el).forEach(k => delete el[k]);
+    const set = new Set(vis.map(n => n.id));
+    vis.forEach(n => { n._c = charge(n); const b = boxOf(n); n._hw = b.hw; n._hh = b.hh; });
+    sim.nodes = vis;
+    sim.links = EDGES.filter(e => set.has(e.a) && set.has(e.b));
+    // 次数の高いノード（勢力・戦い）に繋がる辺は弱く長くする。でないと全ノードが一点に潰れる。
+    sim.links.forEach(l => {
+      const lo = Math.min(deg[l.a]||1, deg[l.b]||1), hi = Math.max(deg[l.a]||1, deg[l.b]||1);
+      l._k    = .034 / (1 + lo * 0.16);
+      l._rest = 120 + Math.min(180, hi * 2.6);
+    });
+
+    sim.links.forEach(l => {
+      const ln = document.createElementNS(SVG,"line");
+      ln.setAttribute("class","lnk");
+      l._el = ln; gLink.appendChild(ln);
+      const lb = document.createElementNS(SVG,"text");
+      lb.setAttribute("class","lnk-lbl"); lb.setAttribute("text-anchor","middle");
+      lb.textContent = l.label; l._lb = lb; gLabl.appendChild(lb);
+    });
+
+    vis.forEach(n => {
+      const g = document.createElementNS(SVG,"g");
+      g.setAttribute("class","node"); g.dataset.id = n.id;
+      const r = radius(n);
+      let shp;
+      if (n.kind === "battle"){
+        shp = document.createElementNS(SVG,"rect");
+        shp.setAttribute("x",-r); shp.setAttribute("y",-r);
+        shp.setAttribute("width",r*2); shp.setAttribute("height",r*2);
+        shp.setAttribute("rx",3); shp.setAttribute("transform","rotate(45)");
+      } else {
+        shp = document.createElementNS(SVG,"circle");
+        shp.setAttribute("r", r);
+        if (n.kind === "faction") shp.setAttribute("stroke-dasharray","3 2.5");
+      }
+      shp.setAttribute("class","shp");
+      shp.setAttribute("fill", STATE_FILL[n.state] || "#f0f0ee");
+      g.appendChild(shp);
+      // 顔画像を円でクリップして重ねる（読み込めなければ国の色だけが残る）
+      if (n.kind === "person" && FACES.has(n.id)){
+        const cid = "cp-" + n.id;
+        const cp = document.createElementNS(SVG,"clipPath");
+        cp.setAttribute("id", cid);
+        const cc = document.createElementNS(SVG,"circle");
+        cc.setAttribute("r", r - 1);
+        cp.appendChild(cc); gDefs.appendChild(cp);
+        const im = document.createElementNS(SVG,"image");
+        im.setAttribute("x", -r); im.setAttribute("y", -r);
+        im.setAttribute("width", r*2); im.setAttribute("height", r*2);
+        im.setAttribute("preserveAspectRatio","xMidYMid slice");
+        im.setAttribute("clip-path","url(#" + cid + ")");
+        im.setAttribute("href", faceURL(n.id));
+        im.addEventListener("error", () => im.remove());
+        g.appendChild(im);
+      }
+      const t = document.createElementNS(SVG,"text");
+      t.setAttribute("class","n-lbl" + (n.kind !== "person" || (deg[n.id]||0) >= 5 ? " big" : ""));
+      t.setAttribute("text-anchor","middle");
+      t.setAttribute("y", r + 11);
+      t.textContent = n.name;
+      g.appendChild(t);
+      el[n.id] = {g, shp};
+      gNode.appendChild(g);
+    });
+  }
+
+  function draw(){
+    sim.nodes.forEach(n => {
+      const p = P[n.id];
+      el[n.id].g.setAttribute("transform","translate(" + p.x.toFixed(1) + "," + p.y.toFixed(1) + ")");
+    });
+    sim.links.forEach(l => {
+      const A = P[l.a], B = P[l.b];
+      l._el.setAttribute("x1",A.x); l._el.setAttribute("y1",A.y);
+      l._el.setAttribute("x2",B.x); l._el.setAttribute("y2",B.y);
+      l._lb.setAttribute("x",(A.x+B.x)/2); l._lb.setAttribute("y",(A.y+B.y)/2 - 3);
+    });
+    applyTransform();
+  }
+  function applyTransform(){
+    gRoot.setAttribute("transform","translate(" + (W/2 + view.x) + "," + (H/2 + view.y) + ") scale(" + view.k + ")");
+  }
+
+  function paintGraphState(){
+    const hits = new Set(sim.nodes.filter(passSearch).map(n => n.id));
+    const focus = S.sel && el[S.sel] ? new Set([S.sel, ...neigh[S.sel]]) : null;
+    sim.nodes.forEach(n => {
+      const g = el[n.id].g;
+      const isHit = !S.q || hits.has(n.id);
+      const inFocus = !focus || focus.has(n.id);
+      g.classList.toggle("dim", !(isHit && inFocus));
+      g.classList.toggle("hit", !!S.q && hits.has(n.id));
+      g.classList.toggle("sel", S.sel === n.id);
+    });
+    sim.links.forEach(l => {
+      const act = S.sel && (l.a === S.sel || l.b === S.sel);
+      l._el.classList.toggle("act", !!act);
+      l._el.classList.toggle("dim", !!(focus && !act) || !!(S.q && !(hits.has(l.a) && hits.has(l.b))));
+      l._lb.classList.toggle("act", !!act);
+    });
+  }
+
+  function fit(){
+    measure();
+    if (!sim.nodes.length) return;
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    sim.nodes.forEach(n => { const p=P[n.id]; x0=Math.min(x0,p.x); y0=Math.min(y0,p.y); x1=Math.max(x1,p.x); y1=Math.max(y1,p.y); });
+    const pad = 60, w = (x1-x0)+pad*2, h = (y1-y0)+pad*2;
+    const kraw = Math.min(W/w, H/h);
+    // 画面が狭いときは縮めすぎず、主要ハブ（エレン）を中心に置いてパンで見せる
+    const floor = W < 700 ? .82 : .5;
+    view.k = Math.max(floor, Math.min(1.55, kraw));
+    let cx = (x0+x1)/2, cy = (y0+y1)/2;
+    if (kraw < floor){
+      const hub = sim.nodes.slice().sort((a,b) => (deg[b.id]||0) - (deg[a.id]||0))[0];
+      if (hub){ cx = P[hub.id].x; cy = P[hub.id].y; }
+    }
+    view.x = -cx * view.k;
+    view.y = -cy * view.k;
+    applyTransform();
+  }
+
+  /* パン・ズーム・ドラッグ */
+  let dragging = null, panning = null;
+  svg.addEventListener("pointerdown", e => {
+    view.touched = true;                 // 一度でも触ったら自動フィットは止める
+    const g = e.target.closest(".node");
+    try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+    if (g){
+      dragging = {id:g.dataset.id, moved:0};
+      P[dragging.id].fixed = true;
+    } else {
+      panning = {x:e.clientX, y:e.clientY, vx:view.x, vy:view.y};
+    }
+  });
+  svg.addEventListener("pointermove", e => {
+    if (dragging){
+      const p = P[dragging.id];
+      p.x += e.movementX / view.k; p.y += e.movementY / view.k;
+      dragging.moved += Math.abs(e.movementX) + Math.abs(e.movementY);
+      sim.alpha = Math.max(sim.alpha, .25); tick();
+    } else if (panning){
+      view.x = panning.vx + (e.clientX - panning.x);
+      view.y = panning.vy + (e.clientY - panning.y);
+      applyTransform();
+    }
+  });
+  svg.addEventListener("pointerup", e => {
+    if (dragging){
+      const d = dragging; dragging = null;
+      P[d.id].fixed = false;
+      if (d.moved < 5) open(d.id);
+      sim.alpha = Math.max(sim.alpha, .12); tick();
+    } else if (panning && Math.abs(e.clientX-panning.x) + Math.abs(e.clientY-panning.y) < 5){
+      // 背景タップ = 選択解除
+      if (S.sel){ S.sel = null; paintGraphState(); }
+    }
+    panning = null;
+  });
+  svg.addEventListener("pointercancel", () => { if (dragging) P[dragging.id].fixed = false; dragging = null; panning = null; });
+  svg.addEventListener("wheel", e => {
+    view.touched = true;
+    e.preventDefault();
+    const f = Math.exp(-e.deltaY * .0015);
+    const r = svg.getBoundingClientRect();
+    const cx = e.clientX - r.left - W/2, cy = e.clientY - r.top - H/2;
+    const k2 = Math.max(.2, Math.min(3.2, view.k * f));
+    view.x = cx - (cx - view.x) * (k2/view.k);
+    view.y = cy - (cy - view.y) * (k2/view.k);
+    view.k = k2; applyTransform();
+  }, {passive:false});
+  const zoomBy = f => { view.touched = true; view.k = Math.max(.2, Math.min(3.2, view.k*f)); view.x*=f; view.y*=f; applyTransform(); };
+  document.getElementById("zin").onclick  = () => zoomBy(1.25);
+  document.getElementById("zout").onclick = () => zoomBy(.8);
+  document.getElementById("zfit").onclick = () => fit();
+
+  /* ============ テーブル ============ */
+  const tbody = document.getElementById("tbody");
+  document.querySelectorAll("#tbl thead th").forEach(th => th.onclick = () => {
+    const k = th.dataset.k;
+    if (S.sortK === k) S.sortD *= -1; else { S.sortK = k; S.sortD = 1; }
+    render();
+  });
+  function renderTable(rows){
+    document.querySelectorAll("#tbl thead th").forEach(th => {
+      const on = th.dataset.k === S.sortK;
+      th.classList.toggle("sorted", on);
+      th.querySelector(".ar").textContent = on ? (S.sortD > 0 ? "↑" : "↓") : "↕";
+    });
+    const k = S.sortK, d = S.sortD;
+    const sorted = rows.slice().sort((a,b) => {
+      let va = a[k], vb = b[k];
+      if (k === "hcm"){
+        if (va == null && vb == null) return a.name.localeCompare(b.name,"ja");
+        if (va == null) return 1;
+        if (vb == null) return -1;
+        return (vb - va) * d || a.name.localeCompare(b.name,"ja");
+      }
+      if (k === "firstn") return (va - vb) * d || a.name.localeCompare(b.name,"ja");
+      va = String(va == null ? "" : va); vb = String(vb == null ? "" : vb);
+      return va.localeCompare(vb, "ja") * d || a.firstn - b.firstn;
+    });
+    tbody.textContent = "";
+    sorted.forEach(n => {
+      const tr = document.createElement("tr");
+      tr.onclick = () => open(n.id);
+      tr.innerHTML =
+        '<td class="nm"><span class="nmbox">' + (n.kind === "person" ? avatarHTML(n,"s") : "") +
+          '<span>' + esc(n.name) + '</span></span></td>' +
+        '<td><span class="bdg k">' + KIND_LABEL[n.kind] + '</span></td>' +
+        '<td><span class="bdg s-' + stateKey(n.state) + '">' + esc(n.state) + '</span></td>' +
+        '<td>' + esc(n.group || "—") + '</td>' +
+        '<td>' + esc(n.klass) + '</td>' +
+        '<td>' + (n.titan ? esc(n.titan) : "—") + '</td>' +
+        '<td class="num">' + (n.hcm != null ? n.hcm : "—") + '</td>' +
+        '<td>' + (n.cv ? esc(n.cv) : "—") + '</td>' +
+        '<td>' + esc(n.role) + '</td>' +
+        '<td>' + esc(n.first) + '</td>' +
+        '<td><span class="bdg' + (["戦死","進行中"].includes(n.status) ? " st-" + n.status : " k") + '">' + esc(n.status) + '</span></td>' +
+        '<td class="sm">' + esc(n.summary) + '</td>';
+      tbody.appendChild(tr);
+    });
+    document.getElementById("tempty").style.display = sorted.length ? "none" : "";
+  }
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+  /* ============ あらすじ ============ */
+  const storyEl = document.getElementById("story");
+  function renderStory(){
+    // 話数検索: 「13話」= 全シリーズ横断 / 「2期13話」「s2e13」「2-13」= シリーズ指定
+    const q = S.q.replace(/[\s　]+/g, "");
+    /* 季ごとの話数 → 通し話数の下駄（第1期 1〜25 / 第2期 26〜37 / 第3期 38〜59 / 第4期 60〜94） */
+    const SEASON_BASE = {1:0, 2:25, 3:37, 4:59};
+    let season = null, ep = null, hashOnly = false, mm;
+    if ((mm = q.match(/^第?([1-4])(?:期|シリーズ)第?(\d+)話?$/))) { season = +mm[1]; ep = +mm[2]; }
+    else if ((mm = q.match(/^s([1-4])e(\d+)$/i)))               { season = +mm[1]; ep = +mm[2]; }
+    else if ((mm = q.match(/^([1-4])-(\d+)$/)))                 { season = +mm[1]; ep = +mm[2]; }
+    else if ((mm = q.match(/^(#?)第?(\d+)話?$/)))                { hashOnly = mm[1] === "#"; ep = +mm[2]; }
+    const absEp = (season != null && ep != null) ? SEASON_BASE[season] + ep : ep;
+    const hitEp = a => (a._segs || []).some(x => absEp >= x.a && absEp <= x.b);
+    const rows = ARCS.filter(a => {
+      if (!S.q) return true;
+      if (ep != null){
+        // 期の指定なしの数字は「アニメ通し話数」と「原作話数」の両方で探す（"#12" はアニメのみ）
+        if (season == null && !hashOnly && a._chA != null && ep >= a._chA && ep <= a._chB) return true;
+        return hitEp(a);
+      }
+      return a._hay.indexOf(S.q) >= 0;
+    });
+    const idx = rows.length > 1
+      ? '<div class="arcidx"><h2>章の索引</h2>' +
+        '<div class="ixsub">全' + ARCS.length + '章 / ' + rows.length + '章を表示中。行をクリックでその章へ。各章末に要点と復習チェックあり。</div>' +
+        '<div class="ixlist">' + rows.map(a =>
+          '<button class="ixrow" data-arc="' + a.id + '">' +
+            '<span class="ixno">' + esc(a.no) + '</span>' +
+            '<span class="ixnm">' + esc(a.name) + '</span>' +
+            '<span class="ixmeta">' + esc(a.vols) + (a.year && a.year !== "—" ? " ・ " + esc(a.year) : "") +
+              (a.result && a.result !== "—" ? " ・ " + esc(a.result) : "") + '</span>' +
+          '</button>').join("") +
+        '</div></div>'
+      : "";
+    storyEl.innerHTML = idx + rows.map(a => {
+      const now = /進行中|放送中/.test(String(a.ep) + a.vols + (a.result||""));
+      const keys = (a.keys||[]).filter(k => byId[k]);
+      const bats = (a.battles||[]).filter(k => byId[k]);
+      const nc   = (a.newcomers||[]).filter(k => byId[k]);
+      const dd   = (a.deaths||[]).filter(k => byId[k]);
+      const meta = [["原作", a.chapters], ["時期", a.year], ["対戦", a.sides], ["結果", a.result], ["エレンの立場", a.rank]]
+        .filter(x => x[1] && x[1] !== "—")
+        .map(x => "<dt>" + x[0] + "</dt><dd>" + esc(x[1]) + "</dd>").join("");
+      return '<section class="arc' + (now ? " now" : "") + '" id="arc-' + a.id + '">' +
+        '<div class="ahead"><span class="ano">' + esc(a.no) + '</span>' +
+          '<h2>' + esc(a.name) + '</h2>' +
+          (a.ep ? '<span class="aep">' + esc(a.ep) + '</span>' : "") +
+          '<span class="avol">' + esc(a.vols) + (a.era ? " ・ " + esc(a.era) : "") + '</span></div>' +
+        '<p class="alead">' + esc(a.lead) + '</p>' +
+        (meta ? '<dl class="ameta">' + meta + '</dl>' : "") +
+        (a.quote ? '<blockquote class="aquote">「' + esc(a.quote.t) + '」<b>— ' + esc(a.quote.by) + '</b></blockquote>' : "") +
+        (a.beats||[]).map(b => '<div class="beat"><div class="bh">' + esc(b.h) +
+            (b.ep && b.ep !== "—" ? '<span class="bep">' + esc(b.ep) + '</span>' : "") +
+          '</div><p class="bb">' + esc(b.body) + '</p></div>').join("") +
+        ((a.points||[]).length ? '<div class="apoints"><div class="fl">この章の要点</div><ul>' +
+          a.points.map(p => '<li>' + esc(p) + '</li>').join("") + '</ul></div>' : "") +
+        ((a.checks||[]).length ? '<div class="achecks"><div class="fl">復習チェック（クリックで答え）</div>' +
+          '<div class="qtool"><button class="qbtn" data-qa="open">全部開く</button>' +
+          '<button class="qbtn" data-qa="close">全部閉じる</button></div>' +
+          a.checks.map(c => '<details class="qa"><summary>' + esc(c.q) + '</summary>' +
+            '<p class="ans">' + esc(c.a) + '</p></details>').join("") + '</div>' : "") +
+        (bats.length ? '<div class="arcfoot"><div class="fl">この章の戦い</div><div class="rels">' +
+          bats.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+        (keys.length ? '<div class="arcfoot"><div class="fl">主要人物</div><div class="rels">' +
+          keys.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+        (nc.length ? '<div class="arcfoot"><div class="fl">この章の主な新顔</div><div class="rels">' +
+          nc.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+        (dd.length ? '<div class="arcfoot"><div class="fl">この章で退場</div><div class="rels">' +
+          dd.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+      '</section>';
+    }).join("");
+    storyEl.querySelectorAll(".rel").forEach(b => b.onclick = () => open(b.dataset.id));
+    storyEl.querySelectorAll(".ixrow").forEach(b => b.onclick = () => {
+      const t = document.getElementById("arc-" + b.dataset.arc);
+      if (t) t.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+    storyEl.querySelectorAll(".qbtn").forEach(b => b.onclick = () => {
+      const box = b.closest(".achecks");
+      box.querySelectorAll("details.qa").forEach(d => d.open = b.dataset.qa === "open");
+    });
+    document.getElementById("sempty").style.display = rows.length ? "none" : "";
+    return rows.length;
+  }
+
+
+  /* ============ 詳細ドロワー ============ */
+  const drawer = document.getElementById("drawer");
+  function open(id){
+    const n = byId[id]; if (!n) return;
+    S.sel = id;
+    document.getElementById("d-av").innerHTML = n.kind === "person" ? avatarHTML(n,"l") : "";
+    document.getElementById("d-name").textContent = n.name;
+    document.getElementById("d-yomi").textContent = n.yomi || "";
+    document.getElementById("d-bdgs").innerHTML =
+      '<span class="bdg k">' + KIND_LABEL[n.kind] + '</span>' +
+      '<span class="bdg s-' + stateKey(n.state) + '">' + esc(n.state) + '</span>' +
+      '<span class="bdg k">' + esc(n.klass) + '</span>' +
+      '<span class="bdg' + (["戦死","死亡","消滅"].includes(n.status) ? " st-" + n.status : " k") + '">' + esc(n.status) + '</span>' +
+      (n.tags||[]).map(t => '<span class="bdg k">#' + esc(t) + '</span>').join("");
+
+    const pf = prof(n.id);
+    let h = '<p class="dsum">' + esc(n.summary) + '</p>';
+    if (pf && pf.stats) h += statsHTML(pf);
+    h += '<dl class="dgrid">' +
+      row("所属", n.group) + row("立場 / 結果", n.role) +
+      (pf ? row("異名", pf.epithet) + row("階級", pf.rank) + row("兵種・立場", pf.cls) +
+            row("継承した巨人", pf.titan) + row("年齢", pf.age) +
+            row("身長", pf.hcm ? pf.hcm + "cm" : "") + row("誕生日", pf.birth) +
+            row("性別", pf.gender) + row("声優", pf.cv) : "") +
+      row("初登場", n.first) +
+      row("登場編", n.arc) +
+      (pf ? row("出典", pf.src ? "Wikipedia「進撃の巨人の登場人物」: " + pf.src : "") : "") + '</dl>';
+    (n.detail||[]).forEach(d => {
+      h += '<div class="dsec"><h3>' + esc(d.h) + '</h3><p>' + esc(d.body) + '</p></div>';
+    });
+
+    // 登場する戦い / 参加者
+    const bat = (n.battles||[]).filter(b => byId[b]);
+    if (bat.length) h += relBlock("登場する戦い", bat.map(b => ({id:b, label:""})));
+    if (n.kind === "battle" && n._in.length) h += relBlock("参加者", n._in.map(i => ({id:i, label:""})));
+
+    const rel = (n.rel||[]).filter(r => byId[r.to]);
+    const back = N.filter(o => (o.rel||[]).some(r => r.to === n.id) && !rel.some(r => r.to === o.id))
+                  .map(o => ({id:o.id, label:(o.rel.find(r => r.to === n.id)||{}).label}));
+    const all = rel.map(r => ({id:r.to, label:r.label})).concat(back);
+    if (all.length) h += relBlock("関連", all);
+
+    document.getElementById("d-body").innerHTML = h;
+    document.getElementById("d-body").scrollTop = 0;
+    document.getElementById("d-body").querySelectorAll(".rel").forEach(b => b.onclick = () => open(b.dataset.id));
+    drawer.classList.add("on"); drawer.setAttribute("aria-hidden","false");
+    document.body.classList.add("dopen"); reflowAfterDrawer();
+    if (history.replaceState) history.replaceState(null, "", "#" + id);
+    if (S.view === "graph") paintGraphState();
+  }
+  const row = (k,v) => v && v !== "—" ? "<dt>" + esc(k) + "</dt><dd>" + esc(v) + "</dd>" : "";
+  function statsHTML(pf){
+    const s = pf.stats;
+    let h = '<div class="stats"><div class="sthead"><span class="sttitle">能力値</span>' +
+            '<span class="stsrc">' + esc(pf.statsSrc || "公式ガイドブック") + '</span></div>';
+    ["bu","shiki","chi","miryoku"].forEach(k => {
+      if (typeof s[k] !== "number") return;
+      h += '<div class="strow"><span class="k">' + STAT_LABEL[k] + '</span>' +
+           '<span class="bar"><i style="width:' + Math.max(2, Math.min(100, s[k])) + '%"></i></span>' +
+           '<span class="v">' + s[k] + esc(s[k+"P"] || "") + '</span></div>';
+    });
+    if (s.kei) h += '<div class="strow grade"><span class="k">経験</span><span class="bar" style="background:none"></span>' +
+                    '<span class="v">' + esc(s.kei) + '</span></div>';
+    return h + '</div>';
+  }
+  function relBlock(title, items){
+    return '<div class="dsec"><h3>' + title + '</h3><div class="rels">' +
+      items.map(i => '<button class="rel" data-id="' + i.id + '">' + esc(byId[i.id].name) +
+        (i.label ? '<span class="rl">' + esc(i.label) + '</span>' : "") + '</button>').join("") +
+      '</div></div>';
+  }
+  function reflowAfterDrawer(){
+    // 本文の幅が変わるので、遷移後にグラフを測り直して中心を合わせる
+    [60, 260].forEach(t => setTimeout(() => {
+      if (S.view !== "graph") return;
+      measure(); applyTransform();
+    }, t));
+  }
+  function close(){
+    drawer.classList.remove("on"); drawer.setAttribute("aria-hidden","true");
+    document.body.classList.remove("dopen"); reflowAfterDrawer();
+    S.sel = null;
+    if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);
+    if (S.view === "graph") paintGraphState();
+  }
+  document.getElementById("dclose").onclick = close;
+  document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+
+  /* ============ 描画 ============ */
+  function render(){
+    const rows = N.filter(n => passFilter(n) && (S.view === "table" ? passSearch(n) : true));
+    const vis  = N.filter(passFilter);
+    document.getElementById("count").textContent =
+      (S.view === "table" ? rows.length + " 件" : vis.length + " ノード / " + sim.links.length + " 関係");
+    if (S.view === "deep" || S.view === "map"){ document.getElementById("count").textContent = ""; return; }
+    if (S.view === "story"){
+      document.getElementById("count").textContent = renderStory() + " / " + ARCS.length + " 章";
+      return;
+    }
+    if (S.view === "table"){
+      renderTable(rows);
+    } else {
+      const sig = vis.map(n => n.id).join(",");
+      if (sig !== render._sig){ render._sig = sig; buildGraph(vis); sim.alpha = .8; }
+      document.getElementById("count").textContent = vis.length + " ノード / " + sim.links.length + " 関係";
+      paintGraphState(); draw(); tick();
+    }
+  }
+
+  measure();
+  render();
+  setTimeout(() => {
+    for (let i=0;i<600;i++) step();
+    for (let i=0;i<120;i++) collide(sim.nodes);   // 最後にラベルの重なりだけを解く
+    draw(); fit();
+  }, 30);
+  window.addEventListener("resize", () => { measure(); applyTransform(); });
+  if (location.hash && byId[location.hash.slice(1)]) setTimeout(() => open(location.hash.slice(1)), 80);
+})();
+</script>
+<script>
+/* ── 地図タブ（自己完結・データファイル非依存）
+   進撃の巨人の世界は架空なので、ビューごとに独自のxy座標で描く模式図。
+   区の配置は公式マップを踏まえた概略で、厳密な方角ではない。 ── */
+(function(){
+  "use strict";
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+  const FILL = {
+    "壁内":"#f1eee4", "内地":"#eae6d6", "パラディ島":"#efeee7",
+    "マーレ":"#f7eae6", "中東連合":"#f3eee2", "ヒィズル":"#fbeef3", "海":"#e8f0f7"
+  };
+
+  /* ═══ ビュー定義 ═══ */
+  const VIEWS = {
+    walls:{ label:"壁内（三重の壁）", w:1060, h:900,
+      note:"外側からウォール・マリア／ローゼ／シーナ。各壁から突き出した「区」だけが巨人の侵入口になる。区の方角は公式マップを踏まえた概略。" },
+    island:{ label:"パラディ島", w:1060, h:760,
+      note:"壁は島の内陸に置かれ、周囲は無垢の巨人が徘徊する無人地帯だった。851年にアルミンたちが初めて海を見た。" },
+    world:{ label:"世界図", w:1060, h:720,
+      note:"パラディ島の外にある世界。マーレ大陸を中心に、島は「悪魔の島」として全世界の敵とされていた。地形は模式図。" }
+  };
+
+  const C = {walls:[530,455]};                       /* 壁の中心 */
+  const R = {maria:360, rose:245, sina:125};         /* 各壁の半径 */
+  const rad = d => (d - 90) * Math.PI / 180;         /* 0度=真上 */
+  const onWall = (r, deg) => [C.walls[0] + r * Math.cos(rad(deg)), C.walls[1] + r * Math.sin(rad(deg))];
+
+  /* ═══ 地点 ═══ */
+  const SPOTS = {
+  walls:[
+    {id:"mitras", n:"王都ミトラス", yo:"みとらす", s:"内地", k:"都", xy:[530,455], off:[0,-16],
+      w:"ウォール・シーナの中心にある王都。表向きの王フリッツ王が座り、実権はレイス家が握っていた。王政クーデターでザックレーとピクシスがここを制圧し、ヒストリアが即位した。", a:"王政編",
+      geo:"ウォール・シーナの内側の中心。壁からの距離が最も遠い＝最も安全な場所。",
+      note:"「壁の中心に近いほど身分が高い」という構造そのものが、この世界の階級の図解になっている。"},
+    {id:"underground", n:"地下街", yo:"ちかがい", s:"内地", k:"施設", xy:[530,530], off:[0,20],
+      w:"ミトラスの真下に広がる、日の当たらない居住区。リヴァイは娼婦だった母クシェルのもとでここに生まれ、ケニーに拾われて生き方を教わった。", a:"王政編 / 悔いなき選択",
+      geo:"王都の地下。壁の中でもっとも身分の低い者が押し込められた場所。",
+      note:"最も安全な王都の真下に、最も救われない場所がある。壁内社会の縦の断面。"},
+    {id:"stohess", n:"ストヘス区", yo:"すとへすく", s:"壁内", k:"区", xy:onWall(R.sina,180), off:[0,22],
+      w:"ウォール・シーナ南の区。女型捕獲作戦の舞台で、アニが市街地で巨人化して市街戦になった。崩れた壁の断面から巨人が顔を覗かせ、壁の正体が露見した場所。", a:"ストヘス区急襲",
+      geo:"ウォール・シーナ南。トロスト区から王都へ向かう線上にある。",
+      note:"捕獲は成功したが区は壊滅。市民が大勢死に、調査兵団の立場が悪化した。"},
+    {id:"ehrmich", n:"エルミハ区", yo:"えるみはく", s:"壁内", k:"区", xy:onWall(R.sina,265), off:[-16,4],
+      w:"ウォール・シーナ西の区。ウォール・ローゼ突破の虚報が流れたとき、王政が門を封鎖して難民を切り捨てようとした場所。ナイルが家族のために封鎖阻止側に立った。", a:"王政編",
+      geo:"ウォール・シーナ西。難民の流入口になる位置。",
+      note:"「壁の内側でも人は切り捨てられる」ことを見せる区。巨人が来る前に人が人を捨てる。"},
+    {id:"orvud", n:"オルブド区", yo:"おるぶどく", s:"壁内", k:"区", xy:onWall(R.sina,332), off:[-18,-10],
+      w:"ウォール・シーナ北の区。制御を失って巨大な無垢の巨人になったロッド・レイスが、ここへ向かって這い進んだ。壁上の火薬で怯ませ、ヒストリアが父のうなじを斬った。", a:"王政編",
+      geo:"ウォール・シーナ北。王都に最も近い区の一つ。",
+      note:"民衆の前で「壁の女王」が誕生した場所。政変が輿論として成立した瞬間。"},
+    {id:"trost", n:"トロスト区", yo:"とろすとく", s:"壁内", k:"区", xy:onWall(R.rose,180), off:[0,22],
+      w:"ウォール・ローゼ南の区。850年に超大型巨人が扉を蹴破り、104期の初陣となった。エレンが喰われて巨人化能力を露見させ、大岩で扉を塞いで人類初の領土奪還を成し遂げた。", a:"トロスト区攻防戦",
+      geo:"ウォール・ローゼ南。シガンシナ区とストヘス区・王都を結ぶ線上にある。",
+      note:"シガンシナ陥落で後退した人類の、新たな最前線。ジャンの故郷でもある。"},
+    {id:"karanes", n:"カラネス区", yo:"からねすく", s:"壁内", k:"区", xy:onWall(R.rose,105), off:[18,4],
+      w:"ウォール・ローゼ東の区。調査兵団が壁外調査に出撃し、帰還する門。第57回壁外調査から遺体を積んだ荷車が戻ってきたのもここ。", a:"第57回壁外調査",
+      geo:"ウォール・ローゼ東。調査兵団の出入り口。",
+      note:"勝ち負けではなく「何人帰らなかったか」を市民が数える場所。"},
+    {id:"yarckel", n:"ヤルケル区", yo:"やるけるく", s:"壁内", k:"区", xy:onWall(R.rose,25), off:[16,-12],
+      w:"ウォール・ローゼ北の区。ローゼ内に巨人が出現した際、104期生と兵士たちが避難誘導と壁の破壊箇所の探索でこの方面へ展開した。", a:"ウォール・ローゼ内地",
+      geo:"ウォール・ローゼ北。ウトガルド城へ向かう方面。",
+      note:"「壁に穴が無かった」という結論が出るまで、兵はこの一帯を一晩歩き回っていた。"},
+    {id:"shiganshina", n:"シガンシナ区", yo:"しがんしなく", s:"壁内", k:"区", xy:onWall(R.maria,180), off:[0,24],
+      w:"ウォール・マリア南端の区でエレンの故郷。845年に超大型巨人が扉を蹴破り、鎧の巨人が壁を突き破って陥落。851年の最終奪還作戦で取り返され、イェーガー家の地下室が開かれた。", a:"ウォール・マリア陥落 / 最終奪還作戦",
+      geo:"ウォール・マリア南端。壁の最も外側で、最初に巨人と接する位置。",
+      note:"物語が始まり、世界の真相が明かされ、最後にエレンが埋葬される場所。全部ここに戻ってくる。"},
+    {id:"yeagerhouse", n:"イェーガー家の地下室", yo:"いぇーがーけのちかしつ", s:"壁内", k:"施設", xy:[418,796], off:[-20,10],
+      w:"グリシャが「全部分かる」と言い残した部屋。三冊の手記に、巨人の正体・壁の外の世界・エルディアとマーレの歴史が記されていた。物語の前提が丸ごと入れ替わる。", a:"世界の真相",
+      geo:"シガンシナ区の家屋の地下。",
+      note:"エルヴィンはこの扉が開く前に死んだ。作品後半の重さのほとんどがその段差から来ている。"},
+    {id:"reisschapel", n:"レイス家の礼拝堂・地下洞窟", yo:"れいすけのれいはいどう", s:"内地", k:"施設", xy:[400,560], off:[-20,14],
+      w:"レイス家が始祖の巨人を代々継承してきた地下礼拝堂。845年にグリシャがフリーダを喰った場所で、851年にはヒストリアがエレンの継承を拒み、ロッドが制御不能の巨人になった。", a:"王政編",
+      geo:"ウォール・シーナ内、レイス家の領地の地下。",
+      note:"壁内の権力の実体がここにあった。表の王都はただの見せかけだった。"},
+    {id:"dauper", n:"ダウパー村", yo:"だうぱーむら", s:"壁内", k:"里", xy:[660,640], off:[18,10],
+      w:"サシャの故郷。ウォール・ローゼ内に巨人が出現した際、サシャが母を喰われて動けなくなっていた少女カヤを弓一本で救い出した。", a:"ウォール・ローゼ内地",
+      geo:"ウォール・ローゼ南区の山あい。狩猟で暮らす集落。",
+      note:"「森から出ろと言ったのは大人だ」というアルトゥルの言葉が生まれる家。"},
+    {id:"ragako", n:"ラガコ村", yo:"らがこむら", s:"壁内", k:"里", xy:[705,545], off:[20,4],
+      w:"コニーの故郷。家々が内側から壊され無人になっていた。後に、ジークの叫びによって村人全員が無垢の巨人にされていたと判明する。屋根の巨人はコニーの母だった。", a:"ウォール・ローゼ内地",
+      geo:"ウォール・ローゼ南区。",
+      note:"「巨人が入ってきた」のではなく「人が巨人にされた」という反転が起きた場所。"},
+    {id:"utgard", n:"ウトガルド城", yo:"うとがるどじょう", s:"壁内", k:"城", xy:[540,168], off:[0,-13],
+      w:"ウォール・ローゼ北方の廃城。装備を持たない104期生がここに籠り、ナナバとゲルガーら古参兵が全滅した。ユミルが巨人化して仲間を守り、翌朝ライナーが正体を告白する。", a:"ウトガルド城の戦い",
+      geo:"ウォール・ローゼとマリアのあいだ、北方の無人地帯。",
+      note:"夜でも動く巨人がいた＝獣の巨人の関与を示す最初の手がかりが出た場所。"},
+    {id:"forest", n:"巨大樹の森", yo:"きょだいじゅのもり", s:"壁内", k:"戦場", xy:[812,300], off:[22,6],
+      w:"樹高80mの巨木が並ぶ森。第57回壁外調査で女型の捕獲作戦が行われ、リヴァイ班が壊滅した。エレン奪還戦ではライナーたちの逃走先になり、エレンが座標の力を初めて発動させた。", a:"第57回壁外調査 / エレン奪還戦",
+      geo:"ウォール・ローゼ外の森林地帯。立体機動が使える貴重な地形。",
+      note:"立体機動が最も活きる地形。だから作戦地に選ばれ、だから二度も舞台になる。"}
+  ],
+  island:[
+    {id:"i_walls", n:"三重の壁", yo:"さんじゅうのかべ", s:"パラディ島", k:"施設", xy:[520,400], off:[0,-118],
+      w:"高さ約50mの三重の城壁。中身は幾千万の超大型巨人で、845年から851年まで人類の生活圏はこの内側だけだった。854年にエレンが硬質化を解き、全部が歩き出した。", a:"全編",
+      geo:"パラディ島の内陸。ウォール・マリアの全長は約480km。",
+      note:"壁の名は王の三人の娘マリア・ローゼ・シーナから採られた、というのが壁内で語られる建前。"},
+    {id:"i_shiganshina", n:"シガンシナ区", yo:"しがんしなく", s:"パラディ島", k:"区", xy:[520,528], off:[0,22],
+      w:"壁の最南端の区。物語の起点で、最終奪還作戦の舞台。エレンの墓がある丘の大樹もこの近くにある。", a:"ウォール・マリア陥落 / 最終奪還作戦",
+      geo:"ウォール・マリア南端。港へ向かう街道の起点。",
+      note:"最終回でミカサがエレンを埋葬した丘は、この区の外にある。"},
+    {id:"i_port", n:"パラディ島の港", yo:"ぱらでぃとうのみなと", s:"パラディ島", k:"施設", xy:[556,688], off:[0,22],
+      w:"851年以降にヒィズル国の技術支援で整備された港。854年、マーレ艦隊の奇襲を受けた戦場。エレンがジークに接触して始祖を発動させ、地鳴らしが始まった場所。", a:"パラディ島奇襲",
+      geo:"島の南岸。海路で大陸と繋がる唯一の窓口。",
+      note:"「海の向こうに行ける」希望の場所が、そのまま「世界が終わる」場所になった。"},
+    {id:"i_sea", n:"アルミンが海を見た浜", yo:"うみをみたはま", s:"パラディ島", k:"戦場", xy:[262,592], off:[-16,16],
+      w:"851年、地下室の真実を知った直後の壁外調査で辿り着いた海岸。アルミンが夢に見続けた「塩の湖」が本当にあった。歓声のなかでエレンだけが水平線の向こうの敵を見ていた。", a:"世界の真相",
+      geo:"島の南西の海岸。",
+      note:"同じ景色を見て、片方は希望を、片方は敵を見た。エレンとアルミンの分岐点。"},
+    {id:"i_forest", n:"巨大樹の森", yo:"きょだいじゅのもり", s:"パラディ島", k:"戦場", xy:[700,320], off:[22,4],
+      w:"壁の外の森林地帯。女型捕獲作戦とエレン奪還戦の舞台。", a:"第57回壁外調査 / エレン奪還戦",
+      geo:"ウォール・ローゼ外の北東。",
+      note:"壁の外にも人が戦える地形があると分かった数少ない場所。"},
+    {id:"i_utgard", n:"ウトガルド城", yo:"うとがるどじょう", s:"パラディ島", k:"城", xy:[600,235], off:[18,-8],
+      w:"壁の北方に残る廃城。装備のない104期生が一夜を耐えた。", a:"ウトガルド城の戦い",
+      geo:"ウォール・ローゼとマリアのあいだの北方。",
+      note:"壁の外に人の建てた廃墟がある＝百年前まで人が住んでいた証拠でもある。"},
+    {id:"i_wild", n:"壁外の無人地帯", yo:"へきがいのむじんちたい", s:"パラディ島", k:"戦場", xy:[300,270], off:[0,20],
+      w:"無垢の巨人が徘徊する地帯。実際には楽園送りにされたエルディア人が、行き先も分からず彷徨っているだけの場所だった。", a:"全編",
+      geo:"壁とパラディ島の海岸線のあいだの全域。",
+      note:"「巨人の世界」だと思われていた場所は、マーレが人を捨てた場所だった。"}
+  ],
+  world:[
+    {id:"w_marley", n:"マーレ", yo:"まーれ", s:"マーレ", k:"国", xy:[235,290], off:[0,-19],
+      w:"巨人大戦でエルディア帝国を倒し、奪った七つの巨人で百年覇権を握った軍事国家。エルディア人を収容区に囲って戦士として使い続けた。地鳴らしで真っ先に踏み潰された。", a:"世界の真相 / 地鳴らし",
+      geo:"大陸の西側を占める超大国。",
+      note:"巨人の力に依存しすぎたため、飛行機と重砲の時代に取り残されつつあった。"},
+    {id:"w_liberio", n:"レベリオ収容区", yo:"れべりおしゅうようく", s:"マーレ", k:"区", xy:[310,395], off:[0,22],
+      w:"マーレ本国にあるエルディア人の収容区。腕章をつけて管理され、子供のうち優秀な者が戦士候補生として巨人を継ぐ。854年、ヴィリー・タイバーの宣戦布告の演説の最中にエレンが襲撃した。", a:"マーレ篇 / レベリオ収容区襲撃",
+      geo:"マーレ本国内。地下街と病棟を含む区画。",
+      note:"グリシャとフェイ、ジーク、ライナー、ガビとファルコ——加害と被害の連鎖の全部がこの区画から出ている。"},
+    {id:"w_slava", n:"スラバ要塞", yo:"すらばようさい", s:"中東連合", k:"戦場", xy:[470,205], off:[16,-12],
+      w:"マーレと中東連合の戦場。854年、ライナーとジークら戦士隊が要塞を落とした。ガビが装甲列車を単独で止め、鎧の巨人の継承候補として名を上げる。", a:"マーレ篇",
+      geo:"マーレと中東連合の国境地帯。",
+      note:"巨人の力で勝ったが、飛行機と重砲の前では巨人が旧兵器になりつつあることも同時に露呈した。"},
+    {id:"w_mideast", n:"中東連合", yo:"ちゅうとうれんごう", s:"中東連合", k:"国", xy:[556,300], off:[0,-19],
+      w:"マーレと戦争状態にあった連合国。技術力でマーレを押し始めており、世界の勢力図が巨人から兵器へ移りつつあることを示す。", a:"マーレ篇",
+      geo:"マーレ大陸の東側。",
+      note:"「巨人がなくてもマーレに勝てる時代が来る」という前提が、マーレを焦らせていた。"},
+    {id:"w_odiha", n:"オディハ（湾岸都市）", yo:"おでぃは", s:"中東連合", k:"施設", xy:[605,415], off:[18,8],
+      w:"エレンが地鳴らしで向かう先を読んだ混成部隊が、飛行艇を確保するために向かった湾岸都市。天と地の戦いの発進地点になる。", a:"天と地の戦い",
+      geo:"大陸南東の港湾都市。",
+      note:"イェレナが最後まで口を割らなかったのは、この目的地の情報だった。"},
+    {id:"w_hizuru", n:"ヒィズル国", yo:"ひぃずるこく", s:"ヒィズル", k:"国", xy:[866,262], off:[0,-19],
+      w:"ミカサの母方の祖先の国。アズマビト家は将軍家の血筋。島の地下に眠るアイスバースト石の開発権と引き換えに、パラディ島へ技術支援と国際的な立場を提供した。", a:"エルディア国の情勢",
+      geo:"大陸の東の海上に浮かぶ島国。",
+      note:"善意ではなく利害で島と組んだ。だからこそ最後まで筋を通した。"},
+    {id:"w_paradis", n:"パラディ島", yo:"ぱらでぃとう", s:"パラディ島", k:"国", xy:[795,515], off:[0,-19],
+      w:"第145代フリッツ王が逃げ込み、三重の壁を築いて籠った島。世界からは「悪魔の島」と呼ばれ、地鳴らしの脅しによって百年間手を出されなかった。", a:"全編",
+      geo:"大陸の南東の海上。地下にアイスバースト石を抱える。",
+      note:"「世界の敵」という立場は、壁の中の人間だけが知らなかった。"},
+    {id:"w_ocean", n:"海", yo:"うみ", s:"海", k:"戦場", xy:[660,600], off:[0,20],
+      w:"壁内人類が存在すら知らなかった塩の湖。851年にアルミンたちが到達し、その先に敵がいると知る。854年にはマーレの艦隊とヒィズルの輸送船がこの海を渡った。", a:"世界の真相 / 天と地の戦い",
+      geo:"大陸とパラディ島を隔てる海域。",
+      note:"「海の向こうに自由がある」という前提が崩れたことが、後半の全部の起点になっている。"}
+  ]};
+
+  /* ═══ DOM ═══ */
+  const host = document.getElementById("view-map");
+  if (!host) return;
+  host.innerHTML =
+    '<div class="row" style="margin-top:12px"><div class="chipset" id="mapchips"><span class="chiplabel">表示</span></div></div>' +
+    '<div class="maplayout">' +
+      '<div><div class="mapcard"><svg id="kmap" xmlns="http://www.w3.org/2000/svg"></svg></div>' +
+        '<div class="maplegend"><span><i class="lc"></i>王都</span><span><i class="lt"></i>区（壁の扉）</span>' +
+        '<span><i class="lg"></i>城・砦</span><span><i class="lf"></i>戦場・海</span><span><i class="lv"></i>村・施設・国</span>' +
+        '<span id="mapnote"></span></div>' +
+        '<div class="maplist"><div class="fl">場所一覧（タップで詳細）</div><div class="rels" id="maplistbody"></div></div>' +
+      '</div>' +
+      '<div class="mapinfo" id="mapinfo"></div>' +
+    '</div>';
+
+  let cur = "walls", sel = null;
+  const svg = document.getElementById("kmap");
+  const info = document.getElementById("mapinfo");
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (t, a) => { const e = document.createElementNS(NS,t);
+    Object.entries(a||{}).forEach(([k,v]) => e.setAttribute(k,v)); return e; };
+  const txt = (cls, x, y, s, anchor) => { const t = el("text",{class:cls, x:x, y:y});
+    if (anchor) t.setAttribute("text-anchor", anchor); t.textContent = s; return t; };
+
+  function chips(){
+    const box = document.getElementById("mapchips");
+    Object.keys(VIEWS).forEach(k => {
+      const b = document.createElement("button");
+      b.className = "chip" + (k === cur ? " on" : "");
+      b.textContent = VIEWS[k].label; b.dataset.k = k;
+      b.onclick = () => { cur = k; sel = null;
+        [...box.querySelectorAll(".chip")].forEach(c => c.classList.toggle("on", c.dataset.k === k));
+        draw(); list(); showInfo(null); };
+      box.appendChild(b);
+    });
+  }
+
+  /* ═══ 各ビューの地形 ═══ */
+  function drawWalls(){
+    const cx = C.walls[0], cy = C.walls[1];
+    svg.appendChild(el("rect",{x:0, y:0, width:1060, height:900, fill:"#f6f6f3"}));
+    ["maria","rose","sina"].forEach((k,i) =>
+      svg.appendChild(el("circle",{cx:cx, cy:cy, r:R[k], fill:i===2 ? FILL["内地"] : FILL["壁内"],
+        stroke:"#8f8f88", "stroke-width":"3.5"})));
+    /* 区の突起（壁から外へ張り出す） */
+    SPOTS.walls.filter(s => s.k === "区").forEach(s => {
+      const dx = s.xy[0] - cx, dy = s.xy[1] - cy, L = Math.hypot(dx,dy);
+      const ux = dx/L, uy = dy/L, px = -uy, py = ux;
+      const o = 34, hw = 26;
+      const p = [[s.xy[0]+px*hw, s.xy[1]+py*hw],[s.xy[0]+ux*o+px*hw*0.7, s.xy[1]+uy*o+py*hw*0.7],
+                 [s.xy[0]+ux*o-px*hw*0.7, s.xy[1]+uy*o-py*hw*0.7],[s.xy[0]-px*hw, s.xy[1]-py*hw]];
+      svg.appendChild(el("path",{d:"M"+p.map(q=>q[0].toFixed(1)+","+q[1].toFixed(1)).join(" L")+" Z",
+        fill:FILL["壁内"], stroke:"#8f8f88", "stroke-width":"2.6"}));
+    });
+    svg.appendChild(txt("rglabel", cx, cy - R.maria - 16, "ウォール・マリア", "middle"));
+    svg.appendChild(txt("rglabel", cx, cy - R.rose - 14, "ウォール・ローゼ", "middle"));
+    svg.appendChild(txt("rglabel", cx, cy - R.sina - 14, "ウォール・シーナ", "middle"));
+    svg.appendChild(txt("rgcap", cx, cy - R.maria - 40, "高さ約50m ／ ウォール・マリア全長 約480km", "middle"));
+    svg.appendChild(txt("ridgelabel", 40, 48, "壁の外＝無垢の巨人が徘徊する無人地帯", "start"));
+  }
+
+  function poly(pts, fill, stroke){
+    return el("path",{class:"rg", d:"M"+pts.map(p=>p[0]+","+p[1]).join(" L")+" Z",
+      fill:fill, stroke:stroke||"#b7b7b1"});
+  }
+
+  function drawIsland(){
+    svg.appendChild(el("rect",{x:0, y:0, width:1060, height:760, fill:FILL["海"]}));
+    svg.appendChild(poly([[300,80],[520,60],[720,110],[840,220],[880,380],[800,560],[640,690],[430,700],[250,600],[170,430],[190,240]],
+      FILL["パラディ島"], "#9fb6c9"));
+    const cx = 520, cy = 400;
+    [[152,FILL["壁内"]],[104,FILL["壁内"]],[54,FILL["内地"]]].forEach(r =>
+      svg.appendChild(el("circle",{cx:cx, cy:cy, r:r[0], fill:r[1], stroke:"#8f8f88", "stroke-width":"2.6"})));
+    svg.appendChild(txt("rglabel", 250, 152, "パラディ島", "start"));
+    svg.appendChild(txt("rgcap", 250, 174, "壁の外は全域が無人地帯", "start"));
+    svg.appendChild(txt("sealabel", 950, 650, "海", "middle"));
+    svg.appendChild(txt("sealabel small", 120, 712, "大陸は海の向こう（北西）", "start"));
+  }
+
+  function drawWorld(){
+    svg.appendChild(el("rect",{x:0, y:0, width:1060, height:720, fill:FILL["海"]}));
+    svg.appendChild(poly([[60,120],[260,80],[400,130],[430,250],[380,360],[300,470],[180,500],[80,400],[40,250]],
+      FILL["マーレ"], "#c9a89f"));
+    svg.appendChild(poly([[430,160],[600,150],[680,240],[660,380],[560,430],[450,390],[420,270]],
+      FILL["中東連合"], "#c2b79a"));
+    svg.appendChild(poly([[810,190],[900,175],[935,255],[905,335],[830,340],[800,265]],
+      FILL["ヒィズル"], "#d6a8bd"));
+    svg.appendChild(poly([[735,455],[830,440],[875,510],[840,585],[755,595],[715,525]],
+      FILL["パラディ島"], "#9fb6c9"));
+    svg.appendChild(txt("rgcap", 235, 322, "巨人大戦の勝者・百年の覇権", "middle"));
+    svg.appendChild(txt("rgcap", 795, 545, "「悪魔の島」", "middle"));
+    svg.appendChild(txt("sealabel", 180, 650, "海", "middle"));
+    svg.appendChild(txt("ridgelabel", 600, 85, "地鳴らしはマーレ本国から始まり、大陸を東へ進んだ", "start"));
+  }
+
+  function marker(sp){
+    const x = sp.xy[0], y = sp.xy[1], off = sp.off || [0,-14];
+    const cls = sp.k === "都" ? "capital" : sp.k === "戦場" ? "field"
+              : sp.k === "区" ? "gate" : sp.k === "国" ? "country" : "city";
+    const g = el("g",{class:"spot k-" + cls});
+    g.dataset.id = sp.id;
+    g.appendChild(el("title",{})).textContent = sp.n + "（" + sp.k + "）";
+    g.appendChild(el("circle",{class:"hit", cx:x, cy:y, r:20}));
+    g.appendChild(el("circle",{class:"halo", cx:x, cy:y, r:13}));
+    if (sp.k === "都"){
+      g.appendChild(el("circle",{class:"mk ring", cx:x, cy:y, r:8}));
+      g.appendChild(el("circle",{class:"mk core", cx:x, cy:y, r:3.6}));
+    } else if (sp.k === "戦場"){
+      g.appendChild(el("rect",{class:"mk", x:x-5.4, y:y-5.4, width:10.8, height:10.8, transform:"rotate(45 "+x+" "+y+")"}));
+      g.appendChild(el("circle",{class:"mk core", cx:x, cy:y, r:1.6}));
+    } else if (sp.k === "区"){
+      g.appendChild(el("rect",{class:"mk", x:x-6, y:y-5, width:12, height:10, rx:1.5}));
+      g.appendChild(el("path",{class:"gateline", d:"M"+x+","+(y-5)+" L"+x+","+(y+5)}));
+    } else if (sp.k === "城"){
+      g.appendChild(el("path",{class:"mk", d:"M"+(x-7)+","+(y+5)+" L"+x+","+(y-6)+" L"+(x+7)+","+(y+5)+" Z"}));
+    } else if (sp.k === "国"){
+      g.appendChild(el("circle",{class:"mk", cx:x, cy:y, r:5.6}));
+    } else {
+      g.appendChild(el("rect",{class:"mk", x:x-4.6, y:y-4.6, width:9.2, height:9.2, rx:1.2}));
+    }
+    g.appendChild(txt("lb", x + off[0], y + off[1] + (off[1] > 0 ? 6 : 0), sp.n,
+      off[0] < -6 ? "end" : (off[0] > 6 ? "start" : "middle")));
+    g.addEventListener("click", () => pick(sp.id));
+    return g;
+  }
+
+  function draw(){
+    const v = VIEWS[cur];
+    svg.setAttribute("viewBox","0 0 " + v.w + " " + v.h);
+    svg.textContent = "";
+    document.getElementById("mapnote").textContent = v.note;
+    if (cur === "walls") drawWalls(); else if (cur === "island") drawIsland(); else drawWorld();
+    SPOTS[cur].forEach(sp => svg.appendChild(marker(sp)));
+    paint();
+  }
+  function list(){
+    document.getElementById("maplistbody").innerHTML = SPOTS[cur]
+      .map(sp => '<button class="rel" data-id="' + sp.id + '">' + esc(sp.n) + '<span class="rl">' + esc(sp.k) + '</span></button>').join("");
+    document.querySelectorAll("#maplistbody .rel").forEach(b => b.onclick = () => pick(b.dataset.id));
+  }
+  function paint(){
+    svg.querySelectorAll(".spot").forEach(g => g.classList.toggle("on", g.dataset.id === sel));
+    document.querySelectorAll("#maplistbody .rel").forEach(b => b.classList.toggle("on", b.dataset.id === sel));
+  }
+  function pick(id){
+    sel = id; paint();
+    showInfo(SPOTS[cur].find(s => s.id === id));
+    if (window.matchMedia("(max-width:900px)").matches) info.scrollIntoView({behavior:"smooth", block:"nearest"});
+  }
+  function showInfo(sp){
+    if (!sp){ info.innerHTML = '<p class="mi-empty">地図の印か、下の一覧をタップすると、その場所で何が起きたかが出ます。</p>'; return; }
+    info.innerHTML =
+      '<h3>' + esc(sp.n) + '</h3><div class="mi-yomi">' + esc(sp.yo) + '</div>' +
+      '<div class="mi-bdg"><span class="bdg s-other">' + esc(sp.s) + '</span>' +
+      '<span class="bdg k">' + esc(sp.k) + '</span></div>' +
+      '<div class="mi-sec"><div class="mi-h">作中で何が起きたか</div><p>' + esc(sp.w) + '</p></div>' +
+      (sp.geo ? '<div class="mi-sec"><div class="mi-h">位置</div><p>' + esc(sp.geo) + '</p></div>' : "") +
+      (sp.note ? '<div class="mi-sec"><div class="mi-h">読みどころ</div><p>' + esc(sp.note) + '</p></div>' : "") +
+      (sp.a ? '<div class="mi-arc">関連する章: ' + esc(sp.a) + '</div>' : "");
+  }
+  chips(); draw(); list(); showInfo(null);
+})();
+</script>
+</body>
+</html>
