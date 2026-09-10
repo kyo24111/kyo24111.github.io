@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2×2行列の対角化 — A = [[1,2],[2,1]]</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --surface:#f5f5f5; --border:#e0e0e0;
+    --text:#111111; --soft:#3c424b; --muted:#888888; --faint:#b5b5b5;
+    --c1:#b8860b;   /* λ1 = 3  の方向 */
+    --c2:#2f5d8a;   /* λ2 = -1 の方向 */
+    --c3:#1d7a4d;   /* 像・結果 */
+    --warn:#c0392b; /* つぶれ・反転 */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);
+    line-height:1.85;font-size:16px;-webkit-font-smoothing:antialiased;font-feature-settings:"palt"}
+  .page{max-width:900px;margin:0 auto;padding:52px 26px 100px}
+  .mono{font-family:'Poppins',sans-serif}
+  html{scroll-behavior:smooth}
+
+  /* ===== side nav ===== */
+  .side-nav{position:fixed;left:20px;top:64px;width:200px;max-height:calc(100vh - 96px);
+    overflow-y:auto;padding:12px 0 32px;font-size:12px;z-index:10;scrollbar-width:thin}
+  .side-nav::-webkit-scrollbar{width:4px}
+  .side-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+  @media(max-width:1360px){ .side-nav{display:none} }
+  .side-nav-title{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;
+    text-transform:uppercase;color:#cccccc;margin-bottom:6px;padding-left:12px}
+  .side-nav ul{list-style:none}
+  .side-nav a{display:block;color:#bbbbbb;text-decoration:none;padding:5px 8px 5px 14px;
+    border-left:2px solid transparent;line-height:1.45;transition:all .15s}
+  .side-nav a:hover{color:var(--text);border-left-color:var(--border)}
+  .side-nav a.active{color:var(--text);font-weight:700;border-left-color:var(--text);background:var(--surface)}
+
+  header{margin-bottom:26px}
+  .kick{font-family:'Poppins',sans-serif;font-size:12px;letter-spacing:.24em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:14px}
+  h1{font-size:27px;font-weight:700;line-height:1.35;margin-bottom:12px}
+  .lede{color:var(--soft);font-size:15px;max-width:720px}
+  .upd{font-size:12px;color:var(--faint);margin-top:14px;font-family:'Poppins',sans-serif}
+
+  section{scroll-margin-top:20px;margin-top:52px}
+  h2{font-size:19px;font-weight:700;margin:0 0 10px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+  h2 .num{font-family:'Poppins',sans-serif;color:var(--faint);margin-right:10px;font-size:16px}
+  h3{font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:700;margin:0 0 10px}
+  p{margin:10px 0}
+  .small{font-size:13.5px;color:var(--soft)}
+  ul.pl,ol.pl{margin:10px 0 10px 22px;font-size:14.5px;color:var(--soft)}
+  ul.pl li,ol.pl li{margin:5px 0}
+  b.k{font-weight:700;color:var(--text)}
+  .hl{background:#fff3cf;padding:0 4px;border-radius:3px}
+  code{font-family:'Poppins',sans-serif;background:var(--surface);padding:1px 6px;border-radius:4px;font-size:13px}
+
+  /* ===== matrix / equation ===== */
+  .mat{display:inline-flex;align-items:stretch;gap:3px;vertical-align:middle;margin:0 3px}
+  .mat i{width:7px;border:1.6px solid var(--soft);flex:none}
+  .mat i.l{border-right:none;border-radius:4px 0 0 4px}
+  .mat i.r{border-left:none;border-radius:0 4px 4px 0}
+  .mat .g{display:grid;gap:1px 12px;padding:3px 3px;font-family:'Poppins',sans-serif;
+    font-size:14px;font-weight:600;text-align:center;line-height:1.5}
+  .mat.c1 i{border-color:var(--c1)} .mat.c1 .g{color:var(--c1)}
+  .mat.c2 i{border-color:var(--c2)} .mat.c2 .g{color:var(--c2)}
+  .eq{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:14px 16px;margin:14px 0;text-align:center;overflow-x:auto;
+    font-family:'Poppins',sans-serif;font-size:14.5px;font-weight:600;line-height:2.1}
+  .eq .row{white-space:nowrap;display:block}
+  .eq .note{display:block;font-family:'Noto Sans JP',sans-serif;font-weight:400;
+    font-size:12.5px;color:var(--muted);margin-top:6px;white-space:normal}
+  .frac{display:inline-flex;flex-direction:column;vertical-align:middle;font-size:11.5px;
+    line-height:1.25;margin:0 3px;text-align:center}
+  .frac span:first-child{border-bottom:1.4px solid var(--soft);padding:0 3px}
+
+  /* ===== stage / panels ===== */
+  .stage{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:16px;margin:18px 0}
+  .cvbox{background:var(--bg);border:1px solid var(--border);border-radius:12px;padding:6px}
+  canvas{display:block;width:100%;touch-action:none}
+  canvas.sq{aspect-ratio:1/1}
+  canvas.wide{aspect-ratio:5/4}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:700px){ .two{grid-template-columns:1fr} }
+
+  .ctrl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:12px}
+  .b{font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;border:1px solid var(--border);
+    background:var(--bg);color:var(--soft);padding:7px 13px;border-radius:8px;cursor:pointer;white-space:nowrap}
+  .b:hover{border-color:var(--muted);color:var(--text)}
+  .b.on{background:var(--text);color:#fff;border-color:var(--text)}
+  .b.play{min-width:104px}
+  .sl{display:flex;align-items:center;gap:9px;flex:1;min-width:170px}
+  .sl label{font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted);white-space:nowrap}
+  .sl input[type=range]{flex:1;min-width:80px;accent-color:var(--text)}
+  .val{font-family:'Poppins',sans-serif;font-size:13px;font-weight:700;min-width:56px;text-align:right}
+  .cap{font-size:13px;color:var(--soft);margin-top:10px;min-height:42px;line-height:1.7}
+  .cap b{font-weight:700;color:var(--text)}
+  .lg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--soft);margin-top:9px}
+  .lg span{display:inline-flex;align-items:center;gap:6px}
+  .sw{width:14px;height:3.5px;border-radius:2px;flex:none}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-top:12px}
+  .stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px;text-align:center}
+  .stat .lab{font-family:'Poppins',sans-serif;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .stat .v{font-family:'Poppins',sans-serif;font-size:17px;font-weight:700}
+  .stat.warn .v{color:var(--warn)}
+
+  .steps{counter-reset:st;margin:14px 0}
+  .step{position:relative;padding:12px 14px 12px 46px;border:1px solid var(--border);
+    border-radius:12px;margin-bottom:8px;background:var(--bg);font-size:14px}
+  .step::before{counter-increment:st;content:counter(st);position:absolute;left:14px;top:12px;
+    width:22px;height:22px;border-radius:50%;background:var(--text);color:#fff;
+    font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;display:flex;
+    align-items:center;justify-content:center}
+  .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+  .chip{font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:600;border:1px solid var(--border);
+    background:var(--bg);color:var(--muted);padding:5px 10px;border-radius:20px;cursor:pointer}
+  .chip.on{background:var(--text);color:#fff;border-color:var(--text)}
+  .bar{height:4px;background:var(--border);border-radius:2px;margin-top:12px;overflow:hidden}
+  .bar>div{height:100%;background:var(--text);width:0%}
+
+  .box{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+    padding:14px 16px;margin:16px 0;font-size:13.5px;color:var(--soft)}
+  .box .t{font-family:'Poppins',sans-serif;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--muted);font-weight:700;margin-bottom:6px}
+  .box.ok{background:#eef8f2;border-color:#b8dbc7;color:#14603c}
+  .box.ok .t{color:#2f8a5f}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;font-size:13px;min-width:100%}
+  th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;white-space:nowrap}
+  th{background:var(--surface);font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:700}
+  td.n{font-family:'Poppins',sans-serif;text-align:right}
+  footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);font-size:13px;color:var(--muted)}
+  footer a{color:var(--soft);text-decoration:none;border-bottom:1px solid var(--border)}
+  footer a:hover{color:var(--text)}
+  footer ul{list-style:none;margin-top:8px}
+  footer li{margin:5px 0}
+</style>
+</head>
+<body>
+
+<nav class="side-nav" id="sideNav">
+  <div class="side-nav-title">Contents</div>
+  <ul>
+    <li><a href="#s1">1. 行列を「動き」で見る</a></li>
+    <li><a href="#s2">2. 固有方向をぐるっと探す</a></li>
+    <li><a href="#s3">3. 固有値 — det(A−λI)=0</a></li>
+    <li><a href="#s4">4. 固有ベクトルを出す</a></li>
+    <li><a href="#s5">5. A = PDP⁻¹ の3段アニメ</a></li>
+    <li><a href="#s6">6. うれしさ① Aⁿ</a></li>
+    <li><a href="#s7">7. うれしさ② 直交対角化</a></li>
+    <li><a href="#s8">8. まとめ</a></li>
+  </ul>
+</nav>
+
+<div class="page">
+
+<header>
+  <div class="kick">Linear Algebra · Walkthrough</div>
+  <h1>2×2行列の対角化を、アニメーションで丁寧に<br>A = <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>2</b><b>2</b><b>1</b></span><i class="r"></i></span></h1>
+  <p class="lede">
+    この1枚の行列を、①動きとして見る → ②固有方向を探す → ③固有値を出す → ④固有ベクトルを出す →
+    ⑤ <span class="mono">A = PDP⁻¹</span> に分解する、の順で追います。
+    各節のアニメは <b class="k">再生</b> かスライダーで自分で動かせます。
+  </p>
+  <div class="upd">Last updated: 2026-09-10</div>
+</header>
+
+<!-- ===================== 1 ===================== -->
+<section id="s1">
+  <h2><span class="num">01</span>まず行列を「動き」として見る</h2>
+  <p>
+    行列は数字が4つ並んだ表ではなく、<b class="k">平面全体を引き伸ばす操作</b>です。
+    点 <span class="mono">v = (x, y)</span> は <span class="mono">Av</span> へ運ばれます。
+  </p>
+  <div class="eq">
+    <span class="row">A <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>x</b><b>y</b></span><i class="r"></i></span>
+    =
+    <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>2</b><b>2</b><b>1</b></span><i class="r"></i></span>
+    <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>x</b><b>y</b></span><i class="r"></i></span>
+    =
+    <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>x + 2y</b><b>2x + y</b></span><i class="r"></i></span></span>
+    <span class="note">下のアニメは、各点が自分の行き先まで直線で移動する様子（途中は (1−t)I + tA）</span>
+  </div>
+
+  <div class="stage">
+    <div class="cvbox"><canvas id="cv1" class="sq"></canvas></div>
+    <div class="ctrl">
+      <button class="b play" id="p1">▶ 再生</button>
+      <div class="sl"><label>t</label><input type="range" id="t1" min="0" max="1" step="0.005" value="0"><span class="val" id="t1v">0.00</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="lab">det</div><div class="v" id="d1">1.00</div></div>
+      <div class="stat"><div class="lab">面積比</div><div class="v" id="a1">1.00</div></div>
+      <div class="stat" id="or1w"><div class="lab">向き</div><div class="v" id="or1">そのまま</div></div>
+    </div>
+    <div class="cap" id="c1"></div>
+    <div class="lg">
+      <span><i class="sw" style="background:#bbb"></i>元のマス目と円</span>
+      <span><i class="sw" style="background:var(--c3)"></i>変形後のマス目と円</span>
+      <span><i class="sw" style="background:var(--text)"></i>単位正方形（A→B→C→D の回り方に注目）</span>
+      <span><i class="sw" style="background:#3c424b"></i>追跡している12点とその軌跡</span>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="t">ここで気づくこと</div>
+    <p style="margin:0">
+      <span class="mono">det A = 1·1 − 2·2 = <b class="k">−3</b></span>。マイナスなので、この変換は
+      <b class="k">平面の向きを裏返します</b>（正方形の角 A→B→C→D の回り方が逆になる）。
+      向きが反転するということは、途中で必ず一度 <span class="hl">面積がゼロにつぶれる</span>瞬間があります。
+      それが <span class="mono">t = 0.50</span>。そのときすべての点が
+      <b class="k">直線 y = x</b> の上に乗ります。この直線が特別だ、というのが最初のヒントです。
+    </p>
+  </div>
+</section>
+
+<!-- ===================== 2 ===================== -->
+<section id="s2">
+  <h2><span class="num">02</span>固有方向をぐるっと探す</h2>
+  <p>
+    ほとんどの向きは、A をかけると<b class="k">向きが変わって</b>しまいます。
+    でも中には、長さだけ変わって<b class="k">向きが変わらない</b>特別な向きがあります。
+    それが <span class="mono">Av = λv</span> を満たす向き（固有方向）です。
+    <span class="mono">v</span> を1周させて、<span class="mono">v</span> と <span class="mono">Av</span> が平行になる瞬間を探します。
+  </p>
+
+  <div class="stage">
+    <div class="cvbox"><canvas id="cv2" class="sq"></canvas></div>
+    <div class="ctrl">
+      <button class="b play" id="p2">▶ 再生</button>
+      <div class="sl"><label>θ</label><input type="range" id="t2" min="0" max="360" step="0.5" value="10"><span class="val" id="t2v">10°</span></div>
+    </div>
+    <div class="chips">
+      <button class="chip" data-th="45">θ = 45°</button>
+      <button class="chip" data-th="135">θ = 135°</button>
+      <button class="chip" data-th="0">θ = 0°</button>
+      <button class="chip" data-th="90">θ = 90°</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="lab">ずれ（外積）</div><div class="v" id="x2">—</div></div>
+      <div class="stat"><div class="lab">伸び率</div><div class="v" id="l2">—</div></div>
+      <div class="stat"><div class="lab">|Av|</div><div class="v" id="m2">—</div></div>
+    </div>
+    <div class="cap" id="c2"></div>
+    <div class="lg">
+      <span><i class="sw" style="background:var(--text)"></i>v（長さ1）</span>
+      <span><i class="sw" style="background:var(--c3)"></i>Av</span>
+      <span><i class="sw" style="background:#ddd"></i>Av の軌跡（楕円）</span>
+    </div>
+  </div>
+
+  <p class="small">
+    このAは対称なので、式にすると気持ちよく整理できます。<span class="mono">v = (cos θ, sin θ)</span> のとき
+  </p>
+  <div class="eq">
+    <span class="row">ずれ（外積） = v<sub>x</sub>(Av)<sub>y</sub> − v<sub>y</sub>(Av)<sub>x</sub> = <b>2 cos 2θ</b></span>
+    <span class="row">伸び率 = v · Av = <b>1 + 2 sin 2θ</b></span>
+    <span class="note">ずれ = 0 になるのは 2θ = 90°, 270°, … つまり θ = 45°, 135°, 225°, 315°。
+    そのとき伸び率は 1+2 = <b>3</b>（45°）と 1−2 = <b>−1</b>（135°）</span>
+  </div>
+  <p class="small">
+    伸び率 <span class="mono">1 + 2 sin 2θ</span> の最大が 3、最小が −1。
+    つまり<b class="k">一番伸びる向きと一番縮む（裏返る）向きが、そのまま固有方向</b>になっています。
+  </p>
+</section>
+
+<!-- ===================== 3 ===================== -->
+<section id="s3">
+  <h2><span class="num">03</span>固有値を出す — det(A − λI) = 0</h2>
+  <p>
+    アニメで「だいたい45°と135°」と分かりましたが、これを式で正確に出します。
+  </p>
+  <div class="steps">
+    <div class="step">求めたいのは <span class="mono">Av = λv</span> かつ <span class="mono">v ≠ 0</span>。移項して <span class="mono">(A − λI)v = 0</span>。</div>
+    <div class="step">つまり行列 <span class="mono">A − λI</span> が、<b class="k">ゼロでないベクトルをゼロに潰す</b>ということ。</div>
+    <div class="step">潰す ⟺ 面積が0になる ⟺ <span class="mono">det(A − λI) = 0</span>。これが固有方程式。</div>
+  </div>
+  <div class="eq">
+    <span class="row">A − λI =
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1−λ</b><b>2</b><b>2</b><b>1−λ</b></span><i class="r"></i></span>
+    </span>
+    <span class="row">det(A − λI) = (1−λ)<sup>2</sup> − 4 = λ<sup>2</sup> − 2λ − 3 = (λ − 3)(λ + 1) = 0</span>
+    <span class="row">→ &nbsp; λ<sub>1</sub> = <b style="color:var(--c1)">3</b>, &nbsp; λ<sub>2</sub> = <b style="color:var(--c2)">−1</b></span>
+    <span class="note">検算：和 3 + (−1) = 2 = trace A（対角の和 1+1）／積 3 × (−1) = −3 = det A</span>
+  </div>
+
+  <p class="small">
+    下のアニメは λ を動かしたときの様子です。左が <span class="mono">p(λ) = det(A − λI)</span> のグラフ、
+    右が <span class="mono">A − λI</span> による平面の変形。<b class="k">グラフが0を横切る瞬間に、右の平面が線につぶれます</b>。
+  </p>
+
+  <div class="stage">
+    <div class="two">
+      <div class="cvbox"><canvas id="cv3a" class="wide"></canvas></div>
+      <div class="cvbox"><canvas id="cv3b" class="wide"></canvas></div>
+    </div>
+    <div class="ctrl">
+      <button class="b play" id="p3">▶ 再生</button>
+      <div class="sl"><label>λ</label><input type="range" id="t3" min="-3" max="5" step="0.01" value="-3"><span class="val" id="t3v">−3.00</span></div>
+    </div>
+    <div class="chips">
+      <button class="chip" data-lam="3">λ = 3</button>
+      <button class="chip" data-lam="-1">λ = −1</button>
+      <button class="chip" data-lam="0">λ = 0</button>
+      <button class="chip" data-lam="1">λ = 1</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="lab">p(λ) = det</div><div class="v" id="d3">12.00</div></div>
+      <div class="stat" id="st3"><div class="lab">状態</div><div class="v" id="s3v">可逆</div></div>
+    </div>
+    <div class="cap" id="c3"></div>
+  </div>
+</section>
+
+<!-- ===================== 4 ===================== -->
+<section id="s4">
+  <h2><span class="num">04</span>固有ベクトルを出す</h2>
+  <p>λ が分かったら、<span class="mono">(A − λI)v = 0</span> を解くだけです。</p>
+
+  <div class="eq">
+    <span class="row"><b style="color:var(--c1)">λ₁ = 3</b> : &nbsp; A − 3I =
+      <span class="mat c1"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>−2</b><b>2</b><b>2</b><b>−2</b></span><i class="r"></i></span>
+      → −2x + 2y = 0 → <b>y = x</b> → v₁ =
+      <span class="mat c1"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>1</b><b>1</b></span><i class="r"></i></span>
+    </span>
+    <span class="row"><b style="color:var(--c2)">λ₂ = −1</b> : &nbsp; A + I =
+      <span class="mat c2"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>2</b><b>2</b><b>2</b><b>2</b></span><i class="r"></i></span>
+      → 2x + 2y = 0 → <b>y = −x</b> → v₂ =
+      <span class="mat c2"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>−1</b><b>1</b></span><i class="r"></i></span>
+    </span>
+    <span class="note">2本の式が同じ式になるのがポイント（つぶれている＝行が1本ぶん無駄）。
+    だから解は1本の直線ぶんだけ残る＝固有ベクトルは定数倍の自由度をもつ</span>
+  </div>
+
+  <div class="box">
+    <div class="t">なぜ (−1, 1) を選ぶか</div>
+    <p style="margin:0">
+      <span class="mono">y = −x</span> 上なら <span class="mono">(1, −1)</span> でも <span class="mono">(−1, 1)</span> でも
+      <span class="mono">(2, −2)</span> でも固有ベクトルです。ここで <span class="mono">(−1, 1)</span> を採ると、
+      後で作る <span class="mono">P</span> がちょうど「<b class="k">45°回して √2 倍</b>」というきれいな形になり、
+      §5 のアニメが見やすくなります。
+    </p>
+  </div>
+
+  <p class="small">
+    固有直線の上にある点は、A をかけても<b class="k">その直線から出られません</b>。
+    金色（<span class="mono">y = x</span>）の上では3倍に伸び、青（<span class="mono">y = −x</span>）の上では原点をまたいで反対側へ折り返します。
+  </p>
+
+  <div class="stage">
+    <div class="cvbox"><canvas id="cv4" class="sq"></canvas></div>
+    <div class="ctrl">
+      <button class="b play on" id="p4">■ 停止</button>
+      <div class="sl"><label>t</label><input type="range" id="t4" min="0" max="1" step="0.005" value="0"><span class="val" id="t4v">0.00</span></div>
+    </div>
+    <div class="cap" id="c4"></div>
+    <div class="lg">
+      <span><i class="sw" style="background:var(--c1)"></i>v₁ = (1,1) → 3v₁</span>
+      <span><i class="sw" style="background:var(--c2)"></i>v₂ = (−1,1) → −v₂</span>
+      <span><i class="sw" style="background:#bbb"></i>その他の向き（直線から外れる）</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 5 ===================== -->
+<section id="s5">
+  <h2><span class="num">05</span>対角化 A = PDP⁻¹ — 3段アニメ</h2>
+  <p>
+    固有ベクトルを<b class="k">列に並べて</b> P を作り、固有値を<b class="k">対角に並べて</b> D を作ります。
+    これだけで A が3つの操作の合成に分解できます。
+  </p>
+
+  <div class="eq">
+    <span class="row">P = [ v₁ v₂ ] =
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">1</b><b style="color:var(--c2)">−1</b><b style="color:var(--c1)">1</b><b style="color:var(--c2)">1</b></span><i class="r"></i></span>
+      , &nbsp; D =
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">3</b><b>0</b><b>0</b><b style="color:var(--c2)">−1</b></span><i class="r"></i></span>
+      , &nbsp; P⁻¹ = <span class="frac"><span>1</span><span>2</span></span>
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>1</b><b>−1</b><b>1</b></span><i class="r"></i></span>
+    </span>
+    <span class="row" style="margin-top:6px">A = P D P⁻¹</span>
+    <span class="note">det P = 1·1 − (−1)·1 = 2 ≠ 0 なので P は可逆。つまり対角化できる</span>
+  </div>
+
+  <p>読み方はこうです。</p>
+  <div class="steps">
+    <div class="step"><b class="k">P⁻¹ をかける</b> — 世界を「固有ベクトルを軸にした座標」に読み替える。今回は <span class="mono">45°戻して 1/√2 倍</span>。</div>
+    <div class="step"><b class="k">D をかける</b> — その座標では、ただの<b class="k">軸ごとの伸縮</b>。x′ 軸に 3 倍、y′ 軸に −1 倍（＝折り返し）。斜めの成分はゼロ。</div>
+    <div class="step"><b class="k">P をかける</b> — 元の座標に戻す。<span class="mono">45°回して √2 倍</span>。</div>
+  </div>
+
+  <div class="stage">
+    <div class="cvbox"><canvas id="cv5" class="sq"></canvas></div>
+    <div class="bar"><div id="bar5"></div></div>
+    <div class="ctrl">
+      <button class="b play" id="p5">▶ 再生</button>
+      <button class="b" id="rst5">↺ 最初から</button>
+      <button class="b" id="gr5">斜めの目盛りを重ねる</button>
+      <div class="sl"><label>速さ</label><input type="range" id="sp5" min="0.2" max="2" step="0.05" value="0.7"><span class="val" id="sp5v">0.70×</span></div>
+    </div>
+    <div class="chips" id="stg5">
+      <button class="chip on" data-s="0">元の図形</button>
+      <button class="chip" data-s="1">P⁻¹ 後</button>
+      <button class="chip" data-s="2">D 後</button>
+      <button class="chip" data-s="3">P 後 = A</button>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="lab">今の行列</div><div class="v mono" id="m5" style="font-size:12px">I</div></div>
+      <div class="stat"><div class="lab">det</div><div class="v" id="d5">1.00</div></div>
+    </div>
+    <div class="cap" id="c5"></div>
+    <div class="lg">
+      <span><i class="sw" style="background:#bbb"></i>元の位置（ゴースト）</span>
+      <span><i class="sw" style="background:var(--text)"></i>今の図形</span>
+      <span><i class="sw" style="background:var(--c1)"></i>x′ 軸 = v₁</span>
+      <span><i class="sw" style="background:var(--c2)"></i>y′ 軸 = v₂</span>
+    </div>
+  </div>
+
+  <div class="box ok">
+    <div class="t">検算（このページ上で計算した値）</div>
+    <div class="scroll" id="chk5" style="font-family:'Poppins',sans-serif;font-size:13.5px;line-height:2"></div>
+  </div>
+
+  <div class="box">
+    <div class="t">−1 倍のところで一度つぶれる理由</div>
+    <p style="margin:0">
+      2段目で y′ 方向の倍率が <span class="mono">1 → −1</span> と変わる途中、必ず <span class="mono">0</span> を通ります。
+      「折り返す」とは<b class="k">一度つぶして反対側に出す</b>ことなので、これは避けられません。
+      §1 で見た「途中で必ずつぶれる」現象の正体がこれです（<span class="mono">det A &lt; 0</span> ＝ 負の固有値が奇数個）。
+    </p>
+  </div>
+</section>
+
+<!-- ===================== 6 ===================== -->
+<section id="s6">
+  <h2><span class="num">06</span>うれしさ① — Aⁿ が一瞬で出る</h2>
+  <p>
+    対角化のいちばん分かりやすい御利益。<span class="mono">P⁻¹P = I</span> が次々に消えていくので、
+    真ん中の D だけが n 乗されます。
+  </p>
+  <div class="eq">
+    <span class="row">A<sup>n</sup> = (PDP⁻¹)(PDP⁻¹)…(PDP⁻¹) = P D<sup>n</sup> P⁻¹ = P
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">3<sup>n</sup></b><b>0</b><b>0</b><b style="color:var(--c2)">(−1)<sup>n</sup></b></span><i class="r"></i></span> P⁻¹
+    </span>
+    <span class="row" style="margin-top:6px">= <span class="frac"><span>1</span><span>2</span></span>
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>3<sup>n</sup>+(−1)<sup>n</sup></b><b>3<sup>n</sup>−(−1)<sup>n</sup></b><b>3<sup>n</sup>−(−1)<sup>n</sup></b><b>3<sup>n</sup>+(−1)<sup>n</sup></b></span><i class="r"></i></span>
+    </span>
+    <span class="note">n = 1 で <span class="mono">½[[2,4],[4,2]] = [[1,2],[2,1]]</span> = A ✓ ／ n = 2 で <span class="mono">½[[10,8],[8,10]] = [[5,4],[4,5]]</span> = A² ✓</span>
+  </div>
+
+  <div class="scroll">
+    <table id="tb6">
+      <thead><tr><th>n</th><th>3ⁿ</th><th>(−1)ⁿ</th><th>Aⁿ</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <p class="small" style="margin-top:18px">
+    もうひとつの御利益。<span class="mono">3ⁿ</span> は <span class="mono">(−1)ⁿ</span> よりはるかに速く育つので、
+    どんな出発ベクトルでも（v₂ 上の点を除いて）向きは <b class="k">v₁ = (1,1) の方向に吸い寄せられます</b>。
+    下は各ステップの向きだけを単位円上にプロットしたものです。
+  </p>
+
+  <div class="stage">
+    <div class="cvbox"><canvas id="cv6" class="sq"></canvas></div>
+    <div class="ctrl">
+      <button class="b play" id="p6">▶ 再生</button>
+      <button class="b" id="rst6">↺ n = 0 に戻す</button>
+      <div class="sl"><label>n</label><input type="range" id="t6" min="0" max="12" step="1" value="0"><span class="val" id="t6v">0</span></div>
+    </div>
+    <div class="cap" id="c6"></div>
+    <div class="lg">
+      <span><i class="sw" style="background:#999"></i>4つの出発ベクトル</span>
+      <span><i class="sw" style="background:var(--c1)"></i>v₁ 方向（吸引先）</span>
+      <span><i class="sw" style="background:var(--c2)"></i>v₂ 方向（ここに乗ると動かない）</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 7 ===================== -->
+<section id="s7">
+  <h2><span class="num">07</span>うれしさ② — 対称行列だから直交対角化できる</h2>
+  <p>
+    今回の A は <span class="mono">Aᵀ = A</span>（対称）でした。このとき固有ベクトルは<b class="k">必ず直交します</b>。
+    実際 <span class="mono">v₁ · v₂ = 1·(−1) + 1·1 = 0</span>。
+  </p>
+  <p>
+    そこで v₁, v₂ を長さ1に正規化して並べると、P は<b class="k">回転行列</b>そのものになり、
+    <span class="mono">P⁻¹</span> を計算する必要さえなくなります（転置でよい）。
+  </p>
+  <div class="eq">
+    <span class="row">Q = <span class="frac"><span>1</span><span>√2</span></span>
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">1</b><b style="color:var(--c2)">−1</b><b style="color:var(--c1)">1</b><b style="color:var(--c2)">1</b></span><i class="r"></i></span>
+      = R(45°), &nbsp; Q⁻¹ = Qᵀ
+    </span>
+    <span class="row" style="margin-top:6px">A = Q D Qᵀ</span>
+    <span class="note">幾何的な意味：<b>45°の軸方向に3倍に伸ばし、それと直角な135°の軸方向に折り返す</b>。それだけの操作</span>
+  </div>
+
+  <div class="stage">
+    <div class="cvbox"><canvas id="cv7" class="sq"></canvas></div>
+    <div class="ctrl">
+      <button class="b play" id="p7">▶ 再生</button>
+      <div class="sl"><label>s</label><input type="range" id="t7" min="0" max="1" step="0.005" value="0"><span class="val" id="t7v">0.00</span></div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="lab">x′ 倍率</div><div class="v" id="a7">1.00</div></div>
+      <div class="stat"><div class="lab">y′ 倍率</div><div class="v" id="b7">1.00</div></div>
+      <div class="stat"><div class="lab">面積比 |det|</div><div class="v" id="d7">1.00</div></div>
+    </div>
+    <div class="cap" id="c7"></div>
+    <div class="lg">
+      <span><i class="sw" style="background:#bbb"></i>単位円</span>
+      <span><i class="sw" style="background:var(--c3)"></i>像（楕円）</span>
+    </div>
+  </div>
+
+  <p class="small">
+    さらに、対称行列は「固有方向への射影」の重ね合わせにも書けます（スペクトル分解）。
+    <span class="mono">v̂₁ = (1,1)/√2</span>, <span class="mono">v̂₂ = (−1,1)/√2</span> として
+  </p>
+  <div class="eq">
+    <span class="row">A = 3 · v̂₁v̂₁ᵀ + (−1) · v̂₂v̂₂ᵀ
+      = 3 · <span class="frac"><span>1</span><span>2</span></span>
+      <span class="mat c1"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>1</b><b>1</b><b>1</b></span><i class="r"></i></span>
+      − <span class="frac"><span>1</span><span>2</span></span>
+      <span class="mat c2"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>−1</b><b>−1</b><b>1</b></span><i class="r"></i></span>
+      =
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>2</b><b>2</b><b>1</b></span><i class="r"></i></span>
+    </span>
+    <span class="note">「v₁ 成分は3倍、v₂ 成分は −1 倍」を1本の式にしたもの</span>
+  </div>
+</section>
+
+<!-- ===================== 8 ===================== -->
+<section id="s8">
+  <h2><span class="num">08</span>まとめ</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>手順</th><th>やったこと</th><th>結果</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>行列を動きとして見る</td><td class="n">det A = −3（向きが反転）</td></tr>
+        <tr><td>2</td><td>v と Av が平行な向きを探す</td><td class="n">θ = 45°, 135°</td></tr>
+        <tr><td>3</td><td>det(A − λI) = 0 を解く</td><td class="n">λ = 3, −1</td></tr>
+        <tr><td>4</td><td>(A − λI)v = 0 を解く</td><td class="n">v₁ = (1,1), v₂ = (−1,1)</td></tr>
+        <tr><td>5</td><td>P に並べ、D に並べる</td><td class="n">A = PDP⁻¹</td></tr>
+        <tr><td>6</td><td>D だけ n 乗する</td><td class="n">Aⁿ = PDⁿP⁻¹</td></tr>
+        <tr><td>7</td><td>対称性を使う</td><td class="n">A = QDQᵀ（Q は45°回転）</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="box">
+    <div class="t">一文でいうと</div>
+    <p style="margin:0">
+      <span class="mono">A = [[1,2],[2,1]]</span> は「ごちゃっと混ざった変換」に見えるが、
+      <b class="k">45°傾いた座標から眺めれば、片方の軸に3倍・もう片方に−1倍するだけ</b>の変換だった。
+      対角化とは、その<b class="k">いい見る角度（＝いい基底）を見つける作業</b>。
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="mono" style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)">Related</div>
+  <ul>
+    <li><a href="260516_linear_algebra.html">260516_linear_algebra.html</a> — 線形代数メインページ</li>
+    <li><a href="260813_eigen_playground.html">260813_eigen_playground.html</a> — 行列の数字を自由に打ち替えて固有値を見るプレイグラウンド</li>
+    <li><a href="260713_animations.html">260713_animations.html</a> — 固有ベクトルの流れ／ゴムシートのアニメ集</li>
+    <li><a href="260808_fibonacci_eigen.html">260808_fibonacci_eigen.html</a> — フィボナッチ行列 [[1,1],[1,0]] で同じことをやる</li>
+  </ul>
+</footer>
+
+</div>
+
+<script>
+/* =========================================================
+   math
+   ========================================================= */
+const A   = [1,2,2,1];
+const I2  = [1,0,0,1];
+const P   = [1,-1,1,1];
+const Pi  = [0.5,0.5,-0.5,0.5];
+const D   = [3,0,0,-1];
+const S2  = Math.SQRT2;
+
+const mul = (M,N)=>[M[0]*N[0]+M[1]*N[2], M[0]*N[1]+M[1]*N[3], M[2]*N[0]+M[3]*N[2], M[2]*N[1]+M[3]*N[3]];
+const ap  = (M,p)=>[M[0]*p[0]+M[1]*p[1], M[2]*p[0]+M[3]*p[1]];
+const dt  = M=>M[0]*M[3]-M[1]*M[2];
+const lerpM = (M,N,t)=>M.map((v,i)=>v+(N[i]-v)*t);
+const nrm = p=>{const L=Math.hypot(p[0],p[1])||1; return [p[0]/L,p[1]/L];};
+const f2  = x=>(Math.abs(x)<5e-3?0:x).toFixed(2).replace('-','−');
+
+/* =========================================================
+   view: world coords -> pixels
+   ========================================================= */
+function makeView(cv, half){
+  const ctx = cv.getContext('2d');
+  const V = {cv, ctx, half, w:0, h:0, s:1, cx:0, cy:0, fs:12};
+  V.fit = ()=>{
+    const dpr = Math.min(window.devicePixelRatio||1, 2);
+    const w = cv.clientWidth || 300, h = cv.clientHeight || 300;
+    cv.width = Math.round(w*dpr); cv.height = Math.round(h*dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    V.w=w; V.h=h; V.cx=w/2; V.cy=h/2;
+    V.s = Math.min(w,h)/(2*V.half);
+    V.fs = Math.max(9, Math.min(13, w/27));
+  };
+  V.X = x=>V.cx + x*V.s;
+  V.Y = y=>V.cy - y*V.s;
+  V.clear = ()=>{ ctx.fillStyle='#fff'; ctx.fillRect(0,0,V.w,V.h); };
+  V.fit();
+  return V;
+}
+
+function seg(V,p,q,color,lw,dash){
+  const c=V.ctx; c.save(); c.strokeStyle=color||'#ddd'; c.lineWidth=lw||1;
+  if(dash) c.setLineDash(dash);
+  c.beginPath(); c.moveTo(V.X(p[0]),V.Y(p[1])); c.lineTo(V.X(q[0]),V.Y(q[1])); c.stroke(); c.restore();
+}
+function axes(V,n){
+  n = n||V.half;
+  const c=V.ctx; c.save(); c.strokeStyle='#ededed'; c.lineWidth=1;
+  for(let k=-n;k<=n;k++){
+    c.beginPath(); c.moveTo(V.X(k),V.Y(-n)); c.lineTo(V.X(k),V.Y(n)); c.stroke();
+    c.beginPath(); c.moveTo(V.X(-n),V.Y(k)); c.lineTo(V.X(n),V.Y(k)); c.stroke();
+  }
+  c.strokeStyle='#c9c9c9'; c.lineWidth=1.4;
+  c.beginPath(); c.moveTo(V.X(-n),V.Y(0)); c.lineTo(V.X(n),V.Y(0)); c.stroke();
+  c.beginPath(); c.moveTo(V.X(0),V.Y(-n)); c.lineTo(V.X(0),V.Y(n)); c.stroke();
+  c.restore();
+}
+function mgrid(V,M,color,lw,n){
+  n = n||Math.ceil(V.half);
+  const c1=[M[0],M[2]], c2=[M[1],M[3]];
+  const c=V.ctx; c.save(); c.strokeStyle=color; c.lineWidth=lw||1;
+  for(let k=-n;k<=n;k++){
+    c.beginPath();
+    c.moveTo(V.X(k*c1[0]-n*c2[0]), V.Y(k*c1[1]-n*c2[1]));
+    c.lineTo(V.X(k*c1[0]+n*c2[0]), V.Y(k*c1[1]+n*c2[1]));
+    c.stroke();
+    c.beginPath();
+    c.moveTo(V.X(-n*c1[0]+k*c2[0]), V.Y(-n*c1[1]+k*c2[1]));
+    c.lineTo(V.X( n*c1[0]+k*c2[0]), V.Y( n*c1[1]+k*c2[1]));
+    c.stroke();
+  }
+  c.restore();
+}
+function arrow(V,p,q,color,lw,dash){
+  const c=V.ctx, x1=V.X(p[0]),y1=V.Y(p[1]),x2=V.X(q[0]),y2=V.Y(q[1]);
+  c.save(); c.strokeStyle=color; c.fillStyle=color; c.lineWidth=lw||2; c.lineCap='round';
+  if(dash) c.setLineDash(dash);
+  c.beginPath(); c.moveTo(x1,y1); c.lineTo(x2,y2); c.stroke(); c.setLineDash([]);
+  const a=Math.atan2(y2-y1,x2-x1), L=Math.hypot(x2-x1,y2-y1), hd=Math.max(6,(lw||2)*3.6);
+  if(L>hd*0.9){
+    c.beginPath(); c.moveTo(x2,y2);
+    c.lineTo(x2-hd*Math.cos(a-0.42), y2-hd*Math.sin(a-0.42));
+    c.lineTo(x2-hd*Math.cos(a+0.42), y2-hd*Math.sin(a+0.42));
+    c.closePath(); c.fill();
+  }
+  c.restore();
+}
+function poly(V,pts,stroke,lw,fill,close){
+  const c=V.ctx; c.save(); c.lineJoin='round';
+  c.beginPath(); c.moveTo(V.X(pts[0][0]),V.Y(pts[0][1]));
+  for(let i=1;i<pts.length;i++) c.lineTo(V.X(pts[i][0]),V.Y(pts[i][1]));
+  if(close!==false) c.closePath();
+  if(fill){ c.fillStyle=fill; c.fill(); }
+  if(stroke){ c.strokeStyle=stroke; c.lineWidth=lw||2; c.stroke(); }
+  c.restore();
+}
+function dot(V,p,r,color){
+  const c=V.ctx; c.save(); c.fillStyle=color;
+  c.beginPath(); c.arc(V.X(p[0]),V.Y(p[1]),r,0,7); c.fill(); c.restore();
+}
+function txt(V,p,s,color,dx,dy,align,fs){
+  const c=V.ctx; c.save();
+  c.font='700 '+(fs||V.fs)+"px Poppins,'Noto Sans JP',sans-serif";
+  c.textAlign=align||'left'; c.textBaseline='middle';
+  const x=V.X(p[0])+(dx||0), y=V.Y(p[1])+(dy||0);
+  c.lineWidth=3.5; c.strokeStyle='rgba(255,255,255,.9)'; c.strokeText(s,x,y);
+  c.fillStyle=color; c.fillText(s,x,y); c.restore();
+}
+function circleImg(V,M,color,lw){
+  const pts=[]; for(let i=0;i<=120;i++){ const a=i/120*Math.PI*2; pts.push(ap(M,[Math.cos(a),Math.sin(a)])); }
+  poly(V,pts,color,lw,null,true);
+}
+
+/* =========================================================
+   animation registry
+   ========================================================= */
+const anims=[];
+function reg(a){
+  anims.push(a);
+  a.visible=true;
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(es=>{ a.visible=es[0].isIntersecting; }, {rootMargin:'80px'}).observe(a.v.cv);
+  }
+  const ro = 'ResizeObserver' in window ? new ResizeObserver(()=>{ a.v.fit(); a.render(); }) : null;
+  if(ro) ro.observe(a.v.cv);
+  a.render();
+  return a;
+}
+let last=performance.now();
+function tick(now){
+  const dtS=Math.min((now-last)/1000, .06); last=now;
+  for(const a of anims){ if(a.playing && a.visible){ a.step(dtS); a.render(); } }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+function playBtn(btn, a){
+  const sync=()=>{ btn.textContent = a.playing ? '■ 停止' : '▶ 再生'; btn.classList.toggle('on', a.playing); };
+  btn.addEventListener('click', ()=>{ a.playing=!a.playing; if(a.playing && a.onPlay) a.onPlay(); sync(); });
+  a.sync=sync; sync();
+}
+const $ = id=>document.getElementById(id);
+
+/* =========================================================
+   §1 — matrix as motion
+   ========================================================= */
+(function(){
+  const v = makeView($('cv1'), 4.2);
+  const sq = [[0,0],[1,0],[1,1],[0,1]];
+  const lab = ['A','B','C','D'];
+  const pts = [];
+  for(let i=0;i<12;i++){ const th=i/12*Math.PI*2; pts.push([1.45*Math.cos(th), 1.45*Math.sin(th)]); }
+
+  const a = {v, playing:false, t:0,
+    step(d){ a.t += d*0.28; if(a.t>1.28){ a.t=0; } sync(); },
+    render(){
+      const t=Math.min(a.t,1), M=lerpM(I2,A,t), det=dt(M);
+      v.fit(); v.clear(); axes(v, 4);
+      mgrid(v, I2, '#efefef', 1, 2);
+      mgrid(v, M, 'rgba(29,122,77,.26)', 1.2, 2);
+      const R=[1.45,0,0,1.45];
+      circleImg(v, R, '#e6e6e6', 1.3);
+      circleImg(v, mul(M,R), 'rgba(29,122,77,.45)', 1.8);
+      // unit square
+      poly(v, sq.map(p=>ap(M,p)), '#111', 2.2, 'rgba(17,17,17,.07)', true);
+      sq.forEach((p,i)=>{ const q=ap(M,p); dot(v,q,3.2,'#111'); txt(v,q,lab[i],'#111',7,-8); });
+      // motion of sample points
+      pts.forEach(p=>{
+        const q=ap(M,p);
+        seg(v,p,q,'rgba(17,17,17,.22)',1.1);
+        dot(v,p,2,'rgba(17,17,17,.2)');
+        dot(v,q,3,'rgba(60,66,75,.9)');
+      });
+      // collapse warning
+      if(Math.abs(det)<0.08){
+        seg(v,[-v.half,-v.half],[v.half,v.half],'rgba(192,57,43,.85)',2.4);
+        txt(v,[2.1,2.1],'y = x に全部つぶれた','#c0392b',6,-12);
+      }
+    }
+  };
+  function sync(){
+    const t=Math.min(a.t,1), M=lerpM(I2,A,t), det=dt(M);
+    $('t1').value=t; $('t1v').textContent=t.toFixed(2);
+    $('d1').textContent=f2(det); $('a1').textContent=f2(Math.abs(det));
+    const or=$('or1'); const w=$('or1w');
+    if(Math.abs(det)<0.06){ or.textContent='つぶれた'; w.classList.add('warn'); }
+    else if(det>0){ or.textContent='そのまま'; w.classList.remove('warn'); }
+    else { or.textContent='反転'; w.classList.add('warn'); }
+    let m='';
+    if(t<0.02) m='<b>t = 0</b> — まだ何もしていない状態。単位正方形は 1×1、面積比は 1。';
+    else if(Math.abs(det)<0.08) m='<b>t = 0.50</b> — 面積が 0。平面ぜんぶが直線 y = x の上に押しつぶされた。この直線が λ = 3 の固有方向。';
+    else if(det>0) m='点がそれぞれ自分の行き先へ直線移動している。まだ向き（A→B→C→D の回り方）は元と同じ。';
+    else if(t<0.99) m='つぶれを通過した後。角の回り方が逆になっている＝<b>向きが裏返った</b>。';
+    else m='<b>t = 1</b> — A そのもの。単位正方形は面積 3 の平行四辺形になり、向きは裏返っている（det = −3）。';
+    $('c1').innerHTML=m;
+  }
+  $('t1').addEventListener('input',e=>{ a.playing=false; a.sync&&a.sync(); a.t=+e.target.value; a.render(); sync(); });
+  reg(a); playBtn($('p1'), a); sync();
+})();
+
+/* =========================================================
+   §2 — hunting the eigen-directions
+   ========================================================= */
+(function(){
+  const v = makeView($('cv2'), 3.4);
+  const a = {v, playing:false, th:10,
+    step(d){ a.th=(a.th + d*32)%360; sync(); },
+    render(){
+      v.fit(); v.clear(); axes(v);
+      // locus of Av (ellipse)
+      circleImg(v, A, '#dddddd', 1.6);
+      circleImg(v, I2, '#efefef', 1.2);
+      // eigen lines (faint until hit)
+      const th=a.th*Math.PI/180, vv=[Math.cos(th),Math.sin(th)], Av=ap(A,vv);
+      const cross=vv[0]*Av[1]-vv[1]*Av[0], near=Math.abs(cross)<0.12;
+      seg(v,[-3.4,-3.4],[3.4,3.4], near&&Math.sin(2*th)>0?'rgba(184,134,11,.75)':'rgba(184,134,11,.18)', near&&Math.sin(2*th)>0?2:1.4);
+      seg(v,[3.4,-3.4],[-3.4,3.4], near&&Math.sin(2*th)<0?'rgba(47,93,138,.75)':'rgba(47,93,138,.18)', near&&Math.sin(2*th)<0?2:1.4);
+      arrow(v,[0,0],Av,'#1d7a4d',2.4);
+      arrow(v,[0,0],vv,'#111',2.4);
+      txt(v,vv,'v','#111',9,-9);
+      txt(v,Av,'Av','#1d7a4d',9,-9);
+      if(near){
+        const lam=vv[0]*Av[0]+vv[1]*Av[1];
+        txt(v,[0,-3.0],'平行！ λ = '+f2(lam), lam>0?'#b8860b':'#2f5d8a',0,0,'center',Math.max(11,v.fs+1));
+      }
+    }
+  };
+  function sync(){
+    const th=a.th*Math.PI/180, vv=[Math.cos(th),Math.sin(th)], Av=ap(A,vv);
+    const cross=vv[0]*Av[1]-vv[1]*Av[0], lam=vv[0]*Av[0]+vv[1]*Av[1];
+    $('t2').value=a.th; $('t2v').textContent=a.th.toFixed(0)+'°';
+    $('x2').textContent=f2(cross); $('l2').textContent=f2(lam);
+    $('m2').textContent=f2(Math.hypot(Av[0],Av[1]));
+    let m;
+    if(Math.abs(cross)<0.06){
+      m = lam>0
+        ? '<b>θ = 45° — 見つけた。</b>v と Av が完全に同じ向きで、長さがちょうど 3 倍。つまり <b>Av = 3v</b>。これが λ₁ = 3 の固有ベクトル (1,1)。'
+        : '<b>θ = 135° — 2本目。</b>Av は v と<b>真逆</b>を向いて長さは同じ。つまり <b>Av = −v</b>。これが λ₂ = −1 の固有ベクトル (−1,1)。伸び縮みはしないが裏返る。';
+    } else if(Math.abs(cross)<0.4){
+      m = 'もう少し。ずれ（外積）が 0 に近づいている＝2本の矢印がほぼ重なりかけている。';
+    } else {
+      m = 'v（黒）と Av（緑）が別の向きを指している。ずれ = '+f2(cross)+'。この向きは固有方向ではない。';
+    }
+    $('c2').innerHTML=m;
+  }
+  $('t2').addEventListener('input',e=>{ a.playing=false; a.sync&&a.sync(); a.th=+e.target.value; a.render(); sync(); });
+  document.querySelectorAll('#s2 .chip').forEach(b=>b.addEventListener('click',()=>{
+    a.playing=false; a.sync&&a.sync(); a.th=+b.dataset.th; a.render(); sync();
+    document.querySelectorAll('#s2 .chip').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  }));
+  reg(a); playBtn($('p2'), a); sync();
+})();
+
+/* =========================================================
+   §3 — det(A - λI) = 0
+   ========================================================= */
+(function(){
+  const cvA=$('cv3a'), cvB=$('cv3b');
+  const vB = makeView(cvB, 3.6);
+  const ctxA = cvA.getContext('2d');
+  const PL = {xmin:-3.4, xmax:5.4, ymin:-6.5, ymax:16.5, w:0, h:0, pad:26};
+  function fitA(){
+    const dpr=Math.min(window.devicePixelRatio||1,2);
+    const w=cvA.clientWidth||300, h=cvA.clientHeight||240;
+    cvA.width=Math.round(w*dpr); cvA.height=Math.round(h*dpr);
+    ctxA.setTransform(dpr,0,0,dpr,0,0); PL.w=w; PL.h=h;
+    PL.fs=Math.max(9,Math.min(12,w/28));
+  }
+  const px = x=>PL.pad + (x-PL.xmin)/(PL.xmax-PL.xmin)*(PL.w-PL.pad*1.3);
+  const py = y=>PL.h-PL.pad - (y-PL.ymin)/(PL.ymax-PL.ymin)*(PL.h-PL.pad*1.6);
+  const p3 = l=>l*l-2*l-3;
+
+  const a = {v:vB, playing:false, lam:-3,
+    step(d){ a.lam += d*1.5; if(a.lam>5.4){ a.lam=-3; } sync(); },
+    render(){
+      /* ---- left: graph ---- */
+      fitA(); ctxA.fillStyle='#fff'; ctxA.fillRect(0,0,PL.w,PL.h);
+      ctxA.save();
+      ctxA.strokeStyle='#ededed'; ctxA.lineWidth=1;
+      for(let k=-3;k<=5;k++){ ctxA.beginPath(); ctxA.moveTo(px(k),py(PL.ymin)); ctxA.lineTo(px(k),py(PL.ymax)); ctxA.stroke(); }
+      for(let k=-5;k<=15;k+=5){ ctxA.beginPath(); ctxA.moveTo(px(PL.xmin),py(k)); ctxA.lineTo(px(PL.xmax),py(k)); ctxA.stroke(); }
+      ctxA.strokeStyle='#c9c9c9'; ctxA.lineWidth=1.4;
+      ctxA.beginPath(); ctxA.moveTo(px(PL.xmin),py(0)); ctxA.lineTo(px(PL.xmax),py(0)); ctxA.stroke();
+      ctxA.beginPath(); ctxA.moveTo(px(0),py(PL.ymin)); ctxA.lineTo(px(0),py(PL.ymax)); ctxA.stroke();
+      // curve
+      ctxA.strokeStyle='#111'; ctxA.lineWidth=2.2; ctxA.beginPath();
+      for(let i=0;i<=200;i++){ const l=PL.xmin+(PL.xmax-PL.xmin)*i/200; const y=p3(l);
+        if(i===0) ctxA.moveTo(px(l),py(y)); else ctxA.lineTo(px(l),py(y)); }
+      ctxA.stroke();
+      // roots
+      [[-1,'#2f5d8a','λ = −1'],[3,'#b8860b','λ = 3']].forEach(([r,c,t])=>{
+        ctxA.fillStyle=c; ctxA.beginPath(); ctxA.arc(px(r),py(0),4.5,0,7); ctxA.fill();
+        ctxA.font='700 '+PL.fs+"px Poppins,sans-serif"; ctxA.textAlign='center';
+        ctxA.lineWidth=3.5; ctxA.strokeStyle='rgba(255,255,255,.9)';
+        ctxA.strokeText(t,px(r),py(0)+PL.fs+9); ctxA.fillText(t,px(r),py(0)+PL.fs+9);
+      });
+      // current
+      const L=a.lam, y=p3(L);
+      ctxA.strokeStyle='rgba(29,122,77,.5)'; ctxA.lineWidth=1.4; ctxA.setLineDash([4,4]);
+      ctxA.beginPath(); ctxA.moveTo(px(L),py(0)); ctxA.lineTo(px(L),py(y)); ctxA.stroke(); ctxA.setLineDash([]);
+      ctxA.fillStyle='#1d7a4d'; ctxA.beginPath(); ctxA.arc(px(L),py(y),5,0,7); ctxA.fill();
+      ctxA.font='700 '+PL.fs+"px Poppins,sans-serif"; ctxA.textAlign='left'; ctxA.fillStyle='#888';
+      ctxA.textBaseline='top'; ctxA.fillText('p(λ) = λ² − 2λ − 3', PL.pad+2, 6);
+      ctxA.restore();
+
+      /* ---- right: the map A - λI ---- */
+      const M=[A[0]-L, A[1], A[2], A[3]-L], det=dt(M);
+      vB.fit(); vB.clear(); axes(vB);
+      mgrid(vB, M, 'rgba(29,122,77,.30)', 1.2);
+      circleImg(vB, I2, '#e4e4e4', 1.3);
+      circleImg(vB, M, '#1d7a4d', 2);
+      poly(vB, [[0,0],[1,0],[1,1],[0,1]].map(p=>ap(M,p)), 'rgba(17,17,17,.5)', 1.6, 'rgba(17,17,17,.06)', true);
+      if(Math.abs(det)<0.6){
+        // kernel direction of A - lam I : for symmetric, kernel = eigenvector
+        const k = Math.abs(L-3)<Math.abs(L+1) ? [1,1] : [-1,1];
+        const c = Math.abs(L-3)<Math.abs(L+1) ? '#b8860b' : '#2f5d8a';
+        seg(vB,[-3.5*k[0],-3.5*k[1]],[3.5*k[0],3.5*k[1]], c, 2.4);
+        arrow(vB,[0,0],k,c,3);
+        txt(vB, k, Math.abs(L-3)<Math.abs(L+1)?'v₁':'v₂', c, 10, -10);
+        txt(vB,[0,-3.15],'この向きが 0 に潰される','#3c424b',0,0,'center',Math.max(10,vB.fs));
+      }
+      txt(vB,[-3.35,3.2],'A − λI','#888',0,0,'left',Math.max(10,vB.fs));
+    }
+  };
+  function sync(){
+    const L=a.lam, det=p3(L);
+    $('t3').value=L; $('t3v').textContent=f2(L);
+    $('d3').textContent=f2(det);
+    const st=$('st3'), sv=$('s3v');
+    if(Math.abs(det)<0.12){ sv.textContent='つぶれた'; st.classList.add('warn'); }
+    else { sv.textContent='可逆'; st.classList.remove('warn'); }
+    let m;
+    if(Math.abs(L-3)<0.12) m='<b>λ = 3。</b>p(3) = 0 なので A − 3I は可逆でない。右の緑の楕円が線に潰れ、金色の向き (1,1) が 0 に送られている。これが「Av = 3v」の言い換え。';
+    else if(Math.abs(L+1)<0.12) m='<b>λ = −1。</b>もうひとつの根。青の向き (−1,1) が 0 に潰される。';
+    else if(det<0) m='p(λ) = '+f2(det)+' &lt; 0。潰れていないので (A − λI)v = 0 の解は v = 0 だけ。λ はこの2根の間にある。';
+    else m='p(λ) = '+f2(det)+' ≠ 0。A − λI は可逆なので、この λ では固有ベクトルは存在しない。';
+    $('c3').innerHTML=m;
+  }
+  $('t3').addEventListener('input',e=>{ a.playing=false; a.sync&&a.sync(); a.lam=+e.target.value; a.render(); sync(); });
+  document.querySelectorAll('#s3 .chip').forEach(b=>b.addEventListener('click',()=>{
+    a.playing=false; a.sync&&a.sync(); a.lam=+b.dataset.lam; a.render(); sync();
+    document.querySelectorAll('#s3 .chip').forEach(x=>x.classList.remove('on')); b.classList.add('on');
+  }));
+  if('ResizeObserver' in window) new ResizeObserver(()=>{a.render();}).observe(cvA);
+  reg(a); playBtn($('p3'), a); sync();
+})();
+
+/* =========================================================
+   §4 — the two eigenlines are invariant
+   ========================================================= */
+(function(){
+  const v = makeView($('cv4'), 4.0);
+  const others = [[1,0],[0,1],[1.6,0.5],[-0.6,1.4]];
+  const a = {v, playing:true, t:0, dir:1,
+    step(d){ a.t += d*0.42*a.dir; if(a.t>1){a.t=1;a.dir=-1;} if(a.t<0){a.t=0;a.dir=1;} sync(); },
+    render(){
+      const t=a.t;
+      v.fit(); v.clear(); axes(v);
+      seg(v,[-4,-4],[4,4],'rgba(184,134,11,.5)',2);
+      seg(v,[4,-4],[-4,4],'rgba(47,93,138,.5)',2);
+      txt(v,[-2.7,-2.7],'y = x','#b8860b',0,-12,'center',Math.max(10,v.fs-1));
+      txt(v,[2.7,-2.7],'y = −x','#2f5d8a',0,-12,'center',Math.max(10,v.fs-1));
+      // other directions: bend away
+      others.forEach(p=>{
+        const q=[p[0]+(ap(A,p)[0]-p[0])*t, p[1]+(ap(A,p)[1]-p[1])*t];
+        seg(v,p,q,'rgba(17,17,17,.12)',1,[3,3]);
+        arrow(v,[0,0],q,'#b0b0b0',1.8);
+      });
+      // v1
+      const v1=[1,1], q1=[1+2*t, 1+2*t];
+      arrow(v,[0,0],q1,'#b8860b',3);
+      dot(v,v1,3,'#b8860b');
+      txt(v,q1,'×'+(1+2*t).toFixed(2),'#b8860b',10,-10);
+      // v2 : scale goes 1 -> -1
+      const s2=1-2*t, q2=[-s2, s2];
+      arrow(v,[0,0],q2,'#2f5d8a',3);
+      dot(v,[-1,1],3,'#2f5d8a');
+      txt(v,q2,'×'+s2.toFixed(2),'#2f5d8a',10,-10);
+    }
+  };
+  function sync(){
+    const t=a.t;
+    $('t4').value=t; $('t4v').textContent=t.toFixed(2);
+    const s2=1-2*t;
+    let m='';
+    if(t<0.03) m='出発点。金 = v₁ (1,1)、青 = v₂ (−1,1)、灰 = その他の向き。';
+    else if(Math.abs(s2)<0.06) m='青の矢印が長さ0を通過中。<b>−1 倍とは、一度つぶして反対側に出ること</b>。';
+    else m='金は直線 y = x 上を伸びるだけ（今 ×'+(1+2*t).toFixed(2)+'）。青は y = −x 上を通って反対側へ（今 ×'+s2.toFixed(2)+'）。'
+        + '<b>灰の矢印だけが元の直線から外れていく</b>のが固有方向との違い。';
+    $('c4').innerHTML=m;
+  }
+  $('t4').addEventListener('input',e=>{ a.playing=false; a.sync&&a.sync(); a.t=+e.target.value; a.render(); sync(); });
+  reg(a); playBtn($('p4'), a); a.playing=true; a.sync&&a.sync(); sync();
+})();
+
+/* =========================================================
+   §5 — A = P D P^-1, three stages
+   ========================================================= */
+(function(){
+  const v = makeView($('cv5'), 4.4);
+  const F = [[-0.5,1.0],[0.5,1.0],[0.5,0.7],[-0.2,0.7],[-0.2,0.15],[0.35,0.15],
+             [0.35,-0.15],[-0.2,-0.15],[-0.2,-1.0],[-0.5,-1.0]].map(p=>[p[0]*1.35,p[1]*1.35]);
+  const stages = [
+    {n:'I',      M:I2,            cap:'<b>まだ何もしていない。</b>黒い F と、それを載せた正方マス目。斜めの2軸（金 = v₁ / 青 = v₂）が対角化で使う「いい座標」。'},
+    {n:'P⁻¹',    M:Pi,            cap:'<b>1段目：P⁻¹ をかけた。</b>斜めだった金・青の軸が、水平・垂直に立った。つまり<b>固有ベクトルを x′y′ 軸として見る座標に読み替えた</b>。今回の P⁻¹ は「45°戻して 1/√2 倍」。'},
+    {n:'D P⁻¹',  M:mul(D,Pi),     cap:'<b>2段目：D をかけた。</b>この座標では、ただ x′ に3倍・y′ に −1 倍しただけ。<b>斜めに混ざる成分がゼロ</b>なので、軸ごとに独立に伸ばすだけで済む。これが「対角」のありがたさ。'},
+    {n:'P D P⁻¹ = A', M:A,        cap:'<b>3段目：P をかけて元の座標に戻した。</b>結果は最初の A = [[1,2],[2,1]] とぴったり一致する。A の正体は「45°傾いた座標で 3 倍と −1 倍しただけ」だった。'}
+  ];
+  // stage-2 is animated as scale (1,1) -> (3,-1) in eigen coords
+  function matAt(i, t){
+    if(i===0) return lerpM(I2, Pi, t);
+    if(i===1) return mul([1+2*t,0,0,1-2*t], Pi);
+    if(i===2) return mul(lerpM(I2,P,t), mul(D,Pi));
+    return A;
+  }
+  const a = {v, playing:false, i:0, t:0, speed:0.7, showGrid:false,
+    step(d){
+      a.t += d*a.speed;
+      while(a.t>=1 && a.i<3){ a.i++; a.t-=1; }
+      if(a.i>=3){ a.i=3; a.t=0; a.playing=false; a.sync&&a.sync(); }
+      sync();
+    },
+    onPlay(){ if(a.i>=3){ a.i=0; a.t=0; } },
+    render(){
+      const M = a.i>=3 ? A : matAt(a.i, Math.min(a.t,1));
+      v.fit(); v.clear(); axes(v);
+      mgrid(v, M, 'rgba(17,17,17,.08)', 1);
+      if(a.showGrid) mgrid(v, mul(M,P), 'rgba(184,134,11,.22)', 1.1, 4);
+      // eigen axes, carried along
+      const e1=ap(M,[1,1]), e2=ap(M,[-1,1]);
+      const k=3.2/Math.max(0.35,Math.hypot(e1[0],e1[1])), k2=3.2/Math.max(0.35,Math.hypot(e2[0],e2[1]));
+      seg(v,[-e1[0]*k,-e1[1]*k],[e1[0]*k,e1[1]*k],'rgba(184,134,11,.45)',1.8);
+      seg(v,[-e2[0]*k2,-e2[1]*k2],[e2[0]*k2,e2[1]*k2],'rgba(47,93,138,.45)',1.8);
+      arrow(v,[0,0],e1,'#b8860b',2.6);
+      arrow(v,[0,0],e2,'#2f5d8a',2.6);
+      // ghost + shape
+      poly(v, F, 'rgba(17,17,17,.22)', 1.4, null, true);
+      poly(v, F.map(p=>ap(M,p)), '#111', 2.4, 'rgba(17,17,17,.08)', true);
+      txt(v,[-4.3,4.1], labelNow(), '#888', 0,0,'left', Math.max(10,v.fs));
+    }
+  };
+  function labelNow(){
+    if(a.i>=3) return 'A';
+    if(a.t<0.02) return stages[a.i].n;
+    return stages[a.i].n+' → '+stages[a.i+1].n;
+  }
+  function sync(){
+    const M = a.i>=3 ? A : matAt(a.i, Math.min(a.t,1));
+    $('m5').textContent=labelNow();
+    $('d5').textContent=f2(dt(M));
+    const prog=((a.i+Math.min(a.t,1))/3)*100;
+    $('bar5').style.width=Math.min(100,prog)+'%';
+    document.querySelectorAll('#stg5 .chip').forEach(c=>{
+      const i=+c.dataset.s;
+      c.classList.toggle('on', a.t<0.02 ? i===Math.min(a.i,3) : false);
+    });
+    const done = a.t<0.02 ? Math.min(a.i,3) : a.i;
+    let m = stages[Math.min(done,3)].cap;
+    if(a.t>=0.02 && a.i===1){
+      const s=1-2*Math.min(a.t,1);
+      m = '<b>2段目の途中：</b>x′ 倍率 '+(1+2*Math.min(a.t,1)).toFixed(2)+'、y′ 倍率 '+s.toFixed(2)+'。'
+        + (Math.abs(s)<0.08 ? ' いま y′ が 0 ＝ <b>一度つぶれて、これから裏返る</b>。' : '');
+    } else if(a.t>=0.02){
+      m = stages[a.i].cap.replace('<b>','<b>（'+labelNow()+'）');
+    }
+    $('c5').innerHTML=m;
+  }
+  $('sp5').addEventListener('input',e=>{ a.speed=+e.target.value; $('sp5v').textContent=a.speed.toFixed(2)+'×'; });
+  $('rst5').addEventListener('click',()=>{ a.i=0; a.t=0; a.render(); sync(); });
+  $('gr5').addEventListener('click',e=>{ a.showGrid=!a.showGrid; e.target.classList.toggle('on',a.showGrid); a.render(); });
+  document.querySelectorAll('#stg5 .chip').forEach(b=>b.addEventListener('click',()=>{
+    a.playing=false; a.sync&&a.sync(); a.i=+b.dataset.s; a.t=0; a.render(); sync();
+  }));
+  // numeric check
+  (function(){
+    const R = mul(P, mul(D, Pi));
+    const fmt = M=>'[['+M[0]+', '+M[1]+'], ['+M[2]+', '+M[3]+']]';
+    const eq = R.every((x,i)=>Math.abs(x-A[i])<1e-12);
+    $('chk5').innerHTML =
+      'P·D·P⁻¹ = '+fmt(R.map(x=>+x.toFixed(10)))+'<br>'+
+      'A &nbsp; &nbsp; &nbsp; &nbsp; = '+fmt(A)+'<br>'+
+      'P·P⁻¹ = '+fmt(mul(P,Pi).map(x=>+x.toFixed(10)))+' = I<br>'+
+      '<b>'+(eq?'一致 ✓':'不一致 ✗')+'</b>';
+  })();
+  reg(a); playBtn($('p5'), a); sync();
+})();
+
+/* =========================================================
+   §6 — A^n
+   ========================================================= */
+(function(){
+  // table
+  const tb=$('tb6').querySelector('tbody');
+  let rows='';
+  for(let n=1;n<=6;n++){
+    const p=Math.pow(3,n), q=Math.pow(-1,n);
+    const d=(p+q)/2, o=(p-q)/2;
+    rows+='<tr><td class="n">'+n+'</td><td class="n">'+p+'</td><td class="n">'+(q<0?'−1':'1')+
+      '</td><td class="n">[['+d+', '+o+'], ['+o+', '+d+']]</td></tr>';
+  }
+  tb.innerHTML=rows;
+
+  const v = makeView($('cv6'), 1.55);
+  const seeds=[[1,0],[0,1],[-1,0.3],[0.2,-1],[-1,1]];
+  const cols=['#666','#888','#777','#999','#2f5d8a'];
+  const a={v, playing:false, n:0, acc:0,
+    step(d){ a.acc+=d; if(a.acc>0.55){ a.acc=0; a.n++; if(a.n>12){ a.n=0; } sync(); } },
+    render(){
+      v.fit(); v.clear();
+      // unit circle
+      circleImg(v, I2, '#e2e2e2', 1.4);
+      const c=v.ctx; c.save(); c.strokeStyle='#ededed'; c.lineWidth=1;
+      c.beginPath(); c.moveTo(v.X(-1.5),v.Y(0)); c.lineTo(v.X(1.5),v.Y(0)); c.stroke();
+      c.beginPath(); c.moveTo(v.X(0),v.Y(-1.5)); c.lineTo(v.X(0),v.Y(1.5)); c.stroke(); c.restore();
+      // eigen directions
+      const u1=nrm([1,1]), u2=nrm([-1,1]);
+      seg(v,[-u1[0]*1.45,-u1[1]*1.45],[u1[0]*1.45,u1[1]*1.45],'rgba(184,134,11,.5)',2);
+      seg(v,[-u2[0]*1.45,-u2[1]*1.45],[u2[0]*1.45,u2[1]*1.45],'rgba(47,93,138,.5)',2);
+      txt(v,[u1[0]*1.2,u1[1]*1.2],'v₁','#b8860b',12,-10);
+      txt(v,[u2[0]*1.2,u2[1]*1.2],'v₂','#2f5d8a',-16,-10);
+      // iterate each seed
+      seeds.forEach((s,si)=>{
+        let p=s.slice();
+        for(let k=0;k<=a.n;k++){
+          const u=nrm(p), r=0.42+0.58*(k/Math.max(1,a.n||1));
+          const alpha = k===a.n ? 1 : 0.10+0.18*(k/Math.max(1,a.n));
+          if(k===a.n){ arrow(v,[0,0],u,cols[si],2.2); dot(v,u,3.4,cols[si]); }
+          else dot(v,[u[0],u[1]],2.2,'rgba(120,120,120,'+alpha.toFixed(2)+')');
+          p=ap(A,p);
+        }
+      });
+      txt(v,[0,-1.42],'n = '+a.n,'#111',0,0,'center',Math.max(11,v.fs+1));
+    }
+  };
+  function sync(){
+    $('t6').value=a.n; $('t6v').textContent=a.n;
+    let m;
+    if(a.n===0) m='n = 0。5本の出発ベクトルの向き。青は v₂ の上にわざと置いたもの。';
+    else if(a.n<3) m='n = '+a.n+'。灰色の矢印がすでに 45°（v₁ 方向）または 225° に寄り始めた。3ⁿ が (−1)ⁿ を押し切るから。';
+    else m='n = '+a.n+'。v₂ の上に置いた青だけは、いつまでも v₂ の向き（±135°）のまま。それ以外は全部 v₁ の向きに張り付く。'
+      + '<b>これが「支配的な固有値」の意味</b>。';
+    $('c6').innerHTML=m;
+  }
+  $('t6').addEventListener('input',e=>{ a.playing=false; a.sync&&a.sync(); a.n=+e.target.value; a.render(); sync(); });
+  $('rst6').addEventListener('click',()=>{ a.n=0; a.acc=0; a.render(); sync(); });
+  reg(a); playBtn($('p6'), a); sync();
+})();
+
+/* =========================================================
+   §7 — orthogonal diagonalization: circle -> ellipse
+   ========================================================= */
+(function(){
+  const v = makeView($('cv7'), 3.6);
+  const Q  = [1/S2, -1/S2, 1/S2, 1/S2];
+  const Qt = [1/S2, 1/S2, -1/S2, 1/S2];
+  const a={v, playing:false, s:0, dir:1,
+    step(d){ a.s += d*0.34*a.dir; if(a.s>1){a.s=1;a.dir=-1;} if(a.s<0){a.s=0;a.dir=1;} sync(); },
+    render(){
+      const s=a.s, k1=1+2*s, k2=1-2*s;
+      const M = mul(Q, mul([k1,0,0,k2], Qt));
+      v.fit(); v.clear(); axes(v);
+      const u1=nrm([1,1]), u2=nrm([-1,1]);
+      seg(v,[-u1[0]*3.5,-u1[1]*3.5],[u1[0]*3.5,u1[1]*3.5],'rgba(184,134,11,.4)',1.8);
+      seg(v,[-u2[0]*3.5,-u2[1]*3.5],[u2[0]*3.5,u2[1]*3.5],'rgba(47,93,138,.4)',1.8);
+      circleImg(v, I2, '#dcdcdc', 1.4);
+      circleImg(v, M, '#1d7a4d', 2.4);
+      // radial spokes to show where points go
+      for(let i=0;i<24;i++){
+        const t=i/24*Math.PI*2, p=[Math.cos(t),Math.sin(t)], q=ap(M,p);
+        seg(v,p,q,'rgba(29,122,77,.16)',1);
+        dot(v,q,1.8,'rgba(29,122,77,.6)');
+      }
+      arrow(v,[0,0],[u1[0]*k1,u1[1]*k1],'#b8860b',2.6);
+      arrow(v,[0,0],[u2[0]*k2,u2[1]*k2],'#2f5d8a',2.6);
+      txt(v,[u1[0]*k1,u1[1]*k1],'×'+k1.toFixed(2),'#b8860b',10,-10);
+      txt(v,[u2[0]*k2,u2[1]*k2],'×'+k2.toFixed(2),'#2f5d8a',10,-10);
+      txt(v,[0,-3.35],'45° 軸に '+k1.toFixed(2)+' 倍 ／ 135° 軸に '+k2.toFixed(2)+' 倍','#3c424b',0,0,'center',Math.max(10,v.fs));
+    }
+  };
+  function sync(){
+    const s=a.s, k1=1+2*s, k2=1-2*s;
+    $('t7').value=s; $('t7v').textContent=s.toFixed(2);
+    $('a7').textContent=f2(k1); $('b7').textContent=f2(k2);
+    $('d7').textContent=f2(Math.abs(k1*k2));
+    let m;
+    if(s<0.03) m='s = 0。まだ単位円のまま（A = I の状態）。';
+    else if(Math.abs(k2)<0.08) m='y′ 倍率が 0。円が45°の線分につぶれた瞬間。ここから先で裏返る。';
+    else if(s>0.97) m='<b>s = 1 で A そのもの。</b>単位円は、45°方向の半径3・135°方向の半径1の楕円になった。面積比 |det| = 3。'
+      + '楕円の主軸がそのまま固有ベクトルの向き — これは A が対称行列だから起きること。';
+    else m='45° 軸方向に '+k1.toFixed(2)+' 倍、直交する 135° 軸方向に '+k2.toFixed(2)+' 倍。'
+      + '2軸が直交しているので、伸縮が互いに干渉しない。';
+    $('c7').innerHTML=m;
+  }
+  $('t7').addEventListener('input',e=>{ a.playing=false; a.sync&&a.sync(); a.s=+e.target.value; a.render(); sync(); });
+  reg(a); playBtn($('p7'), a); sync();
+})();
+
+/* =========================================================
+   side nav scroll spy
+   ========================================================= */
+(function(){
+  const links=[...document.querySelectorAll('#sideNav a')];
+  const secs=links.map(l=>document.querySelector(l.getAttribute('href')));
+  const onScroll=()=>{
+    let idx=0;
+    secs.forEach((s,i)=>{ if(s && s.getBoundingClientRect().top < window.innerHeight*0.35) idx=i; });
+    links.forEach((l,i)=>l.classList.toggle('active', i===idx));
+  };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+})();
+</script>
+</body>
+</html>
