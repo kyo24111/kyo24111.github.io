@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>2×2行列の対角化 — A = [[1,2],[2,1]]</title>
+<title>2×2行列の対角化 ② — A = [[3,1],[2,2]]</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#ffffff; --surface:#f5f5f5; --border:#e0e0e0;
     --text:#111111; --soft:#3c424b; --muted:#888888; --faint:#b5b5b5;
-    --c1:#b8860b;   /* λ1 = 3  の方向 */
-    --c2:#2f5d8a;   /* λ2 = -1 の方向 */
+    --c1:#b8860b;   /* λ1 = 4 の方向 */
+    --c2:#2f5d8a;   /* λ2 = 1 の方向 */
     --c3:#1d7a4d;   /* 像・結果 */
-    --warn:#c0392b; /* つぶれ・反転 */
+    --warn:#c0392b;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);
@@ -98,6 +98,7 @@
   .lg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--soft);margin-top:9px}
   .lg span{display:inline-flex;align-items:center;gap:6px}
   .sw{width:14px;height:3.5px;border-radius:2px;flex:none}
+  .sw.d{background:repeating-linear-gradient(90deg,#111 0 4px,transparent 4px 7px)}
 
   .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-top:12px}
   .stat{background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:8px;text-align:center}
@@ -125,6 +126,13 @@
     color:var(--muted);font-weight:700;margin-bottom:6px}
   .box.ok{background:#eef8f2;border-color:#b8dbc7;color:#14603c}
   .box.ok .t{color:#2f8a5f}
+  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  table{border-collapse:collapse;font-size:13px;min-width:100%}
+  th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;white-space:nowrap}
+  th{background:var(--surface);font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:700}
+  td.n{font-family:'Poppins',sans-serif;text-align:right}
+  table.cmp td{white-space:normal}
+  table.cmp td:first-child{font-weight:700;color:var(--text);white-space:nowrap}
 
   /* ===== column ===== */
   .column{background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--text);
@@ -148,11 +156,7 @@
   .column table td{white-space:normal}
   .column .fold{background:var(--surface);border:1px solid var(--border);border-radius:10px;
     padding:12px 14px;margin:12px 0;font-size:13.5px;color:var(--soft)}
-  .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  table{border-collapse:collapse;font-size:13px;min-width:100%}
-  th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;white-space:nowrap}
-  th{background:var(--surface);font-family:'Poppins',sans-serif;font-size:11.5px;font-weight:700}
-  td.n{font-family:'Poppins',sans-serif;text-align:right}
+
   footer{margin-top:64px;padding-top:20px;border-top:1px solid var(--border);font-size:13px;color:var(--muted)}
   footer a{color:var(--soft);text-decoration:none;border-bottom:1px solid var(--border)}
   footer a:hover{color:var(--text)}
@@ -171,22 +175,26 @@
     <li><a href="#s4">4. 固有ベクトルを出す</a></li>
     <li><a href="#s5">5. A = PDP⁻¹ の3段アニメ</a></li>
     <li><a href="#s6">6. うれしさ① Aⁿ</a></li>
-    <li><a href="#s7">7. うれしさ② 直交対角化</a></li>
-    <li><a href="#s8">8. まとめ</a></li>
+    <li><a href="#s7">7. 対称じゃないと何が違う</a></li>
+    <li><a href="#s8">8. まとめ／1本目との比較</a></li>
   </ul>
 </nav>
 
 <div class="page">
 
 <header>
-  <div class="kick">Linear Algebra · Walkthrough</div>
-  <h1>2×2行列の対角化を、アニメーションで丁寧に<br>A = <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>2</b><b>2</b><b>1</b></span><i class="r"></i></span></h1>
+  <div class="kick">Linear Algebra · Walkthrough ②</div>
+  <h1>2×2行列の対角化 ②<br>A = <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>3</b><b>1</b><b>2</b><b>2</b></span><i class="r"></i></span></h1>
   <p class="lede">
-    この1枚の行列を、①動きとして見る → ②固有方向を探す → ③固有値を出す → ④固有ベクトルを出す →
-    ⑤ <span class="mono">A = PDP⁻¹</span> に分解する、の順で追います。
-    各節のアニメは <b class="k">再生</b> かスライダーで自分で動かせます。
-    同じ手順を別の行列で通した<a href="260910_diagonalization_3122.html" style="color:var(--soft)">2本目（A = [[3,1],[2,2]]）</a>もあります。
+    <a href="260910_diagonalization.html" style="color:var(--soft)">1本目（A = [[1,2],[2,1]]）</a>と<b>まったく同じ8節の順番</b>で、
+    別の行列をもう一度通します。成分は 1〜3 の整数、固有値は <span class="mono">4</span> と <span class="mono">1</span>。
+    1本目と違うのは3点で、そこがこのページの見どころです。
   </p>
+  <ul class="pl">
+    <li><span class="mono">det = 4 &gt; 0</span> なので、<b class="k">一度もつぶれず・裏返らず</b>に変形する</li>
+    <li>固有値のひとつが <span class="mono">1</span>。つまり <b class="k">まったく動かない直線</b>がある</li>
+    <li><b class="k">対称行列ではない</b>ので、固有ベクトルが直交しない（1本目の気持ちよさが消える）</li>
+  </ul>
   <div class="upd">Last updated: 2026-09-10</div>
 </header>
 
@@ -200,10 +208,10 @@
   <div class="eq">
     <span class="row">A <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>x</b><b>y</b></span><i class="r"></i></span>
     =
-    <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>2</b><b>2</b><b>1</b></span><i class="r"></i></span>
+    <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>3</b><b>1</b><b>2</b><b>2</b></span><i class="r"></i></span>
     <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>x</b><b>y</b></span><i class="r"></i></span>
     =
-    <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>x + 2y</b><b>2x + y</b></span><i class="r"></i></span></span>
+    <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>3x + y</b><b>2x + 2y</b></span><i class="r"></i></span></span>
     <span class="note">下のアニメは、各点が自分の行き先まで直線で移動する様子（途中は (1−t)I + tA）</span>
   </div>
 
@@ -228,13 +236,13 @@
   </div>
 
   <div class="box">
-    <div class="t">ここで気づくこと</div>
+    <div class="t">1本目との違い①</div>
     <p style="margin:0">
-      <span class="mono">det A = 1·1 − 2·2 = <b class="k">−3</b></span>。マイナスなので、この変換は
-      <b class="k">平面の向きを裏返します</b>（正方形の角 A→B→C→D の回り方が逆になる）。
-      向きが反転するということは、途中で必ず一度 <span class="hl">面積がゼロにつぶれる</span>瞬間があります。
-      それが <span class="mono">t = 0.50</span>。そのときすべての点が
-      <b class="k">直線 y = x</b> の上に乗ります。この直線が特別だ、というのが最初のヒントです。
+      <span class="mono">det A = 3·2 − 1·2 = <b class="k">+4</b></span>。プラスなので
+      <b class="k">向き（A→B→C→D の回り方）は最後まで変わりません</b>。
+      1本目の <span class="mono">[[1,2],[2,1]]</span> は <span class="mono">det = −3</span> だったので、
+      途中で必ず一度つぶれて裏返りました。今回は<b class="k">ただ滑らかに引き伸ばすだけ</b>。
+      面積は最後に 4 倍になります（＝ det の絶対値）。
     </p>
   </div>
 </section>
@@ -245,7 +253,7 @@
   <p>
     ほとんどの向きは、A をかけると<b class="k">向きが変わって</b>しまいます。
     でも中には、長さだけ変わって<b class="k">向きが変わらない</b>特別な向きがあります。
-    それが <span class="mono">Av = λv</span> を満たす向き（固有方向）です。
+    それが <span class="mono">Av = λv</span> を満たす向き（固有方向）。
     <span class="mono">v</span> を1周させて、<span class="mono">v</span> と <span class="mono">Av</span> が平行になる瞬間を探します。
   </p>
 
@@ -257,13 +265,13 @@
     </div>
     <div class="chips">
       <button class="chip" data-th="45">θ = 45°</button>
-      <button class="chip" data-th="135">θ = 135°</button>
+      <button class="chip" data-th="116.57">θ = 116.57°</button>
       <button class="chip" data-th="0">θ = 0°</button>
       <button class="chip" data-th="90">θ = 90°</button>
     </div>
     <div class="stats">
       <div class="stat"><div class="lab">ずれ（外積）</div><div class="v" id="x2">—</div></div>
-      <div class="stat"><div class="lab">伸び率</div><div class="v" id="l2">—</div></div>
+      <div class="stat"><div class="lab">λ（平行時）</div><div class="v" id="l2">—</div></div>
       <div class="stat"><div class="lab">|Av|</div><div class="v" id="m2">—</div></div>
     </div>
     <div class="cap" id="c2"></div>
@@ -275,26 +283,30 @@
   </div>
 
   <p class="small">
-    このAは対称なので、式にすると気持ちよく整理できます。<span class="mono">v = (cos θ, sin θ)</span> のとき
+    平行になるのは <span class="mono">θ = 45°</span>（そこで <span class="mono" style="color:var(--c1)">λ = 4</span>）と
+    <span class="mono">θ ≒ 116.57°</span>（そこで <span class="mono" style="color:var(--c2)">λ = 1</span>）。
+    <span class="mono">116.57° = 180° − arctan 2</span> で、これは直線 <span class="mono">y = −2x</span> の向きです。
   </p>
-  <div class="eq">
-    <span class="row">ずれ（外積） = v<sub>x</sub>(Av)<sub>y</sub> − v<sub>y</sub>(Av)<sub>x</sub> = <b>2 cos 2θ</b></span>
-    <span class="row">伸び率 = v · Av = <b>1 + 2 sin 2θ</b></span>
-    <span class="note">ずれ = 0 になるのは 2θ = 90°, 270°, … つまり θ = 45°, 135°, 225°, 315°。
-    そのとき伸び率は 1+2 = <b>3</b>（45°）と 1−2 = <b>−1</b>（135°）</span>
+
+  <div class="box">
+    <div class="t">1本目との違い②</div>
+    <p style="margin:0 0 8px">
+      1本目は対称行列だったので、ずれ（外積）が <span class="mono">2 cos 2θ</span> というきれいな式になり、
+      ゼロが <span class="mono">45°</span> と <span class="mono">135°</span>、つまり<b class="k">ちょうど90°離れて</b>いました。
+      今回はこうなります。
+    </p>
+    <div class="eq" style="background:var(--bg);margin:8px 0 0">
+      <span class="row">ずれ = <span class="frac"><span>1</span><span>2</span></span>(1 + 3 cos 2θ − sin 2θ)</span>
+      <span class="note">ゼロになるのは 45° と 116.57°。<b>差は71.57°で、90°ではない</b>
+      ＝ 2本の固有方向が直交しない、ということ（§7でもう一度見ます）</span>
+    </div>
   </div>
-  <p class="small">
-    伸び率 <span class="mono">1 + 2 sin 2θ</span> の最大が 3、最小が −1。
-    つまり<b class="k">一番伸びる向きと一番縮む（裏返る）向きが、そのまま固有方向</b>になっています。
-  </p>
 </section>
 
 <!-- ===================== 3 ===================== -->
 <section id="s3">
   <h2><span class="num">03</span>固有値を出す — det(A − λI) = 0</h2>
-  <p>
-    アニメで「だいたい45°と135°」と分かりましたが、これを式で正確に出します。
-  </p>
+  <p>アニメで「だいたい45°と117°」と分かりましたが、これを式で正確に出します。</p>
   <div class="steps">
     <div class="step">求めたいのは <span class="mono">Av = λv</span> かつ <span class="mono">v ≠ 0</span>。移項して <span class="mono">(A − λI)v = 0</span>。</div>
     <div class="step">つまり行列 <span class="mono">A − λI</span> が、<b class="k">ゼロでないベクトルをゼロに潰す</b>ということ。</div>
@@ -302,11 +314,11 @@
   </div>
   <div class="eq">
     <span class="row">A − λI =
-      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1−λ</b><b>2</b><b>2</b><b>1−λ</b></span><i class="r"></i></span>
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>3−λ</b><b>1</b><b>2</b><b>2−λ</b></span><i class="r"></i></span>
     </span>
-    <span class="row">det(A − λI) = (1−λ)<sup>2</sup> − 4 = λ<sup>2</sup> − 2λ − 3 = (λ − 3)(λ + 1) = 0</span>
-    <span class="row">→ &nbsp; λ<sub>1</sub> = <b style="color:var(--c1)">3</b>, &nbsp; λ<sub>2</sub> = <b style="color:var(--c2)">−1</b></span>
-    <span class="note">検算：和 3 + (−1) = 2 = trace A（対角の和 1+1）／積 3 × (−1) = −3 = det A</span>
+    <span class="row">det(A − λI) = (3−λ)(2−λ) − 1·2 = λ<sup>2</sup> − 5λ + 4 = (λ − 4)(λ − 1) = 0</span>
+    <span class="row">→ &nbsp; λ<sub>1</sub> = <b style="color:var(--c1)">4</b>, &nbsp; λ<sub>2</sub> = <b style="color:var(--c2)">1</b></span>
+    <span class="note">検算：和 4 + 1 = 5 = trace A（対角の和 3+2）／積 4 × 1 = 4 = det A</span>
   </div>
 
   <p class="small">
@@ -321,19 +333,29 @@
     </div>
     <div class="ctrl">
       <button class="b play" id="p3">▶ 再生</button>
-      <div class="sl"><label>λ</label><input type="range" id="t3" min="-3" max="5" step="0.01" value="-3"><span class="val" id="t3v">−3.00</span></div>
+      <div class="sl"><label>λ</label><input type="range" id="t3" min="-1.4" max="6.4" step="0.01" value="-1.4"><span class="val" id="t3v">−1.40</span></div>
     </div>
     <div class="chips">
-      <button class="chip" data-lam="3">λ = 3</button>
-      <button class="chip" data-lam="-1">λ = −1</button>
-      <button class="chip" data-lam="0">λ = 0</button>
+      <button class="chip" data-lam="4">λ = 4</button>
       <button class="chip" data-lam="1">λ = 1</button>
+      <button class="chip" data-lam="0">λ = 0</button>
+      <button class="chip" data-lam="2.5">λ = 2.5</button>
     </div>
     <div class="stats">
-      <div class="stat"><div class="lab">p(λ) = det</div><div class="v" id="d3">12.00</div></div>
+      <div class="stat"><div class="lab">p(λ) = det</div><div class="v" id="d3">12.96</div></div>
       <div class="stat" id="st3"><div class="lab">状態</div><div class="v" id="s3v">可逆</div></div>
     </div>
     <div class="cap" id="c3"></div>
+  </div>
+
+  <div class="box">
+    <div class="t">λ = 0 のところに注目</div>
+    <p style="margin:0">
+      <span class="mono">p(0) = 4 = det A</span>。<b class="k">グラフの縦軸切片は、いつでも det A になります</b>
+      （<span class="mono">det(A − 0·I) = det A</span> なので当たり前ですが、見ておくと安心できる）。
+      今回は2本の根が両方プラス側にあり、グラフは 0 を左からまたぎません。
+      1本目は根が <span class="mono">−1</span> と <span class="mono">3</span> で 0 をまたいでいたので、切片が負（−3）でした。
+    </p>
   </div>
 </section>
 
@@ -343,33 +365,34 @@
   <p>λ が分かったら、<span class="mono">(A − λI)v = 0</span> を解くだけです。</p>
 
   <div class="eq">
-    <span class="row"><b style="color:var(--c1)">λ₁ = 3</b> : &nbsp; A − 3I =
-      <span class="mat c1"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>−2</b><b>2</b><b>2</b><b>−2</b></span><i class="r"></i></span>
-      → −2x + 2y = 0 → <b>y = x</b> → v₁ =
+    <span class="row"><b style="color:var(--c1)">λ₁ = 4</b> : &nbsp; A − 4I =
+      <span class="mat c1"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>−1</b><b>1</b><b>2</b><b>−2</b></span><i class="r"></i></span>
+      → −x + y = 0 → <b>y = x</b> → v₁ =
       <span class="mat c1"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>1</b><b>1</b></span><i class="r"></i></span>
     </span>
-    <span class="row"><b style="color:var(--c2)">λ₂ = −1</b> : &nbsp; A + I =
-      <span class="mat c2"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>2</b><b>2</b><b>2</b><b>2</b></span><i class="r"></i></span>
-      → 2x + 2y = 0 → <b>y = −x</b> → v₂ =
-      <span class="mat c2"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>−1</b><b>1</b></span><i class="r"></i></span>
+    <span class="row"><b style="color:var(--c2)">λ₂ = 1</b> : &nbsp; A − I =
+      <span class="mat c2"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>2</b><b>1</b><b>2</b><b>1</b></span><i class="r"></i></span>
+      → 2x + y = 0 → <b>y = −2x</b> → v₂ =
+      <span class="mat c2"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>−1</b><b>2</b></span><i class="r"></i></span>
     </span>
     <span class="note">2本の式が同じ式になるのがポイント（つぶれている＝行が1本ぶん無駄）。
     だから解は1本の直線ぶんだけ残る＝固有ベクトルは定数倍の自由度をもつ</span>
   </div>
 
   <div class="box">
-    <div class="t">なぜ (−1, 1) を選ぶか</div>
+    <div class="t">なぜ (−1, 2) を選ぶか</div>
     <p style="margin:0">
-      <span class="mono">y = −x</span> 上なら <span class="mono">(1, −1)</span> でも <span class="mono">(−1, 1)</span> でも
-      <span class="mono">(2, −2)</span> でも固有ベクトルです。ここで <span class="mono">(−1, 1)</span> を採ると、
-      後で作る <span class="mono">P</span> がちょうど「<b class="k">45°回して √2 倍</b>」というきれいな形になり、
-      §5 のアニメが見やすくなります。
+      <span class="mono">y = −2x</span> 上なら <span class="mono">(1, −2)</span> でも <span class="mono">(−1, 2)</span> でも固有ベクトルです。
+      ここで <span class="mono">(−1, 2)</span> を採ると <span class="mono">det P = +3</span> になり、
+      §5の3段アニメが<b class="k">一度もつぶれずに</b>進みます（<span class="mono">(1, −2)</span> だと det P = −3 で、
+      1段目の途中で一度つぶれてしまう）。答えは同じですが、絵の見やすさが変わります。
     </p>
   </div>
 
   <p class="small">
     固有直線の上にある点は、A をかけても<b class="k">その直線から出られません</b>。
-    金色（<span class="mono">y = x</span>）の上では3倍に伸び、青（<span class="mono">y = −x</span>）の上では原点をまたいで反対側へ折り返します。
+    金色（<span class="mono">y = x</span>）の上では4倍に伸び、青（<span class="mono">y = −2x</span>）の上では
+    <b class="k">倍率が 1 なので、まったく動きません</b>。
   </p>
 
   <div class="stage">
@@ -380,10 +403,19 @@
     </div>
     <div class="cap" id="c4"></div>
     <div class="lg">
-      <span><i class="sw" style="background:var(--c1)"></i>v₁ = (1,1) → 3v₁</span>
-      <span><i class="sw" style="background:var(--c2)"></i>v₂ = (−1,1) → −v₂</span>
+      <span><i class="sw" style="background:var(--c1)"></i>v₁ = (1,1) → 4v₁</span>
+      <span><i class="sw" style="background:var(--c2)"></i>v₂ = (−1,2) → そのまま</span>
       <span><i class="sw" style="background:#bbb"></i>その他の向き（直線から外れる）</span>
     </div>
+  </div>
+
+  <div class="box">
+    <div class="t">λ = 1 の意味</div>
+    <p style="margin:0">
+      固有値 1 は「伸びも縮みもしない」。だから直線 <span class="mono">y = −2x</span> 上のすべての点は
+      <b class="k">A をかけても不動点</b>です（<span class="mono">A(−1,2) = (−1,2)</span>、<span class="mono">A(−3,6) = (−3,6)</span>、…）。
+      平面全体は4倍に引き伸ばされているのに、この1本の線だけが完全に固定されている、という絵になります。
+    </p>
   </div>
 </section>
 
@@ -392,19 +424,20 @@
   <h2><span class="num">05</span>対角化 A = PDP⁻¹ — 3段アニメ</h2>
   <p>
     固有ベクトルを<b class="k">列に並べて</b> P を作り、固有値を<b class="k">対角に並べて</b> D を作ります。
-    これだけで A が3つの操作の合成に分解できます。
+    並べる順番は対応さえしていれば自由です（v₁ を1列目にしたら D の左上は λ₁）。
   </p>
 
   <div class="eq">
     <span class="row">P = [ v₁ v₂ ] =
-      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">1</b><b style="color:var(--c2)">−1</b><b style="color:var(--c1)">1</b><b style="color:var(--c2)">1</b></span><i class="r"></i></span>
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">1</b><b style="color:var(--c2)">−1</b><b style="color:var(--c1)">1</b><b style="color:var(--c2)">2</b></span><i class="r"></i></span>
       , &nbsp; D =
-      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">3</b><b>0</b><b>0</b><b style="color:var(--c2)">−1</b></span><i class="r"></i></span>
-      , &nbsp; P⁻¹ = <span class="frac"><span>1</span><span>2</span></span>
-      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>1</b><b>−1</b><b>1</b></span><i class="r"></i></span>
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">4</b><b>0</b><b>0</b><b style="color:var(--c2)">1</b></span><i class="r"></i></span>
+      , &nbsp; P⁻¹ = <span class="frac"><span>1</span><span>3</span></span>
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>2</b><b>1</b><b>−1</b><b>1</b></span><i class="r"></i></span>
     </span>
     <span class="row" style="margin-top:6px">A = P D P⁻¹</span>
-    <span class="note">det P = 1·1 − (−1)·1 = 2 ≠ 0 なので P は可逆。つまり対角化できる</span>
+    <span class="note">det P = 1·2 − (−1)·1 = 3 ≠ 0 なので P は可逆。つまり対角化できる。
+    2×2の逆行列は <span class="mono">1/det · [[d, −b], [−c, a]]</span> で出る</span>
   </div>
 
   <div class="column">
@@ -418,19 +451,20 @@
     <p>
       その2本を<b class="k">固有ベクトルで取り替えたもの</b>が固有基底です。今回なら
       <span class="mono" style="color:var(--c1)">v₁ = (1,1)</span> と
-      <span class="mono" style="color:var(--c2)">v₂ = (−1,1)</span> の組 <span class="mono">{v₁, v₂}</span>。
+      <span class="mono" style="color:var(--c2)">v₂ = (−1,2)</span> の組 <span class="mono">{v₁, v₂}</span>。
       この2本は平行でないので、どんな点も一通りに書けます。
     </p>
     <div class="eq">
       <span class="row">任意の点 &nbsp; v = c₁<b style="color:var(--c1)">v₁</b> + c₂<b style="color:var(--c2)">v₂</b>
         &nbsp;→&nbsp; この <span class="mono">(c₁, c₂)</span> が<b>固有座標</b></span>
-      <span class="row" style="margin-top:4px">Av = c₁·<b style="color:var(--c1)">3</b>v₁ + c₂·(<b style="color:var(--c2)">−1</b>)v₂</span>
-      <span class="note">A をかけても v₁ 成分と v₂ 成分が<b>混ざらない</b>。ただ 3 倍と −1 倍されるだけ</span>
+      <span class="row" style="margin-top:4px">Av = c₁·<b style="color:var(--c1)">4</b>v₁ + c₂·<b style="color:var(--c2)">1</b>v₂</span>
+      <span class="note">A をかけても v₁ 成分と v₂ 成分が<b>混ざらない</b>。
+      c₁ が4倍になり、c₂ は<b>そのまま</b>置かれるだけ</span>
     </div>
     <p>
       これが固有基底のうれしさです。標準基底で見ると
-      <span class="mono">x</span> と <span class="mono">y</span> が互いに流れ込む（<span class="mono">x + 2y</span>, <span class="mono">2x + y</span>）ので
-      ごちゃっとして見えますが、固有基底で見ると<b class="k">2本の独立な掛け算</b>に分かれます。
+      <span class="mono">x</span> と <span class="mono">y</span> が互いに流れ込む（<span class="mono">3x + y</span>, <span class="mono">2x + 2y</span>）ので
+      ごちゃっとして見えますが、固有基底で見ると<b class="k">「片方を4倍、もう片方は放置」</b>だけになります。
     </p>
     <dl class="defs">
       <dt>P</dt><dd>固有座標 <span class="mono">(c₁, c₂)</span> を受け取って、標準座標 <span class="mono">(x, y)</span> を返す（固有ベクトルを列に並べただけ）</dd>
@@ -438,58 +472,54 @@
       <dt>D</dt><dd>固有座標のまま、成分ごとに倍率をかける</dd>
     </dl>
     <p>
-      具体例。<span class="mono">(1, 0) = ½v₁ − ½v₂</span> なので固有座標は <span class="mono">(½, −½)</span>。
-      これに D をかけると <span class="mono">(3/2, 1/2)</span>、標準座標に戻すと
-      <span class="mono">(3/2)(1,1) + (1/2)(−1,1) = (1, 2)</span>。
-      たしかに <span class="mono">A(1,0) = (1, 2)</span> と一致します。
+      具体例。<span class="mono">(1, 0)</span> の固有座標は
+      <span class="mono">P⁻¹(1,0) = ⅓(2, −1) = (2/3, −1/3)</span>。
+      これに D をかけると <span class="mono">(8/3, −1/3)</span>、標準座標に戻すと
+      <span class="mono">(8/3)(1,1) + (−1/3)(−1,2) = (3, 2)</span>。
+      たしかに <span class="mono">A(1,0) = (3, 2)</span>（A の1列目）と一致します。
     </p>
     <p class="small" style="margin-bottom:0">
       なお、固有基底は<b class="k">いつでも取れるわけではありません</b>。独立な固有ベクトルが次元ぶん（2次なら2本）そろわない行列は、
-      固有基底が作れない＝対角化できない。今回は 3 と −1 という別々の固有値から2本そろったので取れました。
+      固有基底が作れない＝対角化できない。今回は 4 と 1 という別々の固有値から2本そろったので取れました。
     </p>
   </div>
 
   <div class="column">
     <div class="kickc">Column</div>
     <h4>「P⁻¹ をかける＝座標を読み替える」って、どういうこと？</h4>
-    <p>
-      いちばん引っかかるところなので、一段ずつ潰します。
-      <span class="mono">45°戻して 1/√2 倍</span> という言い方の中身も、最後に数字で確かめます。
-    </p>
+    <p>いちばん引っかかるところなので、一段ずつ潰します。</p>
 
     <div class="pt"><span class="ptn">1</span>
       <h5>そもそも「座標」は何を数えているのか</h5>
       <p>
         <span class="mono">(x, y)</span> は「右に x 歩、上に y 歩」という意味でした。この「歩」の正体が
         <span class="mono">e₁ = (1,0)</span> と <span class="mono">e₂ = (0,1)</span>。
-        つまり <span class="mono">(3, 3)</span> は <b class="k">e₁ を3歩、e₂ を3歩</b>という記録です。
+        つまり <span class="mono">(2, 2)</span> は <b class="k">e₁ を2歩、e₂ を2歩</b>という記録です。
       </p>
       <p>
         ここで歩き方を変えます。<span class="mono" style="color:var(--c1)">v₁ = (1,1)</span> 方向を1歩、
-        <span class="mono" style="color:var(--c2)">v₂ = (−1,1)</span> 方向を1歩と決め直すと、同じ点 (3,3) は
+        <span class="mono" style="color:var(--c2)">v₂ = (−1,2)</span> 方向を1歩と決め直すと、同じ点 (2,2) は
       </p>
-      <div class="eq"><span class="row">(3, 3) = 3·<b style="color:var(--c1)">v₁</b> + 0·<b style="color:var(--c2)">v₂</b>
-        &nbsp;→&nbsp; この定規では「<b>(3, 0)</b>」</span>
+      <div class="eq"><span class="row">(2, 2) = 2·<b style="color:var(--c1)">v₁</b> + 0·<b style="color:var(--c2)">v₂</b>
+        &nbsp;→&nbsp; この定規では「<b>(2, 0)</b>」</span>
         <span class="note">点は1ミリも動いていない。使う定規（基底）を変えたから数字が変わっただけ</span></div>
     </div>
 
     <div class="pt"><span class="ptn">2</span>
       <h5>P は「固有座標 → 標準座標」の翻訳機</h5>
-      <p>
-        行列 × ベクトルは、実は<b class="k">列の重み付き和</b>という意味しかありません。
-      </p>
+      <p>行列 × ベクトルは、実は<b class="k">列の重み付き和</b>という意味しかありません。</p>
       <div class="eq"><span class="row">P
         <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>c₁</b><b>c₂</b></span><i class="r"></i></span>
         = c₁·(Pの1列目) + c₂·(Pの2列目) = c₁<b style="color:var(--c1)">v₁</b> + c₂<b style="color:var(--c2)">v₂</b></span>
         <span class="note">P の列は v₁ と v₂ を並べただけ。だから「固有座標を入れると標準座標が出てくる」</span></div>
-      <p>試すと <span class="mono">P(3, 0) = 3·(1,1) + 0·(−1,1) = (3, 3)</span>。1 の逆向きになっています。</p>
+      <p>試すと <span class="mono">P(2, 0) = 2·(1,1) + 0·(−1,2) = (2, 2)</span>。1 の逆向きになっています。</p>
     </div>
 
     <div class="pt"><span class="ptn">3</span>
       <h5>だから P⁻¹ は逆向き＝標準座標を固有座標に翻訳する</h5>
       <div class="eq"><span class="row">P⁻¹
-        <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>3</b><b>3</b></span><i class="r"></i></span>
-        = <span class="frac"><span>1</span><span>2</span></span>(3+3, −3+3) = <b>(3, 0)</b></span></div>
+        <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:auto"><b>2</b><b>2</b></span><i class="r"></i></span>
+        = <span class="frac"><span>1</span><span>3</span></span>(2·2 + 1·2, &nbsp;−1·2 + 1·2) = <span class="frac"><span>1</span><span>3</span></span>(6, 0) = <b>(2, 0)</b></span></div>
       <p>
         「P⁻¹ をかける」とは、<b class="k">この点、固有の定規で測ると何歩と何歩？</b>を計算すること。
         それが「固有基底で見た座標に読み替える」の中身です。
@@ -497,35 +527,32 @@
     </div>
 
     <div class="pt"><span class="ptn">4</span>
-      <h5>「45°戻して 1/√2 倍」の正体</h5>
-      <p>P の中身をよく見ると、実は回転でした。</p>
-      <ul class="pl">
-        <li>v₁ = (1,1) と v₂ = (−1,1) は<b class="k">どちらも長さ √2</b></li>
-        <li>長さ1にすると <span class="mono">(1,1)/√2 = (cos45°, sin45°)</span>、<span class="mono">(−1,1)/√2 = (cos135°, sin135°)</span></li>
-        <li>つまり <span class="mono">P = √2 · R(45°)</span>（45°回転を √2 倍したもの）</li>
-        <li>ひっくり返すと <span class="mono">P⁻¹ = R(−45°) ÷ √2</span> ＝ <b class="k">45°戻して 1/√2 倍</b></li>
-      </ul>
-      <p>数字で確かめます。<span class="mono">(3,3)</span> は45°の向き・長さ <span class="mono">3√2 ≒ 4.24</span>。</p>
+      <h5>今回の P⁻¹ は「回転」ではない</h5>
+      <p>
+        1本目では <span class="mono">P = √2 · R(45°)</span>、つまり P⁻¹ が「45°戻して 1/√2 倍」というきれいな形でした。
+        今回はそうなりません。理由は P の2つの列を見れば分かります。
+      </p>
       <div class="scroll"><table>
-        <thead><tr><th>操作</th><th>結果</th></tr></thead>
+        <thead><tr><th>チェック</th><th>1本目 [[1,2],[2,1]]</th><th>今回 [[3,1],[2,2]]</th></tr></thead>
         <tbody>
-          <tr><td>45°戻す（時計回り）</td><td class="n">x軸上の長さ4.24 → (4.24, 0)</td></tr>
-          <tr><td>1/√2 倍</td><td class="n"><b>(3, 0)</b> ← 3 の計算と一致</td></tr>
+          <tr><td>列の長さ</td><td class="n">√2 と √2（同じ）</td><td class="n">√2 と √5（違う）</td></tr>
+          <tr><td>列が直交</td><td class="n">する（内積0）</td><td class="n">しない（内積1）</td></tr>
+          <tr><td>P の正体</td><td class="n">回転 × 拡大</td><td class="n">マス目を平行四辺形に傾ける</td></tr>
         </tbody>
       </table></div>
-      <div class="fold">
-        <b class="k">1/√2 が出てくる理由は「選んだ定規が長さ1ではなく √2 だから」だけ。</b>
-        §7 で長さ1に揃えた Q を使うと係数が消えて <span class="mono">Q⁻¹ = R(−45°)</span> ちょうどになります。
-        これが「対称行列だと直交行列で対角化できて気持ちいい」の実体です。
-      </div>
+      <p>
+        なので今回の読み替えは、<b class="k">向きを回すだけでなく、マス目の形そのものを歪める</b>操作になります。
+        これが一般の場合で、1本目のように回転で済むのは<b class="k">対称行列という特別な事情</b>があったからです（§7で確認）。
+        ただし<b class="k">式としては何も変わりません</b> — P を作って逆行列を取るだけ。
+      </p>
     </div>
 
     <div class="pt"><span class="ptn">5</span>
       <h5>読み替えなのに、なぜアニメでは図形が動くのか</h5>
       <p>
         理由は、<b class="k">画面はいつでも「標準座標のマス目」で描いているから</b>です。
-        読み替えの結果 (3,0) という数字が出たら、アニメはその数字を素直に標準のマス目に置きます。
-        だから見た目には点が (3,3) から (3,0) へ移動します。同じことの2つの見方：
+        読み替えの結果 (2,0) という数字が出たら、アニメはその数字を素直に標準のマス目に置きます。
+        だから見た目には点が (2,2) から (2,0) へ移動します。同じことの2つの見方：
       </p>
       <div class="scroll"><table>
         <thead><tr><th>見方</th><th>絵</th></tr></thead>
@@ -535,16 +562,15 @@
         </tbody>
       </table></div>
       <p>
-        §5のアニメは (b) を描いていますが、意味しているのは (a)。だから
+        下のアニメは (b) を描いていますが、意味しているのは (a)。だから
         <b class="k">「斜めだった金・青の軸が、水平・垂直に立つ」</b>という見え方になります。
-        斜めの軸を立て直した、と読めば同じことです。
       </p>
     </div>
 
     <div class="pt"><span class="ptn">6</span>
       <h5>なぜ P⁻¹ から始めるのか</h5>
       <p>
-        D は「x軸方向に3倍、y軸方向に −1 倍」という、<b class="k">まっすぐな軸に沿った操作しか知りません</b>。
+        D は「x軸方向に4倍、y軸方向に1倍」という、<b class="k">まっすぐな軸に沿った操作しか知りません</b>。
         今回伸ばしたい軸は斜め45°なので、D には直接扱えない。だから順番はこうなります。
       </p>
       <div class="eq"><span class="row">板を回してまっすぐ置く（P⁻¹）→ 切る（D）→ 元の向きに戻す（P）</span>
@@ -553,11 +579,11 @@
     </div>
   </div>
 
-  <p>読み方はこうです。</p>
+  <p>これを踏まえて、3段の読み方はこうです。</p>
   <div class="steps">
-    <div class="step"><b class="k">P⁻¹ をかける</b> — 世界を<b class="k">固有基底で見た座標</b>（＝固有座標）に読み替える。今回は <span class="mono">45°戻して 1/√2 倍</span>。</div>
-    <div class="step"><b class="k">D をかける</b> — その座標では、ただの<b class="k">軸ごとの伸縮</b>。x′ 軸に 3 倍、y′ 軸に −1 倍（＝折り返し）。斜めの成分はゼロ。</div>
-    <div class="step"><b class="k">P をかける</b> — 元の座標に戻す。<span class="mono">45°回して √2 倍</span>。</div>
+    <div class="step"><b class="k">P⁻¹ をかける</b> — 世界を<b class="k">固有基底で見た座標</b>（＝固有座標）に読み替える。斜めの2軸が水平・垂直に立つ。</div>
+    <div class="step"><b class="k">D をかける</b> — その座標では、ただの<b class="k">軸ごとの伸縮</b>。x′ 軸に 4 倍、y′ 軸は 1 倍（＝何もしない）。斜めの成分はゼロ。</div>
+    <div class="step"><b class="k">P をかける</b> — 元の座標に戻す。</div>
   </div>
 
   <div class="stage">
@@ -594,11 +620,12 @@
   </div>
 
   <div class="box">
-    <div class="t">−1 倍のところで一度つぶれる理由</div>
+    <div class="t">1本目との違い③</div>
     <p style="margin:0">
-      2段目で y′ 方向の倍率が <span class="mono">1 → −1</span> と変わる途中、必ず <span class="mono">0</span> を通ります。
-      「折り返す」とは<b class="k">一度つぶして反対側に出す</b>ことなので、これは避けられません。
-      §1 で見た「途中で必ずつぶれる」現象の正体がこれです（<span class="mono">det A &lt; 0</span> ＝ 負の固有値が奇数個）。
+      det は <span class="mono">1 → 1/3 → 4/3 → 4</span> と動きますが、<b class="k">一度もゼロを通りません</b>。
+      1本目は D に −1 があったので2段目で必ず一度つぶれました。今回の D は
+      <span class="mono">(4, 1)</span> でどちらもプラスなので、つぶれも裏返りも起きません。
+      さらに y′ の倍率が 1 なので、<b class="k">2段目は横方向に引き伸ばすだけ</b>という素朴な動きになります。
     </p>
   </div>
 </section>
@@ -607,28 +634,32 @@
 <section id="s6">
   <h2><span class="num">06</span>うれしさ① — Aⁿ が一瞬で出る</h2>
   <p>
-    対角化のいちばん分かりやすい御利益。<span class="mono">P⁻¹P = I</span> が次々に消えていくので、
-    真ん中の D だけが n 乗されます。
+    <span class="mono">P⁻¹P = I</span> が次々に消えていくので、真ん中の D だけが n 乗されます。
   </p>
   <div class="eq">
     <span class="row">A<sup>n</sup> = (PDP⁻¹)(PDP⁻¹)…(PDP⁻¹) = P D<sup>n</sup> P⁻¹ = P
-      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">3<sup>n</sup></b><b>0</b><b>0</b><b style="color:var(--c2)">(−1)<sup>n</sup></b></span><i class="r"></i></span> P⁻¹
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">4<sup>n</sup></b><b>0</b><b>0</b><b style="color:var(--c2)">1</b></span><i class="r"></i></span> P⁻¹
     </span>
-    <span class="row" style="margin-top:6px">= <span class="frac"><span>1</span><span>2</span></span>
-      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>3<sup>n</sup>+(−1)<sup>n</sup></b><b>3<sup>n</sup>−(−1)<sup>n</sup></b><b>3<sup>n</sup>−(−1)<sup>n</sup></b><b>3<sup>n</sup>+(−1)<sup>n</sup></b></span><i class="r"></i></span>
+    <span class="row" style="margin-top:6px">= <span class="frac"><span>1</span><span>3</span></span>
+      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>2·4<sup>n</sup>+1</b><b>4<sup>n</sup>−1</b><b>2·4<sup>n</sup>−2</b><b>4<sup>n</sup>+2</b></span><i class="r"></i></span>
     </span>
-    <span class="note">n = 1 で <span class="mono">½[[2,4],[4,2]] = [[1,2],[2,1]]</span> = A ✓ ／ n = 2 で <span class="mono">½[[10,8],[8,10]] = [[5,4],[4,5]]</span> = A² ✓</span>
+    <span class="note">λ₂ = 1 なので <span class="mono">1<sup>n</sup> = 1</span>。<b>n が出てくるのは 4ⁿ の側だけ</b>という、とても見やすい形になる。
+    n = 1 で <span class="mono">⅓[[9,3],[6,6]] = [[3,1],[2,2]]</span> = A ✓</span>
   </div>
 
   <div class="scroll">
     <table id="tb6">
-      <thead><tr><th>n</th><th>3ⁿ</th><th>(−1)ⁿ</th><th>Aⁿ</th></tr></thead>
+      <thead><tr><th>n</th><th>4ⁿ</th><th>1ⁿ</th><th>Aⁿ</th></tr></thead>
       <tbody></tbody>
     </table>
   </div>
+  <p class="small">
+    全部が整数になるのは <span class="mono">2·4ⁿ+1</span> などが必ず3の倍数になるから。
+    <span class="mono">4 ≡ 1 (mod 3)</span> なので <span class="mono">4ⁿ ≡ 1</span>、よって <span class="mono">4ⁿ − 1</span> は3で割れます。
+  </p>
 
   <p class="small" style="margin-top:18px">
-    もうひとつの御利益。<span class="mono">3ⁿ</span> は <span class="mono">(−1)ⁿ</span> よりはるかに速く育つので、
+    <span class="mono">4ⁿ</span> は <span class="mono">1ⁿ = 1</span> よりはるかに速く育つので、
     どんな出発ベクトルでも（v₂ 上の点を除いて）向きは <b class="k">v₁ = (1,1) の方向に吸い寄せられます</b>。
     下は各ステップの向きだけを単位円上にプロットしたものです。
   </p>
@@ -644,89 +675,134 @@
     <div class="lg">
       <span><i class="sw" style="background:#999"></i>4つの出発ベクトル</span>
       <span><i class="sw" style="background:var(--c1)"></i>v₁ 方向（吸引先）</span>
-      <span><i class="sw" style="background:var(--c2)"></i>v₂ 方向（ここに乗ると動かない）</span>
+      <span><i class="sw" style="background:var(--c2)"></i>v₂ 方向（ここに乗ると不動）</span>
     </div>
+  </div>
+
+  <div class="box">
+    <div class="t">行き先の行列</div>
+    <p style="margin:0">
+      <span class="mono">Aⁿ / 4ⁿ</span> は n を大きくすると
+      <span class="mono">⅓[[2, 1],[2, 1]]</span> に落ち着きます。これは
+      <b class="k">「v₂ 方向を捨てて v₁ 方向だけ残す」射影</b>そのもの。
+      1本目は λ₂ = −1 だったので符号が交互に揺れましたが、今回は λ₂ = 1 なので<b class="k">静かに落ち着きます</b>。
+    </p>
   </div>
 </section>
 
 <!-- ===================== 7 ===================== -->
 <section id="s7">
-  <h2><span class="num">07</span>うれしさ② — 対称行列だから直交対角化できる</h2>
+  <h2><span class="num">07</span>対称じゃないと、何が違うのか</h2>
   <p>
-    今回の A は <span class="mono">Aᵀ = A</span>（対称）でした。このとき固有ベクトルは<b class="k">必ず直交します</b>。
-    実際 <span class="mono">v₁ · v₂ = 1·(−1) + 1·1 = 0</span>。
+    1本目の <span class="mono">[[1,2],[2,1]]</span> は <span class="mono">Aᵀ = A</span>（対称）でした。
+    今回は <span class="mono">Aᵀ = [[3,2],[1,2]] ≠ A</span>。この差で3つのことが崩れます。
   </p>
-  <p>
-    そこで v₁, v₂ を長さ1に正規化して並べると、P は<b class="k">回転行列</b>そのものになり、
-    <span class="mono">P⁻¹</span> を計算する必要さえなくなります（転置でよい）。
-  </p>
-  <div class="eq">
-    <span class="row">Q = <span class="frac"><span>1</span><span>√2</span></span>
-      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b style="color:var(--c1)">1</b><b style="color:var(--c2)">−1</b><b style="color:var(--c1)">1</b><b style="color:var(--c2)">1</b></span><i class="r"></i></span>
-      = R(45°), &nbsp; Q⁻¹ = Qᵀ
-    </span>
-    <span class="row" style="margin-top:6px">A = Q D Qᵀ</span>
-    <span class="note">幾何的な意味：<b>45°の軸方向に3倍に伸ばし、それと直角な135°の軸方向に折り返す</b>。それだけの操作</span>
+  <div class="steps">
+    <div class="step"><b class="k">固有ベクトルが直交しない。</b> <span class="mono">v₁ · v₂ = 1·(−1) + 1·2 = 1 ≠ 0</span>。1本目は 0 でした。</div>
+    <div class="step"><b class="k">P が回転にならない。</b>だから <span class="mono">P⁻¹ = Pᵀ</span> という近道が使えず、ちゃんと逆行列を計算する必要がある。</div>
+    <div class="step"><b class="k">楕円の主軸と固有方向がズレる。</b>単位円を A で写した楕円の長軸は <span class="mono">41.4°</span> の向きですが、固有方向は <span class="mono">45°</span>。</div>
   </div>
+
+  <p class="small">
+    3つめが一番目で見て分かります。下のアニメで
+    <b class="k">「一番よく伸びる向き」と「向きが変わらない向き」が別物</b>だと確認できます。
+  </p>
 
   <div class="stage">
     <div class="cvbox"><canvas id="cv7" class="sq"></canvas></div>
     <div class="ctrl">
       <button class="b play" id="p7">▶ 再生</button>
+      <button class="b on" id="ax7">主軸を表示</button>
       <div class="sl"><label>s</label><input type="range" id="t7" min="0" max="1" step="0.005" value="0"><span class="val" id="t7v">0.00</span></div>
     </div>
     <div class="stats">
       <div class="stat"><div class="lab">x′ 倍率</div><div class="v" id="a7">1.00</div></div>
-      <div class="stat"><div class="lab">y′ 倍率</div><div class="v" id="b7">1.00</div></div>
+      <div class="stat"><div class="lab">最大伸び率 σ₁</div><div class="v" id="b7">1.00</div></div>
       <div class="stat"><div class="lab">面積比 |det|</div><div class="v" id="d7">1.00</div></div>
     </div>
     <div class="cap" id="c7"></div>
     <div class="lg">
       <span><i class="sw" style="background:#bbb"></i>単位円</span>
       <span><i class="sw" style="background:var(--c3)"></i>像（楕円）</span>
+      <span><i class="sw d"></i>楕円の主軸</span>
+      <span><i class="sw" style="background:var(--c1)"></i>v₁（×4）</span>
+      <span><i class="sw" style="background:var(--c2)"></i>v₂（不動）</span>
     </div>
   </div>
 
-  <p class="small">
-    さらに、対称行列は「固有方向への射影」の重ね合わせにも書けます（スペクトル分解）。
-    <span class="mono">v̂₁ = (1,1)/√2</span>, <span class="mono">v̂₂ = (−1,1)/√2</span> として
-  </p>
-  <div class="eq">
-    <span class="row">A = 3 · v̂₁v̂₁ᵀ + (−1) · v̂₂v̂₂ᵀ
-      = 3 · <span class="frac"><span>1</span><span>2</span></span>
-      <span class="mat c1"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>1</b><b>1</b><b>1</b></span><i class="r"></i></span>
-      − <span class="frac"><span>1</span><span>2</span></span>
-      <span class="mat c2"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>−1</b><b>−1</b><b>1</b></span><i class="r"></i></span>
-      =
-      <span class="mat"><i class="l"></i><span class="g" style="grid-template-columns:repeat(2,auto)"><b>1</b><b>2</b><b>2</b><b>1</b></span><i class="r"></i></span>
-    </span>
-    <span class="note">「v₁ 成分は3倍、v₂ 成分は −1 倍」を1本の式にしたもの</span>
+  <div class="box">
+    <div class="t">「伸び率」と「固有値」は別物</div>
+    <p style="margin:0 0 8px">
+      この A で一番よく伸びる向きは <span class="mono">30.1°</span> の入力で、そこは <span class="mono">4.13 倍</span>に伸びます
+      （行き先は <span class="mono">41.4°</span>）。一方、固有値の最大は <span class="mono">4</span> で、向きは <span class="mono">45°</span>。
+      <b class="k">4.13 ≠ 4、30.1° ≠ 45°</b> です。
+    </p>
+    <div class="scroll"><table class="cmp">
+      <thead><tr><th>問い</th><th>答えを与えるもの</th><th>今回の値</th></tr></thead>
+      <tbody>
+        <tr><td>どの向きが一番伸びる？</td><td>特異値 / 特異ベクトル（AᵀA の固有値）</td><td class="n">30.1° の入力が 4.13 倍</td></tr>
+        <tr><td>どの向きが向きを変えない？</td><td>固有値 / 固有ベクトル</td><td class="n">45°（×4）と 116.6°（×1）</td></tr>
+      </tbody>
+    </table></div>
+    <p style="margin:8px 0 0">
+      1本目の対称行列では、この2つが<b class="k">完全に一致</b>していました（だから「一番伸びる向きを探せば固有方向」と言えた）。
+      対称でないと一致しないので、<b class="k">§2のアニメで「一番長く伸びた瞬間」を固有方向と勘違いしないこと</b>。
+      見るべきは長さではなく「2本の矢印が平行かどうか」です。
+    </p>
   </div>
+
+  <p class="small">
+    ちなみに特異値は <span class="mono">σ₁ = 4.131</span>, <span class="mono">σ₂ = 0.968</span> で、積は
+    <span class="mono">4.00 = |det A|</span>。固有値の積も <span class="mono">4 × 1 = 4</span> で、
+    <b class="k">積だけは必ず一致します</b>（どちらも面積の拡大率だから）。
+  </p>
 </section>
 
 <!-- ===================== 8 ===================== -->
 <section id="s8">
-  <h2><span class="num">08</span>まとめ</h2>
+  <h2><span class="num">08</span>まとめ／1本目との比較</h2>
   <div class="scroll">
     <table>
       <thead><tr><th>手順</th><th>やったこと</th><th>結果</th></tr></thead>
       <tbody>
-        <tr><td>1</td><td>行列を動きとして見る</td><td class="n">det A = −3（向きが反転）</td></tr>
-        <tr><td>2</td><td>v と Av が平行な向きを探す</td><td class="n">θ = 45°, 135°</td></tr>
-        <tr><td>3</td><td>det(A − λI) = 0 を解く</td><td class="n">λ = 3, −1</td></tr>
-        <tr><td>4</td><td>(A − λI)v = 0 を解く</td><td class="n">v₁ = (1,1), v₂ = (−1,1)</td></tr>
+        <tr><td>1</td><td>行列を動きとして見る</td><td class="n">det A = +4（裏返らない）</td></tr>
+        <tr><td>2</td><td>v と Av が平行な向きを探す</td><td class="n">θ = 45°, 116.57°</td></tr>
+        <tr><td>3</td><td>det(A − λI) = 0 を解く</td><td class="n">λ = 4, 1</td></tr>
+        <tr><td>4</td><td>(A − λI)v = 0 を解く</td><td class="n">v₁ = (1,1), v₂ = (−1,2)</td></tr>
         <tr><td>5</td><td>P に並べ、D に並べる</td><td class="n">A = PDP⁻¹</td></tr>
         <tr><td>6</td><td>D だけ n 乗する</td><td class="n">Aⁿ = PDⁿP⁻¹</td></tr>
-        <tr><td>7</td><td>対称性を使う</td><td class="n">A = QDQᵀ（Q は45°回転）</td></tr>
+        <tr><td>7</td><td>対称性がないと何が崩れるか確認</td><td class="n">固有方向 ≠ 楕円の主軸</td></tr>
       </tbody>
     </table>
   </div>
+
+  <h3 style="margin-top:28px">2本を並べる</h3>
+  <div class="scroll">
+    <table class="cmp">
+      <thead><tr><th></th><th>① A = [[1,2],[2,1]]</th><th>② A = [[3,1],[2,2]]</th></tr></thead>
+      <tbody>
+        <tr><td>固有値</td><td>3, −1</td><td>4, 1</td></tr>
+        <tr><td>det</td><td>−3 → 一度つぶれて裏返る</td><td>+4 → 一度もつぶれない</td></tr>
+        <tr><td>固有ベクトル</td><td>(1,1), (−1,1)</td><td>(1,1), (−1,2)</td></tr>
+        <tr><td>直交するか</td><td>する（対称行列だから）</td><td>しない（内積 = 1）</td></tr>
+        <tr><td>P の正体</td><td>√2 · R(45°) ＝ 回転×拡大</td><td>マス目を平行四辺形に傾ける（一般形）</td></tr>
+        <tr><td>P⁻¹ の出し方</td><td>Pᵀ/2 で済む（直交性のおかげ）</td><td>1/det · [[d,−b],[−c,a]] を計算する</td></tr>
+        <tr><td>2段目（D）の動き</td><td>x′ に3倍、y′ に −1 倍（折り返し）</td><td>x′ に4倍、y′ は放置</td></tr>
+        <tr><td>Aⁿ</td><td>3ⁿ と (−1)ⁿ が混ざる（符号が揺れる）</td><td>4ⁿ と 1（静かに落ち着く）</td></tr>
+        <tr><td>特別な直線</td><td>なし（両方向とも動く）</td><td>y = −2x は<b>完全に不動</b></td></tr>
+        <tr><td>楕円の主軸</td><td>固有方向と一致</td><td>ズレる（41.4° vs 45°）</td></tr>
+      </tbody>
+    </table>
+  </div>
+
   <div class="box">
-    <div class="t">一文でいうと</div>
+    <div class="t">手順は1文字も変わらない</div>
     <p style="margin:0">
-      <span class="mono">A = [[1,2],[2,1]]</span> は「ごちゃっと混ざった変換」に見えるが、
-      <b class="k">45°傾いた座標から眺めれば、片方の軸に3倍・もう片方に−1倍するだけ</b>の変換だった。
-      対角化とは、その<b class="k">いい見る角度（＝いい基底）を見つける作業</b>。
+      見た目の性質はいろいろ違いますが、<b class="k">やることは2本とも完全に同じ</b>でした。
+      ① <span class="mono">det(A − λI) = 0</span> で λ を出す →
+      ② <span class="mono">(A − λI)v = 0</span> で v を出す →
+      ③ v を列に並べて P、λ を対角に並べて D。
+      対称かどうか、det の符号、固有値が正か負か — これらは<b class="k">絵の見え方を変えるだけ</b>で、手順を変えません。
     </p>
   </div>
 </section>
@@ -734,11 +810,10 @@
 <footer>
   <div class="mono" style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint)">Related</div>
   <ul>
-    <li><a href="260910_diagonalization_3122.html">260910_diagonalization_3122.html</a> — <b>2本目</b>：A = [[3,1],[2,2]] で同じ8節を通す（非対称・det &gt; 0・固有値 4 と 1）</li>
+    <li><a href="260910_diagonalization.html">260910_diagonalization.html</a> — <b>1本目</b>：A = [[1,2],[2,1]]（対称行列・det &lt; 0 版）</li>
     <li><a href="260516_linear_algebra.html">260516_linear_algebra.html</a> — 線形代数メインページ</li>
     <li><a href="260813_eigen_playground.html">260813_eigen_playground.html</a> — 行列の数字を自由に打ち替えて固有値を見るプレイグラウンド</li>
     <li><a href="260713_animations.html">260713_animations.html</a> — 固有ベクトルの流れ／ゴムシートのアニメ集</li>
-    <li><a href="260808_fibonacci_eigen.html">260808_fibonacci_eigen.html</a> — フィボナッチ行列 [[1,1],[1,0]] で同じことをやる</li>
   </ul>
 </footer>
 
@@ -748,12 +823,13 @@
 /* =========================================================
    math
    ========================================================= */
-const A   = [1,2,2,1];
+const A   = [3,1,2,2];
 const I2  = [1,0,0,1];
-const P   = [1,-1,1,1];
-const Pi  = [0.5,0.5,-0.5,0.5];
-const D   = [3,0,0,-1];
-const S2  = Math.SQRT2;
+const P   = [1,-1,1,2];
+const Pi  = [2/3,1/3,-1/3,1/3];
+const D   = [4,0,0,1];
+const V1  = [1,1], V2 = [-1,2];
+const TH1 = 45, TH2 = 180 - Math.atan(2)*180/Math.PI;   /* 116.565° */
 
 const mul = (M,N)=>[M[0]*N[0]+M[1]*N[2], M[0]*N[1]+M[1]*N[3], M[2]*N[0]+M[3]*N[2], M[2]*N[1]+M[3]*N[3]];
 const ap  = (M,p)=>[M[0]*p[0]+M[1]*p[1], M[2]*p[0]+M[3]*p[1]];
@@ -761,6 +837,17 @@ const dt  = M=>M[0]*M[3]-M[1]*M[2];
 const lerpM = (M,N,t)=>M.map((v,i)=>v+(N[i]-v)*t);
 const nrm = p=>{const L=Math.hypot(p[0],p[1])||1; return [p[0]/L,p[1]/L];};
 const f2  = x=>(Math.abs(x)<5e-3?0:x).toFixed(2).replace('-','−');
+
+/* major axis of the image ellipse of the unit circle under M */
+function majorAxis(M){
+  const a=M[0]*M[0]+M[2]*M[2], b=M[0]*M[1]+M[2]*M[3], c=M[1]*M[1]+M[3]*M[3];
+  const th=0.5*Math.atan2(2*b, a-c);
+  const u=[Math.cos(th),Math.sin(th)];
+  const w=ap(M,u);
+  const tr=a+c, dd=Math.max(0,(a-c)*(a-c)+4*b*b);
+  const s1=Math.sqrt(Math.max(0,(tr+Math.sqrt(dd))/2));
+  return {inDir:u, outDir:w, s1:s1};
+}
 
 /* =========================================================
    view: world coords -> pixels
@@ -867,8 +954,7 @@ function reg(a){
   if('IntersectionObserver' in window){
     new IntersectionObserver(es=>{ a.visible=es[0].isIntersecting; }, {rootMargin:'80px'}).observe(a.v.cv);
   }
-  const ro = 'ResizeObserver' in window ? new ResizeObserver(()=>{ a.v.fit(); a.render(); }) : null;
-  if(ro) ro.observe(a.v.cv);
+  if('ResizeObserver' in window) new ResizeObserver(()=>{ a.v.fit(); a.render(); }).observe(a.v.cv);
   a.render();
   return a;
 }
@@ -891,7 +977,7 @@ const $ = id=>document.getElementById(id);
    §1 — matrix as motion
    ========================================================= */
 (function(){
-  const v = makeView($('cv1'), 4.2);
+  const v = makeView($('cv1'), 5.2);
   const sq = [[0,0],[1,0],[1,1],[0,1]];
   const lab = ['A','B','C','D'];
   const pts = [];
@@ -900,44 +986,34 @@ const $ = id=>document.getElementById(id);
   const a = {v, playing:false, t:0,
     step(d){ a.t += d*0.28; if(a.t>1.28){ a.t=0; } sync(); },
     render(){
-      const t=Math.min(a.t,1), M=lerpM(I2,A,t), det=dt(M);
-      v.fit(); v.clear(); axes(v, 4);
+      const t=Math.min(a.t,1), M=lerpM(I2,A,t);
+      v.fit(); v.clear(); axes(v, 5);
       mgrid(v, I2, '#efefef', 1, 2);
       mgrid(v, M, 'rgba(29,122,77,.26)', 1.2, 2);
       const R=[1.45,0,0,1.45];
       circleImg(v, R, '#e6e6e6', 1.3);
       circleImg(v, mul(M,R), 'rgba(29,122,77,.45)', 1.8);
-      // unit square
       poly(v, sq.map(p=>ap(M,p)), '#111', 2.2, 'rgba(17,17,17,.07)', true);
       sq.forEach((p,i)=>{ const q=ap(M,p); dot(v,q,3.2,'#111'); txt(v,q,lab[i],'#111',7,-8); });
-      // motion of sample points
       pts.forEach(p=>{
         const q=ap(M,p);
         seg(v,p,q,'rgba(17,17,17,.22)',1.1);
         dot(v,p,2,'rgba(17,17,17,.2)');
         dot(v,q,3,'rgba(60,66,75,.9)');
       });
-      // collapse warning
-      if(Math.abs(det)<0.08){
-        seg(v,[-v.half,-v.half],[v.half,v.half],'rgba(192,57,43,.85)',2.4);
-        txt(v,[2.1,2.1],'y = x に全部つぶれた','#c0392b',6,-12);
-      }
     }
   };
   function sync(){
     const t=Math.min(a.t,1), M=lerpM(I2,A,t), det=dt(M);
     $('t1').value=t; $('t1v').textContent=t.toFixed(2);
     $('d1').textContent=f2(det); $('a1').textContent=f2(Math.abs(det));
-    const or=$('or1'); const w=$('or1w');
-    if(Math.abs(det)<0.06){ or.textContent='つぶれた'; w.classList.add('warn'); }
-    else if(det>0){ or.textContent='そのまま'; w.classList.remove('warn'); }
-    else { or.textContent='反転'; w.classList.add('warn'); }
-    let m='';
+    $('or1').textContent='そのまま'; $('or1w').classList.remove('warn');
+    let m;
     if(t<0.02) m='<b>t = 0</b> — まだ何もしていない状態。単位正方形は 1×1、面積比は 1。';
-    else if(Math.abs(det)<0.08) m='<b>t = 0.50</b> — 面積が 0。平面ぜんぶが直線 y = x の上に押しつぶされた。この直線が λ = 3 の固有方向。';
-    else if(det>0) m='点がそれぞれ自分の行き先へ直線移動している。まだ向き（A→B→C→D の回り方）は元と同じ。';
-    else if(t<0.99) m='つぶれを通過した後。角の回り方が逆になっている＝<b>向きが裏返った</b>。';
-    else m='<b>t = 1</b> — A そのもの。単位正方形は面積 3 の平行四辺形になり、向きは裏返っている（det = −3）。';
+    else if(t<0.99) m='点がそれぞれ自分の行き先へ直線移動している。det は '+f2(det)+' で<b>ずっとプラス</b>のまま。'
+      + 'つまり途中でつぶれることも、裏返ることもない。';
+    else m='<b>t = 1</b> — A そのもの。単位正方形は面積 4 の平行四辺形になり、'
+      + '角の回り方（A→B→C→D）は最初と同じ向きのまま。';
     $('c1').innerHTML=m;
   }
   $('t1').addEventListener('input',e=>{ a.playing=false; a.sync&&a.sync(); a.t=+e.target.value; a.render(); sync(); });
@@ -948,26 +1024,26 @@ const $ = id=>document.getElementById(id);
    §2 — hunting the eigen-directions
    ========================================================= */
 (function(){
-  const v = makeView($('cv2'), 3.4);
+  const v = makeView($('cv2'), 4.6);
   const a = {v, playing:false, th:10,
     step(d){ a.th=(a.th + d*32)%360; sync(); },
     render(){
-      v.fit(); v.clear(); axes(v);
-      // locus of Av (ellipse)
+      v.fit(); v.clear(); axes(v, 4);
       circleImg(v, A, '#dddddd', 1.6);
       circleImg(v, I2, '#efefef', 1.2);
-      // eigen lines (faint until hit)
       const th=a.th*Math.PI/180, vv=[Math.cos(th),Math.sin(th)], Av=ap(A,vv);
-      const cross=vv[0]*Av[1]-vv[1]*Av[0], near=Math.abs(cross)<0.12;
-      seg(v,[-3.4,-3.4],[3.4,3.4], near&&Math.sin(2*th)>0?'rgba(184,134,11,.75)':'rgba(184,134,11,.18)', near&&Math.sin(2*th)>0?2:1.4);
-      seg(v,[3.4,-3.4],[-3.4,3.4], near&&Math.sin(2*th)<0?'rgba(47,93,138,.75)':'rgba(47,93,138,.18)', near&&Math.sin(2*th)<0?2:1.4);
-      arrow(v,[0,0],Av,'#1d7a4d',2.4);
-      arrow(v,[0,0],vv,'#111',2.4);
-      txt(v,vv,'v','#111',9,-9);
-      txt(v,Av,'Av','#1d7a4d',9,-9);
+      const cross=vv[0]*Av[1]-vv[1]*Av[0], near=Math.abs(cross)<0.14;
+      const u1=nrm(V1), u2=nrm(V2), R=4.6;
+      const on1 = near && Math.abs(Math.cos(th-Math.PI/4))>0.5;
+      seg(v,[-u1[0]*R,-u1[1]*R],[u1[0]*R,u1[1]*R], on1?'rgba(184,134,11,.75)':'rgba(184,134,11,.18)', on1?2:1.4);
+      seg(v,[-u2[0]*R,-u2[1]*R],[u2[0]*R,u2[1]*R], (near&&!on1)?'rgba(47,93,138,.75)':'rgba(47,93,138,.18)', (near&&!on1)?2:1.4);
+      arrow(v,[0,0],Av,'#1d7a4d',3.4);
+      arrow(v,[0,0],vv,'#111',2.2);
+      txt(v,vv,'v','#111',-6,16);
+      txt(v,Av,'Av','#1d7a4d',10,-10);
       if(near){
         const lam=vv[0]*Av[0]+vv[1]*Av[1];
-        txt(v,[0,-3.0],'平行！ λ = '+f2(lam), lam>0?'#b8860b':'#2f5d8a',0,0,'center',Math.max(11,v.fs+1));
+        txt(v,[0,-4.2],'平行！ λ = '+f2(lam), on1?'#b8860b':'#2f5d8a',0,0,'center',Math.max(11,v.fs+1));
       }
     }
   };
@@ -975,17 +1051,21 @@ const $ = id=>document.getElementById(id);
     const th=a.th*Math.PI/180, vv=[Math.cos(th),Math.sin(th)], Av=ap(A,vv);
     const cross=vv[0]*Av[1]-vv[1]*Av[0], lam=vv[0]*Av[0]+vv[1]*Av[1];
     $('t2').value=a.th; $('t2v').textContent=a.th.toFixed(0)+'°';
-    $('x2').textContent=f2(cross); $('l2').textContent=f2(lam);
+    $('x2').textContent=f2(cross);
+    $('l2').textContent=Math.abs(cross)<0.06?f2(lam):'—';
     $('m2').textContent=f2(Math.hypot(Av[0],Av[1]));
+    const d1=Math.min(Math.abs(a.th-TH1), Math.abs(a.th-TH1-180), Math.abs(a.th-TH1+180));
     let m;
     if(Math.abs(cross)<0.06){
-      m = lam>0
-        ? '<b>θ = 45° — 見つけた。</b>v と Av が完全に同じ向きで、長さがちょうど 3 倍。つまり <b>Av = 3v</b>。これが λ₁ = 3 の固有ベクトル (1,1)。'
-        : '<b>θ = 135° — 2本目。</b>Av は v と<b>真逆</b>を向いて長さは同じ。つまり <b>Av = −v</b>。これが λ₂ = −1 の固有ベクトル (−1,1)。伸び縮みはしないが裏返る。';
-    } else if(Math.abs(cross)<0.4){
+      m = d1<3
+        ? '<b>θ = 45° — 1本目の固有方向。</b>v と Av が完全に同じ向きで、長さがちょうど 4 倍。つまり <b>Av = 4v</b>。固有ベクトル (1,1)。'
+        : '<b>θ ≒ 116.57° — 2本目。</b>v と Av が<b>ぴったり重なる</b>（長さも同じ）。つまり <b>Av = v</b>。'
+          + 'この向きの点は A をかけても<b>まったく動かない</b>。固有ベクトル (−1,2)。';
+    } else if(Math.abs(cross)<0.45){
       m = 'もう少し。ずれ（外積）が 0 に近づいている＝2本の矢印がほぼ重なりかけている。';
     } else {
-      m = 'v（黒）と Av（緑）が別の向きを指している。ずれ = '+f2(cross)+'。この向きは固有方向ではない。';
+      m = 'v（黒）と Av（緑）が別の向きを指している。ずれ = '+f2(cross)+'。この向きは固有方向ではない。'
+        + '<b>長さではなく「平行かどうか」を見る</b>のがポイント。';
     }
     $('c2').innerHTML=m;
   }
@@ -1002,9 +1082,9 @@ const $ = id=>document.getElementById(id);
    ========================================================= */
 (function(){
   const cvA=$('cv3a'), cvB=$('cv3b');
-  const vB = makeView(cvB, 3.6);
+  const vB = makeView(cvB, 4.4);
   const ctxA = cvA.getContext('2d');
-  const PL = {xmin:-3.4, xmax:5.4, ymin:-6.5, ymax:16.5, w:0, h:0, pad:26};
+  const PL = {xmin:-1.8, xmax:6.8, ymin:-5, ymax:16.5, w:0, h:0, pad:26, fs:12};
   function fitA(){
     const dpr=Math.min(window.devicePixelRatio||1,2);
     const w=cvA.clientWidth||300, h=cvA.clientHeight||240;
@@ -1014,58 +1094,55 @@ const $ = id=>document.getElementById(id);
   }
   const px = x=>PL.pad + (x-PL.xmin)/(PL.xmax-PL.xmin)*(PL.w-PL.pad*1.3);
   const py = y=>PL.h-PL.pad - (y-PL.ymin)/(PL.ymax-PL.ymin)*(PL.h-PL.pad*1.6);
-  const p3 = l=>l*l-2*l-3;
+  const p3 = l=>l*l-5*l+4;
 
-  const a = {v:vB, playing:false, lam:-3,
-    step(d){ a.lam += d*1.5; if(a.lam>5.4){ a.lam=-3; } sync(); },
+  const a = {v:vB, playing:false, lam:-1.4,
+    step(d){ a.lam += d*1.5; if(a.lam>6.4){ a.lam=-1.4; } sync(); },
     render(){
       /* ---- left: graph ---- */
       fitA(); ctxA.fillStyle='#fff'; ctxA.fillRect(0,0,PL.w,PL.h);
       ctxA.save();
       ctxA.strokeStyle='#ededed'; ctxA.lineWidth=1;
-      for(let k=-3;k<=5;k++){ ctxA.beginPath(); ctxA.moveTo(px(k),py(PL.ymin)); ctxA.lineTo(px(k),py(PL.ymax)); ctxA.stroke(); }
+      for(let k=-1;k<=6;k++){ ctxA.beginPath(); ctxA.moveTo(px(k),py(PL.ymin)); ctxA.lineTo(px(k),py(PL.ymax)); ctxA.stroke(); }
       for(let k=-5;k<=15;k+=5){ ctxA.beginPath(); ctxA.moveTo(px(PL.xmin),py(k)); ctxA.lineTo(px(PL.xmax),py(k)); ctxA.stroke(); }
       ctxA.strokeStyle='#c9c9c9'; ctxA.lineWidth=1.4;
       ctxA.beginPath(); ctxA.moveTo(px(PL.xmin),py(0)); ctxA.lineTo(px(PL.xmax),py(0)); ctxA.stroke();
       ctxA.beginPath(); ctxA.moveTo(px(0),py(PL.ymin)); ctxA.lineTo(px(0),py(PL.ymax)); ctxA.stroke();
-      // curve
       ctxA.strokeStyle='#111'; ctxA.lineWidth=2.2; ctxA.beginPath();
       for(let i=0;i<=200;i++){ const l=PL.xmin+(PL.xmax-PL.xmin)*i/200; const y=p3(l);
         if(i===0) ctxA.moveTo(px(l),py(y)); else ctxA.lineTo(px(l),py(y)); }
       ctxA.stroke();
-      // roots
-      [[-1,'#2f5d8a','λ = −1'],[3,'#b8860b','λ = 3']].forEach(([r,c,t])=>{
-        ctxA.fillStyle=c; ctxA.beginPath(); ctxA.arc(px(r),py(0),4.5,0,7); ctxA.fill();
-        ctxA.font='700 '+PL.fs+"px Poppins,sans-serif"; ctxA.textAlign='center';
+      [[1,'#2f5d8a','λ = 1'],[4,'#b8860b','λ = 4']].forEach(function(r){
+        ctxA.fillStyle=r[1]; ctxA.beginPath(); ctxA.arc(px(r[0]),py(0),4.5,0,7); ctxA.fill();
+        ctxA.font='700 '+PL.fs+"px Poppins,sans-serif"; ctxA.textAlign='center'; ctxA.textBaseline='alphabetic';
         ctxA.lineWidth=3.5; ctxA.strokeStyle='rgba(255,255,255,.9)';
-        ctxA.strokeText(t,px(r),py(0)+PL.fs+9); ctxA.fillText(t,px(r),py(0)+PL.fs+9);
+        ctxA.strokeText(r[2],px(r[0]),py(0)+PL.fs+9); ctxA.fillText(r[2],px(r[0]),py(0)+PL.fs+9);
       });
-      // current
       const L=a.lam, y=p3(L);
       ctxA.strokeStyle='rgba(29,122,77,.5)'; ctxA.lineWidth=1.4; ctxA.setLineDash([4,4]);
       ctxA.beginPath(); ctxA.moveTo(px(L),py(0)); ctxA.lineTo(px(L),py(y)); ctxA.stroke(); ctxA.setLineDash([]);
       ctxA.fillStyle='#1d7a4d'; ctxA.beginPath(); ctxA.arc(px(L),py(y),5,0,7); ctxA.fill();
-      ctxA.font='700 '+PL.fs+"px Poppins,sans-serif"; ctxA.textAlign='left'; ctxA.fillStyle='#888';
-      ctxA.textBaseline='top'; ctxA.fillText('p(λ) = λ² − 2λ − 3', PL.pad+2, 6);
+      ctxA.font='700 '+PL.fs+"px Poppins,sans-serif"; ctxA.textAlign='left'; ctxA.textBaseline='top';
+      ctxA.fillStyle='#888'; ctxA.fillText('p(λ) = λ² − 5λ + 4', PL.pad+2, 6);
       ctxA.restore();
 
       /* ---- right: the map A - λI ---- */
       const M=[A[0]-L, A[1], A[2], A[3]-L], det=dt(M);
-      vB.fit(); vB.clear(); axes(vB);
-      mgrid(vB, M, 'rgba(29,122,77,.30)', 1.2);
+      vB.fit(); vB.clear(); axes(vB, 4);
+      mgrid(vB, M, 'rgba(29,122,77,.30)', 1.2, 3);
       circleImg(vB, I2, '#e4e4e4', 1.3);
       circleImg(vB, M, '#1d7a4d', 2);
       poly(vB, [[0,0],[1,0],[1,1],[0,1]].map(p=>ap(M,p)), 'rgba(17,17,17,.5)', 1.6, 'rgba(17,17,17,.06)', true);
       if(Math.abs(det)<0.6){
-        // kernel direction of A - lam I : for symmetric, kernel = eigenvector
-        const k = Math.abs(L-3)<Math.abs(L+1) ? [1,1] : [-1,1];
-        const c = Math.abs(L-3)<Math.abs(L+1) ? '#b8860b' : '#2f5d8a';
-        seg(vB,[-3.5*k[0],-3.5*k[1]],[3.5*k[0],3.5*k[1]], c, 2.4);
-        arrow(vB,[0,0],k,c,3);
-        txt(vB, k, Math.abs(L-3)<Math.abs(L+1)?'v₁':'v₂', c, 10, -10);
-        txt(vB,[0,-3.15],'この向きが 0 に潰される','#3c424b',0,0,'center',Math.max(10,vB.fs));
+        const near1 = Math.abs(L-4) < Math.abs(L-1);
+        const k = nrm(near1?V1:V2);
+        const c = near1 ? '#b8860b' : '#2f5d8a';
+        seg(vB,[-k[0]*4.3,-k[1]*4.3],[k[0]*4.3,k[1]*4.3], c, 2.4);
+        arrow(vB,[0,0],[k[0]*1.6,k[1]*1.6],c,3);
+        txt(vB, [k[0]*1.6,k[1]*1.6], near1?'v₁':'v₂', c, 10, -10);
+        txt(vB,[0,-4.0],'この向きが 0 に潰される','#3c424b',0,0,'center',Math.max(10,vB.fs));
       }
-      txt(vB,[-3.35,3.2],'A − λI','#888',0,0,'left',Math.max(10,vB.fs));
+      txt(vB,[-4.15,4.0],'A − λI','#888',0,0,'left',Math.max(10,vB.fs));
     }
   };
   function sync(){
@@ -1076,9 +1153,10 @@ const $ = id=>document.getElementById(id);
     if(Math.abs(det)<0.12){ sv.textContent='つぶれた'; st.classList.add('warn'); }
     else { sv.textContent='可逆'; st.classList.remove('warn'); }
     let m;
-    if(Math.abs(L-3)<0.12) m='<b>λ = 3。</b>p(3) = 0 なので A − 3I は可逆でない。右の緑の楕円が線に潰れ、金色の向き (1,1) が 0 に送られている。これが「Av = 3v」の言い換え。';
-    else if(Math.abs(L+1)<0.12) m='<b>λ = −1。</b>もうひとつの根。青の向き (−1,1) が 0 に潰される。';
-    else if(det<0) m='p(λ) = '+f2(det)+' &lt; 0。潰れていないので (A − λI)v = 0 の解は v = 0 だけ。λ はこの2根の間にある。';
+    if(Math.abs(L-4)<0.12) m='<b>λ = 4。</b>p(4) = 0 なので A − 4I は可逆でない。右の緑の楕円が線に潰れ、金色の向き (1,1) が 0 に送られている。これが「Av = 4v」の言い換え。';
+    else if(Math.abs(L-1)<0.12) m='<b>λ = 1。</b>もうひとつの根。青の向き (−1,2) が 0 に潰される。';
+    else if(Math.abs(L)<0.06) m='<b>λ = 0 では A そのもの。</b>p(0) = 4 = det A。グラフの縦軸切片が det A になる。';
+    else if(det<0) m='p(λ) = '+f2(det)+' &lt; 0。潰れていないので (A − λI)v = 0 の解は v = 0 だけ。λ は2根 1 と 4 の間にある。';
     else m='p(λ) = '+f2(det)+' ≠ 0。A − λI は可逆なので、この λ では固有ベクトルは存在しない。';
     $('c3').innerHTML=m;
   }
@@ -1095,44 +1173,40 @@ const $ = id=>document.getElementById(id);
    §4 — the two eigenlines are invariant
    ========================================================= */
 (function(){
-  const v = makeView($('cv4'), 4.0);
-  const others = [[1,0],[0,1],[1.6,0.5],[-0.6,1.4]];
+  const v = makeView($('cv4'), 5.2);
+  const others = [[1,0],[0,1],[1.4,-0.7],[-1.3,0.2]];
   const a = {v, playing:true, t:0, dir:1,
     step(d){ a.t += d*0.42*a.dir; if(a.t>1){a.t=1;a.dir=-1;} if(a.t<0){a.t=0;a.dir=1;} sync(); },
     render(){
-      const t=a.t;
-      v.fit(); v.clear(); axes(v);
-      seg(v,[-4,-4],[4,4],'rgba(184,134,11,.5)',2);
-      seg(v,[4,-4],[-4,4],'rgba(47,93,138,.5)',2);
-      txt(v,[-2.7,-2.7],'y = x','#b8860b',0,-12,'center',Math.max(10,v.fs-1));
-      txt(v,[2.7,-2.7],'y = −x','#2f5d8a',0,-12,'center',Math.max(10,v.fs-1));
-      // other directions: bend away
+      const t=a.t, R=5.2;
+      v.fit(); v.clear(); axes(v, 5);
+      const u1=nrm(V1), u2=nrm(V2);
+      seg(v,[-u1[0]*R,-u1[1]*R],[u1[0]*R,u1[1]*R],'rgba(184,134,11,.5)',2);
+      seg(v,[-u2[0]*R,-u2[1]*R],[u2[0]*R,u2[1]*R],'rgba(47,93,138,.5)',2);
+      txt(v,[-3.2,-3.2],'y = x','#b8860b',0,-12,'center',Math.max(10,v.fs-1));
+      txt(v,[2.0,-4.0],'y = −2x','#2f5d8a',0,-12,'center',Math.max(10,v.fs-1));
       others.forEach(p=>{
-        const q=[p[0]+(ap(A,p)[0]-p[0])*t, p[1]+(ap(A,p)[1]-p[1])*t];
+        const Ap=ap(A,p), q=[p[0]+(Ap[0]-p[0])*t, p[1]+(Ap[1]-p[1])*t];
         seg(v,p,q,'rgba(17,17,17,.12)',1,[3,3]);
         arrow(v,[0,0],q,'#b0b0b0',1.8);
       });
-      // v1
-      const v1=[1,1], q1=[1+2*t, 1+2*t];
+      const k1=1+3*t, q1=[V1[0]*k1, V1[1]*k1];
       arrow(v,[0,0],q1,'#b8860b',3);
-      dot(v,v1,3,'#b8860b');
-      txt(v,q1,'×'+(1+2*t).toFixed(2),'#b8860b',10,-10);
-      // v2 : scale goes 1 -> -1
-      const s2=1-2*t, q2=[-s2, s2];
-      arrow(v,[0,0],q2,'#2f5d8a',3);
-      dot(v,[-1,1],3,'#2f5d8a');
-      txt(v,q2,'×'+s2.toFixed(2),'#2f5d8a',10,-10);
+      dot(v,V1,3,'#b8860b');
+      txt(v,q1,'×'+k1.toFixed(2),'#b8860b',10,-10);
+      arrow(v,[0,0],V2,'#2f5d8a',3);
+      dot(v,V2,3.4,'#2f5d8a');
+      txt(v,V2,'×1.00（不動）','#2f5d8a',10,-10);
     }
   };
   function sync(){
     const t=a.t;
     $('t4').value=t; $('t4v').textContent=t.toFixed(2);
-    const s2=1-2*t;
-    let m='';
-    if(t<0.03) m='出発点。金 = v₁ (1,1)、青 = v₂ (−1,1)、灰 = その他の向き。';
-    else if(Math.abs(s2)<0.06) m='青の矢印が長さ0を通過中。<b>−1 倍とは、一度つぶして反対側に出ること</b>。';
-    else m='金は直線 y = x 上を伸びるだけ（今 ×'+(1+2*t).toFixed(2)+'）。青は y = −x 上を通って反対側へ（今 ×'+s2.toFixed(2)+'）。'
-        + '<b>灰の矢印だけが元の直線から外れていく</b>のが固有方向との違い。';
+    let m;
+    if(t<0.03) m='出発点。金 = v₁ (1,1)、青 = v₂ (−1,2)、灰 = その他の向き。';
+    else m='金は直線 y = x 上を伸びるだけ（今 ×'+(1+3*t).toFixed(2)+'）。'
+        + '<b>青はスライダーを動かしても1ミリも動かない</b>（倍率が 1 だから）。'
+        + '灰の矢印だけが元の直線から外れていく。';
     $('c4').innerHTML=m;
   }
   $('t4').addEventListener('input',e=>{ a.playing=false; a.sync&&a.sync(); a.t=+e.target.value; a.render(); sync(); });
@@ -1143,19 +1217,18 @@ const $ = id=>document.getElementById(id);
    §5 — A = P D P^-1, three stages
    ========================================================= */
 (function(){
-  const v = makeView($('cv5'), 4.4);
+  const v = makeView($('cv5'), 4.6);
   const F = [[-0.5,1.0],[0.5,1.0],[0.5,0.7],[-0.2,0.7],[-0.2,0.15],[0.35,0.15],
-             [0.35,-0.15],[-0.2,-0.15],[-0.2,-1.0],[-0.5,-1.0]].map(p=>[p[0]*1.35,p[1]*1.35]);
+             [0.35,-0.15],[-0.2,-0.15],[-0.2,-1.0],[-0.5,-1.0]].map(p=>[p[0]*1.15,p[1]*1.15]);
   const stages = [
-    {n:'I',      M:I2,            cap:'<b>まだ何もしていない。</b>黒い F と、それを載せた正方マス目。斜めの2軸（金 = v₁ / 青 = v₂）が対角化で使う「いい座標」。'},
-    {n:'P⁻¹',    M:Pi,            cap:'<b>1段目：P⁻¹ をかけた。</b>斜めだった金・青の軸が、水平・垂直に立った。つまり<b>固有ベクトルを x′y′ 軸として見る座標に読み替えた</b>。今回の P⁻¹ は「45°戻して 1/√2 倍」。'},
-    {n:'D P⁻¹',  M:mul(D,Pi),     cap:'<b>2段目：D をかけた。</b>この座標では、ただ x′ に3倍・y′ に −1 倍しただけ。<b>斜めに混ざる成分がゼロ</b>なので、軸ごとに独立に伸ばすだけで済む。これが「対角」のありがたさ。'},
-    {n:'P D P⁻¹ = A', M:A,        cap:'<b>3段目：P をかけて元の座標に戻した。</b>結果は最初の A = [[1,2],[2,1]] とぴったり一致する。A の正体は「45°傾いた座標で 3 倍と −1 倍しただけ」だった。'}
+    {n:'I',      cap:'<b>まだ何もしていない。</b>黒い F と、それを載せた正方マス目。斜めの2軸（金 = v₁ / 青 = v₂）が対角化で使う「いい座標」。この2本は<b>直交していない</b>ことに注目。'},
+    {n:'P⁻¹',    cap:'<b>1段目：P⁻¹ をかけた。</b>斜めだった金・青の軸が、水平・垂直に立った。つまり<b>固有ベクトルを x′y′ 軸として見る座標に読み替えた</b>。1本目と違い、これは回転ではなくマス目の形を歪める操作。'},
+    {n:'D P⁻¹',  cap:'<b>2段目：D をかけた。</b>この座標では、ただ x′ に4倍しただけ（y′ は倍率1なので何もしない）。<b>横に引き伸ばすだけ</b>という素朴な動きになるのが対角のありがたさ。'},
+    {n:'P D P⁻¹ = A', cap:'<b>3段目：P をかけて元の座標に戻した。</b>結果は最初の A = [[3,1],[2,2]] とぴったり一致する。A の正体は「斜めの座標で片方だけ4倍にしただけ」だった。'}
   ];
-  // stage-2 is animated as scale (1,1) -> (3,-1) in eigen coords
   function matAt(i, t){
     if(i===0) return lerpM(I2, Pi, t);
-    if(i===1) return mul([1+2*t,0,0,1-2*t], Pi);
+    if(i===1) return mul([1+3*t,0,0,1], Pi);
     if(i===2) return mul(lerpM(I2,P,t), mul(D,Pi));
     return A;
   }
@@ -1169,20 +1242,18 @@ const $ = id=>document.getElementById(id);
     onPlay(){ if(a.i>=3){ a.i=0; a.t=0; } },
     render(){
       const M = a.i>=3 ? A : matAt(a.i, Math.min(a.t,1));
-      v.fit(); v.clear(); axes(v);
-      mgrid(v, M, 'rgba(17,17,17,.08)', 1);
+      v.fit(); v.clear(); axes(v, 4);
+      mgrid(v, M, 'rgba(17,17,17,.08)', 1, 4);
       if(a.showGrid) mgrid(v, mul(M,P), 'rgba(184,134,11,.22)', 1.1, 4);
-      // eigen axes, carried along
-      const e1=ap(M,[1,1]), e2=ap(M,[-1,1]);
-      const k=3.2/Math.max(0.35,Math.hypot(e1[0],e1[1])), k2=3.2/Math.max(0.35,Math.hypot(e2[0],e2[1]));
+      const e1=ap(M,V1), e2=ap(M,V2);
+      const k=3.4/Math.max(0.35,Math.hypot(e1[0],e1[1])), k2=3.4/Math.max(0.35,Math.hypot(e2[0],e2[1]));
       seg(v,[-e1[0]*k,-e1[1]*k],[e1[0]*k,e1[1]*k],'rgba(184,134,11,.45)',1.8);
       seg(v,[-e2[0]*k2,-e2[1]*k2],[e2[0]*k2,e2[1]*k2],'rgba(47,93,138,.45)',1.8);
       arrow(v,[0,0],e1,'#b8860b',2.6);
       arrow(v,[0,0],e2,'#2f5d8a',2.6);
-      // ghost + shape
       poly(v, F, 'rgba(17,17,17,.22)', 1.4, null, true);
       poly(v, F.map(p=>ap(M,p)), '#111', 2.4, 'rgba(17,17,17,.08)', true);
-      txt(v,[-4.3,4.1], labelNow(), '#888', 0,0,'left', Math.max(10,v.fs));
+      txt(v,[-4.5,4.3], labelNow(), '#888', 0,0,'left', Math.max(10,v.fs));
     }
   };
   function labelNow(){
@@ -1194,8 +1265,7 @@ const $ = id=>document.getElementById(id);
     const M = a.i>=3 ? A : matAt(a.i, Math.min(a.t,1));
     $('m5').textContent=labelNow();
     $('d5').textContent=f2(dt(M));
-    const prog=((a.i+Math.min(a.t,1))/3)*100;
-    $('bar5').style.width=Math.min(100,prog)+'%';
+    $('bar5').style.width=Math.min(100,((a.i+Math.min(a.t,1))/3)*100)+'%';
     document.querySelectorAll('#stg5 .chip').forEach(c=>{
       const i=+c.dataset.s;
       c.classList.toggle('on', a.t<0.02 ? i===Math.min(a.i,3) : false);
@@ -1203,9 +1273,8 @@ const $ = id=>document.getElementById(id);
     const done = a.t<0.02 ? Math.min(a.i,3) : a.i;
     let m = stages[Math.min(done,3)].cap;
     if(a.t>=0.02 && a.i===1){
-      const s=1-2*Math.min(a.t,1);
-      m = '<b>2段目の途中：</b>x′ 倍率 '+(1+2*Math.min(a.t,1)).toFixed(2)+'、y′ 倍率 '+s.toFixed(2)+'。'
-        + (Math.abs(s)<0.08 ? ' いま y′ が 0 ＝ <b>一度つぶれて、これから裏返る</b>。' : '');
+      m = '<b>2段目の途中：</b>x′ 倍率 '+(1+3*Math.min(a.t,1)).toFixed(2)+'、y′ 倍率 1.00（固定）。'
+        + ' 縦は一切変わらず、横だけが伸びている。';
     } else if(a.t>=0.02){
       m = stages[a.i].cap.replace('<b>','<b>（'+labelNow()+'）');
     }
@@ -1217,15 +1286,15 @@ const $ = id=>document.getElementById(id);
   document.querySelectorAll('#stg5 .chip').forEach(b=>b.addEventListener('click',()=>{
     a.playing=false; a.sync&&a.sync(); a.i=+b.dataset.s; a.t=0; a.render(); sync();
   }));
-  // numeric check
   (function(){
     const R = mul(P, mul(D, Pi));
     const fmt = M=>'[['+M[0]+', '+M[1]+'], ['+M[2]+', '+M[3]+']]';
-    const eq = R.every((x,i)=>Math.abs(x-A[i])<1e-12);
+    const eq = R.every((x,i)=>Math.abs(x-A[i])<1e-9);
     $('chk5').innerHTML =
-      'P·D·P⁻¹ = '+fmt(R.map(x=>+x.toFixed(10)))+'<br>'+
+      'P·D·P⁻¹ = '+fmt(R.map(x=>+x.toFixed(6)))+'<br>'+
       'A &nbsp; &nbsp; &nbsp; &nbsp; = '+fmt(A)+'<br>'+
-      'P·P⁻¹ = '+fmt(mul(P,Pi).map(x=>+x.toFixed(10)))+' = I<br>'+
+      'P·P⁻¹ = '+fmt(mul(P,Pi).map(x=>+x.toFixed(6)))+' = I<br>'+
+      'det P = '+dt(P)+' &nbsp;/&nbsp; det A = '+dt(A)+' = 4 × 1<br>'+
       '<b>'+(eq?'一致 ✓':'不一致 ✗')+'</b>';
   })();
   reg(a); playBtn($('p5'), a); sync();
@@ -1235,43 +1304,39 @@ const $ = id=>document.getElementById(id);
    §6 — A^n
    ========================================================= */
 (function(){
-  // table
   const tb=$('tb6').querySelector('tbody');
   let rows='';
   for(let n=1;n<=6;n++){
-    const p=Math.pow(3,n), q=Math.pow(-1,n);
-    const d=(p+q)/2, o=(p-q)/2;
-    rows+='<tr><td class="n">'+n+'</td><td class="n">'+p+'</td><td class="n">'+(q<0?'−1':'1')+
-      '</td><td class="n">[['+d+', '+o+'], ['+o+', '+d+']]</td></tr>';
+    const p=Math.pow(4,n);
+    const d1=(2*p+1)/3, o1=(p-1)/3, o2=(2*p-2)/3, d2=(p+2)/3;
+    rows+='<tr><td class="n">'+n+'</td><td class="n">'+p+'</td><td class="n">1</td>'+
+      '<td class="n">[['+d1+', '+o1+'], ['+o2+', '+d2+']]</td></tr>';
   }
   tb.innerHTML=rows;
 
   const v = makeView($('cv6'), 1.55);
-  const seeds=[[1,0],[0,1],[-1,0.3],[0.2,-1],[-1,1]];
+  const seeds=[[1,0],[0,1],[-1,-0.3],[1,-1.6],[-1,2]];
   const cols=['#666','#888','#777','#999','#2f5d8a'];
   const a={v, playing:false, n:0, acc:0,
     step(d){ a.acc+=d; if(a.acc>0.55){ a.acc=0; a.n++; if(a.n>12){ a.n=0; } sync(); } },
     render(){
       v.fit(); v.clear();
-      // unit circle
       circleImg(v, I2, '#e2e2e2', 1.4);
       const c=v.ctx; c.save(); c.strokeStyle='#ededed'; c.lineWidth=1;
       c.beginPath(); c.moveTo(v.X(-1.5),v.Y(0)); c.lineTo(v.X(1.5),v.Y(0)); c.stroke();
       c.beginPath(); c.moveTo(v.X(0),v.Y(-1.5)); c.lineTo(v.X(0),v.Y(1.5)); c.stroke(); c.restore();
-      // eigen directions
-      const u1=nrm([1,1]), u2=nrm([-1,1]);
+      const u1=nrm(V1), u2=nrm(V2);
       seg(v,[-u1[0]*1.45,-u1[1]*1.45],[u1[0]*1.45,u1[1]*1.45],'rgba(184,134,11,.5)',2);
       seg(v,[-u2[0]*1.45,-u2[1]*1.45],[u2[0]*1.45,u2[1]*1.45],'rgba(47,93,138,.5)',2);
       txt(v,[u1[0]*1.2,u1[1]*1.2],'v₁','#b8860b',12,-10);
-      txt(v,[u2[0]*1.2,u2[1]*1.2],'v₂','#2f5d8a',-16,-10);
-      // iterate each seed
+      txt(v,[u2[0]*1.25,u2[1]*1.25],'v₂','#2f5d8a',-8,-12);
       seeds.forEach((s,si)=>{
         let p=s.slice();
         for(let k=0;k<=a.n;k++){
-          const u=nrm(p), r=0.42+0.58*(k/Math.max(1,a.n||1));
-          const alpha = k===a.n ? 1 : 0.10+0.18*(k/Math.max(1,a.n));
+          const u=nrm(p);
+          const alpha = 0.10+0.18*(k/Math.max(1,a.n));
           if(k===a.n){ arrow(v,[0,0],u,cols[si],2.2); dot(v,u,3.4,cols[si]); }
-          else dot(v,[u[0],u[1]],2.2,'rgba(120,120,120,'+alpha.toFixed(2)+')');
+          else dot(v,u,2.2,'rgba(120,120,120,'+alpha.toFixed(2)+')');
           p=ap(A,p);
         }
       });
@@ -1282,9 +1347,9 @@ const $ = id=>document.getElementById(id);
     $('t6').value=a.n; $('t6v').textContent=a.n;
     let m;
     if(a.n===0) m='n = 0。5本の出発ベクトルの向き。青は v₂ の上にわざと置いたもの。';
-    else if(a.n<3) m='n = '+a.n+'。灰色の矢印がすでに 45°（v₁ 方向）または 225° に寄り始めた。3ⁿ が (−1)ⁿ を押し切るから。';
-    else m='n = '+a.n+'。v₂ の上に置いた青だけは、いつまでも v₂ の向き（±135°）のまま。それ以外は全部 v₁ の向きに張り付く。'
-      + '<b>これが「支配的な固有値」の意味</b>。';
+    else if(a.n<3) m='n = '+a.n+'。灰色の矢印がすでに 45°（v₁ 方向）または 225° に寄り始めた。4ⁿ が 1 を押し切るから。';
+    else m='n = '+a.n+'。v₂ の上に置いた青は<b>ずっと同じ場所</b>（λ₂ = 1 なので動かない）。'
+      + 'それ以外は全部 v₁ の向きに張り付く。<b>これが「支配的な固有値」の意味</b>。';
     $('c6').innerHTML=m;
   }
   $('t6').addEventListener('input',e=>{ a.playing=false; a.sync&&a.sync(); a.n=+e.target.value; a.render(); sync(); });
@@ -1293,51 +1358,59 @@ const $ = id=>document.getElementById(id);
 })();
 
 /* =========================================================
-   §7 — orthogonal diagonalization: circle -> ellipse
+   §7 — not symmetric: ellipse axes ≠ eigen directions
    ========================================================= */
 (function(){
-  const v = makeView($('cv7'), 3.6);
-  const Q  = [1/S2, -1/S2, 1/S2, 1/S2];
-  const Qt = [1/S2, 1/S2, -1/S2, 1/S2];
-  const a={v, playing:false, s:0, dir:1,
+  const v = makeView($('cv7'), 4.6);
+  const a={v, playing:false, s:0, dir:1, ax:true,
     step(d){ a.s += d*0.34*a.dir; if(a.s>1){a.s=1;a.dir=-1;} if(a.s<0){a.s=0;a.dir=1;} sync(); },
     render(){
-      const s=a.s, k1=1+2*s, k2=1-2*s;
-      const M = mul(Q, mul([k1,0,0,k2], Qt));
-      v.fit(); v.clear(); axes(v);
-      const u1=nrm([1,1]), u2=nrm([-1,1]);
-      seg(v,[-u1[0]*3.5,-u1[1]*3.5],[u1[0]*3.5,u1[1]*3.5],'rgba(184,134,11,.4)',1.8);
-      seg(v,[-u2[0]*3.5,-u2[1]*3.5],[u2[0]*3.5,u2[1]*3.5],'rgba(47,93,138,.4)',1.8);
+      const s=a.s, k1=1+3*s;
+      const M = mul(P, mul([k1,0,0,1], Pi));
+      v.fit(); v.clear(); axes(v, 4);
+      const u1=nrm(V1), u2=nrm(V2), R=4.4;
+      seg(v,[-u1[0]*R,-u1[1]*R],[u1[0]*R,u1[1]*R],'rgba(184,134,11,.4)',1.8);
+      seg(v,[-u2[0]*R,-u2[1]*R],[u2[0]*R,u2[1]*R],'rgba(47,93,138,.4)',1.8);
       circleImg(v, I2, '#dcdcdc', 1.4);
       circleImg(v, M, '#1d7a4d', 2.4);
-      // radial spokes to show where points go
       for(let i=0;i<24;i++){
         const t=i/24*Math.PI*2, p=[Math.cos(t),Math.sin(t)], q=ap(M,p);
         seg(v,p,q,'rgba(29,122,77,.16)',1);
         dot(v,q,1.8,'rgba(29,122,77,.6)');
       }
-      arrow(v,[0,0],[u1[0]*k1,u1[1]*k1],'#b8860b',2.6);
-      arrow(v,[0,0],[u2[0]*k2,u2[1]*k2],'#2f5d8a',2.6);
-      txt(v,[u1[0]*k1,u1[1]*k1],'×'+k1.toFixed(2),'#b8860b',10,-10);
-      txt(v,[u2[0]*k2,u2[1]*k2],'×'+k2.toFixed(2),'#2f5d8a',10,-10);
-      txt(v,[0,-3.35],'45° 軸に '+k1.toFixed(2)+' 倍 ／ 135° 軸に '+k2.toFixed(2)+' 倍','#3c424b',0,0,'center',Math.max(10,v.fs));
+      if(a.ax){
+        const mj=majorAxis(M), o=nrm(mj.outDir), ii=mj.inDir;
+        seg(v,[-ii[0]*1.5,-ii[1]*1.5],[ii[0]*1.5,ii[1]*1.5],'rgba(17,17,17,.5)',1.6,[3,3]);
+        txt(v,[ii[0]*1.5,ii[1]*1.5],'一番伸びる入力 '+(Math.atan2(ii[1],ii[0])*180/Math.PI).toFixed(1)+'°','#3c424b',10,16,'left',Math.max(9,v.fs-2));
+        seg(v,[-o[0]*mj.s1,-o[1]*mj.s1],[o[0]*mj.s1,o[1]*mj.s1],'rgba(17,17,17,.8)',1.8,[6,4]);
+        txt(v,[o[0]*mj.s1,o[1]*mj.s1],'主軸 '+(Math.atan2(o[1],o[0])*180/Math.PI).toFixed(1)+'°','#111',8,16);
+      }
+      arrow(v,[0,0],[V1[0]*k1,V1[1]*k1],'#b8860b',2.6);
+      arrow(v,[0,0],V2,'#2f5d8a',2.6);
+      txt(v,[V1[0]*k1,V1[1]*k1],'×'+k1.toFixed(2),'#b8860b',10,-10);
+      txt(v,V2,'×1.00','#2f5d8a',8,-12);
     }
   };
   function sync(){
-    const s=a.s, k1=1+2*s, k2=1-2*s;
+    const s=a.s, k1=1+3*s;
+    const M = mul(P, mul([k1,0,0,1], Pi));
+    const mj=majorAxis(M);
     $('t7').value=s; $('t7v').textContent=s.toFixed(2);
-    $('a7').textContent=f2(k1); $('b7').textContent=f2(k2);
-    $('d7').textContent=f2(Math.abs(k1*k2));
+    $('a7').textContent=f2(k1);
+    $('b7').textContent=f2(mj.s1);
+    $('d7').textContent=f2(Math.abs(dt(M)));
+    const ang=Math.atan2(mj.outDir[1],mj.outDir[0])*180/Math.PI;
     let m;
-    if(s<0.03) m='s = 0。まだ単位円のまま（A = I の状態）。';
-    else if(Math.abs(k2)<0.08) m='y′ 倍率が 0。円が45°の線分につぶれた瞬間。ここから先で裏返る。';
-    else if(s>0.97) m='<b>s = 1 で A そのもの。</b>単位円は、45°方向の半径3・135°方向の半径1の楕円になった。面積比 |det| = 3。'
-      + '楕円の主軸がそのまま固有ベクトルの向き — これは A が対称行列だから起きること。';
-    else m='45° 軸方向に '+k1.toFixed(2)+' 倍、直交する 135° 軸方向に '+k2.toFixed(2)+' 倍。'
-      + '2軸が直交しているので、伸縮が互いに干渉しない。';
+    if(s<0.03) m='s = 0。まだ単位円のまま（A = I の状態）。主軸も固有方向も意味を持たない。';
+    else if(s>0.97) m='<b>s = 1 で A そのもの。</b>楕円の長軸は '+ang.toFixed(1)+'° を向いているが、'
+      + '固有方向（金）は 45°。<b>この2本がズレているのが「対称でない」ということ</b>。'
+      + '長軸の長さ '+mj.s1.toFixed(2)+' も固有値 4 とは違う。';
+    else m='x′ 方向の倍率 '+k1.toFixed(2)+'。楕円の長軸は '+ang.toFixed(1)+'°、最大伸び率は '+mj.s1.toFixed(2)+'。'
+      + '固有方向（金の 45°）とは別の向きにあることに注目。';
     $('c7').innerHTML=m;
   }
   $('t7').addEventListener('input',e=>{ a.playing=false; a.sync&&a.sync(); a.s=+e.target.value; a.render(); sync(); });
+  $('ax7').addEventListener('click',e=>{ a.ax=!a.ax; e.target.classList.toggle('on',a.ax); a.render(); });
   reg(a); playBtn($('p7'), a); sync();
 })();
 
@@ -1345,7 +1418,7 @@ const $ = id=>document.getElementById(id);
    side nav scroll spy
    ========================================================= */
 (function(){
-  const links=[...document.querySelectorAll('#sideNav a')];
+  const links=[].slice.call(document.querySelectorAll('#sideNav a'));
   const secs=links.map(l=>document.querySelector(l.getAttribute('href')));
   const onScroll=()=>{
     let idx=0;
