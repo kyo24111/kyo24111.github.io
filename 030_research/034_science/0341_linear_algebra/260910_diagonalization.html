@@ -125,6 +125,20 @@
     color:var(--muted);font-weight:700;margin-bottom:6px}
   .box.ok{background:#eef8f2;border-color:#b8dbc7;color:#14603c}
   .box.ok .t{color:#2f8a5f}
+
+  /* ===== column ===== */
+  .column{background:var(--bg);border:1px solid var(--border);border-left:3px solid var(--text);
+    border-radius:4px 12px 12px 4px;padding:18px 20px 16px;margin:22px 0}
+  .column .kickc{font-family:'Poppins',sans-serif;font-size:10px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--muted);font-weight:700}
+  .column h4{font-size:16px;font-weight:700;margin:4px 0 10px}
+  .column p{font-size:14px;color:var(--soft);margin:9px 0}
+  .column .eq{background:var(--surface);margin:12px 0;font-size:13.5px;line-height:1.9}
+  .column .defs{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:12px 0;font-size:13.5px}
+  .column .defs dt{font-family:'Poppins',sans-serif;font-weight:700;color:var(--text);white-space:nowrap}
+  .column .defs dd{color:var(--soft);margin:0}
+  @media(max-width:520px){ .column .defs{grid-template-columns:1fr;gap:2px 0}
+    .column .defs dd{margin-bottom:8px} }
   .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
   table{border-collapse:collapse;font-size:13px;min-width:100%}
   th,td{border:1px solid var(--border);padding:7px 10px;text-align:left;white-space:nowrap}
@@ -383,9 +397,51 @@
     <span class="note">det P = 1·1 − (−1)·1 = 2 ≠ 0 なので P は可逆。つまり対角化できる</span>
   </div>
 
+  <div class="column">
+    <div class="kickc">Column</div>
+    <h4>固有基底（eigenbasis）とは</h4>
+    <p>
+      <b class="k">基底</b>とは、平面上のどんな点でも「その2本の組み合わせ」で書ける、独立な2本のベクトルの組のこと。
+      ふだん使っているのは <span class="mono">e₁ = (1,0)</span>, <span class="mono">e₂ = (0,1)</span> という<b class="k">標準基底</b>で、
+      <span class="mono">(x, y)</span> という書き方はこの2本を何個ぶん使ったかという意味でした。
+    </p>
+    <p>
+      その2本を<b class="k">固有ベクトルで取り替えたもの</b>が固有基底です。今回なら
+      <span class="mono" style="color:var(--c1)">v₁ = (1,1)</span> と
+      <span class="mono" style="color:var(--c2)">v₂ = (−1,1)</span> の組 <span class="mono">{v₁, v₂}</span>。
+      この2本は平行でないので、どんな点も一通りに書けます。
+    </p>
+    <div class="eq">
+      <span class="row">任意の点 &nbsp; v = c₁<b style="color:var(--c1)">v₁</b> + c₂<b style="color:var(--c2)">v₂</b>
+        &nbsp;→&nbsp; この <span class="mono">(c₁, c₂)</span> が<b>固有座標</b></span>
+      <span class="row" style="margin-top:4px">Av = c₁·<b style="color:var(--c1)">3</b>v₁ + c₂·(<b style="color:var(--c2)">−1</b>)v₂</span>
+      <span class="note">A をかけても v₁ 成分と v₂ 成分が<b>混ざらない</b>。ただ 3 倍と −1 倍されるだけ</span>
+    </div>
+    <p>
+      これが固有基底のうれしさです。標準基底で見ると
+      <span class="mono">x</span> と <span class="mono">y</span> が互いに流れ込む（<span class="mono">x + 2y</span>, <span class="mono">2x + y</span>）ので
+      ごちゃっとして見えますが、固有基底で見ると<b class="k">2本の独立な掛け算</b>に分かれます。
+    </p>
+    <dl class="defs">
+      <dt>P</dt><dd>固有座標 <span class="mono">(c₁, c₂)</span> を受け取って、標準座標 <span class="mono">(x, y)</span> を返す（固有ベクトルを列に並べただけ）</dd>
+      <dt>P⁻¹</dt><dd>その逆。標準座標を<b class="k">固有座標に翻訳する</b>。だから対角化はここから始まる</dd>
+      <dt>D</dt><dd>固有座標のまま、成分ごとに倍率をかける</dd>
+    </dl>
+    <p>
+      具体例。<span class="mono">(1, 0) = ½v₁ − ½v₂</span> なので固有座標は <span class="mono">(½, −½)</span>。
+      これに D をかけると <span class="mono">(3/2, 1/2)</span>、標準座標に戻すと
+      <span class="mono">(3/2)(1,1) + (1/2)(−1,1) = (1, 2)</span>。
+      たしかに <span class="mono">A(1,0) = (1, 2)</span> と一致します。
+    </p>
+    <p class="small" style="margin-bottom:0">
+      なお、固有基底は<b class="k">いつでも取れるわけではありません</b>。独立な固有ベクトルが次元ぶん（2次なら2本）そろわない行列は、
+      固有基底が作れない＝対角化できない。今回は 3 と −1 という別々の固有値から2本そろったので取れました。
+    </p>
+  </div>
+
   <p>読み方はこうです。</p>
   <div class="steps">
-    <div class="step"><b class="k">P⁻¹ をかける</b> — 世界を「固有ベクトルを軸にした座標」に読み替える。今回は <span class="mono">45°戻して 1/√2 倍</span>。</div>
+    <div class="step"><b class="k">P⁻¹ をかける</b> — 世界を<b class="k">固有基底で見た座標</b>（＝固有座標）に読み替える。今回は <span class="mono">45°戻して 1/√2 倍</span>。</div>
     <div class="step"><b class="k">D をかける</b> — その座標では、ただの<b class="k">軸ごとの伸縮</b>。x′ 軸に 3 倍、y′ 軸に −1 倍（＝折り返し）。斜めの成分はゼロ。</div>
     <div class="step"><b class="k">P をかける</b> — 元の座標に戻す。<span class="mono">45°回して √2 倍</span>。</div>
   </div>
