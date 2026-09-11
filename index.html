@@ -81,17 +81,38 @@
       letter-spacing: -.01em;
     }
 
+    /* 入れ子は「薄い文字」ではなく細いツリー罫で表す。文字色は親と同じ濃さを保つ */
     .sub-nest {
-      padding-left: 15px;
-      margin: 1px 0 3px 3px;
-      border-left: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       gap: 0;
+      margin: 0 0 4px 4px;
+      padding-left: 21px;
     }
-    .sub-nest .sub-item { padding: 3px 0; }
-    .sub-nest .sub-label-name { font-size: 12.5px; font-weight: 500; color: var(--muted); }
-    .sub-nest .sub-item:hover .sub-label-name { color: var(--text); }
+    .sub-nest .sub-item { position: relative; padding: 4px 0; }
+    /* 縦の罫（最後の項目は中央で止めて L 字にする） */
+    .sub-nest .sub-item::before {
+      content: "";
+      position: absolute;
+      left: -21px; top: 0; bottom: 0;
+      width: 1px;
+      background: var(--border);
+      transition: background .12s;
+    }
+    .sub-nest .sub-item:last-child::before { bottom: 50%; }
+    .sub-nest .sub-item:first-child::before { top: -4px; }
+    /* 横の罫 */
+    .sub-nest .sub-item::after {
+      content: "";
+      position: absolute;
+      left: -21px; top: 50%;
+      width: 12px; height: 1px;
+      background: var(--border);
+      transition: background .12s;
+    }
+    .sub-nest .sub-label-name { font-size: 12.5px; font-weight: 600; color: var(--text); }
+    .sub-nest .sub-item:hover .sub-label-name { color: var(--mid); }
+    .sub-nest .sub-item:hover::after { background: var(--muted); }
 
     @media (max-width: 600px) {
       .header { padding: 36px 24px 32px; }
@@ -122,7 +143,12 @@ body{padding-top:56px!important;padding-bottom:68px!important}
 .snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
 .snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
 .snav-a:hover{color:#fff}
-.snav-sub{padding-left:14px;font-size:12px;font-weight:500;color:rgba(255,255,255,.5)}
+.snav-sub{position:relative;margin-left:5px;padding-left:15px;font-size:12.5px;font-weight:600;color:rgba(255,255,255,.72)}
+.snav-sub::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1px;background:rgba(255,255,255,.14)}
+.snav-sub:last-child::before{bottom:50%}
+.snav-sub::after{content:"";position:absolute;left:0;top:50%;width:9px;height:1px;background:rgba(255,255,255,.14)}
+.snav-sub:hover{color:#fff}
+.snav-sub:hover::after{background:rgba(255,255,255,.45)}
 @media(min-width:900px){.snav-inline{display:flex}.snav-btn{display:none}}
 .snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
 .snav-footer-sns{display:flex;gap:20px}
