@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Urabandai Lakes — 2026.09.13-14</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #ffffff;
+  --panel: #f7f7f5;
+  --line: #e6e6e6;
+  --line2: #d5d5d5;
+  --ink: #111111;
+  --muted: #555555;
+  --dim: #888888;
+  --faint: #aaaaaa;
+}
+
+body {
+  font-family: 'Noto Sans JP', 'Poppins', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+}
+a { color: var(--ink); }
+.wrap { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+/* ===== header ===== */
+.page-head { border-bottom: 1px solid var(--line); }
+.page-head .wrap { padding-top: 60px; padding-bottom: 32px; }
+.kicker {
+  font-family: 'Poppins', sans-serif; font-size: 0.66rem; font-weight: 600;
+  letter-spacing: 0.3em; text-transform: uppercase; color: var(--faint); margin-bottom: 14px;
+}
+h1 {
+  font-family: 'Poppins', sans-serif; font-size: 2.25rem; font-weight: 700;
+  letter-spacing: 0.01em; line-height: 1.25; margin-bottom: 10px;
+}
+.route-line { font-size: 0.9rem; font-weight: 500; color: var(--muted); }
+.route-line b { color: var(--ink); font-weight: 700; }
+.status {
+  display: inline-block; margin-top: 18px; font-family: 'Poppins', sans-serif;
+  font-size: 0.65rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+  border: 1px solid var(--ink); padding: 4px 10px;
+}
+
+.meta {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 1px; background: var(--line); border: 1px solid var(--line); margin-top: 26px;
+}
+.meta div { background: var(--bg); padding: 12px 14px; }
+.meta dt {
+  font-family: 'Poppins', sans-serif; font-size: 0.63rem; font-weight: 600;
+  letter-spacing: 0.15em; text-transform: uppercase; color: var(--faint); margin-bottom: 3px;
+}
+.meta dd { font-size: 0.8rem; line-height: 1.6; font-weight: 500; }
+
+/* ===== sections ===== */
+main { padding: 40px 0 96px; }
+h2 {
+  font-family: 'Poppins', sans-serif; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.22em; text-transform: uppercase; color: var(--dim);
+  padding-bottom: 8px; border-bottom: 1px solid var(--line); margin-bottom: 20px;
+}
+h2 .jp {
+  font-family: 'Noto Sans JP', sans-serif; letter-spacing: 0.04em; text-transform: none;
+  color: var(--ink); font-size: 0.9rem; margin-left: 10px; font-weight: 700;
+}
+.sec { margin-bottom: 52px; }
+.hint { font-size: 0.74rem; color: var(--dim); }
+
+/* ===== open questions ===== */
+.tbd { border: 1px solid var(--ink); padding: 18px 20px; margin-bottom: 44px; }
+.tbd .lbl {
+  font-family: 'Poppins', sans-serif; font-size: 0.63rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); margin-bottom: 10px;
+}
+.tbd ol { margin-left: 18px; }
+.tbd li { font-size: 0.85rem; color: var(--muted); padding: 4px 0; }
+.tbd li b { color: var(--ink); }
+
+/* ===== map ===== */
+.mapwrap { border: 1px solid var(--line2); }
+#map { height: 480px; width: 100%; background: var(--panel); }
+.leaflet-container { font-family: 'Noto Sans JP', sans-serif; }
+.filters { display: flex; flex-wrap: wrap; gap: 6px; padding: 10px 12px; border-bottom: 1px solid var(--line); background: var(--panel); }
+.fbtn {
+  font-family: 'Poppins', sans-serif; font-size: 0.66rem; font-weight: 600;
+  letter-spacing: 0.08em; padding: 5px 11px; cursor: pointer;
+  background: #fff; border: 1px solid var(--line2); color: var(--muted);
+}
+.fbtn.on { background: var(--ink); border-color: var(--ink); color: #fff; }
+.pin {
+  background: var(--ink); color: #fff; border: 2px solid #fff; border-radius: 50%;
+  width: 25px; height: 25px; line-height: 21px; text-align: center;
+  font-family: 'Poppins', sans-serif; font-size: 0.68rem; font-weight: 700;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.32);
+}
+.pin.ref { background: #fff; color: var(--ink); border: 1.5px solid var(--ink); width: 15px; height: 15px; }
+.leaflet-popup-content-wrapper { border-radius: 2px; }
+.leaflet-popup-content { margin: 11px 14px; font-size: 0.78rem; line-height: 1.7; }
+.leaflet-popup-content b { display: block; font-size: 0.85rem; }
+.leaflet-popup-content .t { font-family: 'Poppins', sans-serif; font-size: 0.66rem; letter-spacing: 0.08em; color: var(--dim); }
+.leaflet-popup-content .np { display: block; color: var(--muted); font-size: 0.72rem; margin-top: 3px; }
+.leaflet-popup-content .gl { display: inline-block; margin-top: 6px; font-size: 0.72rem; }
+.maphint { border-top: 1px solid var(--line); padding: 9px 12px; font-size: 0.7rem; color: var(--dim); background: var(--panel); }
+
+/* ===== day / timeline ===== */
+.day { margin-bottom: 44px; }
+.dayhead { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; border-bottom: 2px solid var(--ink); padding-bottom: 7px; margin-bottom: 4px; }
+.dayhead .n { font-family: 'Poppins', sans-serif; font-size: 1.35rem; font-weight: 800; }
+.dayhead .dt { font-family: 'Poppins', sans-serif; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.08em; color: var(--muted); }
+.dayhead .stay { margin-left: auto; font-size: 0.74rem; color: var(--dim); }
+.row { display: grid; grid-template-columns: 74px 1fr; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.row .time { font-family: 'Poppins', sans-serif; font-size: 0.78rem; font-weight: 600; padding-top: 2px; }
+.row .time small { display: block; font-size: 0.65rem; font-weight: 500; color: var(--faint); letter-spacing: 0.05em; }
+.row .ttl { font-size: 0.95rem; font-weight: 700; line-height: 1.5; }
+.row .ttl .num {
+  font-family: 'Poppins', sans-serif; font-size: 0.68rem; font-weight: 700; color: #fff;
+  background: var(--ink); border-radius: 50%; display: inline-block;
+  width: 17px; height: 17px; line-height: 17px; text-align: center; margin-right: 7px; vertical-align: 2px;
+}
+.row .ttl .num.star { background: #fff; color: var(--ink); border: 1.5px solid var(--ink); font-size: 0.6rem; line-height: 15px; }
+.badges { margin: 5px 0 6px; display: flex; flex-wrap: wrap; gap: 5px; }
+.bdg { font-size: 0.65rem; letter-spacing: 0.04em; padding: 2px 7px; border: 1px solid var(--line2); color: var(--muted); background: var(--panel); }
+.bdg.k { border-color: var(--ink); color: var(--ink); font-weight: 700; background: #fff; }
+.row .note { font-size: 0.84rem; color: var(--muted); }
+.row .note em { font-style: normal; border-bottom: 1px solid var(--line2); }
+.row .geo { display: inline-block; font-size: 0.74rem; margin-top: 5px; color: var(--dim); }
+.row .geo::after { content: " →"; }
+.mv { font-size: 0.76rem; color: var(--dim); padding: 8px 0 8px 88px; border-bottom: 1px dashed var(--line); }
+.mv::before { content: "↓ "; }
+.slot { color: var(--faint); font-weight: 400; }
+
+/* ===== table ===== */
+.tscroll { overflow-x: auto; border: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); }
+th { font-family: 'Poppins', sans-serif; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); font-weight: 600; background: var(--panel); }
+td.num { font-family: 'Poppins', sans-serif; font-weight: 600; white-space: nowrap; }
+
+/* ===== candidate cards ===== */
+.cands { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.cands > div { background: #fff; padding: 14px 16px; }
+.cands .en { font-family: 'Poppins', sans-serif; font-size: 0.63rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--faint); }
+.cands .city { font-size: 0.92rem; font-weight: 700; }
+.cands .st { font-size: 0.72rem; color: var(--dim); margin-top: 3px; }
+
+.note-box { background: var(--panel); border-left: 2px solid var(--ink); padding: 13px 16px; font-size: 0.83rem; color: var(--muted); margin: 16px 0 0; }
+
+footer { border-top: 1px solid var(--line); }
+footer .wrap { padding: 22px 24px 60px; font-family: 'Poppins', sans-serif; font-size: 0.7rem; letter-spacing: 0.1em; color: var(--faint); }
+
+@media (max-width: 720px) {
+  .page-head .wrap { padding-top: 42px; }
+  h1 { font-size: 1.65rem; }
+  .meta { grid-template-columns: repeat(2, 1fr); }
+  #map { height: 400px; }
+  .row { grid-template-columns: 60px 1fr; gap: 10px; }
+  .mv { padding-left: 70px; }
+}
+@media (max-width: 420px) {
+  .meta { grid-template-columns: 1fr; }
+  .row { grid-template-columns: 52px 1fr; }
+  .mv { padding-left: 62px; }
+}
+
+/* ===== tabs ===== */
+.tabnav { border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--bg); z-index: 1200; }
+.tabnav .wrap { display: flex; gap: 26px; padding-top: 0; padding-bottom: 0; overflow-x: auto; }
+.tab {
+  appearance: none; background: none; border: 0; cursor: pointer; padding: 14px 0 11px;
+  border-bottom: 2px solid transparent; color: var(--dim); white-space: nowrap;
+  font-family: 'Poppins', sans-serif; font-size: 0.72rem; font-weight: 700;
+  letter-spacing: 0.18em; text-transform: uppercase;
+}
+.tab .jp { font-family: 'Noto Sans JP', sans-serif; letter-spacing: 0.04em; text-transform: none; font-size: 0.86rem; margin-left: 8px; }
+.tab:hover { color: var(--ink); }
+.tab.on { color: var(--ink); border-bottom-color: var(--ink); }
+.tab .cnt { font-size: 0.66rem; letter-spacing: 0.06em; color: var(--faint); margin-left: 6px; }
+
+/* ===== fact list (予備情報 / 宿) ===== */
+.card { border: 1px solid var(--line2); margin-bottom: 26px; }
+.card > .hd {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--line); padding: 12px 16px; background: var(--panel);
+}
+.card > .hd .t { font-size: 0.95rem; font-weight: 700; }
+.card > .hd .s { font-family: 'Poppins', sans-serif; font-size: 0.64rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--dim); }
+.card > .hd .fixed { margin-left: auto; font-family: 'Poppins', sans-serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; border: 1px solid var(--ink); padding: 2px 8px; }
+.card > .hd .fixed.open { border-color: var(--line2); color: var(--dim); }
+.fl { display: grid; grid-template-columns: 132px 1fr; }
+.fl > dt {
+  padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 0.73rem; color: var(--dim);
+  font-weight: 500; background: #fcfcfc;
+}
+.fl > dd { padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 0.85rem; }
+.fl > dt:last-of-type, .fl > dd:last-of-type { border-bottom: 0; }
+.fl .big { font-family: 'Poppins', sans-serif; font-size: 1.05rem; font-weight: 700; letter-spacing: 0.01em; }
+.fl .sub { display: block; font-size: 0.76rem; color: var(--muted); margin-top: 3px; }
+.fl a { color: var(--ink); }
+.blank { color: var(--faint); border-bottom: 1px dashed var(--line2); display: inline-block; min-width: 180px; }
+.chk { list-style: none; }
+.chk li { font-size: 0.84rem; color: var(--muted); padding: 5px 0 5px 22px; position: relative; border-bottom: 1px solid var(--line); }
+.chk li:last-child { border-bottom: 0; }
+.chk li::before { content: "□"; position: absolute; left: 2px; color: var(--dim); }
+.chk li b { color: var(--ink); }
+@media (max-width: 560px) {
+  .fl { grid-template-columns: 1fr; }
+  .fl > dt { border-bottom: 0; padding-bottom: 0; background: none; }
+  .fl > dd { padding-top: 4px; }
+}
+
+/* ===== detail toggle ===== */
+details.more { border-top: 1px solid var(--line); }
+details.more > summary {
+  cursor: pointer; list-style: none; padding: 10px 16px;
+  font-family: 'Poppins', sans-serif; font-size: 0.66rem; font-weight: 600;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim);
+}
+details.more > summary::-webkit-details-marker { display: none; }
+details.more > summary::before { content: "＋ "; color: var(--faint); }
+details.more[open] > summary::before { content: "− "; }
+details.more > summary:hover { color: var(--ink); }
+details.more > summary .jp { font-family: 'Noto Sans JP', sans-serif; letter-spacing: 0.04em; text-transform: none; font-size: 0.8rem; margin-left: 8px; color: var(--muted); }
+details.more .body { border-top: 1px solid var(--line); }
+.mini { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
+.mini th, .mini td { border-bottom: 1px solid var(--line); padding: 7px 16px; text-align: left; font-weight: 400; }
+.mini th { color: var(--dim); font-weight: 500; width: 52%; }
+.mini td { text-align: right; font-family: 'Poppins', sans-serif; font-weight: 500; }
+.mini tr:last-child th, .mini tr:last-child td { border-bottom: 0; }
+.mini tr.total th { font-weight: 700; color: var(--ink); }
+.mini tr.total td { font-weight: 700; font-size: 0.95rem; }
+.mini tr.total th, .mini tr.total td { border-top: 1px solid var(--line2); background: var(--panel); }
+.warn { border: 1px solid var(--ink); border-left-width: 3px; padding: 12px 16px; font-size: 0.84rem; margin: 16px 0 0; }
+.warn .lb { font-family: 'Poppins', sans-serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; display: block; margin-bottom: 5px; }
+
+/* ===== todo summary ===== */
+.todo { border: 2px solid var(--ink); margin-bottom: 40px; }
+.todo > .hd { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; padding: 13px 18px; border-bottom: 1px solid var(--line2); background: var(--ink); color: #fff; }
+.todo > .hd .t { font-family: 'Poppins', sans-serif; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; }
+.todo > .hd .jp { font-size: 0.88rem; font-weight: 700; }
+.todo > .hd .n { margin-left: auto; font-family: 'Poppins', sans-serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; color: #bbb; }
+.todo ol { list-style: none; }
+.todo li { display: grid; grid-template-columns: 30px 1fr; gap: 12px; padding: 13px 18px; border-bottom: 1px solid var(--line); }
+.todo li:last-child { border-bottom: 0; }
+.todo li .i { font-family: 'Poppins', sans-serif; font-size: 0.82rem; font-weight: 700; color: var(--faint); padding-top: 1px; }
+.todo li .h { font-size: 0.92rem; font-weight: 700; line-height: 1.55; }
+.todo li .h .tag { font-family: 'Poppins', sans-serif; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; border: 1px solid var(--ink); padding: 1px 6px; margin-left: 8px; vertical-align: 2px; }
+.todo li .h .tag.soft { border-color: var(--line2); color: var(--dim); }
+.todo li .d { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
+.todo li .d a { color: var(--ink); }
+@media (max-width: 560px) { .todo li { grid-template-columns: 22px 1fr; gap: 8px; padding: 12px 14px; } .todo li .h .tag { margin-left: 0; display: inline-block; margin-top: 4px; } }
+</style>
+</head>
+<body>
+
+<header class="page-head">
+  <div class="wrap">
+    <div class="kicker">Travel Plan / 0451_travel</div>
+    <h1>Urabandai Lakes</h1>
+    <div class="route-line">東京 → <b>郡山</b>（新幹線）→ レンタカー → <b>ゴールドライン</b> → <b>裏磐梯</b>（五色沼）泊 → <b>レークライン / 喜多方</b> → 郡山 → <b>大宮</b> → <b>川口</b>（夕食）<br>1888年の磐梯山水蒸気爆発が山体を崩し、川を堰き止めてできた湖沼群。<em>地形そのものが噴火の跡</em>。</div>
+    <div class="status">v5 — 移動・宿すべて予約済／残るは食事だけ</div>
+    <dl class="meta">
+      <div><dt>Dates</dt><dd>2026.09.13(日) 〜<br>09.14(月) ／ 1泊2日</dd></div>
+      <div><dt>Mode</dt><dd>往 <b>10:11 東京発</b>（やまびこ207号）→ 郡山 11:48<br>復 <b>18:30 郡山発</b>（つばさ154号）→ 大宮 19:19</dd></div>
+      <div><dt>Stay</dt><dd>日：<b>裏磐梯高原ホテル</b><br>ラグジュアリーツイン／2食付</dd></div>
+      <div><dt>Party</dt><dd><b>おとな2名</b><br>新幹線・宿とも2名で確定</dd></div>
+    </dl>
+  </div>
+</header>
+
+<nav class="tabnav">
+  <div class="wrap">
+    <button class="tab on" data-p="plan">Plan<span class="jp">行程</span></button>
+    <button class="tab" data-p="hotel">Stay<span class="jp">宿</span><span class="cnt">予約済</span></button>
+    <button class="tab" data-p="meals">Meals<span class="jp">ご飯</span><span class="cnt">3食 未定</span></button>
+    <button class="tab" data-p="ref">Info<span class="jp">予備情報</span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<section class="panel" data-p="plan">
+
+  <div class="todo">
+    <div class="hd"><span class="t">To do</span><span class="jp">残りのTODO</span><span class="n">4件 / 本日出発</span></div>
+    <ol>
+      <li><span class="i">01</span><div>
+        <div class="h">川口の夜ごはんを20:00入店で押さえる<span class="tag">今すぐ</span></div>
+        <div class="d">逆算：<b>郡山18:30発 → 大宮19:19着 → 在来線乗換 → 川口19:40〜45着 → 入店19:45〜20:00</b>。<b>2名</b>。<em>帰りが24分うしろの便になったぶん入店が15分遅くなった</em>ので、<b>ラストオーダー21:00以降の店</b>に絞って予約まで入れる。月曜夜なので定休も確認。川口にこだわらないなら<b>大宮で食べれば19:30入店</b>にできる。<a href="#meals">→ Meals タブ</a></div>
+      </div></li>
+
+      <li><span class="i">02</span><div>
+        <div class="h">残り2食の店を決める<span class="tag">今すぐ</span></div>
+        <div class="d">
+          <b>① 9/13 昼・郡山駅西口（11:55〜12:40）</b>— 11:48着の直後、レンタカーを取る前に。<em>徒歩圏の店</em>に限られる。日曜の昼なので、並ぶ店は避けるか予約する。<br>
+          <b>④ 9/14 昼・裏磐梯（12:00〜13:00）</b>— <em>9/14は月曜</em>。裏磐梯は昼も店数が少ないので営業日を先に確認。<a href="#meals">→ Meals タブ</a>
+        </div>
+      </div></li>
+
+      <li><span class="i">03</span><div>
+        <div class="h">ホテルに3点確認（チェックイン時でも可）<span class="tag soft">②③に影響</span></div>
+        <div class="d">行程は<b>16:45 チェックイン → 17:00 露天風呂 → 18:30 夕食 → 20:30 星見</b>。①<b>夕食が18:30で取れているか</b>（会席は時間指定のことが多い）②<b>朝食が07:00から開くか</b>③<b>露天風呂の利用時間</b>。アーリーIN／レイトOUT（各3,300円）は申告制なので事前に決めなくていい。<a href="#hotel">→ Stay タブ</a></div>
+      </div></li>
+
+      <li><span class="i">04</span><div>
+        <div class="h">Day 2 午後の行き先を決める（＋月曜定休の確認）<span class="tag soft">当日でも可</span></div>
+        <div class="d">13:00〜<b>16:35</b> の枠（帰りが18:30発になって25分伸びた）。昼を裏磐梯で取るので<em>食べない前提の3択</em>：<b>喜多方の蔵の街</b>／<b>会津若松の鶴ヶ城</b>／<b>磐梯熱海の立ち寄り湯</b>。あわせて<b>9/14(月)の定休</b>を確認する — 諸橋近代美術館・桧原湖の遊覧船・喜多方の店。</div>
+      </div></li>
+    </ol>
+  </div>
+
+
+  <div class="sec">
+    <h2>Map<span class="jp">地図</span></h2>
+    <div class="mapwrap">
+      <div class="filters">
+        <button class="fbtn on" data-f="all">ALL</button>
+        <button class="fbtn" data-f="1">DAY 1</button>
+        <button class="fbtn" data-f="2">DAY 2</button>
+        <button class="fbtn" data-f="0">REF / 候補</button>
+      </div>
+      <div id="map"></div>
+      <div class="maphint">黒丸＝訪問順（クリックで該当行へ）、白丸＝まだ入れていない候補地。ポップアップからGoogleマップのナビへ。※ピンは番地まで詰めていないのでエリアの目安。東京（①）・大宮（⑭）・川口（⑮）は縮尺の都合で表示範囲の外。</div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>Itinerary<span class="jp">行く場所と時間配分</span></h2>
+
+    <!-- DAY 1 -->
+    <div class="day">
+      <div class="dayhead"><span class="n">Day 1</span><span class="dt">09.13 SUN</span><span class="stay">裏磐梯泊</span></div>
+
+      <div class="row" id="s1">
+        <div class="time">10:11<small>確定</small></div>
+        <div>
+          <div class="ttl"><span class="num">1</span>東京駅 発 — やまびこ207号（仙台行）</div>
+          <div class="badges"><span class="bdg">移動</span><span class="bdg k">確定</span></div>
+          <div class="note">郡山まで97分。<em>東京駅始発</em>なので、自由席でも座れる可能性が高い。<span class="slot">指定券はまだ。</span></div>
+        </div>
+      </div>
+      <div class="mv">東北新幹線 やまびこ207号 ／ 約226km・97分</div>
+
+      <div class="row" id="s2">
+        <div class="time">11:48<small>45min</small></div>
+        <div>
+          <div class="ttl"><span class="num">2</span>郡山駅 着 → 西口でランチ <span class="slot">— 店未定</span></div>
+          <div class="badges"><span class="bdg k">食 ①</span><span class="bdg">郡山</span></div>
+          <div class="note">レンタカーを取る前に西口周辺で済ませる。<em>徒歩圏の店でないと回らない</em>。12:40には出たい。<span class="slot">店は未定（Meals タブ ①）。</span></div>
+        </div>
+      </div>
+      <div class="mv">徒歩 郡山駅西口 → 西口営業所 ／ 約600m・7〜8分</div>
+
+      <div class="row" id="s3">
+        <div class="time">12:45<small>15min</small></div>
+        <div>
+          <div class="ttl"><span class="num">3</span>レンタカー受取 — 郡山駅西口営業所</div>
+          <div class="badges"><span class="bdg">移動</span><span class="bdg k">予約済</span></div>
+          <div class="note">クラス 軽。<em>13:00 に郡山を出る</em>。<span class="slot">出発予定は11:30で登録されているので、遅れて着く旨は Info タブ参照。</span></div>
+        </div>
+      </div>
+      <div class="mv">磐越自動車道 郡山IC〜猪苗代磐梯高原IC → 磐梯山ゴールドライン ／ 約55km・65分</div>
+
+      <div class="row" id="s4">
+        <div class="time">14:05<small>45min</small></div>
+        <div>
+          <div class="ttl"><span class="num">4</span>磐梯山ゴールドライン（山湖台ほか）</div>
+          <div class="badges"><span class="bdg k">火山</span><span class="bdg">ドライブ</span></div>
+          <div class="note">磐梯山の南斜面を登って裏磐梯へ抜ける山岳道路。2013年に無料化。<em>猪苗代湖を見下ろす南面 → 峠 → 湖沼だらけの北面</em>という、1888年の崩壊方向がそのまま分かる並び。</div>
+        </div>
+      </div>
+      <div class="mv">裏磐梯・五色沼へ ／ 約12km・25分</div>
+
+      <div class="row" id="s5">
+        <div class="time">15:15<small>85min</small></div>
+        <div>
+          <div class="ttl"><span class="num">5</span>五色沼自然探勝路（毘沙門沼〜）</div>
+          <div class="badges"><span class="bdg k">火山</span><span class="bdg k">自然</span><span class="bdg">今回の主役</span></div>
+          <div class="note">噴火で堰き止められた沼が並ぶ約3.6kmの遊歩道。沼ごとに水の色が違うのは、流入する火山性の成分と水深の差。<em>17:00に入浴に入る</em>ので、初日はここを<b>85分＝毘沙門沼〜弁天沼あたりで折り返し</b>にして、<b>残りは2日目の朝に宿から歩いて回収する</b>。宿が探勝路の入口側にあるからできる組み方。<span class="slot">隣の諸橋近代美術館に入る手もあるが、この枠だと両立しない。</span></div>
+        </div>
+      </div>
+      <div class="mv">五色沼入口 → 宿 ／ 約0.9km・車で3分</div>
+
+      <div class="row" id="s6">
+        <div class="time">16:45<small>IN 15:00〜</small></div>
+        <div>
+          <div class="ttl"><span class="num">6</span>裏磐梯高原ホテル チェックイン → 露天風呂</div>
+          <div class="badges"><span class="bdg k">予約済</span><span class="bdg k">温泉</span><span class="bdg">展望</span></div>
+          <div class="note"><b>17:00 に入浴</b>。露天から磐梯山が見える。<em>日の入が17:51</em>なので、17:00に入れば<b>山の面が夕方の光に変わっていく時間をそのまま湯から見る</b>ことになる。<span class="slot">この枠を取るぶん、桧原湖の夕景は落とした（2日目の朝に中瀬沼から湖を見るので重複しない）。</span></div>
+        </div>
+      </div>
+
+      <div class="row" id="s7">
+        <div class="time">18:30<small>食 ②</small></div>
+        <div>
+          <div class="ttl"><span class="num">7</span>夕食 — 会席（和食）</div>
+          <div class="badges"><span class="bdg k">食 ②</span><span class="bdg">宿</span></div>
+          <div class="note">2食付プランに含まれる。宿で完結するので<em>初日の夜は運転しない＝飲める</em>。<span class="slot">会席は時間指定のことが多いので、18:30スタートで取れているか要確認（TODO ④）。</span></div>
+        </div>
+      </div>
+
+      <div class="row" id="s7b">
+        <div class="time">20:30<small class="slot">食後</small></div>
+        <div>
+          <div class="ttl"><span class="num star">★</span>裏庭の池で星を見る</div>
+          <div class="badges"><span class="bdg k">新月</span><span class="bdg">夜</span></div>
+          <div class="note">宿の裏手に池と芝地があって、正面に磐梯山が入る。<b>9/12 が新月</b>なので、この夜の<em>月齢は1.6・照度3%</em>。細い月は日没後まもなく西に沈むので、<b>食後の時間帯は月明かりがほぼゼロ</b>。<br>
+          日の入 17:51 → <b>天文薄明の終了は19:20</b>。20:30 はとっくに完全な暗夜に入っている。この時間なら<b>夏の大三角が天頂〜西寄り、天の川が南西に立つ</b>。<br>
+          <em>標高約800m。9月中旬の夜は10℃前後まで下がる</em>ので上着は必須。目が暗さに慣れるのに15分かかるから、スマホの画面は落としておく。</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DAY 2 -->
+    <div class="day">
+      <div class="dayhead"><span class="n">Day 2</span><span class="dt">09.14 MON</span><span class="stay">帰着</span></div>
+
+      <div class="row" id="s8">
+        <div class="time">07:30<small>60min</small><small class="slot">朝食 07:00</small></div>
+        <div>
+          <div class="ttl"><span class="num">8</span>朝ごはん（宿）→ 桧原湖 ／ 中瀬沼展望台</div>
+          <div class="badges"><span class="bdg k">食 ③</span><span class="bdg">湖</span><span class="bdg">展望</span></div>
+          <div class="note"><em>07:00 に朝食（和食）、07:30 に出る</em>のが前提。宿の朝食開始が7:30以降なら、先に展望台へ行って戻る順に入れ替える（Meals タブ ③）。<b>チェックアウトは11:00まで</b>なので、08:30に宿へ戻って荷造り → <b>09:00 チェックアウト</b>で余裕がある。宿は五色沼の入口側なので、中瀬沼の代わりに<em>朝の五色沼を歩く</em>選択肢もここ。<br>桧原湖は噴火の泥流が桧原村ごと沈めてできた湖。中瀬沼展望台からは沼と磐梯山の崩壊壁が一枚に入る。<span class="slot">遊覧船を入れるなら +40分・始発時刻の確認が必要。</span></div>
+        </div>
+      </div>
+
+      <div class="row" id="s9">
+        <div class="time">09:00<small>120min</small></div>
+        <div>
+          <div class="ttl"><span class="num">9</span>磐梯吾妻レークライン（秋元湖・中津川渓谷）</div>
+          <div class="badges"><span class="bdg">ドライブ</span><span class="bdg">渓谷</span></div>
+          <div class="note">桧原湖 → 小野川湖 → 秋元湖と、三湖を東へなぞる道。中津川渓谷は駐車場から谷に降りる。<em>昼が裏磐梯になったので、往復ぶんの2時間を丸ごとここに置ける</em>。余れば磐梯山噴火記念館かビジターセンターで埋める。<span class="slot">紅葉には2週間ほど早い時期。</span></div>
+        </div>
+      </div>
+
+      <div class="row" id="s10">
+        <div class="time">12:00<small>60min</small></div>
+        <div>
+          <div class="ttl"><span class="num">10</span>裏磐梯でランチ <span class="slot">— 店未定</span></div>
+          <div class="badges"><span class="bdg k">食 ④</span><span class="bdg">裏磐梯</span></div>
+          <div class="note">レークラインから戻って裏磐梯で食べる。<em>この判断で「喜多方でラーメン」は消える</em>（昼を2回は食べられない）ので、Day 2 の分岐は<b>午後の観光</b>として選ぶことになる。<span class="slot">店は未定（Meals タブ ④）。裏磐梯は昼も店数が少ないので、営業日を先に確認。</span></div>
+        </div>
+      </div>
+
+      <div class="row" id="s11">
+        <div class="time">13:00<small>〜16:35 枠</small></div>
+        <div>
+          <div class="ttl"><span class="num">11</span>午後の分岐 <span class="slot">— 喜多方 / 会津若松 / 温泉</span></div>
+          <div class="badges"><span class="bdg k">要決定</span><span class="bdg">温泉</span><span class="bdg">歴史</span></div>
+          <div class="note">昼を裏磐梯で済ませたので、ここは<b>食べない前提の3択</b>。<b>西：喜多方</b>（蔵の街並み／40分・帰りは会津若松ICから磐越道）／<b>南：猪苗代・会津若松</b>（野口英世記念館・志田浜／鶴ヶ城）／<b>東：磐梯熱海の立ち寄り湯</b>（郡山IC手前で位置がいい・中ノ沢や沼尻の酸性泉も）。<span class="slot">帰りが18:30発になったので<em>枠がさらに25分伸びた</em>。16:35 にここを出れば返却に間に合う。</span></div>
+        </div>
+      </div>
+      <div class="mv">磐越自動車道 ／ 約60〜90km・1時間10分〜1時間30分（分岐次第）</div>
+
+      <div class="row" id="s12">
+        <div class="time">17:45<small>45min</small></div>
+        <div>
+          <div class="ttl"><span class="num">12</span>郡山駅西口営業所 レンタカー返却</div>
+          <div class="badges"><span class="bdg">移動</span><span class="bdg k">締切</span></div>
+          <div class="note">受取と<em>同じ営業所に返す</em>。<b>予約上の返却期限は18:00</b>だが、18:00ちょうどだと駅まで22分しかないので<em>17:45 を目安に入る</em>。給油＋返却＋駅まで徒歩で45分みて、遅くとも16:35には午後の枠を出る。<span class="slot">営業所の営業時間は要確認。</span></div>
+        </div>
+      </div>
+
+      <div class="row" id="s13">
+        <div class="time">18:30<small>予約済</small></div>
+        <div>
+          <div class="ttl"><span class="num">13</span>郡山 発 — つばさ154号（山形新幹線・東京行）</div>
+          <div class="badges"><span class="bdg">移動</span><span class="bdg k">予約済</span><span class="bdg">グリーン</span></div>
+          <div class="note">グリーン 11号車 6番A・B席。大宮まで49分。東京行だが<em>大宮で降りる</em>。<span class="slot">つばさ編成は11〜17号車。郡山のホームでは乗車位置の案内表示を確認。</span></div>
+        </div>
+      </div>
+      <div class="mv">山形新幹線 つばさ154号 ／ 郡山〜大宮 196.4km・49分</div>
+
+      <div class="row" id="s14">
+        <div class="time">19:19<small>20min</small></div>
+        <div>
+          <div class="ttl"><span class="num">14</span>大宮 着 → 川口へ在来線</div>
+          <div class="badges"><span class="bdg">移動</span></div>
+          <div class="note">新幹線ホームから在来線まで数分。<em>京浜東北線で大宮〜川口 約22分</em>（宇都宮線・高崎線で赤羽まで出て1駅戻る手もあるが、直通の京浜東北で十分）。<span class="slot">乗換込みで川口 19:40〜19:45着の想定。</span></div>
+        </div>
+      </div>
+      <div class="mv">JR京浜東北線 大宮 → 川口 ／ 約22分</div>
+
+      <div class="row" id="s15">
+        <div class="time">19:45<small class="slot">店未定</small></div>
+        <div>
+          <div class="ttl"><span class="num">15</span>川口 — 夕食 <span class="slot">（食 ⑤）</span></div>
+          <div class="badges"><span class="bdg k">食 ⑤</span><span class="bdg k">要確定</span></div>
+          <div class="note">帰りが18:30発になったぶん<em>入店が19:45〜20:00まで後ろ倒し</em>。<b>月曜夜の20時入店はラストオーダーが本当に厳しい</b>ので、21:00以降まで開いている店を選んで予約しておく。<a href="#meals">→ Meals タブ</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>Distances<span class="jp">移動時間の目安</span></h2>
+    <div class="tscroll">
+      <table>
+        <thead><tr><th>区間</th><th>距離</th><th>時間</th><th>経路 / 備考</th></tr></thead>
+        <tbody>
+          <tr><td>東京 → 郡山</td><td class="num">約226km</td><td class="num">97分</td><td>東北新幹線 やまびこ207号（仙台行・当駅始発）／<b>10:11発・11:48着</b></td></tr>
+          <tr><td>郡山駅 → 猪苗代磐梯高原IC</td><td class="num">約45km</td><td class="num">45分</td><td>磐越道 郡山IC〜猪苗代磐梯高原IC</td></tr>
+          <tr><td>IC → 裏磐梯（五色沼）</td><td class="num">約30km</td><td class="num">65分</td><td>磐梯山ゴールドライン経由（展望の停車を含む）／国道459号直行なら30分</td></tr>
+          <tr><td>五色沼 → 桧原湖畔</td><td class="num">約5km</td><td class="num">10分</td><td>国道459号／宿のエリア次第</td></tr>
+          <tr><td>裏磐梯 → 秋元湖・中津川渓谷</td><td class="num">約15km</td><td class="num">30分</td><td>磐梯吾妻レークライン</td></tr>
+          <tr><td>裏磐梯 → 喜多方</td><td class="num">約30km</td><td class="num">40分</td><td>国道459号（大塩経由）</td></tr>
+          <tr><td>喜多方 → 郡山駅</td><td class="num">約80km</td><td class="num">1時間15分</td><td>磐越道 会津若松IC〜郡山IC</td></tr>
+          <tr><td>裏磐梯 → 郡山駅（直行）</td><td class="num">約60km</td><td class="num">1時間10分</td><td>猪苗代磐梯高原IC経由</td></tr>
+          <tr><td>郡山 → 大宮</td><td class="num">196.4km</td><td class="num">49分</td><td>山形新幹線 つばさ154号（東京行）／<b>18:30発・19:19着</b></td></tr>
+          <tr><td>大宮 → 川口</td><td class="num">約18km</td><td class="num">約22分</td><td>JR京浜東北線（乗換込み 川口 19:40〜19:45着）</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note-box">1泊2日で車移動は<b>合計200km前後</b>。距離は余裕がある一方、<b>初日は13:00郡山発〜17:00入浴の4時間しかなく、うち1時間強が移動</b>。実質は初日の午後＋2日目の午前。初日は<b>猪苗代を捨ててゴールドラインと五色沼だけに絞り、17:00の入浴で夕方を締める</b>組み方。五色沼は85分歩いて、残りは2日目の朝に回す。<b>猪苗代は2日目の午後に行けたら行く</b>扱いにした。</div>
+  </div>
+
+  <div class="sec">
+    <h2>Candidates<span class="jp">まだ入れていない候補</span></h2>
+    <div class="cands">
+      <div><div class="en">Museum</div><div class="city">諸橋近代美術館</div><div class="st">ダリ。五色沼の隣／初日に入れるかは時間次第</div></div>
+      <div><div class="en">Lake</div><div class="city">桧原湖 遊覧船</div><div class="st">湖上から崩壊壁を見る／+40分</div></div>
+      <div><div class="en">Onsen</div><div class="city">中ノ沢・沼尻温泉</div><div class="st">強い酸性泉。裏磐梯の南側</div></div>
+      <div><div class="en">Onsen</div><div class="city">磐梯熱海温泉</div><div class="st">郡山IC手前。帰り道の立ち寄り湯</div></div>
+      <div><div class="en">Food</div><div class="city">喜多方</div><div class="st">ラーメンと蔵の街／西へ40分</div></div>
+      <div><div class="en">History</div><div class="city">会津若松（鶴ヶ城）</div><div class="st">南回り。半日は要る</div></div>
+      <div><div class="en">Center</div><div class="city">裏磐梯ビジターセンター</div><div class="st">1888年の噴火の展示。五色沼入口</div></div>
+      <div><div class="en">Volcano</div><div class="city">磐梯山 登山</div><div class="st">往復5〜6時間。今回の日程では入らない</div></div>
+      <div><div class="en">Drive</div><div class="city">磐梯吾妻スカイライン・浄土平</div><div class="st">郡山往復に決めたので今回は行かない</div></div>
+      <div><div class="en">Drive</div><div class="city">西吾妻スカイバレー</div><div class="st">桧原湖から山形・米沢へ抜ける道</div></div>
+      <div><div class="en">Ruin</div><div class="city">旧桧原村跡（湖底の鳥居）</div><div class="st">噴火で沈んだ村。渇水期のみ見える</div></div>
+      <div><div class="en">Fall</div><div class="city">達沢不動滝</div><div class="st">猪苗代の南。2日目に南回りを選ぶなら</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" data-p="hotel" hidden>
+
+  <div class="tbd">
+    <div class="lbl">Stay — 決定</div>
+    <ol>
+      <li><b>裏磐梯高原ホテル・2食付で確定。</b>これで <a href="#meals">Meals</a> の ②夕食（会席・和食）と ③朝食（和食）も同時に埋まった。残る食事は ①郡山の昼・④裏磐梯の昼・⑤川口の夜の3つ。</li>
+      <li><b>場所が効く。</b>宿は<em>五色沼探勝路の入口側</em>（毘沙門沼から約880m・国道459号沿い）。初日に歩き切れなくても<em>2日目の朝に宿から歩いて出られる</em>ので、Day 1 夕方の時間圧が一段下がった。</li>
+      <li><b>チェックイン15:00／チェックアウト11:00。</b>初日は<b>16:45チェックイン → 17:00 露天風呂 → 18:30 夕食 → 20:30 裏庭で星見</b>の流れ。2日目は09:00チェックアウトでも2時間の余裕がある。</li>
+      <li><b>アーリーIN（14:00〜／3,300円）とレイトOUT（3,300円/1h）は、今の行程では両方いらない。</b>理由は下。チェックイン時に申告する方式なので、<em>当日の気分で足せる</em>のは覚えておく。</li>
+    </ol>
+  </div>
+
+  <div class="sec">
+    <h2>Booking<span class="jp">予約内容</span></h2>
+    <div class="card">
+      <div class="hd"><span class="s">Reservation</span><span class="t">裏磐梯高原ホテル</span><span class="fixed">予約済</span></div>
+      <dl class="fl">
+        <dt>予約</dt><dd class="big">予約済<span class="sub">予約番号は予約完了メールを参照</span></dd>
+        <dt>部屋</dt><dd class="big">ラグジュアリーツイン<span class="sub"><b>おとな2名</b></span></dd>
+        <dt>食事</dt><dd class="big">2食付<span class="sub">夕食＝<b>会席（和食）</b>／朝食＝<b>和食</b></span></dd>
+        <dt>住所</dt><dd>〒969-2701 福島県耶麻郡北塩原村大字桧原字湯平山1171<span class="sub">国道459号沿い／<a href="https://www.google.com/maps/search/?api=1&amp;query=%E8%A3%8F%E7%A3%90%E6%A2%AF%E9%AB%98%E5%8E%9F%E3%83%9B%E3%83%86%E3%83%AB" target="_blank" rel="noopener">Googleマップ ↗</a></span></dd>
+        <dt>電話</dt><dd><a href="tel:0241322211">0241-32-2211</a></dd>
+        <dt>チェックイン</dt><dd class="big">15:00 〜<span class="sub">行程は16:45着。<em>五色沼を歩く前に寄って荷物を置ける</em></span></dd>
+        <dt>チェックアウト</dt><dd class="big">〜 11:00<span class="sub">行程は09:00チェックアウト。2時間の余裕あり</span></dd>
+        <dt>有料オプション</dt><dd>アーリーチェックイン 14:00〜 <b>3,300円</b><br>レイトチェックアウト <b>3,300円/1h</b><span class="sub"><em>どちらもチェックイン時に申告する</em>方式。今の行程ではどちらも不要（下の判断）</span></dd>
+        <dt>立地</dt><dd><b>五色沼探勝路の入口側</b><span class="sub">毘沙門沼まで約880m（徒歩5分圏）。桧原湖までは車で10分ほど</span></dd>
+        <dt>風呂</dt><dd><b>露天から磐梯山</b><span class="sub">17:00に入る想定。日の入17:51なので、山が夕方の光に変わる時間を湯から見られる。<span class="slot">利用時間は要確認</span></span></dd>
+        <dt>裏庭</dt><dd>池＋芝地、正面に磐梯山<span class="sub">20:30からの星見はここ。<a href="#ref">Info タブの Night sky</a></span></dd>
+        <dt>駐車場</dt><dd>あり（屋外・無料）</dd>
+        <dt>料金</dt><dd><span class="blank">&nbsp;</span></dd>
+        <dt>キャンセル規定</dt><dd><span class="blank">&nbsp;</span></dd>
+      </dl>
+    </div>
+
+    <div class="note-box"><b>有料オプションは両方とも見送りでいい。</b><br>
+    <b>アーリーチェックイン（14:00〜・3,300円）</b>— 初日は14:35にゴールドライン、15:40に五色沼を歩いている。<em>14:00に宿にいる予定が無い</em>ので、払っても使う時間が無い。荷物だけなら通常のチェックイン前でも預かってもらえることが多いので、そこも払う理由にならない。<br>
+    <b>レイトチェックアウト（3,300円/1h）</b>— 2日目は<em>09:00に出る想定で、期限の11:00まで2時間も余らせている</em>。朝の五色沼を探勝路の片道ぶんまで伸ばしても（往復2時間半）10:30には戻るので、まだ無料の枠に収まる。<br>
+    <b>買う価値が出るのは1パターンだけ</b>：2日目に<em>レークラインと午後の分岐を両方捨てて、朝風呂と朝の五色沼だけで昼まで宿にいる</em>構成にしたとき。今の組み方とは別の旅になるので、当日そう感じたら申告すればいい。</div>
+  </div>
+
+
+</section>
+
+</section>
+
+<section class="panel" data-p="meals" hidden>
+
+  <div class="tbd">
+    <div class="lbl">Meals — 1泊2日で5食</div>
+    <ol>
+      <li><b>②と③は宿で確定。</b>裏磐梯高原ホテルの2食付（夕食＝会席・和食／朝食＝和食）。<em>残りは ①郡山の昼・④裏磐梯の昼・⑤川口の夜の3つ</em>。</li>
+      <li><b>裏磐梯で外食するのは④だけ。</b>夜と朝が宿に入ったので、店を探す必要があるのは2日目の昼のみ。</li>
+      <li><b>④で「喜多方ラーメン」が消える。</b>昼を裏磐梯で取るので、Day 2 の分岐は食事ではなく<em>午後の観光</em>として選ぶことになる。</li>
+    </ol>
+  </div>
+
+  <div class="sec">
+    <h2>At a glance<span class="jp">5食の枠</span></h2>
+    <div class="tscroll">
+      <table>
+        <thead><tr><th>#</th><th>いつ</th><th>どこ</th><th>枠</th><th>状態</th></tr></thead>
+        <tbody>
+          <tr><td class="num">①</td><td>9/13(日) 昼</td><td><b>郡山</b>（駅西口）</td><td class="num">11:55〜12:40</td><td class="slot">店 未定</td></tr>
+          <tr><td class="num">②</td><td>9/13(日) 夜</td><td><b>裏磐梯高原ホテル</b></td><td class="num">18:30頃</td><td><b>確定</b>／会席・和食</td></tr>
+          <tr><td class="num">③</td><td>9/14(月) 朝</td><td><b>裏磐梯高原ホテル</b></td><td class="num">07:00〜07:25</td><td><b>確定</b>／和食</td></tr>
+          <tr><td class="num">④</td><td>9/14(月) 昼</td><td><b>裏磐梯</b></td><td class="num">12:00〜13:00</td><td class="slot">店 未定</td></tr>
+          <tr><td class="num">⑤</td><td>9/14(月) 夜</td><td><b>川口</b>（駅周辺）</td><td class="num">19:45〜20:00 入店</td><td class="slot">店 未定</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>Slots<span class="jp">1食ずつ</span></h2>
+
+    <div class="card">
+      <div class="hd"><span class="s">① Lunch</span><span class="t">9/13(日) 郡山 — 駅西口</span><span class="fixed open">店 未定</span></div>
+      <dl class="fl">
+        <dt>枠</dt><dd class="big">11:55 〜 12:40<span class="sub">45分。11:48 郡山着の直後</span></dd>
+        <dt>場所</dt><dd>郡山駅 <b>西口</b> の徒歩圏<span class="sub">この後 12:45 に西口営業所でレンタカーを取る。<em>駅から歩ける範囲でないと回らない</em></span></dd>
+        <dt>店</dt><dd><span class="blank">&nbsp;</span></dd>
+        <dt>予約</dt><dd><span class="blank">&nbsp;</span><span class="sub">日曜の昼。並ぶ店なら予約するか、並ばない店にする</span></dd>
+        <dt>締切</dt><dd><b>12:40 に店を出る</b><span class="sub">遅れた分だけゴールドラインか五色沼が削れる</span></dd>
+        <dt>メモ</dt><dd class="slot">郡山発祥の「クリームボックス」は菓子パンなので、昼ごはんの枠には向かない。</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <div class="hd"><span class="s">② Dinner</span><span class="t">9/13(日) 裏磐梯高原ホテル</span><span class="fixed">確定</span></div>
+      <dl class="fl">
+        <dt>内容</dt><dd class="big">会席（和食）<span class="sub">2食付プランに含まれる</span></dd>
+        <dt>枠</dt><dd class="big">18:30<span class="sub">16:45 チェックイン → 17:00 露天風呂 → そのまま夕食</span></dd>
+        <dt>開始時刻</dt><dd><span class="blank">&nbsp;</span><span class="sub">会席は時間指定のことが多い。<b>18:30 で取れているか</b>を確認する。17:00からの入浴を1時間半みているので、これより早いと湯を切り上げることになる</span></dd>
+        <dt>運転しない</dt><dd>宿で完結<span class="sub">裏磐梯は夜に開いている店がほとんど無いので、外食なら猪苗代まで30分下る必要があった。それが消えた＝<b>初日の夜は飲める</b></span></dd>
+        <dt>この後</dt><dd><b>20:30 から裏庭で星見</b><span class="sub">新月期・月齢1.6。<a href="#ref">Info タブの Night sky</a></span></dd>
+        <dt>連動</dt><dd><a href="#hotel">Stay タブ</a>の「食事」欄と同じもの</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <div class="hd"><span class="s">③ Breakfast</span><span class="t">9/14(月) 裏磐梯高原ホテル</span><span class="fixed">確定</span></div>
+      <dl class="fl">
+        <dt>内容</dt><dd class="big">和食<span class="sub">2食付プランに含まれる</span></dd>
+        <dt>枠</dt><dd class="big">07:00 〜 07:25<span class="sub">07:30 に出る前提</span></dd>
+        <dt>開始時刻</dt><dd><span class="blank">&nbsp;</span><span class="sub"><em>07:00 から開いているか</em>が唯一の論点。07:30以降スタートだと順番が成立しない</span></dd>
+        <dt>その場合</dt><dd>先に外へ → 戻って朝食<span class="sub">宿は五色沼の入口側なので、07:00に出て<b>朝の五色沼を歩き</b>、08:00に戻って朝食、でも成立する。むしろ朝の光はこちらが良い</span></dd>
+        <dt>チェックアウト</dt><dd>〜11:00<span class="sub">行程は09:00に出る想定なので、朝食が多少後ろでも吸収できる</span></dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <div class="hd"><span class="s">④ Lunch</span><span class="t">9/14(月) 裏磐梯</span><span class="fixed open">店 未定</span></div>
+      <dl class="fl">
+        <dt>枠</dt><dd class="big">12:00 〜 13:00<span class="sub">レークライン（09:00〜11:00）から戻って</span></dd>
+        <dt>効いてくること</dt><dd><b>「喜多方でラーメン」が選択肢から外れる</b><span class="sub">昼を裏磐梯で取ると決めた時点で、Day 2 の分岐は食事ではなく午後の観光（喜多方の蔵／会津若松／磐梯熱海の湯）の3択になる</span></dd>
+        <dt>注意</dt><dd><b>9/14 は月曜</b><span class="sub">裏磐梯は昼も店数が少ないので、定休日を先に確認しないと当日詰む</span></dd>
+        <dt>店</dt><dd><span class="blank">&nbsp;</span></dd>
+        <dt>予約</dt><dd><span class="blank">&nbsp;</span></dd>
+        <dt>締切</dt><dd><b>13:00 に出る</b><span class="sub">16:35 までが午後の枠。返却は17:45</span></dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <div class="hd"><span class="s">⑤ Dinner</span><span class="t">9/14(月) 川口 — 駅周辺</span><span class="fixed open">店 未定</span></div>
+      <dl class="fl">
+        <dt>逆算</dt><dd class="big">19:45 〜 20:00 入店<span class="sub">郡山 18:30発（つばさ154号）→ 大宮 19:19着 → 在来線乗換 → 川口 19:40〜45着</span></dd>
+        <dt>予約するなら</dt><dd><b>20:00</b><span class="sub">新幹線や乗換が押しても飲み込める。<b>2名</b></span></dd>
+        <dt>ここが一番の懸念</dt><dd><b>月曜夜の20:00入店</b><span class="sub">帰りが24分うしろの便になったぶん、入店が15分遅くなった。<em>20:00〜20:30 L.O. の店は完全に無理</em>。<b>21:00以降までオーダーを受ける店</b>に絞って、予約まで入れておく</span></dd>
+        <dt>逃げ道</dt><dd>大宮で食べる<span class="sub">大宮19:19着なので、大宮で食べれば19:30入店にできる。川口にこだわらないなら選択肢</span></dd>
+        <dt>場所</dt><dd>川口駅から歩ける範囲<span class="sub">荷物を持っての移動になるので、駅から遠い店は避ける</span></dd>
+        <dt>店</dt><dd><span class="blank">&nbsp;</span></dd>
+        <dt>予約</dt><dd><span class="blank">&nbsp;</span></dd>
+      </dl>
+    </div>
+  </div>
+
+</section>
+
+<section class="panel" data-p="ref" hidden>
+
+  <div class="sec">
+    <h2>Shinkansen<span class="jp">新幹線</span></h2>
+
+    <div class="card">
+      <div class="hd"><span class="s">Outbound</span><span class="t">9/13(日) 東京 → 郡山</span><span class="fixed">便 確定</span></div>
+      <dl class="fl">
+        <dt>予約</dt><dd class="big">えきねっと 済<span class="sub">おとな2名／<b>新幹線eチケット</b>で乗車。<em>予約番号はえきねっとアプリを参照</em></span></dd>
+        <dt>列車</dt><dd class="big">やまびこ207号<span class="sub">東北・北海道新幹線・仙台行／<b>東京駅 始発</b></span></dd>
+        <dt>時刻</dt><dd class="big">10:11 → 11:48<span class="sub">1時間37分・226.7km・乗換0回</span></dd>
+        <dt>座席</dt><dd class="big">グランクラス 10号車 5番B・C席<span class="sub">B・Cは2人並びの側</span></dd>
+        <dt>乗車位置</dt><dd>10号車＝進行方向の先頭側<span class="sub">東京駅のホームでは端の方になるので、乗車位置まで少し歩く。始発なので早めに入れば座って待てる</span></dd>
+        <dt>降車</dt><dd>郡山<span class="sub">仙台行なので乗り過ごす心配は少ない（郡山の次は福島）</span></dd>
+        <dt>この便の意味</dt><dd>郡山を出るのが 13:00（西口でランチ→12:45受取）。昼は<b>郡山に着いてから</b>取る（Meals ①）</dd>
+      </dl>
+    </div>
+
+    <div class="card">
+      <div class="hd"><span class="s">Return</span><span class="t">9/14(月) 郡山 → 大宮</span><span class="fixed">予約済</span></div>
+      <dl class="fl">
+        <dt>予約</dt><dd class="big">えきねっと 済<span class="sub">おとな2名／<b>新幹線eチケット</b>で乗車</span></dd>
+        <dt>列車</dt><dd class="big">つばさ154号<span class="sub"><b>山形新幹線</b>・東京行。往路のやまびことは別系統</span></dd>
+        <dt>時刻</dt><dd class="big">18:30 → 19:19<span class="sub">49分・196.4km・乗換0回</span></dd>
+        <dt>座席</dt><dd class="big">グリーン 11号車 6番A・B席<span class="sub">つばさ編成は11〜17号車の7両。<em>11号車は やまびこ編成と連結する側</em>なので、郡山のホームでは乗車位置の案内表示を確認</span></dd>
+        <dt>降車</dt><dd><b>大宮</b><span class="sub">東京行だが大宮で降りる。降り損ねると川口が遠回りになる</span></dd>
+        <dt>この便の意味</dt><dd>前案（やまびこ64号 18:06発）より<b>24分うしろ</b>。<em>レンタカーの返却予定18:00との矛盾が解消した</em>。一方で大宮着が16分遅くなり、<b>川口の夕食が19:45〜20:00入店</b>になった</dd>
+      </dl>
+    </div>
+
+    <ul class="chk">
+      <li><b>往復とも予約済</b>（往 やまびこ207号 グランクラス／復 つばさ154号 グリーン）</li>
+      <li><b>eチケットに紐づけた交通系ICカードを持参</b>（紙のきっぷは出ない。改札はタッチ）</li>
+      <li><b>はやぶさは郡山に停まらない</b>ので、往路の代替もやまびこから選ぶ</li>
+      <li>復路を逃した場合の<b>次の上り</b>を控えておく（郡山18:30以降）</li>
+      <li>大宮での<b>新幹線 → 在来線の乗換時間</b>（実際は数分だが、19:19着で川口19:40〜45着の前提）</li>
+    </ul>
+  </div>
+
+  <div class="sec">
+    <h2>Rental Car<span class="jp">レンタカー</span></h2>
+
+    <div class="card">
+      <div class="hd"><span class="s">Reservation</span><span class="t">ニッポンレンタカー 郡山駅西口営業所</span><span class="fixed">予約済</span></div>
+      <dl class="fl">
+        <dt>予約</dt><dd class="big">ネット予約 済<span class="sub">個人利用。<em>予約番号は予約完了メールを参照</em></span></dd>
+        <dt>営業所</dt><dd>郡山駅西口営業所　<a href="tel:05017122893">050-1712-2893</a><span class="sub">〒963-8001 郡山市大町2丁目-18／<a href="https://maps.app.goo.gl/P9nu2b6Da2VGpmTC9" target="_blank" rel="noopener">Googleマップ ↗</a>　郡山駅<b>西口</b>から徒歩7〜8分（約600m）</span></dd>
+        <dt>出発予定</dt><dd class="big">9/13(日) 11:30<span class="sub">実際は <b>11:48 郡山着 → 徒歩 → 12:00 店着</b>。予約より30分遅れて着く（下の注意）</span></dd>
+        <dt>返却予定</dt><dd class="big">9/14(月) 18:00<span class="sub">同じ営業所。帰りが<b>18:30発</b>になったので矛盾は解消。行程は<em>17:45に返す</em>（下の注意）</span></dd>
+        <dt>クラス</dt><dd><b>軽</b>（タイプ指定なし）<span class="sub">定員4名のところ<b>2名</b>なので、人も荷物も余裕がある</span></dd>
+        <dt>料金コース</dt><dd>安心コース／<b>CDW 加入</b>・<b>ECO 加入</b><span class="sub">乗捨手数料なし（往復同一営業所）。スタッドレス・4WD指定なし</span></dd>
+        <dt>合計</dt><dd class="big">16,610円<span class="sub">税込・ネットクレジット決済</span></dd>
+      </dl>
+
+      <details class="more">
+        <summary>Breakdown<span class="jp">料金の内訳と契約情報</span></summary>
+        <div class="body">
+          <table class="mini">
+            <tr><th>基本料金（安心コース・税抜）</th><td>12,300 円</td></tr>
+            <tr><th>スタッドレスタイヤ／4WD指定（税抜）</th><td>0 円</td></tr>
+            <tr><th>乗捨手数料（税抜）</th><td>0 円</td></tr>
+            <tr><th>CDW加入料（税抜）</th><td>2,000 円</td></tr>
+            <tr><th>ECO加入料（税抜）</th><td>800 円</td></tr>
+            <tr><th>オプション料金（税抜）</th><td>0 円</td></tr>
+            <tr><th>消費税（10%）</th><td>1,510 円</td></tr>
+            <tr><th>レンタカーポイント使用分</th><td>▲0 ポイント</td></tr>
+            <tr class="total"><th>合計（税込）</th><td>16,610 円</td></tr>
+          </table>
+          <dl class="fl" style="border-top:1px solid var(--line)">
+            <dt>支払い方法</dt><dd>ネットクレジット決済<span class="sub">予約時点はカード認証のみ</span></dd>
+            <dt>ポイント使用</dt><dd>0 ポイント</dd>
+          </dl>
+        </div>
+      </details>
+    </div>
+
+    <div class="warn">
+      <span class="lb">Resolved — 返却18:00 と 発車18:30</span>
+      帰りが <b>18:30発</b>（つばさ154号）になったので、返却予定18:00との矛盾は<em>解消した</em>。予約を変更する必要はない。<br>
+      ただし<b>18:00ちょうどに返すと駅まで22分しかない</b>（営業所〜駅は徒歩7〜8分）。行程は<b>17:45 返却</b>で組んである — 早く返す分には問題ないので、予約は18:00のままでいい。
+    </div>
+
+    <div class="warn">
+      <span class="lb">Note — 出発11:30 と 到着11:48</span>
+      出発予定が <b>11:30</b> だが、やまびこ207号の郡山着は <b>11:48</b>。<em>予約時刻には物理的に間に合わない</em>。到着が遅れても車は取り置かれるが、貸出時間は11:30から起算される。気になるなら受取を12:00に変更する（返却18:00との差は30.5h→30hで、料金区分は変わらない見込み）。
+    </div>
+
+    <ul class="chk">
+      <li><s>返却予定を17:15に変更</s> — <b>不要になった</b>（帰りが18:30発になったため。予約は18:00のままでいい）</li>
+      <li>運転免許証 / 決済に使ったカードを持参</li>
+      <li>営業所の<b>営業時間</b>を確認（17:45の返却が時間内か）</li>
+      <li>ETCカードの有無（磐越道 郡山IC〜猪苗代磐梯高原IC、帰りも磐越道）</li>
+      <li>満タン返しの<b>給油場所</b>を郡山IC〜西口営業所の間で1つ決めておく</li>
+      <li>スマホホルダー / 充電ケーブル</li>
+    </ul>
+
+    <div class="note-box"><b>クラスは軽だが2名なので問題ない。</b>ゴールドラインとレークラインは登り勾配が続くので4人フル乗車だと登坂が苦しいが、2名なら許容範囲。CDWとECOの両方に入っているので、事故時の免責額とNOCの自己負担はカバーされている<span class="slot">（適用条件は貸渡約款で確認）</span>。</div>
+
+    <div class="note-box">走行は<b>1泊2日で合計200km前後</b>。磐梯山ゴールドライン・磐梯吾妻レークラインはどちらも<b>無料</b>（旧有料道路）。山岳路なので、日没後の運転を前提にしない組み方にしてある。</div>
+  </div>
+
+  <div class="sec">
+    <h2>Night sky<span class="jp">夜空</span></h2>
+    <div class="card">
+      <div class="hd"><span class="s">9/13(日) night</span><span class="t">裏磐梯高原ホテル 裏庭</span><span class="fixed">新月期</span></div>
+      <dl class="fl">
+        <dt>月</dt><dd class="big">月齢 1.6 ／ 照度 3%<span class="sub">新月は前日 <b>9/12 05:29</b>。細い月は日没後まもなく西に沈むので、食後は<em>月明かりゼロ</em>。1年で最良の条件に当たっている</span></dd>
+        <dt>日の入</dt><dd class="big">17:51</dd>
+        <dt>薄明の終了</dt><dd class="big">19:20<span class="sub">市民薄明 18:17 → 航海薄明 18:48 → 天文薄明 19:20。<b>19:20以降が完全な暗夜</b></span></dd>
+        <dt>いつ出るか</dt><dd class="big">20:30 〜<span class="sub">薄明の終了（19:20）はとうに過ぎている。この時間帯は夏の大三角が天頂〜西寄り、天の川が南西に立つ</span></dd>
+        <dt>気温</dt><dd>10℃前後<span class="sub">標高約800m・9月中旬の夜間。<b>上着は必須</b></span></dd>
+        <dt>コツ</dt><dd>暗順応に15分<span class="sub">スマホの画面を落とす。池の水面に磐梯山と空が映る</span></dd>
+        <dt>翌朝</dt><dd>日の出 05:20<span class="sub">07:00 朝食なので、早起きすれば朝の五色沼にもう一枠取れる</span></dd>
+      </dl>
+    </div>
+  </div>
+
+  <div class="sec">
+    <h2>Timing<span class="jp">効いてくる時刻</span></h2>
+    <div class="tscroll">
+      <table>
+        <thead><tr><th>時刻</th><th>何</th><th>外すとどうなる</th></tr></thead>
+        <tbody>
+          <tr><td class="num"><b>10:11</b></td><td>東京発 やまびこ207号</td><td>次のやまびこまで待つと初日の五色沼が消える</td></tr>
+          <tr><td class="num"><b>12:45</b></td><td>レンタカー受取</td><td>遅れた分だけゴールドラインか五色沼を削る</td></tr>
+          <tr><td class="num"><b>16:40</b></td><td>五色沼を切り上げる</td><td>17:00の入浴に入れない</td></tr>
+          <tr><td class="num"><b>18:30</b></td><td>夕食（会席）</td><td>——</td></tr>
+          <tr><td class="num">17:51</td><td>日の入</td><td>桧原湖の夕景が終わる</td></tr>
+          <tr><td class="num">19:20</td><td>天文薄明の終了（完全な暗夜）</td><td>——（20:30の星見はとうに暗夜の中）</td></tr>
+          <tr><td class="num">16:35</td><td>Day 2 午後の枠を出る限界</td><td>返却17:45に間に合わない</td></tr>
+          <tr><td class="num"><b>17:45</b></td><td>レンタカー返却</td><td>18:30発が綱渡りになる（予約上の期限は18:00）</td></tr>
+          <tr><td class="num"><b>18:30</b></td><td>郡山発 つばさ154号</td><td>川口の夕食が流れる</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">Last updated: 2026-09-12</div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script>
+/* d: 1/2 = 訪問日、0 = 候補 / ap: 位置は目安 */
+var PINS = [
+  { n: 1, d: 1, t: '10:11', name: '東京駅（発・やまびこ207号）',    a: '東京',   lat: 35.68123, lng: 139.76712, far: 1, q: '東京駅' },
+  { n: 2, d: 1, t: '11:48', name: '郡山駅 西口（ランチ・店未定）',    a: '郡山',   lat: 37.39790, lng: 140.38780 },
+  { n: 3, d: 1, t: '12:45', name: 'ニッポンレンタカー 郡山駅西口営業所（受取）', a: '郡山・大町2-18', lat: 37.40301, lng: 140.38906 },
+  { n: 4, d: 1, t: '14:05', name: '磐梯山ゴールドライン（山湖台）', a: '猪苗代', lat: 37.61500, lng: 140.03500, ap: 1 },
+  { n: 5, d: 1, t: '15:15', name: '五色沼自然探勝路（毘沙門沼）',  a: '裏磐梯', lat: 37.64850, lng: 140.07400, ap: 1 },
+  { n: 6, d: 1, t: '16:45', name: '裏磐梯高原ホテル（IN・露天風呂）', a: '桧原字湯平山1171', lat: 37.64868, lng: 140.06398 },
+  { n: 7, d: 1, t: '18:30', name: '夕食（会席）→ 20:30 裏庭で星見',  a: '宿・裏庭の池', lat: 37.64915, lng: 140.06330, ap: 1 },
+
+  { n: 8, d: 2, t: '07:00', name: '朝食（和食）→ 中瀬沼 / 五色沼',   a: '裏磐梯', lat: 37.65640, lng: 140.08660, ap: 1 },
+  { n: 9, d: 2, t: '09:00', name: '秋元湖・中津川渓谷（レークライン）', a: '裏磐梯', lat: 37.68000, lng: 140.13000, ap: 1 },
+  { n: 10, d: 2, t: '12:00', name: '裏磐梯でランチ（店未定）',        a: '裏磐梯', lat: 37.65000, lng: 140.06500, ap: 1 },
+  { n: 11, d: 2, t: '13:00', name: '午後の分岐（喜多方/会津/温泉）',  a: '未定',   lat: 37.55000, lng: 140.00000, ap: 1 },
+  { n: 12, d: 2, t: '17:45', name: 'ニッポンレンタカー東北 郡山駅西口店（返却）', a: '郡山・受取と同じ店', lat: 37.40301, lng: 140.38906 },
+  { n: 13, d: 2, t: '18:30', name: '郡山駅 発（つばさ154号）',       a: '郡山',   lat: 37.39790, lng: 140.38780 },
+  { n: 14, d: 2, t: '19:19', name: '大宮駅（着・在来線へ乗換）',      a: '大宮',   lat: 35.90635, lng: 139.62373, far: 1, q: '大宮駅 埼玉県' },
+  { n: 15, d: 2, t: '19:45', name: '川口（夕食・店未定）',            a: '川口',   lat: 35.80722, lng: 139.71472, far: 1, q: '川口駅 埼玉県' },
+
+  { d: 0, name: '猪苗代湖・志田浜',        a: '候補・2日目の午後',      lat: 37.48690, lng: 140.12370, ap: 1 },
+  { d: 0, name: '野口英世記念館',          a: '候補・2日目の午後',      lat: 37.52220, lng: 140.09560, ap: 1 },
+  { d: 0, name: '磐梯山噴火記念館',        a: '候補・1888年の展示',     lat: 37.64320, lng: 140.08500, ap: 1 },
+  { d: 0, name: '磐梯山 山頂',            a: '参考・今回は登らない',    lat: 37.60140, lng: 140.07220 },
+  { d: 0, name: '中ノ沢・沼尻温泉',        a: '候補・酸性泉',           lat: 37.58250, lng: 140.13000, ap: 1 },
+  { d: 0, name: '磐梯熱海温泉',            a: '候補・帰り道の立ち寄り湯', lat: 37.43840, lng: 140.25290, ap: 1 },
+  { d: 0, name: '鶴ヶ城（会津若松）',      a: '候補・南回り',           lat: 37.48750, lng: 139.92960 }
+];
+
+/* 同じ場所に複数のピンが重なると番号が読めなくなるので、
+   近接（約150m以内）しているものを小さな円状にずらす */
+(function () {
+  var groups = {};
+  PINS.forEach(function (p) {
+    var k = p.lat.toFixed(3) + ',' + p.lng.toFixed(3);
+    (groups[k] = groups[k] || []).push(p);
+  });
+  Object.keys(groups).forEach(function (k) {
+    var g = groups[k];
+    if (g.length < 2) return;
+    var r = 0.0016;
+    g.forEach(function (p, i) {
+      var a = (2 * Math.PI * i) / g.length - Math.PI / 2;
+      p.lat += r * Math.sin(a);
+      p.lng += r * Math.cos(a) * 1.26; /* 経度は緯度37度ぶん詰まるので補正 */
+      p.ap = 1;
+    });
+  });
+})();
+
+var map = L.map('map', { scrollWheelZoom: false, tap: true });
+/* 地図をクリック／タップするまではページのスクロールを優先、触ったらホイール拡大を有効化 */
+map.on('click focus', function () { map.scrollWheelZoom.enable(); });
+map.on('mouseout', function () { map.scrollWheelZoom.disable(); });
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors', maxZoom: 19
+}).addTo(map);
+
+var layers = { 1: L.layerGroup(), 2: L.layerGroup(), 0: L.layerGroup() };
+[1, 2].forEach(function (d) {
+  var pts = PINS.filter(function (p) { return p.d === d && !p.far; }).map(function (p) { return [p.lat, p.lng]; });
+  L.polyline(pts, { color: '#111', weight: 1.6, opacity: 0.55, dashArray: '4 5' }).addTo(layers[d]);
+});
+
+PINS.forEach(function (p) {
+  var ref = p.d === 0;
+  var icon = L.divIcon({
+    className: '',
+    html: '<div class="pin' + (ref ? ' ref' : '') + '">' + (ref ? '' : p.n) + '</div>',
+    iconSize: ref ? [15, 15] : [25, 25],
+    iconAnchor: ref ? [7.5, 7.5] : [12.5, 12.5],
+    popupAnchor: [0, -13]
+  });
+  var g = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(p.q || (p.name.replace(/（.*/, '') + ' 福島'));
+  var html = '<span class="t">' + (ref ? 'REF' : 'DAY ' + p.d + ' · ' + p.t) + '</span><b>' + p.name + '</b>'
+    + '<span class="np">' + p.a + (p.ap ? '／位置は目安' : '') + '</span>'
+    + '<a class="gl" href="' + g + '" target="_blank" rel="noopener">Googleマップで開く ↗</a>';
+  var m = L.marker([p.lat, p.lng], { icon: icon }).bindPopup(html);
+  if (!ref) {
+    m.on('click', function () {
+      var el = document.getElementById('s' + p.n);
+      if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    });
+  }
+  m.addTo(layers[p.d]);
+});
+
+/* 東京（far）は縮尺を壊すので bounds から除く */
+var ALL = L.latLngBounds(PINS.filter(function (p) { return !p.far; }).map(function (p) { return [p.lat, p.lng]; }));
+function show(f) {
+  Object.keys(layers).forEach(function (k) { map.removeLayer(layers[k]); });
+  ((f === 'all') ? ['1', '2', '0'] : [f]).forEach(function (k) { layers[k].addTo(map); });
+  var pts = PINS.filter(function (p) { return !p.far && (f === 'all' || String(p.d) === f); }).map(function (p) { return [p.lat, p.lng]; });
+  var pad = window.innerWidth < 640 ? 26 : 40;
+  map.fitBounds(pts.length > 1 ? L.latLngBounds(pts) : ALL, { padding: [pad, pad] });
+}
+document.querySelectorAll('.fbtn').forEach(function (b) {
+  b.addEventListener('click', function () {
+    document.querySelectorAll('.fbtn').forEach(function (x) { x.classList.toggle('on', x === b); });
+    show(b.dataset.f);
+  });
+});
+show('all');
+
+/* ===== tabs ===== */
+(function () {
+  var tabs = document.querySelectorAll('.tab');
+  var panels = document.querySelectorAll('.panel');
+  function go(name, push) {
+    var hit = false;
+    panels.forEach(function (el) {
+      var on = el.dataset.p === name;
+      el.hidden = !on;
+      if (on) hit = true;
+    });
+    if (!hit) return go('plan', push);
+    tabs.forEach(function (b) { b.classList.toggle('on', b.dataset.p === name); });
+    if (name === 'plan' && map) { setTimeout(function () { map.invalidateSize(); }, 0); }
+    if (push) { history.replaceState(null, '', '#' + name); }
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  }
+  tabs.forEach(function (b) {
+    b.addEventListener('click', function () { go(b.dataset.p, true); });
+  });
+  var h = (location.hash || '').replace('#', '');
+  if (h) { go(h, false); }
+  /* ページ内の #hotel / #ref リンクからもタブを切り替える */
+  window.addEventListener('hashchange', function () {
+    go((location.hash || '').replace('#', '') || 'plan', false);
+  });
+})();
+</script>
+
+</body>
+</html>
