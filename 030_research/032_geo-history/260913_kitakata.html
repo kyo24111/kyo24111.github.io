@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>喜多方市 — 市リサーチ 260913</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* 人口推移グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="260831_japan.html">japan</a>
+    <span class="sep">/</span>
+    <a href="260913_fukushima.html">fukushima</a>
+    <span class="sep">/</span>
+    <span class="cur">kitakata</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">City Research — 260913</div>
+    <h1>喜多方市 / Kitakata</h1>
+    <div class="hero-country">日本 · 福島県 会津 / 蔵4,200棟とラーメンの「醸造のまち」 / 人口約4.2万</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">人口</div>
+        <div class="kv-val">41,739</div>
+        <div class="kv-note">2025国調速報 / 45年で−31%</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">面積</div>
+        <div class="kv-val">554.63km²</div>
+        <div class="kv-note">2006年に5市町村が合併</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">蔵</div>
+        <div class="kv-val">約4,200棟</div>
+        <div class="kv-note">市街から農村まで市内全域</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">財政力指数</div>
+        <div class="kv-val">0.37</div>
+        <div class="kv-note">歳入の37.8%が地方交付税</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">市としての特徴</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">経済規模と産業構造</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">市の財政 — 歳入・歳出とBS/PL</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">人口推移</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">日本の大企業との関連</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">直近30年の出来事と、ゆかりの企業</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">出身の有名人</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">観光スポット</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">産業ベンチマーク — ラーメンと「蔵」を全国と比べる</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">ダウンタウンとホテル</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">桃鉄の「喜多方駅」を読む</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">市としての特徴</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <div class="callout">
+      喜多方市を一言でいうと「<strong>醸造で建てた蔵が、観光資源として二度目の仕事をしている市</strong>」。
+      飯豊山の伏流水と会津の米で<strong>酒・味噌・醤油</strong>を造る町だったので、市内には<strong>約4,200棟の蔵</strong>が残っている。
+      同じ水と同じ町の食堂文化から生まれたのが<strong>喜多方ラーメン</strong>で、旧市域では<strong>人口37,000人に対して約120軒</strong>——<strong>対人口比のラーメン店密度で日本一</strong>だった。<br>
+      その2枚看板で全国区の知名度を得た一方、<strong>人口は45年で31%減り、財政力指数は0.37</strong>。
+      <strong>「知名度は全国級、規模は4万人」というギャップ</strong>がこの市の現実。
+    </div>
+
+    <table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>位置</td><td>福島県<strong>会津地方の北部</strong>で、<strong>県内の市としては最西端</strong>。北は<strong>飯豊連峰</strong>、西は新潟県に接する。主な河川は阿賀川（大川）と只見川。<strong>特別豪雪地帯</strong>を含む</td></tr>
+      <tr><td>面積</td><td><strong>554.63km²</strong>。人口密度<strong>81人/km²</strong>で、<a href="260913_koriyama.html#s01" style="color:inherit">郡山（433人/km²）</a>の1/5。市域の大半が山地</td></tr>
+      <tr><td><strong>成り立ち</strong></td><td><strong>1954年3月31日に初代の喜多方市が発足</strong>。<strong>2006年1月4日に耶麻郡 熱塩加納村・塩川町・山都町・高郷村と合併</strong>して現在の市に。当初は北塩原村・西会津町も含む構想だったが両者は不参加</td></tr>
+      <tr><td>地名の由来</td><td>会津の<strong>「北方（きたかた）」</strong>——若松城下から見て北の地域、という位置関係がそのまま地名になった</td></tr>
+      <tr><td><strong>飯豊山の県境</strong></td><td>市域が<strong>飯豊山の山頂まで細長い回廊状に伸びている</strong>という、日本地図でも有名な奇形。明治の廃藩置県後の領有権争いで、旧会津藩領の一ノ木村（現・山都町）が猛反対し、<strong>明治38年に登山道と山頂・飯豊山神社奥宮を福島県領とすることで決着</strong>した。県境は<strong>幅1mの登山道</strong></td></tr>
+      <tr><td>気候</td><td>年平均気温<strong>11.4℃</strong>、最低記録<strong>−18.1℃</strong>（2006年1月）。<strong>年較差・日較差が大きい大陸性気候</strong>で、この寒暖差が醸造に効く</td></tr>
+      <tr><td>産業構造</td><td>就業者の<strong>第1次11.4% / 第2次30.4% / 第3次58.2%</strong>（2020年国調）。<strong>第1次が郡山（3.0%）の約4倍</strong>で、農業の街であることが数字に出ている</td></tr>
+      <tr><td>製造業</td><td>製造品出荷額<strong>819億円</strong>（2023年）。<strong>レゾナック（旧・昭和電工）喜多方事業所</strong>、<strong>本田金属技術 喜多方工場</strong>が代表</td></tr>
+      <tr><td>交通</td><td><strong>磐越西線 喜多方駅</strong>が玄関。<strong>日中線は1984年に廃止</strong>され、その跡地が<strong>日中線記念自転車歩行者道（しだれ桜並木）</strong>になっている。高速は磐越自動車道・会津若松ICが最寄り</td></tr>
+      <tr><td>名産</td><td><strong>喜多方ラーメン</strong>（日本三大ラーメン）、<strong>日本酒</strong>（大和川酒造店・1790年創業、ほまれ酒造・1918年創業ほか）、味噌・醤油、山都そば、会津漆器・会津桐、たまりせんべい</td></tr>
+      <tr><td>姉妹都市</td><td>ウィルソンビル（米国オレゴン州）、東大和市、香取市、宿遷市（中国・江蘇省）</td></tr>
+    </table>
+
+    <div class="sub-h">醸造の町が、蔵とラーメンで二度売れるまで</div>
+    <table class="t">
+      <tr><th>時期</th><th>何が起きたか</th></tr>
+      <tr><td><strong>1582年</strong></td><td><strong>小田付の町割りが行われる。</strong>のちに定期市が立ち、<strong>酒・味噌・醤油の醸造を中心とする商業地</strong>に発展した。喜多方の「蔵」はこの醸造業の設備として建てられたもの</td></tr>
+      <tr><td>近世〜明治</td><td>会津藩領の北方（きたかた）として、米と水を背景に醸造業が集積。<strong>豪雪と寒暖差が発酵に向く</strong>という条件がそのまま産業になった</td></tr>
+      <tr><td><strong>1790年</strong></td><td><strong>大和川酒造店 創業</strong>（寛政2年）。飯豊山の伏流水が蔵内に湧く</td></tr>
+      <tr><td><strong>1924年</strong></td><td><strong>浙江省出身の潘欽星（はんきんせい）が、喜多方で麺を打って屋台を引く</strong>——これが<strong>喜多方ラーメンの原点</strong>。のちに「源来軒」となり、市内の食堂が次々に同様のラーメンを出すようになった</td></tr>
+      <tr><td>1938年</td><td><strong>日中線 開通</strong>（喜多方〜熱塩）。当初は米沢まで延伸する計画だったが実現せず、<strong>途中までの盲腸線</strong>に終わる</td></tr>
+      <tr><td><strong>1954年3月31日</strong></td><td><strong>市制施行</strong>（初代・喜多方市）</td></tr>
+      <tr><td><strong>1958年</strong></td><td><strong>人口がピーク（81,257人・現市域ベース）。</strong>以降は一度も増えていない</td></tr>
+      <tr><td><strong>1970年代後半</strong></td><td><strong>「蔵のまち」として写真家やメディアに発見される。</strong>醸造設備だった蔵が、そのまま観光資源として認識され始めた。<strong>ラーメンの全国的な知名度もこの蔵ブームに乗って広がった</strong></td></tr>
+      <tr><td><strong>1984年</strong></td><td><strong>日中線 廃止。</strong>国鉄の赤字ローカル線整理で消えたが、跡地が桜並木として残り、のちに市の代表的な観光資源になる</td></tr>
+      <tr><td>1980〜90年代</td><td>「蔵の町＋ラーメン」で観光客を集める時代。旧市域では<strong>人口37,000人に約120軒のラーメン店</strong>という、<strong>対人口比で日本一の密度</strong>になる</td></tr>
+      <tr><td><strong>2006年1月4日</strong></td><td><strong>熱塩加納村・塩川町・山都町・高郷村と合併。</strong>面積が554.63km²に広がり、飯豊山・熱塩温泉・山都そばが市域に入った。<strong>同時に、維持すべきインフラと人口減少地域も一度に抱え込んだ</strong></td></tr>
+      <tr><td><strong>2018年8月</strong></td><td><strong>小田付が国の重要伝統的建造物群保存地区に選定。</strong>約15.5haに<strong>伝統的建造物190件</strong>。「蔵のまち」が公式に文化財として認められた</td></tr>
+      <tr><td>2010〜2024年</td><td>ラーメン店が<strong>約110軒 → 約90軒</strong>へ。<strong>店主の高齢化</strong>が主因</td></tr>
+      <tr><td><strong>2025年9月24日</strong></td><td><strong>喜多方ラーメンの原点「源来軒」が101年の歴史に幕。</strong>1924年の屋台から数えて101年目の閉店</td></tr>
+    </table>
+
+    <div class="callout">
+      <strong>「蔵」という言葉の二重性。</strong>喜多方の蔵は、観光のために作られた景観ではなく<strong>醸造業の設備</strong>だった。
+      酒・味噌・醤油を仕込むために必要な、<strong>温度が安定した厚い壁の建物</strong>である。<br>
+      つまり<strong>約4,200棟の蔵は、この町がかつて何で食っていたかの物量的な証拠</strong>で、
+      それが1970年代に<strong>「風景」として再発見されて第二の用途を得た</strong>。
+      <a href="260904_muroran.html#s08" style="color:inherit">室蘭の工場夜景が「鉄のまち」をそのまま観光資源にした</a>のと同じ構造で、
+      <strong>喜多方は醸造の設備を観光資源に転換した</strong>ということになる。
+    </div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">経済規模と産業構造</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <div class="callout">
+      喜多方の経済は<strong>「農業11.4%・製造30.4%・サービス58.2%」</strong>という、
+      日本の4万人規模の市としてはかなり典型的な構成。
+      製造品出荷額<strong>819億円</strong>は<a href="260913_koriyama.html#s02" style="color:inherit">郡山（7,083億円）の1/9</a>だが、
+      <strong>1人当たりで見ると196万円</strong>で郡山（225万円）とそこまで差がない——
+      <strong>この市は「観光の街」というより、意外にちゃんと製造業のある街</strong>。
+    </div>
+
+    <table class="t">
+      <tr><th>指標</th><th>数値</th><th>位置づけ</th></tr>
+      <tr><td><strong>製造品出荷額等</strong></td><td><strong>819億円</strong>（2023年）</td><td>県全体56,554億円の<strong>1.4%</strong>。<a href="260913_inawashiro.html#s02" style="color:inherit">猪苗代町（71億円）の11.5倍</a>で、会津地方では会津若松（2,691億円）に次ぐ規模</td></tr>
+      <tr><td>1人当たり製造品出荷額</td><td>約<strong>196万円/人</strong></td><td>819億円 ÷ 41,739人。郡山（約225万円）の87%で、<strong>製造業の厚みは人口比では郡山と大差ない</strong></td></tr>
+      <tr><td><strong>就業構造</strong></td><td>1次<strong>11.4%</strong> / 2次30.4% / 3次58.2%</td><td>2020年国調。<strong>第1次が郡山（3.0%）の約4倍、第2次も郡山（24.7%）を上回る</strong>。第3次が58.2%と低いのは、卸売・サービスの集積がないから</td></tr>
+      <tr><td>市税</td><td><strong>48.2億円</strong>（歳入の16.3%）</td><td>うち<strong>固定資産税23.9億円（49.7%）</strong>・市民税18.4億円（38.1%）。<strong>市税より地方交付税（111.6億円）のほうが2.3倍大きい</strong></td></tr>
+      <tr><td><strong>入湯税</strong></td><td>4,326万円</td><td>市の目的税は<strong>入湯税だけ</strong>（都市計画税も事業所税もない）。<strong>熱塩温泉・日中温泉の規模がそのまま出る</strong></td></tr>
+      <tr><td>農業</td><td>会津米・山都そば・アスパラガスなど</td><td>飯豊山系の水と豪雪地帯の気候。<strong>醸造業（酒・味噌・醤油）の原料供給元でもある</strong></td></tr>
+      <tr><td>酒造</td><td>大和川酒造店（1790年創業）、ほまれ酒造（1918年創業）ほか</td><td><strong>「会津ほまれ」「弥右衛門」</strong>など。仕込み水はいずれも<strong>飯豊山系の伏流水</strong></td></tr>
+      <tr><td>ラーメン</td><td>市内<strong>約90軒</strong>（2024年）</td><td>2010年の約110軒から<strong>20軒減</strong>。主因は<strong>店主の高齢化</strong>で、人口減少より先に<strong>担い手の減少</strong>が来ている</td></tr>
+    </table>
+
+    <div class="sub-h">なぜ「知名度は全国級、規模は4万人」なのか</div>
+    <table class="t">
+      <tr><th>#</th><th>要因</th><th>中身</th></tr>
+      <tr><td>1</td><td><strong>売っているものが「単価の低い体験」だから</strong></td><td>ラーメン1杯と蔵の街歩き。<strong>知名度を金額に変換する倍率が低い</strong>。同じ知名度でも、宿泊や物販に落ちる額が小さい</td></tr>
+      <tr><td>2</td><td><strong>日帰り圏に入ってしまっているから</strong></td><td>会津若松から車で30分、郡山から1時間強。<strong>泊まる理由がない</strong>ので観光消費が市内に落ちにくい。<a href="260904_muroran.html#s10" style="color:inherit">室蘭が登別に宿泊を吸われている</a>のと同型</td></tr>
+      <tr><td>3</td><td><strong>合併で「守る範囲」が広がったから</strong></td><td>2006年に4町村を加えて554.63km²に。<strong>人口は増えないのにインフラと行政コストだけ増えた</strong>。これが<a href="#s03" style="color:inherit">経常収支比率97.1%・将来負担比率76.1%</a>に直結している</td></tr>
+      <tr><td>4</td><td>製造業が域外資本だから</td><td>レゾナック・本田金属技術という<strong>市外に本社を持つ企業の工場</strong>。雇用は生むが、<strong>本社機能の税収や意思決定は市外</strong></td></tr>
+      <tr><td>5</td><td><strong>担い手の高齢化が資源を減らしている</strong></td><td>ラーメン店110→90軒、そして2025年に<strong>原点の源来軒が101年で閉店</strong>。<strong>観光資源そのものが供給側から細っていく</strong>という、他の観光地にはあまりない形の減少</td></tr>
+      <tr><td>6</td><td><strong>だが「蔵4,200棟」は減らない</strong></td><td>建物なので担い手問題の影響が小さく、2018年に<strong>小田付が重伝建に選定</strong>されて保存の枠組みも入った。<strong>ラーメンが縮む分、蔵のウエイトが相対的に上がる</strong>局面にある</td></tr>
+    </table>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">市の財政 — 歳入・歳出とBS/PL</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <div class="callout">
+      喜多方の財政は<strong>「合併の代償を払っている最中」</strong>の数字。
+      歳入295.2億円のうち<strong>市税は48.2億円（16.3%）しかなく、地方交付税が111.6億円（37.8%）</strong>——
+      <strong>交付税が市税の2.3倍</strong>という強い依存構造。<strong>財政力指数0.37</strong>、<strong>経常収支比率97.1%</strong>、
+      <strong>将来負担比率76.1%</strong>、<strong>地方債現在高256.3億円は標準財政規模156.2億円の1.64倍</strong>。
+      <a href="260913_koriyama.html#s03" style="color:inherit">郡山（財政力0.81・将来負担比率なし）</a>とは別の世界にいる。
+    </div>
+
+    <details class="raw">
+      <summary>歳入の内訳（令和6年度決算・普通会計） ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+      <tr><th>区分</th><th>金額（億円）</th><th>構成比</th><th>中身</th></tr>
+      <tr><td><strong>歳入合計</strong></td><td>295.2</td><td>100.0%</td><td></td></tr>
+      <tr><td><strong>地方交付税</strong></td><td>111.6</td><td>37.8%</td><td>普通交付税90.4億・特別交付税20.8億・震災復興特別交付税0.4億</td></tr>
+      <tr><td>地方税</td><td>48.2</td><td>16.3%</td><td>市が自前で集める税</td></tr>
+      <tr><td>国庫支出金</td><td>40.2</td><td>13.6%</td><td></td></tr>
+      <tr><td>都道府県支出金</td><td>26.8</td><td>9.1%</td><td></td></tr>
+      <tr><td>地方債</td><td>17.7</td><td>6.0%</td><td>うち臨時財政対策債0.4億</td></tr>
+      <tr><td>繰入金</td><td>16.7</td><td>5.7%</td><td>基金の取り崩し</td></tr>
+      <tr><td>地方消費税交付金</td><td>11.6</td><td>3.9%</td><td></td></tr>
+      <tr><td>諸収入</td><td>5.1</td><td>1.7%</td><td></td></tr>
+      <tr><td>繰越金</td><td>4.4</td><td>1.5%</td><td></td></tr>
+      <tr><td>地方譲与税</td><td>3.0</td><td>1.0%</td><td></td></tr>
+      <tr><td>地方特例交付金等</td><td>2.2</td><td>0.7%</td><td></td></tr>
+      <tr><td>寄附金</td><td>1.9</td><td>0.6%</td><td>ふるさと納税を含む</td></tr>
+      <tr><td>使用料</td><td>1.8</td><td>0.6%</td><td></td></tr>
+      <tr><td>分担金・負担金</td><td>0.9</td><td>0.3%</td><td></td></tr>
+      <tr><td>手数料</td><td>0.6</td><td>0.2%</td><td></td></tr>
+    </table></div>
+    </details>
+
+    <details class="raw">
+      <summary>市税の内訳（税目別） ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+      <tr><th>税目</th><th>金額（億円）</th><th>市税内シェア</th></tr>
+      <tr><td><strong>地方税 合計</strong></td><td>48.2</td><td>100.0%</td></tr>
+      <tr><td>固定資産税</td><td>24.0</td><td>49.7%</td></tr>
+      <tr><td>市町村民税</td><td>18.4</td><td>38.1%</td></tr>
+      <tr><td>　うち個人所得割</td><td>15.8</td><td>32.8%</td></tr>
+      <tr><td>　うち法人税割</td><td>0.8</td><td>1.7%</td></tr>
+      <tr><td>市町村たばこ税</td><td>3.6</td><td>7.4%</td></tr>
+      <tr><td>軽自動車税</td><td>1.9</td><td>4.0%</td></tr>
+      <tr><td>入湯税</td><td>0.4</td><td>0.9%</td></tr>
+      <tr><td>都市計画税・事業所税</td><td>—</td><td>課税なし</td></tr>
+    </table></div>
+    </details>
+
+    <details class="raw">
+      <summary>歳出の内訳（目的別・性質別） ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+      <tr><th>区分（目的別）</th><th>金額（億円）</th><th>構成比</th></tr>
+      <tr><td><strong>歳出合計</strong></td><td>291.3</td><td>100.0%</td></tr>
+      <tr><td>民生費</td><td>92.9</td><td>31.9%</td></tr>
+      <tr><td>土木費</td><td>38.5</td><td>13.2%</td></tr>
+      <tr><td>総務費</td><td>37.6</td><td>12.9%</td></tr>
+      <tr><td>教育費</td><td>36.2</td><td>12.4%</td></tr>
+      <tr><td>公債費</td><td>23.9</td><td>8.2%</td></tr>
+      <tr><td>衛生費</td><td>17.6</td><td>6.1%</td></tr>
+      <tr><td>農林水産業費</td><td>13.0</td><td>4.4%</td></tr>
+      <tr><td>商工費</td><td>11.5</td><td>4.0%</td></tr>
+      <tr><td>消防費</td><td>10.8</td><td>3.7%</td></tr>
+      <tr><td><strong>災害復旧費</strong></td><td>6.5</td><td>2.2%</td></tr>
+      <tr><td>議会費</td><td>2.4</td><td>0.8%</td></tr>
+      </table>
+      <table class="t">
+      <tr><th>区分（性質別）</th><th>金額（億円）</th><th>構成比</th></tr>
+      <tr><td>人件費</td><td>53.6</td><td>18.4%</td></tr>
+      <tr><td>扶助費</td><td>48.6</td><td>16.7%</td></tr>
+      <tr><td>補助費等</td><td>41.6</td><td>14.3%</td></tr>
+      <tr><td>物件費</td><td>40.4</td><td>13.9%</td></tr>
+      <tr><td>普通建設事業費</td><td>28.9</td><td>9.9%</td></tr>
+      <tr><td>公債費</td><td>23.9</td><td>8.2%</td></tr>
+      <tr><td>繰出金</td><td>22.6</td><td>7.8%</td></tr>
+      <tr><td>維持補修費</td><td>15.5</td><td>5.3%</td></tr>
+      <tr><td>積立金</td><td>6.4</td><td>2.2%</td></tr>
+    </table></div>
+    </details>
+
+    <div class="callout">
+      <strong>BS/PLの読みどころ。</strong><strong>資産1,403.4億／負債299.3億／純資産1,104.1億。</strong>
+      注目すべきは<strong>市民1人当たり資産336万円</strong>という数字で、これは
+      <a href="260913_koriyama.html#s03" style="color:inherit">郡山（195万円）の1.7倍</a>、
+      <a href="260904_muroran.html#s03" style="color:inherit">室蘭（272万円）すら上回る</a>。
+      さらに<strong>有形固定資産1,294.1億のうちインフラ資産が1,009.3億（78%）</strong>——
+      <strong>554km²に広がる道路・上下水道を4万人で維持している</strong>という構図が、そのままBSに出ている。
+    </div>
+
+    <table class="t">
+      <tr><th>#</th><th>特筆すべき点</th></tr>
+      <tr><td>1</td><td><strong>1人当たり資産336万円は室蘭（272万円）より重い。</strong>室蘭は「人口が6割減ったのにインフラが残っている」典型例として語られるが、<strong>喜多方はそれ以上に人口比で過大な資産を抱えている</strong>。理由は人口減少ではなく<strong>面積</strong>——554km²は室蘭（81km²）の6.8倍。</td></tr>
+      <tr><td>2</td><td><strong>インフラ資産1,009.3億は郡山（3,320.3億）の30%。</strong>人口は郡山の13%しかないのに、インフラは30%持っている。<strong>「広い市域に薄く人が住む」ことのコストがここに出る。</strong></td></tr>
+      <tr><td>3</td><td><strong>PLの本年度差額△32.2億円。</strong>純行政コスト284.7億に対し、税収等182.0億＋国県補助金70.5億＝252.5億。<strong>32億の穴</strong>。うち<strong>減価償却費49.0億</strong>が現金支出を伴わない分で、これが赤字の主因。</td></tr>
+      <tr><td>4</td><td><strong>更新投資（公共施設等整備費支出21.9億）が減価償却費49.0億の45%しかない。</strong><a href="260904_muroran.html#s03" style="color:inherit">室蘭と同じ「償却の半分しか作り替えていない」状態</a>で、<strong>インフラの老朽化が静かに進行している</strong>。</td></tr>
+      <tr><td>5</td><td><strong>臨時損失14.3億のうち災害復旧事業費6.5億。</strong>令和6年度は災害復旧が歳出の2.2%を占めた。豪雪・豪雨地帯で、<strong>毎年一定の災害コストが乗る</strong>のがこの市の構造。</td></tr>
+      <tr><td>6</td><td><strong>経常収支比率97.1%（前年99.1%）。</strong>改善はしたが依然として<strong>自由に使えるお金がほぼない</strong>水準。人件費18.4%・公債費8.2%という固定費の重さが効いており、<strong>経常収支比率における公債費の寄与は15.0%</strong>と郡山（10.1%）より高い。</td></tr>
+      <tr><td>7</td><td><strong>基金は財政調整5.6億＋減債1.9億＋特定目的13.9億＝21.4億円。</strong>標準財政規模156.2億に対し14%で、<a href="260913_koriyama.html#s03" style="color:inherit">郡山（40%）</a>の1/3。<strong>不測の事態に耐える厚みが薄い</strong>。</td></tr>
+    </table>
+
+    <details class="raw">
+      <summary>貸借対照表（BS）— 令和6年度・一般会計等 ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+      <tr><th>科目</th><th>金額（億円）</th><th>中身</th></tr>
+      <tr><td><strong>資産合計</strong></td><td>1,403.4</td><td>資産の総額</td></tr>
+      <tr><td>固定資産</td><td>1,380.7</td><td></td></tr>
+      <tr><td>有形固定資産</td><td>1,294.1</td><td></td></tr>
+      <tr><td>　インフラ資産</td><td>1,009.3</td><td>道路・橋・上下水道など（有形固定資産の78%）</td></tr>
+      <tr><td>　事業用資産</td><td>276.9</td><td>庁舎・学校など</td></tr>
+      <tr><td>投資その他の資産</td><td>86.0</td><td>うち出資金68.3億・基金15.3億</td></tr>
+      <tr><td>流動資産</td><td>22.7</td><td>現金預金4.7億・未収金10.6億・基金7.4億</td></tr>
+      <tr><td><strong>負債合計</strong></td><td>299.3</td><td></td></tr>
+      <tr><td>固定負債</td><td>271.2</td><td>うち地方債232.9億・退職手当引当金38.3億</td></tr>
+      <tr><td>流動負債</td><td>28.1</td><td>うち1年内償還予定地方債23.5億</td></tr>
+      <tr><td><strong>純資産合計</strong></td><td>1,104.1</td><td>資産−負債</td></tr>
+    </table></div>
+    </details>
+
+    <details class="raw">
+      <summary>行政コスト計算書（PL）と資金収支 — 令和6年度・一般会計等 ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+      <tr><th>科目</th><th>金額（億円）</th><th>中身</th></tr>
+      <tr><td><strong>経常費用</strong></td><td>277.8</td><td></td></tr>
+      <tr><td>物件費等</td><td>107.8</td><td>うち物件費55.1億・維持補修費3.4億</td></tr>
+      <tr><td>　うち減価償却費</td><td>49.0</td><td>現金支出なし</td></tr>
+      <tr><td>補助金等</td><td>55.2</td><td></td></tr>
+      <tr><td>人件費</td><td>54.5</td><td>うち職員給与費42.5億（職員459人）</td></tr>
+      <tr><td>社会保障給付</td><td>42.4</td><td></td></tr>
+      <tr><td>他会計への繰出金</td><td>15.6</td><td></td></tr>
+      <tr><td>経常収益</td><td>7.3</td><td></td></tr>
+      <tr><td>純経常行政コスト</td><td>270.5</td><td></td></tr>
+      <tr><td>臨時損失</td><td>14.3</td><td>うち災害復旧事業費6.5億</td></tr>
+      <tr><td><strong>純行政コスト</strong></td><td>284.7</td><td></td></tr>
+      <tr><td>税収等</td><td>182.0</td><td>税収＋交付税など</td></tr>
+      <tr><td>国県等補助金</td><td>70.5</td><td></td></tr>
+      <tr><td><strong>本年度差額</strong></td><td>-32.2</td><td></td></tr>
+      <tr><td>業務活動収支</td><td>14.7</td><td></td></tr>
+      <tr><td>投資活動収支</td><td>-8.3</td><td></td></tr>
+      <tr><td>財務活動収支</td><td>-6.8</td><td>返済が発行を上回る（債務削減局面）</td></tr>
+      <tr><td><strong>本年度資金収支額</strong></td><td>-0.5</td><td></td></tr>
+    </table></div>
+    </details>
+
+    <details class="raw">
+      <summary>財政指標 ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+      <tr><th>指標</th><th>値</th><th>中身</th></tr>
+      <tr><td><strong>財政力指数</strong></td><td>0.37</td><td>郡山0.81の半分以下。<strong>交付税なしでは行政が成立しない</strong></td></tr>
+      <tr><td>経常収支比率</td><td>97.1%</td><td>前年99.1%から改善。<strong>ほぼ全額が固定費</strong></td></tr>
+      <tr><td>実質公債費比率</td><td>6.9%</td><td>18%未満で健全域だが郡山（1.3%）の5倍</td></tr>
+      <tr><td><strong>将来負担比率</strong></td><td>76.1%</td><td>郡山は算定なし。<strong>合併特例債など将来の負担が明確に存在する</strong></td></tr>
+      <tr><td>地方債現在高</td><td>256.3 億円</td><td><strong>標準財政規模156.2億の1.64倍</strong>。臨財債を除くと179.3億</td></tr>
+      <tr><td>標準財政規模</td><td>156.2 億円</td><td></td></tr>
+      <tr><td>基準財政需要額 / 収入額</td><td>142.4億 / 52.4億</td><td>差額90.0億が普通交付税の算定基礎</td></tr>
+      <tr><td>ラスパイレス指数</td><td>100.9</td><td>職員459人</td></tr>
+      <tr><td>指定状況</td><td><strong>過疎 / 山振 / 低開発</strong></td><td>過疎地域・山村振興・低開発地域工業開発のいずれにも指定されている</td></tr>
+    </table></div>
+    </details>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">人口推移</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Population — 喜多方市</div>
+      <div class="chart-scroll"><svg class="chart" viewBox="0 0 720 300" role="img" aria-label="喜多方市 の人口推移">
+      <line class="grid" x1="62" y1="266.0" x2="704" y2="266.0"/>
+      <text class="ytick" x="54" y="269.5">40,000</text>
+      <line class="grid" x1="62" y1="243.5" x2="704" y2="243.5"/>
+      <text class="ytick" x="54" y="247.0">42,000</text>
+      <line class="grid" x1="62" y1="220.9" x2="704" y2="220.9"/>
+      <text class="ytick" x="54" y="224.4">44,000</text>
+      <line class="grid" x1="62" y1="198.4" x2="704" y2="198.4"/>
+      <text class="ytick" x="54" y="201.9">46,000</text>
+      <line class="grid" x1="62" y1="175.8" x2="704" y2="175.8"/>
+      <text class="ytick" x="54" y="179.3">48,000</text>
+      <line class="grid" x1="62" y1="153.3" x2="704" y2="153.3"/>
+      <text class="ytick" x="54" y="156.8">50,000</text>
+      <line class="grid" x1="62" y1="130.7" x2="704" y2="130.7"/>
+      <text class="ytick" x="54" y="134.2">52,000</text>
+      <line class="grid" x1="62" y1="108.2" x2="704" y2="108.2"/>
+      <text class="ytick" x="54" y="111.7">54,000</text>
+      <line class="grid" x1="62" y1="85.6" x2="704" y2="85.6"/>
+      <text class="ytick" x="54" y="89.1">56,000</text>
+      <line class="grid" x1="62" y1="63.1" x2="704" y2="63.1"/>
+      <text class="ytick" x="54" y="66.6">58,000</text>
+      <line class="grid" x1="62" y1="40.5" x2="704" y2="40.5"/>
+      <text class="ytick" x="54" y="44.0">60,000</text>
+      <line class="grid" x1="62" y1="18.0" x2="704" y2="18.0"/>
+      <text class="ytick" x="54" y="21.5">62,000</text>
+      <text class="xtick" x="62.0" y="288">1980</text>
+      <text class="xtick" x="133.3" y="288">1985</text>
+      <text class="xtick" x="204.7" y="288">1990</text>
+      <text class="xtick" x="276.0" y="288">1995</text>
+      <text class="xtick" x="347.3" y="288">2000</text>
+      <text class="xtick" x="418.7" y="288">2005</text>
+      <text class="xtick" x="490.0" y="288">2010</text>
+      <text class="xtick" x="561.3" y="288">2015</text>
+      <text class="xtick" x="632.7" y="288">2020</text>
+      <text class="xtick" x="704.0" y="288">2025</text>
+      <polyline class="line" points="62.0,35.4 133.3,35.9 204.7,42.6 276.0,45.6 347.3,56.7 418.7,81.2 490.0,126.7 561.3,160.3 632.7,212.3 704.0,246.4"/>
+      <circle class="dot peak" cx="62.0" cy="35.4" r="3"/>
+      <circle class="dot" cx="133.3" cy="35.9" r="3"/>
+      <circle class="dot" cx="204.7" cy="42.6" r="3"/>
+      <circle class="dot" cx="276.0" cy="45.6" r="3"/>
+      <circle class="dot" cx="347.3" cy="56.7" r="3"/>
+      <circle class="dot" cx="418.7" cy="81.2" r="3"/>
+      <circle class="dot" cx="490.0" cy="126.7" r="3"/>
+      <circle class="dot" cx="561.3" cy="160.3" r="3"/>
+      <circle class="dot" cx="632.7" cy="212.3" r="3"/>
+      <circle class="dot" cx="704.0" cy="246.4" r="3"/>
+      </svg></div>
+    </div>
+    <p class="chart-note">出典：国勢調査（1980〜2020年・現市域ベース）／令和7年国勢調査 人口速報集計（2025年）。1958年のピーク81,257人は基準が異なるためグラフから除外。</p>
+
+    <details class="raw">
+      <summary>人口の数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+      <tr><th>年</th><th>人口</th><th>備考</th></tr>
+      <tr><td><strong>1958</strong></td><td><strong>81,257</strong></td><td><strong>ピーク</strong></td></tr>
+      <tr><td>1980</td><td>60,456</td><td>ピークから −20,801</td></tr>
+      <tr><td>1985</td><td>60,411</td><td>−45。<strong>ほぼ横ばいの期間</strong></td></tr>
+      <tr><td>1990</td><td>59,817</td><td>−594（−1.0%）</td></tr>
+      <tr><td>1995</td><td>59,554</td><td>−263（−0.4%）</td></tr>
+      <tr><td>2000</td><td>58,571</td><td>−983（−1.7%）</td></tr>
+      <tr><td>2005</td><td>56,396</td><td>−2,175（−3.7%）。<strong>減少が本格化</strong></td></tr>
+      <tr><td>2010</td><td>52,356</td><td><strong>−4,040（−7.2%）</strong>。合併直後に加速</td></tr>
+      <tr><td>2015</td><td>49,377</td><td>−2,979（−5.7%）。<strong>5万人割れ</strong></td></tr>
+      <tr><td>2020</td><td>44,760</td><td>−4,617（−9.4%）</td></tr>
+      <tr><td>2025</td><td>41,739</td><td>−3,021（−6.7%）（速報値）</td></tr>
+    </table></div>
+    </details>
+
+    <div class="callout">
+      <strong>この表の読みどころは「1980〜1995年がほぼ横ばい」だったこと。</strong>
+      1980年60,456人 → 1995年59,554人で、<strong>15年間の減少はわずか902人（−1.5%）</strong>。
+      蔵ブームとラーメンで全国区になった時期と重なり、<strong>人口が減らない地方都市だった</strong>。<br>
+      崩れたのは<strong>2000年以降</strong>で、2000→2025の25年で<strong>−16,832人（−28.7%）</strong>。
+      特に<strong>2005→2010の−7.2%</strong>は、2006年の合併で加わった旧4町村（熱塩加納・塩川・山都・高郷）の減少が乗ったもの。
+      <strong>合併は面積と行政コストを増やしたが、人口減少は止めなかった</strong>。<br>
+      45年で−31%というペースは、<a href="260913_inawashiro.html#s04" style="color:inherit">猪苗代（−39%）</a>よりは緩く、
+      <a href="260913_koriyama.html#s04" style="color:inherit">郡山（+9.8%）</a>とは正反対。
+      <strong>同じ福島県内で、45年の人口変化が+10%から−39%まで開いている</strong>のがこの県の実態。
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">日本の大企業との関連</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <div class="callout">
+      喜多方の大企業との関係は<strong>「工場が2つと、酒蔵がいくつか」</strong>。
+      本社機能を持つ全国企業はないが、<strong>レゾナック（旧・昭和電工）と本田金属技術</strong>という
+      素材・部品の大手工場が立地している。
+    </div>
+
+    <div class="sub-h">立地する大企業の工場</div>
+    <table class="t">
+      <tr><th>企業</th><th>内容</th></tr>
+      <tr><td><strong>レゾナック 喜多方事業所</strong></td><td>旧・昭和電工の事業所。<strong>レゾナック・ホールディングスは昭和電工と日立化成が統合してできた総合化学メーカー</strong>で、半導体材料で世界的なポジションを持つ。<strong>喜多方に化学系の大手が立地している</strong>ことが、この市の製造品出荷額819億円の背骨</td></tr>
+      <tr><td><strong>本田金属技術 喜多方工場</strong></td><td>ホンダ系のアルミ鋳造・鍛造メーカー。<strong>エンジン部品やホイールなどの軽合金部品</strong>を手がける。自動車のサプライチェーンの末端が会津にも伸びている例</td></tr>
+    </table>
+
+    <div class="sub-h">地場の醸造 — この街の本業</div>
+    <table class="t">
+      <tr><th>企業</th><th>内容</th></tr>
+      <tr><td><strong>大和川酒造店</strong></td><td><strong>1790年（寛政2年）創業</strong>。喜多方の蔵のなかでも屈指の老舗で、<strong>蔵内に飯豊山の伏流水が湧く</strong>。代表銘柄は「弥右衛門」。歴史的な蔵を公開する「北方風土館」を運営し、<strong>醸造と観光を1つの敷地で両立させている</strong></td></tr>
+      <tr><td><strong>ほまれ酒造</strong></td><td><strong>1918年（大正7年）創業</strong>。<strong>「会津ほまれ」</strong>で知られ、飯豊山系の伏流水を仕込み水に使う。国際的な日本酒コンテストでの受賞が多い蔵</td></tr>
+      <tr><td>味噌・醤油の蔵元</td><td>小田付を中心に、酒・味噌・醤油の蔵が集積してきた。<strong>約4,200棟という蔵の数は、この醸造業の集積の物量的な結果</strong></td></tr>
+      <tr><td><strong>坂内食堂 / まこと食堂</strong></td><td>喜多方ラーメンの代表店。<strong>坂内食堂は「喜多方ラーメン坂内」として全国にフランチャイズ展開</strong>しており、<strong>この街のラーメンが全国チェーン化した数少ない例</strong>。なお<a href="260913_koriyama.html#s05" style="color:inherit">郡山に本社を置く幸楽苑</a>も会津のラーメン文化から出た企業で、<strong>福島のラーメンは2系統で全国化している</strong></td></tr>
+    </table>
+
+    <div class="callout">
+      <strong>喜多方の企業構造は「域外資本の工場＋地場の醸造」の二層。</strong>
+      前者は雇用と製造品出荷額（819億円）を供給するが<strong>意思決定は市外</strong>、
+      後者は市の文化そのものだが<strong>規模は小さい</strong>。<br>
+      この構造で面白いのは、<strong>観光資源（蔵・ラーメン）が後者から生まれている</strong>こと。
+      <a href="260904_muroran.html#s05" style="color:inherit">室蘭が「2社で街ができている」</a>のとは違って、
+      喜多方は<strong>大企業が街のアイデンティティを作っていない</strong>。
+      だから工場が1つ減っても街のイメージは変わらないが、<strong>酒蔵やラーメン店が減ると街の中身が直接減る</strong>。
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">直近30年の出来事と、ゆかりの企業</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <div class="callout">
+      喜多方の30年は<strong>「合併して広くなり、蔵が文化財になり、ラーメンが減り始めた」</strong>という線。
+      2006年の合併で面積が554km²になり、2018年に小田付が重伝建に選定され、
+      2025年に<strong>喜多方ラーメンの原点・源来軒が101年で閉店</strong>した。
+    </div>
+
+    <div class="sub-h">30年の年表</div>
+    <table class="t">
+      <tr><th>年</th><th>出来事</th><th>意味</th></tr>
+      <tr><td>1990年代</td><td>「蔵の町・ラーメンの町」として観光が定着。<strong>人口は1995年まで6万人前後で横ばい</strong></td><td>知名度がピークに近い時期。ラーメン店は旧市域で<strong>約120軒</strong></td></tr>
+      <tr><td><strong>2006/1/4</strong></td><td><strong>熱塩加納村・塩川町・山都町・高郷村と合併。</strong>面積が554.63km²に</td><td>飯豊山・熱塩温泉・山都そばが市域に。<strong>同時に、維持すべき道路・上下水道・施設が一気に増えた</strong>——これが<a href="#s03" style="color:inherit">将来負担比率76.1%とインフラ資産1,009億</a>の起点</td></tr>
+      <tr><td>2006/1</td><td>最低気温<strong>−18.1℃</strong>を記録</td><td>特別豪雪地帯としての条件。<strong>寒暖差が醸造に効く一方、除雪と災害復旧のコストが毎年乗る</strong></td></tr>
+      <tr><td>2011/3/11</td><td>東日本大震災。会津地方は沿岸部ほどの直接被害はなかったが、<strong>観光は風評で大きく落ちた</strong></td><td>福島県全体の観光客入込数が急減。<strong>被災していないのに客が来ない</strong>という、内陸観光地に共通の打撃</td></tr>
+      <tr><td>2010〜</td><td><strong>ラーメン店が約110軒から減少に転じる</strong></td><td>主因は<strong>店主の高齢化</strong>。人口減少より先に<strong>供給側が細る</strong></td></tr>
+      <tr><td><strong>2018/3・8</strong></td><td><strong>小田付が市の伝統的建造物群保存地区に決定（3月）、国の重要伝統的建造物群保存地区に選定（8月）。</strong>約15.5ha、伝統的建造物190件・工作物25件・環境物件13件</td><td>「蔵のまち」が<strong>制度として保存される</strong>ようになった。全国130地区（2026年9月時点）のうちの1つ</td></tr>
+      <tr><td><strong>2024</strong></td><td>市が<strong>「ラーメンの日」を制定</strong>。ラーメン店は<strong>約90軒</strong>に</td><td>2010年の約110軒から20軒減。<strong>資源を守るための行政の動き</strong>が明確になった年</td></tr>
+      <tr><td><strong>2025/9/24</strong></td><td><strong>源来軒が101年で閉店。</strong>1924年に潘欽星が屋台を引いたのが喜多方ラーメンの原点</td><td><strong>この街の観光資源の「原点」そのものが消えた</strong>という象徴的な出来事</td></tr>
+      <tr><td><strong>2025/10</strong></td><td>国勢調査で<strong>41,739人（速報）</strong></td><td>1958年のピーク81,257人から<strong>約49%減</strong>。<strong>67年で人口が半分になった</strong></td></tr>
+    </table>
+
+    <div class="sub-h">ゆかりの企業・店 — 4つのエピソード</div>
+    <table class="t">
+      <tr><th>企業・店</th><th>この街との関係</th></tr>
+      <tr><td><strong>源来軒</strong></td><td><strong>1924年、浙江省出身の潘欽星が喜多方で麺を打ち屋台を引いたのが始まり。</strong>のちに店を構え、市内の食堂が同様のラーメンを出すようになって<strong>「喜多方ラーメン」という地域ジャンルが生まれた</strong>。<strong>2025年9月24日に101年で閉店</strong>。日本三大ラーメンの1つの原点が、創業者の街から消えたことになる</td></tr>
+      <tr><td><strong>大和川酒造店</strong></td><td><strong>1790年創業</strong>で、喜多方の醸造史そのもの。蔵内に<strong>飯豊山の伏流水</strong>が湧き、その水で「弥右衛門」を仕込む。歴史的な蔵を<strong>北方風土館</strong>として公開し、<strong>「働いている蔵」と「見せる蔵」を同じ場所で成立させている</strong>——喜多方の観光がうまくいっている部分の代表例</td></tr>
+      <tr><td><strong>レゾナック（旧・昭和電工）</strong></td><td>喜多方事業所。<strong>昭和電工と日立化成が統合して生まれた総合化学メーカー</strong>で、半導体材料で世界的な地位を持つ。<strong>会津の山あいに、グローバル素材産業の一部が刺さっている</strong>という構図</td></tr>
+      <tr><td><strong>坂内食堂</strong></td><td>喜多方ラーメンの代表格で、<strong>「喜多方ラーメン坂内」として全国にフランチャイズ展開</strong>。<strong>ご当地ラーメンを全国の駅前で食べられる形にした</strong>という点で、この街の資源を最も広く流通させた存在。ただし<strong>フランチャイズが増えるほど、本場に行く理由は相対的に薄まる</strong>という副作用もある</td></tr>
+    </table>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">出身の有名人</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">Wikipedia「喜多方市」の著名な出身者に挙げられている人物。</p>
+
+    <table class="t">
+      <tr><th>名前</th><th>肩書き</th></tr>
+      <tr><td><strong>瓜生岩子</strong></td><td>社会事業家（1829〜1897）。熱塩加納の出身で、<strong>戊辰戦争の負傷者救護や孤児・貧民の救済に尽くし、日本の社会福祉の先駆者とされる</strong>。<strong>女性として初めて藍綬褒章を受章</strong>。浅草寺境内に銅像がある</td></tr>
+      <tr><td><strong>戸辺誠</strong></td><td>将棋棋士（九段）。<strong>「戸辺流」の振り飛車</strong>で知られ、解説者としても活動</td></tr>
+      <tr><td>唐橋東</td><td>政治家。元衆議院議員</td></tr>
+      <tr><td>小熊慎司</td><td>政治家。衆議院議員</td></tr>
+      <tr><td>野路ももこ</td><td>女優</td></tr>
+      <tr><td><strong>潘欽星</strong></td><td>（出身ではないが）中国・浙江省から来て<strong>1924年に喜多方でラーメンの屋台を始めた人物</strong>。<strong>この街の最大の観光資源を作った外国人</strong>で、源来軒の創業者</td></tr>
+    </table>
+
+    <div class="callout">
+      <strong>人口4万人の市としては、輩出の層は厚くない。</strong>
+      ただし<strong>瓜生岩子</strong>という、日本の社会福祉史に名前が残る人物を出していることは大きい——
+      戊辰戦争で最も過酷な側に置かれた会津で、<strong>敵味方を分けずに負傷者を救護した</strong>という経歴は、
+      この地域の歴史そのものと結びついている。<br>
+      そして<strong>この街を全国区にしたのは、地元出身者ではなく中国から来た潘欽星だった</strong>という点は、
+      喜多方を語るうえで外せない。<strong>ご当地グルメの起源が移民である</strong>という構図は、
+      <a href="260904_muroran.html#s08" style="color:inherit">室蘭やきとりが製鉄所の副産物だった</a>のと同じく、
+      <strong>ご当地の食は「その土地で偶然起きたこと」から生まれる</strong>ことを示している。
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">観光スポット</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+    <div class="spot-grid">
+      <div class="spot-card">
+        <div class="spot-name">小田付（重要伝統的建造物群保存地区）</div>
+        <div class="spot-loc">田付川の東 / 2018年8月 国選定</div>
+        <div class="spot-desc"><strong>1582年に町割りされた在郷町</strong>。定期市から発展し、<strong>酒・味噌・醤油の醸造を中心とする商業地</strong>になった。保存地区は<strong>約15.5ha</strong>で、店舗・主屋・土蔵など<strong>伝統的建造物190件</strong>を含む。全国130地区の重伝建のひとつ。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">蔵のまち（市内全域）</div>
+        <div class="spot-loc">市街地から農村部まで / 約4,200棟</div>
+        <div class="spot-desc">喜多方の蔵は<strong>観光用に作られた景観ではなく、醸造業の設備</strong>。店蔵・味噌蔵・座敷蔵など用途もさまざまで、<strong>市街地だけでなく農村部にも残っている</strong>のが他の「蔵の町」と違う点。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">喜多方ラーメン</div>
+        <div class="spot-loc">市内 約90軒（2024年）</div>
+        <div class="spot-desc"><strong>札幌・博多と並ぶ日本三大ラーメン。</strong>特徴は<strong>幅約4mmの平打ち熟成多加水麺</strong>と、<strong>醤油味の透明な豚骨スープ</strong>（豚骨＋煮干しのブレンドも多い）。<strong>朝から食べる「朝ラー」</strong>の文化があり、<strong>2025年9月に原点の源来軒が101年で閉店</strong>した。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">日中線記念自転車歩行者道（しだれ桜）</div>
+        <div class="spot-loc">旧・日中線跡 / 1984年廃止</div>
+        <div class="spot-desc"><strong>廃線跡がそのまま桜並木になった</strong>遊歩道で、約3kmに<strong>しだれ桜が約1,000本</strong>並ぶ。日中線は1938年に喜多方〜熱塩間で開通したが、米沢への延伸は実現せず<strong>盲腸線のまま廃止</strong>された。<strong>失敗した鉄道が最大の春の観光資源になっている</strong>。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">熱塩温泉 / 日中温泉</div>
+        <div class="spot-loc">旧・熱塩加納村 / 2006年に市域へ</div>
+        <div class="spot-desc">飯豊連峰の麓の温泉地。<strong>市の入湯税収4,326万円の大半がここから</strong>。合併で市域に入った観光資産で、<strong>喜多方の「泊まれる場所」の中心</strong>。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">飯豊山・新宮熊野神社</div>
+        <div class="spot-loc">市北部 / 飯豊連峰</div>
+        <div class="spot-desc"><strong>市域が山頂まで幅1mの回廊状に伸びている</strong>という日本地図の名物。明治38年の県境争いの決着で、登山道と飯豊山神社奥宮が福島県領になった。<strong>新宮熊野神社の「長床」</strong>は平安期の様式を伝える国指定重要文化財で、大イチョウの黄葉が名高い。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">産業ベンチマーク — ラーメンと「蔵」を全国と比べる</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <div class="callout">
+      喜多方が全国と勝負できるものは<strong>製造品出荷額（819億円）ではなく、ラーメンと蔵</strong>。
+      そして両方とも<strong>「規模」ではなく「密度」で日本一だった</strong>——
+      人口37,000人に120軒のラーメン店、554km²に4,200棟の蔵。
+      <strong>この密度がいま供給側から崩れつつある</strong>、というのがベンチマークの結論になる。
+    </div>
+
+    <div class="sub-h">① 日本三大ラーメンの中での位置</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>ご当地ラーメン</th><th>都市の人口</th><th>特徴</th><th>読みどころ</th></tr>
+      <tr><td><strong>札幌ラーメン</strong></td><td>札幌市 約197万人</td><td>味噌が代表格。ラードで熱を閉じ込める</td><td><strong>政令市を背景にした巨大な内需</strong>。観光がなくても成立する</td></tr>
+      <tr><td><strong>博多ラーメン</strong></td><td>福岡市 約164万人</td><td>豚骨白湯・細麺・替玉</td><td>同じく政令市。<strong>屋台文化と全国チェーン（一風堂・一蘭）で世界展開</strong></td></tr>
+      <tr><td><strong>喜多方ラーメン</strong></td><td><strong>喜多方市 約4.2万人</strong></td><td><strong>平打ち熟成多加水麺・醤油の透明な豚骨スープ・朝ラー</strong></td><td><strong>人口が他の2つの1/40以下。</strong>都市の規模ではなく<strong>店舗密度</strong>で三大の一角に入った、極めて異例のケース</td></tr>
+    </table></div>
+
+    <table class="t">
+      <tr><th>指標</th><th>喜多方</th><th>読みどころ</th></tr>
+      <tr><td><strong>人口当たり店舗数（最盛期）</strong></td><td>旧市域<strong>人口37,000人に約120軒</strong></td><td><strong>約308人に1軒</strong>という密度で<strong>対人口比 日本一</strong>だった。札幌・博多は都市規模で勝負しているので、この指標では喜多方が上</td></tr>
+      <tr><td>現在の店舗数</td><td><strong>約90軒</strong>（2024年）</td><td>2010年の約110軒から<strong>18%減</strong>。現市域人口41,739人で割ると<strong>約464人に1軒</strong>——<strong>密度は落ちたが、それでも全国屈指</strong></td></tr>
+      <tr><td><strong>減少の理由</strong></td><td><strong>店主の高齢化</strong></td><td>需要が減ったのではなく<strong>作る人がいなくなっている</strong>。<strong>2025年9月に原点の源来軒が101年で閉店</strong>したのが象徴</td></tr>
+      <tr><td>全国化の形</td><td>坂内食堂系のフランチャイズ／<a href="260913_koriyama.html#s05" style="color:inherit">幸楽苑（郡山本社）</a></td><td><strong>福島のラーメンは2系統で全国化している。</strong>ただし全国で食べられるようになるほど、<strong>本場に行く理由は相対的に薄れる</strong>という構造的ジレンマがある</td></tr>
+    </table>
+
+    <div class="sub-h">② 「蔵」を重伝建の枠で全国と比べる</div>
+    <table class="t">
+      <tr><th>指標</th><th>数値</th><th>読みどころ</th></tr>
+      <tr><td>重要伝統的建造物群保存地区</td><td>全国<strong>130地区 / 107市町村</strong>（2026年9月時点）</td><td>合計面積 約4,072ha、保護されている伝統的建造物・環境物件は約30,770件。<strong>43都道府県に分布</strong>（山形・東京・神奈川・熊本を除く）</td></tr>
+      <tr><td><strong>喜多方市 小田付</strong></td><td><strong>約15.5ha / 伝統的建造物190件</strong></td><td>2018年8月選定。<strong>全国130地区の中では中規模</strong>。在郷町・醸造町という類型</td></tr>
+      <tr><td><strong>市内全域の蔵</strong></td><td><strong>約4,200棟</strong></td><td><strong>ここが喜多方の本当の強み。</strong>重伝建は15.5haの一角に過ぎず、蔵は<strong>市街地から農村部まで市内全域に散らばっている</strong>。「保存地区の中にだけ古い町並みがある」多くの重伝建の町とは規模が違う</td></tr>
+      <tr><td>弱点</td><td>散らばっていること</td><td>4,200棟が広域に分散しているので<strong>歩いて回れる密度になっていない</strong>。川越・倉敷のような「1本の通りで完結する」形にはならず、<strong>観光としての回遊性は低い</strong></td></tr>
+    </table>
+
+    <div class="callout">
+      <strong>この2つを並べると、喜多方の課題がはっきりする。</strong>
+      ラーメンは<strong>密度で日本一を取ったが、担い手が減って密度が落ちている</strong>。
+      蔵は<strong>棟数で圧倒的だが、散らばっていて密度がない</strong>。<br>
+      つまりこの市の資源は両方とも<strong>「密度」という同じ変数で説明できる</strong>——
+      ラーメンは密度を失いつつあり、蔵はもともと密度がない。
+      <a href="260904_muroran.html#s09" style="color:inherit">室蘭が「量では負けたが難易度で残った」</a>のに対し、
+      <strong>喜多方が守るべきは難易度でも量でもなく、密度</strong>ということになる。
+    </div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">ダウンタウンとホテル</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <div class="sub-h">ダウンタウン — 駅と街の中心がずれている</div>
+    <table class="t">
+      <tr><th>エリア</th><th>中身</th></tr>
+      <tr><td><strong>喜多方駅前</strong></td><td>磐越西線の玄関口だが、<strong>街の中心ではない</strong>。駅から蔵のまち（ふれあい通り・小田付）までは徒歩10〜20分で、<strong>観光の重心は駅から離れている</strong></td></tr>
+      <tr><td><strong>ふれあい通り（中央通り）</strong></td><td>蔵を活かした店舗が並ぶ、実質的な観光のメインストリート。<strong>ラーメン店・土産物・蔵カフェ</strong>が集まる</td></tr>
+      <tr><td><strong>小田付（重伝建）</strong></td><td>田付川の東側。<strong>1582年の町割りから続く在郷町</strong>で、酒・味噌・醤油の蔵元が今も営業している。<strong>「観光地化された通り」ではなく、生活と生業が続いている地区</strong></td></tr>
+      <tr><td>塩川・山都・高郷（旧町村部）</td><td>2006年に合併した地域。<strong>塩川は阿賀川沿いの旧宿場、山都はそばの産地、高郷は化石で知られる</strong>。市域は広いが、それぞれの中心は独立している</td></tr>
+      <tr><td><strong>熱塩温泉</strong></td><td>市北部。<strong>この市で実質的に「泊まる場所」</strong>。入湯税4,326万円の大半がここ</td></tr>
+    </table>
+
+    <div class="callout">
+      <strong>喜多方は「駅・観光地・宿泊地」が3か所に分かれている。</strong>
+      駅前に降りても蔵はなく、蔵の街を歩いても泊まる場所はなく、泊まるなら山の温泉へ行く。
+      <strong>この分散が、日帰り観光地になっている最大の理由</strong>。<br>
+      <a href="260913_koriyama.html#s10" style="color:inherit">郡山が駅前にすべてを集約している</a>のと対照的で、
+      喜多方は<strong>資源の総量では負けていないのに、動線で負けている</strong>。
+    </div>
+
+    <div class="sub-h">Tier 1 ホテル</div>
+    <table class="t">
+      <tr><th>区分</th><th>中身</th></tr>
+      <tr><td>市内</td><td><strong>シティホテル・ラグジュアリー枠は市内にない。</strong>駅前に小規模なビジネスホテルと旅館がある程度で、宿泊供給は薄い</td></tr>
+      <tr><td><strong>エリアの最上位＝熱塩温泉</strong></td><td>市北部の<strong>熱塩温泉</strong>が市域内での実質Tier 1。飯豊連峰の麓の静かな温泉地で、旅館が数軒</td></tr>
+      <tr><td><strong>圏域の最上位＝会津東山・芦ノ牧 / 裏磐梯</strong></td><td>車で30分の<strong>会津若松（東山温泉・芦ノ牧温泉）</strong>、40〜50分の<a href="260913_inawashiro.html#s10" style="color:inherit"><strong>裏磐梯・猪苗代</strong></a>が圏域の宿泊の主役。<strong>喜多方の観光客は、泊まるときは市外へ出る</strong></td></tr>
+    </table>
+
+    <div class="callout">
+      <strong>これが喜多方の観光の構造的な弱点。</strong>
+      ラーメンは<strong>昼（と朝）の商品</strong>で、蔵歩きも日中の体験。
+      <strong>夜の商品がないので、泊まる理由がない</strong>。<br>
+      会津若松から30分・郡山から1時間強という位置は、<strong>集客には有利だが宿泊には不利</strong>。
+      <a href="260904_muroran.html#s10" style="color:inherit">室蘭が工場夜景という夜の商品を持ちながら宿泊を登別に取られている</a>のと比べると、
+      喜多方は<strong>そもそも夜の商品を持っていない</strong>ぶん、より根が深い。
+      逆に言えば、<strong>「夜の蔵」を商品化できれば宿泊需要は作れる</strong>——大和川酒造店の北方風土館のような
+      「働いている蔵を見せる」形は、その方向のヒントになっている。
+    </div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">桃鉄の「喜多方駅」を読む</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <div class="callout">
+      喜多方駅は<strong>物件総額5,000万円・5物件・独占収益7,000万円</strong>。
+      <strong>5件すべてが「喜多方ラーメン屋」（各1,000万円・収益率70%）</strong>という、
+      桃鉄でも屈指の極端な駅。<strong>独占収益率140%</strong>は福島県5駅で最高で、
+      <strong>1年で投資額の1.4倍が返ってくる</strong>。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>物件名</th><th>価格</th><th>収益率</th><th>収益</th><th>何を指しているか</th></tr>
+      <tr><td><strong>喜多方ラーメン屋</strong>（5件）</td><td>各1,000万円</td><td><strong>70%</strong></td><td>各700万円</td><td><strong>喜多方ラーメン。</strong>1924年に潘欽星が屋台で始め、市内の食堂が広めた<strong>日本三大ラーメン</strong>のひとつ。<strong>5件すべてが同じ物件名</strong>なのは、<a href="#s09" style="color:inherit">人口37,000人に約120軒という日本一の店舗密度</a>をゲームが正確に表現した結果と読める</td></tr>
+      <tr><td colspan="2"><strong>物件総額</strong></td><td colspan="3"><strong>5,000万円</strong>（＝5件×1,000万円）</td></tr>
+      <tr><td colspan="2"><strong>独占収益</strong></td><td colspan="3"><strong>7,000万円</strong>（＝700万円×5件×独占ボーナス2倍）／<strong>独占収益率140%</strong></td></tr>
+    </table></div>
+
+    <div class="sub-h">読みどころ — 5,000万で買える「最強のコスパ駅」</div>
+    <table class="t">
+      <tr><th>#</th><th>論点</th><th>中身</th></tr>
+      <tr><td>1</td><td><strong>独占収益率140%は福島県5駅で断トツ</strong></td><td>郡山5%・会津若松7%・いわき3%・福島2%に対し、喜多方は<strong>140%</strong>。<strong>投資額5,000万円に対して年7,000万円が返る</strong>ので、桃鉄では「序盤に必ず独占すべき駅」として定番の扱いを受けている</td></tr>
+      <tr><td>2</td><td><strong>物件総額は福島県で最小</strong></td><td>福島県全体の独占価格476億8,000万円に対し、喜多方は<strong>5,000万円（0.01%）</strong>。<a href="260913_koriyama.html#s11" style="color:inherit">郡山40.7億</a>・いわき220.2億・福島203.0億・会津若松12.4億と並べると桁が3〜4つ違う。<strong>これは実際の経済規模（製造品出荷額819億円）とも整合している</strong></td></tr>
+      <tr><td>3</td><td><strong>ラーメン一本というモノカルチャー</strong></td><td>蔵・日本酒・そば・温泉・飯豊山と観光資源は多いのに、桃鉄の喜多方は<strong>ラーメンしか物件がない</strong>。<strong>ゲームが拾う「この街といえば」が1つしかない</strong>ということで、<a href="#s09" style="color:inherit">知名度が1品目に集中している</a>という現実そのもの</td></tr>
+      <tr><td>4</td><td><strong>「ラーメン日本一」の対象駅</strong></td><td>桃鉄には臨時収入やイベントでラーメン関連の対象になる仕組みがあり、喜多方はその対象駅。<strong>安く独占できてイベントにも絡む</strong>ので、プレイヤーからの評価は実際の街の規模よりはるかに高い</td></tr>
+      <tr><td>5</td><td><strong>実在の街との一致度が高い</strong></td><td>桃鉄の物件が実態からズレる駅は多いが（<a href="260913_koriyama.html#s11" style="color:inherit">郡山は卸売1兆円が丸ごと欠けている</a>）、喜多方は<strong>「小さいがラーメンで全国区」という実態とゲームの評価がほぼ一致している</strong>数少ない駅。<strong>単価の低い商品を高密度で回して稼ぐ</strong>という構造まで含めて正確</td></tr>
+    </table>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>Wikipedia「喜多方市」「喜多方ラーメン」「喜多方市小田付伝統的建造物群保存地区」「大和川酒造店」「ほまれ酒造」「飯豊山神社」</li>
+      <li>福島県「令和6年度 財政状況資料集（喜多方市）」（総括表・普通会計の状況／歳入・歳出・税目別・財政指標）</li>
+      <li>喜多方市「統一的な基準による地方公会計制度に基づく財務書類（令和6年度・一般会計等）」（貸借対照表・行政コスト計算書・純資産変動計算書・資金収支計算書）</li>
+      <li>総務省統計局 国勢調査（1980〜2020年）／令和7年国勢調査 人口速報集計（2025年）</li>
+      <li>帝国書院「工業生産（出荷額）：2023年：福島県」（2024年経済構造実態調査／喜多方819億円・県計56,554億円）</li>
+      <li>文化庁「伝統的建造物群保存地区」「重要伝統的建造物群保存地区の選定について」（全国130地区・107市町村／2026年9月時点）／喜多方市「小田付伝統的建造物群保存地区について」</li>
+      <li>政府広報オンライン HIGHLIGHTING Japan（2024年11月「日本三大ラーメンの一つとされる喜多方ラーメン」）／蔵の町喜多方老麺会</li>
+      <li>日本経済新聞「福島に『へその緒』正体は？ 県境またぐ飯豊山への道」／喜多方市「飯豊山登山情報」</li>
+      <li>桃太郎電鉄 ～昭和 平成 令和も定番！～ 攻略情報（攻略大百科「福島県の物件一覧」／ゲームエイト／桃鉄令和ラボ） ※物件データはゲーム内の数値</li>
+    </ul>
+  </div>
+
+  <div class="sec" style="margin-top:40px">
+    <div class="info-box">
+      <ul>
+        <li><a href="260913_fukushima.html" style="color:inherit">福島県に戻る</a></li>
+        <li><a href="260913_koriyama.html" style="color:inherit">郡山市を見る</a></li>
+        <li><a href="260913_inawashiro.html" style="color:inherit">猪苗代町を見る</a></li>
+        <li><a href="index.html" style="color:inherit">geo-history トップに戻る</a></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>福島県 — 県リサーチ 260913</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* 人口推移グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="260831_japan.html">japan</a>
+    <span class="sep">/</span>
+    <span class="cur">fukushima</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Prefecture Research — 260913</div>
+    <h1>福島県 / Fukushima</h1>
+    <div class="hero-country">日本 · 東北地方 / 県庁所在地 福島市 / 面積 全国3位</div>
+  </div>
+
+  <div class="callout">
+    福島県は<strong>「県庁＝福島市／商業＝郡山市／工業＝いわき市」という三極構造</strong>で、
+    さらに<strong>浜通り・中通り・会津</strong>という性格の違う3地方に分かれている。
+    <strong>1つの県の中で、気候も歴史も経済圏も分かれている</strong>のがこの県の最大の特徴。
+    ここでは県全体の指標と、配下の市町村の比較を置く。
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">県全体の経済指標</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+    <table class="t">
+      <tr><th>指標</th><th>数値</th><th>備考</th></tr>
+      <tr><td><strong>人口</strong></td><td><strong>1,711,937人</strong></td><td>令和7年国勢調査 人口速報集計（2025年10月1日現在・2026年5月29日公表）。<strong>前回比 −121,215人（−6.6%）</strong>。世帯数734,134</td></tr>
+      <tr><td><strong>面積</strong></td><td><strong>13,782.81km²</strong></td><td><strong>全国3位</strong>（北海道・岩手に次ぐ）。人口密度は約124人/km²</td></tr>
+      <tr><td>市町村数</td><td><strong>13市31町15村</strong>（計59）</td><td>13市13郡31町15村</td></tr>
+      <tr><td><strong>名目 県内総生産</strong></td><td><strong>8兆3,950億円</strong></td><td>令和5年度（2023年度）県民経済計算。<strong>名目成長率+6.7%（2年ぶりのプラス）、実質+5.4%（3年連続のプラス）</strong>。令和4年度は7兆8,650億円で全国21位</td></tr>
+      <tr><td>1人当たり県民所得</td><td><strong>321万5千円</strong></td><td>令和5年度。2年ぶりのプラス</td></tr>
+      <tr><td><strong>製造品出荷額等</strong></td><td><strong>56,554億円</strong></td><td>2024年経済構造実態調査（2023年実績）。<a href="260903_hokkaido.html#s01" style="color:inherit">北海道（67,747億円）</a>の83%</td></tr>
+      <tr><td>産業構造の特徴</td><td>製造業・建設業が高く、卸売小売・情報通信が低い</td><td>県民経済計算の整理。<strong>ものづくりの県</strong>という性格</td></tr>
+      <tr><td>観光客入込数</td><td><strong>5,757万人</strong>（令和6年）</td><td>前年比+6.8%。中通り2,772万人／会津1,757万人／浜通り1,229万人</td></tr>
+    </table>
+    <div class="callout">
+      <strong>人口減少のペースが問題。</strong>2020→2025の5年間で<strong>−121,215人（−6.6%）</strong>という減少率は全国でも大きい部類で、
+      これは<a href="260913_kitakata.html" style="color:inherit">喜多方市</a>3つ分の人口が5年で消えた計算になる。<br>
+      一方で県内総生産は令和5年度に<strong>名目+6.7%</strong>と伸びている。
+      <strong>人口は減るがGDPは増える</strong>——復興関連投資と製造業の集積が効いており、
+      <strong>「人口＝経済」ではなくなっている</strong>のが震災後の福島県の特徴。
+    </div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">製造品出荷額 県内ランキング</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>順位</th><th>市町村</th><th>出荷額</th><th>県内シェア</th><th>地方</th></tr>
+      <tr><td>1</td><td><strong>いわき市</strong></td><td><strong>10,799億円</strong></td><td><strong>19.1%</strong></td><td>浜通り</td></tr>
+      <tr><td>2</td><td><strong><a href="260913_koriyama.html#s02" style="color:inherit">郡山市</a></strong></td><td><strong>7,083億円</strong></td><td>12.5%</td><td>中通り</td></tr>
+      <tr><td>3</td><td>福島市</td><td>4,758億円</td><td>8.4%</td><td>中通り（県庁所在地）</td></tr>
+      <tr><td>4</td><td>白河市</td><td>3,811億円</td><td>6.7%</td><td>中通り</td></tr>
+      <tr><td>5</td><td>相馬市</td><td>3,288億円</td><td>5.8%</td><td>浜通り</td></tr>
+      <tr><td>6</td><td>本宮市</td><td>3,107億円</td><td>5.5%</td><td>中通り</td></tr>
+      <tr><td>7</td><td>西郷村</td><td>2,952億円</td><td>5.2%</td><td>中通り（村で県内7位）</td></tr>
+      <tr><td>8</td><td>会津若松市</td><td>2,691億円</td><td>4.8%</td><td>会津</td></tr>
+      <tr><td>9</td><td>二本松市</td><td>2,065億円</td><td>3.7%</td><td>中通り</td></tr>
+      <tr><td>10</td><td>須賀川市</td><td>1,925億円</td><td>3.4%</td><td>中通り</td></tr>
+      <tr><td>—</td><td>伊達市</td><td>1,397億円</td><td>2.5%</td><td>中通り</td></tr>
+      <tr><td>—</td><td>南相馬市</td><td>1,027億円</td><td>1.8%</td><td>浜通り</td></tr>
+      <tr><td>—</td><td><strong><a href="260913_kitakata.html#s02" style="color:inherit">喜多方市</a></strong></td><td><strong>819億円</strong></td><td>1.4%</td><td>会津</td></tr>
+      <tr><td>—</td><td><strong><a href="260913_inawashiro.html#s02" style="color:inherit">猪苗代町</a></strong></td><td><strong>71億円</strong></td><td>0.13%</td><td>会津</td></tr>
+    </table></div>
+    <p style="font-size:12.5px;color:var(--muted);margin:-4px 0 20px">出典：帝国書院「工業生産（出荷額）：2023年：福島県」（2024年経済構造実態調査）。県計 56,554億円。秘匿措置により一部市町村は非公表。</p>
+    <div class="callout">
+      <strong>上位3市で県内の40%。</strong>いわき・郡山・福島で22,640億円（40.0%）。
+      ただし<a href="260903_hokkaido.html#s02" style="color:inherit">北海道が苫小牧1市で21.1%という極端な偏り</a>を持つのに対し、
+      福島は<strong>1位のいわきでも19.1%で、上位が比較的なだらかに並ぶ</strong>——<strong>分散型の工業構造</strong>。<br>
+      もうひとつの読みどころは<strong>会津の薄さ</strong>。会津地方で上位に入るのは会津若松（2,691億円・4.8%）だけで、
+      <a href="260913_kitakata.html" style="color:inherit">喜多方は819億円（1.4%）</a>、
+      <a href="260913_inawashiro.html" style="color:inherit">猪苗代は71億円（0.13%）</a>。
+      <strong>会津は「工業の地方」ではなく「観光と農業の地方」</strong>という性格が、この表にそのまま出ている。<br>
+      なお<strong>西郷村が2,952億円で県内7位</strong>というのも特徴的で、白河・西郷は<strong>東北道と新幹線に沿った内陸工業の集積地</strong>。
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">3地方区分 — 浜通り・中通り・会津</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+
+    <div class="callout">
+      福島県を理解する最初の補助線が<strong>この3分割</strong>。
+      南北に走る<strong>阿武隈高地</strong>と<strong>奥羽山脈</strong>という2本の山脈が県を縦に3つに割っており、
+      <strong>気候も、歴史も、向いている方角も違う</strong>。
+      「福島県」という1つの単位で語ると必ず外すのはこのため。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>地方</th><th>人口シェア</th><th>気候</th><th>性格</th><th>主な市町村</th></tr>
+      <tr><td><strong>浜通り</strong></td><td>約24%</td><td><strong>太平洋側気候</strong>。冬の降雪が少なく温暖</td><td><strong>関東との結びつきが強い。</strong>県内最大の工業都市いわきを擁し、原発事故の被災地域でもある</td><td>いわき市・相馬市・南相馬市・双葉郡</td></tr>
+      <tr><td><strong>中通り</strong></td><td><strong>約62%</strong></td><td>内陸盆地。夏は暑く冬は寒い</td><td><strong>人口の6割が集中。</strong>東北新幹線・東北自動車道が貫き、<strong>福島市・郡山市・白河市の3極</strong>がある</td><td><a href="260913_koriyama.html" style="color:inherit">郡山市</a>・福島市・白河市・須賀川市・本宮市</td></tr>
+      <tr><td><strong>会津</strong></td><td>約14%</td><td><strong>日本海側気候</strong>。豪雪地帯・大陸性</td><td><strong>会津藩の歴史文化が濃い。</strong>観光と農業が主で、工業の集積は薄い</td><td>会津若松市・<a href="260913_kitakata.html" style="color:inherit">喜多方市</a>・<a href="260913_inawashiro.html" style="color:inherit">猪苗代町</a>・南会津</td></tr>
+    </table></div>
+
+    <table class="t">
+      <tr><th>#</th><th>この3分割から読めること</th></tr>
+      <tr><td>1</td><td><strong>面積は全国3位なのに、人口の62%が中通りに集中している。</strong>13,782.81km²のうち会津地方が最も広いが、人口シェアは14%。<strong>「広い県」の実態は「広い会津と、人が住む中通り」</strong>。</td></tr>
+      <tr><td>2</td><td><strong>浜通りは関東を向いている。</strong>常磐線・常磐道で東京と直結し、経済圏としては北関東の延長。<strong>いわき市が「東北」ではなく「北関東」の感覚に近い</strong>のはこのため。</td></tr>
+      <tr><td>3</td><td><strong>会津は新潟を向いている。</strong>磐越西線・磐越道で新潟とつながり、気候も日本海側。<a href="260913_kitakata.html#s01" style="color:inherit">喜多方市は西で新潟県と接している</a>。<strong>同じ県内でも、会津から浜通りへ行くより新潟へ行くほうが近い</strong>という感覚がある。</td></tr>
+      <tr><td>4</td><td><strong>中通りだけが「福島県」として完結している。</strong>県庁（福島市）も、商業の中心（郡山市）も、新幹線も高速もここ。<strong>3地方のうち中通りだけが県内で自己完結し、浜通りは関東、会津は新潟を向いている</strong>——これが福島県のまとまりにくさの構造的な理由。</td></tr>
+      <tr><td>5</td><td><strong>観光客入込数（令和6年）は中通り2,772万人 / 会津1,757万人 / 浜通り1,229万人。</strong>人口シェア14%の会津が観光では31%を取っている。<strong>会津は人口と観光の比率が最もねじれている地方</strong>。</td></tr>
+    </table>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">市町村（Cities）</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+    <div class="spot-grid">
+      <a class="spot-card" href="260913_koriyama.html" style="text-decoration:none">
+        <div class="spot-name">郡山市 / Koriyama</div>
+        <div class="spot-loc">中通り · 郡山盆地 / 人口約31.5万</div>
+        <div class="spot-desc">県内最大。猪苗代湖から130kmの安積疏水で作られた街。年間商品販売額1兆4,014億円の70%が卸売。1991年に世界初のリチウムイオン電池を量産した工場がある。</div>
+      </a>
+      <a class="spot-card" href="260913_kitakata.html" style="text-decoration:none">
+        <div class="spot-name">喜多方市 / Kitakata</div>
+        <div class="spot-loc">会津 · 県内最西端の市 / 人口約4.2万</div>
+        <div class="spot-desc">醸造業が建てた蔵が約4,200棟。日本三大ラーメンの一角で、旧市域は人口37,000人に約120軒という店舗密度で日本一だった。2018年に小田付が重伝建に選定。</div>
+      </a>
+      <a class="spot-card" href="260913_inawashiro.html" style="text-decoration:none">
+        <div class="spot-name">猪苗代町 / Inawashiro</div>
+        <div class="spot-loc">会津 · 磐梯山と猪苗代湖 / 人口約1.2万</div>
+        <div class="spot-desc">日本4位の湖（103.24km²）と日本百名山。1882年に郡山へ、1914年に東京へ水と電気を送った町。1888年の噴火が裏磐梯の湖沼群を作った。野口英世の生地。</div>
+      </a>
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">3市町の比較</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>市町</th><th>人口<br>(2025国調速報)</th><th>面積</th><th>売っている資源</th><th>製造品出荷額<br>(2023)</th><th>財政力指数</th><th>45年の人口変化<br>(1980→2025)</th></tr>
+      <tr><td><strong><a href="260913_koriyama.html" style="color:inherit">郡山</a></strong></td><td>314,625</td><td>757.20km²</td><td><strong>結節点・卸売・本社機能</strong></td><td>7,083億円</td><td><strong>0.81</strong></td><td><strong>+9.8%</strong>（2005年ピーク）</td></tr>
+      <tr><td><strong><a href="260913_kitakata.html" style="color:inherit">喜多方</a></strong></td><td>41,739</td><td>554.63km²</td><td><strong>蔵・ラーメン・日本酒</strong></td><td>819億円</td><td>0.37</td><td><strong>−31.0%</strong></td></tr>
+      <tr><td><strong><a href="260913_inawashiro.html" style="color:inherit">猪苗代</a></strong></td><td>11,964</td><td>394.85km²</td><td><strong>湖・山・水力・野口英世</strong></td><td>71億円</td><td>0.37</td><td><strong>−39.3%</strong></td></tr>
+    </table></div>
+
+    <div class="sub-h">財政を並べる（令和6年度決算・一般会計等）</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>指標</th><th>郡山市</th><th>喜多方市</th><th>猪苗代町</th><th>読みどころ</th></tr>
+      <tr><td>歳入 / 歳出</td><td>1,623.0億 / 1,551.3億</td><td>295.2億 / 291.3億</td><td>94.9億 / 89.2億</td><td>—</td></tr>
+      <tr><td><strong>市町税の構成比</strong></td><td><strong>32.0%</strong></td><td>16.3%</td><td>20.2%</td><td>郡山だけが自前の税で3割を賄う</td></tr>
+      <tr><td><strong>地方交付税の構成比</strong></td><td>8.9%</td><td><strong>37.8%</strong></td><td><strong>43.0%</strong></td><td><strong>会津の2自治体は歳入の4割前後が交付税</strong></td></tr>
+      <tr><td>財政力指数</td><td><strong>0.81</strong></td><td>0.37</td><td>0.37</td><td>喜多方と猪苗代は同値</td></tr>
+      <tr><td>経常収支比率</td><td>91.0%</td><td><strong>97.1%</strong></td><td>91.0%</td><td><strong>喜多方だけが突出して硬直</strong></td></tr>
+      <tr><td>実質公債費比率</td><td>1.3%</td><td>6.9%</td><td><strong>9.5%</strong></td><td>猪苗代が最も重い（警戒線は18%）</td></tr>
+      <tr><td>将来負担比率</td><td>算定なし</td><td><strong>76.1%</strong></td><td>27.5%</td><td><strong>喜多方は2006年合併の負担が残る</strong></td></tr>
+      <tr><td>基金 / 標準財政規模</td><td>302.6億 / 750.9億（<strong>40%</strong>）</td><td>21.4億 / 156.2億（<strong>14%</strong>）</td><td>22.5億 / 57.7億（<strong>39%</strong>）</td><td><strong>喜多方だけ貯金が薄い</strong></td></tr>
+      <tr><td><strong>1人当たり資産</strong></td><td>195万円</td><td><strong>336万円</strong></td><td><strong>338万円</strong></td><td><a href="260904_muroran.html#s03" style="color:inherit">室蘭（272万円）</a>を会津の2自治体が上回る</td></tr>
+      <tr><td>減価償却費 / 更新投資</td><td>173.0億 / 189.5億（<strong>110%</strong>）</td><td>49.0億 / 21.9億（45%）</td><td>16.7億 / 5.2億（<strong>31%</strong>）</td><td><strong>郡山だけが償却を上回って作り替えている</strong></td></tr>
+      <tr><td>本年度差額（PL）</td><td>−55.1億</td><td>−32.2億</td><td>−4.4億</td><td>3自治体とも赤字（減価償却費が主因）</td></tr>
+    </table></div>
+
+    <div class="callout">
+      <strong>3自治体を並べたときの最大の発見は「1人当たり資産」の逆転。</strong>
+      人口31.5万の郡山が195万円なのに対し、<strong>喜多方336万円・猪苗代338万円</strong>と、
+      小さい自治体ほど1人当たりの資産が重い。<strong>しかも両方とも<a href="260904_muroran.html#s03" style="color:inherit">室蘭（272万円）を上回っている</a></strong>——
+      「人口が6割減った室蘭がインフラを持て余している」という有名な構図より、
+      <strong>会津の自治体のほうが人口比では過大な資産を抱えている</strong>。<br>
+      理由は人口減少ではなく<strong>面積</strong>。喜多方554.63km²・猪苗代394.85km²は室蘭（81.01km²）の5〜7倍で、
+      <strong>広い市域に道路と上下水道を敷いた結果が、そのままBSに乗っている</strong>。<br>
+      そして<strong>更新投資が償却を下回っている</strong>（喜多方45%・猪苗代31%）ので、
+      <strong>この資産は今後じわじわ目減りしていく</strong>。<strong>作り替えられない資産を抱えている</strong>というのが、
+      会津の小規模自治体の財政の本質。
+    </div>
+
+    <div class="callout">
+      <strong>もうひとつの読みどころは「猪苗代湖でつながっている」こと。</strong>
+      郡山の水も電気の起点も<a href="260913_inawashiro.html#s01" style="color:inherit">猪苗代湖</a>から来ており、
+      <a href="260913_koriyama.html#s01" style="color:inherit">1882年の安積疏水（130km）</a>と
+      <a href="260913_inawashiro.html#s09" style="color:inherit">1914年の猪苗代第一発電所（東京へ225km）</a>は
+      2016年に同じ日本遺産「未来を拓いた一本の水路」として認定されている。<br>
+      <strong>人口1.2万の町の水が、31.5万人の市を作り、首都圏を回した。</strong>
+      そしていま、水を送った側（猪苗代）は45年で人口が39%減り、
+      水を受けた側（郡山）は45年で10%増えている。
+      <strong>この非対称が、福島県の中通りと会津の関係をいちばん短く説明している</strong>。
+    </div>
+  </div>
+
+  <div class="sec" id="industry-xref">
+    <div class="sec-label"><span class="num">＋</span><span class="sec-title">関連：industry セクター</span></div>
+    <p style="font-size:13.5px;color:#666;line-height:1.85;margin-bottom:14px">福島県は「水力の原点・再エネの国立研究機関・原発事故の当事県」という、エネルギーの文脈で読むべき県。</p>
+    <div class="info-box">
+      <ul>
+        <li><a href="/030_research/036_industry/0364_power_generation/260714_power_generation.html" style="color:inherit"><strong>Power Generation — 発電</strong></a> — <span style="color:#999">猪苗代の水力37,500kWと布引高原の風力65,980kW</span></li>
+        <li><a href="/030_research/036_industry/0363_power_utility/260714_power_utility.html" style="color:inherit"><strong>Power / Grid — 送配電</strong></a> — <span style="color:#999">1914年・225kmの115kV送電という日本の原型</span></li>
+        <li><a href="/030_research/036_industry/index.html" style="color:inherit">industry トップ（20セクター）</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>Wikipedia「福島県」</li>
+      <li>福島県「令和7年国勢調査速報（福島県の人口・世帯数）」（2026年5月29日公表）／総務省統計局 令和7年国勢調査 人口速報集計</li>
+      <li>福島県「令和5(2023)年度 福島県県民経済計算の概要」／内閣府 県民経済計算（令和4年度・全国21位）</li>
+      <li>帝国書院「工業生産（出荷額）：2023年：福島県」（2024年経済構造実態調査／県計56,554億円）</li>
+      <li>福島県 商工労働部観光交流局「福島県観光客入込状況 令和6年分」</li>
+      <li>福島県「令和6年度 財政状況資料集」（郡山市・喜多方市・猪苗代町）／各市町の令和6年度 一般会計等財務書類</li>
+    </ul>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">Index</span><span class="sec-updated">Last updated: 2026-09-13</span></div>
+    <div class="info-box">
+      <ul>
+        <li><a href="260913_koriyama.html" style="color:inherit">郡山市</a></li>
+        <li><a href="260913_kitakata.html" style="color:inherit">喜多方市</a></li>
+        <li><a href="260913_inawashiro.html" style="color:inherit">猪苗代町</a></li>
+        <li><a href="260831_japan.html" style="color:inherit">Japan に戻る</a></li>
+        <li><a href="index.html" style="color:inherit">geo-history トップに戻る</a></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>
