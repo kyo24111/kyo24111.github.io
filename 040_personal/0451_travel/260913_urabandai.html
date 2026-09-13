@@ -165,7 +165,6 @@ footer .wrap { padding: 22px 24px 60px; font-family: 'Poppins', sans-serif; font
   .mv { padding-left: 70px; }
 }
 @media (max-width: 420px) {
-  .meta { grid-template-columns: 1fr; }
   .row { grid-template-columns: 52px 1fr; }
   .mv { padding-left: 62px; }
 }
@@ -256,6 +255,22 @@ details.more .body { border-top: 1px solid var(--line); }
 .todo li .d { font-size: 0.82rem; color: var(--muted); margin-top: 4px; }
 .todo li .d a { color: var(--ink); }
 @media (max-width: 560px) { .todo li { grid-template-columns: 22px 1fr; gap: 8px; padding: 12px 14px; } .todo li .h .tag { margin-left: 0; display: inline-block; margin-top: 4px; } }
+
+@media (max-width: 560px) {
+  .tabnav .wrap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; padding: 0 10px; overflow: visible; }
+  .tab { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 10px 2px 8px; font-size: 0; letter-spacing: 0; }
+  .tab .jp { font-size: 0.88rem; margin-left: 0; line-height: 1.35; }
+  .tab .cnt { font-size: 0.66rem; margin-left: 0; line-height: 1.3; }
+  .page-head .wrap { padding-top: 30px; padding-bottom: 22px; }
+  .meta { grid-template-columns: repeat(2, 1fr); }
+  .meta div { padding: 10px 11px; }
+  .meta dd { font-size: 0.76rem; }
+  .card > .hd { padding: 11px 13px; }
+  .card > .hd .fixed { margin-left: 0; }
+  .fl > dt, .fl > dd { padding-left: 13px; padding-right: 13px; }
+  .todo > .hd { padding: 11px 14px; }
+  table { font-size: 0.76rem; }
+}
 </style>
 </head>
 <body>
@@ -854,27 +869,6 @@ var PINS = [
   { d: 0, name: '鶴ヶ城（会津若松）',      a: '候補・南回り',           lat: 37.48750, lng: 139.92960 }
 ];
 
-/* 同じ場所に複数のピンが重なると番号が読めなくなるので、
-   近接（約150m以内）しているものを小さな円状にずらす */
-(function () {
-  var groups = {};
-  PINS.forEach(function (p) {
-    var k = p.lat.toFixed(3) + ',' + p.lng.toFixed(3);
-    (groups[k] = groups[k] || []).push(p);
-  });
-  Object.keys(groups).forEach(function (k) {
-    var g = groups[k];
-    if (g.length < 2) return;
-    var r = 0.0016;
-    g.forEach(function (p, i) {
-      var a = (2 * Math.PI * i) / g.length - Math.PI / 2;
-      p.lat += r * Math.sin(a);
-      p.lng += r * Math.cos(a) * 1.26; /* 経度は緯度37度ぶん詰まるので補正 */
-      p.ap = 1;
-    });
-  });
-})();
-
 var map = L.map('map', { scrollWheelZoom: false, tap: true });
 /* 地図をクリック／タップするまではページのスクロールを優先、触ったらホイール拡大を有効化 */
 map.on('click focus', function () { map.scrollWheelZoom.enable(); });
@@ -903,6 +897,7 @@ PINS.forEach(function (p) {
     + '<span class="np">' + p.a + (p.ap ? '／位置は目安' : '') + '</span>'
     + '<a class="gl" href="' + g + '" target="_blank" rel="noopener">Googleマップで開く ↗</a>';
   var m = L.marker([p.lat, p.lng], { icon: icon }).bindPopup(html);
+  p._m = m;
   if (!ref) {
     m.on('click', function () {
       var el = document.getElementById('s' + p.n);
@@ -920,6 +915,7 @@ function show(f) {
   var pts = PINS.filter(function (p) { return !p.far && (f === 'all' || String(p.d) === f); }).map(function (p) { return [p.lat, p.lng]; });
   var pad = window.innerWidth < 640 ? 26 : 40;
   map.fitBounds(pts.length > 1 ? L.latLngBounds(pts) : ALL, { padding: [pad, pad] });
+  spreadPins();
 }
 document.querySelectorAll('.fbtn').forEach(function (b) {
   b.addEventListener('click', function () {
@@ -927,7 +923,44 @@ document.querySelectorAll('.fbtn').forEach(function (b) {
     show(b.dataset.f);
   });
 });
+/* 重なって番号が読めないピンをほどく。画面座標で近すぎるものを押し合い、
+   実位置から離れすぎないよう引き戻す。ズームごとに計算し直すので、
+   拡大して十分離れれば元の位置に戻る。線と表示範囲は実座標のまま。 */
+function spreadPins() {
+  var z = map.getZoom(), MIN = 27, MAXD = 48;
+  var a = [];
+  PINS.forEach(function (p, i) {
+    if (!p._m) return;
+    var pt = map.project([p.lat, p.lng], z);
+    a.push({ p: p, hx: pt.x, hy: pt.y, x: pt.x, y: pt.y, i: i });
+  });
+  for (var it = 0; it < 80; it++) {
+    var moved = false;
+    for (var i = 0; i < a.length; i++) {
+      for (var j = i + 1; j < a.length; j++) {
+        var dx = a[j].x - a[i].x, dy = a[j].y - a[i].y;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        if (d >= MIN) continue;
+        if (d < 0.01) { var ang = (i * 2.399); dx = Math.cos(ang); dy = Math.sin(ang); d = 1; }
+        var k = ((MIN - d) / 2 + 0.5) / d;
+        a[i].x -= dx * k; a[i].y -= dy * k;
+        a[j].x += dx * k; a[j].y += dy * k;
+        moved = true;
+      }
+    }
+    for (var m2 = 0; m2 < a.length; m2++) {
+      var vx = a[m2].x - a[m2].hx, vy = a[m2].y - a[m2].hy;
+      var v = Math.sqrt(vx * vx + vy * vy);
+      if (v > MAXD) { a[m2].x = a[m2].hx + vx / v * MAXD; a[m2].y = a[m2].hy + vy / v * MAXD; }
+    }
+    if (!moved) break;
+  }
+  a.forEach(function (o) { o.p._m.setLatLng(map.unproject(L.point(o.x, o.y), z)); });
+}
+map.on('zoomend', spreadPins);
+
 show('all');
+spreadPins();
 
 /* ===== tabs ===== */
 (function () {
