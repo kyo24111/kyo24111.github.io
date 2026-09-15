@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teeth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --surface:#f5f5f5; --card:#f0f0f0; --card2:#e8e8e8;
+  --border:#d8d8d8; --accent:#111111; --mid:#444444; --muted:#888888;
+  --dim:#bbbbbb; --text:#111111; --white:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:14px;line-height:1.7;-webkit-text-size-adjust:100%}
+.page{max-width:1180px;margin:0 auto;padding:32px 20px 80px}
+
+.hero{background:var(--accent);color:var(--white);border-radius:12px;padding:16px 22px 14px;margin-bottom:14px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;bottom:-50px;right:-50px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+.hero-tag{font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px}
+.hero h1{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.hero-sub{font-size:.72rem;color:rgba(255,255,255,.55);margin-top:4px;line-height:1.7}
+
+/* タブ */
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tab{font-size:12.5px;padding:7px 16px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--mid);cursor:pointer;white-space:nowrap;font-family:inherit}
+.tab:hover{border-color:var(--accent);color:var(--accent)}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.tab .n{font-family:'Poppins',sans-serif;font-size:9px;opacity:.5;margin-left:6px}
+.panel{display:none}
+.panel.on{display:block}
+
+/* 共通カード */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.card-h{font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.note{background:#fff;border-left:2px solid var(--accent);padding:8px 10px;margin-top:10px;font-size:12px;line-height:1.65}
+.note b{font-family:'Poppins',sans-serif;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+
+/* サマリー */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.stat-k{font-family:'Poppins',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stat-v{font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:800;letter-spacing:-.02em;line-height:1.25}
+.stat-v small{font-size:.7rem;font-weight:600;color:var(--muted);margin-left:2px}
+
+/* 歯式図レイアウト */
+.app{display:grid;grid-template-columns:1fr 330px;gap:14px;align-items:start}
+@media (max-width:900px){.app{grid-template-columns:1fr}}
+.stage{background:linear-gradient(180deg,#fafafa,#f0f0f0);border:1px solid var(--border);border-radius:12px;padding:10px 6px 6px;position:relative}
+#chart{display:block;width:100%;height:auto;max-width:560px;margin:0 auto;touch-action:manipulation}
+.side-mark{position:absolute;top:12px;font-family:'Poppins',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.12em;color:var(--dim)}
+.side-mark.r{left:14px}
+.side-mark.l{right:14px}
+.tooth{cursor:pointer}
+.tooth rect{transition:stroke-width .12s}
+.tooth:hover rect{stroke:#111;stroke-width:2.2}
+.tooth.sel rect{stroke:#111;stroke-width:2.8}
+.t-num{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;pointer-events:none}
+.arch-label{font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.14em;fill:#bbbbbb}
+
+/* 凡例 */
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;margin-top:8px;padding:0 8px 4px}
+.lg{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mid)}
+.lg i{width:13px;height:13px;border-radius:3px;display:block;flex:none;border:1px solid #999}
+
+/* 詳細パネル */
+.side{display:flex;flex-direction:column;gap:12px}
+.d-name{font-size:1.15rem;font-weight:700;letter-spacing:-.01em;line-height:1.35}
+.d-en{font-family:'Poppins',sans-serif;font-size:.72rem;color:var(--muted);margin-bottom:8px}
+.d-badge{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;border:1px solid var(--border);background:#fff;border-radius:999px;padding:3px 11px;color:var(--mid)}
+.d-badge i{width:9px;height:9px;border-radius:2px;display:block;border:1px solid #999}
+.f{margin-top:11px}
+.f-k{font-family:'Poppins',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.f-v{font-size:12.5px;line-height:1.75;word-break:break-word}
+.mini{margin:-2px -6px}
+.mini-row{display:flex;gap:8px;padding:6px 8px;border-radius:7px;font-size:12px;line-height:1.55;border:1px solid transparent}
+.mini-row+.mini-row{border-top:1px solid var(--border);border-radius:0}
+.mini-d{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--muted);flex:none;width:66px}
+.empty{font-size:12px;color:var(--muted);padding:2px 0}
+
+/* テーブル */
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:10px;background:#fff}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:12.5px}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--border);vertical-align:top}
+th{font-family:'Poppins',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--surface);white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafafa}
+td.num{font-family:'Poppins',sans-serif;text-align:right;white-space:nowrap}
+td.dt{font-family:'Poppins',sans-serif;white-space:nowrap;color:var(--mid)}
+.chip{display:inline-block;font-size:10.5px;border:1px solid var(--border);background:var(--surface);border-radius:999px;padding:1px 8px;margin:1px 3px 1px 0;white-space:nowrap}
+
+/* 知識タブ */
+h2.sec{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:800;letter-spacing:-.01em;margin:22px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+h2.sec:first-of-type{margin-top:4px}
+h3.sub{font-size:.85rem;font-weight:700;margin:14px 0 5px}
+p.tx{font-size:13px;line-height:1.85;margin-bottom:8px}
+ul.tx{font-size:13px;line-height:1.85;padding-left:1.25em;margin-bottom:8px}
+ul.tx li{margin-bottom:3px}
+details{border:1px solid var(--border);border-radius:10px;background:var(--surface);margin-top:10px}
+summary{cursor:pointer;padding:9px 14px;font-size:12.5px;font-weight:700;list-style:none;display:flex;align-items:center;gap:8px}
+summary::-webkit-details-marker{display:none}
+summary::before{content:'+';font-family:'Poppins',sans-serif;font-size:13px;color:var(--muted);flex:none}
+details[open] summary::before{content:'−'}
+details .body{padding:0 14px 12px}
+.c-scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin:10px 0 4px}
+@media (max-width:700px){.c-scale{grid-template-columns:repeat(2,1fr)}}
+.c-item{background:#fff;border:1px solid var(--border);border-radius:9px;padding:9px 10px}
+.c-tag{font-family:'Poppins',sans-serif;font-size:12px;font-weight:800;letter-spacing:-.01em}
+.c-ttl{font-size:11.5px;font-weight:700;margin:1px 0 3px}
+.c-tx{font-size:11px;line-height:1.6;color:var(--mid)}
+.upd{font-family:'Poppins',sans-serif;font-size:9px;letter-spacing:.08em;color:var(--dim);margin-top:14px}
+</style>
+  <!-- snav -->
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-sub{padding-left:14px;font-size:12px;font-weight:500;color:rgba(255,255,255,.55)}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<!-- snav:bar -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec">
+    <div class="snav-sec-label">030 Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a>
+    <a class="snav-a" href="/030_research/035_startup/index.html">startup</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">040 Personal</div>
+    <a class="snav-a" href="/040_personal/profile/index.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a snav-sub" href="/040_personal/0420_health/260824_body_3d.html">body 3d</a>
+    <a class="snav-a snav-sub" href="/040_personal/0420_health/260828_workout.html">workout</a>
+    <a class="snav-a snav-sub" href="/040_personal/0420_health/260915_teeth.html">teeth</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-tag">040 Personal / 0420 Health</div>
+    <h1>Teeth</h1>
+    <div class="hero-sub">32本を1本ずつ図で管理する。状態は分かったものから埋める方式なので、初期値は「未確認」。治療のたびにログを1行足すと、歯式図・サマリー・各歯の履歴がすべて連動して更新される。</div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <!-- ========== 歯式図 ========== -->
+  <section class="panel on" id="p-chart">
+    <div class="stats" id="stats"></div>
+    <div class="app">
+      <div>
+        <div class="stage">
+          <div class="side-mark r">RIGHT / 右</div>
+          <div class="side-mark l">LEFT / 左</div>
+          <svg id="chart" viewBox="0 0 560 600" role="img" aria-label="歯式図"></svg>
+          <div class="legend" id="legend"></div>
+        </div>
+        <div class="note" style="margin-top:12px">
+          <b>読み方</b>並びは歯科のカルテと同じ「本人と向かい合った向き」。画面の左半分が自分の右側の歯、右半分が自分の左側。中央の1番から外側に向かって 1〜8 と数え、8番が親知らず。歯をタップすると右（スマホでは下）に詳細と、その歯に紐づく治療履歴が出る。
+        </div>
+      </div>
+      <div class="side">
+        <div class="card" id="detail"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 治療履歴 ========== -->
+  <section class="panel" id="p-log">
+    <div class="stats" id="logStats"></div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>日付</th><th>歯</th><th>処置</th><th>医院</th><th>費用</th><th>メモ</th></tr></thead>
+        <tbody id="logBody"></tbody>
+      </table>
+    </div>
+    <div class="note">
+      <b>記録の入れ方</b>このファイル内の <code>LOGS</code> 配列に1行足すだけ。<code>teeth</code> に歯コード（例 <code>UL5</code> = 左上5番）を書けば、歯式図側の履歴にも自動で出る。歯の状態そのものを変えたいときは <code>TEETH</code> 側の <code>status</code> を書き換える。
+    </div>
+  </section>
+
+  <!-- ========== 知識 ========== -->
+  <section class="panel" id="p-know">
+    <h2 class="sec">虫歯の進行度（C0〜C4）</h2>
+    <p class="tx">歯科で「C いくつ」と言われるやつ。どこまで進むと何を削られるかが決まる。C1 までなら削らずに済む可能性が残るが、C2 に入ると基本的に削って詰める。</p>
+    <div class="c-scale">
+      <div class="c-item"><div class="c-tag">C0</div><div class="c-ttl">要観察</div><div class="c-tx">エナメル質が白く濁っただけ。穴なし。フッ素と歯磨きで再石灰化を狙える、唯一「戻せる」段階。</div></div>
+      <div class="c-item"><div class="c-tag">C1</div><div class="c-ttl">エナメル質</div><div class="c-tx">表層に限局。痛みはほぼ出ない。経過観察か、最小限のCR充填。</div></div>
+      <div class="c-item"><div class="c-tag">C2</div><div class="c-ttl">象牙質</div><div class="c-tx">冷たいものがしみる。削ってCRかインレー。一般的な「虫歯治療」の大半がここ。</div></div>
+      <div class="c-item"><div class="c-tag">C3</div><div class="c-ttl">歯髄</div><div class="c-tx">神経まで到達。何もしなくてもズキズキする。根管治療＋クラウンになり、通院は数回〜十数回。</div></div>
+      <div class="c-item"><div class="c-tag">C4</div><div class="c-ttl">残根</div><div class="c-tx">歯冠が崩壊。多くは抜歯し、ブリッジ／インプラント／入れ歯で補う。</div></div>
+    </div>
+    <div class="note"><b>要点</b>「痛くないから大丈夫」は C2 までの話で、痛みが出た時点で C3 が近い。削る量は一度増えたら戻らないので、早い段階で見つけるほど残る歯質が多い。</div>
+
+    <h2 class="sec">詰め物・被せ物の選択肢</h2>
+    <p class="tx">同じ虫歯でも、削った穴の大きさで処置が変わる。小さければ樹脂を直接詰めて1回で終わり、大きければ型を取って詰め物を作るので2回以上かかる。</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>処置</th><th>適応</th><th>通院</th><th>特徴</th></tr></thead>
+        <tbody>
+          <tr><td>CR（コンポジットレジン）</td><td>小〜中の欠損</td><td>1回</td><td>白い樹脂をその場で充填して硬化。削る量が最小で済む。経年で着色・段差が出ることがある。</td></tr>
+          <tr><td>インレー（詰め物）</td><td>中程度の欠損</td><td>2回〜</td><td>型を取って作る部分的な詰め物。保険なら金属（銀色）、自費ならセラミック等。</td></tr>
+          <tr><td>クラウン（被せ物）</td><td>大きな欠損・根管治療後</td><td>2〜3回</td><td>歯全体を覆う。神経を取った歯は脆いので基本これ。</td></tr>
+          <tr><td>根管治療</td><td>C3（神経に到達）</td><td>数回〜十数回</td><td>神経と感染部を除去して薬を詰める。回数がかかるので途中離脱が最大のリスク。</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="tx" style="margin-top:8px">保険と自費の差は主に材料。保険は機能回復が目的なので、見た目や耐久性を上げたい場合は自費という整理になる。奥歯は噛む力が強いので、材料の選択がそのまま持ちに効く。</p>
+
+    <h2 class="sec">ジルコニアとは</h2>
+    <p class="tx">二酸化ジルコニウム（ZrO<sub>2</sub>）を主成分とするセラミック。純粋なジルコニアは温度で結晶構造が変わって自壊するため、歯科用はイットリア（Y<sub>2</sub>O<sub>3</sub>）を数%加えて正方晶のまま常温で安定させた「イットリア安定化ジルコニア（YSZ）」を使う。工業的には人工関節や刃物、F1のブレーキ部材などにも使われる材料で、通称は「白い金属」。</p>
+
+    <h3 class="sub">なぜ硬いのに割れにくいのか</h3>
+    <p class="tx">ジルコニアの強さの正体は、硬さそのものより<b>応力誘起相変態（transformation toughening）</b>という仕組みにある。クラックが入ると、その先端の応力で正方晶の結晶が単斜晶に変わる。このとき体積が数%ふくらみ、周囲からクラックを押さえつける圧縮応力が生まれ、亀裂の進行がそこで止まる。壊れようとする力を、自分で壊れにくくなる力に変換している。だから他のセラミックが「硬いけど脆い」のに対し、ジルコニアは「硬くて粘る」。</p>
+    <p class="tx">曲げ強度でいうと、従来の陶材（ポーセレン）が 100 MPa 前後、ガラスセラミック（e.max 等）が 400 MPa 前後なのに対し、ジルコニアは 1,000 MPa を超える。奥歯の噛む力に対しては桁違いの余裕がある。</p>
+
+    <h3 class="sub">弱点</h3>
+    <ul class="tx">
+      <li><b>透明感とのトレードオフ</b> — 強度の高いタイプ（3Y系）は白さが強く、天然歯の透け感に欠ける。透光性を上げたタイプ（4Y / 5Y系）は見た目が良くなる代わりに強度が落ちる。前歯か奥歯かで選ぶグレードが変わるのはこのため。</li>
+      <li><b>対合歯の摩耗</b> — 相手の歯より硬いので、噛み合う歯を削ってしまう可能性がある。表面をしっかり研磨してあれば実害は小さいとされるが、噛み合わせの調整で削った面をザラつかせたままだとリスクが上がる。</li>
+      <li><b>低温劣化（LTD / エイジング）</b> — 湿潤環境で長期間経つと、表面から徐々に単斜晶へ変態して強度が落ちていく現象。材料の改良で以前より抑えられているが、ゼロではない。</li>
+      <li><b>修理が効かない</b> — 硬すぎて口の中で削ったり盛ったりしづらい。壊れた場合は作り直しが基本。</li>
+      <li><b>原則として自費</b> — 保険の対象外なので、費用は全額自己負担。</li>
+    </ul>
+
+    <h2 class="sec">他の材料との比較</h2>
+    <p class="tx">同じ「詰め物・被せ物」でも材料で性質が大きく違う。判断軸は、強度・見た目・二次虫歯のしにくさ・対合歯へのやさしさ・費用の5つ。</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>材料</th><th>保険</th><th>強度</th><th>見た目</th><th>費用目安/本</th><th>特徴・トレードオフ</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>ジルコニア</b></td><td>自費</td><td>非常に高い<br><span style="color:#888">約1,000+ MPa</span></td><td>白いが透明感は控えめ</td><td>5〜15万円</td>
+            <td>割れにくさが突出。金属を使わないので金属アレルギー・歯ぐきの黒ずみがない。精度が高く適合が良いため二次虫歯が起きにくい。硬さゆえ対合歯への配慮が要る。<b>今回入れたのはこれ。</b></td>
+          </tr>
+          <tr>
+            <td>e.max（二ケイ酸リチウム）</td><td>自費</td><td>中〜高<br><span style="color:#888">約400 MPa</span></td><td>最も自然。透明感が高い</td><td>4〜10万円</td>
+            <td>審美性ではジルコニアより上で、前歯の第一候補。強度は劣るので、噛む力が強い人の奥歯やブリッジには不向き。</td>
+          </tr>
+          <tr>
+            <td>金属（金銀パラジウム合金＝銀歯）</td><td>保険</td><td>高い（粘る）</td><td>銀色で目立つ</td><td>3千〜5千円</td>
+            <td>安くて割れない。ただし歯との間に微小な隙間ができやすく二次虫歯の温床になりやすい、金属イオンで歯ぐきが黒ずむ、金属アレルギーの原因になり得る、という難点が揃う。</td>
+          </tr>
+          <tr>
+            <td>ゴールド（金合金）</td><td>自費</td><td>高い（よく馴染む）</td><td>金色</td><td>5〜10万円</td>
+            <td>適合精度と歯へのやさしさは最高クラス。適度に変形して歯と一体化し、対合歯も傷めない。見た目だけが理由で選ばれにくい。</td>
+          </tr>
+          <tr>
+            <td>ハイブリッドレジン（CAD/CAM冠）</td><td>保険（条件あり）</td><td>低〜中</td><td>白いが濁る・着色する</td><td>数千円</td>
+            <td>樹脂とセラミックの混合。白くできる保険の選択肢だが、摩耗・変色・脱離が起きやすく、数年での作り直しを見込む必要がある。</td>
+          </tr>
+          <tr>
+            <td>CR（コンポジットレジン直接充填）</td><td>保険</td><td>低い</td><td>白い（経年で着色）</td><td>千〜2千円</td>
+            <td>その場で詰めて1回で終わる。削る量が最小で済むのが最大の利点。小さい虫歯ならこれが第一選択。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <details>
+      <summary>どう選ぶかの整理</summary>
+      <div class="body">
+        <ul class="tx" style="margin-bottom:0">
+          <li><b>奥歯（噛む力が最大 / あまり見えない）</b> — 強度優先。ジルコニアかゴールド。今回の左上5・6番はここに該当する。</li>
+          <li><b>前歯（見える / 力は弱い）</b> — 審美優先。e.max か、透光性の高いジルコニア。</li>
+          <li><b>欠損が小さい</b> — 材料の話に行く前に、そもそも削る量を抑えられる CR で済まないかを考える。残る歯質の量が長期的な寿命を決める。</li>
+          <li><b>費用を抑えたい</b> — 保険の金属。ただし二次虫歯で再治療になれば、削り直して歯がさらに減る。安さの代償は歯質で払う形になる。</li>
+        </ul>
+        <div class="note"><b>本質</b>材料選びは「何年もつか」ではなく「壊れたときに歯がどれだけ減るか」で見ると判断しやすい。再治療のたびに歯は確実に痩せていき、その回数の期待値を下げることが、最終的に歯を残す確率を上げる。</div>
+      </div>
+    </details>
+
+    <h2 class="sec">歯を失う二大要因</h2>
+    <p class="tx">歯を失う原因は、虫歯と歯周病でほぼ二分される。虫歯は「歯そのもの」が溶ける話、歯周病は「歯を支える骨」が減る話で、対処もまったく別。</p>
+    <ul class="tx">
+      <li><b>虫歯</b> — 細菌が糖を分解して出す酸で歯が溶ける。効くのは、糖に触れている時間を短くすること・フッ素・物理的に落とすこと。</li>
+      <li><b>歯周病</b> — 歯周ポケットの細菌による炎症で、歯槽骨が吸収されていく。痛みが出にくく、自覚した時には骨がかなり減っている。減った骨は基本的に戻らない。</li>
+    </ul>
+    <div class="note"><b>非対称性</b>虫歯は削れば止められるが、歯周病で失った骨は戻らない。だから定期検診の主目的は、虫歯探しよりむしろ歯周ポケットの測定とクリーニングにある。</div>
+
+    <h2 class="sec">セルフケア</h2>
+    <ul class="tx">
+      <li><b>歯ブラシだけでは歯間に届かない</b> — 虫歯も歯周病も歯と歯の間から始まりやすい。フロスか歯間ブラシを足して初めて全面をカバーできる。</li>
+      <li><b>フッ素は濃度と残留時間</b> — 高濃度（1450ppm）を使い、磨いた後はすすぎすぎない。口に残す方が効く。</li>
+      <li><b>回数より接触時間</b> — 間食やジュースでだらだら糖を入れると、酸性の時間が伸びて溶ける。まとめて摂る方がまだマシ。</li>
+      <li><b>定期検診</b> — 3〜6ヶ月に1回が目安。痛みが出る前に見つけるほど削る量が減る。</li>
+    </ul>
+
+    <div class="upd">Last updated: 2026-09-15</div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   TEETH — 32本の状態。status を書き換えると図もサマリーも変わる。
+   status: unknown / healthy / caries / watch / cr / inlay / crown / root / missing / implant
+   code: U=上顎 L=下顎 / R=右 L=左 + 1〜8
+   ============================================================ */
+const STATUS = {
+  unknown:{ja:'未確認', fill:'#ffffff', stroke:'#c2c2c2', dash:'3 2',  fg:'#aaaaaa'},
+  healthy:{ja:'健全',   fill:'#ffffff', stroke:'#111111', dash:'',     fg:'#111111'},
+  caries: {ja:'虫歯（未処置）', fill:'#b3453a', stroke:'#8d3229', dash:'', fg:'#ffffff'},
+  watch:  {ja:'経過観察', fill:'#d8a13a', stroke:'#a87a25', dash:'',   fg:'#ffffff'},
+  cr:     {ja:'CR充填',  fill:'#e2e2e2', stroke:'#111111', dash:'',    fg:'#444444'},
+  inlay:  {ja:'インレー', fill:'#bdbdbd', stroke:'#111111', dash:'',   fg:'#222222'},
+  crown:  {ja:'クラウン', fill:'#8a8a8a', stroke:'#111111', dash:'',   fg:'#ffffff'},
+  root:   {ja:'根管治療済', fill:'#6e6e6e', stroke:'#111111', dash:'', fg:'#ffffff'},
+  treated:{ja:'治療済（詳細未記録）', fill:'#cfcfcf', stroke:'#111111', dash:'', fg:'#222222'},
+  missing:{ja:'欠損', fill:'#f2f2f2', stroke:'#bbbbbb', dash:'2 2',    fg:'#bbbbbb'},
+  implant:{ja:'インプラント', fill:'#111111', stroke:'#111111', dash:'', fg:'#ffffff'}
+};
+
+const TYPE = {
+  1:{ja:'中切歯', en:'Central incisor', w:1.05},
+  2:{ja:'側切歯', en:'Lateral incisor', w:0.92},
+  3:{ja:'犬歯',   en:'Canine',          w:1.00},
+  4:{ja:'第一小臼歯', en:'1st premolar', w:1.05},
+  5:{ja:'第二小臼歯', en:'2nd premolar', w:1.05},
+  6:{ja:'第一大臼歯', en:'1st molar',    w:1.35},
+  7:{ja:'第二大臼歯', en:'2nd molar',    w:1.30},
+  8:{ja:'親知らず',   en:'3rd molar',    w:1.18}
+};
+
+/* status を埋めていく。note は自由記述 */
+const TEETH = {};
+[['U','R',1],['U','L',2],['L','L',3],['L','R',4]].forEach(([arch,side,fdiQ])=>{
+  for(let n=1;n<=8;n++){
+    TEETH[arch+side+n] = {arch, side, n, fdi: fdiQ*10+n, status:'unknown', note:''};
+  }
+});
+
+/* ---- 判明している状態をここで上書き ---- */
+TEETH.UL5.status   = 'inlay';
+TEETH.UL5.material = 'ジルコニア（自費）';
+TEETH.UL5.note     = '2026-09-15 に虫歯治療。削ってジルコニアを装着。';
+TEETH.UL6.status   = 'inlay';
+TEETH.UL6.material = 'ジルコニア（自費）';
+TEETH.UL6.note     = '2026-09-15 に虫歯治療。削ってジルコニアを装着。';
+
+/* ============================================================
+   LOGS — 治療履歴。1通院1行。teeth は歯コードの配列。
+   cost は円（不明なら null）。
+   ============================================================ */
+const LOGS = [
+  {
+    date:'2026-09-15',
+    teeth:['UL5','UL6'],
+    proc:'虫歯治療 → ジルコニア',
+    clinic:'',
+    cost:null,
+    note:'左上の5番・6番。削った部分にジルコニアを装着（自費）。費用・医院名は後で追記。'
+  }
+];
+
+/* ============================================================ */
+const ARCH_JA = {U:'上', L:'下'};
+const SIDE_JA = {R:'右', L:'左'};
+const codeJa = c => { const t = TEETH[c]; return t ? SIDE_JA[t.side]+ARCH_JA[t.arch]+t.n+'番' : c; };
+
+/* ---- 歯式図の描画 ---- */
+function buildChart(){
+  const svg = document.getElementById('chart');
+  const CX = 280, RX = 196, RY = 152;
+  const CYU = 246, CYL = 360;   /* 上下顎を離して、カルテと同じ十字の4分割に見せる */
+  let out = '';
+
+  out += '<text class="arch-label" x="280" y="20" text-anchor="middle">UPPER / 上顎</text>';
+  out += '<text class="arch-label" x="280" y="590" text-anchor="middle">LOWER / 下顎</text>';
+  /* 正中線（縦）と咬合線（横）＝ 歯式の4分割 */
+  out += '<line x1="280" y1="62" x2="280" y2="546" stroke="#e6e6e6" stroke-width="1" stroke-dasharray="4 4"/>';
+  out += '<line x1="48" y1="303" x2="512" y2="303" stroke="#e6e6e6" stroke-width="1" stroke-dasharray="4 4"/>';
+
+  /* 楕円は角度を等分すると奥歯側が詰まるので、弧長で等分する */
+  const STEPS = 2000, D2R = Math.PI/180, dDeg = 180/STEPS;
+  const arcs = [0];
+  for(let i=1;i<=STEPS;i++){
+    const mid = (180 + dDeg*(i-0.5)) * D2R;
+    const ds = Math.sqrt(RX*RX*Math.sin(mid)*Math.sin(mid) + RY*RY*Math.cos(mid)*Math.cos(mid)) * dDeg * D2R;
+    arcs.push(arcs[i-1] + ds);
+  }
+  const ARC_L = arcs[STEPS];
+  const degAtArc = frac => {
+    const target = frac * ARC_L;
+    let lo = 0, hi = STEPS;
+    while(lo < hi){ const m = (lo+hi) >> 1; if(arcs[m] < target) lo = m+1; else hi = m; }
+    return 180 + dDeg*lo;
+  };
+
+  ['U','L'].forEach(arch=>{
+    /* 画面左→右：右側の8番〜1番、左側の1番〜8番 */
+    const order = [];
+    for(let n=8;n>=1;n--) order.push(arch+'R'+n);
+    for(let n=1;n<=8;n++) order.push(arch+'L'+n);
+
+    const ws = order.map(c => TYPE[TEETH[c].n].w);
+    const total = ws.reduce((a,b)=>a+b,0);
+    let cum = 0;
+
+    order.forEach((code,i)=>{
+      const t = TEETH[code], ty = TYPE[t.n], st = STATUS[t.status];
+      const frac = (cum + ws[i]/2) / total;
+      cum += ws[i];
+      const deg = degAtArc(frac);
+      const rad = deg*Math.PI/180;
+      const px = CX + RX*Math.cos(rad);
+      const py = arch==='U' ? CYU + RY*Math.sin(rad) : CYL - RY*Math.sin(rad);
+      const dx = px - CX;
+      const dy = (arch==='U' ? py - CYU : py - CYL);
+      const rot = Math.atan2(dy, dx)*180/Math.PI + 90;
+
+      const w = t.n>=6 ? 34 : (t.n>=4 ? 29 : (t.n===3 ? 27 : 26));
+      const h = t.n>=6 ? 35 : (t.n===3 ? 34 : 30);
+
+      out += '<g class="tooth" data-code="'+code+'" transform="translate('+px.toFixed(1)+','+py.toFixed(1)+') rotate('+rot.toFixed(1)+')">';
+      out += '<rect x="'+(-w/2)+'" y="'+(-h/2)+'" width="'+w+'" height="'+h+'" rx="6" fill="'+st.fill+'" stroke="'+st.stroke+'" stroke-width="1.4"'+(st.dash?' stroke-dasharray="'+st.dash+'"':'')+'/>';
+      out += '<text class="t-num" x="0" y="4" text-anchor="middle" fill="'+st.fg+'" transform="rotate('+(-rot).toFixed(1)+')">'+t.n+'</text>';
+      if(t.status==='missing'){
+        out += '<path d="M'+(-w/2+5)+','+(-h/2+5)+' L'+(w/2-5)+','+(h/2-5)+' M'+(w/2-5)+','+(-h/2+5)+' L'+(-w/2+5)+','+(h/2-5)+'" stroke="#cccccc" stroke-width="1.4"/>';
+      }
+      out += '</g>';
+    });
+  });
+
+  /* 四分割の呼び名（カルテ表記） */
+  [['右上',158,297],['左上',402,297],['右下',158,320],['左下',402,320]].forEach(q=>{
+    out += '<text class="arch-label" x="'+q[1]+'" y="'+q[2]+'" text-anchor="middle" style="font-size:8.5px;letter-spacing:.1em">'+q[0]+'</text>';
+  });
+
+  svg.innerHTML = out;
+  svg.querySelectorAll('.tooth').forEach(g=>{
+    g.addEventListener('click', ()=> select(g.dataset.code));
+  });
+}
+
+/* ---- 凡例（使われている状態だけ出す） ---- */
+function buildLegend(){
+  const used = new Set(Object.values(TEETH).map(t=>t.status));
+  const order = ['healthy','caries','watch','cr','inlay','crown','root','treated','implant','missing','unknown'];
+  document.getElementById('legend').innerHTML = order.filter(k=>used.has(k)).map(k=>{
+    const s = STATUS[k];
+    return '<span class="lg"><i style="background:'+s.fill+';border-color:'+s.stroke+'"></i>'+s.ja+'</span>';
+  }).join('');
+}
+
+/* ---- サマリー ---- */
+function buildStats(){
+  const all = Object.values(TEETH);
+  const cnt = k => all.filter(t=>t.status===k).length;
+  const treatedKeys = ['cr','inlay','crown','root','treated','implant'];
+  const treated = all.filter(t=>treatedKeys.includes(t.status)).length;
+  const attention = cnt('caries') + cnt('watch');
+  const rows = [
+    ['Total', all.length, '本'],
+    ['健全', cnt('healthy'), '本'],
+    ['治療済', treated, '本'],
+    ['未確認', cnt('unknown'), '本']
+  ];
+  if(attention) rows[3] = ['要対応', attention, '本'];
+  document.getElementById('stats').innerHTML = rows.map(r=>
+    '<div class="stat"><div class="stat-k">'+r[0]+'</div><div class="stat-v">'+r[1]+'<small>'+r[2]+'</small></div></div>'
+  ).join('');
+}
+
+/* ---- 歯の詳細 ---- */
+let selected = null;
+function select(code){
+  selected = code;
+  document.querySelectorAll('.tooth').forEach(g=> g.classList.toggle('sel', g.dataset.code===code));
+  renderDetail();
+}
+function renderDetail(){
+  const el = document.getElementById('detail');
+  if(!selected){
+    el.innerHTML = '<div class="card-h">Tooth</div><div class="empty">歯式図から1本タップすると、その歯の種類・状態・治療履歴がここに出る。</div>';
+    return;
+  }
+  const t = TEETH[selected], ty = TYPE[t.n], st = STATUS[t.status];
+  const logs = LOGS.filter(l => l.teeth.includes(selected)).sort((a,b)=> b.date.localeCompare(a.date));
+  let h = '<div class="card-h">Tooth / '+t.fdi+'</div>';
+  h += '<div class="d-name">'+SIDE_JA[t.side]+ARCH_JA[t.arch]+t.n+'番 &nbsp;<span style="font-size:.8rem;font-weight:500;color:#888">'+ty.ja+'</span></div>';
+  h += '<div class="d-en">'+ty.en+' / FDI '+t.fdi+'</div>';
+  h += '<span class="d-badge"><i style="background:'+st.fill+';border-color:'+st.stroke+'"></i>'+st.ja+'</span>';
+  if(t.material) h += '<div class="f"><div class="f-k">Material</div><div class="f-v">'+t.material+'</div></div>';
+  if(t.note) h += '<div class="f"><div class="f-k">Note</div><div class="f-v">'+t.note+'</div></div>';
+  h += '<div class="f"><div class="f-k">History</div>';
+  if(logs.length){
+    h += '<div class="mini">'+logs.map(l=>
+      '<div class="mini-row"><span class="mini-d">'+l.date.slice(2).replace(/-/g,'.')+'</span><span>'+l.proc+(l.note?'<br><span style="color:#888;font-size:11.5px">'+l.note+'</span>':'')+'</span></div>'
+    ).join('')+'</div>';
+  } else {
+    h += '<div class="empty">記録なし</div>';
+  }
+  h += '</div>';
+  el.innerHTML = h;
+}
+
+/* ---- 治療履歴タブ ---- */
+function buildLog(){
+  const sorted = [...LOGS].sort((a,b)=> b.date.localeCompare(a.date));
+  document.getElementById('logBody').innerHTML = sorted.length ? sorted.map(l=>{
+    const chips = l.teeth.map(c=>'<span class="chip">'+codeJa(c)+'</span>').join('');
+    return '<tr><td class="dt">'+l.date+'</td><td>'+chips+'</td><td>'+l.proc+'</td><td>'+(l.clinic||'<span style="color:#bbb">—</span>')+
+      '</td><td class="num">'+(l.cost==null?'<span style="color:#bbb">—</span>':'¥'+l.cost.toLocaleString())+
+      '</td><td style="color:#444">'+(l.note||'')+'</td></tr>';
+  }).join('') : '<tr><td colspan="6" style="color:#888">記録なし</td></tr>';
+
+  const costs = LOGS.filter(l=>l.cost!=null);
+  const sum = costs.reduce((a,b)=>a+b.cost,0);
+  const last = LOGS.length ? [...LOGS].sort((a,b)=> b.date.localeCompare(a.date))[0].date : '—';
+  const teethTouched = new Set(LOGS.flatMap(l=>l.teeth)).size;
+  document.getElementById('logStats').innerHTML = [
+    ['通院', LOGS.length, '件'],
+    ['対象の歯', teethTouched, '本'],
+    ['費用合計', costs.length? '¥'+sum.toLocaleString() : '—', costs.length<LOGS.length?' 一部未入力':''],
+    ['最終来院', last.slice(2).replace(/-/g,'.'), '']
+  ].map(r=>'<div class="stat"><div class="stat-k">'+r[0]+'</div><div class="stat-v">'+r[1]+'<small>'+r[2]+'</small></div></div>').join('');
+}
+
+/* ---- タブ ---- */
+const TABS = [
+  {id:'chart', label:'歯式図', n:'32'},
+  {id:'log',   label:'治療履歴', n:String(LOGS.length)},
+  {id:'know',  label:'知識', n:''}
+];
+function buildTabs(){
+  document.getElementById('tabs').innerHTML = TABS.map((t,i)=>
+    '<button class="tab'+(i===0?' on':'')+'" data-id="'+t.id+'">'+t.label+(t.n?'<span class="n">'+t.n+'</span>':'')+'</button>'
+  ).join('');
+  document.querySelectorAll('.tab').forEach(b=>{
+    b.addEventListener('click', ()=>{
+      document.querySelectorAll('.tab').forEach(x=>x.classList.remove('on'));
+      document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      document.getElementById('p-'+b.dataset.id).classList.add('on');
+      history.replaceState(null,'','#'+b.dataset.id);
+    });
+  });
+  const h = location.hash.slice(1);
+  if(h && TABS.some(t=>t.id===h)) document.querySelector('.tab[data-id="'+h+'"]').click();
+}
+
+buildChart();
+buildLegend();
+buildStats();
+buildLog();
+buildTabs();
+renderDetail();
+select('UL6');
+</script>
+
+<!-- snav:footer -->
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</footer>
+</body>
+</html>
