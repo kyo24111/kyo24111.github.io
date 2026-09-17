@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Housing Search / 次の賃貸</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#fff;--text:#111;--mid:#555;--muted:#999;--light:#ccc;--line:#e8e8e8;--soft:#f6f6f6}
+body{background:var(--bg);color:var(--text);font-family:'Poppins','Noto Sans JP',sans-serif;font-size:13px;-webkit-font-smoothing:antialiased}
+
+.header{background:#111;color:#fff;padding:52px 48px 44px}
+.header .kicker{font-size:10px;font-weight:600;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:14px}
+.header h1{font-size:2.2rem;font-weight:800;letter-spacing:-.03em;line-height:1}
+.header p{font-size:12px;color:rgba(255,255,255,.55);margin-top:14px;max-width:720px;line-height:1.75}
+.header .stamp{margin-top:18px;font-size:10px;letter-spacing:.1em;color:rgba(255,255,255,.35)}
+
+.main{max-width:1340px;margin:0 auto;padding:40px 48px 90px}
+.sec{margin-bottom:46px}
+.sec-head{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--text);display:flex;justify-content:space-between;align-items:baseline}
+.sec-head .sub{font-weight:400;letter-spacing:.02em;text-transform:none;font-size:11px;color:var(--muted)}
+
+/* conditions */
+.cond{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.cond div{background:#fff;padding:13px 15px}
+.cond .k{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+.cond .v{font-size:13px;font-weight:600;letter-spacing:-.01em;line-height:1.55}
+.cond .v small{display:block;font-weight:400;color:var(--mid);font-size:11px;margin-top:3px}
+
+/* controls */
+.controls{display:flex;flex-wrap:wrap;gap:22px;align-items:flex-end;padding:16px 0 18px;border-bottom:1px solid var(--line);margin-bottom:20px}
+.ctl{display:flex;flex-direction:column;gap:6px}
+.ctl label{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ctl input[type=range]{width:118px;accent-color:#111}
+.chips{display:flex;gap:6px}
+.chip{border:1px solid var(--light);background:#fff;color:var(--mid);font:inherit;font-size:11px;font-weight:600;padding:5px 11px;border-radius:999px;cursor:pointer;transition:.12s}
+.chip:hover{border-color:var(--mid)}
+.chip.on{background:#111;border-color:#111;color:#fff}
+.wq{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* top5 */
+.top5{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.card{border:1px solid var(--line);padding:14px 15px 15px;cursor:pointer;transition:.14s;position:relative}
+.card:hover{border-color:#111}
+.card.hl{border-color:#111;box-shadow:0 0 0 1px #111 inset}
+.card .rk{position:absolute;top:0;right:0;background:#111;color:#fff;font-size:10px;font-weight:700;padding:3px 7px;letter-spacing:.06em}
+.card .nm{font-size:14px;font-weight:700;letter-spacing:-.02em;line-height:1.35;padding-right:26px;margin-bottom:6px}
+.card .ad{font-size:10.5px;color:var(--muted);margin-bottom:10px}
+.card .pr{font-size:19px;font-weight:700;letter-spacing:-.03em}
+.card .pr span{font-size:11px;font-weight:500;color:var(--mid)}
+.card .mt{margin-top:9px;padding-top:9px;border-top:1px solid var(--line);font-size:11px;color:var(--mid);line-height:1.7}
+.card .sc{margin-top:9px;display:flex;align-items:center;gap:7px}
+.card .sc .bar{flex:1;height:3px;background:var(--line)}
+.card .sc .bar i{display:block;height:100%;background:#111}
+.card .sc b{font-size:11px;font-variant-numeric:tabular-nums}
+.card .thumb{margin:-14px -15px 11px;border-bottom:1px solid var(--line);background:var(--soft);height:132px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.card .thumb img{max-width:100%;max-height:132px;object-fit:contain;mix-blend-mode:multiply}
+.card .thumb.none{font-size:10.5px;color:var(--light);letter-spacing:.06em}
+.card .warn{margin-top:9px;font-size:10.5px;font-weight:700;letter-spacing:.02em;color:#111;background:var(--soft);border-left:2px solid #111;padding:5px 8px}
+
+/* detail panel */
+.mini{width:62px;height:46px;object-fit:contain;background:var(--soft);border:1px solid var(--line);display:block;mix-blend-mode:multiply}
+.noimg-s{color:var(--light)}
+tr.open{background:#f0f0f0!important;box-shadow:inset 3px 0 0 #111}
+tr.det td{background:var(--soft);padding:0;border-bottom:2px solid var(--text)}
+.detwrap{display:grid;grid-template-columns:280px 1fr;gap:20px;padding:18px 16px 20px}
+.detimg{display:flex;flex-direction:column;gap:6px}
+.detimg img{width:100%;background:#fff;border:1px solid var(--line);display:block}
+.detimg .cap{font-size:10px;color:var(--muted);letter-spacing:.06em;margin-bottom:6px}
+.detimg .noimg{padding:34px 10px;text-align:center;font-size:11px;color:var(--light);border:1px dashed var(--light);background:#fff}
+.spgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:11px 18px}
+.sp .k{font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.sp .v{font-size:12px;line-height:1.55}
+.sp .v b.ng,.badge.ng{color:#111}
+.badge.ng{background:#111;color:#fff;border-color:#111}
+.kg{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;padding:1px 5px;border-radius:2px;vertical-align:1px}
+.kg.ok{background:#111;color:#fff}
+.kg.ng{background:#fff;color:#111;border:1px solid #111}
+.edge{color:var(--muted);font-size:10px;margin-left:2px}
+.card .kgline{margin-top:8px;font-size:11px;color:var(--mid);letter-spacing:.01em}
+.card .kgline b.ok{background:#111;color:#fff;padding:1px 5px;border-radius:2px;font-size:9.5px;letter-spacing:.06em}
+.card .kgline b.ng{border:1px solid #111;color:#111;padding:0 4px;border-radius:2px;font-size:9.5px}
+.sp .v b.ok{background:#111;color:#fff;padding:1px 6px;border-radius:2px;font-size:10px;letter-spacing:.06em}
+.kgtoggle{margin-left:auto}
+.flags{display:flex;flex-wrap:wrap;gap:5px;margin-top:15px;padding-top:14px;border-top:1px solid var(--line)}
+.fl{font-size:10.5px;font-weight:600;border:1px solid var(--light);background:#fff;padding:3px 8px;border-radius:2px;color:var(--mid)}
+.biko{margin-top:13px;font-size:11.5px;line-height:1.75;color:var(--mid)}
+.biko span{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.1em;color:var(--muted);margin-right:8px;vertical-align:1px}
+.detlinks{margin-top:14px;display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.detlinks .upd{font-size:10px;color:var(--muted);letter-spacing:.04em}
+
+/* map */
+.mapchips{display:flex;gap:6px;margin-bottom:10px}
+.mapwrap{position:relative}
+#map{height:460px;border:1px solid var(--line);background:var(--soft)}
+.maphint{display:none;position:absolute;left:50%;bottom:12px;transform:translateX(-50%);z-index:600;background:#111;color:#fff;font-size:11.5px;font-weight:600;letter-spacing:.02em;padding:8px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.maphint.on{display:block}
+#map.gs .leaflet-tile-pane{filter:grayscale(1) contrast(.94) brightness(1.03)}
+.leaflet-container{font-family:'Poppins','Noto Sans JP',sans-serif}
+.pin{background:#111;color:#fff;border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;box-shadow:0 0 0 2px #fff}
+.pin.b{background:#fff;color:#111;box-shadow:0 0 0 2px #111}
+.pin.on{background:#111;transform:scale(1.3);box-shadow:0 0 0 3px #fff,0 0 0 5px #111}
+.pin-office{background:#111;color:#fff;width:auto;padding:4px 9px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:.06em;white-space:nowrap;box-shadow:0 0 0 2px #fff}
+.pop{font-size:12px;line-height:1.6}
+.pop b{font-size:13px;display:block;margin-bottom:3px}
+.pop .m{display:block;color:var(--muted);font-size:11px;margin-bottom:4px}
+.pop a{color:#111;font-weight:600;font-size:11px}
+.legend{display:flex;gap:18px;margin-top:9px;font-size:10.5px;color:var(--muted);flex-wrap:wrap}
+.legend i{display:inline-block;width:9px;height:9px;background:#111;border-radius:50%;margin-right:5px;vertical-align:middle}
+.legend i.o{background:#fff;box-shadow:0 0 0 1.5px #111}
+.legend i.sq{border-radius:2px}
+
+/* table */
+.tblwrap{overflow-x:auto;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;min-width:1200px;font-size:12px}
+th{background:var(--soft);text-align:left;font-size:9px;letter-spacing:.08em;text-transform:uppercase;color:var(--mid);font-weight:700;padding:9px 8px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;user-select:none}
+th:hover{color:#111}
+th.asc::after{content:" ▲";font-size:8px}
+th.desc::after{content:" ▼";font-size:8px}
+td{padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+tbody tr{cursor:pointer;transition:background .1s}
+tbody tr:hover{background:var(--soft)}
+tbody tr.hl{background:#f0f0f0;box-shadow:inset 3px 0 0 #111}
+td.nm{font-weight:700;letter-spacing:-.01em}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.badge{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.06em;padding:2px 6px;border:1px solid var(--light);color:var(--mid);border-radius:2px;white-space:nowrap}
+.badge.in{background:#111;color:#fff;border-color:#111}
+.st{display:flex;gap:3px}
+.st button{border:1px solid var(--light);background:#fff;font:inherit;font-size:10px;width:22px;height:22px;line-height:1;cursor:pointer;color:var(--muted);border-radius:2px}
+.st button.on{background:#111;border-color:#111;color:#fff}
+a.ext{color:#111;font-weight:600;font-size:11px;text-decoration:none;border-bottom:1px solid var(--light)}
+a.ext:hover{border-color:#111}
+
+/* links */
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.links a{display:block;border:1px solid var(--line);padding:13px 15px;text-decoration:none;color:var(--text);transition:.14s}
+.links a:hover{border-color:#111}
+.links .t{font-size:12.5px;font-weight:700;letter-spacing:-.01em}
+.links .d{font-size:10.5px;color:var(--muted);margin-top:4px;line-height:1.6}
+
+.note{font-size:12px;color:var(--mid);line-height:1.9}
+.note ul{margin:8px 0 0 18px}
+.note li{margin-bottom:6px}
+.note b{color:var(--text)}
+.kigaku{margin-top:20px;padding:16px 18px;border:1px solid var(--line);background:var(--soft)}
+.kg-head{font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.kigaku p{font-size:12px;color:var(--mid);line-height:1.8}
+.kigaku ul{margin:8px 0 0 18px}
+.kigaku li{margin-bottom:7px;font-size:12px;line-height:1.85;color:var(--mid)}
+footer{max-width:1340px;margin:0 auto;padding:22px 48px 60px;border-top:1px solid var(--line);font-size:11px;color:var(--light);line-height:1.8}
+
+/* ---------- responsive ---------------------------------------------------- */
+@media(max-width:1000px){
+  .main,footer{padding-left:32px;padding-right:32px}
+  .header{padding:44px 32px 38px}
+}
+@media(max-width:700px){
+  body{font-size:13.5px}
+  .header{padding:34px 20px 28px}
+  .header h1{font-size:1.85rem}
+  .header p{font-size:12.5px}
+  .main{padding:30px 20px 56px}
+  footer{padding:20px 20px 48px;font-size:11.5px}
+  .sec{margin-bottom:38px}
+  .sec-head{flex-direction:column;gap:4px;align-items:flex-start}
+  .sec-head .sub{font-size:11px}
+
+  .cond{grid-template-columns:1fr 1fr}
+  .cond .k{font-size:10px}
+
+  /* コントロール：スライダーは2列、チップは全幅で折り返し */
+  .controls{gap:16px 18px}
+  .ctl{flex:1 1 calc(50% - 9px);min-width:0}
+  .ctl label{font-size:10px}
+  .ctl input[type=range]{width:100%}
+  .ctl:last-child{flex:1 1 100%}
+  .chips{flex-wrap:wrap}
+  .chip{font-size:12px;padding:7px 13px}
+
+  .top5{grid-template-columns:1fr}
+  .card .nm{font-size:15px}
+  .card .ad{font-size:11.5px}
+
+  #map{height:min(58vh,380px)}
+  .legend{font-size:11px;gap:10px 16px}
+
+  .links{grid-template-columns:1fr}
+  .note{font-size:12.5px}
+}
+/* テーブル → カード。14列を横スクロールで追いかけるのは電話・タブレットでは無理 */
+@media(max-width:860px){
+  .tblwrap{border:none;overflow:visible}
+  table{min-width:0;display:block;font-size:13px}
+  thead{display:none}
+  tbody{display:block}
+  tbody tr{display:grid;grid-template-columns:1fr 1fr;gap:9px 12px;border:1px solid var(--line);padding:13px 14px;margin-bottom:9px}
+  tbody tr.hl{background:#f4f4f4;border-color:#111;box-shadow:none}
+  tbody td{border:none;padding:0;line-height:1.45}
+  td[data-l]::before{content:attr(data-l);display:block;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  td.num{text-align:left}
+  .c-name{order:1;grid-column:1/-1;font-size:15.5px;letter-spacing:-.02em;line-height:1.35}
+  .c-plan{order:2;grid-column:1/-1}
+  .c-plan .mini{width:100%;height:auto;max-height:190px}
+  .c-score{order:3}.c-chome{order:4}.c-walk{order:5}.c-rent{order:6}.c-init{order:7}.c-area{order:8}
+  .c-layout{order:9}.c-muki{order:10}.c-genkan{order:11}.c-houi{order:12}.c-age{order:13}.c-unit{order:14}.c-kanri{order:15}.c-floor{order:16}.c-station{order:17}
+  .c-score b{font-size:17px}
+  .c-rent{font-weight:700}
+  .c-status{order:18;grid-column:1/-1}
+  .st button{width:36px;height:30px;font-size:12px}
+
+  tr.det{display:block;border:1px solid #111;border-top:none;margin:-9px 0 9px;padding:0}
+  tr.det td{display:block;border-bottom:none}
+  .detwrap{grid-template-columns:1fr;gap:16px;padding:14px}
+  .spgrid{grid-template-columns:1fr 1fr;gap:10px 14px}
+  .detlinks{gap:12px}
+}
+@media(min-width:701px) and (max-width:860px){
+  tbody tr{grid-template-columns:repeat(3,1fr)}
+  .c-name{font-size:16px}
+}
+@media(max-width:400px){
+  .cond{grid-template-columns:1fr}
+  .ctl{flex:1 1 100%}
+  tbody tr{grid-template-columns:1fr 1fr;gap:9px 10px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="kicker">Housing Search</div>
+  <h1>次の賃貸を探す</h1>
+  <p>職場（神田神保町3-6-1 能楽書林ビル）から徒歩圏。指定エリア＝神田神保町2・3丁目／西神田2・3丁目／九段北1丁目／飯田橋2丁目、賃料26〜40万、1LDK・2LDK。候補は重み付けスコアで自動ランキングされ、上位5件がTOP候補として出る。</p>
+  <div class="stamp" id="stamp"></div>
+</div>
+
+<div class="main">
+
+  <!-- 条件 -->
+  <div class="sec">
+    <div class="sec-head"><span>Conditions / 検索条件</span></div>
+    <div class="cond">
+      <div><div class="k">Area</div><div class="v">神保町・西神田・九段北・飯田橋<small>神田神保町2/3・西神田2/3・九段北1・飯田橋2</small></div></div>
+      <div><div class="k">Rent</div><div class="v">26 – 40 万円<small>管理費別</small></div></div>
+      <div><div class="k">Layout</div><div class="v">1LDK / 2LDK<small>40㎡以上を目安</small></div></div>
+      <div><div class="k">Base point</div><div class="v">能楽書林ビル 4F<small>千代田区神田神保町3-6-1</small></div></div>
+    </div>
+  </div>
+
+  <!-- TOP5 -->
+  <div class="sec">
+    <div class="sec-head"><span>Top 5 / 有力候補</span><span class="sub" id="hitcount"></span></div>
+    <div class="controls">
+      <div class="ctl"><label>立地（職場に近い） <span class="wq" id="q0"></span></label><input type="range" id="w0" min="0" max="5" step="1" value="4"></div>
+      <div class="ctl"><label>広さ <span class="wq" id="q1"></span></label><input type="range" id="w1" min="0" max="5" step="1" value="3"></div>
+      <div class="ctl"><label>築浅 <span class="wq" id="q2"></span></label><input type="range" id="w2" min="0" max="5" step="1" value="3"></div>
+      <div class="ctl"><label>割安（円/㎡） <span class="wq" id="q3"></span></label><input type="range" id="w3" min="0" max="5" step="1" value="2"></div>
+      <div class="ctl"><label>日当たり（向き） <span class="wq" id="q4"></span></label><input type="range" id="w4" min="0" max="5" step="1" value="2"></div>
+      <div class="ctl"><label>九星気学（方位） <span class="wq" id="q5"></span></label><input type="range" id="w5" min="0" max="5" step="1" value="2"></div>
+      <div class="ctl wide"><label>絞り込み</label>
+        <div class="chips">
+          <button class="chip on" data-f="all">全件</button>
+          <button class="chip" data-f="strict">指定丁目のみ</button>
+          <button class="chip" data-f="1LDK">1LDK</button>
+          <button class="chip" data-f="2LDK">2LDK</button>
+          <button class="chip" id="showout">除外した物件も表示</button>
+        </div>
+      </div>
+      <div class="ctl wide"><label>条件（AND）</label>
+        <div class="chips" id="reqchips">
+          <button class="chip" data-r="futsuu">普通借家のみ</button>
+          <button class="chip" data-r="south">南向き系</button>
+          <button class="chip" data-r="角部屋">角部屋</button>
+          <button class="chip" data-r="追焚き">追焚き</button>
+          <button class="chip" data-r="独立洗面">独立洗面</button>
+          <button class="chip" data-r="食洗機">食洗機</button>
+          <button class="chip" data-r="宅配ボックス">宅配BOX</button>
+          <button class="chip" data-r="ペット相談">ペット可</button>
+          <button class="chip" data-r="事務所相談">事務所可</button>
+          <button class="chip" data-r="kichi">気学 吉方位（北東・西）</button>
+          <button class="chip" data-r="genkanok">玄関NG（北・北東・南西）を除く</button>
+        </div>
+      </div>
+    </div>
+    <div class="top5" id="top5"></div>
+  </div>
+
+  <!-- 地図 -->
+  <div class="sec">
+    <div class="sec-head"><span>Map / 位置</span><span class="sub">ピンをクリックで詳細。表の行と連動。カーソルを乗せてホイールで拡大縮小</span></div>
+    <div class="mapchips">
+      <button class="chip on" data-base="pale">淡色</button>
+      <button class="chip" data-base="std">標準</button>
+      <button class="chip" data-base="photo">航空写真</button>
+      <button class="chip on kgtoggle" id="kgsector">吉方位を表示（北東・西）</button>
+    </div>
+    <div class="mapwrap"><div id="map"></div><div class="maphint" id="maphint">地図を動かす</div></div>
+    <div class="legend">
+      <span><i class="sq"></i>職場（能楽書林ビル）</span>
+      <span><i></i>指定エリア内の候補</span>
+      <span><i class="o"></i>隣接エリアの候補</span>
+      <span>破線の円＝職場からの400m・800m圏</span>
+      <span>網掛けの扇形＝職場から見た<b>吉方位（北東・西）</b></span>
+      <span>ピンは<b>建物ごとの実住所</b>（物件名から住所を特定 → 国土地理院でジオコーディング）。街区レベルの精度。徒歩分数はOSRMで実際に歩いた距離を80m=1分で換算。</span>
+    </div>
+  </div>
+
+  <!-- 一覧 -->
+  <div class="sec">
+    <div class="sec-head"><span>All Candidates / 候補一覧</span><span class="sub">行クリックで間取り図と詳細スペック／見出しクリックで並べ替え／○△×は端末に保存</span></div>
+    <div class="tblwrap">
+      <table>
+        <thead><tr>
+          <th data-s="score">Score</th>
+          <th data-s="name">物件名</th>
+          <th>間取り図</th>
+          <th data-s="chome">所在</th>
+          <th data-s="walk">職場まで</th>
+          <th data-s="rentMin">賃料</th>
+          <th data-s="kanri">管理費</th>
+          <th data-s="init">初期費用目安</th>
+          <th data-s="layout">間取り</th>
+          <th data-s="areaMin">専有面積</th>
+          <th data-s="unit">円/㎡</th>
+          <th data-s="muki">向き</th>
+          <th data-s="genkan">玄関 方位</th>
+          <th data-s="houi">気学 方位</th>
+          <th data-s="age">築年</th>
+          <th data-s="floor">階</th>
+          <th data-s="station">最寄駅</th>
+          <th>判定</th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 常時最新を取りに行く -->
+  <div class="sec">
+    <div class="sec-head"><span>Live Search / 最新在庫を見る</span><span class="sub">条件を入れた状態で開く</span></div>
+    <div class="links">
+      <a href="https://suumo.jp/jj/chintai/ichiran/FR301FC001/?ar=030&bs=040&ta=13&sc=13101&oz=13101019&oz=13101047&oz=13101037&oz=13101001&cb=26.0&ct=40.0&md=04&md=07&et=9999999&mb=0&mt=9999999&cn=9999999&pc=50" target="_blank" rel="noopener">
+        <div class="t">SUUMO（条件適用済み）</div><div class="d">神田神保町・西神田・九段北・飯田橋／26〜40万／1LDK・2LDK。このページの元データ</div></a>
+      <a href="https://www.homes.co.jp/chintai/tokyo/jimbocho_00873-st/" target="_blank" rel="noopener">
+        <div class="t">HOME'S 神保町駅</div><div class="d">SUUMO未掲載の管理会社直物件が出ることがある</div></a>
+      <a href="https://www.athome.co.jp/chintai/tokyo/chiyoda-city/019-town/list/" target="_blank" rel="noopener">
+        <div class="t">アットホーム 神田神保町</div><div class="d">地場仲介の掲載が厚い。丁目まで絞れる</div></a>
+      <a href="https://www.google.com/maps/dir/?api=1&origin=%E6%9D%B1%E4%BA%AC%E9%83%BD%E5%8D%83%E4%BB%A3%E7%94%B0%E5%8C%BA%E7%A5%9E%E7%94%B0%E7%A5%9E%E4%BF%9D%E7%94%BA3-6-1&travelmode=walking" target="_blank" rel="noopener">
+        <div class="t">Google Maps（職場起点）</div><div class="d">行き先を入れれば実測の徒歩ルートが出る</div></a>
+    </div>
+  </div>
+
+  <!-- 所感 -->
+  <div class="sec">
+    <div class="sec-head"><span>Notes / 読み解き</span></div>
+    <div class="note">
+      <ul>
+        <li><b>この一覧は9件。</b>2026-09-18 の再取得時点で指定エリア＋隣接に出ていた19棟のうち、<b>11棟は検討対象から外した</b>（データは残してあり「除外した物件も表示」で戻せる）。前回あった TK猿楽町レジデンスは掲載終了。</li>
+        <li><b>今回の更新で動いたもの。</b><b>ガリシア九段下ライズが27.5万→26.0万</b>（ただし管理費1.5万が別建てになったので総額はほぼ同じ）。<b>パークアクシス神保町に1LDK 41㎡ 27.0万が出た</b>（前回は2LDKのみ30.4万）。<b>千代田ファーストハイツは掲載住戸が1520号室に替わり、管理費2万が別途に</b>。ロイジェントは36.0万の1戸から35.8万＋36.0万の2戸へ。</li>
+        <li><b>新規で3棟。</b>ラ・トゥール千代田（西神田3-5-3・徒歩3分・39.8万）、シティタワー九段下（飯田橋2-17-9・徒歩6分・35.5万）、テラス神田猿楽町（新築・26.0〜33.6万で13戸の空き）。</li>
+        <li><b>神田神保町2丁目・3丁目には、この条件の賃貸がほぼ存在しない。</b>古書店街・出版社の商業地で、居住用マンションの供給自体が薄い。指定エリアで実際に球が出るのは<b>西神田2・3丁目／九段北1丁目／飯田橋2丁目</b>の4つ。</li>
+        <li>職場から最短なのは<b>西神田3丁目（徒歩3〜4分）</b>と<b>九段北1丁目（徒歩2〜4分）</b>。指定エリアはどこを選んでも通勤負荷はほぼ変わらないので、差がつくのは物件そのもの。</li>
+        <li>価格帯の性格：26〜30万は<b>1LDK 41〜55㎡</b>、32〜36万で<b>2LDK 52〜64㎡</b>が中心。<b>26万で2LDK 52㎡のガリシア九段下ライズ</b>は築15年ゆえの価格で、坪単価では明確に割安。逆にラ・トゥール千代田は敷3＋礼1＋償却1で<b>初期費用だけで210万超</b>になる。</li>
+        <li>賃料は<b>募集中の部屋のレンジ</b>。同じ建物でも階と向きで数万動くので、レンジ下限＝低層・条件弱めであることが多い。テラス神田猿楽町の26.0万は40.86㎡、33.6万は50.01㎡で、実質は別物件と思ったほうがいい。</li>
+        <li><b>定期借家が5件（9件中）。</b>ガリシア（3年）・千代田ファーストハイツ（3年）・ラ・トゥール（2年）・シティタワー九段下（<b>5年</b>）。更新できないので、住み続ける前提なら普通借家の リブクオーレ／パークアクシス／ロイジェント／テラス を軸に見るほうが安全。</li>
+        <li>テラス神田猿楽町だけは<b>SUUMOが番地を出していない</b>ので、ピンと徒歩分数は猿楽町2丁目の代表点による概算。実際は水道橋寄りで、職場からはもう少し遠い可能性がある。</li>
+      </ul>
+      <div class="kigaku">
+        <div class="kg-head">九星気学の方位</div>
+        <p>2つの軸を別々に見ている。混ぜない。表でも「気学 方位」「玄関 方位」は独立した列で、それぞれ単独に並べ替えできる。</p>
+        <ul>
+          <li><b>① 職場（能楽書林ビル）から見た方位 — 北東・西が吉。</b>建物の実座標との真北基準の方位角で判定した。八方位は等分ではなく、<b>四正（北・東・南・西）が30度、四隅（北東・南東・南西・北西）が60度</b>という気学の切り方を使っている。境目から3度以内のものには <span class="edge">*</span> を付けたので、そこは断定しないこと。</li>
+          <li><b>② 部屋の中心から見た玄関の方位 — 北・北東・南西は凶。</b>間取り図を1枚ずつ読んで割り出した。手順は、図面の<b>方位記号</b>で図の回転角を確定（記号が無い図はバルコニーの位置とSUUMOの「向き」から逆算）→ 住戸の重心から玄関までのベクトルを実方位に変換 → 八方位に分類。各行の詳細に根拠と確度を書いてある。<b>境目±5度のものには <span class="edge">*</span></b> を付けたので、そこは断定しないこと。</li>
+          <li>方位は<b>真北</b>基準。東京の磁北は真北から約7.5度西にずれるので、方位磁石で測ると境目付近の判定は変わりうる。</li>
+          <li><b>①の結果：吉方位に入るのは6件。</b>西＝ガリシア九段下ライズ。北東＝レ・ジェイドクロス千代田神保町／リブクオーレ神保町／パークアクシス神保町／千代田ファーストハイツ／テラス神田猿楽町。<b>飯田橋方面はすべて北西</b>で吉方位には入らず、ラ・トゥール千代田は真北（355.9度）で北。</li>
+          <li><b>②の結果：玄関が可は5件、凶は4件。</b><br>
+            可＝ガリシア九段下ライズ（南東）／リブクオーレ神保町（北西）／シティタワー九段下（南）／ロイジェント九段（南<span class="edge">*</span>）／ラ・トゥール千代田（東<span class="edge">*</span>）。<br>
+            凶＝レ・ジェイドクロス千代田神保町（<b>南西</b>）／パークアクシス神保町（北東）／千代田ファーストハイツ（北東<span class="edge">*</span>）／テラス神田猿楽町（北東）。</li>
+          <li><b>①と②を両方満たすのは、ガリシア九段下ライズ（西の吉方位／玄関 南東）とリブクオーレ神保町（北東の吉方位／玄関 北西）の2件。</b>前回と同じ2件が残った。</li>
+          <li>確度の低いものが3件ある。<b>レ・ジェイドクロス千代田神保町の玄関 南西（240度）は本人指定の値</b>で、間取り図には方位記号がなくSUUMOも向きを出していない。<b>ラ・トゥール千代田</b>は方位記号から読むとバルコニーが西になり、SUUMOの「向き＝東」と食い違う（どちらで読んでも玄関は凶を外れるが、現地で要確認）。<b>ロイジェント九段</b>は玄関が南と南西のちょうど境界に乗っている。</li>
+          <li>玄関が凶でも、気学では<b>水回り（トイレ・浴室・キッチン）が鬼門・裏鬼門に乗っているか</b>も見る。そこは間取り図と内見で個別に確認すること。ここでは玄関だけを判定している。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  kyo24111.github.io / housing<br>
+  出典：物件情報は <a href="https://suumo.jp/" target="_blank" rel="noopener">SUUMO</a>（リクルート）の掲載内容。間取り図・外観画像の著作権は各掲載会社に帰属する。<br>
+  位置は国土地理院 地名検索API、徒歩分数は OSRM foot ルーティングの実距離を80m=1分で換算した概算。<br>
+  在庫は流動的。判断前に必ず Live Search から現況を確認すること。
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ---------- data ---------------------------------------------------------- */
+var FETCHED = '2026-09-18';
+var OFFICE  = {lat:35.696617, lng:139.753159, name:'能楽書林ビル 4F', addr:'千代田区神田神保町3-6-1'};
+
+/* 丁目の代表点（国土地理院）＋ 職場からの徒歩実距離（OSRM foot） */
+var CHOME = {
+  '神田神保町1丁目':{lat:35.696491,lng:139.759079,dist:588,walk:8, target:false},
+  '神田神保町2丁目':{lat:35.696636,lng:139.756454,dist:378,walk:5, target:true},
+  '西神田1丁目'   :{lat:35.699409,lng:139.757156,dist:584,walk:8, target:false},
+  '西神田2丁目'   :{lat:35.698803,lng:139.755264,dist:414,walk:6, target:true},
+  '西神田3丁目'   :{lat:35.698021,lng:139.753326,dist:200,walk:3, target:true},
+  '九段北1丁目'   :{lat:35.696655,lng:139.750656,dist:246,walk:4, target:true},
+  '飯田橋1丁目'   :{lat:35.698471,lng:139.749420,dist:461,walk:6, target:false},
+  '飯田橋2丁目'   :{lat:35.699207,lng:139.750565,dist:423,walk:6, target:true},
+  '飯田橋4丁目'   :{lat:35.700886,lng:139.746704,dist:853,walk:11,target:false},
+  '神田猿楽町1丁目':{lat:35.698444,lng:139.760361,dist:853,walk:11,target:false},
+  '神田猿楽町2丁目':{lat:35.699696,lng:139.759232,dist:710,walk:9, target:false}
+};
+
+var DATA = [
+ {id:"lejade", genkan:"南西", genkanDeg:240, genkanSrc:"本人指定（真南から西へ60度＝240度）", genkanConf:"高", bearing:43.5, houi:"北東", addr:"東京都千代田区西神田2-4-16", lat:35.698078, lng:139.754868, dist:297, walk:4, name:"レ・ジェイドクロス千代田神保町", chome:"西神田2丁目", rentMin:28.0, rentMax:37.1, kanri:0, layout:"1LDK・2LDK", areaMin:45.03, areaMax:64.46, age:3, floor:"4–5F", station:"神保町 5分", muki:"-", kouzou:"RC", kaidate:"4階/地下1地上14階建", total:14, chiku:"2023年9月", madoriS:"洋5 LDK11.4", balcony:"-", shiki:28.0, rei:28.0, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 初回保証料：月額賃料等の50％", hoka:"合計6.44万円（内訳：入居サポート2.145万円／室内抗菌処理代1.76万円／鍵交換費2.53万円）", sonpo:"2.5万円2年", keiyaku:"-", teiki:false, nyukyo:"即", kosuu:"-", jouken:"二人入居可/ペット相談", torihiki:"仲介", updated:"2026/09/16", biko:"※1年未満解約時、賃料1か月分の違約金有 ※同タイプ・別階の内観写真を掲載している場合があります。", flags:["角部屋","バストイレ別","追焚き","浴室乾燥","都市ガス","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","駐輪場","ペット相談","保証人不要","カード決済可","二人入居可"], img:"img/lejade_madori.jpg", imgOut:null, url:"https://suumo.jp/chintai/jnc_000107269046/"},
+ {id:"libcuore", genkan:"北西", genkanDeg:326, genkanSrc:"方位記号", genkanConf:"中", bearing:60.6, houi:"北東", addr:"東京都千代田区神田神保町1-62-2", lat:35.698765, lng:139.757858, dist:556, walk:7, name:"リブクオーレ神保町", chome:"神田神保町1丁目", rentMin:32.2, rentMax:35.4, kanri:1.5, layout:"2LDK・2SLDK", areaMin:55.94, areaMax:57.03, age:6, floor:"4–10F", station:"神保町 5分", muki:"南東", kouzou:"RC", kaidate:"4階/14階建", total:14, chiku:"2020年11月", madoriS:"洋6.1 洋4.5 LD10.8K3.3", balcony:"-", shiki:32.2, rei:32.2, shikibiki:0.0, chuukai:"1.1ヶ月", hoshou:"保証会社利用必 初期は賃料等の50％、月次保証料は賃料等の1％", hoka:"合計5.28万円（内訳：鍵交換3.3万円／M-REALプレミアム会費2年1.98万円）", sonpo:"3.2万円2年", keiyaku:"普通借家 2年", teiki:false, nyukyo:"'26年11月上旬", kosuu:"102戸", jouken:"ペット相談/楽器相談", torihiki:"仲介", updated:"2026/09/16", biko:"通勤管理／JR中央本線 御茶ノ水駅 徒歩11分", flags:["角部屋","バストイレ別","追焚き","浴室乾燥","3口以上コンロ","床暖房","WIC","都市ガス","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","24hゴミ出し","ペット相談","楽器相談","カード決済可"], img:"img/libcuore_madori.jpg", imgOut:"img/libcuore_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000108955134/"},
+ {id:"galicia", genkan:"南東", genkanDeg:140, genkanSrc:"方位記号（間取り図で再確認）", genkanConf:"高", bearing:282.9, houi:"西", addr:"東京都千代田区九段北1-7-2", lat:35.696861, lng:139.751846, dist:131, walk:2, name:"ガリシア九段下ライズ", chome:"九段北1丁目", rentMin:26.0, rentMax:26.0, kanri:1.5, layout:"2LDK", areaMin:52.24, areaMax:52.24, age:15, floor:"11F", station:"九段下 2分", muki:"北西", kouzou:"RC", kaidate:"11階/14階建", total:14, chiku:"2012年7月", madoriS:"洋5.2 洋5 LDK10.8", balcony:"-", shiki:52.0, rei:26.0, shikibiki:0.0, chuukai:"不要", hoshou:"-", hoka:"-", sonpo:"2.55万円2年", keiyaku:"定期借家 3年", teiki:true, nyukyo:"相談", kosuu:"-", jouken:"単身者可/二人入居可/子供可", torihiki:"仲介", updated:"2026/09/13", biko:"2026/08の27.5万円から26.0万円に値下げ（管理費1.5万円は別途）。仲介手数料不要・WEB内見/IT重説対応。向きはSUUMO表記が非公開に変わったが、間取り図から北西で確定。", flags:["角部屋","2面採光","バストイレ別","追焚き","浴室乾燥","独立洗面","3口以上コンロ","WIC","都市ガス","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","保証人不要","カード決済可","分譲賃貸","デザイナーズ"], img:"img/galicia_madori.jpg", imgOut:null, url:"https://suumo.jp/chintai/jnc_000108902250/"},
+ {id:"paxis", genkan:"北東", genkanDeg:29, genkanSrc:"方位記号", genkanConf:"中", bearing:62.1, houi:"北東", addr:"東京都千代田区神田神保町1-56-2", lat:35.698418, lng:139.757355, dist:508, walk:7, name:"パークアクシス神保町", chome:"神田神保町1丁目", rentMin:27.0, rentMax:34.5, kanri:1.5, layout:"1LDK・2LDK", areaMin:41.03, areaMax:52.2, age:3, floor:"2–11F", station:"神保町 4分", muki:"南西", kouzou:"RC", kaidate:"6階/14階建", total:14, chiku:"2024年4月", madoriS:"洋4.3 LDK10.6", balcony:"-", shiki:27.0, rei:0.0, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 初回：賃料等の50％（最低2万円）、2年目以降：9,600円／年", hoka:"合計3.3万円（内訳：カギ交換費用3.3万円）", sonpo:"要", keiyaku:"普通借家 2年", teiki:false, nyukyo:"'26年10月上旬", kosuu:"91戸", jouken:"二人入居可/子供可/ペット相談/楽器相談", torihiki:"仲介", updated:"2026/09/16", biko:"巡回管理／1LDK 41.03㎡が27.0万円、2LDK 52.2㎡が30.5〜34.5万円。退去時清掃費76,726円。", flags:["角部屋","バストイレ別","追焚き","浴室乾燥","独立洗面","床暖房","WIC","オートロック","宅配ボックス","防犯カメラ","エレベーター","駐輪場","カード決済可","二人入居可"], img:"img/paxis_madori.jpg", imgOut:"img/paxis_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000109528277/"},
+ {id:"loigent", genkan:"南", genkanDeg:194, genkanSrc:"方位記号（南と南西の境界・±5度）", genkanConf:"低", bearing:306.5, houi:"北西", addr:"東京都千代田区九段北1-9-12", lat:35.698009, lng:139.750839, dist:302, walk:4, name:"ロイジェント九段", chome:"九段北1丁目", rentMin:35.8, rentMax:36.0, kanri:0, layout:"2LDK", areaMin:61.33, areaMax:61.33, age:10, floor:"10–13F", station:"九段下 5分", muki:"-", kouzou:"RC", kaidate:"10階/13階建", total:13, chiku:"2017年8月", madoriS:"洋7.1 洋5 LDK12.7", balcony:"-", shiki:35.8, rei:35.8, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 初回なし。カード決済必須・家財保険付きで総賃料3.4％＋800円／月の手数料", hoka:"-", sonpo:"要", keiyaku:"普通借家 2年", teiki:false, nyukyo:"'26年12月上旬", kosuu:"-", jouken:"ペット相談", torihiki:"仲介", updated:"2026/09/17", biko:"10階35.8万円／13階36.0万円の2住戸。ペット可（小型犬1匹 敷金＋1ヶ月）。駐輪場代 借主負担。", flags:["角部屋","追焚き","浴室乾燥","独立洗面","WIC","都市ガス","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","駐輪場","ペット相談","カード決済可"], img:"img/loigent_madori.jpg", imgOut:null, url:"https://suumo.jp/chintai/jnc_000109883290/"},
+ {id:"firsth", genkan:"北東", genkanDeg:71, genkanSrc:"方位記号（北東と東の境界・±5度）", genkanConf:"中", bearing:15.4, houi:"北東", addr:"東京都千代田区西神田3-8-3", lat:35.698326, lng:139.753738, dist:291, walk:4, name:"千代田ファーストハイツ", chome:"西神田3丁目", rentMin:27.9, rentMax:27.9, kanri:2.0, layout:"1LDK", areaMin:54.78, areaMax:54.78, age:28, floor:"15F", station:"神保町 5分", muki:"南西", kouzou:"SRC", kaidate:"15階/17階建", total:17, chiku:"1998年11月", madoriS:"洋7.9 LDK12.1", balcony:"-", shiki:55.8, rei:27.9, shikibiki:27.9, chuukai:"不要", hoshou:"保証会社利用必 1年目 賃料の30％、2年目以降 8,000円／年", hoka:"-", sonpo:"要", keiyaku:"定期借家 3年", teiki:true, nyukyo:"即", kosuu:"-", jouken:"二人入居可/子供可", torihiki:"貸主", updated:"2026/09/16", biko:"常駐管理／掲載住戸が1520号室に変わり、管理費2万円が別途に。退去時償却金1ヶ月、1年未満解約は違約金1ヶ月。", flags:["バストイレ別","追焚き","浴室乾燥","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","駐輪場"], img:"img/firsth_madori.jpg", imgOut:"img/firsth_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000109557784/"},
+ {id:"latour", genkan:"東", genkanDeg:80, genkanSrc:"方位記号（SUUMOの向き表記と不一致・要現地確認）", genkanConf:"低", bearing:355.9, houi:"北", addr:"東京都千代田区西神田3-5-3", lat:35.698345, lng:139.753006, dist:239, walk:3, name:"ラ・トゥール千代田", chome:"西神田3丁目", rentMin:39.8, rentMax:39.8, kanri:0, layout:"1LDK", areaMin:59.26, areaMax:59.26, age:23, floor:"27F", station:"九段下 5分", muki:"東", kouzou:"S", kaidate:"27階/32階建", total:32, chiku:"2004年1月", madoriS:"洋8.1 LD11.0K4.0", balcony:"-", shiki:119.4, rei:39.8, shikibiki:39.8, chuukai:"不要", hoshou:"保証会社利用必 1年目 賃料の30％、2年目以降 8,000円／年", hoka:"-", sonpo:"要", keiyaku:"定期借家 2年", teiki:true, nyukyo:"相談", kosuu:"189戸", jouken:"子供可/ペット相談", torihiki:"貸主", updated:"2026/09/16", biko:"新規。住友不動産のラ・トゥール。24時間フロント・フィットネス付き。敷金3ヶ月＋礼金1ヶ月＋償却1ヶ月で初期費用が突出する。", flags:["バストイレ別","追焚き","浴室乾燥","床暖房","WIC","オートロック","防犯カメラ","エレベーター","駐輪場","ペット相談"], img:"img/latour_madori.jpg", imgOut:null, url:"https://suumo.jp/chintai/jnc_000093867871/"},
+ {id:"citytower", genkan:"南", genkanDeg:189, genkanSrc:"方位記号", genkanConf:"中", bearing:322.7, houi:"北西", addr:"東京都千代田区飯田橋2-17-9", lat:35.699566, lng:139.750397, dist:466, walk:6, name:"シティタワー九段下", chome:"飯田橋2丁目", rentMin:35.5, rentMax:35.5, kanri:2.0, layout:"2LDK", areaMin:59.82, areaMax:59.82, age:20, floor:"4F", station:"飯田橋 4分", muki:"北東", kouzou:"RC", kaidate:"4階/24階建", total:24, chiku:"2007年3月", madoriS:"-", balcony:"-", shiki:71.0, rei:35.5, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 初回 賃料等の総額50％、月額 賃料等の1％", hoka:"-", sonpo:"-", keiyaku:"定期借家 5年", teiki:true, nyukyo:"相談", kosuu:"99戸", jouken:"二人入居可/子供可", torihiki:"仲介", updated:"2026/09/16", biko:"新規。SUUMOは物件名非公開だが、飯田橋2-17-9／2007年3月築／24階建／99戸からシティタワー九段下と特定。更新料 新賃料1ヶ月、駐車場 敷地内43,000円。", flags:["角部屋","バストイレ別","追焚き","浴室乾燥","独立洗面","3口以上コンロ","WIC","都市ガス","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","駐輪場","保証人不要","分譲賃貸","デザイナーズ"], img:"img/citytower_madori.jpg", imgOut:null, url:"https://suumo.jp/chintai/jnc_000109755750/"},
+ {id:"terrace", genkan:"北東", genkanDeg:23, genkanSrc:"方位記号", genkanConf:"中", bearing:58.0, houi:"北東", addr:"東京都千代田区神田猿楽町2丁目（番地非公開）", lat:35.699696, lng:139.759232, dist:710, walk:9, name:"テラス神田猿楽町", chome:"神田猿楽町2丁目", rentMin:26.0, rentMax:33.6, kanri:2.0, layout:"2LDK", areaMin:40.86, areaMax:50.01, age:0, floor:"2–12F", station:"水道橋 6分", muki:"南西", kouzou:"RC", kaidate:"2階/13階建", total:13, chiku:"2026年9月", madoriS:"洋3.9 洋3.3 LDK10.4", balcony:"-", shiki:26.0, rei:0.0, shikibiki:0.0, chuukai:"0.55ヶ月", hoshou:"保証会社利用必 初回 月額賃料等の50％、月額賃料等の1％／月", hoka:"-", sonpo:"要", keiyaku:"普通借家 2年", teiki:false, nyukyo:"'26年9月下旬", kosuu:"-", jouken:"ペット相談", torihiki:"仲介", updated:"2026/09/16", biko:"新規・新築（2026年9月竣工）。40.86㎡が26.0〜27.0万円、50.01㎡が31.5〜33.6万円で空きが13戸。番地が非公開のため位置は猿楽町2丁目の代表点（徒歩分数も丁目基準の概算）。M-REALプレミアム会費2年19,800円。", flags:["角部屋","2面採光","バストイレ別","追焚き","浴室乾燥","独立洗面","WIC","都市ガス","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","24hゴミ出し","駐輪場","ペット相談","保証人不要","カード決済可"], img:"img/terrace_madori.jpg", imgOut:null, url:"https://suumo.jp/chintai/jnc_000109713264/"},
+ {id:"bellvue", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:"北", genkanDeg:9, genkanSrc:"方位記号", genkanConf:"高", bearing:301.1, houi:"北西", addr:"東京都千代田区飯田橋1-12-4", lat:35.699158, lng:139.747971, dist:624, walk:8, name:"ベルビュー千代田飯田橋", chome:"飯田橋1丁目", rentMin:34.0, rentMax:37.0, kanri:1.5, layout:"2LDK", areaMin:56.14, areaMax:56.14, age:6, floor:"10F", station:"飯田橋 4分", muki:"南", kouzou:"RC", kaidate:"10階/12階建", total:12, chiku:"2021年7月", madoriS:"洋6 洋5 LD10.7K2.9", balcony:"-", shiki:34.0, rei:17.0, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 初回保証料：月額賃料等の50％、継続：毎年1万円ほか", hoka:"合計17.43万円（内訳：鍵交換代5.5万円／退去時清掃・エアコン清掃11.924万円）", sonpo:"要", keiyaku:"普通借家 2年", teiki:false, nyukyo:"即", kosuu:"40戸", jouken:"事務所利用不可", torihiki:"仲介", updated:"2026/09/16", biko:"礼金が1ヶ月から半月（17万円）に下がり、下限賃料も35.5→34.0万円。", flags:["角部屋","2面採光","バストイレ別","追焚き","浴室乾燥","3口以上コンロ","食洗機","床暖房","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","駐輪場"], img:"img/bellvue_madori.jpg", imgOut:"img/bellvue_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000099107558/"},
+ {id:"bellfa", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:"北", genkanDeg:9, genkanSrc:"方位記号", genkanConf:"中", bearing:71.3, houi:"北東", addr:"東京都千代田区神田神保町1-46-5", lat:35.698067, lng:139.758438, dist:640, walk:9, name:"ベルファース神田神保町", chome:"神田神保町1丁目", rentMin:26.6, rentMax:26.9, kanri:1.5, layout:"1LDK", areaMin:40.08, areaMax:42.21, age:3, floor:"10–13F", station:"神保町 4分", muki:"南東", kouzou:"RC", kaidate:"10階/13階建", total:13, chiku:"2024年1月", madoriS:"洋3.6 LDK12.0", balcony:"-", shiki:26.6, rei:0.0, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 月額総家賃の50％～", hoka:"合計2.2万円（内訳：鍵交換代金2.2万円）", sonpo:"2万円2年", keiyaku:"-", teiki:false, nyukyo:"即", kosuu:"-", jouken:"二人入居可/フリーレント2ヶ月", torihiki:"仲介", updated:"2026/09/16", biko:"フリーレント2ヶ月が付いた。", flags:["バストイレ別","追焚き","浴室乾燥","3口以上コンロ","WIC","都市ガス","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","24hゴミ出し","駐輪場","保証人不要","カード決済可","二人入居可"], img:"img/bellfa_madori.jpg", imgOut:"img/bellfa_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000106650494/"},
+ {id:"habio", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:"北", genkanDeg:8, genkanSrc:"方位記号", genkanConf:"高", bearing:306.8, houi:"北西", addr:"東京都千代田区飯田橋2-4-3", lat:35.698322, lng:139.750351, dist:373, walk:5, name:"パークハビオ飯田橋", chome:"飯田橋2丁目", rentMin:26.3, rentMax:26.3, kanri:1.8, layout:"1LDK", areaMin:40.07, areaMax:40.07, age:12, floor:"8F", station:"九段下 3分", muki:"南", kouzou:"RC", kaidate:"8階/地下1地上13階建", total:13, chiku:"2015年2月", madoriS:"洋5 LDK11.8", balcony:"-", shiki:26.3, rei:26.3, shikibiki:0.0, chuukai:"0.55ヶ月", hoshou:"保証会社利用必 月額賃料等の50％（初回）、2年目以降は1万円／年", hoka:"合計4.4万円（内訳：カギ交換費用4.4万円）", sonpo:"要", keiyaku:"普通借家 2年", teiki:false, nyukyo:"即", kosuu:"113戸", jouken:"ペット相談/楽器相談", torihiki:"仲介", updated:"2026/09/16", biko:"掲載住戸が801号室に変わり、礼金1ヶ月が付いた。", flags:["角部屋","2面採光","バストイレ別","追焚き","浴室乾燥","独立洗面","3口以上コンロ","WIC","都市ガス","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","24hゴミ出し","駐輪場","ペット相談","楽器相談","保証人不要","カード決済可"], img:"img/habio_madori.jpg", imgOut:null, url:"https://suumo.jp/chintai/jnc_000108633602/"},
+ {id:"fisio", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:"南西", genkanDeg:206, genkanSrc:"方位記号", genkanConf:"高", bearing:313.7, houi:"北西", addr:"東京都千代田区飯田橋2-3-2", lat:35.698479, lng:139.750763, dist:350, walk:5, name:"フィシオ飯田橋", chome:"飯田橋2丁目", rentMin:28.7, rentMax:30.1, kanri:2.5, layout:"1LDK", areaMin:41.32, areaMax:41.53, age:2, floor:"11–14F", station:"九段下 4分", muki:"北東", kouzou:"RC", kaidate:"11階/14階建", total:14, chiku:"2025年2月", madoriS:"洋6.5 LDK9.3", balcony:"-", shiki:0.0, rei:0.0, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 初回：賃料等の50％（最低15,000円）、2年目以降：10,000円／年", hoka:"-", sonpo:"要", keiyaku:"普通借家 2年", teiki:false, nyukyo:"即", kosuu:"26戸", jouken:"二人入居可/子供可/ペット相談/楽器相談", torihiki:"仲介", updated:"2026/09/16", biko:"未入居。防音室あり。退去時清掃77,268円＋エアコン清掃15,000円。", flags:["角部屋","バストイレ別","追焚き","浴室乾燥","独立洗面","WIC","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","24hゴミ出し","カード決済可","二人入居可"], img:"img/fisio_madori.jpg", imgOut:null, url:"https://suumo.jp/chintai/jnc_000103593265/"},
+ {id:"idic", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:null, genkanDeg:null, genkanSrc:"要再判定（SUUMOの向き表記が南→南東に変更）", genkanConf:null, bearing:317.8, houi:"北西", addr:"東京都千代田区飯田橋2-11-8", lat:35.700035, lng:139.749344, dist:604, walk:8, name:"アイディーコート飯田橋", chome:"飯田橋2丁目", rentMin:27.8, rentMax:29.8, kanri:2.0, layout:"2LDK", areaMin:56.63, areaMax:56.63, age:15, floor:"3F", station:"飯田橋 3分", muki:"南東", kouzou:"SRC", kaidate:"3階/12階建", total:12, chiku:"2012年1月", madoriS:"洋6 洋4.5 LDK12", balcony:"-", shiki:27.8, rei:27.8, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 宅建ハトさん保証 50％～100％", hoka:"-", sonpo:"要", keiyaku:"定期借家 3年", teiki:true, nyukyo:"即", kosuu:"-", jouken:"-", torihiki:"仲介", updated:"2026/09/17", biko:"同じ301号室だが向き表記が南→南東に変わったため、バルコニー逆算だった玄関方位は無効化。", flags:["追焚き","浴室乾燥","オートロック","エレベーター"], img:"img/idic_madori.jpg", imgOut:"img/idic_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000108788997/"},
+ {id:"tokyores", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:"北東", genkanDeg:73, genkanSrc:"方位記号", genkanConf:"低", bearing:335.7, houi:"北西", addr:"東京都千代田区飯田橋2-18-1", lat:35.698757, lng:139.751968, dist:329, walk:5, name:"東京レジデンス", chome:"飯田橋2丁目", rentMin:28.0, rentMax:28.0, kanri:1.0, layout:"1LDK", areaMin:51.61, areaMax:51.61, age:24, floor:"5F", station:"九段下 5分", muki:"南西", kouzou:"RC", kaidate:"5階/地下2地上29階建", total:29, chiku:"2003年2月", madoriS:"-", balcony:"11.7m2", shiki:28.0, rei:28.0, shikibiki:0.0, chuukai:"1.1ヶ月", hoshou:"保証会社利用必 初回保証料：賃料等の50％～（最低2万円）、月額保証料：月額引落金額×1％", hoka:"-", sonpo:"1.66万円2年", keiyaku:"定期借家 3年", teiki:true, nyukyo:"'26年10月上旬", kosuu:"-", jouken:"-", torihiki:"仲介", updated:"2026/09/16", biko:"通勤管理／退去時ハウスクリーニング 平米×1,540円。禁煙（バルコニー含む）。", flags:["バストイレ別","追焚き","浴室乾燥","3口以上コンロ","WIC","都市ガス","オートロック","TVインターホン","防犯カメラ","エレベーター","24hゴミ出し","駐輪場","保証人不要","分譲賃貸","二人入居可"], img:"img/tokyores_madori.jpg", imgOut:"img/tokyores_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000109117198/"},
+ {id:"crossres", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:"南", genkanDeg:180, genkanSrc:"バルコニー逆算", genkanConf:"中", bearing:103.1, houi:"東", addr:"東京都千代田区神田神保町1-5-8", lat:35.695469, lng:139.759216, dist:701, walk:9, name:"クロスレジデンス神田神保町", chome:"神田神保町1丁目", rentMin:32.3, rentMax:32.3, kanri:1.2, layout:"2LDK", areaMin:50.05, areaMax:50.05, age:3, floor:"12F", station:"神保町 1分", muki:"北", kouzou:"RC", kaidate:"12階/13階建", total:13, chiku:"2024年4月", madoriS:"洋5.2 洋4.6 LDK10.3", balcony:"-", shiki:32.3, rei:32.3, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 詳細は要問合せ", hoka:"合計3.85万円（内訳：鍵交換代3.85万円）", sonpo:"2.15万円2年", keiyaku:"-", teiki:false, nyukyo:"相談", kosuu:"44戸", jouken:"ペット相談", torihiki:"仲介", updated:"2026/09/16", biko:"巡回管理／契約金分割払い可。ペット飼育時は敷金積み増し1ヶ月。", flags:["バストイレ別","追焚き","浴室乾燥","3口以上コンロ","食洗機","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","24hゴミ出し","保証人不要","カード決済可","分譲賃貸","デザイナーズ"], img:"img/crossres_madori.jpg", imgOut:"img/crossres_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000108470158/"},
+ {id:"taliesin", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:"南西", genkanDeg:239, genkanSrc:"方位記号", genkanConf:"高", bearing:299.4, houi:"北西", addr:"東京都千代田区飯田橋1-12-12", lat:35.698547, lng:139.748947, dist:534, walk:7, name:"タリアセンCY", chome:"飯田橋1丁目", rentMin:27.0, rentMax:27.0, kanri:2.0, layout:"1LDK", areaMin:48.29, areaMax:48.29, age:8, floor:"8F", station:"飯田橋 5分", muki:"北東", kouzou:"RC", kaidate:"8階/8階建", total:8, chiku:"2019年7月", madoriS:"洋5.8 LDK9", balcony:"-", shiki:27.0, rei:27.0, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 Casa 初回保証委託料：月額賃料等の50％、2年目以降：10,000円／年", hoka:"合計12.97万円（内訳：清掃費6.3742万円／エアコン洗浄6.6万円）", sonpo:"要", keiyaku:"定期借家 2年", teiki:true, nyukyo:"相談", kosuu:"-", jouken:"単身者可/二人入居可/子供可", torihiki:"仲介", updated:"2026/09/15", biko:"巡回管理／1年未満解約は違約金1ヶ月。", flags:["角部屋","最上階","バストイレ別","追焚き","浴室乾燥","独立洗面","都市ガス","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","24hゴミ出し","駐輪場","保証人不要","カード決済可","二人入居可","デザイナーズ"], img:"img/taliesin_madori.jpg", imgOut:"img/taliesin_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000107630725/"},
+ {id:"albio", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:"東", genkanDeg:104, genkanSrc:"方位記号（東と南東の境界・±5度）", genkanConf:"中", bearing:306.9, houi:"北西", addr:"東京都千代田区飯田橋4-4-5", lat:35.700794, lng:139.746307, dist:905, walk:12, name:"アルビオ・ザ・タワー千代田飯田橋", chome:"飯田橋4丁目", rentMin:29.8, rentMax:29.8, kanri:2.0, layout:"1LDK", areaMin:44.15, areaMax:44.15, age:6, floor:"4F", station:"飯田橋 2分", muki:"北西", kouzou:"RC", kaidate:"4階/24階建", total:24, chiku:"2021年1月", madoriS:"洋6 LDK11", balcony:"6.36m2", shiki:29.8, rei:29.8, shikibiki:0.0, chuukai:"1.1ヶ月", hoshou:"保証会社利用必 初回保証料：賃料等の50％～（最低2万円）、月額保証料：月額引落金額×1％", hoka:"-", sonpo:"1.66万円2年", keiyaku:"定期借家 2年", teiki:true, nyukyo:"即", kosuu:"-", jouken:"-", torihiki:"仲介", updated:"2026/09/16", biko:"35.0万円→29.8万円に値下げ（掲載住戸が402号室に変更）。退去時清掃 平米×1,540円。", flags:["バストイレ別","追焚き","浴室乾燥","3口以上コンロ","食洗機","床暖房","都市ガス","オートロック","TVインターホン","宅配ボックス","エレベーター","24hゴミ出し","分譲賃貸"], img:"img/albio_madori.jpg", imgOut:"img/albio_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000109634052/"},
+ {id:"central", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:"北西", genkanDeg:331, genkanSrc:"方位記号", genkanConf:"高", bearing:306.9, houi:"北西", addr:"東京都千代田区飯田橋4-10-1", lat:35.701733, lng:139.744766, dist:1236, walk:16, name:"飯田橋セントラルプラザ", chome:"飯田橋4丁目", rentMin:29.8, rentMax:30.0, kanri:2.8, layout:"2LDK", areaMin:61.42, areaMax:72.75, age:43, floor:"12–16F", station:"飯田橋 1分", muki:"南東", kouzou:"SRC", kaidate:"16階/地下1地上20階建", total:20, chiku:"1984年3月", madoriS:"洋7.2 洋4.3 LDK12.2", balcony:"-", shiki:29.8, rei:29.8, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 総賃料の60％～", hoka:"合計2.42万円（内訳：鍵交換代2.42万円）", sonpo:"2.8万円2年", keiyaku:"定期借家 4年", teiki:true, nyukyo:"即", kosuu:"-", jouken:"単身者可", torihiki:"仲介", updated:"2026/09/16", biko:"12階61.42㎡30.0万円の住戸が追加。常駐管理。", flags:["バストイレ別","追焚き","浴室乾燥","独立洗面","3口以上コンロ","都市ガス","TVインターホン","エレベーター","保証人不要"], img:"img/central_madori.jpg", imgOut:"img/central_gaikan.jpg", url:"https://suumo.jp/chintai/jnc_000095489605/"},
+ {id:"jpt", out:true, outWhy:"2026-09-18 に検討対象から除外", genkan:"西", genkanDeg:259, genkanSrc:"バルコニー逆算（西と南西の境界・±5度）", genkanConf:"低", bearing:82.2, houi:"東", addr:"東京都千代田区神田猿楽町1-2-1", lat:35.697346, lng:139.75972, dist:840, walk:11, name:"JPT RESIDENCE", chome:"神田猿楽町1丁目", rentMin:27.9, rentMax:29.0, kanri:0.85, layout:"1LDK", areaMin:47.88, areaMax:47.88, age:1, floor:"10F", station:"神保町 4分", muki:"東", kouzou:"RC", kaidate:"10階/14階建", total:14, chiku:"2025年11月", madoriS:"洋6 LDK15.0", balcony:"-", shiki:27.9, rei:27.9, shikibiki:0.0, chuukai:"-", hoshou:"保証会社利用必 初回保証料：総賃料の50％、月額：総賃料の1％", hoka:"合計4.4万円（内訳：スマートロック管理手数料2.75万円／室内除菌消臭費1.65万円）", sonpo:"要", keiyaku:"普通借家 2年", teiki:false, nyukyo:"相談", kosuu:"-", jouken:"二人入居可", torihiki:"仲介", updated:"2026/09/16", biko:"29.0万円→27.9万円。今回はじめて詳細スペックを取得（前回は未取得扱い）。ネット使用料無料。", flags:["バストイレ別","追焚き","浴室乾燥","独立洗面","3口以上コンロ","都市ガス","オートロック","TVインターホン","宅配ボックス","防犯カメラ","エレベーター","駐輪場","ネット使用料無","保証人不要","カード決済可","分譲賃貸"], img:"img/jpt_madori.jpg", imgOut:null, url:"https://suumo.jp/chintai/jnc_000109510104/"}
+];
+
+/* ---------- derive -------------------------------------------------------- */
+DATA.forEach(function(d){
+  /* lat/lng/dist/walk は建物ごとの実住所を国土地理院でジオコーディングし、
+     OSRM foot で職場から実際に歩いた距離を出したもの。丁目の代表点ではない。 */
+  d.target = CHOME[d.chome].target;
+  d.unit = Math.round(d.rentMin*10000/d.areaMin);
+  d.is1 = d.layout.indexOf('1LDK') >= 0;
+  d.is2 = d.layout.indexOf('2LDK') >= 0;
+
+  /* 九星気学 --------------------------------------------------------------
+     ① 職場（能楽書林ビル）から見た方位：北東・西が吉。
+        八方位は等分ではなく、四正（北東南西）30度／四隅（北東・南東・南西・北西）60度で切る。
+        bearing は真北基準（磁北ではない）。
+     ② 部屋の中心から見た向き：北・北東・南西は凶。SUUMOの「向き」＝主要採光面の方位。 */
+  d.kichi     = (d.houi === '北東' || d.houi === '西');
+  /* ②は部屋の中心から見た「玄関の方位」で判定する。SUUMOの「向き」はバルコニー側なので使わない */
+  d.genkanNG  = (d.genkan === '北' || d.genkan === '北東' || d.genkan === '南西');
+  d.genkanOK  = (d.genkan !== null && !d.genkanNG);
+  /* 方位の境目±5度に入る玄関は断定しない */
+  d.genkanEdge = d.genkanDeg !== null && [15,75,105,165,195,255,285,345].some(function(b){
+    var diff = Math.abs(((d.genkanDeg - b + 540) % 360) - 180);
+    return Math.abs(180 - diff) <= 5;
+  });
+  /* 方位の境界（15/75/105/165/195/255/285/345度）に3度以内なら「際どい」印を付ける */
+  d.houiEdge = [15,75,105,165,195,255,285,345].some(function(b){
+    var diff = Math.abs(((d.bearing - b + 540) % 360) - 180);
+    return Math.abs(180 - diff) <= 3;
+  });
+
+  /* 並べ替え用のキー。気学（職場から）と玄関（部屋の中心から）は別軸なので別々に持つ。
+     いずれも「良い順 → 方位角順」。玄関は 可 → 凶 → 不明 の順に並ぶ。 */
+  d.houiSort   = (d.kichi ? 0 : 1) * 1000 + d.bearing;
+  d.genkanSort = (d.genkan === null ? 2000 : (d.genkanNG ? 1000 : 0)) + (d.genkanDeg === null ? 0 : d.genkanDeg);
+});
+
+/* ---------- scoring ------------------------------------------------------- */
+var W = [4,3,3,2,2,2];
+var NW = W.length;
+/* 向きの評価。南＞南東・南西＞東＞西＞北東・北西＞北。不明は真ん中に置く */
+var MUKI = {'南':1, '南東':.9, '南西':.85, '東':.7, '西':.55, '北東':.4, '北西':.4, '北':.3};
+function clamp(x){ return x<0?0:(x>1?1:x); }
+function parts(d){
+  return [
+    clamp(1 - (d.walk-1)/11),                       // 立地：徒歩1分=1、12分=0
+    clamp((d.areaMax-38)/(75-38)),                  // 広さ：38㎡=0、75㎡=1
+    clamp(1 - d.age/30),                            // 築浅：新築=1、築30年=0
+    clamp(1 - (d.unit-4500)/(9500-4500)),           // 割安：4,500円/㎡=1、9,500円/㎡=0
+    (MUKI[d.muki] === undefined ? .5 : MUKI[d.muki]),// 日当たり：向き
+    (d.kichi ? .5 : 0) + (d.genkan === null ? .25 : (d.genkanNG ? 0 : .5))  // 気学：職場からの吉方位＋玄関の方位
+  ];
+}
+function score(d){
+  var p = parts(d), s = 0, t = 0;
+  for(var i=0;i<NW;i++){ s += W[i]*p[i]; t += W[i]; }
+  return t ? Math.round(100*s/t) : 0;
+}
+/* 初期費用の目安：前家賃＋管理費＋敷金＋礼金＋仲介手数料＋保証料＋その他（万円） */
+function initCost(d){
+  if(d.nospec) return null;                          // 詳細ページ未取得。0円扱いにすると安く見えて危ない
+  var rent = d.rentMin, x = rent + d.kanri + d.shiki + d.rei;
+  var mc = /([\d.]+)ヶ月/.exec(d.chuukai || '');
+  x += mc ? rent * parseFloat(mc[1]) : (/不要/.test(d.chuukai || '') ? 0 : rent * 1.1);
+  var mh = /([\d０-９]+)\s*[％%]/.exec((d.hoshou || '').replace(/[０-９]/g, function(c){return '0123456789'['０１２３４５６７８９'.indexOf(c)];}));
+  x += mh ? rent * parseFloat(mh[1]) / 100 : rent * 0.5;
+  var mo = /合計([\d.]+)万円/.exec(d.hoka || '');
+  if(mo) x += parseFloat(mo[1]);
+  var ms = /([\d.]+)万円/.exec(d.sonpo || '');
+  if(ms) x += parseFloat(ms[1]);
+  return x;
+}
+
+/* ---------- state --------------------------------------------------------- */
+var FILTER = 'all';
+var SHOWOUT = false;   /* 検討対象から外した物件を表示するか */
+var REQ = {};
+var SORT = {key:'score', dir:-1};
+var HL = null;
+var OPEN = null;
+var ST = JSON.parse(localStorage.getItem('housing260816') || '{}');
+
+function visible(){
+  return DATA.filter(function(d){
+    if(!SHOWOUT && d.out) return false;
+    if(FILTER==='strict' && !d.target) return false;
+    if(FILTER==='1LDK'   && !d.is1)    return false;
+    if(FILTER==='2LDK'   && !d.is2)    return false;
+    for(var k in REQ){
+      if(!REQ[k]) continue;
+      if(k === 'futsuu'){ if(d.teiki) return false; continue; }
+      if(k === 'south'){ if(['南','南東','南西'].indexOf(d.muki) < 0) return false; continue; }
+      if(k === 'kichi'){ if(!d.kichi) return false; continue; }
+      if(k === 'genkanok'){ if(d.genkanNG) return false; continue; }
+      if(d.flags.indexOf(k) < 0) return false;
+    }
+    return true;
+  });
+}
+function sorted(list){
+  var k = SORT.key, dir = SORT.dir;
+  var val = function(d){
+    if(k === 'score')  return score(d);
+    if(k === 'init')   return initCost(d)===null ? (dir>0?1e9:-1e9) : initCost(d);
+    if(k === 'houi')   return d.houiSort;      // 気学 方位：吉方位が先、そのあと方位角順
+    if(k === 'genkan') return d.genkanSort;    // 玄関 方位：可 → 凶 → 不明
+    return d[k];
+  };
+  return list.slice().sort(function(a,b){
+    var x = val(a), y = val(b);
+    if(typeof x === 'string') return dir * x.localeCompare(y,'ja');
+    return dir * (x - y);
+  });
+}
+function fmtRent(d){ return d.rentMin === d.rentMax ? d.rentMin.toFixed(1) : d.rentMin.toFixed(1)+'–'+d.rentMax.toFixed(1); }
+function fmtArea(d){ return d.areaMin === d.areaMax ? d.areaMin.toFixed(2) : d.areaMin.toFixed(2)+'–'+d.areaMax.toFixed(2); }
+
+/* ---------- render: top5 -------------------------------------------------- */
+function renderTop(){
+  var list = sorted(visible()).slice(0);
+  if(SORT.key!=='score') list = visible().slice().sort(function(a,b){return score(b)-score(a);});
+  var top = list.slice(0,5);
+  document.getElementById('hitcount').textContent = visible().length + ' 件中 / 上位5件';
+  document.getElementById('top5').innerHTML = top.map(function(d,i){
+    var sc = score(d);
+    return '<div class="card'+(HL===d.id?' hl':'')+'" data-id="'+d.id+'">'
+      + '<div class="rk">'+(i+1)+'</div>'
+      + (d.img ? '<div class="thumb"><img src="'+d.img+'" alt="'+d.name+' 間取り図" loading="lazy"></div>' : '<div class="thumb none">間取り図なし</div>')
+      + '<div class="nm">'+d.name+'</div>'
+      + '<div class="ad">'+d.chome+(d.target?'':' <span style="opacity:.7">（隣接）</span>')+'</div>'
+      + '<div class="pr">'+fmtRent(d)+'<span> 万円</span></div>'
+      + '<div class="mt">職場まで徒歩'+d.walk+'分（'+d.dist+'m）<br>'
+        + d.layout+' ／ '+fmtArea(d)+'㎡ ／ 築'+(d.age===0?'新':d.age)+'年<br>'
+        + '向き '+d.muki+' ／ '+d.unit.toLocaleString()+' 円/㎡<br>'
+        + (initCost(d)===null ? '初期費用 未取得' : '初期費用 目安 '+initCost(d).toFixed(0)+' 万円')+'</div>'
+      + '<div class="kgline">気学 '+d.houi+(d.kichi ? ' <b class="ok">吉方位</b>' : '')
+        + ' ／ 玄関 '+(d.genkan ? d.genkan+(d.genkanNG ? ' <b class="ng">凶</b>' : '') : '不明')+'</div>'
+      + (d.teiki ? '<div class="warn">定期借家 — 更新なし</div>' : '')
+      + '<div class="sc"><div class="bar"><i style="width:'+sc+'%"></i></div><b>'+sc+'</b></div>'
+      + '</div>';
+  }).join('');
+}
+
+/* ---------- render: table ------------------------------------------------- */
+function spec(k, v){ return '<div class="sp"><div class="k">'+k+'</div><div class="v">'+(v && v !== '-' ? v : '—')+'</div></div>'; }
+
+function detail(d){
+  return '<tr class="det" data-det="'+d.id+'"><td colspan="18"><div class="detwrap">'
+    + '<div class="detimg">'
+      + (d.img ? '<a href="'+d.img+'" target="_blank" rel="noopener"><img src="'+d.img+'" alt="間取り図" loading="lazy"></a><div class="cap">間取り図（クリックで拡大）</div>' : '<div class="noimg">間取り図なし</div>')
+      + (d.imgOut ? '<a href="'+d.imgOut+'" target="_blank" rel="noopener"><img src="'+d.imgOut+'" alt="外観" loading="lazy"></a><div class="cap">建物外観</div>' : '')
+    + '</div>'
+    + '<div class="detspec">'
+      + '<div class="spgrid">'
+        + spec('所在地', d.addr)
+        + spec('向き（バルコニー側）', d.muki)
+        + spec('玄関の方位（部屋の中心から）', d.genkan
+            ? d.genkan + '（約' + d.genkanDeg + '°）' + (d.genkanNG ? ' <b class="ng">凶：北・北東・南西</b>' : ' <b class="ok">可</b>')
+              + (d.genkanEdge ? ' ※方位の境目に近い' : '')
+              + '<br><span style="color:#999;font-size:10.5px">根拠：' + d.genkanSrc + '／確度 ' + d.genkanConf + '</span>'
+            : '不明<br><span style="color:#999;font-size:10.5px">' + d.genkanSrc + '</span>')
+        + spec('気学 方位（職場から）', d.houi + '（真北基準 ' + d.bearing.toFixed(1) + '°）'
+            + (d.kichi ? ' <b class="ok">吉方位</b>' : '') + (d.houiEdge ? ' ※方位の境目に近い' : ''))
+        + spec('間取り詳細', d.madoriS)
+        + spec('バルコニー', d.balcony !== '-' ? d.balcony.replace(/m\s*2/, 'm²') : '-')
+        + spec('構造', d.kouzou)
+        + spec('階建', d.kaidate)
+        + spec('築年月', d.chiku)
+        + spec('総戸数', d.kosuu)
+        + spec('契約形態', (d.teiki ? '<b class="ng">' + d.keiyaku + '</b>' : d.keiyaku))
+        + spec('入居可能', d.nyukyo)
+        + spec('取引態様', d.torihiki)
+        + spec('敷金 / 礼金', d.shiki.toFixed(1)+' 万 / '+d.rei.toFixed(1)+' 万' + (d.shikibiki ? '<b class="ng">（敷引 '+d.shikibiki.toFixed(1)+' 万）</b>' : ''))
+        + spec('仲介手数料', d.chuukai)
+        + spec('保証会社', d.hoshou)
+        + spec('その他初期費用', d.hoka)
+        + spec('火災保険', d.sonpo)
+        + spec('入居条件', d.jouken)
+        + spec('初期費用 目安', initCost(d)===null ? '詳細未取得' : '<b>'+initCost(d).toFixed(1)+' 万円</b>（前家賃＋管理費＋敷礼＋仲手＋保証料＋鍵等）')
+      + '</div>'
+      + (d.flags.length ? '<div class="flags">'+d.flags.map(function(f){return '<span class="fl">'+f+'</span>';}).join('')+'</div>' : '')
+      + (d.biko ? '<div class="biko"><span>備考</span>'+d.biko+'</div>' : '')
+      + '<div class="detlinks"><a class="ext" href="'+d.url+'" target="_blank" rel="noopener">SUUMOで見る</a>'
+        + '<a class="ext" href="https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(d.name+' 千代田区'+d.chome)+'" target="_blank" rel="noopener">Mapsで位置を確認</a>'
+        + '<span class="upd">情報更新 '+d.updated+'</span></div>'
+    + '</div></div></td></tr>';
+}
+
+function renderTable(){
+  var list = sorted(visible());
+  document.getElementById('tbody').innerHTML = list.map(function(d){
+    var s = ST[d.id] || '';
+    var row = '<tr data-id="'+d.id+'" class="'+(HL===d.id?'hl ':'')+(OPEN===d.id?'open':'')+'">'
+      + '<td class="num c-score" data-l="Score"><b>'+score(d)+'</b></td>'
+      + '<td class="nm c-name">'+d.name+(d.teiki?' <span class="badge ng">定借</span>':'')+'</td>'
+      + '<td class="c-plan" data-l="間取り図">'+(d.img ? '<img class="mini" src="'+d.img+'" alt="間取り図" loading="lazy">' : '<span class="noimg-s">—</span>')+'</td>'
+      + '<td class="c-chome" data-l="所在"><span class="badge'+(d.target?' in':'')+'">'+d.chome+'</span></td>'
+      + '<td class="num c-walk" data-l="職場まで">徒歩'+d.walk+'分 <span style="color:#999;font-size:10px">'+d.dist+'m</span></td>'
+      + '<td class="num c-rent" data-l="賃料">'+fmtRent(d)+' 万</td>'
+      + '<td class="num c-kanri" data-l="管理費">'+(d.kanri?d.kanri.toFixed(1)+' 万':'—')+'</td>'
+      + '<td class="num c-init" data-l="初期費用目安">'+(initCost(d)===null?'<span style="color:#ccc">未取得</span>':initCost(d).toFixed(0)+' 万')+'</td>'
+      + '<td class="c-layout" data-l="間取り">'+d.layout+'</td>'
+      + '<td class="num c-area" data-l="専有面積">'+fmtArea(d)+' ㎡</td>'
+      + '<td class="num c-unit" data-l="円/㎡">'+d.unit.toLocaleString()+'</td>'
+      + '<td class="c-muki" data-l="向き">'+(d.muki !== '-' ? d.muki : '—')+'</td>'
+      + '<td class="c-genkan" data-l="玄関 方位">'+(d.genkan ? d.genkan + (d.genkanNG ? ' <span class="kg ng">凶</span>' : '') + (d.genkanEdge ? '<span class="edge" title="方位の境目に近い">*</span>' : '') : '<span style="color:#ccc">不明</span>')+'</td>'
+      + '<td class="c-houi" data-l="気学 方位">'+d.houi+(d.kichi ? ' <span class="kg ok">吉</span>' : '')+(d.houiEdge ? '<span class="edge" title="方位の境目に近い">*</span>' : '')+'</td>'
+      + '<td class="num c-age" data-l="築年">'+(d.age===0?'新築':'築'+d.age+'年')+'</td>'
+      + '<td class="num c-floor" data-l="階">'+d.floor+'<span style="color:#999;font-size:10px">'+(d.total?' /'+d.total+'F':'')+'</span></td>'
+      + '<td class="c-station" data-l="最寄駅">'+d.station+'</td>'
+      + '<td class="c-status" data-l="判定"><div class="st">'
+        + '<button data-st="o" class="'+(s==='o'?'on':'')+'">○</button>'
+        + '<button data-st="t" class="'+(s==='t'?'on':'')+'">△</button>'
+        + '<button data-st="x" class="'+(s==='x'?'on':'')+'">×</button>'
+      + '</div></td></tr>';
+    return row + (OPEN===d.id ? detail(d) : '');
+  }).join('');
+}
+
+/* ---------- map ----------------------------------------------------------- */
+var map = L.map('map', {scrollWheelZoom:true, zoomSnap:0.5}).setView([35.6980,139.7535], 15.5);
+var FITTED = false;
+
+/* 地理院タイル。淡色は日本語ラベルで線が細く、モノクロ配色と相性が良い */
+var GSI = '<a href="https://maps.gsi.go.jp/development/ichiran.html" target="_blank" rel="noopener">国土地理院</a>';
+var BASES = {
+  pale : L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',          {minZoom:10,maxZoom:18,maxNativeZoom:18,attribution:GSI}),
+  std  : L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',           {minZoom:10,maxZoom:18,maxNativeZoom:18,attribution:GSI}),
+  photo: L.tileLayer('https://cyberjapandata.gsi.go.jp/xyz/seamlessphoto/{z}/{x}/{y}.jpg', {minZoom:10,maxZoom:18,maxNativeZoom:18,attribution:GSI})
+};
+var curBase = 'pale';
+var mapEl = document.getElementById('map');
+BASES.pale.addTo(map); mapEl.classList.add('gs');
+
+[].forEach.call(document.querySelectorAll('.mapchips .chip[data-base]'), function(b){
+  b.addEventListener('click', function(){
+    [].forEach.call(document.querySelectorAll('.mapchips .chip[data-base]'), function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    map.removeLayer(BASES[curBase]);
+    curBase = b.dataset.base;
+    BASES[curBase].addTo(map);
+    /* 航空写真をグレースケールにすると何も読めなくなるので、そこだけ素通し */
+    mapEl.classList.toggle('gs', curBase !== 'photo');
+  });
+});
+
+L.marker([OFFICE.lat, OFFICE.lng], {
+  icon: L.divIcon({className:'', html:'<div class="pin-office">OFFICE</div>', iconSize:[72,22], iconAnchor:[36,11]}),
+  zIndexOffset: 1000
+}).addTo(map).bindPopup('<div class="pop"><b>'+OFFICE.name+'</b><span class="m">'+OFFICE.addr+'</span></div>');
+
+L.circle([OFFICE.lat, OFFICE.lng], {radius:400, color:'#111', weight:1, opacity:.35, fill:false, dashArray:'3 4'}).addTo(map);
+L.circle([OFFICE.lat, OFFICE.lng], {radius:800, color:'#111', weight:1, opacity:.18, fill:false, dashArray:'3 4'}).addTo(map);
+
+/* 職場から見た吉方位（北東 15–75°／西 255–285°）を扇形で描く。
+   八方位は等分ではなく、四正30度・四隅60度で切るのが九星気学の作法。 */
+function sector(fromDeg, toDeg, radiusM){
+  var pts = [[OFFICE.lat, OFFICE.lng]];
+  var R = 6378137;
+  for(var a = fromDeg; a <= toDeg; a += 2){
+    var t = a * Math.PI/180, dr = radiusM / R;
+    var la1 = OFFICE.lat * Math.PI/180, lo1 = OFFICE.lng * Math.PI/180;
+    var la2 = Math.asin(Math.sin(la1)*Math.cos(dr) + Math.cos(la1)*Math.sin(dr)*Math.cos(t));
+    var lo2 = lo1 + Math.atan2(Math.sin(t)*Math.sin(dr)*Math.cos(la1), Math.cos(dr) - Math.sin(la1)*Math.sin(la2));
+    pts.push([la2*180/Math.PI, lo2*180/Math.PI]);
+  }
+  return L.polygon(pts, {color:'#111', weight:1, opacity:.45, fillColor:'#111', fillOpacity:.1, dashArray:'2 4'});
+}
+var SECTORS = L.layerGroup([sector(15, 75, 1500), sector(255, 285, 1500)]).addTo(map);
+document.getElementById('kgsector').addEventListener('click', function(){
+  var on = this.classList.toggle('on');
+  if(on) SECTORS.addTo(map); else map.removeLayer(SECTORS);
+});
+
+/* スマホ：1本指ドラッグが地図に吸われるとページが送れなくなる。
+   既定はドラッグ無効（＝地図の上でも普通にスクロールできる）。ピンのタップは効くまま。
+   地図を動かしたいときだけピルを押して有効化する。全面オーバーレイにするとポップアップが隠れるので使わない。 */
+if (L.Browser.mobile) {
+  map.dragging.disable();
+  var hint = document.getElementById('maphint');
+  hint.classList.add('on');
+  hint.addEventListener('click', function(){
+    if (map.dragging.enabled()) { map.dragging.disable(); hint.textContent = '地図を動かす'; hint.classList.remove('act'); }
+    else { map.dragging.enable(); hint.textContent = '地図固定に戻す'; hint.classList.add('act'); }
+  });
+}
+/* 画面幅が変わってもタイルが欠けないように */
+window.addEventListener('resize', function(){ map.invalidateSize(); });
+
+var MARKERS = {};
+function renderMap(){
+  Object.keys(MARKERS).forEach(function(k){ map.removeLayer(MARKERS[k]); });
+  MARKERS = {};
+  var list = sorted(visible());
+
+  var rank = {};
+  var byScore = visible().slice().sort(function(a,b){return score(b)-score(a);});
+  byScore.forEach(function(d,i){ rank[d.id] = i+1; });
+
+  list.forEach(function(d){
+    var n = rank[d.id];
+    var m = L.marker([d.lat,d.lng], {
+      icon: L.divIcon({className:'', html:'<div class="pin'+(d.target?'':' b')+(HL===d.id?' on':'')+'">'+n+'</div>', iconSize:[24,24], iconAnchor:[12,12]}),
+      zIndexOffset: n<=5 ? 500 : 0
+    }).addTo(map);
+    m.bindPopup('<div class="pop"><b>'+n+'. '+d.name+'</b>'
+      + '<span class="m">'+d.addr.replace('東京都','')+(d.target?'':'（隣接）')+'</span>'
+      + fmtRent(d)+'万円 ／ '+d.layout+' ／ '+fmtArea(d)+'㎡<br>'
+      + '築'+(d.age===0?'新':d.age)+'年 ／ '+d.floor+' ／ '+d.station+'<br>'
+      + '職場まで徒歩'+d.walk+'分（'+d.dist+'m）<br>'
+      + '<a href="'+d.url+'" target="_blank" rel="noopener">SUUMOで見る</a> ・ '
+      + '<a href="https://www.google.com/maps/dir/?api=1&origin='+encodeURIComponent(OFFICE.addr)+'&destination='+encodeURIComponent(d.addr)+'&travelmode=walking" target="_blank" rel="noopener">職場からの徒歩ルート</a>'
+      + '</div>');
+    m.on('click', function(){ setHL(d.id, false); });
+    MARKERS[d.id] = m;
+  });
+
+  if(!FITTED && list.length){
+    FITTED = true;
+    var pts = list.map(function(d){ return [d.lat, d.lng]; });
+    pts.push([OFFICE.lat, OFFICE.lng]);
+    map.fitBounds(L.latLngBounds(pts).pad(0.12));
+  }
+}
+
+/* ---------- interaction --------------------------------------------------- */
+function setHL(id, pan){
+  HL = (HL === id) ? null : id;
+  OPEN = HL;
+  renderAll();
+  if(HL && pan){
+    var d = DATA.filter(function(x){return x.id===HL;})[0];
+    if(d){ map.panTo([d.lat,d.lng]); if(MARKERS[d.id]) MARKERS[d.id].openPopup(); }
+  }
+}
+function renderAll(){ renderTop(); renderTable(); renderMap(); }
+
+for(var i=0;i<NW;i++){(function(i){
+  var el = document.getElementById('w'+i);
+  el.addEventListener('input', function(){ W[i] = +el.value; document.getElementById('q'+i).textContent = W[i]; renderAll(); });
+  document.getElementById('q'+i).textContent = W[i];
+})(i);}
+
+/* 排他：間取り・エリアの絞り込み */
+[].forEach.call(document.querySelectorAll('.controls .chip[data-f]'), function(b){
+  b.addEventListener('click', function(){
+    [].forEach.call(document.querySelectorAll('.controls .chip[data-f]'), function(x){ x.classList.remove('on'); });
+    b.classList.add('on'); FILTER = b.dataset.f; HL = null; OPEN = null; renderAll();
+  });
+});
+/* 複数選択：条件は AND */
+[].forEach.call(document.querySelectorAll('.controls .chip[data-r]'), function(b){
+  b.addEventListener('click', function(){
+    var k = b.dataset.r;
+    REQ[k] = !REQ[k];
+    b.classList.toggle('on', REQ[k]);
+    HL = null; OPEN = null; renderAll();
+  });
+});
+
+/* 検討対象から外した物件の表示切り替え（データは消さずに隠しているだけ） */
+(function(){
+  var b = document.getElementById('showout');
+  var n = DATA.filter(function(d){ return d.out; }).length;
+  b.textContent = '除外した物件も表示（' + n + '件）';
+  b.addEventListener('click', function(){
+    SHOWOUT = !SHOWOUT;
+    b.classList.toggle('on', SHOWOUT);
+    HL = null; OPEN = null; renderAll(); stampText();
+  });
+})();
+
+document.getElementById('top5').addEventListener('click', function(e){
+  var c = e.target.closest('.card'); if(c) setHL(c.dataset.id, true);
+});
+document.getElementById('tbody').addEventListener('click', function(e){
+  var btn = e.target.closest('button[data-st]');
+  var tr  = e.target.closest('tr'); if(!tr) return;
+  if(btn){
+    e.stopPropagation();
+    var v = btn.dataset.st;
+    ST[tr.dataset.id] = (ST[tr.dataset.id] === v) ? '' : v;
+    localStorage.setItem('housing260816', JSON.stringify(ST));
+    renderTable(); return;
+  }
+  if(e.target.closest('a') || tr.classList.contains('det')) return;
+  var id = tr.dataset.id;
+  OPEN = (OPEN === id) ? null : id;
+  HL = OPEN;
+  renderAll();
+  if(OPEN){
+    var d = DATA.filter(function(x){ return x.id === OPEN; })[0];
+    if(d){ map.panTo([d.lat, d.lng]); if(MARKERS[d.id]) MARKERS[d.id].openPopup(); }
+  }
+});
+[].forEach.call(document.querySelectorAll('th[data-s]'), function(th){
+  th.addEventListener('click', function(){
+    var k = th.dataset.s;
+    SORT = {key:k, dir: (SORT.key===k ? -SORT.dir : (k==='name'||k==='chome'||k==='layout'||k==='station'||k==='floor'||k==='muki'||k==='houi'||k==='genkan' ? 1 : -1))};
+    [].forEach.call(document.querySelectorAll('th[data-s]'), function(x){ x.className=''; });
+    th.className = SORT.dir>0 ? 'asc' : 'desc';
+    renderAll();
+  });
+});
+
+function stampText(){
+  var n = DATA.filter(function(d){ return !d.out; }).length;
+  var out = DATA.length - n;
+  document.getElementById('stamp').textContent =
+    'Data fetched: ' + FETCHED + ' — SUUMO / ' + (SHOWOUT ? DATA.length : n) + ' buildings'
+    + (out ? '（検討対象外 ' + out + '件は' + (SHOWOUT ? '表示中' : '非表示') + '）' : '');
+}
+stampText();
+renderAll();
+</script>
+</body>
+</html>
