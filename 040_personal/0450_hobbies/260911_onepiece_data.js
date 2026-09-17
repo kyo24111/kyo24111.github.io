@@ -36,9 +36,26 @@ const ONEPIECE = {
     updated: "2026-09-11"
   },
 
-  /* 顔画像は未収録。無い場合は頭文字アバターにフォールバックする。
-     将来 onepiece_faces/<node id>.jpg を置く場合は ids に列挙する。 */
-  faces: { dir: "onepiece_faces/", ids: [] },
+  /* 顔画像は onepiece_faces/<node id>.jpg（220x220）。出典は ONE PIECE Fandom Wiki の
+     各キャラクター記事のポートレート（アニメ立ち絵）。著作権は尾田栄一郎／集英社および
+     各アニメ製作委員会に帰属。ページ側にクレジットを記載し、noindex で公開している。
+     ids に無い人物（元画像が未取得）は頭文字アバターに自動フォールバックする。 */
+  faces: {
+    dir: "onepiece_faces/",
+    ids: [
+      "apoo", "aramaki", "ashura", "babanuki", "bepo", "bigmom", "blackmaria", "brook",
+      "carrot", "chopper", "daifugo", "denjiro", "dobon", "drake", "franky", "fuga",
+      "fukurokuju", "guernica", "hatcha", "hawkins", "higurashi", "hiyori", "holdem", "hotei",
+      "hyogoro", "inuarashi", "izo", "jack", "jinbe", "kaido", "kanjuro", "kawamatsu", "kid",
+      "kiku", "killer", "kinemon", "law", "luffy", "momo", "nami", "nekomamushi", "ocho",
+      "oden", "omasa", "omusubi", "onimaru", "orochi", "osome", "otama", "otsuru", "page1",
+      "pedro", "perospero", "queen", "raizo", "robin", "roger", "ryuma", "sanji", "sasaki",
+      "semimaru", "shanks", "sheepshead", "shinobu", "shishilian", "solitaire", "speed",
+      "sukiyaki", "tempura", "toki", "toko", "tsunagoro", "ulti", "urashima", "ushimaru",
+      "usopp", "wanda", "whitebeard", "whosuwho", "yamato", "yasuie", "yatappe", "zoro",
+      "zunisha"
+    ]
+  },
 
   /* 人物プロフィール（node id → 個人データ）
      出典: Wikipedia「ONE PIECEの登場人物一覧」「海賊 (ONE PIECE)」＋単行本SBS/VIVRE CARD。
