@@ -60,6 +60,31 @@
   .tab.on{background:var(--accent); border-color:var(--accent); color:#fff;}
   .count{font-size:.75rem; color:var(--muted); margin-left:auto;}
 
+  /* ── 絞り込みの開閉（既定は畳んでグラフを広く見せる） ── */
+  .ftoggle{
+    font-family:inherit; font-size:.78rem; font-weight:600; color:var(--muted);
+    background:var(--panel); border:1px solid var(--line2); border-radius:999px;
+    padding:6px 13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  }
+  .ftoggle:hover{background:var(--head); color:var(--txt);}
+  .ftoggle .fic{font-size:.62rem; line-height:1; transition:transform .15s;}
+  .ftoggle.open{background:var(--head); color:var(--txt);}
+  .ftoggle.open .fic{transform:rotate(90deg);}
+  .ftoggle .fnum{
+    font-size:.68rem; font-weight:700; color:#fff; background:var(--accent);
+    border-radius:999px; padding:1px 7px; margin-left:1px;
+  }
+  .fsum{
+    font-size:.74rem; color:var(--muted); min-width:0; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap;
+  }
+  .fclear{
+    font-family:inherit; font-size:.72rem; color:var(--muted); background:none;
+    border:0; padding:2px 4px; cursor:pointer; text-decoration:underline; white-space:nowrap;
+  }
+  .fclear:hover{color:var(--txt);}
+  #filterrow[hidden]{display:none;}
+
   /* ── 陣営バッジ（意味を持つラベルなので配色あり） ── */
   .bdg{display:inline-block; font-size:.7rem; font-weight:600; padding:2px 8px; border-radius:999px; border:1px solid transparent; white-space:nowrap;}
   .s-麦わらの一味{background:#fdf1dc; color:#8a5a05; border-color:#f5e3c2;}
@@ -302,14 +327,21 @@
         <button class="clr" id="clr" aria-label="クリア">×</button>
       </div>
     </div>
-    <div class="row" id="filterrow">
+    <div class="row" id="filterbar">
+      <button class="ftoggle" id="ftoggle" aria-expanded="false" aria-controls="filterrow">
+        <span class="fic">▶</span>絞り込み<span class="fnum" id="fnum" hidden></span>
+      </button>
+      <span class="fsum" id="fsum"></span>
+      <button class="fclear" id="fclear" hidden>すべて解除</button>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="row" id="filterrow" hidden>
       <div class="chipset" id="kindchips"><span class="chiplabel">種別</span></div>
       <div class="chipset" id="statechips"><span class="chiplabel">陣営</span></div>
       <div class="chipset" id="epichips"><span class="chiplabel">エピソード</span></div>
       <div class="chipset" id="crewchips"><span class="chiplabel">海賊団・組織</span></div>
       <div class="chipset" id="originchips"><span class="chiplabel">出身</span></div>
       <div class="chipset" id="ftypechips"><span class="chiplabel">悪魔の実</span></div>
-      <span class="count" id="count"></span>
     </div>
   </div>
 
@@ -636,6 +668,32 @@
     (S.ftype  === "all" || n.ftype   === S.ftype);
   const passSearch  = n => !S.q || n._hay.indexOf(S.q) >= 0;
 
+  /* ── 絞り込みの開閉（既定は畳む。選択中の条件はバーに要約で出す） ── */
+  const FKEYS = [["kind","種別"], ["state","陣営"], ["epi","エピソード"],
+                 ["crew","海賊団・組織"], ["origin","出身"], ["ftype","悪魔の実"]];
+  const KINDLABEL = {person:"人物", battle:"戦い", faction:"勢力"};
+  const ftog = document.getElementById("ftoggle"), frow = document.getElementById("filterrow");
+  ftog.onclick = () => {
+    const open = frow.hidden;
+    frow.hidden = !open;
+    ftog.classList.toggle("open", open);
+    ftog.setAttribute("aria-expanded", String(open));
+    if (S.view === "graph"){ measure(); sim.alpha = .3; tick(); }   // 高さが変わるので測り直す
+  };
+  document.getElementById("fclear").onclick = () => {
+    FKEYS.forEach(([k]) => S[k] = "all");
+    document.querySelectorAll("#filterrow .chip").forEach(c => c.classList.toggle("on", c.dataset.val === "all"));
+    render();
+  };
+  function updateFilterBar(){
+    const act = FKEYS.filter(([k]) => S[k] !== "all");
+    const num = document.getElementById("fnum");
+    num.hidden = !act.length; num.textContent = act.length;
+    document.getElementById("fsum").textContent =
+      act.map(([k, lb]) => lb + ": " + (k === "kind" ? (KINDLABEL[S[k]] || S[k]) : S[k])).join(" / ");
+    document.getElementById("fclear").hidden = !act.length;
+  }
+
   /* ── タブ ── */
   document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
     S.view = t.dataset.view;
@@ -643,8 +701,11 @@
     ["graph","table","story","deep"].forEach(v => {
       document.getElementById("view-" + v).style.display = S.view === v ? "" : "none";
     });
-    // 種別・国フィルタは人物/戦い一覧にだけ効くので、あらすじでは隠す
-    document.querySelectorAll("#filterrow .chipset").forEach(c => c.style.display = (S.view === "story" || S.view === "deep") ? "none" : "");
+    // 種別・国フィルタは人物/戦い一覧にだけ効くので、あらすじ・詳解では絞り込みごと隠す
+    const off = (S.view === "story" || S.view === "deep");
+    ftog.style.display = off ? "none" : "";
+    document.getElementById("fsum").style.display = off ? "none" : "";
+    if (off){ frow.hidden = true; ftog.classList.remove("open"); ftog.setAttribute("aria-expanded","false"); }
     render();
     if (S.view === "graph") { sim.alpha = .35; tick(); }
   });
@@ -1175,6 +1236,7 @@
 
   /* ============ 描画 ============ */
   function render(){
+    updateFilterBar();
     const rows = N.filter(n => passFilter(n) && (S.view === "table" ? passSearch(n) : true));
     const vis  = N.filter(passFilter);
     document.getElementById("count").textContent =
