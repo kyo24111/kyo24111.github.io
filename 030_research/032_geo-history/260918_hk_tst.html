@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>尖沙咀 / Tsim Sha Tsui — Geo Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+      .hero h1 { font-size: 32px; overflow-wrap: anywhere; }
+      .hero-eyebrow, .toc li, .spot-name, .crumb { overflow-wrap: anywhere; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* 人口推移グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="260917_hongkong.html">hong kong</a>
+    <span class="sep">/</span>
+    <span class="cur">tsim sha tsui</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">District Research — 260918</div>
+    <h1>尖沙咀 / Tsim Sha Tsui</h1>
+    <div class="hero-country">九龍半島の最南端 · 油尖旺区 / 1860年の北京条約で英国領になった最前線 / 対岸の島側スカイラインを正面から見るための街</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">ラグジュアリー路面賃料</div>
+        <div class="kv-val">アジア1位</div>
+        <div class="kv-note">廣東道 / 年 約US$18,980／m²</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">シンフォニー・オブ・ライツ</div>
+        <div class="kv-val">20:00</div>
+        <div class="kv-note">毎晩・約10分 / 悪天候時は中止</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">スターフェリー</div>
+        <div class="kv-val">1888</div>
+        <div class="kv-note">就航年 / 中環まで約8分</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">重慶大厦の1日の出入り</div>
+        <div class="kv-val">1万人超</div>
+        <div class="kv-note">ゲストハウス約800軒が入る</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">このエリアとは</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">歴史 — 1860年からの最前線</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">街の構造 — 彌敦道と海沿い</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">見どころ</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">重慶大厦 — ビル1棟が別の国</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">買い物 — アジアで最も高い路面</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">食</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">夜 — 夜景をどこから見るか</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">泊まる</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">スクリーンの中の尖沙咀</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">いま起きていること（2025→2026）</a></li>
+      <li><span class="toc-num">12</span><a href="#s12">歩き方 — 夕方からのルート</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">このエリアとは</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="callout">
+      尖沙咀（チムサーチョイ）を一言でいうと「<strong>香港が観光客に見せたい顔が全部置いてある場所</strong>」。
+      <strong>対岸の島側スカイライン、高級ホテル、ブランド街、博物館、そして重慶大厦</strong>——
+      <strong>これらが半径1km以内に収まっている</strong>。
+      <a href="260918_hk_central.html">中環</a>が「香港が働く場所」だとすれば、<strong>尖沙咀は「香港が見られる場所」</strong>。
+      <strong>初めて香港に来るなら、拠点にするにせよ通うにせよ、必ず1回は来ることになる</strong>。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>行政区</strong></td><td><strong>油尖旺區（Yau Tsim Mong District）</strong>の南端。<a href="260918_hk_mongkok.html">旺角・油麻地</a>と同じ区で、<strong>彌敦道1本で繋がっている</strong></td></tr>
+      <tr><td>位置</td><td><strong>九龍半島の最南端</strong>。<strong>ヴィクトリア・ハーバーを挟んで中環・灣仔の真正面</strong></td></tr>
+      <tr><td>MTR</td><td><strong>尖沙咀站</strong>（荃灣線）／<strong>尖東站</strong>（屯馬線、地下通路で尖沙咀站と接続）／北に<strong>佐敦站</strong>、西に<strong>柯士甸站</strong>。<strong>北角からは港島線→（中環乗換 or フェリー）で20〜25分</strong></td></tr>
+      <tr><td><strong>フェリー</strong></td><td><strong>スターフェリーで中環まで約8分、灣仔まで約8分</strong>。<strong>片道でHK$5前後</strong>。<strong>MTRより安く、景色が段違いに良い</strong>——尖沙咀に来る正しい方法はこれ</td></tr>
+      <tr><td>何の街か</td><td><strong>観光・小売・ホテル。香港で最もホテル密度が高い一帯</strong>。加えて<strong>尖沙咀東部（TST East）は埋立地に建つオフィス街</strong>で、中環の賃料を嫌った企業の受け皿になっている</td></tr>
+      <tr><td>歩けるか</td><td><strong>ほぼ平坦で、島側と違って坂がない</strong>。<strong>ただし彌敦道の歩道は常に混雑していて、進みは遅い</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">歴史 — 1860年からの最前線</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>年</th><th>出来事</th></tr>
+      <tr><td><strong>1860</strong></td><td><strong>アロー戦争の結果の北京条約で、九龍半島（界限街以南）が英国に永久割譲される</strong>。<strong>1842年の香港島に続く2回目の割譲で、尖沙咀はその最南端＝島側から見て正面の土地</strong>だった。<strong>軍事的には「対岸を押さえる」ための取得</strong></td></tr>
+      <tr><td><strong>1888</strong></td><td><strong>スターフェリー就航</strong>。<strong>これで九龍と香港島が日常的に繋がり、尖沙咀が「島へ渡る玄関」になった</strong></td></tr>
+      <tr><td>1904</td><td>彌敦道が拡幅・整備される（当時の総督ナサンの名にちなむ）。<strong>「無用に広い道を作った」と批判されたが、結果として九龍の背骨になった</strong></td></tr>
+      <tr><td><strong>1910 / 1915</strong></td><td><strong>九廣鐵路（KCR）の尖沙咀駅が開業（1910）、時計塔が完成（1915）</strong>。<strong>ここは「ロンドンから鉄道で来られる終点」</strong>——ユーラシア横断鉄道の南端という位置づけだった</td></tr>
+      <tr><td><strong>1928</strong></td><td><strong>ペニンシュラホテル開業</strong>。<strong>「スエズ以東で最も豪華なホテル」を標榜</strong>。1941年12月には<strong>ここで香港総督が日本軍に降伏文書を交わしている</strong></td></tr>
+      <tr><td>1961</td><td><strong>重慶大厦（Chungking Mansions）竣工</strong>。当初は高級住宅・商業ビルだった（§05）</td></tr>
+      <tr><td><strong>1975</strong></td><td><strong>KCRの終着駅が紅磡へ移転。駅舎は解体され、時計塔だけが保存された</strong>。<strong>跡地に1989年、香港文化中心が建つ</strong>——<strong>ハーバー正面の一等地に窓のない建物を建てたことは、いまも香港で最も有名な建築批判のネタ</strong></td></tr>
+      <tr><td>1982〜</td><td><strong>海港城（Harbour City）が段階的に完成</strong>。廣東道がブランド街になっていく</td></tr>
+      <tr><td>2004 / 2019</td><td><strong>星光大道（Avenue of Stars）開業、2019年に全面リニューアル</strong>して再開</td></tr>
+      <tr><td><strong>2019</strong></td><td><strong>K11 MUSEA 開業</strong>（Victoria Dockside）。<strong>10フロア・約120万平方フィート、250超のブランド</strong>。<strong>「文化小売（cultural retail）」を掲げた再開発で、尖沙咀の重心を東寄りに動かした</strong></td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：尖沙咀は「割譲の順番」でできた街。</strong>
+      <strong>香港島（1842）→ 九龍（1860）→ 新界（1898年の99年租借）</strong>という3段階のうち、
+      <strong>尖沙咀は2番目の境界線のすぐ内側</strong>にある。
+      <strong>だからここには軍の施設（旧水警本部＝現1881 Heritage、九龍公園＝旧ウィットフィールド兵営）が集中していた</strong>。
+      <strong>いま観光地になっている建物のほとんどが、元は軍事・海運・鉄道の施設</strong>だという目で見ると、街の並びが一気に読めるようになる。
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">街の構造 — 彌敦道と海沿い</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>通り／区画</th><th>性格</th></tr>
+      <tr><td><strong>彌敦道（Nathan Road）</strong></td><td><strong>九龍の背骨</strong>。尖沙咀から<a href="260918_hk_mongkok.html">旺角</a>まで南北に一直線。<strong>両側は金行・時計店・薬局・両替所・雑居ビル</strong>。<strong>「ゴールデンマイル」と呼ばれるのはこの南端部分</strong></td></tr>
+      <tr><td><strong>廣東道（Canton Road）</strong></td><td><strong>ラグジュアリーブランドの通り</strong>。海港城（Harbour City）がこの西側全体を占める。<strong>路面賃料はアジア最高水準</strong>（§06）</td></tr>
+      <tr><td>梳士巴利道（Salisbury Rd）</td><td><strong>海沿いの東西軸</strong>。ペニンシュラ、香港文化中心、時計塔、スターフェリー埠頭がこの線上</td></tr>
+      <tr><td><strong>尖沙咀プロムナード／星光大道</strong></td><td><strong>海沿いの遊歩道</strong>。<strong>対岸のスカイラインを正面から見る場所で、夜景を見るならここ</strong></td></tr>
+      <tr><td>尖沙咀東部（TST East）</td><td><strong>1970年代以降の埋立地</strong>。<strong>ホテルとオフィスビルの区画で、雰囲気は本編の尖沙咀とかなり違う</strong>。MTR尖東站</td></tr>
+      <tr><td>九龍公園</td><td><strong>旧ウィットフィールド兵営の跡地</strong>。<strong>この密集地で唯一まとまった緑</strong>。中にプールと鳥類園、香港文物探知館</td></tr>
+      <tr><td>加連威老道（Granville Rd）</td><td><strong>安い服と古着の通り</strong>。廣東道のブランド街とは正反対で、同じエリアの中に価格帯の両極が並ぶ</td></tr>
+      <tr><td>諾士佛臺（Knutsford Terrace）</td><td><strong>小さな飲み屋街</strong>。<a href="260918_hk_central.html#s07">蘭桂坊</a>の九龍版という位置づけだが規模ははるかに小さい</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">見どころ</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="spot-grid">
+      <div class="spot-card"><div class="spot-name">尖沙咀プロムナード／星光大道</div><div class="spot-loc">梳士巴利道の海側</div><div class="spot-desc"><strong>香港でいちばん有名な景色がここ</strong>。ブルース・リーの銅像、俳優の手形。<strong>2019年のリニューアルで日陰と休憩スペースが増えた</strong>。<strong>日没の30分前に着くと、昼→夕→夜の全部が見られる</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">シンフォニー・オブ・ライツ</div><div class="spot-loc">プロムナードから</div><div class="spot-desc"><strong>毎晩20:00、約10分</strong>。両岸のビルがレーザーと光で連動する。<strong>天候が悪いと中止</strong>。<strong>正直「思ったより地味」という感想が多いが、一度は見ておくもの</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">時計塔（前九廣鐵路鐘樓）</div><div class="spot-loc">スターフェリー埠頭の隣</div><div class="spot-desc"><strong>1915年完成。1975年に解体された尖沙咀駅の唯一の遺構</strong>。<strong>「ここが大陸横断鉄道の南端だった」という事実だけで見え方が変わる</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">ペニンシュラ香港</div><div class="spot-loc">梳士巴利道22号</div><div class="spot-desc"><strong>1928年開業</strong>。<strong>ロビーのアフタヌーンティーは予約不可・並ぶのが前提</strong>（14:00〜18:00頃）。<strong>1941年に香港総督が降伏文書に署名したのもこの建物</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">1881 Heritage</div><div class="spot-loc">廣東道2A</div><div class="spot-desc"><strong>旧・水上警察本部（1884）を保存改修した商業施設</strong>。<strong>建物と広場が撮影スポットとして人気</strong>で、テナントよりも外観を見に来る人が多い。</div></div>
+      <div class="spot-card"><div class="spot-name">K11 MUSEA</div><div class="spot-loc">Victoria Dockside</div><div class="spot-desc"><strong>10フロア・約120万平方フィート、250超のブランド</strong>。<strong>「アートと小売の融合」を掲げた2019年開業の複合施設</strong>で、館内に現代アートが常設されている。<strong>屋上からのハーバービューも良い</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">香港文化中心／香港藝術館</div><div class="spot-loc">梳士巴利道</div><div class="spot-desc">1989年開業のコンサートホール群と、隣接する美術館。<strong>文化中心はハーバー正面なのに窓がないことで有名</strong>。<strong>藝術館は2019年に改装再開し、展望テラスからの眺めが良い</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">香港歷史博物館／香港科學館</div><div class="spot-loc">漆咸道南</div><div class="spot-desc"><strong>歷史博物館の常設展「香港故事」は、香港の成り立ちを4億年前から追う</strong>。<strong>半日かけてもいい密度</strong>。<strong>展示更新のため一部が閉室していることがあるので事前確認を</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">九龍公園</div><div class="spot-loc">彌敦道の西</div><div class="spot-desc"><strong>旧兵営跡の緑地</strong>。早朝は太極拳、日曜は家事労働者の集まり。<strong>この密度の街で唯一、腰を下ろせる場所</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">スターフェリー 尖沙咀埠頭</div><div class="spot-loc">時計塔の隣</div><div class="spot-desc"><strong>中環まで約8分、灣仔まで約8分</strong>。<strong>片道HK$5前後で、香港で最も費用対効果の高い観光</strong>。<strong>上層デッキを選ぶこと</strong>。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">重慶大厦 — ビル1棟が別の国</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="callout">
+      <strong>彌敦道36-44号に建つ17階建て・5棟からなる雑居ビル</strong>。
+      <strong>1961年竣工で、当初は高級住宅・商業ビルだった</strong>のが、<strong>60年かけて「南アジア・アフリカと香港を結ぶ結節点」に変質した</strong>。
+      人類学者ゴードン・マシューズの『<strong>低端全球化（Ghetto at the Center of the World）</strong>』が対象にしたことで、学術的にも有名になった建物。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>中身</strong></td><td><strong>約800軒のゲストハウス・ホテル</strong>のほか、<strong>両替商、インド／パキスタン／ネパール／アフリカ料理の食堂、携帯電話の卸、雑貨</strong>。<strong>1日に1万人以上が出入りする</strong>とされる</td></tr>
+      <tr><td><strong>両替</strong></td><td><strong>1階の両替所は香港で最もレートが良いと言われる</strong>。<strong>複数の店を見比べてから替えるのが作法</strong></td></tr>
+      <tr><td>経済的な意味</td><td><strong>アフリカや南アジアの小規模バイヤーが、ここで中国製の携帯・部品を仕入れて持ち帰る</strong>——<strong>「低端全球化（low-end globalization）」の現場</strong>。<a href="260917_hongkong.html#s08">香港の中継貿易</a>の、最も小さな単位がここにある</td></tr>
+      <tr><td>治安</td><td><strong>実際には監視カメラと管理が入り、昔より格段に整理されている</strong>。<strong>ただし客引きは多く、宿の質はピンキリ</strong>。<strong>昼に入って見学するぶんには問題ない</strong></td></tr>
+      <tr><td>泊まるなら</td><td><strong>香港で最も安い部屋がここにある</strong>（1泊数百HKドル〜）。<strong>ただし部屋は極小で、エレベーターは常に行列</strong>。<strong>予算より体験目的で選ぶ場所</strong></td></tr>
+      <tr><td>食べるなら</td><td><strong>2階・3階のインド／パキスタン料理の食堂が本命</strong>。<strong>香港のカレーで最も安くて本格的</strong>と評されることが多い</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：ブランド街の真向かいにある。</strong>
+      <strong>重慶大厦から廣東道のブランド街までは徒歩3分</strong>。
+      <strong>年US$18,980／m²の路面店と、1泊数百HKドルのゲストハウスが、同じ通りの両側にある</strong>——
+      <strong>これほど分かりやすく「香港の振れ幅」が見える場所は他にない</strong>。
+      <strong>尖沙咀を1本の線で歩くなら、この対比を意識すると街の見え方が変わる。</strong>
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">買い物 — アジアで最も高い路面</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>指標</th><th>値</th><th>コメント</th></tr>
+      <tr><td><strong>廣東道の路面賃料</strong></td><td><strong>年 €16,160（約US$18,980）／m²</strong></td><td><strong>アジアのラグジュアリー路面としては1位</strong>。世界1位はロンドンのボンド・ストリート。<strong>「買い物客の絶対数」ではなく「1店舗あたりの売上」で押し上げられている数字</strong></td></tr>
+      <tr><td>2026年の動き</td><td><strong>プライム路面店の賃料は2026年Q1に前期比+2.7%、うち尖沙咀は+3.2%で最も伸びた</strong></td><td><strong>Savillsは2026年通年で約+5%を見込み、<a href="260918_hk_central.html#s08">中環</a>・銅鑼灣・尖沙咀が牽引すると予想している</strong></td></tr>
+    </table></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>施設／通り</th><th>中身</th></tr>
+      <tr><td><strong>海港城 Harbour City</strong></td><td><strong>廣東道沿いの巨大モール</strong>。香港最大級で、<strong>ブランドからカジュアルまで一通り揃う</strong>。<strong>ハーバー側にテラスがあり、船と対岸が見える</strong></td></tr>
+      <tr><td><strong>K11 MUSEA</strong></td><td><strong>アート寄りの高級モール</strong>。<strong>ブランドの品揃えより、館内のアートと建築を見に行く場所</strong></td></tr>
+      <tr><td>圓方 Elements</td><td><strong>西九龍（九龍站）</strong>。<strong>MTRとICCに直結した、より新しい高級モール</strong>。尖沙咀からは1駅</td></tr>
+      <tr><td>iSQUARE／The ONE／美麗華</td><td><strong>彌敦道沿いの縦型モール</strong>。<strong>上階にレストランと映画館</strong>が入る香港特有の構成</td></tr>
+      <tr><td>加連威老道（Granville Rd）</td><td><strong>安い服・古着・アクセサリー</strong>。地元の若者向け</td></tr>
+      <tr><td><strong>注意：電器店・カメラ店</strong></td><td><strong>彌敦道沿いの一部の店での価格トラブルは、香港の観光における最も古典的な問題</strong>。<strong>値札がない／後から付属品を高額請求する、といった手口</strong>。<strong>買うならモール内の正規店か、香港旅遊發展局の「QTS」マークがある店で</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">食</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="food-grid">
+      <div class="food-card"><div class="food-name">ペニンシュラのアフタヌーンティー</div><div class="food-desc"><strong>予約不可、ロビーに並ぶのが作法</strong>。14:00頃から。<strong>「体験としての価格」だと割り切れば納得できる</strong>。服装はスマートカジュアル。</div></div>
+      <div class="food-card"><div class="food-name">唐閣 T'ang Court（ランガム）</div><div class="food-desc"><strong>ミシュラン三つ星の広東料理</strong>。要予約。<strong>尖沙咀で「ちゃんとした広東料理」を一度だけ食べるならここが定番</strong>。</div></div>
+      <div class="food-card"><div class="food-name">重慶大厦のカレー</div><div class="food-desc"><strong>2階・3階のインド／パキスタン料理の食堂</strong>。<strong>香港で最も安くて本格的なカレーがここにある</strong>。客引きが多いが、店自体はまとも。</div></div>
+      <div class="food-card"><div class="food-name">麥文記麵家（佐敦）</div><div class="food-desc"><strong>エビワンタン麺</strong>。尖沙咀から北へ1駅。<strong>スープと細麺のバランスで語られる老舗</strong>で、深夜まで開いている。</div></div>
+      <div class="food-card"><div class="food-name">澳洲牛奶公司（佐敦）</div><div class="food-desc"><strong>スクランブルエッグと蒸しミルクプリン</strong>。<strong>店員の態度が異様に速いことで有名</strong>で、それも含めて名物。朝食向き。</div></div>
+      <div class="food-card"><div class="food-name">許留山 / 糖水</div><div class="food-desc"><strong>マンゴー系の広東デザート（糖水）</strong>。<strong>食後にこれを挟むのが香港の作法</strong>。近年は店舗が減ったので、見つけたら入っておく。</div></div>
+      <div class="food-card"><div class="food-name">翠華餐廳などの茶餐廳</div><div class="food-desc"><strong>24時間営業が多い香港式ファミレス</strong>。<strong>ミルクティー、ポークチョップライス、サテビーフ麺</strong>。<strong>深夜に困ったらここ</strong>。</div></div>
+      <div class="food-card"><div class="food-name">K11 MUSEA / 海港城のレストラン階</div><div class="food-desc"><strong>ハーバービューの席がある店が多い</strong>。<strong>行列を避けたいときと、夜景を確実に取りたいときの選択肢</strong>。要予約。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">夜 — 夜景をどこから見るか</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>場所</th><th>見え方</th><th>コスト・メモ</th></tr>
+      <tr><td><strong>尖沙咀プロムナード</strong></td><td><strong>対岸の島側スカイラインを正面・水平から</strong></td><td><strong>無料。20:00のシンフォニー・オブ・ライツはここで見る</strong>。<strong>19:30には場所を取る</strong></td></tr>
+      <tr><td><strong>スターフェリーの船上</strong></td><td><strong>動きながら、水面すれすれから</strong></td><td><strong>HK$5前後。夜景の見方としては最もコスパが良い</strong>。<strong>往復すれば往路と復路で違う絵になる</strong></td></tr>
+      <tr><td><strong>Ozone（ICC118階・西九龍）</strong></td><td><strong>香港で最も高い位置のバー</strong></td><td><strong>尖沙咀から1駅（九龍站）</strong>。<strong>ドレスコードあり、価格は高い</strong></td></tr>
+      <tr><td>Aqua／Wooloomooloo などの屋上バー</td><td>ビルの上から俯瞰</td><td><strong>予約推奨。窓際が取れるかで満足度が変わる</strong></td></tr>
+      <tr><td>天星小輪の「ハーバークルーズ」</td><td>湾内を周遊</td><td><strong>シンフォニーの時間に合わせた便がある</strong></td></tr>
+      <tr><td><strong>太平山頂（島側）</strong></td><td><strong>俯瞰・ビル群を上から</strong></td><td><strong>尖沙咀からは遠い</strong>。<strong>プロムナードとは「見る絵」が別物なので、両方やる価値はある</strong></td></tr>
+    </table></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>飲む</th><th>内容</th></tr>
+      <tr><td>諾士佛臺（Knutsford Terrace）</td><td><strong>尖沙咀で唯一まとまった飲み屋街</strong>。<a href="260918_hk_central.html#s07">蘭桂坊</a>より小さく、落ち着いている</td></tr>
+      <tr><td>ホテルバー</td><td><strong>ペニンシュラ、Rosewood、InterContinental</strong>。<strong>尖沙咀で夜を過ごすならホテルのバーが失敗しない</strong></td></tr>
+      <tr><td>深夜</td><td><strong>茶餐廳と重慶大厦周辺は遅くまで動いている</strong>。<strong>MTRは概ね0:30〜1:00頃まで</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">泊まる</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>クラス</th><th>候補</th><th>メモ</th></tr>
+      <tr><td><strong>最上位</strong></td><td><strong>ペニンシュラ（1928）／Rosewood Hong Kong（2019）／Regent Hong Kong（2023年に名称復活）／InterContinental</strong></td><td><strong>ハーバービューの部屋が取れるかどうかで価格も体験も大きく変わる</strong></td></tr>
+      <tr><td>高級〜中上級</td><td><strong>K11 ARTUS／Kerry Hotel（紅磡）／Hyatt Regency TST</strong></td><td>K11 ARTUSはレジデンス型で長期滞在向き</td></tr>
+      <tr><td>中級</td><td><strong>The Kowloon Hotel／Eaton HK（佐敦）／Mira</strong></td><td><strong>Eatonは佐敦で、彌敦道沿い。旺角・油麻地にも歩ける</strong></td></tr>
+      <tr><td><strong>格安</strong></td><td><strong>重慶大厦・美麗都大廈のゲストハウス</strong></td><td><strong>1泊数百HKドルから。部屋は極小</strong>（§05）</td></tr>
+      <tr><td>今回の場合</td><td>—</td><td><strong>北角泊まりなら、島側からスターフェリーで渡るのが正解</strong>。<strong>北角→（トラムかMTR）→中環／灣仔埠頭→フェリーで尖沙咀</strong>。<strong>帰りも同じで、最終便は概ね23:00台</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">スクリーンの中の尖沙咀</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>作品</th><th>どこが出てくるか</th></tr>
+      <tr><td><strong>『恋する惑星』（重慶森林, 1994）</strong></td><td><strong>原題の「重慶」はまさに重慶大厦</strong>。<strong>金城武と林青霞のパートは、このビルの内部と周辺で撮られている</strong>。<strong>タイトルの「森林」は、このビルの雑多さそのもの</strong></td></tr>
+      <tr><td>『インファナル・アフェア』（無間道, 2002）</td><td>尖沙咀の街路と、対岸を望むカット</td></tr>
+      <tr><td>『ブレードランナー』（1982）</td><td><strong>ロケ地ではないが、ネオンが折り重なる香港の街並み——とりわけ彌敦道の看板の風景——が、サイバーパンクのビジュアルの源流のひとつとして繰り返し引用される</strong></td></tr>
+      <tr><td>『トランスフォーマー/ロストエイジ』（2014）</td><td><strong>ハリウッドが香港を舞台にした代表例</strong>。尖沙咀と中環のスカイラインが大量に使われる</td></tr>
+      <tr><td>ブルース・リー関連</td><td><strong>星光大道の銅像、そして九龍各所</strong>。<strong>「香港＝カンフー映画」のイメージの中心地</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">いま起きていること（2025→2026）</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>テーマ</th><th>内容</th></tr>
+      <tr><td><strong>路面賃料の回復</strong></td><td><strong>2026年Q1、プライム路面店の賃料は全市で前期比+2.7%、尖沙咀は+3.2%でトップ</strong>。<strong>Savillsは通年で約+5%を見込む</strong></td></tr>
+      <tr><td><strong>アジア最高値のラグジュアリー路面</strong></td><td><strong>廣東道が年US$18,980／m²でアジア1位を維持</strong>。<strong>世界1位はロンドンのボンド・ストリート</strong></td></tr>
+      <tr><td>観光の構造変化</td><td><strong>香港全体の2025年の国際訪問者は2,320万人で世界2位</strong>（1位は<a href="260918_bangkok.html">バンコク</a>3,030万人）。<strong>本土からの日帰り客が増え、1人あたりの消費は下がっている</strong>——<strong>「人は戻ったが金額は戻っていない」</strong>のが小売側の実感</td></tr>
+      <tr><td>Regentの復活</td><td><strong>かつてのリージェント香港（後のインターコンチネンタル）が、2023年に「Regent Hong Kong」として名称を戻して再開</strong>。<strong>ハーバーフロントの高級ホテル競争が再び動き出した</strong></td></tr>
+      <tr><td>スターフェリー</td><td><strong>2018〜2023年で累計1億HKドル超の赤字。2026年7月に約30%の運賃値上げを申請</strong>（<a href="260918_hk_central.html#s11">中環側のページ</a>に詳しく）</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s12">
+    <div class="sec-label"><span class="num">12</span><span class="sec-title">歩き方 — 夕方からのルート</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="callout">
+      <strong>尖沙咀は昼に来ても損をする街</strong>。<strong>16:00頃に入って、日没とシンフォニー・オブ・ライツ（20:00）に合わせて組むのが最適</strong>。
+      <strong>博物館を入れるなら昼から、そうでなければ夕方からで足りる</strong>。
+    </div>
+
+    <div class="info-box">
+      <ul>
+        <li><strong>島側から<a href="260918_hk_central.html">中環</a>（または灣仔）埠頭へ → スターフェリーで尖沙咀へ</strong>（8分・上層デッキ）</li>
+        <li><strong>時計塔 → 1881 Heritage</strong>（30分）</li>
+        <li><strong>廣東道／海港城</strong>を流す（1時間）</li>
+        <li><strong>彌敦道へ抜けて重慶大厦を覗く</strong>（30分・両替もここで）</li>
+        <li><strong>ペニンシュラの前を通って海沿いへ戻る</strong></li>
+        <li><strong>19:30までにプロムナード／星光大道で場所を取る</strong></li>
+        <li><strong>20:00 シンフォニー・オブ・ライツ</strong>（10分）</li>
+        <li><strong>K11 MUSEAか海港城のレストラン階で夕食</strong>、または<strong>佐敦まで歩いて麥文記・澳洲牛奶公司</strong></li>
+        <li><strong>帰りもスターフェリー</strong>（最終は概ね23:00台）<strong>／逃したらMTR荃灣線で中環乗換</strong></li>
+      </ul>
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>実務メモ</th><th>内容</th></tr>
+      <tr><td>フェリー</td><td><strong>中環行きと灣仔行きで埠頭が別</strong>。<strong>八達通で乗れる。上層と下層で料金が違う（上層が少し高い）</strong></td></tr>
+      <tr><td>シンフォニー</td><td><strong>悪天候時は中止</strong>。<strong>音声は現地のスピーカーか専用アプリ／ラジオで</strong></td></tr>
+      <tr><td>買い物の注意</td><td><strong>彌敦道沿いの電器・カメラ店は避け、モール内の正規店かQTS認証店で</strong>（§06）</td></tr>
+      <tr><td>混雑</td><td><strong>週末と本土の連休は歩道が動かなくなる</strong>。<strong>プロムナードは平日でも19:30には埋まり始める</strong></td></tr>
+      <tr><td>雨</td><td><strong>海港城〜K11〜地下通路でかなり繋がっているが、プロムナードは屋根がない</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>Wikipedia「Tsim Sha Tsui」「Chungking Mansions」「A Symphony of Lights」「Star Ferry」「Peninsula Hong Kong」「Former Kowloon-Canton Railway Clock Tower」</li>
+      <li>SCMP「Hong Kong's Tsim Sha Tsui tops Asia luxury retail rents, but Bond Street world's priciest」／ VnExpress International 同記事</li>
+      <li>Real Estate Asia「Prime street shop rents climb across Hong Kong's key retail hubs」（2026年Q1・Savills 予想）</li>
+      <li>K11 MUSEA 公式／ the Avenue of Stars 公式／ 香港旅遊發展局（HKTB）「A Symphony of Lights」「Chungking Mansions」</li>
+      <li>Hong Kong Free Press「Hong Kong's struggling Star Ferry seeks 30% fare hike, proposes pet-friendly route」（2026年7月）</li>
+      <li>Gordon Mathews『Ghetto at the Center of the World: Chungking Mansions, Hong Kong』</li>
+      <li>Euromonitor International「Top 100 City Destinations Index 2025」</li>
+    </ul>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>

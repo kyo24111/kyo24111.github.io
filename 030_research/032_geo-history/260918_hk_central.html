@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>中環・上環 / Central &amp; Sheung Wan — Geo Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+      .hero h1 { font-size: 32px; overflow-wrap: anywhere; }
+      .hero-eyebrow, .toc li, .spot-name, .crumb { overflow-wrap: anywhere; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* 人口推移グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="260917_hongkong.html">hong kong</a>
+    <span class="sep">/</span>
+    <span class="cur">central &amp; sheung wan</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">District Research — 260918</div>
+    <h1>中環・上環 / Central &amp; Sheung Wan</h1>
+    <div class="hero-country">香港島 中西区 · 1841年に英国が上陸した場所 / 皇后大道より北は全部が埋立地 / 金融街と漢方問屋と骨董屋が徒歩5分に同居する</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">Grade Aオフィス空室率</div>
+        <div class="kv-val">9.9%</div>
+        <div class="kv-note">2026年2月・中環 / 全市平均は13.4%</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">エスカレーター全長</div>
+        <div class="kv-val">800m+</div>
+        <div class="kv-note">高低差135m / 屋外では世界最長</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">英国上陸</div>
+        <div class="kv-val">1841</div>
+        <div class="kv-note">1月26日・水坑口（上環）</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">文武廟の創建</div>
+        <div class="kv-val">1847</div>
+        <div class="kv-note">香港最古級の廟</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">このエリアとは</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">歴史 — 香港はここから始まった</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">街の構造 — 埋立ての地層と坂</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">見どころ</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">問屋街と骨董街</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">食</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">夜 — 蘭桂坊とSOHO</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">オフィスと店舗の相場</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">泊まる</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">スクリーンの中の中環</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">いま起きていること（2025→2026）</a></li>
+      <li><span class="toc-num">12</span><a href="#s12">歩き方 — 半日ルート</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">このエリアとは</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="callout">
+      中環（Central）と上環（Sheung Wan）は<strong>隣り合っているのに性格が正反対</strong>で、そこがこのエリアの面白さのすべて。
+      <strong>中環は英国が作った統治と金融の街</strong>、<strong>上環は華人商人が作った貿易と問屋の街</strong>。
+      <strong>両者を分ける境目はだいたい中環街市／永吉街のあたり</strong>で、
+      <strong>歩いて5分の間に、ガラスの高層ビルから干し鮑の匂いがする通りへ切り替わる</strong>。
+      <a href="260917_hongkong.html">香港全体</a>を1日で理解したいなら、このエリアを縦に歩くのが最短になる。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>行政区</strong></td><td><strong>中西區（Central and Western District）</strong>。香港18区のひとつ。面積約12.4km²、人口は約23.5万人で<strong>香港の区の中では少ない部類</strong>——<strong>昼間人口と夜間人口の差が極端に大きい</strong></td></tr>
+      <tr><td>MTR</td><td><strong>中環站</strong>（港島線・荃灣線）／<strong>香港站</strong>（東涌線・機場快線、中環站と地下通路で接続）／<strong>上環站</strong>（港島線）。<strong>北角からは港島線1本で中環まで約12分</strong></td></tr>
+      <tr><td>そのほかの足</td><td><strong>トラム（叮叮）</strong>が德輔道中を東西に走る（全線HK$3、後払い・八達通可）。<strong>スターフェリー</strong>で尖沙咀へ。<strong>ピーク・トラム</strong>で山頂へ</td></tr>
+      <tr><td><strong>何の街か</strong></td><td><strong>中環＝行政・金融・法曹</strong>（政府総部は隣の金鐘だが、立法会・終審法院・金融当局・取引所がこの一帯）。<strong>上環＝海味・漢方・骨董・印刷、そして近年はカフェとギャラリー</strong></td></tr>
+      <tr><td>ランドマーク</td><td><strong>IFC二期（415m）／香港上海銀行本店／中國銀行タワー／長江集団中心／交易廣場（HKEX）</strong>。上環側は<strong>文武廟・西港城・南北行の街並み</strong></td></tr>
+      <tr><td>歩きやすさ</td><td><strong>空中回廊（Central Elevated Walkway）</strong>で、IFC〜交易廣場〜置地廣場〜金鐘まで<strong>地上に降りずに歩ける</strong>。雨季と猛暑にはこれが効く</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">歴史 — 香港はここから始まった</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>年</th><th>出来事</th></tr>
+      <tr><td><strong>1841年1月26日</strong></td><td><strong>英海軍が上陸し占領を宣言。その場所は中環ではなく上環の「水坑口（Possession Point）」</strong>——現在の水坑口街で、<strong>香港という都市の起点はこの一点</strong>。今は小さな公園（荷李活道公園）になっている</td></tr>
+      <tr><td>1841–1850年代</td><td><strong>ヴィクトリア・シティの建設。中環に政庁・軍・洋行（ジャーディン・マセソン、スワイヤ）、上環に華人の居住区と商館</strong>が置かれた。<strong>人種で居住区を分ける都市計画が最初から敷かれていた</strong></td></tr>
+      <tr><td>1844年頃</td><td><strong>荷李活道（Hollywood Road）が香港最初期の道路のひとつとして開通</strong>。名前は米国の映画都市とは無関係で、<strong>ヒイラギ（holly）の茂みに由来する説が有力</strong></td></tr>
+      <tr><td><strong>1847</strong></td><td><strong>文武廟（Man Mo Temple）建立</strong>。文昌帝（学問）と関帝（武）を祀る。<strong>植民地政府の法が届く前、華人社会の紛争調停の場でもあった</strong></td></tr>
+      <tr><td>1850年代〜</td><td><strong>南北行（Nam Pak Hong）の成立</strong>。文咸東街・西街に華人の貿易商が集まり、<strong>東南アジアと中国本土を結ぶ中継貿易の元締めになる</strong>。<strong>これが「香港＝中継貿易の街」の最初の姿</strong></td></tr>
+      <tr><td><strong>1894</strong></td><td><strong>太平山街一帯でペストが大流行。数千人が死亡し、政府は華人街区を強制的に取り壊した</strong>。<strong>これが香港の公衆衛生行政と都市計画の出発点</strong>になる。跡地の一部が現在のブレイク・ガーデン</td></tr>
+      <tr><td>1904</td><td><strong>トラム開業</strong>。当時の海岸線（德輔道）に沿って敷かれた</td></tr>
+      <tr><td>1970s–1990s</td><td><strong>埋立てが繰り返され、海岸線が北へ北へ動く</strong>。1980年代にHSBC本店（1985、ノーマン・フォスター）と中國銀行タワー（1990、I.M.ペイ）が建ち、<strong>この2棟の「風水対決」が語り草になる</strong></td></tr>
+      <tr><td><strong>1993</strong></td><td><strong>中環〜半山エスカレーター開通</strong>。半山（Mid-Levels）の住民を通勤で下ろすための実用インフラだったが、<strong>結果としてSOHOという飲食街を生んだ</strong></td></tr>
+      <tr><td>2014</td><td><strong>雨傘運動。運動の名前自体が「和平佔中（Occupy Central with Love and Peace）」</strong>で、中環が象徴として選ばれた（実際の占拠の中心は金鐘）</td></tr>
+      <tr><td><strong>2018</strong></td><td><strong>大館（Tai Kwun）開館</strong>。旧中央警察署・中央裁判司署・域多利監獄の16棟を<strong>香港ジョッキークラブが約38億HKドルかけて修復</strong>。<strong>香港の保存再生プロジェクトの代表例</strong></td></tr>
+      <tr><td>2021</td><td><strong>中環街市（Central Market）再開</strong>。1939年のバウハウス様式の市場建築を保存改修</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：香港の起点が上環にある、という事実。</strong>
+      ふつう「香港＝中環の摩天楼」とイメージされるが、<strong>英国が最初に足をつけたのも、華人商人が最初に富を作ったのも上環</strong>だった。
+      <strong>中環の金融は後から乗ってきたレイヤー</strong>で、その下には<strong>南北行の中継貿易という、いまの香港とまったく同じビジネスモデル</strong>が180年前から動いている。
+      <a href="260917_hongkong.html#s01">香港の本質が「通過する時の手数料」である</a>ことは、上環の問屋街を歩くと一番よく分かる。
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">街の構造 — 埋立ての地層と坂</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="callout">
+      このエリアは<strong>「海に向かって新しく、山に向かって古い」</strong>という、極めて読みやすい構造をしている。
+      <strong>皇后大道中（Queen's Road Central）が1841年当時の海岸線</strong>で、<strong>それより北にある道はすべて埋立地の上にある</strong>。
+      逆に<strong>南（山側）に向かうほど坂がきつくなり、古い街と住宅地になる</strong>。
+    </div>
+
+    <div class="sub-h">北から南へ — 埋立ての年輪</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>通り</th><th>できた時期</th><th>いま何があるか</th></tr>
+      <tr><td><strong>民光街／香港站・IFC</strong></td><td>1990年代の埋立て</td><td><strong>最も新しい海岸線</strong>。IFC、四季酒店、機場快線、フェリー埠頭</td></tr>
+      <tr><td>干諾道中（Connaught Rd）</td><td>1890年代の埋立て</td><td>高架道路と交易廣場（HKEX）</td></tr>
+      <tr><td>德輔道中（Des Voeux Rd）</td><td>1860〜80年代の埋立て</td><td><strong>トラムが走る通り</strong>。銀行の本店が並ぶ</td></tr>
+      <tr><td><strong>皇后大道中（Queen's Rd Central）</strong></td><td><strong>1841年の海岸線</strong></td><td><strong>ここが元の渚。名前の「Queen's Road」は香港最初の道路</strong></td></tr>
+      <tr><td>荷李活道（Hollywood Rd）</td><td>1844年頃</td><td><strong>骨董街と大館、文武廟</strong>。ここから坂が本格化する</td></tr>
+      <tr><td>堅道（Caine Rd）／半山</td><td>19世紀後半〜</td><td><strong>高級住宅地。エスカレーターの終点</strong></td></tr>
+    </table></div>
+
+    <div class="sub-h">覚えておくと迷わない固有名詞</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>名前</th><th>中身</th></tr>
+      <tr><td><strong>中環〜半山エスカレーター</strong></td><td><strong>全長800m超・高低差135mの屋外エスカレーター／動く歩道の連結システム</strong>。<strong>朝6:00〜10:00は下り、10:00〜24:00は上りの一方通行</strong>——<strong>昼に下りたいときは階段か脇の道を歩くことになるので注意</strong></td></tr>
+      <tr><td><strong>SOHO</strong></td><td><strong>South of Hollywood Road</strong> の略。エスカレーター沿いの<strong>各国料理とバーの密集地</strong>。1993年のエスカレーター開通で生まれた、比較的新しい街</td></tr>
+      <tr><td>NoHo / PoHo</td><td><strong>NoHo＝荷李活道の北側</strong>（士丹頓街・伊利近街）、<strong>PoHo＝太平山街周辺</strong>。<strong>PoHoは上環側の、独立系のカフェ・古着・ギャラリーが集まる一角</strong>で、ここ10年で最も雰囲気が変わった場所</td></tr>
+      <tr><td>空中回廊</td><td><strong>IFC〜交易廣場〜置地廣場〜遮打道〜金鐘までデッキで繋がる</strong>。<strong>日曜日はこのデッキと歩道がフィリピン人・インドネシア人の家事労働者の休憩場所になる</strong>——香港の労働構造がそのまま可視化される光景で、一見の価値がある</td></tr>
+      <tr><td><strong>上環の通りの役割分担</strong></td><td><strong>德輔道西＝海味街（乾物）／文咸東街・西街＝南北行（漢方・燕の巣・人参）／高陞街＝藥材街／摩羅上街＝キャット・ストリート（骨董）／永樂街＝海産物問屋</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">見どころ</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="spot-grid">
+      <div class="spot-card"><div class="spot-name">大館 Tai Kwun</div><div class="spot-loc">荷李活道10号</div><div class="spot-desc">旧中央警察署・裁判司署・域多利監獄の<strong>16棟を保存改修した複合施設。入場無料</strong>。<strong>現代美術館（JC Contemporary）と、独房がそのまま残る監獄棟</strong>の両方が見られる。<strong>このエリアで1ヶ所だけ選ぶならここ</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">文武廟 Man Mo Temple</div><div class="spot-loc">荷李活道124-126号</div><div class="spot-desc"><strong>1847年創建、香港最古級</strong>。<strong>天井から吊るされた渦巻き線香</strong>が煙る内部が有名。<strong>かつては華人社会の裁定機関でもあった</strong>。入場無料、朝から夕方まで。</div></div>
+      <div class="spot-card"><div class="spot-name">中環街市 Central Market</div><div class="spot-loc">皇后大道中93号</div><div class="spot-desc"><strong>1939年のバウハウス様式の市場建築</strong>を保存し、2021年に再開。<strong>エスカレーターの起点に直結</strong>していて、暑いときの休憩と待ち合わせに使える。</div></div>
+      <div class="spot-card"><div class="spot-name">PMQ 元創方</div><div class="spot-loc">鴨巴甸街35号</div><div class="spot-desc">旧・警察既婚者宿舎（Police Married Quarters）を<strong>デザイナーやクラフト作家のスタジオ兼ショップに転用</strong>。<strong>土産をここで買うと、他と被らない</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">ミッドレベルズ・エスカレーター</div><div class="spot-loc">中環街市〜半山</div><div class="spot-desc"><strong>全長800m超・高低差135m</strong>。<strong>乗ること自体が観光</strong>で、両脇のバーと飲食店を眺めながら20分ほどかけて登る。<strong>10:00以降は上り方向のみ</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">ピーク・トラム／太平山頂</div><div class="spot-loc">花園道（中環）</div><div class="spot-desc"><strong>1888年開業のケーブルカー</strong>。2022年に第6世代車両へ更新され輸送力が上がった。<strong>山頂からの夜景は香港の定番中の定番</strong>だが、<strong>行列は覚悟</strong>。バス（15番）やタクシーで登る手もある。</div></div>
+      <div class="spot-card"><div class="spot-name">摩羅上街（キャット・ストリート）</div><div class="spot-loc">上環</div><div class="spot-desc"><strong>骨董・古銭・文革グッズ・玉の露店</strong>が並ぶ短い通り。<strong>本物かどうかは問わずに眺めるのが正しい楽しみ方</strong>。荷李活道の骨董店街と一体で歩ける。</div></div>
+      <div class="spot-card"><div class="spot-name">海味街（德輔道西）</div><div class="spot-loc">上環〜西營盤</div><div class="spot-desc"><strong>干し鮑・干し貝柱・ナマコ・フカヒレ・燕の巣</strong>の問屋が延々と続く。<strong>匂いと値札の桁で、香港の華人資本の厚みが体感できる</strong>。買わなくても歩く価値がある。</div></div>
+      <div class="spot-card"><div class="spot-name">HSBC本店 × 中國銀行タワー</div><div class="spot-loc">皇后大道中1号／花園道1号</div><div class="spot-desc"><strong>ノーマン・フォスター（1985）とI.M.ペイ（1990）</strong>。<strong>中銀タワーの鋭角が「刃」としてHSBCを切っている、という風水の話</strong>が有名で、HSBCが屋上に「大砲」を向けたという逸話まである。<strong>HSBCの1階ピロティは日曜に開放される</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">スターフェリー 中環埠頭</div><div class="spot-loc">民光街</div><div class="spot-desc"><strong>尖沙咀まで約8分</strong>。<strong>上層デッキでも数HKドル</strong>で、<a href="260918_hk_tst.html">対岸のTST</a>へ渡るなら地下鉄よりこちらが圧倒的に良い。<strong>ただし経営は苦しく、値上げ申請が続いている</strong>（§11）。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">問屋街と骨董街</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>通り</th><th>扱うもの</th><th>メモ</th></tr>
+      <tr><td><strong>文咸東街・文咸西街</strong></td><td><strong>南北行（Nam Pak Hong）</strong>：人参・燕の巣・乾物・漢方</td><td><strong>19世紀からの華人貿易商の同業組合の街</strong>。看板の屋号がそのまま残っている店がある</td></tr>
+      <tr><td><strong>德輔道西</strong></td><td><strong>海味（干し海産物）</strong></td><td><strong>通称「海味街」</strong>。干し鮑は数万HKドル、フカヒレ、干し貝柱。<strong>旧正月前が最も活気づく</strong></td></tr>
+      <tr><td>高陞街</td><td>漢方薬材</td><td><strong>通称「藥材街」</strong>。乾いた薬草の匂いが通り一本ぶん続く</td></tr>
+      <tr><td>永樂街</td><td>海産物・乾物の問屋</td><td>海味街と一体</td></tr>
+      <tr><td><strong>荷李活道</strong></td><td><strong>骨董・美術</strong></td><td><strong>中環側は高級ギャラリー、上環側にいくほど雑多になる</strong></td></tr>
+      <tr><td>摩羅上街</td><td>骨董の露店</td><td><strong>キャット・ストリート</strong>。土産物寄り</td></tr>
+      <tr><td>西港城（Western Market）</td><td>布地・雑貨</td><td><strong>1906年築のエドワード朝様式の旧市場建築</strong>。2階に生地問屋が集まる</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：この問屋街が生き残っている理由。</strong>
+      <strong>家賃が世界最高水準の島に、干物問屋が並んでいるのは経済的に不自然に見える</strong>。
+      成立する理由は<strong>①多くが自社ビルを所有している（何十年も前に取得した）②扱う商材の単価が高い（干し鮑は1kgで数万HKドル）③中国本土の需要が実需として太い</strong>の3つ。
+      <strong>つまりこれは「残った古い街」ではなく、いまも現役の中継貿易ビジネス</strong>。
+      <strong>一方でPoHo周辺ではカフェとギャラリーへの置き換えが進んでいて、その境界線がどこまで来ているかを見るのが、いま上環を歩く面白さになっている。</strong>
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">食</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="food-grid">
+      <div class="food-card"><div class="food-name">蓮香居 / 蓮香樓（上環）</div><div class="food-desc"><strong>ワゴンを押して回る旧式の飲茶が残る数少ない店</strong>。相席が基本で、自分で席を確保し、自分でワゴンを止めて取る。<strong>「昔の香港の朝」を体験できる場所</strong>。朝が最も混む。</div></div>
+      <div class="food-card"><div class="food-name">九記牛腩（歌賦街）</div><div class="food-desc"><strong>牛バラ煮込み麺の名店</strong>。開店時間が独特（昼と夜の間に閉まる）で、いつも行列。<strong>カレー牛腩か清湯かで好みが分かれる</strong>。</div></div>
+      <div class="food-card"><div class="food-name">勝香園（美輪街）</div><div class="food-desc"><strong>路上に机を出す大牌檔（屋台食堂）</strong>。トマト麺とクリスプバン（脆脆）が名物。<strong>この形式自体が絶滅危惧種</strong>で、香港で大牌檔を体験するならここは筆頭候補。</div></div>
+      <div class="food-card"><div class="food-name">蘭芳園（結志街）</div><div class="food-desc"><strong>ストッキング・ミルクティー（絲襪奶茶）発祥を名乗る店</strong>。港式ミルクティーとポークチョップ麺。<strong>茶餐廳文化の原点として押さえておくと話が広がる</strong>。</div></div>
+      <div class="food-card"><div class="food-name">泰昌餅家（擺花街）</div><div class="food-desc"><strong>エッグタルト</strong>。最後の英国総督パッテンが好んだことで有名になった。<strong>クッキー生地とパイ生地の2種があり、ここはクッキー生地</strong>。</div></div>
+      <div class="food-card"><div class="food-name">鏞記酒家（威靈頓街）</div><div class="food-desc"><strong>ガチョウのロースト（燒鵝）</strong>の代名詞。<strong>持ち帰りの半羽を買って帰る人が絶えない</strong>。値段は高め。</div></div>
+      <div class="food-card"><div class="food-name">龍景軒 Lung King Heen（四季酒店）</div><div class="food-desc"><strong>中華料理として世界で初めてミシュラン三つ星を獲得したレストラン</strong>（2009年）。<strong>ランチの点心なら比較的入りやすい</strong>。要予約。</div></div>
+      <div class="food-card"><div class="food-name">SOHO / PoHo の各国料理</div><div class="food-desc"><strong>スペイン・イタリア・タイ・ネパール・中東が1本の坂に並ぶ</strong>。<strong>香港で「中華以外」を食べるならまずこのエリア</strong>。PoHo側は個人経営のカフェとベーカリーが中心。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">夜 — 蘭桂坊とSOHO</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>エリア</th><th>中身</th></tr>
+      <tr><td><strong>蘭桂坊 Lan Kwai Fong</strong></td><td><strong>香港の夜を代表してきたL字型の坂道</strong>。1980年代にアラン・ゼーマンが開発し、<strong>金融マンと外国人で埋まる街</strong>になった。<strong>大晦日とハロウィンは歩けないほど混む</strong></td></tr>
+      <tr><td><strong>その蘭桂坊の現在</strong></td><td><strong>コロナ後の回復が鈍い。</strong>長く続いたクラブやバーが閉じ、<strong>その跡地に火鍋店とカラオケが入る</strong>——<strong>客層が欧米系の駐在員から中国本土からの訪問者へ入れ替わったこと</strong>が、そのまま業態の変化として現れている</td></tr>
+      <tr><td><strong>2026年の再開発</strong></td><td><strong>政府が蘭桂坊とその周辺 約3ヘクタールを対象に、2段階の美化計画を発表</strong>。<strong>壁画とライトアートで、中環〜半山エスカレーターからウィンダム街までを整備する</strong>。<strong>「街を綺麗にすれば人が戻る」という発想がどこまで効くかは、正直まだ分からない</strong></td></tr>
+      <tr><td>SOHO</td><td><strong>エスカレーター沿いの、より落ち着いた飲食街</strong>。蘭桂坊よりも食事寄りで、年齢層も上がる</td></tr>
+      <tr><td>PoHo / 太平山街</td><td><strong>上環側。個人経営のワインバーとクラフトビール</strong>。<strong>ここ数年、香港の「新しい夜」はこちら側に移ってきている</strong></td></tr>
+      <tr><td>屋上バー</td><td><strong>Sevva（置地遮打）、Wooloomooloo（灣仔）、Ozone（西九龍のICC118階）</strong>など。<strong>夜景を飲みながら見るなら、ピークに登るより確実で早い</strong></td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：蘭桂坊の衰退は、香港の縮図。</strong>
+      <strong>欧米系の駐在員が減り、本土からの訪問者が増え、そして香港人自身は週末に深圳へ「北上消費」に出る</strong>——
+      <strong>この3つの動きが同時に起きた結果が、いまの蘭桂坊</strong>。
+      <a href="260917_hongkong.html#s23">香港が直面している構造変化</a>を、1本の坂道で観察できる場所になっている。
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">オフィスと店舗の相場</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>指標</th><th>値</th><th>コメント</th></tr>
+      <tr><td><strong>中環 Grade A 空室率</strong></td><td><strong>9.9%（2026年2月）</strong></td><td><strong>全市平均13.4%より明確に低い</strong>。<strong>「中環だけは埋まっている」という二極化</strong>が続いている</td></tr>
+      <tr><td><strong>中環 Grade A 賃料</strong></td><td><strong>約HK$999／m²／月（2026年初）</strong></td><td><strong>2026年の最初の2ヶ月で+3.5%</strong>。<strong>長く続いた下落局面がようやく底を打った、という評価</strong></td></tr>
+      <tr><td><strong>路面店賃料</strong></td><td><strong>中環は1〜5月で+76%</strong></td><td>観光の回復が効いた。<strong>Savillsはプライム路面店の2026年通年で約+5%を見込み、中環・銅鑼灣・<a href="260918_hk_tst.html">尖沙咀</a>が牽引すると予想</strong></td></tr>
+      <tr><td>テナントの動き</td><td>—</td><td><strong>「中環に本部、バックオフィスは鰂魚涌や九龍東」</strong>という分散は定着。<strong>一方で賃料が下がった局面で中環へ戻る（flight to quality）動きも出ている</strong></td></tr>
+      <tr><td>住宅</td><td>—</td><td><strong>半山（Mid-Levels）は香港でも最上位の住宅地</strong>。エスカレーター沿いは利便性で割高になる。<strong>上環側は相対的に安く、若い層と外国人の単身が多い</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">泊まる</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>クラス</th><th>候補</th><th>メモ</th></tr>
+      <tr><td><strong>最上位</strong></td><td><strong>フォーシーズンズ（IFC直結）／マンダリン オリエンタル（1963年開業、香港のクラシック）／ザ・アッパー・ハウス（金鐘）</strong></td><td><strong>フォーシーズンズは機場快線の香港站に直結</strong>していて、空港からの移動が最も楽</td></tr>
+      <tr><td>中級</td><td><strong>The Pottinger（中環）／Hotel Madera Hollywood／Ovolo Central</strong></td><td>SOHO・大館が徒歩圏</td></tr>
+      <tr><td><strong>上環側</strong></td><td><strong>iclub Sheung Wan／The Mercer</strong> など</td><td><strong>中環より1〜2割安く、MTR上環站とマカオ行きフェリー乗り場に近い</strong></td></tr>
+      <tr><td>今回の場合</td><td>—</td><td><strong>北角（Hyatt Centric Victoria Harbour）からは港島線1本、約12分で中環站</strong>。<strong>上環站まででも15分程度</strong>なので、わざわざこのエリアに泊まる必要はない</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">スクリーンの中の中環</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>作品</th><th>どこが出てくるか</th></tr>
+      <tr><td><strong>『恋する惑星』（重慶森林, 1994）</strong></td><td><strong>フェイ・ウォンが働くスナックバー「Midnight Express」は蘭桂坊の入口</strong>、<strong>金城武／トニー・レオンのパートで使われるアパートはミッドレベルズ・エスカレーター沿い</strong>。<strong>エスカレーターから部屋を覗く、あの構図はここでしか撮れない</strong></td></tr>
+      <tr><td>『インファナル・アフェア』（無間道, 2002）</td><td><strong>屋上で対峙する場面は中環のオフィスビル群</strong>。香港映画の「屋上」のイメージを決定づけた</td></tr>
+      <tr><td>『ダークナイト』（2008）</td><td><strong>バットマンがIFC二期から飛び降りる</strong>。ハリウッドが撮った中環として最も有名</td></tr>
+      <tr><td>『天使の涙』『花様年華』</td><td>ウォン・カーウァイ作品は中環・上環の路地と階段を繰り返し使う</td></tr>
+      <tr><td>『警察故事』シリーズ</td><td>ジャッキー・チェンが中環の街路とトラムで暴れる</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">いま起きていること（2025→2026）</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>テーマ</th><th>内容</th></tr>
+      <tr><td><strong>オフィス市況が底を打った</strong></td><td><strong>中環のGrade A空室率9.9%（2026年2月）、賃料は年初2ヶ月で+3.5%</strong>。<strong>数年続いた下落が止まったという見方が広がっている</strong></td></tr>
+      <tr><td><strong>路面店の急回復</strong></td><td><strong>中環の店舗賃料が1〜5月で+76%</strong>。<strong>ただしこれは「空いていた区画が埋まった」ことによる回復で、ピーク時の水準には遠い</strong></td></tr>
+      <tr><td><strong>蘭桂坊の美化計画</strong></td><td><strong>2026年、政府が約3haを対象に2段階の整備（壁画・ライトアート）を発表</strong>（§07）</td></tr>
+      <tr><td><strong>スターフェリーの経営難</strong></td><td><strong>2018〜2023年で累計1億HKドル超の赤字。2026年7月、運営会社が約30%の運賃値上げを申請し、あわせてペット同伴航路を提案した</strong>。<strong>2025年末時点で純有利子負債は7,300万HKドル超</strong>。<strong>「香港の象徴」が補助と値上げなしには維持できなくなっている</strong></td></tr>
+      <tr><td>観光の構成変化</td><td><strong>2025年の香港の国際訪問者は2,320万人で世界2位</strong>（1位は<a href="260918_bangkok.html">バンコク</a>の3,030万人）。<strong>本土からの日帰り客の比率が上がり、単価は下がっている</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s12">
+    <div class="sec-label"><span class="num">12</span><span class="sec-title">歩き方 — 半日ルート</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="callout">
+      <strong>上環から入って中環に抜ける</strong>のが正解。<strong>逆順は坂を登ることになるうえ、エスカレーターが10時以降は上り専用なので効率が悪い</strong>。
+      <strong>所要は寄り道込みで4〜5時間</strong>。
+    </div>
+
+    <div class="info-box">
+      <ul>
+        <li><strong>MTR上環站 A2出口</strong>でスタート</li>
+        <li><strong>德輔道西の海味街</strong>を西へ少し歩いて引き返す（15分）</li>
+        <li><strong>文咸東街・西街の南北行</strong>を抜けて坂へ（15分）</li>
+        <li><strong>摩羅上街（キャット・ストリート）→ 文武廟</strong>（30分）</li>
+        <li><strong>荷李活道を東へ → PMQ</strong>（30分）</li>
+        <li><strong>大館 Tai Kwun</strong>。ここでしっかり時間を取る（1.5時間）</li>
+        <li><strong>エスカレーターでSOHOへ上がって昼食</strong>（1時間）</li>
+        <li><strong>下って中環街市 → 空中回廊 → IFC</strong>（30分）</li>
+        <li><strong>スターフェリー中環埠頭から<a href="260918_hk_tst.html">尖沙咀</a>へ渡る</strong>（8分）——<strong>そのまま対岸で夜景と20:00のシンフォニー・オブ・ライツに繋げられる</strong></li>
+      </ul>
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>実務メモ</th><th>内容</th></tr>
+      <tr><td>八達通</td><td><strong>MTR・トラム・スターフェリー・コンビニまで1枚で済む</strong>。<strong>トラムは後払い（降りるときにタップ）</strong></td></tr>
+      <tr><td>服装</td><td><strong>坂が多いので靴は歩けるもの</strong>。<strong>屋内の冷房が強いので羽織り1枚</strong></td></tr>
+      <tr><td>時間帯</td><td><strong>大館・文武廟・問屋街は昼、蘭桂坊とSOHOは夜</strong>。<strong>日曜は空中回廊が家事労働者の休憩で埋まり、通行に時間がかかる</strong>（それ自体が見ものではある）</td></tr>
+      <tr><td>雨</td><td><strong>空中回廊とエスカレーター（屋根付き）でかなりの距離を濡れずに移動できる</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>Wikipedia「Central, Hong Kong」「Sheung Wan」「Central–Mid-Levels escalator」「Lan Kwai Fong」「Man Mo Temple, Hong Kong」「Tai Kwun」</li>
+      <li>MJPM「Hong Kong Office Rent Guide 2026: Central vs Quarry Bay Compared」／ hongkongoffices.com 中環オフィス相場</li>
+      <li>Macao News「Hong Kong plans Lan Kwai Fong makeover with murals and light art」（2026年）／ Bloomberg「Hong Kong's New Party Scene Shifts From Lan Kwai Fong」（2026年7月）「Mainland Chinese Influx Reshapes Hong Kong Nightlife Hub Lan Kwai Fong」</li>
+      <li>Dim Sum Daily「Central shop rents surge 76% in Jan–May as tourist rebound lifts core retail」／ Real Estate Asia「Prime street shop rents climb across Hong Kong's key retail hubs」（Savills 予想）</li>
+      <li>Hong Kong Free Press「Hong Kong's struggling Star Ferry seeks 30% fare hike, proposes pet-friendly route」（2026年7月）</li>
+      <li>Gafencu「West Side Story: Swanky Central's next-door neighbour, soulful Sheung Wan」／ Hong Kong Guides「Sheung Wan」／ 上環文物徑（Sheung Wan Heritage Trail）</li>
+      <li>香港旅遊發展局（HKTB）各スポット案内 ／ 大館 Tai Kwun 公式</li>
+      <li>Euromonitor International「Top 100 City Destinations Index 2025」</li>
+    </ul>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>

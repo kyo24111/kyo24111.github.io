@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>旺角・油麻地 / Mong Kok &amp; Yau Ma Tei — Geo Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+      .hero h1 { font-size: 32px; overflow-wrap: anywhere; }
+      .hero-eyebrow, .toc li, .spot-name, .crumb { overflow-wrap: anywhere; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* 人口推移グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="260917_hongkong.html">hong kong</a>
+    <span class="sep">/</span>
+    <span class="cur">mong kok &amp; yau ma tei</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">District Research — 260918</div>
+    <h1>旺角・油麻地 / Mong Kok &amp; Yau Ma Tei</h1>
+    <div class="hero-country">九龍 油尖旺区 · 世界有数の人口密度 / 通りごとにテーマが決まった商店街が連続する / 看板が道路を覆う「あの香港」の本場</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">人口密度</div>
+        <div class="kv-val">約13万/km²</div>
+        <div class="kv-note">旺角 / 世界一としてギネスに載った</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">女人街</div>
+        <div class="kv-val">11:00–23:00</div>
+        <div class="kv-note">通菜街南段 / 夕方以降が本番</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">油麻地果欄</div>
+        <div class="kv-val">1913</div>
+        <div class="kv-note">開設年 / 動くのは深夜</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">歩行者天国</div>
+        <div class="kv-val">2018年廃止</div>
+        <div class="kv-note">18年続いたが騒音苦情1,000件超で終了</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">このエリアとは</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">歴史 — 農村から最も密な街へ</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">街の構造 — 通りごとにテーマが決まっている</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">市場を歩く</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">見どころ</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">食</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">夜 — 廟街と旺角の深夜</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">住まいと店舗 — 劏房と唐樓</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">泊まる</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">スクリーンの中の旺角</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">いま起きていること（2023→2026）</a></li>
+      <li><span class="toc-num">12</span><a href="#s12">歩き方 — 夕方からのルート</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">このエリアとは</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="callout">
+      旺角（モンコック）と油麻地（ヤウマテイ）は<strong>「香港人が実際に買い物をする街」</strong>。
+      <a href="260918_hk_tst.html">尖沙咀</a>が観光客とブランドの街、<a href="260918_hk_central.html">中環</a>が金融の街だとすれば、<strong>ここは生活と小商いの街</strong>で、
+      <strong>看板が道路の上まで張り出し、店が歩道にはみ出し、人が途切れない——世界が「香港」と聞いてイメージする風景の本場がここ</strong>。
+      <strong>そして最大の特徴は「通りごとに売っているものが決まっている」こと</strong>。金魚だけの通り、スニーカーだけの通り、花だけの通りが実在する。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>行政区</strong></td><td><strong>油尖旺區（Yau Tsim Mong District）</strong>。<a href="260918_hk_tst.html">尖沙咀</a>と同じ区で、<strong>彌敦道1本で南北に繋がっている</strong></td></tr>
+      <tr><td><strong>人口密度</strong></td><td><strong>旺角は約13万人/km²とされ、「世界で最も人口密度の高い場所」としてギネスに掲載されたことがある</strong>。<a href="260917_hongkong.html#s01">香港全体の約6,760人/km²</a>と比べると桁が違う</td></tr>
+      <tr><td>MTR</td><td><strong>旺角站</strong>（荃灣線・觀塘線）／<strong>油麻地站</strong>（同）／<strong>太子站</strong>（同）／<strong>旺角東站</strong>（東鐵線、旺角站とは別の駅で徒歩で乗換）。<strong>北角からは港島線→中環乗換→荃灣線で30分弱</strong></td></tr>
+      <tr><td>歩き方</td><td><strong>太子（北）から旺角、油麻地、佐敦（南）へ、彌敦道に沿って南下するのが基本</strong>。<strong>MTRで3駅ぶんだが、歩いても30〜40分</strong>で、その間ずっと何かしらの商店街が続く</td></tr>
+      <tr><td>いつ行くか</td><td><strong>夕方以降</strong>。<strong>女人街・廟街は11時／夕方から、果欄は深夜</strong>。<strong>昼に行くと半分の店が閉まっている</strong></td></tr>
+      <tr><td>治安</td><td><strong>基本的に安全</strong>だが、<strong>スリと客引き、そして「偽ブランド・偽電子機器」には注意</strong>。<strong>夜でも人通りが絶えないぶん、体感的にはむしろ安心</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">歴史 — 農村から最も密な街へ</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>年</th><th>出来事</th></tr>
+      <tr><td>〜19世紀</td><td><strong>旺角の元の字は「芒角」——芒草（ススキの類）が生える岬、という意味の農村</strong>。油麻地は<strong>船具（麻の綱）と桐油を扱う浜</strong>で、名前はそこから来ている。<strong>どちらも水辺の集落だった</strong></td></tr>
+      <tr><td>1860</td><td><strong>北京条約で九龍半島が英国領に</strong>。ただし開発は<a href="260918_hk_tst.html">尖沙咀</a>から始まり、北側のこの一帯はしばらく農地のままだった</td></tr>
+      <tr><td>1864</td><td><strong>油麻地天后廟が建立</strong>（現在地には1876年）。<strong>漁民の信仰の中心で、いまも廟街の名の由来になっている</strong></td></tr>
+      <tr><td><strong>1913</strong></td><td><strong>油麻地果欄（卸売果物市場）が開設</strong>。<strong>戦前の低層建築群がそのまま残り、いまも深夜に卸売が動いている</strong>——<strong>香港で「時間が止まっている」場所の筆頭</strong></td></tr>
+      <tr><td>1920s–30s</td><td><strong>埋立てと区画整理で現在の碁盤目の街区ができる</strong>。<strong>通菜街・花園街といった名前は、当時そこが実際に畑だった</strong>ことに由来する（通菜＝空心菜）</td></tr>
+      <tr><td>1930</td><td><strong>油麻地戲院が開業</strong>。<strong>香港に現存する唯一の戦前の映画館建築</strong>で、現在は粤劇（広東オペラ）の劇場として使われている</td></tr>
+      <tr><td>1950s–70s</td><td><strong>大陸からの難民流入で人口が爆発し、唐樓（低層の連棟住宅）が密集</strong>。<strong>1階が店、上階が住居という香港特有の形態がこの時期に固まった</strong></td></tr>
+      <tr><td>1980s–90s</td><td><strong>女人街・波鞋街・金魚街といった「通りごとの専門商店街」が定着</strong>。<strong>映画『旺角卡門』（1988）が街の名前をそのままタイトルにした</strong></td></tr>
+      <tr><td>2000</td><td><strong>西洋菜南街に歩行者天国（行人專用區）が設置される</strong>。<strong>路上パフォーマーが集まり、旺角の名物になった</strong></td></tr>
+      <tr><td><strong>2014</strong></td><td><strong>雨傘運動。旺角は3つの占拠地のひとつで、最も激しい衝突が繰り返された場所</strong>。<strong>金鐘の整然としたテント村とは対照的に、旺角は路上の混乱そのものだった</strong></td></tr>
+      <tr><td>2016</td><td><strong>旺角騒乱（魚蛋革命）。旧正月の屋台取り締まりをきっかけに大規模な衝突が起きた</strong></td></tr>
+      <tr><td><strong>2018</strong></td><td><strong>歩行者天国が18年で廃止。騒音苦情が1,000件を超え、道路は24時間車に戻された</strong>。<strong>その後、再開はされていない</strong></td></tr>
+      <tr><td>2023</td><td><strong>廟街夜市が「Night Vibes Hong Kong」キャンペーンの一環で、多文化フードマーケットとしてリニューアル開幕</strong>（§11）</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：通りの名前が農地の記憶を残している。</strong>
+      <strong>通菜街（空心菜）、花園街（花畑）、西洋菜街（クレソン）</strong>——<strong>いま最も人口密度が高い街区の通り名が、100年前の畑の作物で付いている</strong>。
+      <strong>香港の都市化がどれだけ短期間で起きたかを、地図を見るだけで確認できる</strong>。
+      そして<strong>その延長線上に、いま金魚とスニーカーと花が通りごとに売られている</strong>——
+      <strong>「なぜ通りごとに業種が固まるのか」は、元が市（いち）の集まりだったから、と考えると自然に繋がる。</strong>
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">街の構造 — 通りごとにテーマが決まっている</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="callout">
+      このエリアを歩くときは<strong>「地図上の通り名＝売っているもの」だと思っていい</strong>。
+      <strong>北の太子から南の佐敦まで、テーマの違う商店街が数珠つなぎになっている</strong>ので、
+      <strong>上から下へ一直線に歩くだけでひと通り回れる</strong>。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>通り</th><th>通称</th><th>売っているもの・中身</th></tr>
+      <tr><td><strong>花墟道（Flower Market Rd）</strong></td><td><strong>花墟</strong></td><td><strong>生花と植木の卸・小売が1ブロック丸ごと</strong>。太子站の東。<strong>旧正月前は歩けないほど混む</strong>。朝から夕方</td></tr>
+      <tr><td><strong>園圃街</strong></td><td><strong>雀仔街（Yuen Po Bird Garden）</strong></td><td><strong>鳥と鳥籠、餌のバッタ</strong>。<strong>老人が鳥籠を持ち寄って世間話をする、香港の古い習慣がまだ見られる</strong></td></tr>
+      <tr><td><strong>通菜街 北段</strong></td><td><strong>金魚街</strong></td><td><strong>ビニール袋に入った観賞魚が壁一面に吊るされている</strong>。<strong>写真的に最も「香港」な光景のひとつ</strong></td></tr>
+      <tr><td><strong>花園街</strong></td><td><strong>波鞋街（Sneaker Street）</strong></td><td><strong>スニーカー専門店が数十軒連続</strong>。<strong>同じモデルの値段を店ごとに比べられる</strong></td></tr>
+      <tr><td><strong>通菜街 南段</strong></td><td><strong>女人街（Ladies' Market）</strong></td><td><strong>衣類・土産・雑貨の露店が約1km</strong>。<strong>11:00〜23:00頃</strong>。<strong>値切りが前提</strong>（提示額の半分から交渉するのが相場感）</td></tr>
+      <tr><td>西洋菜南街</td><td>—</td><td><strong>電気店・ドラッグストア・チェーン店</strong>。<strong>2018年まで歩行者天国だった通り</strong></td></tr>
+      <tr><td>奶路臣街</td><td>—</td><td><strong>信和中心（Sino Centre）と旺角電腦中心</strong>。<strong>アニメ・同人・中古ゲームの雑居ビル</strong></td></tr>
+      <tr><td><strong>廟街（Temple St）</strong></td><td><strong>廟街夜市</strong></td><td><strong>油麻地。夕方から深夜</strong>。<strong>占い、路上の粤劇、海鮮の大牌檔、雑貨</strong>。<strong>2023年に多文化フードマーケットとして再編された</strong></td></tr>
+      <tr><td>上海街</td><td>—</td><td><strong>厨房用品・中華鍋・蒸籠の問屋街</strong>。<strong>料理好きなら女人街よりこちらの方が収穫がある</strong></td></tr>
+      <tr><td>甘肅街</td><td>玉器市場</td><td><strong>翡翠・玉の露店</strong>。<strong>真贋は分からない前提で</strong></td></tr>
+      <tr><td><strong>石龍街ほか</strong></td><td><strong>油麻地果欄</strong></td><td><strong>1913年開設の卸売果物市場。動くのは22:00〜明け方</strong>（§05）</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">市場を歩く</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>市場</th><th>時間</th><th>実際どうか</th></tr>
+      <tr><td><strong>女人街</strong></td><td><strong>11:00〜23:00頃</strong></td><td><strong>売っているものは土産物と量産品が中心で、正直「買う場所」ではない</strong>。<strong>それでも約1kmの露店が続く光景自体に価値がある</strong>。<strong>値切りは半額スタートが相場</strong></td></tr>
+      <tr><td><strong>廟街夜市</strong></td><td><strong>18:00〜24:00頃</strong></td><td><strong>女人街より雑多で、こちらの方が面白い</strong>。<strong>占い師の列、路上で粤劇を歌う人、海鮮を出す大牌檔</strong>。<strong>2023年の再編で飲食の比重が上がった</strong></td></tr>
+      <tr><td><strong>金魚街</strong></td><td>昼〜夜</td><td><strong>観賞魚と水草。買わなくても見るだけで面白い数少ない市場</strong></td></tr>
+      <tr><td><strong>花墟</strong></td><td>朝〜19:00頃</td><td><strong>ここは本当に地元の人が買いに来る市場</strong>。<strong>他と違って観光地化していない</strong></td></tr>
+      <tr><td>雀仔街</td><td>朝〜夕方</td><td><strong>規模は小さい。花墟とセットで15分</strong></td></tr>
+      <tr><td><strong>波鞋街</strong></td><td>昼〜22:00頃</td><td><strong>本気で探すと掘り出し物がある</strong>。<strong>ただし限定モデルの真贋には注意</strong></td></tr>
+      <tr><td><strong>油麻地果欄</strong></td><td><strong>22:00〜明け方</strong></td><td><strong>観光地ではなく現役の卸売市場</strong>。<strong>トラックと台車が動き回るので、邪魔にならないように歩くこと</strong>。<strong>戦前の建物が残る貴重な場所</strong></td></tr>
+      <tr><td>玉器市場</td><td>10:00〜18:00頃</td><td><strong>目利きができないなら記念品の範囲で</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">見どころ</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="spot-grid">
+      <div class="spot-card"><div class="spot-name">油麻地果欄</div><div class="spot-loc">窩打老道／石龍街</div><div class="spot-desc"><strong>1913年開設の卸売果物市場</strong>。<strong>戦前の低層建築がそのまま現役で使われている</strong>。<strong>深夜に行くと、台車と木箱と怒号の世界</strong>。<strong>再開発計画が長く議論されているので、見るなら今のうち</strong>（§11）。</div></div>
+      <div class="spot-card"><div class="spot-name">油麻地天后廟</div><div class="spot-loc">廟街の北端</div><div class="spot-desc"><strong>廟街の名の由来</strong>。<strong>前の広場（榕樹頭）は、将棋を指す老人と占い師の場</strong>で、夜になると一帯が廟街夜市に繋がる。</div></div>
+      <div class="spot-card"><div class="spot-name">油麻地戲院</div><div class="spot-loc">窩打老道6号</div><div class="spot-desc"><strong>1930年建設。香港に現存する唯一の戦前の映画館建築</strong>。<strong>現在は粤劇（広東オペラ）の専用劇場として使われている</strong>。隣の旧・紅磚屋（ポンプ場）とセットで保存されている。</div></div>
+      <div class="spot-card"><div class="spot-name">朗豪坊 Langham Place</div><div class="spot-loc">亞皆老街8号</div><div class="spot-desc"><strong>2004年開業。旺角の再開発の象徴</strong>。<strong>4階から8階まで一気に上がる長いエスカレーター（Expresscalator）</strong>が名物。<strong>雑然とした街の中に突然現れる、完全に管理された空間</strong>という対比が面白い。</div></div>
+      <div class="spot-card"><div class="spot-name">信和中心 Sino Centre</div><div class="spot-loc">彌敦道582-592号</div><div class="spot-desc"><strong>アニメ・漫画・同人誌・中古ゲームの雑居ビル</strong>。<strong>香港のオタク文化の総本山</strong>で、上階に行くほどマニアックになる。<strong>日本のコンテンツの流通の仕方が観察できる</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">百老匯電影中心 Broadway Cinematheque</div><div class="spot-loc">油麻地・駿發花園</div><div class="spot-desc"><strong>香港を代表するアートハウス系映画館</strong>。<strong>併設のKubrickは書店兼カフェ</strong>で、このエリアで唯一落ち着いて座れる場所かもしれない。</div></div>
+      <div class="spot-card"><div class="spot-name">旺角電腦中心／先達廣場</div><div class="spot-loc">亞皆老街／登打士街</div><div class="spot-desc"><strong>PC・スマホの部品とアクセサリーの雑居ビル</strong>。<strong>先達廣場は中古スマホの一大取引所</strong>で、<a href="260917_hongkong.html#s08">香港の中継貿易</a>の小売端末がここにある。</div></div>
+      <div class="spot-card"><div class="spot-name">彌敦道の看板</div><div class="spot-loc">旺角〜油麻地</div><div class="spot-desc"><strong>道路の上に張り出したネオン看板は、香港の視覚的アイデンティティそのもの</strong>。<strong>ただし2010年代以降、安全規制で撤去が進み、往年の密度はもうない</strong>。<strong>残っている区間を見られるのはこの一帯</strong>。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">食</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="callout">
+      <strong>このエリアは香港で最も「安くて美味い」の密度が高い</strong>。
+      <a href="260918_hk_central.html#s06">中環</a>のような高級店はほとんどなく、<strong>茶餐廳・冰室・粥麺・街頭小食</strong>が主役。
+      <strong>ミシュランのビブグルマンがいちばん集中しているのも、実はこの一帯</strong>。
+    </div>
+
+    <div class="food-grid">
+      <div class="food-card"><div class="food-name">美都餐室 Mido Cafe（油麻地）</div><div class="food-desc"><strong>1950年開業の冰室（氷室）</strong>。<strong>天后廟の向かいにあり、2階の窓際から廟街を見下ろせる</strong>。<strong>内装がほぼ当時のまま</strong>で、映画・ドラマのロケにも頻繁に使われる。焗排骨飯（焼きポークチョップライス）が定番。</div></div>
+      <div class="food-card"><div class="food-name">澳洲牛奶公司（佐敦）</div><div class="food-desc"><strong>スクランブルエッグと蒸しミルクプリン</strong>。<strong>注文から着席・退店まで異様に速い</strong>ことで有名で、それ自体が名物。朝〜昼向き。</div></div>
+      <div class="food-card"><div class="food-name">麥文記麵家（佐敦）</div><div class="food-desc"><strong>エビワンタン麺の老舗</strong>。<strong>細麺のコシとスープで評価される</strong>。深夜まで開いているので、廟街のあとに寄れる。</div></div>
+      <div class="food-card"><div class="food-name">添好運 Tim Ho Wan</div><div class="food-desc"><strong>「世界一安いミシュラン星付き」として有名になった点心店</strong>。<strong>元は旺角の小さな店から始まった</strong>。<strong>ベイクドポークバン（酥皮焗叉燒包）は必ず頼む</strong>。</div></div>
+      <div class="food-card"><div class="food-name">街頭小食（咖喱魚蛋・雞蛋仔）</div><div class="food-desc"><strong>カレー風味の魚団子、卵ワッフル、腸粉、燒賣</strong>。<strong>女人街・西洋菜南街の路地で立ち食い</strong>。<strong>1本20〜30HKドル程度で、これが旺角の正しい食べ方</strong>。</div></div>
+      <div class="food-card"><div class="food-name">廟街の海鮮大牌檔</div><div class="food-desc"><strong>路上に机を出して海鮮を出す店</strong>。<strong>値段は事前に確認すること</strong>（時価表記のトラブルが定番）。<strong>ビールと炒め物で夜市の雰囲気ごと食べる場所</strong>。</div></div>
+      <div class="food-card"><div class="food-name">旺角の火鍋・燒臘</div><div class="food-desc"><strong>ローストダック・ガチョウ・チャーシューの燒臘店</strong>が路面に多い。<strong>1皿とライスで50〜80HKドル</strong>。<strong>深夜の火鍋店も多く、本土からの客で賑わう</strong>。</div></div>
+      <div class="food-card"><div class="food-name">糖水・甜品</div><div class="food-desc"><strong>マンゴー系、豆腐花、亀ゼリー（龜苓膏）</strong>。<strong>食後に1軒挟むのが香港の作法</strong>で、この一帯には遅くまで開いている店が多い。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">夜 — 廟街と旺角の深夜</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>場所・時間</th><th>中身</th></tr>
+      <tr><td><strong>18:00〜 廟街</strong></td><td><strong>露店が立ち上がり、天后廟前の榕樹頭に占い師が並ぶ</strong>。<strong>路上で粤劇を歌う人（歌壇）</strong>がいるのもここ。<strong>2023年の再編で、多文化フードの屋台が増えた</strong></td></tr>
+      <tr><td>19:00〜 女人街</td><td><strong>人出のピーク</strong>。23:00頃まで</td></tr>
+      <tr><td>20:00〜 旺角の路面</td><td><strong>燒臘・火鍋・茶餐廳が動く時間帯</strong>。<strong>西洋菜南街のドラッグストアと電気店も深夜まで</strong></td></tr>
+      <tr><td><strong>22:00〜 油麻地果欄</strong></td><td><strong>ここからが卸売の本番</strong>。<strong>観光ではなく仕事の現場なので、見学は静かに</strong></td></tr>
+      <tr><td>深夜</td><td><strong>麻雀館（麻雀學校）のネオン、カラオケ、24時間の茶餐廳</strong>。<strong>MTRは概ね0:30〜1:00頃まで、その後は深夜バス（N番台）</strong></td></tr>
+      <tr><td><strong>注意</strong></td><td><strong>「マッサージ」「カラオケ」の客引きには乗らないこと</strong>。<strong>旺角・佐敦一帯はこの種のトラブルが最も多い</strong>。<strong>通りを歩くぶんには問題ない</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">住まいと店舗 — 劏房と唐樓</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>テーマ</th><th>内容</th></tr>
+      <tr><td><strong>唐樓（tong lau）</strong></td><td><strong>1階が店舗、上階が住居の低層連棟建築</strong>。<strong>戦前〜1960年代のものがこの一帯に多く残る</strong>。<strong>エレベーターがなく、老朽化が進んでいる</strong></td></tr>
+      <tr><td><strong>劏房（subdivided flat）</strong></td><td><strong>1住戸を数室に間仕切りした極小住宅</strong>。<strong>油麻地・旺角・深水埗はその集中地域</strong>。<strong>面積数㎡で月数千HKドルという水準で、香港の住宅問題の象徴</strong>。<a href="260917_hongkong.html#s12">香港全体の住宅問題</a>の最前線がここにある</td></tr>
+      <tr><td><strong>店舗賃料</strong></td><td><strong>2010年代前半、旺角の路面賃料は世界最高水準に達した</strong>（本土からの買い物客が薬局と宝飾店を押し上げた）。<strong>その後の観光構造の変化で大きく調整され、いまは当時のピークからは程遠い</strong></td></tr>
+      <tr><td>いま入っている業態</td><td><strong>薬局・化粧品店・宝飾店が減り、飲食と生活雑貨が増えた</strong>。<strong>「本土の買い物客向け」から「地元向け」に戻ってきている</strong>という見方ができる</td></tr>
+      <tr><td><strong>北上消費</strong></td><td><strong>香港人が週末に深圳へ買い物・外食に行く動きが定着し、九龍の小売にとっては新しい逆風になっている</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">泊まる</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>クラス</th><th>候補</th><th>メモ</th></tr>
+      <tr><td>上級</td><td><strong>Cordis Hong Kong（朗豪坊に直結）</strong></td><td><strong>このエリアで唯一の本格的な高級ホテル</strong>。<strong>MTR旺角站直結で、市場も徒歩圏</strong></td></tr>
+      <tr><td>中級</td><td><strong>Dorsett Mongkok／Royal Plaza（旺角東）／Eaton HK（佐敦）</strong></td><td><strong>Eatonは彌敦道沿いで、<a href="260918_hk_tst.html">尖沙咀</a>まで歩ける</strong></td></tr>
+      <tr><td>格安</td><td><strong>佐敦・油麻地のゲストハウス</strong></td><td><a href="260918_hk_tst.html#s05">重慶大厦</a>ほど極端ではないが、選択肢は多い</td></tr>
+      <tr><td><strong>そもそも泊まるべきか</strong></td><td>—</td><td><strong>観光の拠点としては<a href="260918_hk_tst.html">尖沙咀</a>か島側の方が便利</strong>。<strong>ここは「泊まる街」ではなく「夜に来る街」</strong>。<strong>北角からはMTRで30分弱</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">スクリーンの中の旺角</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>作品</th><th>メモ</th></tr>
+      <tr><td><strong>『旺角卡門』（As Tears Go By, 1988）</strong></td><td><strong>ウォン・カーウァイの長編デビュー作で、タイトルがそのまま旺角</strong>。<strong>チンピラの街としての旺角のイメージを決定づけた</strong></td></tr>
+      <tr><td><strong>『PTU』（2003）／『エレクション』（黑社會, 2005）</strong></td><td><strong>ジョニー・トーが繰り返し撮る夜の旺角</strong>。<strong>人のいない深夜の街路が、香港ノワールの標準的な画面になった</strong></td></tr>
+      <tr><td>『男たちの挽歌』（英雄本色, 1986）</td><td>九龍の街路と雑居ビル。香港ノワールの原型</td></tr>
+      <tr><td><strong>『一念無明』（Mad World, 2016）</strong></td><td><strong>劏房で暮らす親子を描いた作品</strong>。<strong>§08の住宅問題を正面から扱った代表作</strong></td></tr>
+      <tr><td>美都餐室</td><td><strong>『新不了情』ほか多数の映画・ドラマに登場</strong>。<strong>店そのものがロケ地として有名</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">いま起きていること（2023→2026）</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>テーマ</th><th>内容</th></tr>
+      <tr><td><strong>廟街夜市のリニューアル</strong></td><td><strong>2023年12月、政府の「Night Vibes Hong Kong」（夜間経済の活性化）キャンペーンの一環として、廟街夜市が多文化フードマーケットとして再スタート</strong>。<strong>「新しい夜市を作るより、廟街や女人街のような既存の夜市をまず立て直すべきだ」という批判も同時に出ていた</strong></td></tr>
+      <tr><td><strong>歩行者天国は戻っていない</strong></td><td><strong>2018年に廃止された西洋菜南街の行人專用區は、その後も再開されていない</strong>。<strong>路上パフォーマンスの騒音問題が解決していないため</strong></td></tr>
+      <tr><td><strong>油麻地果欄の再開発</strong></td><td><strong>市區重建局（URA）が2021年に立法会へ提案した計画では、果欄を観光地化し、ブティックホテル・オープンスペース・アート文化エリアを併設する</strong>という構想。<strong>ただし果物商は「一方的な提案」「顧客基盤を失う」と反発しており、着地していない</strong>。<strong>現状はいまも現役の卸売市場として動いている</strong></td></tr>
+      <tr><td>観光客の質の変化</td><td><strong>本土からの日帰り客が増え、1人あたりの消費は下がった</strong>。<strong>同時に香港人自身が深圳へ買い物に出る「北上消費」が定着し、九龍の小売は両側から挟まれている</strong></td></tr>
+      <tr><td>ネオン看板</td><td><strong>安全規制による撤去が続き、往年の「看板が道路を覆う」風景は年々失われている</strong>。<strong>記録・保存の動きはあるが、街頭のネオンとしては減る一方</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s12">
+    <div class="sec-label"><span class="num">12</span><span class="sec-title">歩き方 — 夕方からのルート</span><span class="sec-updated">Last updated: 2026-09-18</span></div>
+
+    <div class="callout">
+      <strong>北（太子）から南（佐敦）へ、彌敦道に沿って下るのが唯一の正解</strong>。
+      <strong>花墟だけは夕方に閉まる</strong>ので、<strong>16:00頃にスタートして、日没を挟んで廟街で終える</strong>のが理想的な組み方になる。
+      <strong>所要は3〜4時間</strong>。
+    </div>
+
+    <div class="info-box">
+      <ul>
+        <li><strong>16:00 MTR太子站</strong>でスタート</li>
+        <li><strong>花墟（花市場）→ 雀仔街（鳥の市場）</strong>（40分）<strong>※ここが一番早く閉まる</strong></li>
+        <li><strong>金魚街（通菜街 北段）</strong>（20分）</li>
+        <li><strong>波鞋街（花園街）</strong>（30分）</li>
+        <li><strong>女人街（通菜街 南段）</strong>（40分）</li>
+        <li><strong>朗豪坊で涼む／信和中心を覗く</strong>（30分）</li>
+        <li><strong>彌敦道を南下して油麻地へ</strong>（15分・看板を見ながら）</li>
+        <li><strong>18:30〜 廟街夜市 → 天后廟前の榕樹頭</strong>（1時間）</li>
+        <li><strong>夕食：美都餐室（早い時間なら）か、佐敦まで歩いて麥文記／澳洲牛奶公司</strong></li>
+        <li><strong>体力があれば22:00以降に油麻地果欄</strong>（30分）</li>
+      </ul>
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>実務メモ</th><th>内容</th></tr>
+      <tr><td>値切り</td><td><strong>女人街・廟街は値切り前提</strong>。<strong>提示額の半分から始めて、歩き出す素振りで決まることが多い</strong>。<strong>花墟と果欄は定価の世界なので値切らない</strong></td></tr>
+      <tr><td>支払い</td><td><strong>露店は現金が基本</strong>。<strong>小額紙幣を用意しておく</strong>。<strong>店舗は八達通・AlipayHK・WeChat Payが使える</strong></td></tr>
+      <tr><td>混雑</td><td><strong>週末夜と本土の連休は歩道が動かない</strong>。<strong>平日の夕方が最も快適</strong></td></tr>
+      <tr><td>雨</td><td><strong>市場はほぼ屋外なので、雨だと成立しない</strong>。<strong>降ったら朗豪坊・信和中心・百老匯電影中心に切り替える</strong></td></tr>
+      <tr><td><strong>組み合わせ</strong></td><td><strong>同じ油尖旺区の<a href="260918_hk_tst.html">尖沙咀</a>とは彌敦道1本で繋がっている</strong>。<strong>「20:00に尖沙咀でシンフォニー → 北上して廟街」または「夕方に旺角 → 南下して尖沙咀で夜景」のどちらかで1日が組める</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>Wikipedia「Mong Kok」「Yau Ma Tei」「Yau Ma Tei Fruit Market」「Temple Street, Hong Kong」「Ladies' Market」「Street performance in Hong Kong」</li>
+      <li>Time Out Hong Kong「Temple Street Night Market: Hong Kong's revamped attraction officially kicks off」（2023年12月）／ SCMP「Forget new night markets, 'Night Vibes Hong Kong' should revitalise old ones first」</li>
+      <li>SCMP「Hong Kong pedestrian zone to be scrapped after more than 1,000 complaints about Mong Kok street performers」「The last performance: Mong Kok pedestrian zone closes after 18 years」（2018年）</li>
+      <li>SCMP「Hong Kong fruit merchants slam 'one-sided proposal' to move wholesale market」／ HKU「A Fruitful Hub in the Metropolis: The Past and Future of the Yau Ma Tei Wholesale Fruit Market」／ CUHK Varsity「The Market Never Sleeps」</li>
+      <li>Dorsett Mongkok「Hong Kong Street Shopping Guide 2026」／ ladies-market.hk「Hong Kong Night Markets Complete Guide 2026」</li>
+      <li>香港旅遊發展局（HKTB）各市場の案内 ／ 油麻地戲院・百老匯電影中心 公式</li>
+    </ul>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>
