@@ -80,6 +80,29 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 .m-jp{font-size:12.5px;flex:1;min-width:0}
 .m-role{font-family:'Poppins',sans-serif;font-size:8.5px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
 .m-legend{font-size:10.5px;color:var(--muted);margin-top:9px;line-height:1.6}
+
+/* ビュー切替 */
+.view-bar{display:flex;gap:0;margin-bottom:14px;border-bottom:1px solid var(--border)}
+.vbtn{font-family:'Poppins',sans-serif;font-size:12px;font-weight:600;padding:8px 16px;border:none;background:none;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.vbtn:hover{color:var(--accent)}
+.vbtn.on{color:var(--accent);border-bottom-color:var(--accent)}
+.view[hidden]{display:none}
+
+/* act2+ メニュー */
+.a2-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.a2-title{font-size:1.05rem;font-weight:700}
+.a2-count{font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted)}
+.a2-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+@media (max-width:520px){.a2-list{grid-template-columns:1fr}}
+.a2{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 14px;min-width:0}
+.a2-top{display:flex;gap:10px;align-items:baseline}
+.a2-n{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--dim);flex:none;width:18px}
+.a2-name{font-size:14px;font-weight:700;line-height:1.45;min-width:0;overflow-wrap:anywhere}
+.a2-sub{font-size:11.5px;color:var(--mid);margin:4px 0 0 28px;line-height:1.6}
+.a2-desc{font-size:12.5px;line-height:1.75;margin:8px 0 0 28px}
+.a2-desc.empty{color:var(--dim)}
+.a2-link{display:inline-block;margin:8px 0 0 28px;font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:600;color:var(--accent);background:#fff;border:1px solid var(--border);border-radius:999px;padding:3px 10px;cursor:pointer}
+.a2-link:hover{border-color:var(--accent)}
 </style>
   <!-- snav -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -138,6 +161,20 @@ body{padding-top:48px!important;padding-bottom:60px!important}
     <div class="hero-sub">種目ごとに、動きを3Dで再生しながら「いま働いている筋肉」を光らせる。テキストと動作は1つの定義から生成。</div>
   </div>
 
+  <div class="view-bar">
+    <button class="vbtn on" data-view="v3d">3D</button>
+    <button class="vbtn" data-view="vAct2">act2+ Menu</button>
+  </div>
+
+  <div class="view" id="vAct2" hidden>
+    <div class="a2-head">
+      <div class="a2-title">act2+ でやっているメニュー</div>
+      <div class="a2-count" id="a2Count"></div>
+    </div>
+    <div class="a2-list" id="a2List"></div>
+  </div>
+
+  <div class="view" id="v3d">
   <div class="ex-bar" id="exBar"></div>
 
   <div class="app">
@@ -174,8 +211,55 @@ body{padding-top:48px!important;padding-bottom:60px!important}
       </div>
     </div>
   </div>
+  </div>
 </div>
 
+<script>
+/* act2+ のメニュー。desc に説明を足していく。ex = 3D種目のid（あれば「3Dで見る」を出す） */
+const ACT2_MENU = [
+  {name:'コンセントレーションクランチ深呼吸', sub:'横隔膜の運動', desc:''},
+  {name:'キャットカウ', sub:'', desc:''},
+  {name:'立位ヒップフレクション', sub:'腸腰筋トレーニング', desc:''},
+  {name:'ハムストリングウォーク', sub:'ヒップリフトの姿勢から踵で歩いていく', desc:''},
+  {name:'ペルビックカール', sub:'ハムのトレーニング', desc:''},
+  {name:'バードドッグ', sub:'通常／ポールに乗って', desc:'', ex:'birddog'},
+  {name:'ヒップドロップ', sub:'中臀筋トレーニング。台に乗って骨盤を上げ下げする', desc:''},
+  {name:'ルーマニアンデッドリフト', sub:'', desc:''},
+  {name:'ダウンドッグ', sub:'四つ這いからお尻を天井に引き上げる', desc:''},
+  {name:'ベンチプレス', sub:'', desc:''},
+  {name:'マーメイド', sub:'', desc:''},
+  {name:'筋膜リリース', sub:'', desc:'', ex:'tflrelease'},
+  {name:'ソラシックローテーション', sub:'', desc:''},
+  {name:'チンタッククランチ', sub:'', desc:''},
+  {name:'ペルビックティルト', sub:'', desc:''},
+  {name:'リバースプランク', sub:'', desc:''},
+];
+(function(){
+  const list = document.getElementById('a2List');
+  document.getElementById('a2Count').textContent = ACT2_MENU.length + ' 種目';
+  list.innerHTML = ACT2_MENU.map((m, i) => `
+    <div class="a2">
+      <div class="a2-top"><span class="a2-n">${String(i + 1).padStart(2, '0')}</span><span class="a2-name">${m.name}</span></div>
+      ${m.sub ? `<div class="a2-sub">${m.sub}</div>` : ''}
+      <div class="a2-desc ${m.desc ? '' : 'empty'}">${m.desc || '説明はこれから'}</div>
+      ${m.ex ? `<span class="a2-link" data-go="${m.ex}">3Dで見る →</span>` : ''}
+    </div>`).join('');
+  const show = v => {
+    document.querySelectorAll('.vbtn').forEach(b => b.classList.toggle('on', b.dataset.view === v));
+    document.querySelectorAll('.view').forEach(el => el.hidden = el.id !== v);
+    try { localStorage.setItem('workoutView', v); } catch (e) {}
+  };
+  document.querySelectorAll('.vbtn').forEach(b => b.onclick = () => show(b.dataset.view));
+  list.addEventListener('click', e => {
+    const go = e.target.closest('[data-go]'); if (!go) return;
+    show('v3d');
+    const b = document.querySelector(`.ex-btn[data-ex="${go.dataset.go}"]`); if (b) b.click();
+    window.scrollTo({top: 0, behavior: 'smooth'});
+  });
+  let v = 'v3d'; try { v = localStorage.getItem('workoutView') || v; } catch (e) {}
+  show(v);
+})();
+</script>
 <script src="./260824_body_3d_data.js"></script>
 <script src="./260828_workout_data.js"></script>
 <script type="importmap">
