@@ -92,12 +92,14 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 .a2-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
 .a2-title{font-size:1.05rem;font-weight:700}
 .a2-count{font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted)}
-.a2-list{border-top:1px solid var(--border)}
+.a2-list{}
 .a2{display:grid;grid-template-columns:28px 1fr;column-gap:10px;padding:11px 4px;border-bottom:1px solid var(--border);min-width:0}
 .a2-top{display:contents}
 .a2-n{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--dim);padding-top:3px}
 .a2-name{font-size:14px;font-weight:700;line-height:1.5;min-width:0;overflow-wrap:anywhere}
 .a2-sub,.a2-tags,.a2-desc,.a2-link{grid-column:2}
+.a2-grp{font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:14px 4px 6px;border-bottom:1px solid var(--border)}
+.a2-list > .a2-grp:first-child{padding-top:6px}
 .a2-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
 .a2-tag{font-size:10.5px;line-height:1.5;border:1px solid var(--border);background:#fff;border-radius:999px;padding:1px 8px;color:var(--mid)}
 .a2-sub{font-size:11.5px;color:var(--mid);line-height:1.6;margin-top:1px}
@@ -217,8 +219,11 @@ body{padding-top:48px!important;padding-bottom:60px!important}
 </div>
 
 <script>
-/* act2+ のメニュー。desc に説明を足していく。mus = 主に使う筋肉（タグ表示）。ex = 3D種目のid（あれば「3Dで見る」を出す） */
+/* act2+ のメニュー。desc に説明を足していく。mus = 主に使う筋肉（タグ表示）。grp:'warmup' = 最初にやるウォームアップ。ex = 3D種目のid（あれば「3Dで見る」を出す） */
 const ACT2_MENU = [
+  {grp:'warmup', name:'筋膜リリース', mus:['大腿筋膜張筋','腸脛靭帯'], sub:'ストレッチポールを使う', desc:'', ex:'tflrelease'},
+  {grp:'warmup', name:'マーメイド', mus:['腹斜筋','広背筋','腰方形筋'], sub:'', desc:''},
+  {grp:'warmup', name:'ソラシックローテーション', mus:['腹斜筋','大胸筋','菱形筋'], sub:'ストレッチポールを使う', desc:''},
   {name:'コンセントレーションクランチ深呼吸', mus:['横隔膜','腹横筋','腹直筋','骨盤底筋'], sub:'横隔膜の運動', desc:''},
   {name:'キャットカウ', mus:['脊柱起立筋','多裂筋','腹直筋'], sub:'', desc:''},
   {name:'立位ヒップフレクション', mus:['腸腰筋','大腿直筋','腹横筋'], sub:'腸腰筋トレーニング', desc:''},
@@ -229,9 +234,6 @@ const ACT2_MENU = [
   {name:'ルーマニアンデッドリフト', mus:['ハムストリングス','大臀筋','脊柱起立筋'], sub:'', desc:''},
   {name:'ダウンドッグ', mus:['ハムストリングス','ふくらはぎ','広背筋','前鋸筋'], sub:'四つ這いからお尻を天井に引き上げる', desc:''},
   {name:'ベンチプレス', mus:['大胸筋','三角筋前部','上腕三頭筋'], sub:'', desc:''},
-  {name:'マーメイド', mus:['腹斜筋','広背筋','腰方形筋'], sub:'', desc:''},
-  {name:'筋膜リリース', mus:['大腿筋膜張筋','腸脛靭帯'], sub:'', desc:'', ex:'tflrelease'},
-  {name:'ソラシックローテーション', mus:['腹斜筋','大胸筋','菱形筋'], sub:'', desc:''},
   {name:'チンタッククランチ', mus:['深層頸屈筋','腹直筋'], sub:'', desc:''},
   {name:'ペルビックティルト', mus:['腹横筋','腹直筋','骨盤底筋'], sub:'', desc:''},
   {name:'リバースプランク', mus:['大臀筋','ハムストリングス','脊柱起立筋','上腕三頭筋'], sub:'', desc:''},
@@ -239,7 +241,9 @@ const ACT2_MENU = [
 (function(){
   const list = document.getElementById('a2List');
   document.getElementById('a2Count').textContent = ACT2_MENU.length + ' 種目';
-  list.innerHTML = ACT2_MENU.map((m, i) => `
+  const head = (m, i) => { const w = m.grp === 'warmup', pw = i > 0 && ACT2_MENU[i - 1].grp === 'warmup';
+    return i === 0 ? `<div class="a2-grp">${w ? 'Warm-up' : 'Main'}</div>` : (!w && pw ? '<div class="a2-grp">Main</div>' : ''); };
+  list.innerHTML = ACT2_MENU.map((m, i) => head(m, i) + `
     <div class="a2">
       <div class="a2-top"><span class="a2-n">${String(i + 1).padStart(2, '0')}</span><span class="a2-name">${m.name}</span></div>
       ${m.sub ? `<div class="a2-sub">${m.sub}</div>` : ''}
