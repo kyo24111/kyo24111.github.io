@@ -97,7 +97,33 @@ body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-seri
 .a2-top{display:contents}
 .a2-n{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--dim);padding-top:3px}
 .a2-name{font-size:14px;font-weight:700;line-height:1.5;min-width:0;overflow-wrap:anywhere}
-.a2-sub,.a2-tags,.a2-desc,.a2-link{grid-column:2}
+.a2-sub,.a2-tags,.a2-desc,.a2-sub-bar{display:flex;gap:6px;margin-bottom:10px}
+.a2-sbtn{font-family:'Poppins',sans-serif;font-size:11px;font-weight:600;padding:5px 14px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--mid);cursor:pointer}
+.a2-sbtn:hover{border-color:var(--accent);color:var(--accent)}
+.a2-sbtn.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.a2-sv[hidden]{display:none}
+.a2t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--border);border-radius:10px}
+.a2t{width:100%;min-width:600px;border-collapse:collapse;font-size:12.5px;line-height:1.6}
+.a2t th{position:sticky;top:0;background:var(--surface);text-align:left;font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:1px solid var(--border);white-space:nowrap}
+.a2t td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:top}
+.a2t tr:last-child td{border-bottom:none}
+.a2t .c-n{width:30px;font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--dim)}
+.a2t .c-name{font-weight:700;min-width:120px}
+.a2t .c-en-th,.a2t .c-en{width:1%}
+.a2t .c-en{font-family:'Poppins',sans-serif;font-size:11.5px;color:var(--mid);white-space:nowrap}
+.a2t:not(.show-en) .c-en span{display:none}
+.a2t .c-mus{min-width:170px}
+.a2t .c-mus .a2-tags{margin:0}
+.a2t .c-memo{min-width:220px;color:var(--text)}
+.a2t .c-memo .m-sub{color:var(--mid);font-size:11.5px}
+.a2t .c-memo ul{margin:2px 0 0;padding-left:1.2em}
+.a2t .c-memo .empty{color:var(--dim)}
+.a2t tr.g td{background:#fafafa;font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);padding:7px 10px}
+.a2t tr.g b{color:var(--accent);margin-right:8px}
+.a2t tr.g span{font-family:'Noto Sans JP',sans-serif;font-size:10.5px;font-weight:400;letter-spacing:0;text-transform:none;margin-left:10px}
+.en-tg{font:inherit;letter-spacing:inherit;text-transform:inherit;color:var(--muted);background:#fff;border:1px solid var(--border);border-radius:999px;padding:1px 8px;cursor:pointer}
+.en-tg:hover{border-color:var(--accent);color:var(--accent)}
+.a2-link{grid-column:2}
 .a2-grp{font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:14px 4px 6px;border-bottom:1px solid var(--border)}
 .a2-list > .a2-grp:first-child{padding-top:6px}
 .a2-grp b{color:var(--accent);margin-right:8px}
@@ -179,7 +205,12 @@ body{padding-top:48px!important;padding-bottom:60px!important}
       <div class="a2-title">act2+ でやっているメニュー</div>
       <div class="a2-count" id="a2Count"></div>
     </div>
-    <div class="a2-list" id="a2List"></div>
+    <div class="a2-sub-bar">
+      <button class="a2-sbtn on" data-sv="a2List">List</button>
+      <button class="a2-sbtn" data-sv="a2TableWrap">Table</button>
+    </div>
+    <div class="a2-sv a2-list" id="a2List"></div>
+    <div class="a2-sv a2t-wrap" id="a2TableWrap" hidden><table class="a2t" id="a2Table"></table></div>
   </div>
 
   <div class="view" id="v3d">
@@ -226,25 +257,25 @@ body{padding-top:48px!important;padding-bottom:60px!important}
 /* act2+ のメニュー。desc に説明を足していく。mus = 主に使う筋肉（タグ表示）。grp = A:warm up / B:easy / C:hard。lv = 難易度を上げるバリエーション。ex = 3D種目のid（あれば「3Dで見る」を出す） */
 const ACT2_MENU = [
   /* A: warm up */
-  {grp:'A', name:'筋膜リリース', mus:['大腿筋膜張筋','腸脛靭帯'], sub:'ストレッチポールを使う', desc:'', ex:'tflrelease'},
-  {grp:'A', name:'マーメイド', mus:['腹斜筋','広背筋','腰方形筋'], sub:'', desc:''},
-  {grp:'A', name:'ソラシックローテーション', mus:['腹斜筋','大胸筋','菱形筋'], sub:'ストレッチポールを使う', desc:''},
+  {grp:'A', name:'筋膜リリース', en:'Myofascial Release', mus:['大腿筋膜張筋','腸脛靭帯'], sub:'ストレッチポールを使う', desc:'', ex:'tflrelease'},
+  {grp:'A', name:'マーメイド', en:'Mermaid Stretch', mus:['腹斜筋','広背筋','腰方形筋'], sub:'', desc:''},
+  {grp:'A', name:'ソラシックローテーション', en:'Thoracic Rotation', mus:['腹斜筋','大胸筋','菱形筋'], sub:'ストレッチポールを使う', desc:''},
   /* B: easy — 家でもできる */
-  {grp:'B', name:'チンタッククランチ', mus:['深層頸屈筋','腹直筋'], sub:'', desc:'首を上げたままの腹筋'},
-  {grp:'B', name:'リバースプランク', mus:['大臀筋','ハムストリングス','脊柱起立筋','上腕三頭筋'], sub:'', desc:''},
-  {grp:'B', name:'コンセントレーションクランチ深呼吸', mus:['横隔膜','腹横筋','腹直筋','骨盤底筋'], sub:'横隔膜の運動', desc:''},
-  {grp:'B', name:'ハムストリングウォーク', mus:['ハムストリングス','大臀筋'], sub:'ヒップリフトの姿勢から踵で歩いていく', desc:''},
-  {grp:'B', name:'ダウンドッグ', mus:['ハムストリングス','ふくらはぎ','広背筋','前鋸筋'], sub:'四つ這いからお尻を天井に引き上げる', desc:'両手足を床につけて体全体で逆V字を作る'},
+  {grp:'B', name:'チンタッククランチ', en:'Chin Tuck Crunch', mus:['深層頸屈筋','腹直筋'], sub:'', desc:'首を上げたままの腹筋'},
+  {grp:'B', name:'リバースプランク', en:'Reverse Plank', mus:['大臀筋','ハムストリングス','脊柱起立筋','上腕三頭筋'], sub:'', desc:''},
+  {grp:'B', name:'コンセントレーションクランチ深呼吸', en:'Concentration Crunch Breathing', mus:['横隔膜','腹横筋','腹直筋','骨盤底筋'], sub:'横隔膜の運動', desc:''},
+  {grp:'B', name:'ハムストリングウォーク', en:'Hamstring Walkout', mus:['ハムストリングス','大臀筋'], sub:'ヒップリフトの姿勢から踵で歩いていく', desc:''},
+  {grp:'B', name:'ダウンドッグ', en:'Downward Dog', mus:['ハムストリングス','ふくらはぎ','広背筋','前鋸筋'], sub:'四つ這いからお尻を天井に引き上げる', desc:'両手足を床につけて体全体で逆V字を作る'},
   /* C: hard — ジムでやりたい（フォームが崩れやすい・妥協しやすい） */
   {grp:'C', name:'キャットカウ', en:'Cat Cow', mus:['脊柱起立筋','多裂筋','腹直筋'], sub:'', desc:'四つ這いで背骨を片側から丸める／リバース'},
   {grp:'C', name:'ペルビックカール', en:'Pelvic Curl', mus:['ハムストリングス','大臀筋','腹直筋'], sub:'ハムのトレーニング', desc:'仰向けで骨盤を丸めながら背骨を一本ずつ持ち上げる'},
-  {grp:'C', name:'バードドッグ', mus:['多裂筋','腹横筋','大臀筋','脊柱起立筋'], sub:'通常／ポールに乗って', desc:'', lv:['ポールの角度を縦に近づける（中難易度）','軸足のつま先を浮かす（高難易度）'], ex:'birddog'},
-  {grp:'C', name:'ヒップドロップ', mus:['中臀筋','腰方形筋'], sub:'中臀筋トレーニング。台に乗って骨盤を上げ下げする', desc:''},
-  {grp:'C', name:'ルーマニアンデッドリフト', mus:['ハムストリングス','大臀筋','脊柱起立筋'], sub:'', desc:'ダンベルを持ってハムを伸ばす。お尻を落とさずまっすぐ後ろに突き出す意識'},
-  {grp:'C', name:'ベンチプレス', mus:['大胸筋','三角筋前部','上腕三頭筋'], sub:'', desc:''},
-  {grp:'C', name:'ペルビックティルト', mus:['腹横筋','腹直筋','骨盤底筋'], sub:'', desc:''},
+  {grp:'C', name:'バードドッグ', en:'Bird Dog', mus:['多裂筋','腹横筋','大臀筋','脊柱起立筋'], sub:'通常／ポールに乗って', desc:'', lv:['ポールの角度を縦に近づける（中難易度）','軸足のつま先を浮かす（高難易度）'], ex:'birddog'},
+  {grp:'C', name:'ヒップドロップ', en:'Hip Drop', mus:['中臀筋','腰方形筋'], sub:'中臀筋トレーニング。台に乗って骨盤を上げ下げする', desc:''},
+  {grp:'C', name:'ルーマニアンデッドリフト', en:'Romanian Deadlift', mus:['ハムストリングス','大臀筋','脊柱起立筋'], sub:'', desc:'ダンベルを持ってハムを伸ばす。お尻を落とさずまっすぐ後ろに突き出す意識'},
+  {grp:'C', name:'ベンチプレス', en:'Bench Press', mus:['大胸筋','三角筋前部','上腕三頭筋'], sub:'', desc:''},
+  {grp:'C', name:'ペルビックティルト', en:'Pelvic Tilt', mus:['腹横筋','腹直筋','骨盤底筋'], sub:'', desc:''},
   /* 未分類 */
-  {grp:'-', name:'立位ヒップフレクション', mus:['腸腰筋','大腿直筋','腹横筋'], sub:'腸腰筋トレーニング', desc:''},
+  {grp:'-', name:'立位ヒップフレクション', en:'Standing Hip Flexion', mus:['腸腰筋','大腿直筋','腹横筋'], sub:'腸腰筋トレーニング', desc:''},
 ];
 (function(){
   const list = document.getElementById('a2List');
@@ -260,6 +291,28 @@ const ACT2_MENU = [
       <div class="a2-desc ${m.desc || m.lv ? '' : 'empty'}">${m.desc || (m.lv ? '' : '説明はこれから')}${m.lv ? `<ul class="a2-lv">${m.lv.map(x => `<li>${x}</li>`).join('')}</ul>` : ''}</div>
       ${m.ex ? `<span class="a2-link" data-go="${m.ex}">3Dで見る →</span>` : ''}
     </div>`).join('');
+  const tbl = document.getElementById('a2Table');
+  tbl.innerHTML = `<thead><tr><th class="c-n">#</th><th>メニュー名</th><th class="c-en-th"><button class="en-tg" id="enTg">Menu (Eng) ▸</button></th><th>利用筋肉</th><th>Memo</th></tr></thead><tbody>`
+    + ACT2_MENU.map((m, i) => {
+      const g = GRP[m.grp], gr = (i === 0 || ACT2_MENU[i - 1].grp !== m.grp)
+        ? `<tr class="g"><td colspan="5"><b>${g[0]}</b>${g[1]}${g[2] ? `<span>${g[2]}</span>` : ''}</td></tr>` : '';
+      const memo = [m.sub ? `<div class="m-sub">${m.sub}</div>` : '', m.desc ? `<div>${m.desc}</div>` : '',
+        m.lv ? `<ul>${m.lv.map(x => `<li>${x}</li>`).join('')}</ul>` : ''].join('');
+      return gr + `<tr><td class="c-n">${String(i + 1).padStart(2, '0')}</td><td class="c-name">${m.name}</td><td class="c-en"><span>${m.en || ''}</span></td>
+        <td class="c-mus"><div class="a2-tags">${(m.mus || []).map(t => `<span class="a2-tag">${t}</span>`).join('')}</div></td>
+        <td class="c-memo">${memo || '<span class="empty">—</span>'}</td></tr>`;
+    }).join('') + '</tbody>';
+  const enTg = document.getElementById('enTg');
+  const setEn = on => { tbl.classList.toggle('show-en', on); enTg.textContent = on ? 'Menu (Eng) ◂' : 'Menu (Eng) ▸'; };
+  enTg.onclick = () => setEn(!tbl.classList.contains('show-en'));
+  const showSv = sv => {
+    document.querySelectorAll('.a2-sbtn').forEach(b => b.classList.toggle('on', b.dataset.sv === sv));
+    document.querySelectorAll('.a2-sv').forEach(el => el.hidden = el.id !== sv);
+    try { localStorage.setItem('act2Sub', sv); } catch (e) {}
+  };
+  document.querySelectorAll('.a2-sbtn').forEach(b => b.onclick = () => showSv(b.dataset.sv));
+  let sv = 'a2List'; try { sv = localStorage.getItem('act2Sub') || sv; } catch (e) {}
+  showSv(sv);
   const show = v => {
     document.querySelectorAll('.vbtn').forEach(b => b.classList.toggle('on', b.dataset.view === v));
     document.querySelectorAll('.view').forEach(el => el.hidden = el.id !== v);
