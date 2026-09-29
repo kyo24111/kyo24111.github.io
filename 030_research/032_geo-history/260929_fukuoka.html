@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>福岡県 — 県リサーチ 260929</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t.wide { min-width: 640px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+      .hero h1 { font-size: 32px; overflow-wrap: anywhere; }
+      .hero-eyebrow, .toc li, .spot-name, .crumb { overflow-wrap: anywhere; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* 人口推移グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="260831_japan.html">japan</a>
+    <span class="sep">/</span>
+    <span class="cur">fukuoka</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Prefecture Research — 260929</div>
+    <h1>福岡県 / Fukuoka</h1>
+    <div class="hero-country">日本 · 九州地方 / 県庁所在地 福岡市 / 人口 全国8位・面積 全国29位 / 政令市を2つ持つ</div>
+  </div>
+
+  <div class="callout">
+    福岡県は<strong>政令指定都市を2つ（福岡市・北九州市）持つ</strong>九州の中心県。
+    <strong>2025年の国勢調査で北海道を抜いて人口全国8位</strong>になった一方、
+    <strong>県全体では昭和45年以来はじめて人口が減少</strong>した。
+    その内訳は<strong>「福岡市だけが増え（+51,500人・21大都市で増加率1位）、北九州市が全国で最も減った（−34,740人）」</strong>という極端な二極化。
+    ここでは県全体の指標と、2つの政令市の比較を置く。
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">県全体の経済指標</span><span class="sec-updated">Last updated: 2026-09-29</span></div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>指標</th><th>数値</th><th>備考</th></tr>
+      <tr><td><strong>人口</strong></td><td><strong>5,081,879人</strong></td><td>令和7年国勢調査 人口速報集計（2025年10月1日現在・2026年5月29日公表）。<strong>前回比 −53,335人（−1.04%）で、昭和45年以来続いていた増加が初めて減少に転じた</strong>。<strong>北海道（4,985,419人）を抜いて全国8位</strong>。世帯数は2,401,053（+3.35%）</td></tr>
+      <tr><td><strong>面積</strong></td><td><strong>4,987.66km²</strong></td><td>令和7年全国都道府県市区町村別面積調。全国29位。<a href="260915_saitama.html#s01" style="color:inherit">埼玉県（3,797.75km²）の1.3倍</a>、<a href="260913_fukushima.html#s01" style="color:inherit">福島県（13,782.81km²）の36%</a></td></tr>
+      <tr><td><strong>人口密度</strong></td><td>約<strong>1,019人/km²</strong></td><td>人口÷面積で算出。東京・大阪・神奈川・埼玉・愛知・千葉に次ぐ<strong>全国7位</strong>相当。埼玉（約1,919）の半分強、福島（約124）の8倍</td></tr>
+      <tr><td>市町村数</td><td><strong>29市29町2村</strong>（計60）</td><td>うち政令市2（福岡市・北九州市）。村は東峰村・赤村</td></tr>
+      <tr><td><strong>名目 県内総生産</strong></td><td><strong>21兆2,387億円</strong></td><td>令和5年度（2023年度）県民経済計算（2026年3月公表）。<strong>名目+5.1%・実質+2.2%</strong>（実質19兆9,776億円）。<a href="260915_saitama.html#s01" style="color:inherit">埼玉（25兆8,900億円）の82%</a>、<a href="260913_fukushima.html#s01" style="color:inherit">福島（8兆3,950億円）の2.5倍</a>。<a href="260903_hokkaido.html#s01" style="color:inherit">北海道は令和4年度で20兆8,893億円</a></td></tr>
+      <tr><td><strong>1人当たり県民所得</strong></td><td><strong>297万4千円</strong></td><td>令和5年度（県民所得15兆1,736億円÷人口）。<strong>埼玉（328万6千円）・福島（321万5千円）より低い</strong>。県内では福岡市332万1千円、北九州市301万円</td></tr>
+      <tr><td>産業構造（名目総生産）</td><td>第1次 0.6% / 第2次 <strong>20.0%</strong> / 第3次 <strong>78.5%</strong></td><td>令和5年度。業種別では製造業14.9%・卸売小売業13.0%・不動産業12.7%・保健衛生社会事業10.8%</td></tr>
+      <tr><td><strong>製造品出荷額等</strong></td><td><strong>116,167億円</strong></td><td>2024年経済構造実態調査（2023年実績）。<a href="260915_saitama.html#s01" style="color:inherit">埼玉（153,297億円）の76%</a>、<a href="260913_fukushima.html#s01" style="color:inherit">福島（56,554億円）の2.1倍</a>、<a href="260903_hokkaido.html#s01" style="color:inherit">北海道（67,747億円）の1.7倍</a></td></tr>
+      <tr><td><strong>昼夜間人口比率</strong></td><td><strong>100.0</strong></td><td>2020年国勢調査（不詳補完値）。全国15位。<strong>県外への流出も県外からの流入もほぼ釣り合う「自己完結型」</strong>——<a href="260915_saitama.html#s03" style="color:inherit">埼玉（87.6・全国最低）</a>とは正反対</td></tr>
+    </table></div>
+    <div class="callout">
+      <strong>「九州の中心」なのに1人当たり県民所得は埼玉・福島より低い。</strong>
+      県内総生産21.2兆円は福島の2.5倍だが、1人当たり県民所得は<strong>297.4万円</strong>で、
+      <a href="260913_fukushima.html#s01" style="color:inherit">福島（321.5万円）</a>を<strong>24万円下回る</strong>。<br>
+      理由は<strong>第3次産業が78.5%という構造</strong>。卸売小売・不動産・医療福祉といった
+      <strong>1人当たり付加価値が高くない業種が厚く、製造業の比率は14.9%</strong>にとどまる。
+      一方で<strong>昼夜間人口比率は100.0</strong>——<a href="260915_saitama.html#s01" style="color:inherit">埼玉のように「稼ぎを県外（東京）から持ち帰る」構造ではなく、県内で稼いで県内で使う</a>。
+      <strong>所得が低いのは流出ではなく、産業の中身の問題</strong>という読み方になる。
+    </div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">製造品出荷額 県内ランキング</span><span class="sec-updated">Last updated: 2026-09-29</span></div>
+    <div class="t-wrap"><table class="t wide">
+      <tr><th>順位</th><th>市町</th><th>出荷額</th><th>県内シェア</th><th>地域 / 主な工場</th></tr>
+      <tr><td>1</td><td><strong><a href="260929_kitakyushu.html" style="color:inherit">北九州市</a></strong></td><td><strong>27,745億円</strong></td><td><strong>23.9%</strong></td><td>北九州 / 鉄鋼・化学・機械など素材型の集積</td></tr>
+      <tr><td>2</td><td><strong>苅田町</strong></td><td><strong>24,698億円</strong></td><td><strong>21.3%</strong></td><td>北九州（京築）/ <strong>日産自動車九州</strong>（1975年〜・能力53万台/年）、トヨタ自動車九州 苅田工場（エンジン）</td></tr>
+      <tr><td>3</td><td><strong>宮若市</strong></td><td><strong>15,135億円</strong></td><td><strong>13.0%</strong></td><td>筑豊 / <strong>トヨタ自動車九州 宮田工場</strong>（1992年〜・レクサスNX/RX等）</td></tr>
+      <tr><td>4</td><td><a href="260929_fukuoka_city.html" style="color:inherit">福岡市</a></td><td>7,002億円</td><td>6.0%</td><td>福岡（県庁所在地・人口1位）</td></tr>
+      <tr><td>5</td><td>久留米市</td><td>3,933億円</td><td>3.4%</td><td>筑後</td></tr>
+      <tr><td>6</td><td>大牟田市</td><td>3,309億円</td><td>2.8%</td><td>筑後（旧三池炭鉱・化学）</td></tr>
+      <tr><td>7</td><td>朝倉市</td><td>3,205億円</td><td>2.8%</td><td>福岡（朝倉圏域）</td></tr>
+      <tr><td>8</td><td>古賀市</td><td>2,464億円</td><td>2.1%</td><td>福岡</td></tr>
+      <tr><td>9</td><td>筑後市</td><td>2,284億円</td><td>2.0%</td><td>筑後</td></tr>
+      <tr><td>10</td><td>飯塚市</td><td>2,184億円</td><td>1.9%</td><td>筑豊</td></tr>
+      <tr><td>11</td><td>直方市</td><td>2,007億円</td><td>1.7%</td><td>筑豊</td></tr>
+      <tr><td>12</td><td>行橋市</td><td>1,676億円</td><td>1.4%</td><td>北九州（京築）</td></tr>
+      <tr><td>13</td><td>豊前市</td><td>1,427億円</td><td>1.2%</td><td>北九州（京築）</td></tr>
+      <tr><td>14</td><td>鞍手町</td><td>1,221億円</td><td>1.1%</td><td>筑豊（宮若の隣）</td></tr>
+    </table></div>
+    <p style="font-size:12.5px;color:var(--muted);margin:-4px 0 20px">出典：帝国書院「工業生産（出荷額）：2023年：福岡県」（2024年経済構造実態調査）。県計 116,167億円。シェアは県計に対する比率を算出。工場の立地はトヨタ自動車九州・九州電力の企業立地資料による。</p>
+    <div class="callout">
+      <strong>上位3市町で58.2%——そのうち2つは「自動車の町」。</strong>
+      <strong>北九州市（23.9%）・苅田町（21.3%）・宮若市（13.0%）</strong>の3つで県の出荷額の6割近くを占める。
+      <a href="260915_saitama.html#s02" style="color:inherit">埼玉（1位の狭山でも8.5%）</a>とは対照的な<strong>一極集中型</strong>。<br>
+      とくに異様なのが<strong>人口あたりの規模</strong>。苅田町は人口37,975人で出荷額2.47兆円、
+      宮若市は人口24,109人で1.51兆円——<strong>人口90万の北九州市とほぼ同じ額を、人口3.8万の町が出している</strong>。
+      これは<strong>日産（苅田）とトヨタ（宮若）の完成車工場が1つずつ立地している</strong>ことの結果で、
+      <strong>福岡県の製造業は「北九州の素材」と「郊外の自動車」の二本柱</strong>になっている。<br>
+      そして<strong>県庁所在地・人口1位の福岡市は4位（6.0%）</strong>。
+      <a href="260913_fukushima.html#s02" style="color:inherit">福島</a>や<a href="260915_saitama.html#s02" style="color:inherit">埼玉</a>と同じく
+      <strong>県庁所在地＝工業の中心ではない</strong>——福岡市はその典型で、市内総生産の約9割が第3次産業。
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">北九州（工業）と福岡（商業・支店経済）の二極</span><span class="sec-updated">Last updated: 2026-09-29</span></div>
+
+    <div class="callout">
+      福岡県を理解する最大の補助線は<strong>「2つの政令市」</strong>。
+      明治以来の<strong>官営八幡製鐵所に始まる工業都市・北九州</strong>と、
+      <strong>国の出先機関・大企業の九州支店・卸売が集まる商業都市・福岡</strong>。
+      1979年に人口が逆転して以降、<strong>人・お金・機能は一方向（北九州→福岡）に流れ続けている</strong>。
+    </div>
+
+    <div class="sub-h">県の4地域区分（県民経済計算の地域別）</div>
+    <div class="t-wrap"><table class="t wide">
+      <tr><th>地域</th><th>人口<br>(2025国調速報)</th><th>2020→2025</th><th>名目総生産<br>(令和5年度)</th><th>県内シェア<br>(総生産)</th><th>性格</th></tr>
+      <tr><td><strong>福岡</strong></td><td><strong>2,740,788</strong>（53.9%）</td><td><strong>+1.90%</strong></td><td><strong>11兆5,961億円</strong></td><td><strong>54.6%</strong></td><td>福岡市＋筑紫・糟屋・宗像・糸島・朝倉。<strong>唯一増加している地域</strong></td></tr>
+      <tr><td><strong>北九州</strong></td><td>1,207,038（23.8%）</td><td>−3.75%</td><td>5兆3,839億円</td><td>25.3%</td><td>北九州市＋遠賀・中間＋京築（苅田）。<strong>第2次産業が県内最大</strong></td></tr>
+      <tr><td><strong>筑後</strong></td><td>760,010（15.0%）</td><td>−4.28%</td><td>2兆8,034億円</td><td>13.2%</td><td>久留米・大牟田・柳川・八女。<strong>農業（第1次産業）の県内シェアが最大</strong></td></tr>
+      <tr><td><strong>筑豊</strong></td><td>374,043（7.4%）</td><td><strong>−5.88%</strong></td><td>1兆4,553億円</td><td>6.9%</td><td>飯塚・直方・田川・宮若。旧産炭地。<strong>減少率が最も大きい</strong></td></tr>
+    </table></div>
+    <p style="font-size:12.5px;color:var(--muted);margin:-4px 0 20px">地域区分は福岡県「県民経済・市町村民経済計算」の地域別（15広域地域振興圏域を4地域に集約）。人口は国勢調査速報の圏域別人口を同じ区分で合算したもの（朝倉圏域は福岡地域に含む）。</p>
+
+    <table class="t">
+      <tr><th>#</th><th>ここから読めること</th></tr>
+      <tr><td>1</td><td><strong>「人口増加が続く県」ではなくなった。</strong>2025年国勢調査で増加したのは<strong>東京都と沖縄県の2都県だけ</strong>で、福岡県は<strong>埼玉・千葉・神奈川・愛知・滋賀とともに「増加から減少に転換した6県」</strong>のひとつ（+0.7%→−1.0%）。</td></tr>
+      <tr><td>2</td><td><strong>増えているのは、実質的に福岡市だけ。</strong>福岡市+51,500人に対し、福岡地域の福岡市以外（筑紫・糟屋・宗像・糸島・朝倉）は<strong>−423人でほぼ横ばい</strong>。<strong>福岡市を除いた県全体は5年で約10.5万人（−3.0%）減っている</strong>。60市町村のうち増加は11市町だけ。</td></tr>
+      <tr><td>3</td><td><strong>県のGDPの半分以上が福岡地域。</strong>総生産の54.6%、市町村民所得の56.1%が福岡地域に集まる。<strong>福岡市1市だけで県内総生産の39.1%</strong>（県推計）。</td></tr>
+      <tr><td>4</td><td><strong>北九州地域は「人は減るが生産は伸びる」。</strong>人口−3.75%に対し総生産は令和5年度に<strong>+6.8%</strong>。京築圏域（苅田）が<strong>+23.8%</strong>と県内最大の伸びで、<strong>就業者1人当たり総生産は京築が県平均の125.3</strong>と最も高い——自動車工場の効果。</td></tr>
+      <tr><td>5</td><td><strong>筑豊は旧産炭地の縮小が続く。</strong>人口減少率−5.88%は4地域で最大。ただし<strong>宮若市（トヨタ九州）1市が県内3位の出荷額</strong>を持つという、人口と生産がまったく連動しない地域でもある。</td></tr>
+    </table>
+
+    <div class="callout">
+      <strong>「福岡県は人口が増えている」という印象は、半分だけ正しい。</strong>
+      正しいのは<strong>福岡市</strong>で、2020→2025年に<strong>+3.19%</strong>——21大都市で増加率1位、増加数でも東京特別区部・大阪市に次ぐ<strong>全国3位</strong>。<br>
+      しかし<strong>県としては2025年に初めて減少</strong>し、しかも<strong>全国で最も人口が減った市町村は北九州市（−34,740人）</strong>。
+      同じ県の中に「全国で3番目に増えた市」と「全国で1番減った市」が並んでいる。<br>
+      <a href="260915_saitama.html#s03" style="color:inherit">埼玉</a>が「東京に人を送る県」なら、
+      福岡県は<strong>「県内の人を福岡市に集める県」</strong>——
+      そして九州各県からも人を吸い寄せる<strong>「九州の東京」</strong>が福岡市、という入れ子の構造になっている。
+    </div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">2政令市比較 — 福岡市 vs 北九州市</span><span class="sec-updated">Last updated: 2026-09-29</span></div>
+    <div class="t-wrap"><table class="t wide">
+      <tr><th>指標</th><th><a href="260929_fukuoka_city.html" style="color:inherit">福岡市</a></th><th><a href="260929_kitakyushu.html" style="color:inherit">北九州市</a></th><th>読みどころ</th></tr>
+      <tr><td><strong>人口（2025国調速報）</strong></td><td><strong>1,663,892</strong></td><td><strong>904,289</strong></td><td>福岡市は北九州市の<strong>1.84倍</strong>。県人口に占める割合は32.7%対17.8%</td></tr>
+      <tr><td>2020→2025</td><td><strong>+51,500（+3.19%）</strong></td><td><strong>−34,740（−3.70%）</strong></td><td>福岡市は<strong>21大都市で増加率1位</strong>・増加数全国3位。北九州市は<strong>減少数全国1位</strong>、減少率は21大都市で3位</td></tr>
+      <tr><td>政令市移行</td><td>1972年</td><td><strong>1963年</strong>（5市合併で発足）</td><td>九州初の政令市は北九州市</td></tr>
+      <tr><td><strong>人口のピークと逆転</strong></td><td>増加が続く</td><td><strong>1979年 1,068,415人</strong>がピーク（推計人口）</td><td><strong>1979年に福岡市が北九州市を上回り</strong>、その直後に北九州市はピークを迎えて減少へ。2005年に100万人割れ、<strong>2026年4月1日の推計人口898,668人で発足以来初の90万人割れ</strong></td></tr>
+      <tr><td>面積</td><td>343.47km²</td><td><strong>492.50km²</strong></td><td>北九州市のほうが1.4倍広い</td></tr>
+      <tr><td>人口密度</td><td><strong>約4,844人/km²</strong></td><td>約1,836人/km²</td><td>福岡市は2.6倍の密度</td></tr>
+      <tr><td><strong>市内総生産（名目）</strong></td><td><strong>8兆3,020億円</strong></td><td>4兆771億円</td><td>令和5年度・福岡県推計（市町村比較用）。両市の独自推計（2021年）では<strong>7兆8,277億円（政令市4位）</strong>対3兆9,579億円。<strong>約2倍の差</strong></td></tr>
+      <tr><td>第2次 / 第3次産業比率</td><td>8.3% / <strong>90.8%</strong></td><td><strong>24.0%</strong> / 75.0%</td><td>令和5年度・県推計の総生産構成比。<strong>福岡市は9割がサービス</strong></td></tr>
+      <tr><td>製造品出荷額（2023年）</td><td>7,002億円</td><td><strong>27,745億円</strong></td><td>ここだけは<strong>北九州市が4倍</strong>。県内1位</td></tr>
+      <tr><td>1人当たり市民所得</td><td><strong>332万1千円</strong></td><td>301万円</td><td>令和5年度・県推計。県平均は297万4千円</td></tr>
+      <tr><td><strong>財政力指数</strong></td><td><strong>0.87</strong></td><td>0.69</td><td>2024年度。20政令市で福岡市は7〜8位、<strong>北九州市は18位</strong></td></tr>
+      <tr><td>経常収支比率</td><td><strong>93.6%</strong></td><td>99.3%</td><td>2024年度。北九州市は<strong>財政の弾力性がほぼない</strong></td></tr>
+      <tr><td>自主財源比率</td><td><strong>58.6%（政令市1位）</strong></td><td>42.8%</td><td>2024年度・普通会計。地方交付税の比率は5.0%対13.3%</td></tr>
+      <tr><td><strong>昼夜間人口比率</strong></td><td><strong>109.8</strong></td><td>102.1</td><td>2020年国勢調査（不詳補完値）。福岡市は大阪市・名古屋市に次ぐ政令市3位（東京特別区部を含めると4位）。<strong>どちらも周辺から人を集める側</strong></td></tr>
+      <tr><td>1世帯当たり人員</td><td><strong>1.88人</strong>（県内最少）</td><td>2.07人</td><td>2025国調速報。福岡市は<strong>単身の若者が流入する都市</strong></td></tr>
+      <tr><td>主要産業</td><td>卸売・小売、サービス、情報通信、国の出先機関・大企業支店</td><td>鉄鋼・化学・機械など素材・製造業、物流（港湾）</td><td>「支店経済」対「工業都市」</td></tr>
+    </table></div>
+
+    <div class="callout">
+      <strong>1979年の逆転は、日本の産業構造の転換そのもの。</strong>
+      北九州市は<strong>1963年に人口103万人で発足した九州初の政令市</strong>で、
+      鉄鋼を中心とする重工業が日本の高度成長を支えた。
+      しかし<strong>1979年に福岡市に人口で抜かれ、同じ年にピーク（1,068,415人）</strong>を迎えてから、
+      一度も増加に戻っていない。<br>
+      <strong>素材型の重工業から、サービス・商業・情報へ</strong>——日本経済の重心が移ったタイミングと、
+      2つの市の逆転はほぼ重なっている。報道では<strong>「日本全体より約30年早く人口減少に転じた」</strong>とされ、
+      90万人割れの際に市長は<strong>「現代日本の縮図」</strong>と述べている。
+    </div>
+
+    <div class="callout">
+      <strong>ただし「北九州＝衰退、福岡＝成長」だけでは片付かない。</strong>
+      北九州市の<strong>昼夜間人口比率は102.1</strong>で、依然として周辺（遠賀・中間・京築）から人を集める雇用の中心。
+      <strong>製造品出荷額は福岡市の4倍</strong>で、県内の工業の要は今も北九州にある。<br>
+      一方の福岡市は、<strong>自主財源比率58.6%で政令市1位</strong>という強い財政を持つが、
+      <strong>1人当たり市民所得332万円は政令市のなかで突出して高いわけではない</strong>
+      （福岡市のIR資料でも1人当たり市民所得は公表16政令市中11位）。
+      <strong>人は集まるが、1人あたりの稼ぎは高くない</strong>——若い単身者（1世帯当たり1.88人）と第3次産業9割という構造の裏返しでもある。
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">市町村（Cities）</span><span class="sec-updated">Last updated: 2026-09-29</span></div>
+    <div class="spot-grid">
+      <a class="spot-card" href="260929_fukuoka_city.html" style="text-decoration:none">
+        <div class="spot-name">福岡市 / Fukuoka City</div>
+        <div class="spot-loc">福岡地域 · 県庁所在地 / 人口約166.4万</div>
+        <div class="spot-desc">2025国調で増加率が21大都市1位（+3.19%）。市内総生産は政令市4位、第3次産業が約9割。自主財源比率58.6%は政令市1位。昼夜間人口比率109.8。</div>
+      </a>
+      <a class="spot-card" href="260929_kitakyushu.html" style="text-decoration:none">
+        <div class="spot-name">北九州市 / Kitakyushu</div>
+        <div class="spot-loc">北九州地域 · 関門海峡 / 人口約90.4万</div>
+        <div class="spot-desc">1963年に5市合併で発足した九州初の政令市。1979年の106.8万人がピーク。製造品出荷額27,745億円は県内1位。2025国調の人口減少数は全国の市町村で最多。</div>
+      </a>
+    </div>
+    <p style="font-size:12.5px;color:var(--muted);margin:14px 0 0">※ 県内の他市町は今後追記する。人口上位は福岡市1,663,892人・北九州市904,289人・久留米市296,827人・飯塚市122,329人・春日市109,026人（2025年国調速報）。</p>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>Wikipedia「福岡県」「北九州市」</li>
+      <li>福岡県 統計課「令和7年国勢調査集計結果（速報）について」（2026年5月29日公表／5,081,879人・前回比−53,335人、圏域別・市区町村別人口）</li>
+      <li>総務省統計局「令和7年国勢調査 人口速報集計結果 全国・都道府県・市町村別人口」（都道府県順位、21大都市の増減、市町村別増減数）</li>
+      <li>福岡県「令和5（2023）年度 県民経済・市町村民経済計算報告書」（2026年3月／県内総生産21兆2,387億円・県民所得15兆1,736億円・1人当たり297万4千円、地域別・圏域別・市町村別）</li>
+      <li>帝国書院「工業生産（出荷額）：2023年：福岡県」（2024年経済構造実態調査／県計116,167億円）</li>
+      <li>帝国書院「面積：2025年：福岡県」（令和7年全国都道府県市区町村別面積調／4,987.66km²）</li>
+      <li>総務省統計局「令和2年国勢調査 従業地・通学地による人口・就業状態等集計 結果の概要」（昼夜間人口比率：福岡県100.0、福岡市109.8、北九州市102.1、埼玉県87.6）</li>
+      <li>福岡市財政局「福岡市IR資料 2026年4月」（2024年度の財政力指数・経常収支比率・自主財源比率の政令市比較、市内総生産2021年）</li>
+      <li>北九州市「北九州市の人口推移等について」（1963年1,032,648人、1979年ピーク1,068,415人、2005年100万人割れ）／日本経済新聞「北九州市の人口、初の90万人割れ」（2026年4月1日推計898,668人）</li>
+      <li>トヨタ自動車九州「工場概要」／九州電力「カーアイランド九州」（宮田・苅田・小倉工場、日産自動車九州）</li>
+      <li>埼玉県・福島県・北海道の数値は各ページ（<a href="260915_saitama.html" style="color:inherit">埼玉県</a>・<a href="260913_fukushima.html" style="color:inherit">福島県</a>・<a href="260903_hokkaido.html" style="color:inherit">北海道</a>）の出典による</li>
+    </ul>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">Index</span><span class="sec-updated">Last updated: 2026-09-29</span></div>
+    <div class="info-box">
+      <ul>
+        <li><a href="260929_fukuoka_city.html" style="color:inherit">福岡市</a></li>
+        <li><a href="260929_kitakyushu.html" style="color:inherit">北九州市</a></li>
+        <li><a href="260915_saitama.html" style="color:inherit">埼玉県と比べる</a></li>
+        <li><a href="260831_japan.html" style="color:inherit">Japan に戻る</a></li>
+        <li><a href="index.html" style="color:inherit">geo-history トップに戻る</a></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>
