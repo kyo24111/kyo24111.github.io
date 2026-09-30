@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>24111 / legend</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -18,7 +18,8 @@
       --muted:   #888888;
       --dim:     #cccccc;
     }
-    body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; min-height: 100vh; padding-top: 56px !important; padding-bottom: 68px !important; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { background: var(--bg); color: var(--text); font-family: 'Poppins', 'Noto Sans JP', sans-serif; min-height: 100vh; padding-top: 56px !important; padding-bottom: 68px !important; overflow-wrap: break-word; }
 
     .page-header { background: #111; color: #fff; padding: 36px 48px 32px; }
     .breadcrumb { font-size: 10px; letter-spacing: .1em; color: rgba(255,255,255,.2); margin-bottom: 10px; }
@@ -26,102 +27,85 @@
     .breadcrumb a:hover { color: rgba(255,255,255,.8); }
     .page-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; }
 
-    .main { max-width: 960px; padding: 48px 48px 80px; }
+    .main { max-width: 1120px; padding: 36px 48px 80px; }
 
-    /* ── Category section ── */
-    .cat-block { margin-bottom: 52px; }
-    .cat-header {
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      margin-bottom: 16px;
-      padding-bottom: 12px;
-      border-bottom: 2px solid #111;
-    }
-    .cat-title {
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .1em;
-      text-transform: uppercase;
-      color: #111;
-    }
-    .cat-count {
-      font-size: 9px;
-      font-weight: 500;
-      color: var(--dim);
-      letter-spacing: .06em;
-      margin-left: auto;
-    }
+    /* ── Filters ── */
+    .filters { border: 1px solid var(--border); background: var(--surface); padding: 18px 20px 6px; margin-bottom: 18px; }
+    .f-top { display: flex; gap: 10px; align-items: center; margin-bottom: 14px; flex-wrap: wrap; }
+    .f-search { flex: 1 1 220px; min-width: 0; font: inherit; font-size: 13px; padding: 9px 12px; border: 1px solid var(--border); background: #fff; color: var(--text); outline: none; }
+    .f-search:focus { border-color: #111; }
+    .f-sort { font: inherit; font-size: 12px; padding: 9px 10px; border: 1px solid var(--border); background: #fff; color: var(--text); cursor: pointer; }
+    .f-reset { font: inherit; font-size: 11px; font-weight: 600; letter-spacing: .06em; padding: 9px 12px; border: 1px solid var(--border); background: #fff; color: var(--mid); cursor: pointer; }
+    .f-reset:hover { border-color: #111; color: #111; }
+    .f-toggle { display: none; font: inherit; font-size: 11px; font-weight: 600; letter-spacing: .06em; padding: 9px 12px; border: 1px solid #111; background: #111; color: #fff; cursor: pointer; }
+    .f-group { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-top: 1px solid var(--border); }
+    .f-label { flex: 0 0 92px; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); padding-top: 7px; }
+    .f-label .clr { display: block; margin-top: 4px; font-size: 10px; letter-spacing: .06em; text-transform: none; color: var(--muted); background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; text-decoration: underline; visibility: hidden; }
+    .f-label .clr.on { visibility: visible; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { font: inherit; font-size: 11.5px; font-weight: 500; line-height: 1; padding: 7px 10px; border: 1px solid var(--dim); background: #fff; color: var(--mid); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: background .1s, border-color .1s, color .1s; }
+    .chip:hover { border-color: #111; color: #111; }
+    .chip .n { font-size: 10px; color: var(--muted); font-weight: 500; }
+    .chip.on { background: #111; border-color: #111; color: #fff; }
+    .chip.on .n { color: rgba(255,255,255,.55); }
+    .chip.zero { opacity: .35; }
 
-    /* ── Grid ── */
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(186px, 1fr));
-      gap: 10px;
-    }
+    .result-bar { display: flex; justify-content: space-between; align-items: baseline; margin: 0 0 8px; font-size: 11px; color: var(--muted); gap: 12px; flex-wrap: wrap; }
+    .result-bar b { color: #111; font-size: 13px; }
+    .active-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+    .active-tags span { font-size: 10.5px; background: #111; color: #fff; padding: 3px 8px; cursor: pointer; }
+    .active-tags span::after { content: ' ×'; opacity: .6; }
 
-    /* ── Tile ── */
-    .tile {
-      display: flex;
-      flex-direction: column;
-      padding: 20px 18px 16px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      text-decoration: none;
-      color: var(--text);
-      min-height: 118px;
-      transition: background .12s, border-color .12s, box-shadow .12s;
-    }
-    .tile:hover { background: var(--hover); border-color: #bbb; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
-    .tile:hover .tile-arrow { opacity: 1; }
+    /* ── List ── */
+    .list { width: 100%; border-collapse: collapse; }
+    .list th { text-align: left; font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 10px 10px; border-bottom: 2px solid #111; white-space: nowrap; user-select: none; }
+    .list th.sortable { cursor: pointer; }
+    .list th.sortable:hover { color: #111; }
+    .list th .ar { display: inline-block; width: 10px; color: #111; }
+    .list td { padding: 13px 10px; border-bottom: 1px solid var(--border); vertical-align: top; font-size: 12px; }
+    .list tr.row { cursor: pointer; transition: background .1s; }
+    .list tr.row:hover { background: var(--surface); }
+    .p-name { font-size: 14px; font-weight: 700; letter-spacing: -.01em; line-height: 1.3; }
+    .p-name a { color: #111; text-decoration: none; }
+    .p-name a:hover { text-decoration: underline; }
+    .p-desc { font-family: 'Noto Sans JP', sans-serif; font-size: 11.5px; color: var(--mid); line-height: 1.65; margin-top: 4px; }
+    .c-years { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--mid); }
+    .c-years .era { display: block; font-size: 10px; color: var(--muted); margin-top: 3px; }
+    .c-added { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--muted); font-size: 11px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 4px; }
+    .tag { font-size: 10px; font-weight: 500; color: var(--mid); border: 1px solid var(--dim); padding: 2px 6px; white-space: nowrap; cursor: pointer; }
+    .tag:hover { border-color: #111; color: #111; }
+    .tag.hit { background: #111; color: #fff; border-color: #111; }
+    .c-nat { width: 150px; }
+    .c-genre { width: 190px; }
+    .empty { padding: 40px 0; text-align: center; color: var(--muted); font-size: 12px; display: none; }
 
-    .tile-top { flex: 1; margin-bottom: 14px; }
-    .tile-name {
-      font-size: 13.5px;
-      font-weight: 700;
-      letter-spacing: -.02em;
-      line-height: 1.25;
-      margin-bottom: 7px;
-    }
-    .tile-desc {
-      font-size: 10px;
-      font-weight: 400;
-      color: var(--muted);
-      line-height: 1.55;
-    }
-    .tile-bottom {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .tile-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-    .tile-tag {
-      font-size: 8px;
-      font-weight: 600;
-      letter-spacing: .09em;
-      text-transform: uppercase;
-      color: var(--muted);
-      border: 1px solid var(--dim);
-      padding: 2px 5px;
-    }
-    .tile-arrow {
-      font-size: 11px;
-      color: var(--dim);
-      opacity: 0;
-      transition: opacity .12s;
-      flex-shrink: 0;
-      margin-left: 8px;
+    @media (max-width: 860px) {
+      .page-header { padding: 24px 16px 20px; }
+      .main { padding: 24px 16px 56px; }
+      .filters { padding: 14px 14px 4px; }
+      .f-toggle { display: inline-block; }
+      .f-top { margin-bottom: 0; }
+      .f-search { flex-basis: 100%; }
+      #groups { display: none; margin-top: 12px; }
+      .filters.open #groups { display: block; }
+      .filters { padding-bottom: 14px; }
+      .f-group { flex-direction: column; gap: 6px; }
+      .f-label { flex: none; padding-top: 0; display: flex; gap: 10px; align-items: baseline; }
+      .f-label .clr { margin-top: 0; }
+      .chip { font-size: 12px; padding: 8px 10px; }
+      .list thead { display: none; }
+      .list, .list tbody, .list tr, .list td { display: block; width: 100% !important; }
+      .list tr.row { padding: 14px 0; border-bottom: 1px solid var(--border); }
+      .list td { border: none; padding: 0; }
+      .list td.c-main { margin-bottom: 8px; }
+      .list td.c-years, .list td.c-added { display: inline-block; width: auto !important; margin-right: 12px; font-size: 11px; }
+      .list td.c-years .era { display: inline; margin: 0 0 0 6px; }
+      .list td.c-added::before { content: 'added '; }
+      .list td.c-nat, .list td.c-genre { margin-top: 6px; }
+      .list td.c-nat .tags, .list td.c-genre .tags { display: inline-flex; }
     }
 
-    @media (max-width: 600px) {
-      .page-header { padding: 28px 24px 24px; }
-      .main { padding: 36px 24px 60px; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
-    }
   </style>
   <!-- snav -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -153,147 +137,7 @@
     .footer-stats .stat { white-space:nowrap; }
     .footer-stats .sep { margin:0 9px; color:rgba(255,255,255,.15); }
   </style>
-      <!-- legend-ui:css:begin -->
-  <style>
-    /* ===== 共通: 折り返し・アンカー位置 ===== */
-    html { -webkit-text-size-adjust: 100%; }
-    body { overflow-wrap: break-word; }
-    img, svg, iframe { max-width: 100%; height: auto; }
-    section[id] { scroll-margin-top: 76px; }
-    .tblhint { display: none; }
-
-    /* ===== サイド目次（横幅の広いビューのみ） ===== */
-    .ptoc { display: none; }
-    @media (min-width: 1280px) {
-      .ptoc {
-        display: block;
-        position: fixed;
-        top: 88px;
-        left: calc(50% - 626px);
-        width: 186px;
-        max-height: calc(100vh - 170px);
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        z-index: 60;
-        scrollbar-width: thin;
-        opacity: 0; visibility: hidden;
-        transition: opacity .18s ease, visibility .18s;
-      }
-      .ptoc.show { opacity: 1; visibility: visible; }
-      .ptoc-lbl {
-        font-family: 'Poppins', sans-serif;
-        font-size: 9px; font-weight: 700;
-        letter-spacing: .18em; text-transform: uppercase;
-        color: var(--muted, #888);
-        padding-bottom: 8px; margin-bottom: 6px;
-        border-bottom: 1px solid var(--border, #e0e0e0);
-      }
-      .ptoc ul { list-style: none; margin: 0; padding: 0; }
-      .ptoc li { margin: 0; }
-      .ptoc a {
-        display: block;
-        padding: 6px 0 6px 12px;
-        border-left: 2px solid var(--border, #e0e0e0);
-        color: #999; text-decoration: none;
-        transition: color .15s, border-color .15s;
-      }
-      .ptoc a .en {
-        display: block;
-        font-family: 'Poppins', sans-serif;
-        font-size: 8.5px; font-weight: 700;
-        letter-spacing: .14em; text-transform: uppercase;
-        color: #c2c2c2; line-height: 1.4;
-      }
-      .ptoc a .jp {
-        display: block;
-        font-size: 12px; font-weight: 600;
-        line-height: 1.45; letter-spacing: -.01em;
-      }
-      .ptoc a:hover { color: #111; border-left-color: #999; }
-      .ptoc a:hover .en { color: #888; }
-      .ptoc a.on { color: #111; border-left-color: #111; }
-      .ptoc a.on .en { color: #888; }
-      .ptoc-top { margin-bottom: 4px; }
-    }
-    @media (min-width: 1560px) {
-      .ptoc { width: 216px; left: calc(50% - 660px); }
-      .ptoc a .jp { font-size: 12.5px; }
-    }
-
-    /* ===== モバイル最適化 ===== */
-    @media (max-width: 640px) {
-      body { font-size: 14.5px; line-height: 1.85; }
-
-      .hero { padding: 76px 18px 30px !important; }
-      .hero-inner { max-width: 100%; }
-      .hero h1 { font-size: 28px; margin-bottom: 12px; }
-      .hero p { font-size: 13px !important; line-height: 1.8; }
-      .hero-label { font-size: 10px; letter-spacing: .16em; }
-      .hero-meta { gap: 12px 20px; margin-top: 18px; padding-top: 16px; }
-      .hero-meta-item .label { font-size: 10px; }
-      .hero-meta-item .value { font-size: 13px; }
-
-      .container { padding: 0 18px 92px !important; max-width: 100%; }
-      section { margin-top: 36px; }
-      h2 { font-size: 17px; margin-bottom: 18px; padding-bottom: 10px; }
-      .section-label { font-size: 9px; letter-spacing: .16em; }
-
-      .summary { padding: 18px 18px; margin: 26px 0; font-size: 14px; line-height: 1.85; }
-      .card, .episode, .philo-block, .legend-box, .scandal, .controversy,
-      .achievement, .essay-card, .policy-card, .host-card, .net-person { padding: 16px 18px; }
-      .card-grid { gap: 12px; }
-      .quote { padding: 16px 18px; font-size: 14px; line-height: 1.85; }
-      .networth { font-size: 22px; padding: 5px 14px; }
-      .tag, .tile-tag { font-size: 11px; }
-
-      .timeline { padding-left: 20px; }
-      .timeline::before { left: 3px; }
-      .tl-item::before { left: -17px; width: 7px; height: 7px; }
-      .tl-item { margin-bottom: 20px; }
-      .tl-item p { font-size: 13.5px; }
-
-      .fact-list li { flex-direction: column; gap: 3px; padding: 12px 0; }
-      .fact-list .key {
-        min-width: 0; font-size: 10.5px; letter-spacing: .08em;
-        text-transform: uppercase; padding-top: 0;
-      }
-      .fact-list .val { font-size: 14px; }
-
-      /* --- テーブル: 2列は縦積み / 3列以上は横スクロール --- */
-      table { font-size: 13.5px; }
-      .tblhint {
-        display: block;
-        font-family: 'Poppins', sans-serif;
-        font-size: 9px; font-weight: 600;
-        letter-spacing: .12em; text-transform: uppercase;
-        color: var(--muted, #888); margin-bottom: 6px;
-      }
-      .tblwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -18px; padding: 0 18px; }
-      .tblwrap table { min-width: 560px; }
-      .tbl-stack, .tbl-stack tbody, .tbl-stack tr, .tbl-stack td { display: block; width: 100% !important; }
-      .tbl-stack tr.thead-row { display: none; }
-      .tbl-stack tr { padding: 14px 0; border-bottom: 1px solid var(--border, #e0e0e0); }
-      .tbl-stack tr:last-child { border-bottom: none; padding-bottom: 0; }
-      .tbl-stack td { border-bottom: none; padding: 0; line-height: 1.8; }
-      .tbl-stack td.tstack-key {
-        font-weight: 700; font-size: 13px; margin-bottom: 5px;
-        padding-bottom: 5px; border-bottom: 1px dotted var(--border, #e0e0e0);
-      }
-
-      /* --- index (一覧ページ) --- */
-      .page-header { padding: 24px 18px 20px !important; }
-      .main { padding: 32px 18px 56px !important; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(144px, 1fr)) !important; gap: 8px; }
-      .tile { min-height: 104px; padding: 16px 14px 13px; }
-    }
-    @media (max-width: 380px) {
-      .hero h1 { font-size: 25px; }
-      .grid { grid-template-columns: 1fr !important; }
-      .tile { min-height: 0; }
-    }
-  </style>
-  <!-- legend-ui:css:end -->
-</head>
+      </head>
 <body>
 <div class="snav">
   <a class="snav-logo" href="/index.html">24111</a>
@@ -332,282 +176,248 @@
 
 <main class="main">
 
-  <div class="cat-block">
-    <div class="cat-header">
-      <span class="cat-title">Founder / Builder</span>
-      <span class="cat-count">18 people</span>
+  <div class="filters" id="filters">
+    <div class="f-top">
+      <input class="f-search" id="q" type="search" placeholder="Search name / description…" autocomplete="off">
+      <select class="f-sort" id="sort" aria-label="sort">
+        <option value="added:desc">Added — newest</option>
+        <option value="added:asc">Added — oldest</option>
+        <option value="born:asc">Born — oldest</option>
+        <option value="born:desc">Born — newest</option>
+        <option value="name:asc">Name — A→Z</option>
+        <option value="name:desc">Name — Z→A</option>
+      </select>
+      <button class="f-toggle" id="ftoggle" type="button" aria-expanded="false">Filters</button>
+      <button class="f-reset" id="reset" type="button">Reset</button>
     </div>
-    <div class="grid">
-      <a class="tile" href="elon_musk.html">
-        <div class="tile-top"><div class="tile-name">Elon Musk</div><div class="tile-desc">エネルギー・宇宙・AIで文明スケールの企業を同時に構築</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Tesla</span><span class="tile-tag">SpaceX</span><span class="tile-tag">xAI</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="sam_altman.html">
-        <div class="tile-top"><div class="tile-name">Sam Altman</div><div class="tile-desc">世界最先端のAI研究所でAGIへの競走を先導するCEO</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">OpenAI</span><span class="tile-tag">YC</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="dylan_field.html">
-        <div class="tile-top"><div class="tile-name">Dylan Field</div><div class="tile-desc">Thiel Fellowから、ブラウザで動くデザインツールFigmaを上場まで育てた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Figma</span><span class="tile-tag">Thiel Fellow</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="jensen_huang.html">
-        <div class="tile-top"><div class="tile-name">Jensen Huang</div><div class="tile-desc">NvidiaをAI時代の必須インフラへと変革した立役者</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Nvidia</span><span class="tile-tag">GPU</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="mark_zuckerberg.html">
-        <div class="tile-top"><div class="tile-name">Mark Zuckerberg</div><div class="tile-desc">SNS帝国を築き、AIとARへの全力転換を図るCEO</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Meta</span><span class="tile-tag">Llama</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="patrick_collison.html">
-        <div class="tile-top"><div class="tile-name">Patrick Collison</div><div class="tile-desc">インターネット経済を支える決済インフラを静かに構築</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Stripe</span><span class="tile-tag">Payments</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="palmer_luckey.html">
-        <div class="tile-top"><div class="tile-name">Palmer Luckey</div><div class="tile-desc">VR先駆者からAndurilを創業し、防衛産業を革新</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Oculus</span><span class="tile-tag">Anduril</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="trae_stephens.html">
-        <div class="tile-top"><div class="tile-name">Trae Stephens</div><div class="tile-desc">元諜報アナリスト。ThielとPalmerを繋ぎAndurilを共同創業した"設計者"</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Anduril</span><span class="tile-tag">Founders Fund</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="travis_kalanick.html">
-        <div class="tile-top"><div class="tile-name">Travis Kalanick</div><div class="tile-desc">あらゆる代償を払って交通インフラを破壊し、再出発</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Uber</span><span class="tile-tag">CloudKitchens</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="demis_hassabis.html">
-        <div class="tile-top"><div class="tile-name">Demis Hassabis</div><div class="tile-desc">AlphaGo・AlphaFold・Geminiを生んだ深層知性</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">DeepMind</span><span class="tile-tag">Google</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="masayoshi_son.html">
-        <div class="tile-top"><div class="tile-name">Masayoshi Son</div><div class="tile-desc">人類の技術的未来に強い確信で超大型賭けを続ける</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">SoftBank</span><span class="tile-tag">Vision Fund</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="brett_adcock.html">
-        <div class="tile-top"><div class="tile-name">Brett Adcock</div><div class="tile-desc">農家育ちの連続起業家——Vettery売却、Archer上場、Figure AIで$39B</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Figure AI</span><span class="tile-tag">Humanoid</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="sergey_brin.html">
-        <div class="tile-top"><div class="tile-name">Sergey Brin</div><div class="tile-desc">Google共同創業者。Alphabet退任を経てGemini AIに現場復帰</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Google</span><span class="tile-tag">Gemini</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="morris_chang.html">
-        <div class="tile-top"><div class="tile-name">Morris Chang</div><div class="tile-desc">55歳でTSMC創業。「純粋ファウンドリ」というモデルを発明し半導体産業を作り替えた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">TSMC</span><span class="tile-tag">Foundry</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="sanjay_mehrotra.html">
-        <div class="tile-top"><div class="tile-name">Sanjay Mehrotra</div><div class="tile-desc">SanDisk共同創業でフラッシュを大衆化し、Micron再建CEOとしてHBM・AI時代の主役に導いた二幕のレジェンド</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Micron</span><span class="tile-tag">Memory / HBM</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="alex_wang.html">
-        <div class="tile-top"><div class="tile-name">Alexandr Wang</div><div class="tile-desc">19歳でScale AI創業。データを"AIの燃料"に産業化し、$14.3BでMeta AI総司令へ</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Scale AI</span><span class="tile-tag">Meta</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="steve_jobs.html">
-        <div class="tile-top"><div class="tile-name">Steve Jobs</div><div class="tile-desc">発明家ではなく究極の編集者。削ることで作り、技術とリベラルアーツの交差点に立った</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Apple</span><span class="tile-tag">Pixar</span><span class="tile-tag">Design</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="li_ka_shing.html">
-        <div class="tile-top"><div class="tile-name">Li Ka-shing</div><div class="tile-desc">難民の少年から香港の港湾・電力・小売を握る「超人」へ。底で買い天井で売る資本配分の化身</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">CK Hutchison</span><span class="tile-tag">Ports</span><span class="tile-tag">Horizons</span></div><span class="tile-arrow">→</span></div>
-      </a>
-    </div>
+    <div id="groups"></div>
   </div>
 
-  <div class="cat-block">
-    <div class="cat-header">
-      <span class="cat-title">Investor / Thinker</span>
-      <span class="cat-count">8 people</span>
-    </div>
-    <div class="grid">
-      <a class="tile" href="marc_andreessen.html">
-        <div class="tile-top"><div class="tile-name">Marc Andreessen</div><div class="tile-desc">ソフトウェアが世界を食べる——a16zはその担い手に資金を投じる</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">a16z</span><span class="tile-tag">VC</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="peter_thiel.html">
-        <div class="tile-top"><div class="tile-name">Peter Thiel</div><div class="tile-desc">独占・監視・長寿に投資するZero to One型の逆張り</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Founders Fund</span><span class="tile-tag">Palantir</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="paul_graham.html">
-        <div class="tile-top"><div class="tile-name">Paul Graham</div><div class="tile-desc">YCとエッセイでシリコンバレーの思考様式を定義</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">YC</span><span class="tile-tag">Essays</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="naval_ravikant.html">
-        <div class="tile-top"><div class="tile-name">Naval Ravikant</div><div class="tile-desc">固有知識とレバレッジを軸にした富の哲学</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">AngelList</span><span class="tile-tag">Philosophy</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="david_sacks.html">
-        <div class="tile-top"><div class="tile-name">David Sacks</div><div class="tile-desc">PayPalマフィアの実業家からVCを経て米国AI政策の中枢へ</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Craft</span><span class="tile-tag">AI Czar</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="chamath_palihapitiya.html">
-        <div class="tile-top"><div class="tile-name">Chamath Palihapitiya</div><div class="tile-desc">難民の子→Facebook成長の伝説→"SPAC王"→8090 CEOとして現場復帰</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Social Capital</span><span class="tile-tag">8090</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="joe_lonsdale.html">
-        <div class="tile-top"><div class="tile-name">Joe Lonsdale</div><div class="tile-desc">Thiel直系の弟子。22歳でPalantir共同創業、Addepar・8VCを築いた連続起業家兼VC</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Palantir</span><span class="tile-tag">8VC</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="leopold_aschenbrenner.html">
-        <div class="tile-top"><div class="tile-name">Leopold Aschenbrenner</div><div class="tile-desc">元OpenAI。『Situational Awareness』でAGI2027を掲げ、AIファンドを$45Bへ育てた最年少投資家</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Ex-OpenAI</span><span class="tile-tag">Situational Awareness</span></div><span class="tile-arrow">→</span></div>
-      </a>
-    </div>
+  <div class="result-bar">
+    <div><b id="cnt">0</b> / <span id="tot">0</span> people</div>
+    <div class="active-tags" id="active"></div>
   </div>
 
-  <div class="cat-block">
-    <div class="cat-header">
-      <span class="cat-title">Historical — Ancient</span>
-      <span class="cat-count">7 people</span>
-    </div>
-    <div class="grid">
-      <a class="tile" href="cyrus_the_great.html">
-        <div class="tile-top"><div class="tile-name">Cyrus the Great</div><div class="tile-desc">遊牧の小国から一代でメディア・リディア・バビロンを併合。征服した民の信仰を認めた最初の世界帝国の建国者</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Persia</span><span class="tile-tag">Achaemenid</span><span class="tile-tag">BC c.600–530</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="alexander_the_great.html">
-        <div class="tile-top"><div class="tile-name">Alexander the Great</div><div class="tile-desc">20歳で王、32歳で死ぬまでにギリシャからインダスまでを征服。ヘレニズムという文明の混ざり合いを生んだ</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Macedonia</span><span class="tile-tag">Persia</span><span class="tile-tag">BC 356–323</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="ashoka.html">
-        <div class="tile-top"><div class="tile-name">Ashoka</div><div class="tile-desc">インド亜大陸をほぼ統一した後、戦争の惨状を悔いて「法（ダルマ）による統治」へ転じた王</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Maurya</span><span class="tile-tag">Dhamma</span><span class="tile-tag">BC c.304–232</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="shi_huangdi.html">
-        <div class="tile-top"><div class="tile-name">Qin Shi Huang</div><div class="tile-desc">人質の子から中国を初めて統一。文字・度量衡・貨幣を揃え、2000年続く「皇帝」の型を作った</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">秦</span><span class="tile-tag">Unification</span><span class="tile-tag">BC 259–210</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="hannibal.html">
-        <div class="tile-top"><div class="tile-name">Hannibal Barca</div><div class="tile-desc">象を連れてアルプスを越え、カンナエで包囲殲滅戦の型を作った「ローマ最大の敵」</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Carthage</span><span class="tile-tag">Cannae</span><span class="tile-tag">BC 247–183</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="julius_caesar.html">
-        <div class="tile-top"><div class="tile-name">Julius Caesar</div><div class="tile-desc">借金で権力を買い、ガリア征服で返し、寛容で敵を味方にした。名前が「皇帝」になった男</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Rome</span><span class="tile-tag">Gallic Wars</span><span class="tile-tag">BC 100–44</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="augustus.html">
-        <div class="tile-top"><div class="tile-name">Augustus</div><div class="tile-desc">18歳でカエサルの遺産を継ぎ、内戦を終わらせて「共和政の看板のまま」帝政を作った初代皇帝</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Rome</span><span class="tile-tag">Pax Romana</span><span class="tile-tag">BC 63–AD 14</span></div><span class="tile-arrow">→</span></div>
-      </a>
-    </div>
-  </div>
-
-  <div class="cat-block">
-    <div class="cat-header">
-      <span class="cat-title">Historical — Medieval / Early Modern</span>
-      <span class="cat-count">6 people</span>
-    </div>
-    <div class="grid">
-      <a class="tile" href="saladin.html">
-        <div class="tile-top"><div class="tile-name">Saladin</div><div class="tile-desc">クルド人の武将からエジプトとシリアを統一し、エルサレムを奪還。敵の十字軍からも敬意を集めた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Ayyubid</span><span class="tile-tag">Crusades</span><span class="tile-tag">1137–1193</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="genghis_khan.html">
-        <div class="tile-top"><div class="tile-name">Genghis Khan</div><div class="tile-desc">父を毒殺された孤児からモンゴル高原を統一し、史上最大の陸の帝国の礎を築いた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Mongol</span><span class="tile-tag">Meritocracy</span><span class="tile-tag">1162?–1227</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="lorenzo_de_medici.html">
-        <div class="tile-top"><div class="tile-name">Lorenzo de' Medici</div><div class="tile-desc">銀行家一族の当主として、外交と芸術パトロンでフィレンツェ・ルネサンスの頂点を演出した</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Florence</span><span class="tile-tag">Renaissance</span><span class="tile-tag">1449–1492</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="elizabeth_i.html">
-        <div class="tile-top"><div class="tile-name">Elizabeth I</div><div class="tile-desc">母を処刑された「庶子」の王女が、45年の治世でイングランドを海洋国家への入口に立たせた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Tudor</span><span class="tile-tag">Armada</span><span class="tile-tag">1533–1603</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="oda_nobunaga.html">
-        <div class="tile-top"><div class="tile-name">Oda Nobunaga</div><div class="tile-desc">「うつけ」と呼ばれた尾張の若殿が、既存の権威と慣行を壊して天下統一の道を開いた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">戦国</span><span class="tile-tag">天下布武</span><span class="tile-tag">1534–1582</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="peter_the_great.html">
-        <div class="tile-top"><div class="tile-name">Peter the Great</div><div class="tile-desc">身分を隠して西欧の造船所で働いた皇帝。ロシアを力ずくで「ヨーロッパの大国」に作り替えた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Russia</span><span class="tile-tag">St Petersburg</span><span class="tile-tag">1672–1725</span></div><span class="tile-arrow">→</span></div>
-      </a>
-    </div>
-  </div>
-
-  <div class="cat-block">
-    <div class="cat-header">
-      <span class="cat-title">Historical — Modern</span>
-      <span class="cat-count">17 people</span>
-    </div>
-    <div class="grid">
-      <a class="tile" href="benjamin_franklin.html">
-        <div class="tile-top"><div class="tile-name">Benjamin Franklin</div><div class="tile-desc">学校2年の印刷工から、発明家・起業家・外交官としてアメリカ建国を支えた「最初のアメリカ人」</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Printer</span><span class="tile-tag">Inventor</span><span class="tile-tag">1706–1790</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="frederick_the_great.html">
-        <div class="tile-top"><div class="tile-name">Frederick the Great</div><div class="tile-desc">親友の処刑を見せられた笛吹き王子から、三大国と7年戦った「大王」へ。哲学と戦争の啓蒙君主</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Prussia</span><span class="tile-tag">Enlightened Absolutism</span><span class="tile-tag">1712–1786</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="alexander_hamilton.html">
-        <div class="tile-top"><div class="tile-name">Alexander Hamilton</div><div class="tile-desc">カリブの孤児から初代財務長官へ。国債・中央銀行でアメリカの金融の骨格を作り、決闘で死んだ</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Treasury</span><span class="tile-tag">Federalist</span><span class="tile-tag">1755?–1804</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="napoleon_bonaparte.html">
-        <div class="tile-top"><div class="tile-name">Napoleon Bonaparte</div><div class="tile-desc">訛りを笑われたコルシカの少年が、革命の実力主義に乗って35歳で皇帝に。戦争より法典が残った</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">France</span><span class="tile-tag">Code civil</span><span class="tile-tag">1769–1821</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="nathan_mayer_rothschild.html">
-        <div class="tile-top"><div class="tile-name">Nathan Mayer Rothschild</div><div class="tile-desc">ゲットー出身の移民がナポレオン戦争の軍資金を動かす銀行家に。ワーテルロー伝説の嘘も検証</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Banking</span><span class="tile-tag">Napoleonic Wars</span><span class="tile-tag">1777–1836</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="abraham_lincoln.html">
-        <div class="tile-top"><div class="tile-name">Abraham Lincoln</div><div class="tile-desc">丸太小屋育ちの独学の弁護士が、南北戦争を率いて連邦を守り、奴隷制を終わらせた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Civil War</span><span class="tile-tag">Emancipation</span><span class="tile-tag">1809–1865</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="andrew_carnegie.html">
-        <div class="tile-top"><div class="tile-name">Andrew Carnegie</div><div class="tile-desc">週1ドル20セントの糸巻き工から鉄鋼王へ。「金持ちのまま死ぬのは恥」と財産の9割を配った</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Steel</span><span class="tile-tag">Philanthropy</span><span class="tile-tag">1835–1919</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="john_d_rockefeller.html">
-        <div class="tile-top"><div class="tile-name">John D. Rockefeller</div><div class="tile-desc">16歳の帳簿係から石油精製の9割を握る独占王へ。解体後は財団で医学と公衆衛生に5億ドル超</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Oil</span><span class="tile-tag">Philanthropy</span><span class="tile-tag">1839–1937</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="shibusawa_eiichi.html">
-        <div class="tile-top"><div class="tile-name">渋沢栄一</div><div class="tile-desc">代官に侮辱された藍玉農家の息子が、約500社を興し財閥を作らなかった。日本資本主義の父</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Joint-stock</span><span class="tile-tag">Philanthropy</span><span class="tile-tag">1840–1931</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="thomas_edison.html">
-        <div class="tile-top"><div class="tile-name">Thomas Edison</div><div class="tile-desc">学校を3か月で辞めた少年が、研究所そのものを「発明の工場」にして電気の時代を開いた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Menlo Park</span><span class="tile-tag">Invention</span><span class="tile-tag">1847–1931</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="cecil_rhodes.html">
-        <div class="tile-top"><div class="tile-name">Cecil Rhodes</div><div class="tile-desc">病弱な牧師の息子がダイヤ9割を独占し、ケープ首相に。自分の名の国と奨学金を遺した帝国主義者</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Diamonds</span><span class="tile-tag">Imperialism</span><span class="tile-tag">1853–1902</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="henry_ford.html">
-        <div class="tile-top"><div class="tile-name">Henry Ford</div><div class="tile-desc">時計いじりの農家の少年から自動車王へ。流れ作業と日給5ドルで大衆消費社会を作り、反ユダヤ主義も広めた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Mass Production</span><span class="tile-tag">Model T</span><span class="tile-tag">1863–1947</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="kemal_ataturk.html">
-        <div class="tile-top"><div class="tile-name">Mustafa Kemal Atatürk</div><div class="tile-desc">ガリポリの無名中佐から共和国の父へ。文字も帽子も名字も変え、帝国を15年で作り直した</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Republic of Turkey</span><span class="tile-tag">Secularism</span><span class="tile-tag">1881–1938</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="eleanor_roosevelt.html">
-        <div class="tile-top"><div class="tile-name">Eleanor Roosevelt</div><div class="tile-desc">内気な少女がファーストレディの役割を作り替え、世界人権宣言の起草を率いた</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">First Lady</span><span class="tile-tag">Human Rights</span><span class="tile-tag">1884–1962</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="lee_kuan_yew.html">
-        <div class="tile-top"><div class="tile-name">Lee Kuan Yew</div><div class="tile-desc">資源も水もない島を31年で先進国へ。日本占領を生き延びた男の、清廉と強権の国家建設</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Nation Building</span><span class="tile-tag">Singapore</span><span class="tile-tag">1923–2015</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="che_guevara.html">
-        <div class="tile-top"><div class="tile-name">Che Guevara</div><div class="tile-desc">喘息持ちの医学生から革命の司令官へ。大臣の座を捨て39歳でボリビアに散った伝説</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Cuban Revolution</span><span class="tile-tag">Pop Icon</span><span class="tile-tag">1928–1967</span></div><span class="tile-arrow">→</span></div>
-      </a>
-      <a class="tile" href="paul_kagame.html">
-        <div class="tile-top"><div class="tile-name">Paul Kagame</div><div class="tile-desc">難民キャンプの少年がジェノサイドを止め、国を経営する。開発の優等生か独裁者か</div></div>
-        <div class="tile-bottom"><div class="tile-tags"><span class="tile-tag">Developmental State</span><span class="tile-tag">Authoritarianism</span><span class="tile-tag">1957–</span></div><span class="tile-arrow">→</span></div>
-      </a>
-    </div>
-  </div>
+  <table class="list">
+    <thead><tr>
+      <th class="sortable" data-k="name">Name <span class="ar"></span></th>
+      <th class="sortable" data-k="born">Years / Era <span class="ar"></span></th>
+      <th>Nationality</th>
+      <th>Genre</th>
+      <th class="sortable" data-k="added">Added <span class="ar"></span></th>
+    </tr></thead>
+    <tbody id="rows"></tbody>
+  </table>
+  <div class="empty" id="empty">該当なし — フィルタを外してください</div>
 
 </main>
 
+<script>
+/* ===== DATA: 1行=1人。追加時はここに1行足すだけ（added=追加日 YYYY-MM-DD / born・died は年、紀元前は負数、存命は null） ===== */
+const PEOPLE = [
+  {f:"frederick_the_great", name:"Frederick the Great", desc:"親友の処刑を見せられた笛吹き王子から、三大国と7年戦った「大王」へ。哲学と戦争の啓蒙君主", born:1712, died:1786, nat:["Germany"], genre:["Ruler", "Military"], added:"2026-10-01"},
+  {f:"nathan_mayer_rothschild", name:"Nathan Mayer Rothschild", desc:"ゲットー出身の移民がナポレオン戦争の軍資金を動かす銀行家に。ワーテルロー伝説の嘘も検証", born:1777, died:1836, nat:["Germany", "UK"], genre:["Finance"], added:"2026-10-01"},
+  {f:"john_d_rockefeller", name:"John D. Rockefeller", desc:"16歳の帳簿係から石油精製の9割を握る独占王へ。解体後は財団で医学と公衆衛生に5億ドル超", born:1839, died:1937, nat:["USA"], genre:["Industrialist", "Philanthropy"], added:"2026-10-01"},
+  {f:"shibusawa_eiichi", name:"渋沢栄一", desc:"代官に侮辱された藍玉農家の息子が、約500社を興し財閥を作らなかった。日本資本主義の父", born:1840, died:1931, nat:["Japan"], genre:["Industrialist", "Finance", "Philanthropy"], added:"2026-10-01"},
+  {f:"cecil_rhodes", name:"Cecil Rhodes", desc:"病弱な牧師の息子がダイヤ9割を独占し、ケープ首相に。自分の名の国と奨学金を遺した帝国主義者", born:1853, died:1902, nat:["UK", "South Africa"], genre:["Industrialist", "Statesman"], added:"2026-10-01"},
+  {f:"henry_ford", name:"Henry Ford", desc:"時計いじりの農家の少年から自動車王へ。流れ作業と日給5ドルで大衆消費社会を作り、反ユダヤ主義も広めた", born:1863, died:1947, nat:["USA"], genre:["Industrialist", "Founder"], added:"2026-10-01"},
+  {f:"kemal_ataturk", name:"Mustafa Kemal Atatürk", desc:"ガリポリの無名中佐から共和国の父へ。文字も帽子も名字も変え、帝国を15年で作り直した", born:1881, died:1938, nat:["Turkey"], genre:["Statesman", "Military", "Revolutionary"], added:"2026-10-01"},
+  {f:"lee_kuan_yew", name:"Lee Kuan Yew", desc:"資源も水もない島を31年で先進国へ。日本占領を生き延びた男の、清廉と強権の国家建設", born:1923, died:2015, nat:["Singapore"], genre:["Statesman"], added:"2026-10-01"},
+  {f:"che_guevara", name:"Che Guevara", desc:"喘息持ちの医学生から革命の司令官へ。大臣の座を捨て39歳でボリビアに散った伝説", born:1928, died:1967, nat:["Argentina", "Cuba"], genre:["Revolutionary", "Military"], added:"2026-10-01"},
+  {f:"paul_kagame", name:"Paul Kagame", desc:"難民キャンプの少年がジェノサイドを止め、国を経営する。開発の優等生か独裁者か", born:1957, died:null, nat:["Rwanda"], genre:["Statesman", "Military"], added:"2026-10-01"},
+  {f:"cyrus_the_great", name:"Cyrus the Great", desc:"遊牧の小国から一代でメディア・リディア・バビロンを併合。征服した民の信仰を認めた最初の世界帝国の建国者", born:-600, died:-530, nat:["Persia"], genre:["Ruler", "Military"], added:"2026-09-28"},
+  {f:"alexander_the_great", name:"Alexander the Great", desc:"20歳で王、32歳で死ぬまでにギリシャからインダスまでを征服。ヘレニズムという文明の混ざり合いを生んだ", born:-356, died:-323, nat:["Macedonia"], genre:["Ruler", "Military"], added:"2026-09-28"},
+  {f:"ashoka", name:"Ashoka", desc:"インド亜大陸をほぼ統一した後、戦争の惨状を悔いて「法（ダルマ）による統治」へ転じた王", born:-304, died:-232, nat:["India"], genre:["Ruler"], added:"2026-09-28"},
+  {f:"shi_huangdi", name:"Qin Shi Huang", desc:"人質の子から中国を初めて統一。文字・度量衡・貨幣を揃え、2000年続く「皇帝」の型を作った", born:-259, died:-210, nat:["China"], genre:["Ruler"], added:"2026-09-28"},
+  {f:"hannibal", name:"Hannibal Barca", desc:"象を連れてアルプスを越え、カンナエで包囲殲滅戦の型を作った「ローマ最大の敵」", born:-247, died:-183, nat:["Carthage"], genre:["Military"], added:"2026-09-28"},
+  {f:"julius_caesar", name:"Julius Caesar", desc:"借金で権力を買い、ガリア征服で返し、寛容で敵を味方にした。名前が「皇帝」になった男", born:-100, died:-44, nat:["Rome"], genre:["Military", "Statesman"], added:"2026-09-28"},
+  {f:"augustus", name:"Augustus", desc:"18歳でカエサルの遺産を継ぎ、内戦を終わらせて「共和政の看板のまま」帝政を作った初代皇帝", born:-63, died:14, nat:["Rome"], genre:["Ruler", "Statesman"], added:"2026-09-28"},
+  {f:"saladin", name:"Saladin", desc:"クルド人の武将からエジプトとシリアを統一し、エルサレムを奪還。敵の十字軍からも敬意を集めた", born:1137, died:1193, nat:["Egypt", "Syria"], genre:["Ruler", "Military"], added:"2026-09-28"},
+  {f:"genghis_khan", name:"Genghis Khan", desc:"父を毒殺された孤児からモンゴル高原を統一し、史上最大の陸の帝国の礎を築いた", born:1162, died:1227, nat:["Mongolia"], genre:["Ruler", "Military"], added:"2026-09-28"},
+  {f:"lorenzo_de_medici", name:"Lorenzo de' Medici", desc:"銀行家一族の当主として、外交と芸術パトロンでフィレンツェ・ルネサンスの頂点を演出した", born:1449, died:1492, nat:["Italy"], genre:["Finance", "Statesman", "Philanthropy"], added:"2026-09-28"},
+  {f:"elizabeth_i", name:"Elizabeth I", desc:"母を処刑された「庶子」の王女が、45年の治世でイングランドを海洋国家への入口に立たせた", born:1533, died:1603, nat:["UK"], genre:["Ruler"], added:"2026-09-28"},
+  {f:"oda_nobunaga", name:"Oda Nobunaga", desc:"「うつけ」と呼ばれた尾張の若殿が、既存の権威と慣行を壊して天下統一の道を開いた", born:1534, died:1582, nat:["Japan"], genre:["Ruler", "Military"], added:"2026-09-28"},
+  {f:"peter_the_great", name:"Peter the Great", desc:"身分を隠して西欧の造船所で働いた皇帝。ロシアを力ずくで「ヨーロッパの大国」に作り替えた", born:1672, died:1725, nat:["Russia"], genre:["Ruler", "Military"], added:"2026-09-28"},
+  {f:"benjamin_franklin", name:"Benjamin Franklin", desc:"学校2年の印刷工から、発明家・起業家・外交官としてアメリカ建国を支えた「最初のアメリカ人」", born:1706, died:1790, nat:["USA"], genre:["Statesman", "Scientist", "Thinker"], added:"2026-09-28"},
+  {f:"alexander_hamilton", name:"Alexander Hamilton", desc:"カリブの孤児から初代財務長官へ。国債・中央銀行でアメリカの金融の骨格を作り、決闘で死んだ", born:1755, died:1804, nat:["USA"], genre:["Statesman", "Finance"], added:"2026-09-28"},
+  {f:"napoleon_bonaparte", name:"Napoleon Bonaparte", desc:"訛りを笑われたコルシカの少年が、革命の実力主義に乗って35歳で皇帝に。戦争より法典が残った", born:1769, died:1821, nat:["France"], genre:["Ruler", "Military"], added:"2026-09-28"},
+  {f:"abraham_lincoln", name:"Abraham Lincoln", desc:"丸太小屋育ちの独学の弁護士が、南北戦争を率いて連邦を守り、奴隷制を終わらせた", born:1809, died:1865, nat:["USA"], genre:["Statesman"], added:"2026-09-28"},
+  {f:"andrew_carnegie", name:"Andrew Carnegie", desc:"週1ドル20セントの糸巻き工から鉄鋼王へ。「金持ちのまま死ぬのは恥」と財産の9割を配った", born:1835, died:1919, nat:["UK", "USA"], genre:["Industrialist", "Philanthropy"], added:"2026-09-28"},
+  {f:"thomas_edison", name:"Thomas Edison", desc:"学校を3か月で辞めた少年が、研究所そのものを「発明の工場」にして電気の時代を開いた", born:1847, died:1931, nat:["USA"], genre:["Scientist", "Founder"], added:"2026-09-28"},
+  {f:"eleanor_roosevelt", name:"Eleanor Roosevelt", desc:"内気な少女がファーストレディの役割を作り替え、世界人権宣言の起草を率いた", born:1884, died:1962, nat:["USA"], genre:["Statesman", "Activist"], added:"2026-09-28"},
+  {f:"steve_jobs", name:"Steve Jobs", desc:"発明家ではなく究極の編集者。削ることで作り、技術とリベラルアーツの交差点に立った", born:1955, died:2011, nat:["USA"], genre:["Founder", "Tech"], added:"2026-09-24"},
+  {f:"li_ka_shing", name:"Li Ka-shing", desc:"難民の少年から香港の港湾・電力・小売を握る「超人」へ。底で買い天井で売る資本配分の化身", born:1928, died:null, nat:["Hong Kong"], genre:["Founder", "Industrialist", "Investor"], added:"2026-09-18"},
+  {f:"alex_wang", name:"Alexandr Wang", desc:"19歳でScale AI創業。データを\"AIの燃料\"に産業化し、$14.3BでMeta AI総司令へ", born:1997, died:null, nat:["USA"], genre:["Founder", "AI"], added:"2026-07-31"},
+  {f:"leopold_aschenbrenner", name:"Leopold Aschenbrenner", desc:"元OpenAI。『Situational Awareness』でAGI2027を掲げ、AIファンドを$45Bへ育てた最年少投資家", born:2001, died:null, nat:["Germany"], genre:["Thinker", "AI", "Investor"], added:"2026-07-31"},
+  {f:"joe_lonsdale", name:"Joe Lonsdale", desc:"Thiel直系の弟子。22歳でPalantir共同創業、Addepar・8VCを築いた連続起業家兼VC", born:1982, died:null, nat:["USA"], genre:["Investor", "Founder"], added:"2026-07-08"},
+  {f:"trae_stephens", name:"Trae Stephens", desc:"元諜報アナリスト。ThielとPalmerを繋ぎAndurilを共同創業した\"設計者\"", born:1983, died:null, nat:["USA"], genre:["Founder", "Investor", "Military"], added:"2026-07-06"},
+  {f:"chamath_palihapitiya", name:"Chamath Palihapitiya", desc:"難民の子→Facebook成長の伝説→\"SPAC王\"→8090 CEOとして現場復帰", born:1976, died:null, nat:["Sri Lanka", "Canada", "USA"], genre:["Investor"], added:"2026-07-06"},
+  {f:"morris_chang", name:"Morris Chang", desc:"55歳でTSMC創業。「純粋ファウンドリ」というモデルを発明し半導体産業を作り替えた", born:1931, died:null, nat:["China", "USA", "Taiwan"], genre:["Founder", "Tech"], added:"2026-06-11"},
+  {f:"sanjay_mehrotra", name:"Sanjay Mehrotra", desc:"SanDisk共同創業でフラッシュを大衆化し、Micron再建CEOとしてHBM・AI時代の主役に導いた二幕のレジェンド", born:1958, died:null, nat:["India", "USA"], genre:["Executive", "Tech"], added:"2026-06-11"},
+  {f:"sergey_brin", name:"Sergey Brin", desc:"Google共同創業者。Alphabet退任を経てGemini AIに現場復帰", born:1973, died:null, nat:["Russia", "USA"], genre:["Founder", "Tech", "AI"], added:"2026-06-10"},
+  {f:"brett_adcock", name:"Brett Adcock", desc:"農家育ちの連続起業家——Vettery売却、Archer上場、Figure AIで$39B", born:1986, died:null, nat:["USA"], genre:["Founder", "AI"], added:"2026-05-14"},
+  {f:"sam_altman", name:"Sam Altman", desc:"世界最先端のAI研究所でAGIへの競走を先導するCEO", born:1985, died:null, nat:["USA"], genre:["Founder", "AI", "Investor"], added:"2026-04-15"},
+  {f:"dylan_field", name:"Dylan Field", desc:"Thiel Fellowから、ブラウザで動くデザインツールFigmaを上場まで育てた", born:1992, died:null, nat:["USA"], genre:["Founder", "Tech"], added:"2026-04-15"},
+  {f:"jensen_huang", name:"Jensen Huang", desc:"NvidiaをAI時代の必須インフラへと変革した立役者", born:1963, died:null, nat:["Taiwan", "USA"], genre:["Founder", "Tech", "AI"], added:"2026-04-15"},
+  {f:"masayoshi_son", name:"Masayoshi Son", desc:"人類の技術的未来に強い確信で超大型賭けを続ける", born:1957, died:null, nat:["Japan"], genre:["Founder", "Investor", "Tech"], added:"2026-04-15"},
+  {f:"marc_andreessen", name:"Marc Andreessen", desc:"ソフトウェアが世界を食べる——a16zはその担い手に資金を投じる", born:1971, died:null, nat:["USA"], genre:["Investor", "Founder", "Tech"], added:"2026-04-15"},
+  {f:"elon_musk", name:"Elon Musk", desc:"エネルギー・宇宙・AIで文明スケールの企業を同時に構築", born:1971, died:null, nat:["South Africa", "Canada", "USA"], genre:["Founder", "Tech", "AI"], added:"2026-04-12"},
+  {f:"mark_zuckerberg", name:"Mark Zuckerberg", desc:"SNS帝国を築き、AIとARへの全力転換を図るCEO", born:1984, died:null, nat:["USA"], genre:["Founder", "Tech", "AI"], added:"2026-04-06"},
+  {f:"patrick_collison", name:"Patrick Collison", desc:"インターネット経済を支える決済インフラを静かに構築", born:1988, died:null, nat:["Ireland"], genre:["Founder", "Tech", "Finance"], added:"2026-04-06"},
+  {f:"palmer_luckey", name:"Palmer Luckey", desc:"VR先駆者からAndurilを創業し、防衛産業を革新", born:1992, died:null, nat:["USA"], genre:["Founder", "Tech", "Military"], added:"2026-04-06"},
+  {f:"travis_kalanick", name:"Travis Kalanick", desc:"あらゆる代償を払って交通インフラを破壊し、再出発", born:1976, died:null, nat:["USA"], genre:["Founder", "Tech"], added:"2026-04-06"},
+  {f:"demis_hassabis", name:"Demis Hassabis", desc:"AlphaGo・AlphaFold・Geminiを生んだ深層知性", born:1976, died:null, nat:["UK"], genre:["Founder", "AI", "Scientist"], added:"2026-04-06"},
+  {f:"peter_thiel", name:"Peter Thiel", desc:"独占・監視・長寿に投資するZero to One型の逆張り", born:1967, died:null, nat:["Germany", "USA"], genre:["Investor", "Founder", "Thinker"], added:"2026-04-06"},
+  {f:"paul_graham", name:"Paul Graham", desc:"YCとエッセイでシリコンバレーの思考様式を定義", born:1964, died:null, nat:["UK", "USA"], genre:["Investor", "Founder", "Thinker"], added:"2026-04-06"},
+  {f:"naval_ravikant", name:"Naval Ravikant", desc:"固有知識とレバレッジを軸にした富の哲学", born:1974, died:null, nat:["India", "USA"], genre:["Investor", "Thinker"], added:"2026-04-06"},
+  {f:"david_sacks", name:"David Sacks", desc:"PayPalマフィアの実業家からVCを経て米国AI政策の中枢へ", born:1972, died:null, nat:["South Africa", "USA"], genre:["Investor", "Founder", "Statesman"], added:"2026-04-06"},
+];
+
+/* 時代区分は生年から自動で決める */
+const ERAS = [
+  ['Ancient',      -9999, 499],
+  ['Medieval',       500, 1499],
+  ['Early Modern',  1500, 1799],
+  ['19th Century',  1800, 1899],
+  ['20th Century',  1900, 1959],
+  ['Contemporary',  1960, 9999],
+];
+const eraOf = b => ERAS.find(e => b >= e[1] && b <= e[2])[0];
+PEOPLE.forEach(p => { p.era = eraOf(p.born); });
+
+const GROUPS = [
+  { key: 'genre', label: 'Genre',       get: p => p.genre },
+  { key: 'era',   label: 'Era',         get: p => [p.era], order: ERAS.map(e => e[0]) },
+  { key: 'nat',   label: 'Nationality', get: p => p.nat },
+];
+
+const state = { q: '', sort: 'added', dir: 'desc', sel: { genre: new Set(), era: new Set(), nat: new Set() } };
+
+const yr = y => y == null ? '' : (y < 0 ? 'BC ' + (-y) : String(y));
+const years = p => p.died == null ? yr(p.born) + '–' : (p.born < 0 && p.died < 0 ? 'BC ' + (-p.born) + '–' + (-p.died) : yr(p.born) + '–' + yr(p.died));
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+/* グループ内OR・グループ間AND。exceptKey を外した条件で件数を数える（ファセット件数用） */
+function match(p, exceptKey) {
+  if (state.q) {
+    const t = (p.name + ' ' + p.desc + ' ' + p.nat.join(' ') + ' ' + p.genre.join(' ')).toLowerCase();
+    if (!t.includes(state.q)) return false;
+  }
+  for (const g of GROUPS) {
+    if (g.key === exceptKey) continue;
+    const sel = state.sel[g.key];
+    if (sel.size && !g.get(p).some(v => sel.has(v))) return false;
+  }
+  return true;
+}
+
+function renderGroups() {
+  const box = document.getElementById('groups');
+  box.innerHTML = GROUPS.map(g => {
+    const all = {};
+    PEOPLE.forEach(p => g.get(p).forEach(v => { all[v] = all[v] || 0; }));
+    PEOPLE.filter(p => match(p, g.key)).forEach(p => g.get(p).forEach(v => { all[v]++; }));
+    const total = {};
+    PEOPLE.forEach(p => g.get(p).forEach(v => { total[v] = (total[v] || 0) + 1; }));
+    const keys = Object.keys(all).sort(g.order
+      ? (a, b) => g.order.indexOf(a) - g.order.indexOf(b)
+      : (a, b) => total[b] - total[a] || a.localeCompare(b));
+    const sel = state.sel[g.key];
+    return `<div class="f-group"><div class="f-label">${g.label}<button class="clr${sel.size ? ' on' : ''}" data-clr="${g.key}" type="button">clear</button></div><div class="chips">` +
+      keys.map(v => `<button type="button" class="chip${sel.has(v) ? ' on' : ''}${!all[v] && !sel.has(v) ? ' zero' : ''}" data-g="${g.key}" data-v="${esc(v)}" aria-pressed="${sel.has(v)}">${esc(v)}<span class="n">${all[v]}</span></button>`).join('') +
+      `</div></div>`;
+  }).join('');
+}
+
+function render() {
+  const list = PEOPLE.filter(p => match(p));
+  const d = state.dir === 'asc' ? 1 : -1;
+  list.sort((a, b) => {
+    let r = state.sort === 'name' ? a.name.localeCompare(b.name) : (a[state.sort] < b[state.sort] ? -1 : a[state.sort] > b[state.sort] ? 1 : 0);
+    if (!r) r = state.sort === 'added' ? a.born - b.born : a.name.localeCompare(b.name);
+    return r * d;
+  });
+  const hit = (g, v) => state.sel[g].has(v) ? ' hit' : '';
+  document.getElementById('rows').innerHTML = list.map(p => `<tr class="row" data-href="${p.f}.html">
+    <td class="c-main"><div class="p-name"><a href="${p.f}.html">${esc(p.name)}</a></div><div class="p-desc">${esc(p.desc)}</div></td>
+    <td class="c-years">${years(p)}<span class="era">${p.era}</span></td>
+    <td class="c-nat"><div class="tags">${p.nat.map(v => `<span class="tag${hit('nat', v)}" data-g="nat" data-v="${esc(v)}">${esc(v)}</span>`).join('')}</div></td>
+    <td class="c-genre"><div class="tags">${p.genre.map(v => `<span class="tag${hit('genre', v)}" data-g="genre" data-v="${esc(v)}">${esc(v)}</span>`).join('')}</div></td>
+    <td class="c-added">${p.added}</td>
+  </tr>`).join('');
+  document.getElementById('cnt').textContent = list.length;
+  document.getElementById('tot').textContent = PEOPLE.length;
+  document.getElementById('empty').style.display = list.length ? 'none' : 'block';
+  document.getElementById('active').innerHTML = GROUPS.flatMap(g => [...state.sel[g.key]].map(v => `<span data-g="${g.key}" data-v="${esc(v)}">${esc(v)}</span>`)).join('');
+  document.getElementById('sort').value = state.sort + ':' + state.dir;
+  document.querySelectorAll('.list th.sortable').forEach(th => {
+    th.querySelector('.ar').textContent = th.dataset.k === state.sort ? (state.dir === 'asc' ? '↑' : '↓') : '';
+  });
+  renderGroups();
+  const nSel = GROUPS.reduce((a, g) => a + state.sel[g.key].size, 0);
+  document.getElementById('ftoggle').textContent = nSel ? 'Filters (' + nSel + ')' : 'Filters';
+  saveHash();
+}
+
+function toggle(g, v) { const s = state.sel[g]; s.has(v) ? s.delete(v) : s.add(v); render(); }
+
+/* URLのハッシュに状態を持たせる（共有・リロード用） */
+function saveHash() {
+  const p = new URLSearchParams();
+  if (state.q) p.set('q', state.q);
+  if (state.sort !== 'added' || state.dir !== 'desc') p.set('sort', state.sort + ':' + state.dir);
+  GROUPS.forEach(g => { if (state.sel[g.key].size) p.set(g.key, [...state.sel[g.key]].join('|')); });
+  const h = p.toString();
+  history.replaceState(null, '', h ? '#' + h : location.pathname + location.search);
+}
+function loadHash() {
+  const p = new URLSearchParams(location.hash.slice(1));
+  state.q = (p.get('q') || '').toLowerCase();
+  document.getElementById('q').value = p.get('q') || '';
+  const [k, d] = (p.get('sort') || 'added:desc').split(':');
+  state.sort = k; state.dir = d;
+  GROUPS.forEach(g => { state.sel[g.key] = new Set((p.get(g.key) || '').split('|').filter(Boolean)); });
+}
+
+document.addEventListener('click', e => {
+  const chip = e.target.closest('.chip, .tag, .active-tags span');
+  if (chip) { e.stopPropagation(); toggle(chip.dataset.g, chip.dataset.v); return; }
+  const clr = e.target.closest('[data-clr]');
+  if (clr) { state.sel[clr.dataset.clr].clear(); render(); return; }
+  const th = e.target.closest('.list th.sortable');
+  if (th) {
+    const k = th.dataset.k;
+    if (state.sort === k) state.dir = state.dir === 'asc' ? 'desc' : 'asc';
+    else { state.sort = k; state.dir = k === 'added' ? 'desc' : 'asc'; }
+    render(); return;
+  }
+  const row = e.target.closest('tr.row');
+  if (row && !e.target.closest('a')) location.href = row.dataset.href;
+});
+document.getElementById('ftoggle').addEventListener('click', e => {
+  const f = document.getElementById('filters'); f.classList.toggle('open');
+  e.target.setAttribute('aria-expanded', f.classList.contains('open'));
+});
+document.getElementById('q').addEventListener('input', e => { state.q = e.target.value.trim().toLowerCase(); render(); });
+document.getElementById('sort').addEventListener('change', e => { [state.sort, state.dir] = e.target.value.split(':'); render(); });
+document.getElementById('reset').addEventListener('click', () => {
+  state.q = ''; document.getElementById('q').value = '';
+  state.sort = 'added'; state.dir = 'desc';
+  GROUPS.forEach(g => state.sel[g.key].clear());
+  render();
+});
+
+loadHash();
+render();
+const last = PEOPLE.map(p => p.added).sort().pop();
+document.getElementById('stPeople').textContent = PEOPLE.length + ' people';
+document.getElementById('stUpdated').textContent = last.slice(0, 7).replace('-', '.');
+</script>
+
 <footer class="snav-footer">
   <div class="footer-stats">
-    <span class="stat">56 people</span><span class="sep">·</span>
-    <span class="stat">5 categories</span><span class="sep">·</span>
-    <span class="stat">2026.10</span>
+    <span class="stat" id="stPeople">56 people</span><span class="sep">·</span>
+    <span class="stat" id="stUpdated">2026.10</span>
   </div>
   <div class="snav-footer-sns">
     <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
