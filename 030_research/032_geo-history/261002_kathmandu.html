@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カトマンズ / Kathmandu — Geo Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+      .hero h1 { font-size: 32px; overflow-wrap: anywhere; }
+      .hero-eyebrow, .toc li, .spot-name, .crumb { overflow-wrap: anywhere; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* 人口推移グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 162px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="261002_nepal.html">nepal</a>
+    <span class="sep">/</span>
+    <span class="cur">kathmandu</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">City Research — 261002</div>
+    <h1>カトマンズ / Kathmandu</h1>
+    <div class="hero-country">ネパール連邦民主共和国 首都 · 標高約1,400mのカトマンズ盆地 / 首都市86万・盆地3郡303万（2021年国勢調査） / ネワール王朝の古都と、Z世代デモで政権が倒れた首都</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">カトマンズ首都市 人口</div>
+        <div class="kv-val">862,400</div>
+        <div class="kv-note">2021年国勢調査 / 2011年より減少</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">盆地3郡の人口</div>
+        <div class="kv-val">約303万</div>
+        <div class="kv-note">カトマンズ・ラリトプル・バクタプル郡</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">トリブバン空港 旅客数</div>
+        <div class="kv-val">977万</div>
+        <div class="kv-note">2025年 / 滑走路はいまも1本</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">Z世代デモの死者</div>
+        <div class="kv-val">77人</div>
+        <div class="kv-note">2025年9月 / 6か月後に元市長が首相に</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">カトマンズとは — 基本情報</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">人口推移 — 盆地への急増</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">主要エリアガイド</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">気候</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">歴史 — マッラ朝の三王国から1768年の統一へ</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">経済 — ネパール経済の中のカトマンズ</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">金融 — NEPSEとインドルピー・ペッグ</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">市の財政 — カトマンズ首都市の予算</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">不動産 — 土地神話と取引の停滞</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">交通インフラ — 環状道路・渋滞・大気汚染</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">空港 — トリブバン国際空港</a></li>
+      <li><span class="toc-num">12</span><a href="#s12">エアライン — 国際線・国内線・安全規制</a></li>
+      <li><span class="toc-num">13</span><a href="#s13">デジタル — QR決済とSNS遮断</a></li>
+      <li><span class="toc-num">14</span><a href="#s14">エネルギー — 18時間停電の解消</a></li>
+      <li><span class="toc-num">15</span><a href="#s15">2015年地震と復興</a></li>
+      <li><span class="toc-num">16</span><a href="#s16">2025年9月 Z世代デモ</a></li>
+      <li><span class="toc-num">17</span><a href="#s17">世界遺産 — 盆地の7つの記念物群</a></li>
+      <li><span class="toc-num">18</span><a href="#s18">食・グルメ</a></li>
+      <li><span class="toc-num">19</span><a href="#s19">観光スポット</a></li>
+      <li><span class="toc-num">20</span><a href="#s20">ゆかりの著名人</a></li>
+      <li><span class="toc-num">21</span><a href="#s21">直近の出来事（2024→2026）</a></li>
+      <li><span class="toc-num">22</span><a href="#s22">行くなら</a></li>
+      <li><span class="toc-num">23</span><a href="#s23">Index — 関連ページ</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">カトマンズとは — 基本情報</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      カトマンズを一言でいうと「<strong>ヒマラヤの麓の盆地に、国家機能のほぼすべてを詰め込んだ首都</strong>」。
+      <a href="261002_nepal.html">ネパール</a>の首都で、カトマンズ・ラリトプル（パタン）・バクタプルの3郡からなる<strong>カトマンズ盆地に約303万人</strong>が住む（2021年）。
+      盆地を含むバグマティ州は<strong>全国GDPの約36.5%</strong>を生み、州の一人あたり所得は<strong>全国平均の約1.7倍</strong>。<br>
+      同時にここは<strong>中世ネワール王国の都市がそのまま生活の場として残る世界遺産の街</strong>であり、
+      <strong>2025年9月にはSNS遮断をきっかけとしたZ世代のデモで国会・官庁街（シンハダルバール）が焼け、政権が2日で倒れた</strong>舞台でもある。
+      <a href="260918_bangkok.html" style="color:inherit">バンコク</a>が「メコン圏の本社機能」で食う都市なら、カトマンズは<strong>「出稼ぎ送金と観光と援助が流れ込む国の、唯一の大都市」</strong>だ。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>正式名称</strong></td><td><strong>カトマンズ首都市（Kathmandu Metropolitan City / काठमाडौं महानगरपालिका）</strong>。ネワール語では<strong>「イェン（Yen）」</strong>、古名は<strong>カンティプル</strong>。地名は旧王宮広場に立つ木造の休憩所<strong>カスタマンダプ（Kasthamandap＝「木の東屋」）</strong>に由来する</td></tr>
+      <tr><td>位置</td><td>カトマンズ盆地の北西部、バグマティ川の北。<strong>標高約1,400m</strong>。周囲を2,000m級の山に囲まれた<strong>すり鉢状の盆地</strong>で、この地形が大気汚染・霧・空港の制約（§10・§11）すべての前提になる</td></tr>
+      <tr><td>面積</td><td>首都市は<strong>49.45km²</strong>（東京23区の約1/12）、<strong>32の区（ward）</strong>。都市圏としては約899km²とされる</td></tr>
+      <tr><td><strong>人口</strong></td><td><strong>首都市862,400人（2021年国勢調査、施設人口を除く）</strong>。ただし集計により845,767〜856,767人という数字も流通している。<strong>カトマンズ郡で2,041,587人、盆地3郡で約303万人</strong></td></tr>
+      <tr><td>人口密度</td><td>首都市で<strong>約1.7万人/km²</strong>（862,400÷49.45km²）。<strong>東京23区（約1.5万人/km²）より高い</strong></td></tr>
+      <tr><td><strong>経済規模</strong></td><td>市単独のGDP統計は公表されていない。<strong>カトマンズ盆地を含むバグマティ州が全国GDPの36.52%（約2.23兆ルピー、2024/25年度）</strong>、州の一人あたり所得は<strong>2,644ドル</strong>（全国1,513ドル）</td></tr>
+      <tr><td>公用語</td><td><strong>ネパール語</strong>。盆地の先住民ネワールの言語<strong>ネワール語（ネパール・バサ）</strong>が旧市街では日常的に使われる。英語は観光地・ホテルでは十分通じる</td></tr>
+      <tr><td>通貨</td><td><strong>ネパール・ルピー（NPR）</strong>。<strong>1インドルピー＝1.6ネパールルピーで1993年から固定</strong>（§07）。<strong>US$1＝約151〜153ルピー</strong>（2026年9月、中銀レート）</td></tr>
+      <tr><td>政体</td><td>連邦民主共和制（2008年に王制廃止）。大統領は<strong>ラムチャンドラ・パウデル</strong>、首相は<strong>バレン（バレンドラ）・シャハ</strong>（国民独立党RSP、2026年3月就任）——<strong>直前までカトマンズ市長だった人物</strong></td></tr>
+      <tr><td><strong>カトマンズ市長</strong></td><td>市長は公選。<strong>バレン・シャハが2022年5月に無所属で当選→2026年1月18日に辞職して国政へ</strong>。以後は<strong>副市長スニタ・ダンゴルが市長代行</strong></td></tr>
+      <tr><td>時間帯</td><td><strong>UTC+5:45</strong>（<strong>日本より3時間15分遅い</strong>）。15分単位のずれは世界でも珍しい</td></tr>
+      <tr><td>暦</td><td>公式暦は<strong>ビクラム暦（B.S.）</strong>。2026年は<strong>B.S.2082〜2083年</strong>で、会計年度は7月中旬始まり。予算や統計の「2083/84」はこの暦</td></tr>
+      <tr><td>ビザ</td><td>日本国籍は<strong>到着ビザ（15日US$30／30日US$50／90日US$125）</strong>で入国できる</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>「首都市」と「盆地」は別物。</strong>
+      カトマンズ盆地には<strong>カトマンズ首都市・ラリトプル首都市（パタン）・バクタプル市</strong>をはじめ十数の自治体が隣接していて、
+      観光客が「カトマンズ」と思っているパタンやバクタプルは<strong>行政上は別の市</strong>。
+      このページでは原則として<strong>盆地全体を「カトマンズ」</strong>として扱い、統計は「首都市」「盆地3郡」を書き分ける。
+    </div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">人口推移 — 盆地への急増</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Population — Kathmandu District / Metropolitan City 1981–2021</div>
+      <div class="chart-scroll"><svg class="chart" viewBox="0 0 720 300" role="img" aria-label="カトマンズ郡と首都市の人口推移 1981-2021">
+        <line class="grid" x1="62" y1="222.0" x2="704" y2="222.0"/><text class="ytick" x="54" y="225.5">500,000</text>
+        <line class="grid" x1="62" y1="174.0" x2="704" y2="174.0"/><text class="ytick" x="54" y="177.5">1,000,000</text>
+        <line class="grid" x1="62" y1="126.0" x2="704" y2="126.0"/><text class="ytick" x="54" y="129.5">1,500,000</text>
+        <line class="grid" x1="62" y1="78.0" x2="704" y2="78.0"/><text class="ytick" x="54" y="81.5">2,000,000</text>
+        <line class="grid" x1="62" y1="30.0" x2="704" y2="30.0"/><text class="ytick" x="54" y="33.5">2,500,000</text>
+        <polyline class="line" points="62.0,229.5 222.5,205.2 383.0,166.1 543.5,102.6 704.0,74.0"/>
+        <polyline class="line" style="stroke-dasharray:5 4;stroke-width:1.8" points="222.5,229.0 383.0,205.5 543.5,173.7 704.0,187.2"/>
+        <circle class="dot" cx="62.0" cy="229.5" r="3.4"/>
+        <circle class="dot" cx="222.5" cy="205.2" r="3.4"/>
+        <circle class="dot" cx="383.0" cy="166.1" r="3.4"/>
+        <circle class="dot" cx="543.5" cy="102.6" r="3.4"/>
+        <circle class="dot peak" cx="704.0" cy="74.0" r="4.2"/>
+        <circle class="dot" cx="222.5" cy="229.0" r="3"/>
+        <circle class="dot" cx="383.0" cy="205.5" r="3"/>
+        <circle class="dot" cx="543.5" cy="173.7" r="3"/>
+        <circle class="dot" cx="704.0" cy="187.2" r="3"/>
+        <text class="peaklabel" x="700" y="58" text-anchor="end">2021年 204万（カトマンズ郡）</text>
+        <text class="peaklabel" x="700" y="210" text-anchor="end" style="font-size:11.5px">- - - 首都市は2011年をピークに減少</text>
+        <text class="xtick" x="62.0" y="286">1981</text>
+        <text class="xtick" x="222.5" y="286">1991</text>
+        <text class="xtick" x="383.0" y="286">2001</text>
+        <text class="xtick" x="543.5" y="286">2011</text>
+        <text class="xtick" x="700.0" y="286">2021</text>
+      </svg></div>
+      <div class="chart-note">実線＝カトマンズ郡（盆地の約3分の2）。破線＝カトマンズ首都市。<strong>中心が減って周縁が増える「ドーナツ化」が2010年代に始まった</strong>。2021年の首都市の値は施設人口を除く集計で、定義差の影響もある。</div>
+    </div>
+
+    <div class="sub-h">3つのフェーズに分かれる</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>時期</th><th>何が起きたか</th></tr>
+      <tr><td><strong>1951–1990 / 閉じた王都が開く</strong></td><td>1951年にラナ家の専制が終わり、<strong>鎖国状態だった国が外国人に開かれる</strong>。援助機関・官庁・観光（1960〜70年代のヒッピー・トレイル）が首都に集まり、<strong>カトマンズ郡は1981年42万→1991年68万</strong>へ</td></tr>
+      <tr><td><strong>1990–2011 / 内戦が人を盆地に押し込む</strong></td><td>1990年の民主化に続き、<strong>1996〜2006年のマオイスト内戦で地方の治安が崩れ、人も資金も「安全な盆地」に逃げ込んだ</strong>。郡人口は<strong>2001年108万→2011年174万（10年で1.6倍）</strong>。田畑が無計画に宅地化された</td></tr>
+      <tr><td><strong>2011– / ドーナツ化と出稼ぎ</strong></td><td>郡全体は<strong>2021年204万</strong>と増え続ける一方、<strong>首都市は100万（2011）→86万（2021）に減少</strong>。周縁のブダニールカンタ・トカ・カゲスワリ等の新興市が受け皿になった。全国では<strong>湾岸・マレーシアへの出稼ぎで若年男性が国外に出ており、全国の年人口増加率は0.92%（2021年）と80年で最低</strong></td></tr>
+    </table></div>
+
+    <details class="raw">
+      <summary>人口の推移（カトマンズ郡／首都市／盆地3郡） ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+        <tr><th>年</th><th>カトマンズ郡</th><th>カトマンズ首都市</th><th>備考</th></tr>
+        <tr><td>1981</td><td>422,237</td><td>—</td><td></td></tr>
+        <tr><td>1991</td><td>675,341</td><td>427,045</td><td>民主化の翌年</td></tr>
+        <tr><td>2001</td><td>1,081,845</td><td>671,846</td><td>内戦のさなか</td></tr>
+        <tr><td><strong>2011</strong></td><td><strong>1,744,240</strong></td><td><strong>1,003,285</strong></td><td><strong>首都市のピーク</strong>（975,543とする集計もある）</td></tr>
+        <tr><td><strong>2021</strong></td><td><strong>2,041,587</strong></td><td><strong>862,400</strong></td><td>首都市は施設人口除く。ラリトプル郡551,667・バクタプル郡432,132を足すと<strong>盆地3郡で約303万</strong></td></tr>
+      </table></div>
+    </details>
+
+    <div class="info-box">
+      <strong>読みどころ：「首都の人口が減った」は本当か。</strong>
+      首都市の減少は<strong>境界と集計定義（施設人口の扱い）の影響も含む</strong>ので額面通りには読めないが、
+      <strong>郡全体が+17%なのに中心が減っている</strong>のは確かで、<strong>地価の高騰した旧市街から盆地の縁へ住宅が押し出されている</strong>。
+      <a href="260918_bangkok.html#s02" style="color:inherit">バンコク</a>の「登録人口と実人口の乖離」と同じく、
+      カトマンズにも<strong>住民登録を地方に残したまま住む人、そして国外に出たまま登録上は残る出稼ぎ者</strong>が大量にいて、
+      <strong>どの数字も実態の一断面</strong>にすぎない。
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">主要エリアガイド</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      カトマンズ盆地は<strong>「3つの旧王都（カトマンズ・パタン・バクタプル）」と「2つの仏教聖地（ボダナート・スワヤンブナート）」と「王宮跡〜官庁街の近代軸（ドゥルバーマルグ〜シンハダルバール）」</strong>で理解するのが早い。
+      観光資源は旧王都と聖地に、政治と商業は近代軸にある。<strong>鉄道も地下鉄もない</strong>ので、エリア間の移動はすべて道路（＝渋滞）になる。
+    </div>
+
+    <div class="area-grid">
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Thamel（タメル）</div><div class="area-night">🌙🌙🌙</div></div>
+        <div class="area-equiv">東京の上野アメ横＋神田小川町（登山用品街）に相当</div>
+        <div class="area-tags"><span class="tag">バックパッカー</span><span class="tag">登山用品</span><span class="tag night">ナイトライフ</span></div>
+        <div class="area-desc">安宿・トレッキング代理店・登山用品店・両替商・ライブバーが路地に詰まった観光客街。<strong>エベレストやアンナプルナに向かう人はまずここで装備と許可証を揃える</strong>。看板の「North Face」は大半がコピー品。夜は盆地で最も遅くまで開いている。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Kathmandu Durbar Square / Basantapur</div><div class="area-night">—</div></div>
+        <div class="area-equiv">東京の皇居＋浅草寺に相当</div>
+        <div class="area-tags"><span class="tag">世界遺産</span><span class="tag">旧王宮</span><span class="tag">寺院</span></div>
+        <div class="area-desc">マッラ朝〜シャハ朝の旧王宮（ハヌマン・ドカ）前の広場。<strong>生き神クマリが住むクマリの館</strong>、地名の由来カスタマンダプがある。<strong>2015年地震で多くの塔が倒壊し、再建が続いた</strong>（§15）。南のフリーク・ストリートはヒッピー時代の名残。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Patan（ラリトプル）</div><div class="area-night">🌙</div></div>
+        <div class="area-equiv">鎌倉（古都＋職人＋洒落た住宅地）に相当</div>
+        <div class="area-tags"><span class="tag">世界遺産</span><span class="tag">金工・仏像</span><span class="tag">カフェ</span></div>
+        <div class="area-desc">バグマティ川を渡った南の旧王都。<strong>「美の都（ラリトプル）」の名の通り、金工・木彫の職人街が今も生きている</strong>。パタン博物館は盆地で最良の展示。<strong>隣接するジャワラケル／サネパは国連・NGO職員と外国人の住宅地で、カフェが集まる「代官山」</strong>。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Bhaktapur（バクタプル）</div><div class="area-night">—</div></div>
+        <div class="area-equiv">奈良町＋京都・東山に相当</div>
+        <div class="area-tags"><span class="tag">世界遺産</span><span class="tag">ネワール</span><span class="tag">陶器</span></div>
+        <div class="area-desc">盆地東端の旧王都で、<strong>3都のうち最も中世の街並みが濃い</strong>。5層の<strong>ニャタポラ寺院</strong>、陶器広場、<strong>名物の壺入りヨーグルト「ジュジュ・ダウ」</strong>。外国人は入域料が必要。車が少なく、夕方の広場は地元民の社交場になる。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Boudhanath（ボダナート）</div><div class="area-night">—</div></div>
+        <div class="area-equiv">高野山の門前町に相当</div>
+        <div class="area-tags"><span class="tag">チベット仏教</span><span class="tag">世界遺産</span><span class="tag">僧院</span></div>
+        <div class="area-desc">直径約100mとされる<strong>ネパール最大級の仏塔（ストゥーパ）</strong>。1959年以降に亡命したチベット人が周囲に僧院を建て、<strong>「チベットの外にあるチベット」</strong>になった。朝夕にマニ車を回しながら時計回りに歩く巡礼（コルラ）の流れに混ざるのが正解。<strong>空港のすぐ北</strong>。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Swayambhunath（スワヤンブナート）</div><div class="area-night">—</div></div>
+        <div class="area-equiv">東京の愛宕山＋上野・寛永寺に相当</div>
+        <div class="area-tags"><span class="tag">仏教</span><span class="tag">世界遺産</span><span class="tag">展望</span></div>
+        <div class="area-desc">盆地西の丘に立つ仏塔。<strong>四面に描かれた「ブッダの目」がネパールの象徴</strong>。猿が多く「モンキー・テンプル」の通称で呼ばれる。<strong>365段の石段を上がると盆地全体が見渡せ、天気が良ければヒマラヤも見える</strong>。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Durbar Marg（ドゥルバーマルグ）</div><div class="area-night">🌙🌙</div></div>
+        <div class="area-equiv">東京の銀座＋赤坂に相当</div>
+        <div class="area-tags"><span class="tag upscale">高級</span><span class="tag">ホテル</span><span class="tag">航空会社</span></div>
+        <div class="area-desc">旧王宮（ナラヤンヒティ、現・博物館）から南に延びる目抜き通り。<strong>高級ホテル・航空会社のオフィス・高級レストラン</strong>が並ぶ。<strong>2001年の王族殺害事件の舞台となった王宮</strong>は通りの北端。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Singha Durbar / New Baneshwor</div><div class="area-night">—</div></div>
+        <div class="area-equiv">東京の霞が関＋永田町に相当</div>
+        <div class="area-tags"><span class="tag">官庁</span><span class="tag">国会</span><span class="tag">デモ</span></div>
+        <div class="area-desc">ラナ家の宮殿を転用した中央官庁街シンハダルバールと、国会議事堂のあるニューバネショール。<strong>2025年9月9日、デモ隊にシンハダルバールと国会が放火された</strong>（§16）。<strong>1年たっても再建は進んでいない</strong>。マイティガル交差点はデモの定番の集合場所。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Lazimpat / Maharajgunj</div><div class="area-night">🌙</div></div>
+        <div class="area-equiv">東京の広尾＋麻布（大使館街）に相当</div>
+        <div class="area-tags"><span class="tag">大使館</span><span class="tag">住宅</span><span class="tag upscale">高級</span></div>
+        <div class="area-desc">旧王宮の北。<strong>日本大使館を含む各国大使館、国際機関、高級住宅</strong>が集まる。タメルから歩ける距離にありながら静か。北のマハラジガンジは病院と大学の街。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Pashupatinath（パシュパティナート）</div><div class="area-night">—</div></div>
+        <div class="area-equiv">東京の浅草＋谷中霊園に相当（ただし火葬場）</div>
+        <div class="area-tags"><span class="tag">ヒンドゥー教</span><span class="tag">世界遺産</span><span class="tag">火葬</span></div>
+        <div class="area-desc">バグマティ川沿いの<strong>ネパール最大のヒンドゥー寺院（シヴァ神）</strong>。本堂はヒンドゥー教徒以外は入れないが、<strong>対岸から川辺の火葬（ガート）を見ることができる</strong>。死と日常が地続きのカトマンズを最も強く感じる場所。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">気候</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>ケッペン気候区分</th><th>コード</th><th>特徴</th></tr>
+      <tr><td>温暖冬季少雨気候（亜熱帯の高地）</td><td><strong>Cwa / Cwb</strong></td><td><strong>標高1,400mのおかげで、緯度（北緯27.7度＝奄美大島と同程度）の割に涼しい</strong>。月平均気温は1月の約10℃から7〜8月の約22℃。年降水量は<strong>約1,340mm</strong>で、その大半が6〜9月のモンスーンに集中する</td></tr>
+    </table></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>季節</th><th>時期</th><th>中身</th></tr>
+      <tr><td><strong>秋（ベストシーズン）</strong></td><td><strong>10月〜11月</strong></td><td>モンスーン明けで空気が澄み、<strong>盆地からヒマラヤが最もよく見える</strong>。ダサイン・ティハールの2大祭りもこの時期。<strong>トレッキングと観光の最繁忙期で、空港も最も混む</strong></td></tr>
+      <tr><td>冬</td><td>12月〜2月</td><td>日中は晴れて15〜20℃前後まで上がるが、<strong>朝晩は0℃近くまで冷える</strong>。暖房のない建物が多い。<strong>朝の濃霧で空港の発着が遅れやすい</strong>（§11）</td></tr>
+      <tr><td><strong>春</strong></td><td><strong>3月〜5月</strong></td><td>暖かく花の季節だが、<strong>乾燥と山火事の煙が盆地に溜まり、大気汚染が年間で最悪になる</strong>。2025年4月8日にはIQAirで<strong>世界で最も汚染された都市（AQI 279）</strong>にランクされた</td></tr>
+      <tr><td><strong>雨季（モンスーン）</strong></td><td><strong>6月〜9月</strong></td><td><strong>7月が最多（約378mm）</strong>。夜間〜明け方に強く降る型が多い。<strong>2024年9月28日には24時間で240mmと観測史上最多級の豪雨となり、盆地内のバグマティ川・ナクー川が氾濫した</strong></td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>すり鉢の底に住むということ。</strong>
+      盆地は<strong>周囲を山に囲まれて風が抜けにくく、冬は逆転層ができて排気ガス・ごみ焼却・レンガ工場の煙が底に溜まる</strong>。
+      2024年のPM2.5年平均は<strong>45.1µg/m³（WHO指針の約9倍）</strong>。
+      <strong>「ヒマラヤが見える日」は、そのまま「空気がきれいな日」の指標</strong>になっている。
+      もう一つの宿命は地震で、<strong>盆地はかつての湖が干上がった軟らかい堆積層の上にあり、揺れが増幅されやすい</strong>（§15）。
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">歴史 — マッラ朝の三王国から1768年の統一へ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>年</th><th>出来事</th></tr>
+      <tr><td>伝説</td><td><strong>盆地はもともと湖で、文殊菩薩が剣で山を切り開いて水を抜いた</strong>という創世神話がある。地質学的にも盆地は古代湖の跡</td></tr>
+      <tr><td>5〜9世紀</td><td><strong>リッチャヴィ朝</strong>。チャング・ナラヤンの碑文（464年）が残る。唐やチベットとの交易路の中継地として栄えた</td></tr>
+      <tr><td><strong>12〜18世紀</strong></td><td><strong>マッラ朝</strong>。盆地を支配したネワールの王朝で、<strong>今日の世界遺産の寺院・王宮・広場の大半はこの時代のもの</strong>。13世紀にはパタン出身の工匠<strong>アラニコ</strong>が元の大都に招かれ、北京の白塔寺を建てた</td></tr>
+      <tr><td><strong>1482年頃</strong></td><td>ヤクシャ・マッラ王の死後、王国が<strong>カトマンズ（カンティプル）・パタン（ラリトプル）・バクタプルの三王国</strong>に分裂。<strong>3つの王宮広場が数km間隔で並ぶのは、この3王国が互いに競って寺院を建てた結果</strong></td></tr>
+      <tr><td><strong>1768</strong></td><td><strong>西のゴルカ王国のプリトビ・ナラヤン・シャハが、インドラ・ジャトラ祭の夜にカトマンズを攻略</strong>。翌年までにパタン・バクタプルも落とし、盆地を首都とする<strong>統一ネパール（シャハ王朝）</strong>が成立。ネワールの王都が「ネパール国家の首都」に変わった瞬間</td></tr>
+      <tr><td>1846–1951</td><td><strong>コート（王宮）の虐殺でジャンガ・バハドゥル・ラナが実権を握り、ラナ家の世襲宰相制が約100年続く</strong>。国王は名目化し、<strong>国は事実上鎖国</strong>。シンハダルバールなど白亜の西洋式宮殿はこの時代の遺産</td></tr>
+      <tr><td><strong>1951</strong></td><td><strong>王政復古とラナ体制の終焉</strong>。外国人に国が開かれ、1953年のエベレスト初登頂を機に登山・観光の拠点となる</td></tr>
+      <tr><td>1990</td><td><strong>第1次民主化運動（ジャナ・アンドラン）</strong>。複数政党制の立憲君主制へ</td></tr>
+      <tr><td>1996–2006</td><td><strong>マオイスト（ネパール共産党毛沢東主義派）の人民戦争</strong>。地方が戦場となり、人口が盆地に流入した（§02）</td></tr>
+      <tr><td><strong>2001</strong></td><td><strong>ナラヤンヒティ王宮で王族殺害事件</strong>。ビレンドラ国王一家が殺害され、王弟ギャネンドラが即位</td></tr>
+      <tr><td><strong>2006–2008</strong></td><td><strong>第2次民主化運動で国王が権力を放棄、2008年に制憲議会が王制を廃止</strong>。240年続いたシャハ王朝が終わり、王宮は博物館になった</td></tr>
+      <tr><td>2015</td><td><strong>4月25日のゴルカ地震（M7.8）</strong>（§15）。9月に新憲法公布、7州の連邦制へ</td></tr>
+      <tr><td><strong>2025–2026</strong></td><td><strong>9月のZ世代デモで政権崩壊</strong>（§16）→暫定政権→<strong>2026年3月5日総選挙で国民独立党（RSP）が182議席を獲得、元カトマンズ市長バレン・シャハが首相に</strong></td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>歴史の読み筋。</strong>カトマンズの歴史は<strong>「ネワールの都市文明」の上に「ゴルカ（山岳パハリ）の国家」が乗った二層構造</strong>で説明できる。
+      寺院・祭り・料理・職人技はネワールのもの、<strong>国語・軍・官僚機構は1768年以降に西から来た支配層のもの</strong>。
+      現在もネワール人は盆地の人口の一部にすぎないが、<strong>インドラ・ジャトラやクマリ信仰など「首都の顔」となる文化の大半は彼らが担っている</strong>。
+      そして2008年以降の政治は、<strong>王制廃止 → 連立の短命政権の繰り返し → 若者の怒り → 既成政党の総退場（2026年）</strong>という流れで読むと早い。
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">経済 — ネパール経済の中のカトマンズ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ネパール経済は<strong>①出稼ぎ送金 ②農業 ③観光 ④援助と公共投資 ⑤水力発電</strong>で回っている。
+      製造業は弱く、<strong>サービス業がGDPの約62%</strong>。<strong>カトマンズは送金が消費される場所、観光客が最初に降り立つ場所、援助機関と官庁が集まる場所</strong>として、そのすべての「受け皿」になっている。
+      <strong>バグマティ州（盆地を含む）だけで全国GDPの36.52%</strong>——<a href="260918_bangkok.html#s01" style="color:inherit">バンコク首都圏の約25%</a>より一極集中度は高い。
+    </div>
+
+    <div class="sub-h">ネパールのマクロ（2024/25〜2025/26年度）</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>指標</th><th>値</th><th>コメント</th></tr>
+      <tr><td><strong>名目GDP</strong></td><td><strong>約6.61兆ルピー（2025/26年度、約440億ドル）</strong></td><td>国家統計局（NSO）の推計</td></tr>
+      <tr><td><strong>実質成長率</strong></td><td><strong>2024/25年度 +4.43% → 2025/26年度 +3.85%</strong></td><td><strong>Z世代デモ（2025年9月）の破壊と政治空白が下押し</strong></td></tr>
+      <tr><td>一人あたりGDP</td><td><strong>1,513ドル（2025/26年度）</strong></td><td>前年度1,516ドルからほぼ横ばい。<strong>バグマティ州は2,644ドル、最下位のマデシュ州は934ドル</strong>で約2.8倍の差</td></tr>
+      <tr><td><strong>海外送金</strong></td><td><strong>GDPの約4分の1〜3割</strong></td><td><strong>世界でも有数の送金依存国</strong>。湾岸諸国・マレーシアへの出稼ぎが中心。2025/26年度は前年比3割超増とされる</td></tr>
+      <tr><td>インフレ</td><td><strong>約2.1%</strong></td><td>インドの物価にほぼ連動（ペッグ制のため）</td></tr>
+      <tr><td>公的債務</td><td><strong>GDP比43.6%</strong></td><td>多くは低利の譲許的借款</td></tr>
+      <tr><td>絶対的貧困率</td><td><strong>20.27%</strong></td><td>全国。盆地は大幅に低い</td></tr>
+    </table></div>
+
+    <div class="sub-h">観光 — 年間116万人、その入口はほぼすべてカトマンズ</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>指標</th><th>値</th><th>コメント</th></tr>
+      <tr><td><strong>外国人訪問者</strong></td><td><strong>2025年 1,158,459人</strong>（前年比+約1%）</td><td><strong>3年連続で100万人超</strong>だが、目標の150万人には遠い。コロナ前の約97%水準</td></tr>
+      <tr><td>国別1位</td><td><strong>インド 292,438人（▲8%）</strong></td><td>空路のみの集計（陸路で来るインド人は別）。<strong>減少はZ世代デモの影響と観光局は説明</strong></td></tr>
+      <tr><td>国別2位</td><td><strong>米国 112,316人</strong></td><td>以下、中国・英国などが続く</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：「送金で食べる首都」。</strong>
+      毎年数十万人の若者が<strong>カタール・UAE・サウジ・マレーシア</strong>へ働きに出て、その仕送りが<strong>カトマンズの住宅建設・私立学校・スマホ・バイク</strong>に化ける。
+      トリブバン空港の出発ロビーを埋めるのは観光客ではなく<strong>出稼ぎ労働者</strong>で、国際線旅客の多くが中東・マレーシア路線なのはこのため（§12）。
+      <strong>送金は外貨準備（輸入の約18.5か月分）を厚くする一方、国内に産業が育たない理由でもある</strong>——この構造への苛立ちが、2025年のZ世代デモの底流にあった。
+    </div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">金融 — NEPSEとインドルピー・ペッグ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>取引所</strong></td><td><strong>ネパール証券取引所（NEPSE）</strong>。カトマンズにある国内唯一の取引所。<strong>上場286社・時価総額約4.74兆ルピー（約310億ドル、2026年3月中旬）</strong>。2026年6〜7月は4.3〜4.5兆ルピー台で推移</td></tr>
+      <tr><td>構成</td><td><strong>銀行・金融機関と水力発電会社が中心</strong>。近年は保険・ホテル・航空（イエティ航空のIPO準備）なども増えている</td></tr>
+      <tr><td><strong>外国人投資</strong></td><td><strong>外国人は原則として流通市場で株を売買できない</strong>（在外ネパール人などに限定的な枠がある）。<strong>完全に国内投資家だけの市場</strong>で、個人投資家の値動きに左右されやすい</td></tr>
+      <tr><td><strong>中央銀行</strong></td><td><strong>ネパール・ラストラ銀行（NRB）</strong>。<strong>ペッグを守るのが最大の任務</strong>で、金融政策の自由度は小さい</td></tr>
+      <tr><td><strong>通貨ペッグ</strong></td><td><strong>100インドルピー＝160ネパールルピー（1:1.6）で1993年から固定</strong>。30年以上一度も変わっていない。<strong>対ドルではインドルピーと一緒に動く</strong>ため、<strong>US$1＝約151〜153ルピー（2026年9月）</strong>まで下がってきた</td></tr>
+      <tr><td>なぜペッグか</td><td><strong>貿易の約6割がインドとされ、国境は開放（ビザもパスポートも不要）</strong>。インドルピーが国境地帯では事実上並行流通しており、<strong>固定以外の選択肢が現実的にない</strong>と説明される。一方で<strong>「インドの金融政策をそのまま輸入している」との見直し論</strong>も2026年に入って論壇で再燃している</td></tr>
+      <tr><td>日本円での感覚</td><td><strong>1ルピー≒約1円</strong>（2026年9月の対ドルレートからの概算）。値札の数字をそのまま円と読んでほぼ外れない</td></tr>
+    </table></div>
+
+    <div class="callout">
+      <strong>カトマンズは金融センターではない。</strong>
+      <a href="260918_bangkok.html#s07" style="color:inherit">バンコクのSET</a>が「外国人保有上限つきの国内市場」なら、NEPSEは<strong>そもそも外国人が入れない市場</strong>。
+      国際金融の機能はほぼインド（デリー・ムンバイ）とシンガポール・ドバイが担っている。
+      ネパールの金融を語るときに本当に重要なのは株式ではなく<strong>送金の流れ（正規の銀行・送金会社と、非公式の「フンディ」）</strong>のほうだ。
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">市の財政 — カトマンズ首都市の予算</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>2082/83年度（2025年7月〜）</th><th>2083/84年度（2026年7月〜）</th></tr>
+      <tr><td><strong>予算総額</strong></td><td><strong>257.64億ルピー</strong></td><td><strong>258.83億ルピー（約1.7億ドル）</strong>。うち7.5億ルピーは外部資金</td></tr>
+      <tr><td>提出者</td><td>副市長スニタ・ダンゴル（議長はバレン市長）</td><td><strong>市長代行スニタ・ダンゴル</strong>（バレンの辞職後）。2026年7月に全会一致で可決</td></tr>
+      <tr><td><strong>インフラ開発</strong></td><td>128.0億ルピー（51%）</td><td><strong>153.1億ルピー（61%）</strong></td></tr>
+      <tr><td>社会開発</td><td>50.3億ルピー（20%）</td><td>24.2億ルピー</td></tr>
+      <tr><td>行政・事務運営</td><td>35.2億ルピー（14%）</td><td>47.1億ルピー</td></tr>
+      <tr><td>グッドガバナンス・政府間関係</td><td>31.4億ルピー（12%）</td><td>21.3億ルピー</td></tr>
+      <tr><td>経済開発</td><td>7.5億ルピー（3%）</td><td>5.4億ルピー</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：市民1人あたり約3万ルピー（約200ドル）。</strong>
+      258億ルピーを首都市の人口86万人で割ると<strong>1人あたり約3万ルピー</strong>。首都の予算としては非常に小さく、
+      <strong>上下水道・道路の幹線・空港・環状道路は国（中央政府）の事業</strong>で、市が自前でできることは限られる。
+      その中で<strong>バレン市長（2022〜2026年）は、歩道を占拠する露店の強制撤去、違法建築の取り壊し、ごみ処分場問題での州・国との対立</strong>など「目に見える行政」で若者の支持を集め、
+      <strong>市長職を踏み台に一気に首相になった</strong>。市の予算規模より、<strong>市長という「看板」の政治的価値</strong>のほうがはるかに大きかったことになる。
+    </div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">不動産 — 土地神話と取引の停滞</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>単位</strong></td><td>盆地の土地は<strong>「アナ（aana）」＝約31.8m²</strong>単位で取引される（16アナ＝1ロパニ）。価格は<strong>「1アナあたり◯ラク（10万）ルピー」</strong>で語られる</td></tr>
+      <tr><td><strong>土地神話</strong></td><td>送金と内戦期の人口流入で、<strong>「土地は絶対に下がらない」</strong>という信仰が盆地に根づいた。<strong>中心部の市場価格は政府評価額の2〜5倍</strong>とされる</td></tr>
+      <tr><td>取引の動向</td><td>2020年代前半は中銀の不動産融資規制と高金利で取引が冷え込んだ。<strong>2025/26年度は登記税収が607.4億ルピーと3年ぶりの高水準</strong>になったが、これは<strong>2026/27年度予算でのキャピタルゲイン税引き上げ（5年以上保有5%→7.5%、5年未満7.5%→10%）と分筆規制の復活を前にした駆け込み</strong></td></tr>
+      <tr><td>現状</td><td><strong>「買い手は様子見、売り手は高い希望価格を下げない」膠着状態</strong>と報じられている</td></tr>
+      <tr><td>盆地の地図</td><td>登記税収は<strong>ラガンケル（パタン）が最多</strong>で、ディリバザール・カランキ・バクタプル・チャバヒルが続く。<strong>南（ラリトプル）と東（バクタプル）、環状道路の外側</strong>に住宅開発が広がっている</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>耐震とセットで見る必要がある。</strong>
+      盆地では<strong>田畑を細かく分筆して、細い路地沿いに鉄筋コンクリートのペンシルビルを建てる</strong>パターンが無秩序に広がった。
+      <strong>消防車が入れない路地、軟弱な湖成堆積層、耐震基準の形骸化</strong>——2015年地震（§15）で倒壊が集中したのは、こうした新興住宅地と旧市街の古いレンガ造だった。
+      分筆規制は<strong>まさにこの無秩序な宅地化を止めるための政策</strong>だが、土地を資産として持つ中間層の反発も強い。
+    </div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">交通インフラ — 環状道路・渋滞・大気汚染</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>鉄道</strong></td><td><strong>盆地に鉄道・地下鉄・LRTは一本もない</strong>。メトロ構想は何度も出ては消えている。<strong>公共交通は民間の路線バス・マイクロバス・テンプー（電動三輪）</strong>で、時刻表も停留所も曖昧</td></tr>
+      <tr><td><strong>環状道路（リングロード）</strong></td><td>盆地を一周する<strong>約27kmの幹線</strong>。1970年代に中国の援助で建設。<strong>2012年から中国の援助で4車線→8車線化が始まり、第1期のカランキ〜コテショール間10.4kmが2019年1月に完成</strong>。残る区間の拡幅は遅れ、チャッパル・カルカナ〜ドビコラ区間の入札が2026年7月にようやく出た</td></tr>
+      <tr><td><strong>渋滞</strong></td><td><strong>車両の大半はバイク</strong>。道幅が狭く信号も少ないため、交通整理は警官の手信号に頼る。<strong>雨季の冠水と道路工事で渋滞はさらに悪化する</strong></td></tr>
+      <tr><td><strong>配車アプリ</strong></td><td><strong>Pathao（バイクタクシー中心）</strong>が月約4万人のライダーを抱えるとされ、<strong>inDrive</strong>も2024年4月に正式参入。<strong>配車サービスは2024年の産業企業法改正で「サービス業」として合法化</strong>されたが、<strong>バグマティ州（盆地）には運用規則がまだなく、自家用車・自家用バイクでの営業はグレー</strong>。ガンダキ州（<a href="261002_pokhara.html">ポカラ</a>）が2025年に先に規則を施行した</td></tr>
+      <tr><td><strong>大気汚染</strong></td><td><strong>PM2.5年平均45.1µg/m³（2024年）</strong>。春と冬は世界最悪クラスになる日が珍しくない。原因は<strong>車の排気（古いディーゼル車）、未舗装道路の粉塵、レンガ窯、ごみ焼却、春の山火事の煙</strong>。<strong>マスク着用はファッションではなく日常</strong></td></tr>
+      <tr><td><strong>盆地の出入口</strong></td><td>盆地から外に出る道路は<strong>西のトリシュリ方面（ポカラ・テライへ）など山越えの数本だけ</strong>で、雨季は土砂崩れで頻繁に寸断される。2024年9月の豪雨では盆地近郊の幹線でバスが土砂に埋まった</td></tr>
+      <tr><td><strong>ファストトラック</strong></td><td><strong>カトマンズ〜テライ（ニジガド）を結ぶ72.5kmの4車線高速道路</strong>。ネパール軍が施工する国家プロジェクトで、<strong>トンネル7本（計11.21km）</strong>。進捗は<strong>2026年7月中旬時点で物理48.72%</strong>、軍は<strong>2027年4月中旬の完成</strong>を掲げるが、<strong>盆地側起点（コカナ）の用地問題が未解決</strong></td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：盆地は「出口のない袋」。</strong>
+      鉄道がなく、出入口は山越えの道路数本と滑走路1本の空港だけ。
+      <strong>人口300万の都市圏がこれだけ外部との交通手段を持たないのは、世界の首都でも珍しい</strong>。
+      <a href="260918_bangkok.html#s14" style="color:inherit">バンコク</a>が「鉄道が延びたことで都市の形が変わった」都市なら、
+      カトマンズは<strong>「道路しかないから、すべてがバイクと渋滞と排気ガスに収束する」</strong>都市だ。
+    </div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">空港 — トリブバン国際空港</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      トリブバン国際空港（<strong>KTM / VNKT</strong>）は<strong>ネパールの国際線のほぼすべてと、国内線のハブ機能を1本の滑走路で同時にさばいている</strong>空港。
+      2025年の旅客は<strong>977万人（国際525万・国内453万）、発着13.8万回</strong>。
+      <strong>山に囲まれた盆地・標高1,338m・滑走路1本・誘導路が滑走路に近すぎる</strong>という条件が重なり、遅延・上空待機・事故のリスクが常に付きまとう。
+      ポカラとバイラワに第2・第3の国際空港ができたが、<strong>国際線はほとんど移っていない</strong>。
+    </div>
+
+    <div class="sub-h">基本スペックと歴史</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>開港</strong></td><td><strong>1949年4月23日に初飛来</strong>。もとは<strong>「ガウチャウル（牛の放牧地）」</strong>と呼ばれた草地で、1950年2月にインド諸都市との定期便が始まる。<strong>1955年にマヘンドラ国王が父トリブバン国王にちなんで改名</strong></td></tr>
+      <tr><td><strong>滑走路</strong></td><td><strong>1本のみ（02/20）、長さ3,350m、勾配1.2%</strong>。1975年にADB・OPECの資金で延長、2020年に現在の長さに。<strong>A330やB777クラスの大型機も発着できるが、高地のため重量制限がかかる</strong></td></tr>
+      <tr><td>標高</td><td><strong>1,338m</strong>。空気が薄いぶん離陸滑走が長くなり、夏の高温時はさらに性能が落ちる</td></tr>
+      <tr><td><strong>ターミナル</strong></td><td><strong>国際線ターミナルと国内線ターミナルが別棟</strong>（徒歩では移動しにくく、乗り継ぎは一度外に出るのが基本）。<strong>国際線ターミナルの処理能力は出発1時間あたり1,350人</strong>とされ、ピーク時は恒常的にこれを超える</td></tr>
+      <tr><td>運営</td><td><strong>ネパール民間航空局（CAAN）</strong>。<strong>規制当局と空港運営者を同じ組織が兼ねている</strong>のが国際的な批判の的（§12）</td></tr>
+      <tr><td>位置</td><td>市中心から東へ約5〜6km、<strong>ボダナートとパシュパティナートの間</strong>。市街地に囲まれ、拡張余地がほとんどない</td></tr>
+    </table></div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Passengers — Tribhuvan International Airport 2000–2025</div>
+      <div class="chart-scroll"><svg class="chart" viewBox="0 0 720 300" role="img" aria-label="トリブバン国際空港の旅客数推移 2000-2025">
+        <line class="grid" x1="62" y1="222.0" x2="704" y2="222.0"/><text class="ytick" x="54" y="225.5">2M</text>
+        <line class="grid" x1="62" y1="174.0" x2="704" y2="174.0"/><text class="ytick" x="54" y="177.5">4M</text>
+        <line class="grid" x1="62" y1="126.0" x2="704" y2="126.0"/><text class="ytick" x="54" y="129.5">6M</text>
+        <line class="grid" x1="62" y1="78.0" x2="704" y2="78.0"/><text class="ytick" x="54" y="81.5">8M</text>
+        <line class="grid" x1="62" y1="30.0" x2="704" y2="30.0"/><text class="ytick" x="54" y="33.5">10M</text>
+        <polyline class="line" points="62.0,224.1 190.4,213.3 318.8,174.2 447.2,160.1 549.9,94.2 575.6,208.5 601.3,149.2 627.0,79.1 678.3,42.4 704.0,35.4"/>
+        <circle class="dot" cx="62.0" cy="224.1" r="3.4"/>
+        <circle class="dot" cx="190.4" cy="213.3" r="3.4"/>
+        <circle class="dot" cx="318.8" cy="174.2" r="3.4"/>
+        <circle class="dot" cx="447.2" cy="160.1" r="3.4"/>
+        <circle class="dot" cx="549.9" cy="94.2" r="3.4"/>
+        <circle class="dot" cx="575.6" cy="208.5" r="3.4"/>
+        <circle class="dot" cx="601.3" cy="149.2" r="3.4"/>
+        <circle class="dot" cx="627.0" cy="79.1" r="3.4"/>
+        <circle class="dot" cx="678.3" cy="42.4" r="3.4"/>
+        <circle class="dot peak" cx="704.0" cy="35.4" r="4.2"/>
+        <text class="peaklabel" x="690" y="22" text-anchor="end">2025年 977万人</text>
+        <text class="peaklabel" x="447" y="182" text-anchor="middle" style="font-size:11.5px">2015 地震</text>
+        <text class="peaklabel" x="575" y="228" text-anchor="middle" style="font-size:11.5px">2020 コロナ</text>
+        <text class="xtick" x="62.0" y="286">2000</text>
+        <text class="xtick" x="190.4" y="286">2005</text>
+        <text class="xtick" x="318.8" y="286">2010</text>
+        <text class="xtick" x="447.2" y="286">2015</text>
+        <text class="xtick" x="575.6" y="286">2020</text>
+        <text class="xtick" x="700.0" y="286">2025</text>
+      </svg></div>
+      <div class="chart-note">国際線＋国内線の合計。<strong>25年で約5倍</strong>。2000年代前半の停滞はマオイスト内戦期、2015年の落ち込みは地震。</div>
+    </div>
+
+    <details class="raw">
+      <summary>旅客数・発着回数の推移 ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+        <tr><th>年</th><th>旅客数</th><th>発着回数</th><th>備考</th></tr>
+        <tr><td>2000</td><td>1,914,349</td><td>64,103</td><td></td></tr>
+        <tr><td>2005</td><td>2,362,885</td><td>80,379</td><td>内戦末期</td></tr>
+        <tr><td>2010</td><td>3,991,259</td><td>99,317</td><td></td></tr>
+        <tr><td>2015</td><td>4,581,210</td><td>92,428</td><td>地震で前年割れ</td></tr>
+        <tr><td>2019</td><td>7,327,042</td><td>124,255</td><td>コロナ前のピーク</td></tr>
+        <tr><td>2020</td><td>2,562,182</td><td>48,857</td><td>コロナ</td></tr>
+        <tr><td>2022</td><td>7,954,495</td><td>132,514</td><td>コロナ前を回復</td></tr>
+        <tr><td>2024</td><td>9,482,793</td><td>135,977</td><td>国際線496万人</td></tr>
+        <tr><td><strong>2025</strong></td><td><strong>約9,776,000</strong></td><td><strong>138,145</strong></td><td><strong>国際525.1万・国内452.5万</strong>。国際線発着3.46万回</td></tr>
+      </table></div>
+    </details>
+
+    <div class="sub-h">容量の逼迫 — 1本の滑走路に国際線と国内線が同居</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>論点</th><th>内容</th></tr>
+      <tr><td><strong>国際＋国内の混在</strong></td><td>国際線は1日40便前後、<strong>国内線はその約4倍</strong>。<strong>ATRやツインオッターの小型機とA330・B777が同じ滑走路を使う</strong>ため、間隔調整で待ちが生じる</td></tr>
+      <tr><td><strong>上空待機</strong></td><td>秋の繁忙期や朝の霧・雨のあとは、<strong>着陸待ちの機体が盆地上空で旋回待機し、燃料不足でインドのラクナウやコルカタに目的地変更</strong>する事態が繰り返し起きてきた</td></tr>
+      <tr><td><strong>誘導路</strong></td><td>既存の平行誘導路は<strong>滑走路からわずか110m</strong>で、大型機が誘導路にいると滑走路を同時に使えない。拡張工事で<strong>172m離れた新誘導路</strong>（ICAO基準準拠）と高速脱出誘導路を北（ボダ側）・南（コテショール側）に整備中</td></tr>
+      <tr><td><strong>夜間運用</strong></td><td>工事のため<strong>2024年11月〜2025年4月は毎晩22時〜翌8時を閉鎖</strong>。2025年4月に第1期を終えて<strong>1日18時間運用</strong>に戻った。<strong>完全24時間化はまだ</strong></td></tr>
+      <tr><td><strong>駐機場</strong></td><td>駐機スポット不足が遅延の大きな原因。<strong>18機分の新国際線エプロン</strong>を建設中。ネパール航空・ネパール軍の格納庫を移転して<strong>新国際線ターミナル</strong>の用地を空ける計画</td></tr>
+      <tr><td>拡張事業の規模</td><td><strong>約150億ルピー（CAAN）</strong>。完成すると<strong>発着効率が20〜25%向上</strong>し、年間1,000万人規模に対応するとされる。2025年7月時点の物理進捗は約60%</td></tr>
+      <tr><td><strong>国内線の締め出し</strong></td><td>繁忙期（秋・春）には<strong>CAANがルクラ便をカトマンズ東方のマンタリ（ラメチャップ）空港発着に移す</strong>。2022年10月以降の運用で、<strong>トレッカーはカトマンズから車で約5時間かけてマンタリに向かう</strong>（<a href="261002_namche.html">ナムチェ</a>参照）</td></tr>
+    </table></div>
+
+    <div class="sub-h">盆地の地形と霧</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>条件</th><th>なぜ難しいか</th></tr>
+      <tr><td><strong>周囲の山</strong></td><td>盆地を囲む稜線は2,000m級。<strong>進入経路が限られ、計器進入でも降下角が深い</strong>。<strong>1992年にはタイ国際航空311便（113人死亡）とPIA268便（167人死亡）が、わずか2か月の間に進入中に山に衝突した</strong></td></tr>
+      <tr><td><strong>冬の朝霧</strong></td><td>12〜2月は放射冷却で盆地の底に濃霧が溜まり、<strong>朝の便が数時間止まる</strong>。2015年3月にはトルコ航空のA330が濃霧の中で着陸し滑走路を逸脱した（死者なし）</td></tr>
+      <tr><td><strong>雨季の視程とウィンドシア</strong></td><td>モンスーン期の積乱雲と急な天候変化。<strong>国内線の有視界飛行（VFR）の小型機は特に影響を受ける</strong></td></tr>
+      <tr><td>バードストライク</td><td>空港周辺にごみや川があり鳥が多い。<strong>2012年のシータ航空601便（19人死亡）は離陸直後のバードストライクが原因</strong>とされる</td></tr>
+    </table></div>
+
+    <div class="sub-h">空港とその周辺で起きた主な事故</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>年月</th><th>事故</th><th>死者</th></tr>
+      <tr><td>1992年7月</td><td>タイ国際航空311便（A310）、進入中に北側の山に衝突</td><td>113</td></tr>
+      <tr><td>1992年9月</td><td>パキスタン国際航空268便（A300）、進入中に南側の山に衝突</td><td>167</td></tr>
+      <tr><td>2011年9月</td><td>ブッダ・エア103便（ビーチ1900D）、エベレスト遊覧からの帰路に山腹に衝突</td><td>19</td></tr>
+      <tr><td>2012年9月</td><td>シータ航空601便（ドルニエ228）、ルクラ行きが離陸直後に墜落</td><td>19</td></tr>
+      <tr><td><strong>2018年3月</strong></td><td><strong>USバングラ航空211便（Q400）、着陸時に滑走路を外れ炎上</strong></td><td><strong>51</strong></td></tr>
+      <tr><td><strong>2024年7月24日</strong></td><td><strong>サウリヤ航空（CRJ200）、整備のためポカラへ向かうフェリー便が離陸直後に墜落・炎上</strong>。搭乗19人中、<strong>機長1人のみ生存</strong>。報告書は不適切な機首上げ操作による失速と結論づけた</td><td><strong>18</strong></td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：第2・第3の国際空港は「建てたが使われない」。</strong>
+      <strong>2022年にバイラワ（ゴータマ・ブッダ国際空港）、2023年に<a href="261002_pokhara.html">ポカラ国際空港</a>が開港</strong>したが、
+      外国航空会社の定期便はほとんど定着せず、<strong>国際線は事実上トリブバン一極のまま</strong>。
+      さらに<strong>テライのニジガドに計画された大型の第2国際空港は、環境・用地問題で長年停滞</strong>している。
+      つまり<strong>「トリブバンを拡張しながら使い続ける」しか当面の選択肢がない</strong>——ネパールの航空の問題は、ほぼすべてこの1本の滑走路に集約される。
+    </div>
+  </div>
+
+  <div class="sec" id="s12">
+    <div class="sec-label"><span class="num">12</span><span class="sec-title">エアライン — 国際線・国内線・安全規制</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="sub-h">ネパール航空 — 国営フラッグキャリアの経営難</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>概要</strong></td><td><strong>ネパール航空公社（NAC、旧ロイヤル・ネパール航空）</strong>。1958年設立の国営。<strong>国際線のシェアは長らく首位</strong>（2023年の国際線旅客64.5万人でカタール航空の62.7万人を僅差で上回る）</td></tr>
+      <tr><td><strong>国際線機材</strong></td><td><strong>A330-200×2、A320×2</strong>。国内線はツインオッターなどに加え、<strong>中国から導入したMA60・Y12は稼働率が低く「お荷物」</strong>と批判されてきた</td></tr>
+      <tr><td><strong>債務</strong></td><td>A330購入のための<strong>従業員積立基金（EPF）からの借入が約285.7億ルピー</strong>、A320購入のための<strong>市民投資信託（CIT）からの借入が約193.9億ルピー</strong>。<strong>前年度は収入234億ルピーに対し支出約244億ルピーで約10億ルピーの赤字</strong>と報じられた</td></tr>
+      <tr><td><strong>日本路線</strong></td><td><strong>カトマンズ〜成田の直行便（A330、RA433/434）</strong>。2026年9月18日から週4便に増便予定だったが、<strong>9月15日に成田でエンジンのファンブレード損傷が見つかり機体が足止めされ、乗客226人が影響を受けた</strong>。9月下旬に運航再開</td></tr>
+      <tr><td>運航時刻（参考）</td><td><strong>RA433 カトマンズ22:30発→成田8:30着（翌日）／RA434 成田10:30発→カトマンズ15:00着</strong>（2026年9〜11月ダイヤ）</td></tr>
+      <tr><td>読みどころ</td><td><strong>大型機2機で長距離路線を回すため、1機が止まると全路線が崩れる</strong>。<strong>EU域内には乗り入れできない</strong>（後述）ので、欧州路線は持てない</td></tr>
+    </table></div>
+
+    <div class="sub-h">トリブバン空港に就航する主な国際線</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>方面</th><th>航空会社と行き先</th><th>コメント</th></tr>
+      <tr><td><strong>インド</strong></td><td>エア・インディア（デリー）、インディゴ（デリー・ムンバイ）、エア・インディア・エクスプレス（ベンガルール）、ネパール航空、ブッダ・エア（ヴァラナシ・コルカタ）</td><td><strong>観光客1位のインドとの路線</strong>。インディゴは2023年の国際線旅客で4位</td></tr>
+      <tr><td><strong>中東（湾岸）</strong></td><td><strong>カタール航空（ドーハ）</strong>、<strong>フライドバイ（ドバイ）</strong>、エア・アラビア（シャルジャ・アブダビ）、ジャジーラ航空・クウェート航空（クウェート）、サラーム航空（マスカット）、ヒマラヤ航空・ネパール航空（ドーハ・ドバイ・ダンマーム・リヤド等）</td><td><strong>出稼ぎ労働者の主要路線</strong>。<strong>欧米へ行く旅行者も多くはドーハ・ドバイ経由</strong></td></tr>
+      <tr><td><strong>トルコ</strong></td><td><strong>トルコ航空（イスタンブール）</strong></td><td><strong>欧州への1回乗り継ぎ</strong>として重要</td></tr>
+      <tr><td><strong>東南アジア</strong></td><td><strong>マレーシア航空・バティック・エア・マレーシア（クアラルンプール）</strong>、タイ国際航空（スワンナプーム）、タイ・エアアジア・タイ・ライオン（ドンムアン）、シンガポール航空（シンガポール）</td><td><strong>マレーシアは湾岸と並ぶ出稼ぎ先</strong>。<a href="260918_bangkok.html#s15" style="color:inherit">バンコク</a>経由は日本からの定番ルート</td></tr>
+      <tr><td><strong>東アジア</strong></td><td><strong>ネパール航空（成田）</strong>、大韓航空（仁川）、キャセイパシフィック（香港）、中国国際航空（成都天府）、中国東方航空（昆明）、中国南方航空（広州）、ヒマラヤ航空（北京・上海・ラサ等）</td><td><strong>日本との直行便はネパール航空の成田便のみ</strong>。それ以外は香港・バンコク・クアラルンプール・ソウル・中国経由</td></tr>
+      <tr><td>南アジア他</td><td>ドゥルック航空・ブータン航空（パロ）、ビーマン・バングラデシュ航空（ダッカ）、スリランカ航空（コロンボ）</td><td>ブータン便はヒマラヤ越えの景観で有名</td></tr>
+    </table></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>民間の国際線キャリア</th><th>内容</th></tr>
+      <tr><td><strong>ヒマラヤ航空</strong></td><td><strong>ネパールと中国の合弁</strong>。中国・湾岸・マレーシアに路線網を持ち、2023年の国際線旅客は約46.3万人で3位</td></tr>
+      <tr><td>ブッダ・エア</td><td>国内線最大手だが、<strong>インドのヴァラナシ・コルカタに国際線</strong>も飛ばす</td></tr>
+    </table></div>
+
+    <div class="sub-h">国内線 — トリブバンが全国のハブ</div>
+    <div class="callout">
+      ネパールの国内線は<strong>カトマンズを中心とする放射状</strong>のネットワークで、地方都市同士を直接結ぶ便は少ない。
+      道路が山越えで時間がかかる国なので、<strong>飛行機は「贅沢品」ではなく、ビジネスと観光の現実的な足</strong>になっている。
+      国内線全体の事情は<a href="261002_nepal.html">ネパールのページ</a>で扱い、ここではカトマンズ発の視点でまとめる。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>航空会社</th><th>機材・規模</th><th>特徴</th></tr>
+      <tr><td><strong>ブッダ・エア</strong></td><td><strong>ATR 72/42で18機前後</strong>（2026年7月にATR 72-600を新規導入）</td><td><strong>国内線シェア約6割</strong>。1997年就航以来の累計旅客は約2,800万人。<strong>ATRの保有数で世界7位級</strong>とされる</td></tr>
+      <tr><td><strong>イエティ航空</strong></td><td>ATR 72など</td><td><strong>国内シェア約2割（2024年に17%→21%）</strong>。株式公開（IPO）を準備中。グループのタラ航空が山岳路線を担う</td></tr>
+      <tr><td>シュリー航空</td><td>CRJ（ジェット）、Mi-17ヘリ</td><td>旅客数で3位とされる</td></tr>
+      <tr><td>サウリヤ航空</td><td>CRJ200</td><td><strong>2024年7月にカトマンズで墜落事故</strong>（§11）</td></tr>
+      <tr><td>シータ航空・サミット航空・タラ航空</td><td>ドルニエ228、L-410、ツインオッター</td><td><strong>ルクラなど短い滑走路（STOL）の山岳空港専門</strong></td></tr>
+      <tr><td>ヘリ会社</td><td>エア・ダイナスティ、マナン・エア、シムリク・エアなど</td><td><strong>山岳救助・ベースキャンプへのチャーター</strong>。高額な救助保険請求をめぐる不正が問題になったこともある</td></tr>
+    </table></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>カトマンズ発の主要路線</th><th>所要（目安）</th><th>コメント</th></tr>
+      <tr><td><strong>ポカラ</strong></td><td><strong>約25分</strong></td><td><strong>観光客の最多路線</strong>。車なら6〜8時間かかる山道を飛び越える。外国人運賃は片道<strong>80〜90ドル台＋税</strong>の例があるとされる（<a href="261002_pokhara.html">ポカラ</a>）</td></tr>
+      <tr><td><strong>ルクラ</strong></td><td>30〜40分とされる</td><td><strong>エベレスト街道の入口</strong>。<strong>「世界一危険な空港」として知られるテンジン・ヒラリー空港</strong>（滑走路527m・勾配11.7%、片側が崖）。<strong>繁忙期はマンタリ発に切り替わる</strong>（<a href="261002_namche.html">ナムチェ</a>）</td></tr>
+      <tr><td>バラトプル（チトワン）</td><td>約20〜25分とされる</td><td>チトワン国立公園の玄関口</td></tr>
+      <tr><td>バイラワ（ゴータマ・ブッダ国際空港）</td><td>約35〜40分とされる</td><td><strong>仏陀生誕地ルンビニの最寄り</strong></td></tr>
+      <tr><td>ビラトナガル</td><td>約45分とされる</td><td>東部最大の商工業都市</td></tr>
+      <tr><td>ネパールガンジ</td><td>約1時間とされる</td><td>西部の拠点。さらに奥地の山岳空港への乗り継ぎ地</td></tr>
+      <tr><td><strong>エベレスト遊覧飛行</strong></td><td>約1時間とされる</td><td><strong>早朝にカトマンズを出て、ヒマラヤの峰々を窓から眺めて戻る周遊便</strong>。全員が窓側に座れるよう座席が組まれる。天候次第で欠航</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>外国人は「ドル運賃」。</strong>
+      ネパールの国内線は<strong>外国人とネパール人（およびインド人）で運賃体系が違い、外国人はドル建ての高い運賃</strong>を払う。
+      現地の旅行代理店経由でもアプリ直販でも同じ扱い。<strong>秋の繁忙期は観光路線（ポカラ・ルクラ）から先に埋まる</strong>ので早めの予約が必要。
+      <strong>天候による欠航・遅延は日常で、国際線との乗り継ぎは最低1日の余裕を持つのが定石</strong>。
+    </div>
+
+    <div class="sub-h">安全と規制 — EUのブラックリストとCAANの「兼務」問題</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>EU航空安全リスト</strong></td><td><strong>2013年12月5日から、ネパールで認可された全航空会社（約20社）がEU域内への乗り入れ禁止</strong>。ネパール航空・ブッダ・エア・イエティ・タラ・ヒマラヤ航空、ヘリ会社まで含む。<strong>10年以上解除されていない</strong></td></tr>
+      <tr><td><strong>理由</strong></td><td>個別の事故だけでなく、<strong>監督当局（CAAN）の安全監視体制そのもの</strong>が問題視されている。中でも<strong>CAANが「規制当局」と「空港運営・航空管制のサービス提供者」を一つの組織で兼ねている</strong>ことが最大の論点</td></tr>
+      <tr><td><strong>分離法案</strong></td><td><strong>CAANを規制部門と運営部門に分割する民間航空法案</strong>が国会に提出され、EU側も「通れば解除の手続きは容易になる」との姿勢を示してきた。<strong>政権交代のたびに審議が止まり、2026年8月に新政権の大臣が「解除に向け本気で取り組む」と表明</strong>した段階</td></tr>
+      <tr><td>事故の多さ</td><td>2023年1月の<strong>イエティ航空691便墜落（<a href="261002_pokhara.html">ポカラ</a>、72人死亡）</strong>、2024年7月のサウリヤ航空（カトマンズ）と、大事故が近年も続いている。<strong>山岳・天候・小型機・有視界飛行という条件</strong>に、監督の弱さが重なっている</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s13">
+    <div class="sec-label"><span class="num">13</span><span class="sec-title">デジタル — QR決済とSNS遮断</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>モバイル決済</strong></td><td><strong>eSewa・Khalti（IME Khalti）・Fonepay</strong>が3強。<strong>カトマンズでは屋台やタクシーでもQR決済が通る</strong>のが当たり前になった</td></tr>
+      <tr><td><strong>QRの規模</strong></td><td><strong>Fonepayは2025年3月30日に1日1,002,702件（262.8億ルピー）の加盟店QR決済を処理</strong>し、初めて1日100万件を超えた</td></tr>
+      <tr><td>デジタル決済総額</td><td>2024/25年度に<strong>約98兆ルピー（前年比+71%）</strong>とする集計がある。フィンテック利用者は2023年に2,000万人を超えたとされる</td></tr>
+      <tr><td><strong>外国人と決済</strong></td><td>ネパールの銀行口座がない旅行者はウォレットを作りにくい。<strong>現金（ルピー）が基本</strong>で、高級ホテル・大型店ではカードも通る</td></tr>
+      <tr><td><strong>SNS規制</strong></td><td><strong>政府は「国内登録」を求めて2025年9月に26のSNS（Facebook・Instagram・YouTube・WhatsApp・Xなど）を遮断</strong>。<strong>これがZ世代デモの直接の引き金になった</strong>（§16）。デモの最中に遮断は撤回された</td></tr>
+      <tr><td>IT・アウトソーシング</td><td>カトマンズには<strong>欧米・日本向けのソフトウェア開発・BPO企業</strong>が集まりつつあり、<strong>英語ができる若いエンジニアの「国外に出ずに稼ぐ」手段</strong>として期待されている</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：SNSは「出稼ぎ国家の神経系」。</strong>
+      国外で働く家族と毎日つながる手段がWhatsAppやFacebook Messengerで、送金のやりとりもそこで行われる。
+      <strong>SNSの遮断は若者の娯楽を奪っただけでなく、家族の生活インフラを切った</strong>ことになり、
+      それが<strong>「政治家の子どもの贅沢（#NepoKids）」への怒り</strong>と合流して、数日で政権を倒す規模に膨らんだ。
+    </div>
+  </div>
+
+  <div class="sec" id="s14">
+    <div class="sec-label"><span class="num">14</span><span class="sec-title">エネルギー — 18時間停電の解消</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>時期</th><th>内容</th></tr>
+      <tr><td><strong>〜2016</strong></td><td><strong>乾季（冬）には1日最大18時間の計画停電（ロードシェディング）</strong>が常態だった。カトマンズの住民は<strong>停電スケジュール表を見て生活を組み立て</strong>、商店はディーゼル発電機とインバーターで凌いだ</td></tr>
+      <tr><td><strong>2016年秋</strong></td><td><strong>ネパール電力公社（NEA）の新総裁クルマン・ギシンが、一部大口需要家への優先供給を打ち切り、配電を見直してカトマンズの家庭向け計画停電を解消</strong>（ティハール祭の直後とされる）</td></tr>
+      <tr><td><strong>2018年5月</strong></td><td><strong>工業向けも含め全国で計画停電を解消</strong>。インドからの電力輸入と国内の水力発電所の稼働が支えた</td></tr>
+      <tr><td><strong>現在</strong></td><td><strong>設備容量4,105MW（うち水力3,798MW）、電化率99.1%</strong>。雨季は電力が余り、<strong>インドへ年2,918GWhを輸出</strong>する「電力輸出国」に転じた</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：乾季と雨季で立場が逆転する。</strong>
+      ネパールの水力は<strong>大半が貯水ダムを持たない流れ込み式</strong>で、<strong>雨季は余り、乾季は足りない</strong>。
+      そのため<strong>雨季はインドに売り、乾季はインドから買う</strong>という季節で逆転する取引になる。
+      カトマンズで停電がほぼなくなった今、次の論点は<strong>電気自動車・電気調理器への転換</strong>——輸入石油（＝インドからのLPGとガソリン）への依存を減らす手段として、
+      <strong>ネパールは新車販売に占めるEVの比率が南アジアで突出して高い</strong>国の一つとされる。
+    </div>
+  </div>
+
+  <div class="sec" id="s15">
+    <div class="sec-label"><span class="num">15</span><span class="sec-title">2015年地震と復興</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>発生</strong></td><td><strong>2015年4月25日正午前、M7.8（ゴルカ地震）</strong>。震源はカトマンズの北西約80kmのゴルカ郡。5月12日にM7.3の大きな余震</td></tr>
+      <tr><td><strong>被害</strong></td><td><strong>死者約9,000人</strong>（集計により8,800〜9,000人台）。<strong>全壊家屋50万戸超、半壊約27万戸</strong>。エベレスト・ベースキャンプでも雪崩で死者が出た</td></tr>
+      <tr><td><strong>カトマンズの象徴の倒壊</strong></td><td><strong>ダラハラ塔</strong>（19世紀前半にビムセン・タパが建てた9層の塔）が倒壊し約60人が死亡。<strong>カスタマンダプ</strong>（地名の由来の木造建築）も崩れ70人以上が犠牲に。王宮広場の多くの寺院が倒壊した</td></tr>
+      <tr><td><strong>その後の打撃</strong></td><td>同年9月の新憲法公布にテライのマデシ系住民が反発し、<strong>インド国境の物流が数か月止まる「非公式封鎖」</strong>で燃料・医薬品が欠乏。<strong>震災直後の首都がさらに燃料不足に陥った</strong></td></tr>
+      <tr><td><strong>復興</strong></td><td><strong>新ダラハラ塔は2021年4月に開業</strong>（震災から6年）。<strong>カスタマンダプは住民主導で伝統工法により再建（2021〜22年）</strong>。国の復興庁は法定期限より1年遅れたものの、<strong>住宅再建は「おおむね満足できる」と評価</strong>された</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：再建は「誰が、どの工法で」の争いだった。</strong>
+      カスタマンダプの再建では、<strong>行政がコンクリートで早く建てようとしたのに対し、ネワールの住民組織が「伝統の木組みでなければ意味がない」と反対し、自ら資金と職人を集めて再建した</strong>。
+      王宮広場の寺院群も、<strong>日本・中国・米国など各国の援助チームが区画ごとに担当</strong>して修復した。
+      <strong>世界遺産の都市で大地震が起きたとき、どう直すか</strong>のケーススタディとして、カトマンズは世界で最も参照される事例の一つになっている。
+    </div>
+  </div>
+
+  <div class="sec" id="s16">
+    <div class="sec-label"><span class="num">16</span><span class="sec-title">2025年9月 Z世代デモ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      2025年9月8日、カトマンズの国会前に集まった<strong>制服姿の高校生・大学生</strong>に警察が発砲し、<strong>初日だけで19人が死亡</strong>した。
+      翌9日、怒りは暴動に変わり、<strong>国会・シンハダルバール（中央官庁）・最高裁・大統領府・首相公邸・主要政党本部、そしてカトマンズで最も高いビルだったヒルトン・ホテルが燃えた</strong>。
+      同日、オリ首相は辞任し、軍のヘリでトリブバン空港から退避した。<strong>近代ネパール史上最大の都市暴動の舞台は、ほぼ全部カトマンズの中心部</strong>だった。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>日付</th><th>出来事</th></tr>
+      <tr><td>2025年9月上旬</td><td><strong>政府が国内登録をしていない26のSNSを遮断</strong>。同時にSNS上では<strong>政治家の子どもの贅沢な生活をさらす「#NepoKids」</strong>運動が広がっていた</td></tr>
+      <tr><td><strong>9月8日（月）</strong></td><td>マイティガル〜ニューバネショールの<strong>国会周辺に大勢の若者</strong>。議事堂敷地への侵入を機に警察が実弾を使用し、<strong>カトマンズで17人、全国で19人が死亡</strong>。夜にSNS遮断を撤回、内相が辞任</td></tr>
+      <tr><td><strong>9月9日（火）</strong></td><td>外出禁止令を無視して群衆が官庁街へ。<strong>シンハダルバール、国会議事堂、最高裁、大統領府（シータル・ニワス）、首相公邸（バルワタール）、政党本部、政治家の私邸が放火・略奪される</strong>。<strong>2024年7月開業のヒルトン・カトマンズ（市内最高層）も炎上し、被害は80億ルピー超とされる</strong>。オリ首相が辞任</td></tr>
+      <tr><td>9月10日〜</td><td><strong>軍が全土に外出禁止令を敷いて治安を回復</strong>。軍・大統領・Z世代の代表が協議し、<strong>オンライン（Discord）上の投票なども参照して</strong>暫定首相を選ぶ異例のプロセス</td></tr>
+      <tr><td><strong>9月12日</strong></td><td><strong>元最高裁長官スシラ・カルキが暫定首相に就任（ネパール初の女性首相）</strong>。国会を解散し、総選挙を2026年3月5日に設定</td></tr>
+      <tr><td>2025年12月</td><td>政府の被害調査委員会の報告：<strong>死者77人、負傷者2,429人（うち1,433人が13〜28歳）、物的被害844.5億ルピー（公共449.3億・民間335.4億）</strong></td></tr>
+      <tr><td><strong>2026年3月5日</strong></td><td><strong>総選挙。国民独立党（RSP）が275議席中182議席</strong>（小選挙区125・比例57）で単独過半数。<strong>RSPの首相候補バレン・シャハは、オリ前首相の選挙区で68,348票対18,734票の史上最大差で勝利</strong>。ネパール会議派38、統一共産党（UML）25と既成政党は惨敗</td></tr>
+      <tr><td><strong>2026年3月27日</strong></td><td><strong>バレン・シャハが首相に就任</strong>（35歳、議会制史上最年少・マデシ出身者として初）</td></tr>
+      <tr><td>2026年9月</td><td><strong>デモから1年。シンハダルバールと大統領府は焼けたまま、再建は手つかず</strong>。国会敷地にZ世代犠牲者の記念公園の定礎。盆地の市長会は再建に5,000万ルピーを拠出すると表明</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：「カトマンズ市長」が国を取った。</strong>
+      デモの参加者が<strong>最も支持した政治家が、当時のカトマンズ市長バレン・シャハ</strong>だった。
+      彼はデモの最中は表に出ず、<strong>暫定首相にカルキを推し、自らは選挙を待ってから市長を辞して国政に出た</strong>。
+      <a href="260918_bangkok.html#s23" style="color:inherit">バンコク</a>では2020年の若者デモが政権を倒せなかったのに対し、
+      カトマンズでは<strong>首都の都市空間（国会・官庁街・空港）が数キロ圏に集中していたことが、48時間での政権崩壊を物理的に可能にした</strong>とも言える。
+      問題は<strong>新政権が若者の期待（汚職追及・雇用・国内産業）にどこまで応えられるか</strong>で、1年後の時点では<strong>「約束は未達」とする論調</strong>も出始めている。
+    </div>
+  </div>
+
+  <div class="sec" id="s17">
+    <div class="sec-label"><span class="num">17</span><span class="sec-title">世界遺産 — 盆地の7つの記念物群</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>記念物群</th><th>宗教・性格</th><th>見どころ</th></tr>
+      <tr><td><strong>カトマンズ・ダルバール広場（ハヌマン・ドカ）</strong></td><td>王宮</td><td>旧王宮、クマリの館、カスタマンダプ</td></tr>
+      <tr><td><strong>パタン・ダルバール広場</strong></td><td>王宮</td><td>クリシュナ寺院、パタン博物館、黄金寺院</td></tr>
+      <tr><td><strong>バクタプル・ダルバール広場</strong></td><td>王宮</td><td>55窓の宮殿、ニャタポラ寺院、黄金の門</td></tr>
+      <tr><td><strong>スワヤンブナート</strong></td><td>仏教</td><td>ブッダの目の仏塔、盆地の眺望</td></tr>
+      <tr><td><strong>ボダナート</strong></td><td>チベット仏教</td><td>巨大仏塔、チベット僧院群</td></tr>
+      <tr><td><strong>パシュパティナート</strong></td><td>ヒンドゥー教</td><td>シヴァ寺院、火葬場（ガート）</td></tr>
+      <tr><td><strong>チャング・ナラヤン</strong></td><td>ヒンドゥー教</td><td>ネパール最古級の寺院と5世紀の碑文</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>「カトマンズの谷」は1979年に一括で世界遺産登録</strong>された。
+      7つの記念物群が<strong>半径十数kmの盆地にまとまっている</strong>のが特徴で、<strong>ヒンドゥー教と仏教の聖地が混在し、しかも住民の生活空間として今も使われている</strong>。
+      無秩序な開発で景観が損なわれ、<strong>2003〜2007年には危機遺産リストに載った</strong>こともある。
+      ネパールにはこのほか<strong>サガルマータ国立公園（エベレスト、<a href="261002_namche.html">ナムチェ</a>）</strong>、チトワン国立公園、ルンビニが世界遺産にある。
+    </div>
+  </div>
+
+  <div class="sec" id="s18">
+    <div class="sec-label"><span class="num">18</span><span class="sec-title">食・グルメ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="food-grid">
+      <div class="food-card"><div class="food-name">Momo / モモ</div><div class="food-desc">チベット由来の蒸し餃子で、<strong>カトマンズで最も食べられている軽食</strong>。中身は水牛（バフ）・鶏・野菜。<strong>トマトとゴマのタレ（アチャール）</strong>につける。揚げ、スープ入り（ジョル・モモ）、チリ炒めなど派生が多い。</div></div>
+      <div class="food-card"><div class="food-name">Dal Bhat / ダルバート</div><div class="food-desc">豆スープ（ダル）＋米（バート）＋野菜カレー（タルカリ）＋漬物の定食。<strong>「ダルバート・パワー、24アワー」</strong>と言われる国民食で、<strong>ご飯とダルはおかわり自由</strong>が基本。1日2回これを食べる人が多い。</div></div>
+      <div class="food-card"><div class="food-name">Samay Baji / サマエ・バジ</div><div class="food-desc"><strong>ネワール料理の祝いの盛り合わせ</strong>。干し飯（チウラ）を中心に、水牛の燻製肉、黒豆、生姜、卵、大豆などを葉の皿に並べる。祭りや儀礼の席で必ず出る。</div></div>
+      <div class="food-card"><div class="food-name">Bara / Chatamari</div><div class="food-desc">ネワールの<strong>豆のパンケーキ（バラ）</strong>と、<strong>米粉のクレープに具を載せた「ネワール・ピザ」（チャタマリ）</strong>。パタン・バクタプルの食堂で安く食べられる。</div></div>
+      <div class="food-card"><div class="food-name">Choila / チョイラ</div><div class="food-desc">水牛肉を炭火で焼き、<strong>マスタードオイルと香辛料で和えた</strong>ネワールの肴。米の蒸留酒<strong>アイラ</strong>や濁り酒チャンと合わせる。</div></div>
+      <div class="food-card"><div class="food-name">Juju Dhau / ジュジュ・ダウ</div><div class="food-desc"><strong>「ヨーグルトの王様」</strong>の意。バクタプル名物で、<strong>素焼きの壺に入った濃厚で甘いヨーグルト</strong>。壺が余分な水分を吸うので固い。</div></div>
+      <div class="food-card"><div class="food-name">Yomari / ヨマリ</div><div class="food-desc">米粉の生地に<strong>黒糖とゴマの餡</strong>を包んで蒸した、ネワールの冬の祭り（ヨマリ・プニ）の菓子。形は魚のような紡錘形。</div></div>
+      <div class="food-card"><div class="food-name">Thakali Set / タカリ・セット</div><div class="food-desc">ムスタン地方のタカリ族のダルバートで、<strong>カトマンズで「ちょっといいダルバート」といえばこれ</strong>。ギー（澄ましバター）と香りの強いダル、ほうれん草、干し肉が付く。</div></div>
+      <div class="food-card"><div class="food-name">Sel Roti / セル・ロティ</div><div class="food-desc">米粉の生地をリング状に揚げた甘いドーナツ。<strong>ダサイン・ティハールの祭りで家々が大量に作る</strong>。朝のミルクティーと一緒に食べる。</div></div>
+      <div class="food-card"><div class="food-name">Chiya / チヤ</div><div class="food-desc">スパイスと砂糖とミルクで煮出す紅茶。<strong>街角のチヤ屋はカトマンズの社交場</strong>で、政治談義はだいたいここで始まる。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s19">
+    <div class="sec-label"><span class="num">19</span><span class="sec-title">観光スポット</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="spot-grid">
+      <div class="spot-card"><div class="spot-name">ボダナート</div><div class="spot-loc">空港の北</div><div class="spot-desc"><strong>巨大な白い仏塔と、それを囲むチベット僧院</strong>。<strong>夕方、巡礼者の流れに混じって時計回りに歩き、周囲の屋上カフェから仏塔を見下ろす</strong>のが定番。</div></div>
+      <div class="spot-card"><div class="spot-name">パシュパティナート</div><div class="spot-loc">空港の西、バグマティ川沿い</div><div class="spot-desc">ヒンドゥー教の聖地と火葬場。<strong>対岸のテラスから火葬を見ることができる</strong>。ボダナートから歩いて30分程度で、セットで回れる。</div></div>
+      <div class="spot-card"><div class="spot-name">スワヤンブナート</div><div class="spot-loc">市の西の丘</div><div class="spot-desc">「ブッダの目」の仏塔。<strong>朝か夕方に石段を上がって、盆地全体とヒマラヤを眺める</strong>。猿にスマホや食べ物を取られないよう注意。</div></div>
+      <div class="spot-card"><div class="spot-name">カトマンズ・ダルバール広場</div><div class="spot-loc">旧市街</div><div class="spot-desc">旧王宮と寺院群。<strong>クマリの館の中庭で、運が良ければ窓から生き神クマリが顔を見せる</strong>（撮影は禁止）。外国人は入場料が必要。</div></div>
+      <div class="spot-card"><div class="spot-name">パタン</div><div class="spot-loc">ラリトプル</div><div class="spot-desc">ダルバール広場と<strong>パタン博物館（仏教・ヒンドゥー美術の展示が盆地で最良）</strong>。周辺の路地で金工・仏像工房を覗ける。半日は欲しい。</div></div>
+      <div class="spot-card"><div class="spot-name">バクタプル</div><div class="spot-loc">盆地東端（車で約40分〜）</div><div class="spot-desc">中世の街並みが最も残る旧王都。<strong>ニャタポラ寺院、陶器広場、ジュジュ・ダウ</strong>。<strong>1泊すると、観光客が帰った後の夕方と早朝の広場が見られる</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">ナラヤンヒティ王宮博物館</div><div class="spot-loc">ドゥルバーマルグ北端</div><div class="spot-desc">2008年まで使われた王宮。<strong>2001年の王族殺害事件の現場（建物は取り壊され跡地のみ）</strong>も見られる。王制ネパールの最後を知る場所。</div></div>
+      <div class="spot-card"><div class="spot-name">ガーデン・オブ・ドリームス</div><div class="spot-loc">タメル入口</div><div class="spot-desc">ラナ時代の西洋庭園を修復した公園。<strong>タメルの喧騒から数十歩で静寂に入れる</strong>。カフェもある。</div></div>
+      <div class="spot-card"><div class="spot-name">ダラハラ塔</div><div class="spot-loc">スンダラ</div><div class="spot-desc">2015年地震で倒壊し、<strong>2021年に再建された展望塔</strong>。旧塔の基部も残されている。上から旧市街と盆地を一望できる。</div></div>
+      <div class="spot-card"><div class="spot-name">チャンドラギリ・ケーブルカー／ナガルコット</div><div class="spot-loc">盆地の縁</div><div class="spot-desc"><strong>盆地の外輪山から見るヒマラヤの朝日</strong>。チャンドラギリは盆地西南、ナガルコットは東。<strong>秋〜冬の晴れた早朝が最も確率が高い</strong>。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s20">
+    <div class="sec-label"><span class="num">20</span><span class="sec-title">ゆかりの著名人</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>人物</th><th>カトマンズとの関係</th></tr>
+      <tr><td><strong>アラニコ（1245–1306）</strong></td><td><strong>パタン出身のネワールの工匠</strong>。チベットを経て元の大都に招かれ、<strong>北京・妙応寺の白塔</strong>を建てた。<strong>ネパールと中国の文化交流の象徴</strong>で、カトマンズ〜チベット国境を結ぶ「アラニコ・ハイウェイ」に名を残す</td></tr>
+      <tr><td><strong>プリトビ・ナラヤン・シャハ</strong></td><td>ゴルカ王。<strong>1768年にカトマンズを攻略してネパールを統一</strong>し、盆地を首都に定めた「建国の父」</td></tr>
+      <tr><td>ビムセン・タパ</td><td>19世紀前半の宰相。<strong>ダラハラ塔を建てた</strong>人物</td></tr>
+      <tr><td>ジャンガ・バハドゥル・ラナ</td><td><strong>1846年のコート虐殺で実権を握り、ラナ家の世襲宰相体制（〜1951年）を開いた</strong></td></tr>
+      <tr><td><strong>河口慧海</strong></td><td>明治の日本人僧。<strong>1899年にカトマンズに滞在した後、密かにヒマラヤを越えてチベットに入った</strong>日本人初のチベット入国者。<strong>日本とネパールの交流史の起点</strong>として語られる</td></tr>
+      <tr><td><strong>バレン・シャハ（1990–）</strong></td><td><strong>カトマンズ・ナラデヴィ生まれ</strong>。構造エンジニア、ラッパー。<strong>2022年に無所属でカトマンズ市長に当選、2026年3月に首相</strong>。就任時35歳で、世界で最も若い現職の国家指導者の一人</td></tr>
+      <tr><td>スシラ・カルキ</td><td>元最高裁長官（ネパール初の女性長官）。<strong>Z世代デモ後の暫定首相（2025年9月〜2026年3月）としてシンハダルバールの焼け跡で執務を始めた</strong></td></tr>
+      <tr><td><strong>クルマン・ギシン</strong></td><td>ネパール電力公社の元総裁。<strong>カトマンズの計画停電を終わらせた</strong>（§14）ことで国民的な人気を得た技術官僚</td></tr>
+      <tr><td>プラバル・グルン</td><td>ニューヨークを拠点とするファッションデザイナー。<strong>シンガポール生まれ・カトマンズ育ち</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s21">
+    <div class="sec-label"><span class="num">21</span><span class="sec-title">直近の出来事（2024→2026）</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>時期</th><th>出来事</th></tr>
+      <tr><td>2024年7月</td><td><strong>ヒルトン・カトマンズ開業</strong>（市内最高層）。<strong>14か月後にデモで焼失</strong>することになる</td></tr>
+      <tr><td><strong>2024年7月24日</strong></td><td><strong>サウリヤ航空CRJ200がトリブバン空港で離陸直後に墜落、18人死亡</strong>（§11）</td></tr>
+      <tr><td><strong>2024年9月28日</strong></td><td><strong>盆地で24時間240mmの豪雨。バグマティ川・ナクー川が氾濫し、全国の死者は約200人</strong>。盆地近郊の幹線ではバスが土砂に埋まった</td></tr>
+      <tr><td>2024年11月〜2025年4月</td><td><strong>トリブバン空港が拡張工事で毎晩22時〜翌8時を閉鎖</strong>。4月に18時間運用へ</td></tr>
+      <tr><td>2025年3月30日</td><td><strong>Fonepayが1日100万件のQR決済を初めて突破</strong>（§13）</td></tr>
+      <tr><td>2025年4月</td><td><strong>山火事の煙でカトマンズがIQAirの「世界で最も汚染された都市」に</strong>（4月8日 AQI 279）</td></tr>
+      <tr><td>2025年7月</td><td><strong>カトマンズ首都市が2082/83年度予算257.6億ルピーを可決</strong></td></tr>
+      <tr><td><strong>2025年9月8〜9日</strong></td><td><strong>Z世代デモ。国会・シンハダルバール・最高裁・ヒルトンなどが炎上、オリ首相辞任</strong>（§16）</td></tr>
+      <tr><td><strong>2025年9月12日</strong></td><td><strong>スシラ・カルキが暫定首相に</strong></td></tr>
+      <tr><td><strong>2026年1月18日</strong></td><td><strong>バレン・シャハがカトマンズ市長を辞職し、RSPから国政へ</strong>。副市長スニタ・ダンゴルが市長代行に</td></tr>
+      <tr><td><strong>2026年3月5日</strong></td><td><strong>総選挙。RSPが182議席の地滑り的勝利</strong>（投票率約60%）</td></tr>
+      <tr><td><strong>2026年3月27日</strong></td><td><strong>バレン・シャハが首相に就任</strong></td></tr>
+      <tr><td>2026年7月</td><td><strong>カトマンズ首都市が2083/84年度予算258.8億ルピーを全会一致で可決</strong>（インフラ61%）。<strong>国の予算で不動産のキャピタルゲイン税が引き上げられ、直前に駆け込み取引</strong>（§09）</td></tr>
+      <tr><td>2026年8月</td><td>新政権の大臣が<strong>EU航空安全リストからの除外に「本気で取り組む」</strong>と表明（§12）</td></tr>
+      <tr><td><strong>2026年9月</strong></td><td><strong>Z世代デモから1年。シンハダルバールは焼け跡のまま</strong>。<strong>9月15日、ネパール航空のA330が成田でエンジン損傷により足止め</strong>され、日本路線が一時混乱</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：2025〜26年は「首都が国の政治を丸ごと入れ替えた」1年。</strong>
+      <strong>SNS遮断 → 首都での発砲 → 官庁街の焼失 → 暫定政権 → 首都の市長が首相に</strong>。
+      ネパールの政治は長らく<strong>「同じ3人の老政治家が首相を回し合う」</strong>と揶揄されてきたが、2026年の選挙でその構図が初めて崩れた。
+      <strong>カトマンズは、その変化の原因であり、舞台であり、人材の供給源でもあった</strong>。
+    </div>
+  </div>
+
+  <div class="sec" id="s22">
+    <div class="sec-label"><span class="num">22</span><span class="sec-title">行くなら</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>ベストシーズン</strong></td><td><strong>10〜11月</strong>（モンスーン明けで空が澄み、ヒマラヤが見える）。次点は<strong>3〜4月</strong>だが大気汚染が強い。<strong>6〜9月の雨季は山が見えず、国内線の欠航も多い</strong></td></tr>
+      <tr><td>おすすめ滞在日数</td><td><strong>3〜4泊</strong>。カトマンズ旧市街＋スワヤンブで1日、ボダナート＋パシュパティで半日、パタンで半日、バクタプル（できれば1泊）。<strong>トレッキングや<a href="261002_pokhara.html">ポカラ</a>に行くなら前後に1日ずつ予備日</strong>を</td></tr>
+      <tr><td>拠点にするなら</td><td><strong>タメル</strong>（宿・飲食・代理店が揃い、どこへ出るにも便利）。<strong>静かさ重視ならラジンパット、街歩き重視ならパタン</strong></td></tr>
+      <tr><td><strong>行き方</strong></td><td><strong>日本からの直行便はネパール航空の成田便のみ（週3〜4便）</strong>。それ以外は<strong>バンコク・香港・クアラルンプール・ソウル・中国・湾岸経由</strong>。<strong>夕方〜夜着の便は上空待機で遅れやすい</strong></td></tr>
+      <tr><td><strong>交通</strong></td><td><strong>PathaoかinDriveを入れておく</strong>（タクシーの値段交渉を避けられる）。<strong>旧市街の観光は徒歩</strong>。盆地内の移動は渋滞を見込んで余裕を</td></tr>
+      <tr><td>予算感（1日）</td><td><strong>ダルバート・モモの食堂なら1食200〜500ルピー程度、ツーリスト向けレストランで1,000〜2,000ルピー</strong>（1ルピー≒約1円）。<strong>各世界遺産・旧王都の入場料（外国人料金）が積み上がる</strong>点に注意</td></tr>
+      <tr><td>治安</td><td><strong>凶悪犯罪は少ない。</strong>注意すべきは<strong>①デモ・ゼネスト（バンダ）への遭遇 ②交通事故 ③大気汚染 ④タメルの客引き・偽ガイド</strong>。<strong>デモ情報は大使館のメールとSNSで確認</strong>しておく</td></tr>
+      <tr><td>健康</td><td><strong>生水は飲まない</strong>（ボトル水・浄水を使う）。<strong>春・冬はPM2.5対策のマスク</strong>を。標高1,400mなので高山病の心配はほぼないが、<strong>トレッキングに出るなら別問題</strong>（<a href="261002_namche.html">ナムチェ</a>）</td></tr>
+      <tr><td>決済</td><td><strong>現金（ルピー）が基本</strong>。ATMはタメルに多いが<strong>1回の引き出し上限が低く手数料がかかる</strong>。中級以上のホテル・レストランはカード可</td></tr>
+      <tr><td>電源</td><td><strong>230V。プラグはC・D・Mが混在</strong>し、日本のAプラグは基本的に挿さらない。<strong>変換プラグが必要</strong></td></tr>
+      <tr><td><strong>入国</strong></td><td><strong>到着ビザ（15日US$30／30日US$50／90日US$125）</strong>。<strong>米ドル現金（新しい札）</strong>を用意しておくと速い。空港の端末でオンライン申請情報を入力する</td></tr>
+      <tr><td>服装・マナー</td><td>寺院では<strong>靴を脱ぐ・革製品を外す場所がある</strong>。<strong>仏塔は時計回りに歩く</strong>。パシュパティナート本堂は非ヒンドゥー教徒は入れない。<strong>火葬の撮影は節度を</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s23">
+    <div class="sec-label"><span class="num">23</span><span class="sec-title">Index — 関連ページ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>ページ</th><th>内容</th></tr>
+      <tr><td><a href="261002_nepal.html"><strong>ネパール / Nepal</strong></a></td><td>国全体（政治・経済・出稼ぎ・国内線事情・民族とカースト）</td></tr>
+      <tr><td><a href="261002_pokhara.html"><strong>ポカラ / Pokhara</strong></a></td><td>第2の観光都市。アンナプルナの玄関口、ポカラ国際空港、イエティ航空691便事故</td></tr>
+      <tr><td><a href="261002_namche.html"><strong>ナムチェ・バザール / Namche</strong></a></td><td>エベレスト街道のシェルパの町。ルクラ空港とマンタリ発着の話</td></tr>
+      <tr><td><a href="260918_bangkok.html" style="color:inherit"><strong>バンコク / Bangkok</strong></a></td><td>比較用。一極集中・若者デモ・空港の比較。日本からカトマンズへの乗り継ぎ地</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>National Statistics Office (Nepal)「National Population and Housing Census 2021」／ citypopulation.de「Kathmandu (District / Metropolitan City)」／ The Himalayan Times「Average annual growth rate lowest in eight decades」</li>
+      <li>Wikipedia「Kathmandu」「Tribhuvan International Airport」「2024 Saurya Airlines Bombardier CRJ200 crash」「Balen Shah」「Araniko」「Kul Man Ghising」「Prabal Gurung」</li>
+      <li>Himal Press「Major highlights of Economic Survey 2025/26」「Bagmati projected to contribute 36.7% to GDP in 2025/26」／ B360 Nepal「Bagmati records highest GDP share at 36.52%」</li>
+      <li>Ekantipur「Nepal welcomed 1.15 million tourists in 2025」／ The Week (PTI)「Nepal records 1 pc growth in global tourist arrivals in 2025」</li>
+      <li>B360 Nepal「NEPSE index rises as market capitalisation reaches Rs 4,543.81bn」／ ShareSansar（NEPSE市場データ、2026年）／ Onlinekhabar「Why is the Nepali currency pegged to India」／ Kathmandu Post「Is the peg to INR still a safe harbour」（2026年2月）／ Hamro Patro（NRB為替レート、2026年9月）</li>
+      <li>The Himalayan Times「Kathmandu Metropolitan City unveils Rs 25.76 billion budget for FY 2082/83」／ ShareSansar「Kathmandu Metropolitan City Unanimously Passes NPR 25.88 Billion Budget for FY 2083/84」（2026年7月）／ Ekantipur「Metropolitan Mayor Balendra Shah resigns」（2026年1月）</li>
+      <li>Kathmandu Post「Real estate transaction revenue hits three-year high as buyers rush before tax hike」（2026年7月）／ B360 Nepal「The stagnant asset: Nepal's gridlocked property market」／ merokalam「Nepal Land Price Guide 2082/83」</li>
+      <li>Onlinekhabar「China hands over expanded Kalanki–Koteshwar section of Ring Road」／ Kathmandu Post「Ring Road's Chappal Karkhana–Dhobikhola section set for widening」（2026年7月）／ meroauto「Kathmandu–Tarai fast track progress」／ Kathmandu Post「Follow Gandaki's lead」（配車規制）</li>
+      <li>IQAir「Kathmandu among top 10 most polluted cities in the world」（2025年10月）／ Ekantipur「Kathmandu ranked first in the list of most polluted cities」（2025年4月）</li>
+      <li>Ekantipur「Tribhuvan International Airport to handle over 9.7 million passengers, 138,000 flights in 2025」「What is being built at Kathmandu airport by spending 15 billion rupees?」「Physical progress within the airport is 60 percent」／ Himal Press「TIA now operational for 18 hours」／ Crisis24（夜間閉鎖）／ Kathmandu Post「Kathmandu airport nears 5 million international flyers」</li>
+      <li>Ekantipur「Nepal Airlines' flight schedule disrupted after wide-body aircraft grounded at Narita」「Prime Minister claims the corporation is improving, but accounts show a loss of 1 billion」（2026年）／ Aeroroutes「Nepal Airlines Sep–Nov 2026 Tokyo Service Increases」／ ch-aviation「Auditor General criticises Nepal Airlines loan repayments」</li>
+      <li>Buddha Air「Company Profile 2025」／ Onlinekhabar（ブッダ・エア ATR 72-600導入）／ Aviospace「Yeti Airlines Moves Ahead With Stock Market Debut in Nepal」「Two New Carriers Prepare to Challenge Nepal's Domestic Aviation Oligopoly」／ Himal Press「Trekkers stuck in Manthali as bad weather grounds Lukla flights」</li>
+      <li>Onlinekhabar「EU continues ban on all Nepali airlines from flying to Europe」／ The Diplomat「EU keeps ban on Nepali aircraft flying in its airspace」（2025年3月）／ Ekantipur「Government is determined to remove Nepal airlines from EU's Air Safety List」（2026年8月）</li>
+      <li>NRB「Payment Systems Indicators」／ Fonepay「Over 1 million QR transactions in a single day」／ Simpaisa「Nepal's Digital Payment Boom: 2025 Market Landscape」</li>
+      <li>Onlinekhabar「4 achievements and 4 failures of Kul Man Ghising's 4-year term」／ Wikipedia「Kul Man Ghising」</li>
+      <li>PreventionWeb「Nepal: Gorkha Earthquake 2015」／ The Himalayan Times「Editorial: Dharahara stands tall」／ Bodhi「Debating Identity: Reflections on Coverage of Dharaharā and Kāṣṭhmaṇḍap」</li>
+      <li>IANS「GenZ protests in Nepal left 77 dead, NPR 84 billion in damages」（2025年12月）／ Jurist「Gen Z protests in Nepal result in 19 deaths」／ Himal Press「Gen Z protest death toll rises to 17 in Kathmandu」／ Mothership「Nepal protestors burn Hotel Hilton」／ Euronews（2025年9月10日）</li>
+      <li>Rane Worldview「Nepal: RSP sweeps parliamentary elections」（2026年3月13日）／ The Hitavada「Balendra Shah defeats 4-time PM Oli」／ All India Radio「Balendra Shah sworn in as Nepal's youngest democratically elected Prime Minister」（2026年3月27日）</li>
+      <li>Hamro Patro「One Year After Gen Z Protest, Reconstruction of Damaged Government Buildings Stalled」（2026年9月）／ Ekantipur「One year of the Gen-Z movement」（2026年9月7日）</li>
+      <li>AP / NPR「Flooding deaths in Nepal approach 200」（2024年9月30日）／ WeatherSpark「Climate and Average Weather Year Round in Kathmandu」</li>
+      <li>UNESCO World Heritage Centre「Kathmandu Valley」／ 各種旅行情報（ネパール到着ビザ料金 2026年）</li>
+    </ul>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>

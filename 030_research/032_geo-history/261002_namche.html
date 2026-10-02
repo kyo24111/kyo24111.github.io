@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ナムチェバザール / Namche Bazaar — Geo Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+      .hero h1 { font-size: 32px; overflow-wrap: anywhere; }
+      .hero-eyebrow, .toc li, .spot-name, .crumb { overflow-wrap: anywhere; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart .bar { fill: var(--accent); }
+    .chart .bar.lite { fill: #bdbdbd; }
+    .chart .vlabel { font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; fill: var(--accent); text-anchor: start; }
+    .chart .rlabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; fill: var(--muted); text-anchor: end; }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 162px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="261002_nepal.html">nepal</a>
+    <span class="sep">/</span>
+    <span class="cur">namche bazaar</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Place Research — 261002</div>
+    <h1>ナムチェバザール / Namche Bazaar</h1>
+    <div class="hero-country">ネパール連邦民主共和国 コシ州 ソルクンブ郡 · クンブ・パサンラム村 第5区 / 標高約3,440m / エベレスト街道の「最後の町」にして高所順応の定番地</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">標高</div>
+        <div class="kv-val">3,440m</div>
+        <div class="kv-note">町の下端 / 富士山頂（3,776m）より少し低い</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">村（クンブ・パサンラム）人口</div>
+        <div class="kv-val">8,720</div>
+        <div class="kv-note">2021年国勢調査 / ナムチェ単体は2001年に1,647人</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">ルクラ空港の滑走路</div>
+        <div class="kv-val">527m</div>
+        <div class="kv-note">勾配11.7% / 「世界一危険な空港」とされる</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">エベレスト登山許可料（春）</div>
+        <div class="kv-val">$15,000</div>
+        <div class="kv-note">2025年9月〜 / それまでは$11,000</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">ナムチェとは — 基本情報</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">位置と地形 — エベレスト街道のどこにあるか</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">高山病と順応日 — 「ナムチェで1日休む」理由</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">シェルパの人々</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">歴史 — 塩の交易市場から登山の町へ</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">経済 — ロッジとポーターと許可料</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">ルクラ空港とエアライン</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">ヘリコプター — 救助ビジネスと保険詐欺</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">エネルギー・通信</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">観光スポット</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">日本とのつながり</a></li>
+      <li><span class="toc-num">12</span><a href="#s12">ゴミ・環境問題</a></li>
+      <li><span class="toc-num">13</span><a href="#s13">直近の出来事（2024→2026）</a></li>
+      <li><span class="toc-num">14</span><a href="#s14">行くなら</a></li>
+      <li><span class="toc-num">15</span><a href="#s15">Index — 関連ページ</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">ナムチェとは — 基本情報</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ナムチェバザールを一言でいうと「<strong>エベレストに向かう人が必ず2泊する、標高3,440mの馬蹄形の町</strong>」。
+      急斜面にすり鉢状にロッジが並び、<strong>銀行・パン屋・アウトドア用品店・Wi-Fiまで揃う「クンブ地方の首都」</strong>として機能している。<br>
+      もともとは<strong>チベットとの塩の交易の市場町</strong>だった。いまは交易の代わりに<strong>年5万人を超えるトレッカーと登山者</strong>が通り、
+      その消費で町が食っている。国全体の話は<a href="261002_nepal.html">ネパール</a>、入口の首都は<a href="261002_kathmandu.html">カトマンズ</a>を参照。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>名称</strong></td><td><strong>ナムチェバザール（Namche Bazaar）</strong>。地元ではただ「ナムチェ」。「バザール」は市場のことで、<strong>交易市場だった歴史がそのまま地名に残っている</strong>（§05）</td></tr>
+      <tr><td>行政区分</td><td><strong>コシ州 ソルクンブ郡 クンブ・パサンラム村（Khumbu Pasanglhamu Rural Municipality）第5区</strong>。村の名は<strong>ネパール人女性初のエベレスト登頂者パサン・ラム・シェルパ</strong>にちなむ</td></tr>
+      <tr><td><strong>標高</strong></td><td><strong>3,440m</strong>（町の下端）。斜面の町なので上端はさらに高い。<strong>西にコンデ・リ（6,187m）、東にタムセルク（6,623m）</strong>がそびえる</td></tr>
+      <tr><td>位置</td><td><strong>カトマンズの北東約137km</strong>、ルクラ空港の北約13km（直線）。北緯27°49′・東経86°43′</td></tr>
+      <tr><td><strong>人口</strong></td><td>ナムチェ単体では<strong>1,647人・397世帯（2001年国勢調査）</strong>。より新しい区別の数字は確認できなかった。<strong>ナムチェを含むクンブ・パサンラム村全体では8,720人・2,489世帯（2021年国勢調査）</strong>。シーズン中は観光客・ガイド・ポーターで実人口は大きく膨らむ</td></tr>
+      <tr><td>民族・宗教</td><td><strong>シェルパ</strong>が中心。<strong>チベット仏教（ニンマ派）</strong>（§04）</td></tr>
+      <tr><td>気候</td><td>ケッペン区分で<strong>Cwb／Dwb（高地の温帯〜冷帯・冬季乾燥）</strong>。<strong>年平均気温6.1℃、年降水量1,110mm</strong>で、雨はほぼ6〜9月のモンスーンに集中する</td></tr>
+      <tr><td>保護区</td><td>町全体が<strong>サガルマータ国立公園（1976年指定・1979年世界自然遺産）</strong>の中にある。入域には公園の入園料と村の入域料が要る（§14）</td></tr>
+      <tr><td>時間帯</td><td>UTC+5:45（<strong>日本より3時間15分遅い</strong>）。15分刻みの珍しい時差</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>「エベレスト街道で唯一の “町”」。</strong>ルクラからエベレスト・ベースキャンプ（EBC）までの集落はほとんどがロッジの並ぶ村だが、
+      ナムチェだけは<strong>週1回の土曜市・銀行・ATM・郵便局・警察・博物館</strong>がある。
+      <strong>ここより上で買い物をすると、何でもさらに高くなる</strong>——だから登山者もトレッカーも、ナムチェで装備と現金を最後に整える。
+    </div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">位置と地形 — エベレスト街道のどこにあるか</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ナムチェは<strong>ドゥードコシ川（「乳の川」の意）とボーテコシ川の合流点の上、斜面の窪地</strong>にある。
+      ルクラ（2,845m前後）から谷底を北上し、<strong>合流点から600mほど一気に登りきった先</strong>が町——
+      <strong>EBCまでの道のりのちょうど「高所の入口」</strong>にあたる。ここから上は木がまばらになり、空気が明らかに薄くなる。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>クンブ地方</strong></td><td>ソルクンブ郡の北半分、エベレスト南麓の高地。<strong>シェルパの故地</strong>で、ナムチェ・クムジュン・クンデ・ターメ・パンボチェなどの村がある</td></tr>
+      <tr><td><strong>サガルマータ国立公園</strong></td><td><strong>面積1,148km²</strong>。1976年7月19日に国立公園、<strong>1979年にネパール初の世界遺産（自然遺産）</strong>。2002年に275km²の緩衝地帯を追加。標高はモンジョの2,845mからエベレスト山頂8,848m（現在の公式値は8,848.86m）まで。北はチベット側の保護区に接する</td></tr>
+      <tr><td>川</td><td><strong>ドゥードコシ川</strong>とボーテコシ川の上流域が公園内にある。ゴーキョ湖群もここ</td></tr>
+      <tr><td>公園の入口</td><td><strong>モンジョ（2,845m）のゲート</strong>で入園料を払う。ルクラでは村の入域料をチェックされる</td></tr>
+    </table></div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Elevation profile — Lukla → Everest Base Camp（標準的な旅程・宿泊地）</div>
+      <div class="chart-scroll"><svg class="chart" viewBox="0 0 720 300" role="img" aria-label="ルクラからエベレストベースキャンプまでの標高プロファイル">
+        <line class="grid" x1="62" y1="270" x2="704" y2="270"/><text class="ytick" x="54" y="273.5">2,500m</text>
+        <line class="grid" x1="62" y1="230" x2="704" y2="230"/><text class="ytick" x="54" y="233.5">3,000m</text>
+        <line class="grid" x1="62" y1="190" x2="704" y2="190"/><text class="ytick" x="54" y="193.5">3,500m</text>
+        <line class="grid" x1="62" y1="150" x2="704" y2="150"/><text class="ytick" x="54" y="153.5">4,000m</text>
+        <line class="grid" x1="62" y1="110" x2="704" y2="110"/><text class="ytick" x="54" y="113.5">4,500m</text>
+        <line class="grid" x1="62" y1="70" x2="704" y2="70"/><text class="ytick" x="54" y="73.5">5,000m</text>
+        <line class="grid" x1="62" y1="30" x2="704" y2="30"/><text class="ytick" x="54" y="33.5">5,500m</text>
+        <polyline class="line" points="62.0,241.2 133.3,261.2 204.7,194.8 276.0,194.8 347.3,161.2 418.7,117.2 490.0,117.2 561.3,74.8 632.7,56.9 704.0,40.9"/>
+        <circle class="dot" cx="62.0" cy="241.2" r="3.4"/>
+        <circle class="dot" cx="133.3" cy="261.2" r="3.4"/>
+        <circle class="dot peak" cx="204.7" cy="194.8" r="4.2"/>
+        <circle class="dot peak" cx="276.0" cy="194.8" r="4.2"/>
+        <circle class="dot" cx="347.3" cy="161.2" r="3.4"/>
+        <circle class="dot" cx="418.7" cy="117.2" r="3.4"/>
+        <circle class="dot" cx="490.0" cy="117.2" r="3.4"/>
+        <circle class="dot" cx="561.3" cy="74.8" r="3.4"/>
+        <circle class="dot" cx="632.7" cy="56.9" r="3.4"/>
+        <circle class="dot" cx="704.0" cy="40.9" r="3.4"/>
+        <text class="peaklabel" x="240" y="215" text-anchor="middle">ナムチェ 3,440m（2泊＝順応日）</text>
+        <text class="peaklabel" x="454" y="138" text-anchor="middle">ディンボチェでもう1日</text>
+        <text class="peaklabel" x="700" y="24" text-anchor="end">EBC 5,364m</text>
+        <text class="xtick" x="62.0" y="286">ルクラ</text>
+        <text class="xtick" x="133.3" y="286">パクディン</text>
+        <text class="xtick" x="204.7" y="286">ナムチェ</text>
+        <text class="xtick" x="276.0" y="286">（休養）</text>
+        <text class="xtick" x="347.3" y="286">タンボチェ</text>
+        <text class="xtick" x="418.7" y="286">ディンボチェ</text>
+        <text class="xtick" x="490.0" y="286">（休養）</text>
+        <text class="xtick" x="561.3" y="286">ロブチェ</text>
+        <text class="xtick" x="632.7" y="286">ゴラクシェプ</text>
+        <text class="xtick" x="700.0" y="286">EBC</text>
+      </svg></div>
+      <div class="chart-note">横軸は1日1点（ルクラ到着日〜EBC到達日）。標高はトレッキング資料で一般に引かれる値で、資料により数十mの差がある。<strong>初日はいったん下る（パクディン）のがミソ</strong>。</div>
+    </div>
+
+    <details class="raw">
+      <summary>エベレスト街道の標高と日程 ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+        <tr><th>日</th><th>宿泊地</th><th>標高（目安）</th><th>備考</th></tr>
+        <tr><td>1</td><td>ルクラ → パクディン</td><td>2,860m → 2,610m</td><td>着陸後すぐ歩く。いったん下る</td></tr>
+        <tr><td>2</td><td><strong>ナムチェ</strong></td><td><strong>3,440m</strong></td><td>モンジョで公園ゲート、最後に約600mの急登</td></tr>
+        <tr><td>3</td><td><strong>ナムチェ（順応日）</strong></td><td><strong>3,440m</strong></td><td>エベレストビューホテル等へ登って戻る</td></tr>
+        <tr><td>4</td><td>タンボチェ</td><td>3,860m</td><td>クンブ最大の僧院</td></tr>
+        <tr><td>5</td><td>ディンボチェ</td><td>4,410m</td><td>森林限界の上</td></tr>
+        <tr><td>6</td><td>ディンボチェ（順応日）</td><td>4,410m</td><td>2回目の休養</td></tr>
+        <tr><td>7</td><td>ロブチェ</td><td>4,940m</td><td></td></tr>
+        <tr><td>8</td><td>ゴラクシェプ → EBC</td><td>5,164m／5,364m</td><td>EBCは日帰りで往復</td></tr>
+      </table></div>
+    </details>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">高山病と順応日 — 「ナムチェで1日休む」理由</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      高所では<strong>空気中の酸素の割合（約21%）は変わらないが、気圧が下がるので1回の呼吸で取り込める酸素の量が減る</strong>。
+      ナムチェの3,440mでは<strong>海面の約65%</strong>しかない。
+      ルクラ（約2,860m）から2日で約600m上がってくるので、<strong>ここで1日「上がらない日」を挟まないと、上で高山病になる確率が跳ね上がる</strong>。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>原則（米国ウィルダネス医学会のガイドライン）</th><th>中身</th></tr>
+      <tr><td><strong>寝る高さを1日500m以上上げない</strong></td><td>3,000mを超えたら、<strong>宿泊地の標高差は1日500mまで</strong>。昼に高く登るのは構わない</td></tr>
+      <tr><td><strong>3〜4日に1日は休む</strong></td><td>寝る高さを上げない日を<strong>3〜4日ごとに入れる</strong>。EBCルートでは<strong>ナムチェとディンボチェ</strong>がその日にあたる</td></tr>
+      <tr><td>Climb high, sleep low</td><td>順応日も寝て過ごすのではなく、<strong>300〜400m上まで歩いて戻ってくる</strong>のが定番。ナムチェではエベレストビューホテルやクムジュン方面へ登る</td></tr>
+    </table></div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Effective oxygen vs. sea level（気圧からの概算）</div>
+      <div class="chart-scroll"><svg class="chart" viewBox="0 0 720 300" role="img" aria-label="標高ごとの海面比の酸素量">
+        <text class="rlabel" x="142" y="33">海面 0m</text><rect class="bar lite" x="150" y="20" width="520" height="18"/><text class="vlabel" x="676" y="33">100%</text>
+        <text class="rlabel" x="142" y="63">カトマンズ 1,400m</text><rect class="bar lite" x="150" y="50" width="436.8" height="18"/><text class="vlabel" x="592.8" y="63">84%</text>
+        <text class="rlabel" x="142" y="93">ルクラ 2,860m</text><rect class="bar lite" x="150" y="80" width="364" height="18"/><text class="vlabel" x="520" y="93">70%</text>
+        <text class="rlabel" x="142" y="123">ナムチェ 3,440m</text><rect class="bar" x="150" y="110" width="338" height="18"/><text class="vlabel" x="494" y="123">65%</text>
+        <text class="rlabel" x="142" y="153">タンボチェ 3,860m</text><rect class="bar lite" x="150" y="140" width="322.4" height="18"/><text class="vlabel" x="478.4" y="153">62%</text>
+        <text class="rlabel" x="142" y="183">ディンボチェ 4,410m</text><rect class="bar lite" x="150" y="170" width="301.6" height="18"/><text class="vlabel" x="457.6" y="183">58%</text>
+        <text class="rlabel" x="142" y="213">ロブチェ 4,940m</text><rect class="bar lite" x="150" y="200" width="280.8" height="18"/><text class="vlabel" x="436.8" y="213">54%</text>
+        <text class="rlabel" x="142" y="243">EBC 5,364m</text><rect class="bar lite" x="150" y="230" width="265.2" height="18"/><text class="vlabel" x="421.2" y="243">51%</text>
+        <text class="rlabel" x="142" y="273">エベレスト山頂 8,849m</text><rect class="bar lite" x="150" y="260" width="161.2" height="18"/><text class="vlabel" x="317.2" y="273">31%</text>
+      </svg></div>
+      <div class="chart-note">国際標準大気の気圧式から算出した概算（実際の気圧は季節・天候で変わる）。<strong>EBCでほぼ半分、山頂で3分の1以下</strong>。</div>
+    </div>
+
+    <details class="raw">
+      <summary>標高と酸素の概算 ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+        <tr><th>地点</th><th>標高</th><th>気圧（kPa）</th><th>海面比</th><th>「酸素濃度」換算</th></tr>
+        <tr><td>海面</td><td>0m</td><td>101.3</td><td>100%</td><td>20.9%</td></tr>
+        <tr><td>カトマンズ</td><td>約1,400m</td><td>85.6</td><td>84%</td><td>17.7%</td></tr>
+        <tr><td>ルクラ</td><td>約2,860m</td><td>71.4</td><td>70%</td><td>14.7%</td></tr>
+        <tr><td><strong>ナムチェ</strong></td><td><strong>3,440m</strong></td><td><strong>66.3</strong></td><td><strong>65%</strong></td><td><strong>13.7%</strong></td></tr>
+        <tr><td>タンボチェ</td><td>3,860m</td><td>62.8</td><td>62%</td><td>12.9%</td></tr>
+        <tr><td>ディンボチェ</td><td>4,410m</td><td>58.4</td><td>58%</td><td>12.0%</td></tr>
+        <tr><td>ロブチェ</td><td>4,940m</td><td>54.5</td><td>54%</td><td>11.2%</td></tr>
+        <tr><td>EBC</td><td>5,364m</td><td>51.4</td><td>51%</td><td>10.6%</td></tr>
+        <tr><td>エベレスト山頂</td><td>8,849m</td><td>31.4</td><td>31%</td><td>6.5%</td></tr>
+      </table></div>
+    </details>
+
+    <div class="info-box">
+      <strong>読みどころ：ナムチェは「高山病の分かれ道」。</strong>
+      カトマンズからルクラへは飛行機で一気に約1,400m上がり、そこから2日でさらに約600m上がる。
+      <strong>頭痛・食欲不振・不眠が出始めるのはだいたいナムチェ前後</strong>で、ここで無理をして先へ進む人が上で倒れる。
+      <strong>後述のヘリ救助ビジネス（§08）も、この「高山病が出やすい地形」の上に成り立っている</strong>。
+    </div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">シェルパの人々</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      「シェルパ」は職業名ではなく<strong>民族名</strong>。チベット語で<strong>「シャル（東）」＋「パ（人）」＝東から来た人</strong>を意味し、
+      <strong>約500年前にチベット東部のカム地方からクンブへ移ってきた</strong>人々の子孫とされる。
+      登山ガイドの代名詞になったのは、<strong>高所に強い体と、高所で荷を運ぶ仕事をこの100年担ってきたから</strong>。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>人口</strong></td><td>ネパール全国で<strong>130,637人（2021年国勢調査、総人口の0.45%）</strong>。シェルパ語を母語とする人は<strong>117,896人</strong>。インドのダージリン周辺などにも住む</td></tr>
+      <tr><td><strong>宗教</strong></td><td><strong>チベット仏教ニンマ派</strong>。土着の神々や仏教以前のボン教的な要素も取り込んでいる。<strong>登山隊は出発前に必ずラマを呼んでプジャ（祈祷）をする</strong></td></tr>
+      <tr><td>伝統的な生業</td><td><strong>チベットとの交易</strong>、ヤクの放牧、高地での農業（じゃがいも等）。交易が途絶えた1950年代以降、<strong>登山・トレッキング観光に置き換わった</strong>（§05）</td></tr>
+      <tr><td><strong>名前は曜日で決まる</strong></td><td>伝統的には<strong>生まれた曜日の名を付ける</strong>。日曜＝<strong>ニマ</strong>（太陽）、月曜＝<strong>ダワ</strong>（月）、火曜＝<strong>ミンマ</strong>（火星）、水曜＝<strong>ラクパ</strong>（水星）、木曜＝<strong>プルバ</strong>（木星）、金曜＝<strong>パサン</strong>（金星）、土曜＝<strong>ペンバ</strong>（土星）。<strong>だから登山隊には同じ名前のシェルパが何人もいる</strong>。姓のように付く「シェルパ」は民族名</td></tr>
+      <tr><td>登山ガイド経済</td><td>エベレストの登頂者の多くは<strong>シェルパと高所ガイド</strong>。2025年春は5月27日時点で<strong>ネパール側の登頂694人のうち421人がシェルパ・高所ガイド</strong>（外国人257人）。<strong>2026年春にはカミ・リタ・シェルパが自身32回目の登頂</strong>（56歳）</td></tr>
+      <tr><td>危険の偏り</td><td><strong>1921〜2018年にエベレストで亡くなったシェルパは118人</strong>で、エベレストの死者の約3分の1にあたる。<strong>アイスフォールでの荷揚げなど、最も危険な区間を最も多く往復するのが彼らだから</strong></td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>テンジン・ノルゲイ（1914–1986）。</strong>1953年5月29日、エドモンド・ヒラリーとともにエベレストに初登頂したシェルパ。
+      <strong>ナムチェの西、ターメ村で育った</strong>（出生地はチベット側とする説もある）。
+      のちにインドのダージリンに移り、ヒマラヤ登山学校の指導者になった。
+      <strong>ルクラ空港の正式名「テンジン・ヒラリー空港」（2008年改称）</strong>に名前が残る。
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">歴史 — 塩の交易市場から登山の町へ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>時期</th><th>何が起きたか</th></tr>
+      <tr><td><strong>約500年前</strong></td><td>シェルパがチベット東部のカム地方からクンブへ移住。口承では<strong>4つの氏族</strong>が来たとされる</td></tr>
+      <tr><td><strong>〜1950年代 / 塩の道</strong></td><td>シェルパは<strong>標高5,700mを超えるナンパ・ラ峠を越えてチベットと交易</strong>した。<strong>砂糖・バター・紙をヤクに積んで運び、チベットの塩と羊毛と交換</strong>。ナムチェはその中継市場で、<strong>「バザール」の名はここから</strong></td></tr>
+      <tr><td>1950年代</td><td><strong>中国のチベット併合で国境越えの交易が途絶える</strong>。同じころ、ネパールが外国人に門戸を開き、<strong>エベレスト登山隊が南（ネパール側）から入るようになった</strong></td></tr>
+      <tr><td><strong>1953年</strong></td><td><strong>5月29日、英国隊（隊長ジョン・ハント）のヒラリーとテンジンがエベレスト初登頂</strong>。隊はナムチェを経由してキャラバンを組んだ</td></tr>
+      <tr><td><strong>1960〜1966年</strong></td><td>ヒラリーが<strong>ヒマラヤン・トラスト</strong>を設立（1960年、1963年にNZで法人登録）。<strong>1961年にクムジュン学校（生徒50人で開校）</strong>、1963年にパンボチェとターメの学校、<strong>1964年にルクラ空港</strong>、<strong>1966年にクンデ病院</strong></td></tr>
+      <tr><td>1960年代半ば</td><td><strong>政府が土曜市を始める</strong>（2000年の報道で「35年前」）。交易の拠点から、<strong>低地の米・野菜と高地の産品が交換される週市</strong>へ</td></tr>
+      <tr><td><strong>1971年</strong></td><td>日本人の宮原巍が<strong>ホテル・エベレスト・ビュー</strong>を開業（§11）</td></tr>
+      <tr><td>1976 / 1979年</td><td><strong>サガルマータ国立公園指定 → 世界遺産登録</strong></td></tr>
+      <tr><td>1995年</td><td><strong>ターメ＝ナムチェ小水力発電所（600kW）が稼働</strong>（§09）</td></tr>
+      <tr><td>2000年代〜</td><td>トレッキング客が急増。<strong>2003年に約1.9万人だった公園の訪問者は、2024/25年度は11ヶ月で5.6万人</strong>（§06）</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：ナムチェは「交易の町」が「観光の町」に乗り換えた例。</strong>
+      チベットとの交易が1950年代に閉じたちょうどその時に、<strong>ネパール側からのエベレスト登山が始まった</strong>。
+      <strong>ヤクで荷を運び、高所を往復するという交易時代の技能が、そのままポーター・ガイドという職業に転用された</strong>のがシェルパ経済の出発点になっている。
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">経済 — ロッジとポーターと許可料</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      クンブの経済はほぼ<strong>観光一本</strong>。売上の柱は<strong>①トレッカー向けロッジ（ティーハウス）の宿泊と食事 ②ガイド・ポーターの賃金 ③登山隊の物資と人件費</strong>。
+      国にとっては<strong>エベレストの登山許可料（ロイヤリティ）</strong>が外貨収入の看板になっている。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>数字・中身</th></tr>
+      <tr><td><strong>訪問者数</strong></td><td><strong>2024/25年度は11ヶ月で55,979人（外国人48,402人・国内7,577人）</strong>。2003年には約1.9万人だった</td></tr>
+      <tr><td>季節の偏り</td><td>2024年の例で<strong>9月中旬〜10月中旬の1ヶ月だけで8,902人</strong>、モンスーン期の7月中旬〜8月中旬は125人。<strong>春（3〜5月）と秋（9〜11月）にほぼ全部が来る</strong></td></tr>
+      <tr><td><strong>エベレスト許可料</strong></td><td>南東稜・外国人1人あたり、<strong>春$11,000 → $15,000（2025年9月1日〜、+36%）</strong>。約10年ぶりの値上げ（下表）</td></tr>
+      <tr><td>許可料収入</td><td><strong>2026年春はエベレストだけで約720万ドル</strong>、31座合計で<strong>1,195件・約847万ドル</strong></td></tr>
+      <tr><td>経済効果</td><td><strong>2019年、エベレストの遠征はネパール経済に約3億ドルをもたらした</strong>とされる</td></tr>
+      <tr><td>ポーターと物価</td><td>ルクラより上に車道はないので、<strong>物資はすべてポーターかヤク・ゾッキョ（ヤクと牛の交配種）の背中で運ばれる</strong>。<strong>運ぶ距離と標高のぶんだけ値段が乗るので、同じコーラ・同じ食事でも上の村ほど高い</strong>。ロッジは「食事を泊まり客がロッジで取る」前提で宿泊料を安くし、食事で回収するモデルが一般的</td></tr>
+    </table></div>
+
+    <details class="raw">
+      <summary>エベレスト登山許可料（南東稜・外国人1人）の改定 ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+        <tr><th>シーズン</th><th>旧（〜2025年8月）</th><th>新（2025年9月1日〜）</th><th>上げ幅</th></tr>
+        <tr><td><strong>春（3〜5月）</strong></td><td>$11,000</td><td><strong>$15,000</strong></td><td>+36%</td></tr>
+        <tr><td>秋（9〜11月）</td><td>$5,500</td><td>$7,500</td><td>+36%</td></tr>
+        <tr><td>冬（12〜2月）・モンスーン（6〜8月）</td><td>$2,750</td><td>$3,750</td><td>+36%</td></tr>
+      </table></div>
+    </details>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">ルクラ空港とエアライン</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ナムチェには車道がない。<strong>入る方法は事実上「ルクラまで飛んで2日歩く」か「ヘリで飛ぶ」の2つ</strong>
+      （下の道路終点から1週間ほど歩く古典ルートもある）。
+      その入口のルクラ空港は、<strong>滑走路527m・勾配11.7%、片側は崖、反対側は山の壁</strong>という、
+      <strong>「世界一危険な空港」と呼ばれ続けてきた空港</strong>だ。
+    </div>
+
+    <div class="sub-h">テンジン・ヒラリー空港（ルクラ）</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>標高</strong></td><td><strong>2,845m</strong>（資料により2,860m）</td></tr>
+      <tr><td><strong>滑走路</strong></td><td><strong>長さ527m × 幅30m、勾配11.7%</strong>（約12%の上り坂）。<strong>着陸は上り方向、離陸は下り方向の一方通行</strong>。着陸側の手前は谷へ落ちる崖、奥は山の壁で、<strong>着陸をやり直す（ゴーアラウンド）余地がほぼない</strong></td></tr>
+      <tr><td><strong>開港</strong></td><td><strong>1964年、エドモンド・ヒラリーが建設</strong>。もとは学校・病院建設の資材を運ぶためだった。<strong>2008年2月にテンジン・ヒラリー空港へ改称</strong></td></tr>
+      <tr><td>「世界一危険」</td><td>米ヒストリーチャンネルの番組『Most Extreme Airports』（2010年）で<strong>世界一危険な空港</strong>とされた。以降この呼び名が定着している</td></tr>
+      <tr><td><strong>運航条件</strong></td><td>計器着陸装置はなく<strong>有視界飛行のみ</strong>。<strong>風と雲が出る前の早朝に便が集中</strong>し、昼には止まることが多い。<strong>ルクラかカトマンズ／ラメチャップのどちらかが曇れば全便欠航</strong>で、<strong>数日足止めされるのは珍しくない</strong>——日程には予備日を入れるのが常識</td></tr>
+    </table></div>
+
+    <div class="sub-h">主な事故</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>年</th><th>事故</th></tr>
+      <tr><td>1973年</td><td>ツインオッター（DHC-6）が着陸時に大破（死者なし）</td></tr>
+      <tr><td>2004年</td><td>イエティ航空機が山腹に衝突、乗員3人死亡</td></tr>
+      <tr><td><strong>2008年10月</strong></td><td><strong>イエティ航空のツインオッターが着陸進入中に墜落、18人死亡</strong>（生存は機長1人）。乗客の多くはドイツ人とオーストラリア人のトレッカーだった</td></tr>
+      <tr><td><strong>2017年5月</strong></td><td><strong>サミット航空409便（L-410）が着陸時に滑走路手前の斜面に衝突、操縦士2人死亡</strong></td></tr>
+      <tr><td><strong>2019年4月</strong></td><td><strong>離陸滑走中のサミット航空機（L-410）が駐機中のヘリコプターに衝突、3人死亡</strong></td></tr>
+    </table></div>
+
+    <div class="sub-h">就航エアラインと運賃</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>エアライン</th><th>主な機材</th><th>メモ</th></tr>
+      <tr><td><strong>Tara Air</strong></td><td>DHC-6 ツインオッター</td><td>イエティ航空系。ラメチャップ発で<strong>1日10〜15便</strong>を飛ばす（2024年春の報道）</td></tr>
+      <tr><td><strong>Summit Air</strong></td><td>Let L-410</td><td>チェコ製の小型双発機。2017年・2019年の事故はこの機材</td></tr>
+      <tr><td><strong>Sita Air</strong></td><td>ドルニエ228</td><td>3社の中では便数が少ない</td></tr>
+    </table></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>区間</th><th>所要</th><th>外国人運賃（片道・目安）</th></tr>
+      <tr><td><strong>カトマンズ → ルクラ</strong></td><td>約25〜35分</td><td><strong>約US$226前後</strong>（2026年3月から約$237に改定とする旅行会社情報あり）</td></tr>
+      <tr><td><strong>ラメチャップ（マンタリ）→ ルクラ</strong></td><td>約20分</td><td><strong>約US$186</strong>とされる</td></tr>
+    </table></div>
+    <p style="font-size:12px;color:var(--subtle)">運賃は各航空会社が随時改定し、ネパール人料金と外国人料金が別建て。上は旅行会社サイトの掲載値で、公式運賃表では確認していない。</p>
+
+    <div class="sub-h">繁忙期は「ラメチャップ発」に振り替え</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>なぜ</strong></td><td>カトマンズのトリブバン国際空港は滑走路1本で国際線と国内線が同居しており、<strong>朝のルクラ便が集中すると管制がパンクする</strong>。そこで<strong>春・秋の繁忙期はルクラ便の定期便をラメチャップ県のマンタリ空港発に移す</strong>運用が続いている（2024年は4月1日〜、2025年秋は9月25日〜11月末）</td></tr>
+      <tr><td><strong>効果</strong></td><td>カトマンズ発では<strong>1機あたり1日2〜3往復</strong>が限界だったのが、距離の短いマンタリ発では<strong>1日8〜10往復</strong>できる。繁忙期のマンタリ空港は<strong>1日約120便（往復）、約2,000人</strong>を捌く</td></tr>
+      <tr><td><strong>陸路</strong></td><td><strong>カトマンズからマンタリまでは車で約4〜5時間</strong>。早朝便に乗るには<strong>未明にカトマンズを出る</strong>か、前日にマンタリへ入って泊まるのが定番</td></tr>
+    </table></div>
+
+    <div class="sub-h">安全規制 — EUの航空安全リスト</div>
+    <div class="info-box">
+      <strong>EUは2013年12月5日、ネパールの全航空会社をEU域内乗り入れ禁止リスト（EU Air Safety List）に載せた。</strong>
+      理由は個々の会社というより<strong>ネパール民間航空局の安全監督体制の不備</strong>で、ネパール政府は解除を繰り返し要請しているが、<strong>解除されたという報道は本稿執筆時点で確認できない</strong>。
+      ネパールの国内線はそもそもEUへ飛ばないので運航への直接の影響はないが、<strong>欧州の旅行会社・保険会社が「リスト掲載国の航空会社」を扱う際の判断材料になっている</strong>。
+      国全体の航空事情は<a href="261002_nepal.html">ネパール</a>と<a href="261002_kathmandu.html">カトマンズ</a>、同じく山岳空港を抱える<a href="261002_pokhara.html">ポカラ</a>も参照。
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">ヘリコプター — 救助ビジネスと保険詐欺</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      クンブの上空は<strong>朝から晩までヘリが飛んでいる</strong>。用途は<strong>①高山病・負傷者の救助 ②欠航時の代替輸送 ③EBCへの日帰り遊覧 ④物資輸送</strong>。
+      救助費用は海外旅行保険で払われるため、<strong>「保険が払う救助」が巨大な利権になり、組織的な詐欺事件</strong>にまで発展した。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>シャンボチェ</strong></td><td>ナムチェの上、<strong>標高約3,750mの小さな滑走路</strong>。いまは旅客定期便には使われず、<strong>ヘリの発着場</strong>として使われる。エベレストビューホテルのすぐ下</td></tr>
+      <tr><td>救助の流れ</td><td>高山病が悪化すると、<strong>ロッジ → ガイド／旅行会社 → ヘリ会社</strong>と連絡が回り、カトマンズの病院へ運ばれる。<strong>費用は数千ドル規模になるとされ、保険会社に請求される</strong></td></tr>
+      <tr><td><strong>保険詐欺事件</strong></td><td>ネパール当局は<strong>2022〜2025年の偽救助・水増し請求で32人を起訴</strong>。<strong>被害額は約1,969万ドル</strong>と算定された。<strong>4,782人の外国人登山者・トレッカーに関わる請求、300件超の不審な救助</strong>が対象</td></tr>
+      <tr><td>手口</td><td><strong>演出された急病、偽造書類、水増しされたヘリ搬送の請求</strong>。さらに<strong>ガイドが客の食事に重曹を混ぜて腹痛を起こさせ、高山病に見せかけた</strong>疑いまで報じられた</td></tr>
+      <tr><td>会社別</td><td>報道によれば、<strong>Mountain Rescue Serviceの救助1,248件のうち171件、Nepal Charter Serviceの471件のうち75件、Everest Experienceの601件のうち71件</strong>が偽装と見られている</td></tr>
+      <tr><td>現状</td><td>カトマンズ地裁に起訴状が出され、<strong>9人が出廷、23人は逃亡中</strong>と報じられた</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：本物の救助と偽の救助を見分けにくいことが、詐欺の温床。</strong>
+      高山病は<strong>放置すると命に関わり、症状が主観的</strong>なので、「念のためヘリ」を断りにくい。
+      トレッカー側の自衛策は<strong>①ヘリ救助をカバーし、高度上限が十分な保険に入る ②急病時は保険会社に直接連絡する ③順応日を削らない</strong>こと。
+    </div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">エネルギー・通信</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>電力</strong></td><td><strong>ターメ＝ナムチェ小水力発電所（600kW、1995年10月稼働）</strong>がナムチェ周辺に電気を送る。<strong>全国送電網にはつながっていない地域電力</strong>で、上の村は小水力・太陽光頼み。<strong>上に行くほど充電が有料・高額になる</strong></td></tr>
+      <tr><td>燃料</td><td>暖房と調理は灯油・ガスのほか、<strong>ヤクの糞を乾かした燃料</strong>が今も使われる。薪の伐採は国立公園の規制対象</td></tr>
+      <tr><td><strong>Wi-Fi（Everest Link）</strong></td><td>クンブ専用の無線インターネット業者。<strong>カトマンズ→ルクラ→谷の中継塔を無線で結び、ゴラクシェプまでのロッジでつながる</strong>。プリペイドカードで、<strong>数GBで数百〜千ルピー程度</strong>とされる</td></tr>
+      <tr><td><strong>携帯（4G）</strong></td><td><strong>Ncell とネパールテレコム（NTC）</strong>。ルクラ・ナムチェは4Gが入る。<strong>ディンボチェより上では弱くなり、EBC付近では途切れがち</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">観光スポット</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="spot-grid">
+      <div class="spot-card">
+        <div class="spot-name">土曜市（Saturday Market）</div>
+        <div class="spot-loc">ナムチェ下部 / 毎週土曜の朝</div>
+        <div class="spot-desc">1960年代半ばに政府が始めた週市。<strong>低地から数日かけて運ばれた米・野菜・日用品と、高地の産品が交換される</strong>。2000年の報道では商人200人超、チベット側から13日かけてヤク10頭で来た商人もいた。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">シェルパ博物館（Sherpa Culture Museum）</div>
+        <div class="spot-loc">ナムチェ上部 / 国立公園事務所の近く</div>
+        <div class="spot-desc">シェルパの伝統家屋の再現と生活道具、<strong>エベレスト登山史の写真展示</strong>。順応日の散歩コースに組み込みやすい。晴れればここからエベレストが見える。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">ホテル・エベレスト・ビュー</div>
+        <div class="spot-loc">シャンボチェの上 / 標高3,880m</div>
+        <div class="spot-desc"><strong>1971年に日本人が建てた、ギネス認定の「世界一高所のホテル」</strong>（§11）。<strong>テラスからエベレスト・ローツェ・アマダブラムが一望</strong>でき、順応日の「登って戻る」先として定番。宿泊しなくてもお茶が飲める。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">クムジュン / クンデ</div>
+        <div class="spot-loc">ナムチェの北 / 約3,780〜3,840m</div>
+        <div class="spot-desc">ヒラリーが建てた<strong>クムジュン学校（1961年）とクンデ病院（1966年）</strong>のある双子の村。<strong>クムジュンの僧院には「イエティの頭皮」とされる遺物</strong>が保管されている。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">タンボチェ僧院（Tengboche）</div>
+        <div class="spot-loc">ナムチェから1日 / 3,867m</div>
+        <div class="spot-desc"><strong>1916年創建、クンブ最大の僧院</strong>。チベットのロンブク僧院の流れをくむ。<strong>1934年の地震で倒壊、1989年1月に漏電火災で焼失</strong>し、そのたびに再建された。秋の<strong>マニ・リムドゥ祭</strong>の仮面舞踊で知られる。</div>
+      </div>
+      <div class="spot-card">
+        <div class="spot-name">ターメ</div>
+        <div class="spot-loc">ナムチェの西 / ボーテコシ川沿い</div>
+        <div class="spot-desc"><strong>テンジン・ノルゲイが育った村</strong>で、多くの著名シェルパの出身地。<strong>2024年8月の氷河湖決壊洪水で家屋・学校・診療所が流された</strong>（§13）。ナムチェの電力を担う水力発電所もこの谷。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">日本とのつながり</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      クンブと日本の縁は深い。<strong>世界一高所のホテルを建てたのも、女性として世界で初めてエベレストに立ったのも、80歳で登頂したのも日本人</strong>。
+      ナムチェのロッジに日本語のメニューや日本隊の写真が残っているのはそのため。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>年</th><th>出来事</th></tr>
+      <tr><td><strong>1970年5月11日</strong></td><td>日本山岳会の遠征隊で<strong>植村直己（と松浦輝夫）が日本人初のエベレスト登頂</strong></td></tr>
+      <tr><td><strong>1971年</strong></td><td><strong>宮原巍がホテル・エベレスト・ビューを完成</strong>。設計は日本人建築家の熊谷義信とされる。標高3,880mで、<strong>2004年から「世界一高所にあるホテル」としてギネス記録に載る</strong>（非公式にはより高い宿もあるとされる）</td></tr>
+      <tr><td><strong>1975年5月16日</strong></td><td><strong>田部井淳子が女性として世界初のエベレスト登頂</strong>。5月4日に第2キャンプ（6,300m）で雪崩に埋まり、<strong>シェルパ4人に掘り出された</strong>直後の登頂だった。2025年には登頂50周年の記念行事がカトマンズの日本大使館で開かれた</td></tr>
+      <tr><td><strong>2013年5月23日</strong></td><td><strong>三浦雄一郎が80歳でエベレスト登頂</strong>（当時の最高齢記録）</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>エベレスト・ビュー・ホテルは「日本人がヒマラヤ観光を発明した」例として語られる。</strong>
+      宮原巍は1960年代にネパールに渡り、<strong>登山家ではない人でもエベレストを眺められる場所</strong>を作ろうとした。
+      建設資材の多くは人とヤクが担ぎ上げたとされ、<strong>シャンボチェの滑走路も客を運ぶための足として使われた</strong>とされる。
+      高山病対策に客室へ酸素を供給する構想まであったという話が残っている（細部は未確認）。
+    </div>
+  </div>
+
+  <div class="sec" id="s12">
+    <div class="sec-label"><span class="num">12</span><span class="sec-title">ゴミ・環境問題</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      エベレストは「世界一高いゴミ捨て場」と揶揄されてきた。
+      ナムチェ周辺の問題は<strong>①山の上（キャンプ）に残される酸素ボンベ・テント・排泄物 ②街道沿いのペットボトル・包装ゴミ</strong>の2層ある。
+      地元自治体（クンブ・パサンラム村）と国の両方が規則を重ねてきた。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>規則</th><th>中身</th></tr>
+      <tr><td><strong>ゴミ持ち帰りデポジット</strong></td><td>登山隊は<strong>4,000ドルのデポジット</strong>を払い、<strong>持ち込んだゴミを全部持ち帰れば返金</strong>。さらに<strong>隊員1人あたり自分のゴミとは別に8kgのゴミを下ろす</strong>義務。<strong>実際には徹底されず</strong>、デポジットを返金なしの清掃基金にする案が出ている</td></tr>
+      <tr><td><strong>使い捨てプラスチック禁止</strong></td><td><strong>2020年1月1日から、クンブ地方で厚さ30ミクロン未満のプラスチックとペットボトル飲料を禁止</strong>（村の条例）</td></tr>
+      <tr><td><strong>排泄物の持ち帰り</strong></td><td><strong>2024年春シーズンから、登山者は村から配られる専用袋（1人2袋）で排泄物を持ち下ろす</strong>義務。高所では分解されず、「山が臭う」と地元が訴えていた</td></tr>
+      <tr><td>2026年春の実態</td><td><strong>全キャンプからBCまでのゴミ持ち下ろしが義務化されたが、サウスコルなどでは守られていない</strong>ことが映像で記録された</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s13">
+    <div class="sec-label"><span class="num">13</span><span class="sec-title">直近の出来事（2024→2026）</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>時期</th><th>出来事</th></tr>
+      <tr><td><strong>2024年8月16日</strong></td><td><strong>ターメ村の上流で氷河湖が2つ連鎖的に決壊（GLOF）</strong>。<strong>家屋20棟・小学校・診療所が流され、135人が避難</strong>。<strong>オフシーズン・昼間（13時半ごろ）・子どもが早く下校していたことが重なり、死者は出なかった</strong>。気候変動による氷河湖リスクの象徴的事例になった</td></tr>
+      <tr><td>2024年度〜</td><td><strong>クンブ・パサンラム村が外国人の入域料を2,000→3,000ルピーに引き上げ</strong>（南アジア諸国・中国は2,000ルピー）</td></tr>
+      <tr><td><strong>2025年春</strong></td><td>エベレスト（ネパール側）許可<strong>468件</strong>前後、<strong>登頂は約800人</strong>（報道）</td></tr>
+      <tr><td>2025年4月</td><td>統合観光法案が国会に提出。<strong>「エベレストの前にネパール国内の7,000m峰に登頂していること」を許可条件にする</strong>案が含まれる。<strong>2026年6月時点でまだ成立していない</strong></td></tr>
+      <tr><td><strong>2025年9月1日</strong></td><td><strong>エベレスト許可料の引き上げ（春$11,000→$15,000）</strong>が発効（§06）</td></tr>
+      <tr><td>2025年秋</td><td>9月25日〜11月末、<strong>ルクラ便を全面的にラメチャップ発へ</strong>（§07）</td></tr>
+      <tr><td>2022〜2026年</td><td><strong>ヘリ救助保険詐欺で32人が起訴、被害額約1,969万ドル</strong>（§08）</td></tr>
+      <tr><td><strong>2026年春</strong></td><td><strong>中国がチベット側ルートを直前に閉鎖</strong>し、登山者がネパール側に集中。<strong>許可495件（過去最多）、登頂1,008人（過去最多）、5月20日だけで274人</strong>。エベレストの死者は5人（ほかシェルパ1人が行方不明）。国籍別は中国109・米国77・インド61・英国32</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：値上げしても人は減らなかった。</strong>
+      許可料を36%上げた直後の2026年春に、<strong>許可件数も登頂者数も過去最多</strong>を記録した。
+      チベット側の閉鎖という特殊要因はあるが、<strong>「料金で混雑を抑える」効果は少なくとも初年度には見えなかった</strong>。
+      次の手として残っているのが<strong>7,000m峰の登頂歴を条件にする「経験での絞り込み」</strong>で、これが成立するかが2027年シーズンの焦点になる。
+    </div>
+  </div>
+
+  <div class="sec" id="s14">
+    <div class="sec-label"><span class="num">14</span><span class="sec-title">行くなら</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>ベストシーズン</strong></td><td><strong>秋（10〜11月）と春（3〜5月）</strong>。秋は空気が澄んで山がよく見え、春は花（シャクナゲ）と登山隊の季節。<strong>6〜9月はモンスーンで雲が多く欠航も多い</strong>、12〜2月は寒いが空いている</td></tr>
+      <tr><td><strong>日数</strong></td><td><strong>ナムチェまでの往復だけならルクラから4〜5日</strong>（往路2日＋順応日＋復路）。<strong>EBC往復は12〜14日程度が一般的</strong>とされる。<strong>どちらも欠航に備えた予備日を1〜2日足す</strong></td></tr>
+      <tr><td><strong>許可証</strong></td><td><strong>①サガルマータ国立公園 入園料 3,000ルピー</strong>（モンジョのゲートかカトマンズで支払い） <strong>②クンブ・パサンラム村 入域料 3,000ルピー</strong>（外国人、ルクラで支払い）。<strong>クンブではTIMSカードの代わりにこの村の入域料が徴収される</strong>（2018年〜とされる）</td></tr>
+      <tr><td>予算感</td><td>大きいのは<strong>航空券（片道US$190〜240前後×2）</strong>と<strong>ガイド・ポーター代</strong>。ロッジの宿泊自体は安いが、<strong>食事・ホットシャワー・充電・Wi-Fiが別料金で、上へ行くほど高くなる</strong>。現金（ルピー）はナムチェのATMが最後の頼りと考えておく</td></tr>
+      <tr><td><strong>保険</strong></td><td><strong>ヘリ救助を含み、6,000m前後まで対象になる海外旅行保険</strong>に入る。通常の旅行保険は高所トレッキングが対象外のことがある</td></tr>
+      <tr><td>アクセス</td><td>日本 → <a href="261002_kathmandu.html">カトマンズ</a>（乗継）→ <strong>繁忙期は車で約4〜5時間かけてラメチャップへ</strong> → ルクラ（約20分）→ 徒歩2日でナムチェ</td></tr>
+      <tr><td>体調</td><td><strong>ナムチェで必ず2泊</strong>。水を多めに飲み、アルコールは控える。頭痛が悪化する・ふらつく・息切れが安静時も続くときは<strong>下山が唯一の確実な治療</strong></td></tr>
+      <tr><td>時差・電源</td><td>UTC+5:45（日本より3時間15分遅い）。ネパールの電圧は230V</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s15">
+    <div class="sec-label"><span class="num">15</span><span class="sec-title">Index — 関連ページ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>ページ</th><th>関係</th></tr>
+      <tr><td><a href="261002_nepal.html"><strong>ネパール / Nepal</strong></a></td><td>国（親ページ）。政治・経済・観光政策・航空行政の全体像</td></tr>
+      <tr><td><a href="261002_kathmandu.html"><strong>カトマンズ / Kathmandu</strong></a></td><td>首都・国際線の玄関口。ルクラ便／ラメチャップ行きの出発点</td></tr>
+      <tr><td><a href="261002_pokhara.html"><strong>ポカラ / Pokhara</strong></a></td><td>もう一つのトレッキング拠点（アンナプルナ側）。ナムチェ＝エベレスト側との対比で読む</td></tr>
+      <tr><td><a href="index.html">geo-history index</a></td><td>国・都市リサーチの一覧</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>Wikipedia「Namche Bazaar」「Sagarmatha National Park」「Tenzing–Hillary Airport」「Sherpa people」「2021 Nepal census」「Himalayan Trust」「Tengboche Monastery」「2024 Thame flood」</li>
+      <li>Khumbu Pasanglhamu Rural Municipality 公式サイト（2021年国勢調査の村人口）</li>
+      <li>Nepali Times「Lingering in Namche」（2000年9月27日）— 土曜市・ナンパ・ラの交易</li>
+      <li>Alan Arnette「Everest just became more expensive and unattractive to some」（2025年9月3日）「Everest 2026 Season Summary: Records, Crowds, Trash, Winds」（2026年6月2日）</li>
+      <li>The Kathmandu Post「Climbers race for Everest permits before fees go up」（2025年4月）「Everest to no longer be anybody's climb」（2025年4月）／ Everest Chronicle「Nearly 800 summits mark busy, stormy Everest season」／ Anadolu Agency</li>
+      <li>Explorersweb「New Everest Regulations: You Must Climb a 7,000m Peak in Nepal First」／ Outside「Nepal Mount Everest tourism bill」</li>
+      <li>Onlinekhabar「Over 55,000 tourists visit Khumbu region in 11 months」「Fake helicopter rescues in Nepal」／ The Himalayan Times「Around 9,000 trekkers visit Sagarmatha region in a month」</li>
+      <li>The Himalayan Times「Over four dozen daily flights operating from Manthali to Lukla」／ Onlinekhabar「Ramechhap airport transit in Manthali」／ Aerotelegraph「Ramechhap statt Kathmandu」／ Nepal Hiking・Best Heritage Tour（運賃・振替情報、旅行会社サイト）</li>
+      <li>Bloomberg「EU Bans All Nepal-Based Airlines in Latest Update of Blacklist」（2013年12月5日）／ Onlinekhabar「Nepali airlines continue to be blocked from European sky」</li>
+      <li>GearJunkie「Everest guides suspected of poisoning clients in massive rescue scam」／ Beinsure「Nepal arrests Everest rescue officials over $20mn insurance fraud」／ Beema Post（2026年4月）</li>
+      <li>Himal Press「Entry fee to Everest region hiked by Rs 1,000」／ The Himalayan Times「Collection of tourist entry fee starts in Khumbu」</li>
+      <li>Onlinekhabar「Khumbu, home of Everest, bans plastic bags and bottles」／ CNN（2019年8月）／ UIAA「Everest summitteers required to help clean Mount Everest by bringing out garbage」／ Global News・SCMP（排泄物袋、2024年）</li>
+      <li>Wilderness Medical Society Clinical Practice Guidelines（AAFP 2020年要約）／ CDC Yellow Book「High-Altitude Travel and Altitude Illness」— 酸素量は国際標準大気の気圧式から本稿で計算</li>
+      <li>Outdoor Japan「Building the World's Highest Hotel」／ Uniq Hotels「Hotel Everest View」— 宮原巍・ギネス記録</li>
+      <li>The Himalayan Times「Japan Embassy hosts commemorative event to honor Junko Tabei」（2025年5月）／ Explorersweb「50 Years Ago, Junko Tabei Became the First Woman to Summit Everest」</li>
+      <li>Himalayan Club Journal「Suggested explanations of Sherpa names」（曜日名）</li>
+      <li>Nepal Hiking Team・Traveldailynews ほか（Everest Link・携帯電波の現地情報）</li>
+    </ul>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ポカラ / Pokhara — Geo Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+      .hero h1 { font-size: 32px; overflow-wrap: anywhere; }
+      .hero-eyebrow, .toc li, .spot-name, .crumb { overflow-wrap: anywhere; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* 人口推移グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 162px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="261002_nepal.html">nepal</a>
+    <span class="sep">/</span>
+    <span class="cur">pokhara</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">City Research — 261002</div>
+    <h1>ポカラ / Pokhara</h1>
+    <div class="hero-country">ネパール ガンダキ州 州都 · カスキ郡 / 人口51万（第2の都市）・面積464km²（国内最大の市）/ 標高822mの湖畔から6,993mのマチャプチャレを仰ぐ、観光とグルカ兵の街</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">人口</div>
+        <div class="kv-val">513,504</div>
+        <div class="kv-note">2021年国勢調査 / カトマンズに次ぐ第2位</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">面積</div>
+        <div class="kv-val">464km²</div>
+        <div class="kv-note">ネパールの市で最大 / 2017年にレクナートと合併</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">年降水量</div>
+        <div class="kv-val">3,868mm</div>
+        <div class="kv-note">1991–2020平年値 / 7月だけで941mm</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">国際定期便</div>
+        <div class="kv-val">0 → 1</div>
+        <div class="kv-note">2023年1月開港 / 初の定期便は2026年9月のflydubai</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">ポカラとは — 基本情報</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">人口推移（1961–2021）</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">主要エリアガイド</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">気候 — ネパール屈指の多雨都市</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">地形 — 湖と峡谷と7,000m級の壁</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">歴史 — カスキ王国の冬の都から観光都市へ</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">経済 — 観光と「ラフレ」の送金</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">グルカ兵とポカラ</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">観光 — アンナプルナの玄関口とパラグライダー</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">空港 — 2つのポカラ空港と「国際線が来ない国際空港」</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">エアラインと航空事故</a></li>
+      <li><span class="toc-num">12</span><a href="#s12">陸路 — プリトビ・ハイウェイ</a></li>
+      <li><span class="toc-num">13</span><a href="#s13">市の財政 — 2年連続の縮小予算</a></li>
+      <li><span class="toc-num">14</span><a href="#s14">食・観光スポット</a></li>
+      <li><span class="toc-num">15</span><a href="#s15">ゆかりの著名人</a></li>
+      <li><span class="toc-num">16</span><a href="#s16">直近の出来事（2023→2026）</a></li>
+      <li><span class="toc-num">17</span><a href="#s17">行くなら</a></li>
+      <li><span class="toc-num">18</span><a href="#s18">Index — 関連ページ</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">ポカラとは — 基本情報</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ポカラを一言でいうと「<strong>ヒマラヤを借景にした、ネパールの『第2の首都』兼リゾート</strong>」。
+      首都<a href="261002_kathmandu.html">カトマンズ</a>から西へ約200km、標高822mの盆地にあり、
+      <strong>ペワ湖の向こうにマチャプチャレ（6,993m）とアンナプルナ連峰が直接立ち上がる</strong>景観がこの街の最大の資産になっている。<br>
+      人口は<strong>51万人でカトマンズに次ぐ第2位</strong>、面積は<strong>464km²でネパールの市の中で最大</strong>（2017年に旧レクナート市を合併したため）。
+      食い扶持は<strong>①観光（アンナプルナ・トレッキングの起点） ②海外出稼ぎと英国・インドのグルカ兵の送金・年金</strong>の2本柱で、
+      <strong>「外から来る人」と「外へ出ていく人」の両方で成り立っている街</strong>だと言える。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>正式名称</strong></td><td><strong>ポカラ・メトロポリタン市（Pokhara Metropolitan City）</strong>。2017年の地方制度改革で旧ポカラ準大都市と旧レクナート市が合併し、当初「ポカラ・レクナート」の名で発足した</td></tr>
+      <tr><td>行政上の位置づけ</td><td><strong>ガンダキ州（Gandaki Province）の州都</strong>、カスキ郡の郡都。2015年憲法で導入された7州制の下で州政府・州議会が置かれた</td></tr>
+      <tr><td><strong>人口</strong></td><td><strong>513,504人</strong>（2021年国勢調査・施設人口を除く世帯人口ベース）。英語版Wikipediaなどは「約60万人」とする記述もあり、<strong>定義により数字がぶれる</strong>点に注意（§02）</td></tr>
+      <tr><td><strong>面積</strong></td><td><strong>464.24km²</strong>。<strong>ネパールの市（メトロポリタン市）で最大</strong>。33の区（ward）に分かれる</td></tr>
+      <tr><td>標高</td><td><strong>822m</strong>（市街地）。北のサランコット展望台は約1,600m、真北のマチャプチャレは6,993m</td></tr>
+      <tr><td>位置</td><td>カトマンズの西約200km。<strong>飛行機で約25分、バスで半日</strong>（§11・§12）</td></tr>
+      <tr><td>言語</td><td>母語別では<strong>ネパール語78.8%、グルン語11.0%</strong>、マガール語・ネワール語が各2.4%（2021年）。<strong>グルン人の比率の高さ</strong>がグルカ兵の街という性格と直結している</td></tr>
+      <tr><td>宗教</td><td>ヒンドゥー教82.4%、仏教13.2%、キリスト教2.4%（2021年）</td></tr>
+      <tr><td>識字率</td><td>84.3%（2021年）</td></tr>
+      <tr><td><strong>市長</strong></td><td><strong>ダナ・ラージ・アチャルヤ（Dhana Raj Acharya）</strong>。統一社会主義党（CPN-Unified Socialist）。2022年の地方選挙で当選</td></tr>
+      <tr><td>通貨・時間</td><td>ネパール・ルピー（NPR）。<strong>UTC+5:45（日本より3時間15分遅い）</strong>——15分刻みの時差はネパール全土共通</td></tr>
+      <tr><td>姉妹・友好都市</td><td>英バーネット、中国・広州／昆明／ニンティ、米イサカ、トルコ・プリンスィズ諸島、そして<strong>長野県駒ヶ根市</strong>（2001年に国際協力友好都市協定。母子保健支援を軸にした市民交流が続く）</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>「ポカラ」という地名の由来。</strong>ネパール語の<strong>「ポカリ（pokhari）＝池・湖」</strong>から来ているとされる。
+      実際ポカラ盆地にはペワ湖・ベグナス湖・ルパ湖など<strong>大小の湖が点在</strong>し、「湖の街」という名前どおりの地形になっている。
+      カトマンズが「寺の街」なら、ポカラは<strong>「湖と山の街」</strong>——この対比で覚えておくと、ネパールの2大都市の性格の違いが掴みやすい。
+    </div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">人口推移（1961–2021）</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Population — Pokhara 1961–2021</div>
+      <div class="chart-scroll"><svg class="chart" viewBox="0 0 720 300" role="img" aria-label="ポカラの人口推移 1961-2021">
+        <line class="grid" x1="62" y1="230" x2="704" y2="230"/><text class="ytick" x="54" y="233.5">100,000</text>
+        <line class="grid" x1="62" y1="190" x2="704" y2="190"/><text class="ytick" x="54" y="193.5">200,000</text>
+        <line class="grid" x1="62" y1="150" x2="704" y2="150"/><text class="ytick" x="54" y="153.5">300,000</text>
+        <line class="grid" x1="62" y1="110" x2="704" y2="110"/><text class="ytick" x="54" y="113.5">400,000</text>
+        <line class="grid" x1="62" y1="70" x2="704" y2="70"/><text class="ytick" x="54" y="73.5">500,000</text>
+        <line class="grid" x1="62" y1="30" x2="704" y2="30"/><text class="ytick" x="54" y="33.5">600,000</text>
+        <polyline class="line" style="stroke-dasharray:5 4;stroke-width:1.8" points="62.0,266.0 169.0,261.6 276.0,251.2 383.0,232.0"/>
+        <polyline class="line" points="490.0,156.7 597.0,104.4 704.0,64.6"/>
+        <circle class="dot" cx="62.0" cy="266.0" r="3.4"/>
+        <circle class="dot" cx="169.0" cy="261.6" r="3.4"/>
+        <circle class="dot" cx="276.0" cy="251.2" r="3.4"/>
+        <circle class="dot" cx="383.0" cy="232.0" r="3.4"/>
+        <circle class="dot" cx="490.0" cy="156.7" r="3.4"/>
+        <circle class="dot" cx="597.0" cy="104.4" r="3.4"/>
+        <circle class="dot peak" cx="704.0" cy="64.6" r="4.2"/>
+        <text class="peaklabel" x="700" y="48" text-anchor="end">2021年 51.4万（現市域）</text>
+        <text class="peaklabel" x="80" y="214" style="font-size:11.5px">- - - 旧ポカラ市域（概数）</text>
+        <text class="xtick" x="62.0" y="286">1961</text>
+        <text class="xtick" x="169.0" y="286">1971</text>
+        <text class="xtick" x="276.0" y="286">1981</text>
+        <text class="xtick" x="383.0" y="286">1991</text>
+        <text class="xtick" x="490.0" y="286">2001</text>
+        <text class="xtick" x="597.0" y="286">2011</text>
+        <text class="xtick" x="700.0" y="286">2021</text>
+      </svg></div>
+      <div class="chart-note">破線＝旧ポカラ市域の概数（1961–1991）。実線＝2017年合併後の現市域に組み替えた国勢調査値（2001–2021）。<strong>1991→2001の段差は市域の違いによるもので、急増ではない</strong>。</div>
+    </div>
+
+    <div class="sub-h">3つのフェーズ</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>時期</th><th>何が起きたか</th></tr>
+      <tr><td><strong>〜1960 / 道のない盆地</strong></td><td>1960年代まで<strong>自動車道路が1本も通じておらず</strong>、物資はラバと人の背で運ばれた。人口は1万人前後とされる、湖畔の交易バザールにすぎなかった</td></tr>
+      <tr><td><strong>1960–1990 / 道路と空港で開く</strong></td><td>1958年に旧空港が開港、<strong>1968年にインド国境方面へのシッダールタ・ハイウェイ、1974年にカトマンズへのプリトビ・ハイウェイが開通</strong>。チベット難民の定住、英国グルカ兵の募集拠点化、ヒッピー〜トレッカーの流入が重なり、<strong>30年で約10倍</strong>になった</td></tr>
+      <tr><td><strong>1990– / 州都化と合併</strong></td><td>内戦期（1996–2006）には山間部から比較的安全な盆地へ人が流れ込んだ。<strong>2017年のレクナート合併で面積が国内最大の市</strong>となり、2015年憲法による<strong>ガンダキ州の州都</strong>にもなった。2001年28.3万→2021年51.4万（現市域ベース）</td></tr>
+    </table></div>
+
+    <details class="raw">
+      <summary>人口の推移 ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+        <tr><th>年</th><th>人口</th><th>市域</th><th>備考</th></tr>
+        <tr><td>1961</td><td>約10,000</td><td>旧ポカラ</td><td>概数とされる</td></tr>
+        <tr><td>1971</td><td>約21,000</td><td>旧ポカラ</td><td>概数とされる</td></tr>
+        <tr><td>1981</td><td>約47,000</td><td>旧ポカラ</td><td>概数とされる</td></tr>
+        <tr><td>1991</td><td>約95,000</td><td>旧ポカラ</td><td>概数とされる。この年のレクナートは30,107</td></tr>
+        <tr><td>2001</td><td>283,137</td><td>現市域</td><td>2017年境界に組み替えた値</td></tr>
+        <tr><td>2011</td><td>413,934</td><td>現市域</td><td>同上</td></tr>
+        <tr><td><strong>2021</strong></td><td><strong>513,504</strong></td><td>現市域</td><td><strong>施設人口を除く。男性247,495・女性266,009（女性が51.8%）</strong></td></tr>
+      </table></div>
+    </details>
+
+    <div class="info-box">
+      <strong>読みどころ：女性のほうが多い街。</strong>
+      2021年の男女比は<strong>男性48.2%：女性51.8%</strong>。ネパール全体に共通する傾向だが、
+      その理由は<strong>働き盛りの男性が湾岸諸国・マレーシア・インド・英国へ出稼ぎや兵役で出ている</strong>ことにある。
+      国勢調査の「人口」には海外に出ている人が含まれないため、<strong>ポカラの数字は『家に残った人』の数</strong>と読むのが正確。
+      2026年9月に<strong>ドバイ直行便</strong>が就航したとき、ポカラ発の乗客の多くが出稼ぎ労働者とされるのも、この構造の裏返しだ（§10）。
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">主要エリアガイド</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ポカラの地理は<strong>「ペワ湖畔の観光地（レイクサイド）」と「北の旧市街〜商業地（バザール）」の二重構造</strong>で理解するのが早い。
+      旅行者の生活はほぼレイクサイドで完結し、<strong>地元の生活と商売はそこから北東に3〜5km離れたバザール側</strong>にある。
+      その間をセティ川の深い峡谷が南北に切り裂いていて、<strong>街は「湖」と「峡谷」に挟まれた台地の上</strong>に広がっている。
+    </div>
+
+    <div class="area-grid">
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Lakeside（バイダム）</div><div class="area-night">🌙🌙🌙</div></div>
+        <div class="area-equiv">河口湖畔＋軽井沢の旧軽銀座に相当</div>
+        <div class="area-tags"><span class="tag">観光</span><span class="tag">宿・飲食</span><span class="tag night">ライブバー</span></div>
+        <div class="area-desc">ペワ湖の東岸に沿って<strong>ホテル・カフェ・トレッキング用品店・旅行代理店がびっしり並ぶ</strong>観光の中心。ヒッピー〜バックパッカー向けの宿から発展したとされる。<strong>湖岸の遊歩道から朝はマチャプチャレ、夕方は夕焼けの湖</strong>。夜はライブ演奏のバーが賑わう。2026年4月には湖の保護帯（65m）内の違法建築の撤去が始まった（§16）。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Damside（パルディ）</div><div class="area-night">🌙</div></div>
+        <div class="area-equiv">中軽井沢（本通りから一歩外れた静かな側）に相当</div>
+        <div class="area-tags"><span class="tag">宿</span><span class="tag">静か</span><span class="tag">日本食</span></div>
+        <div class="area-desc">レイクサイドの南、ペワ湖の流出口にある<strong>堰（ダム）</strong>にちなむ地名。<strong>レイクサイドより静かで宿が安く</strong>、長期滞在者や日本人旅行者が好んできたエリア。湖越しの山の眺めはこちらのほうが開けている場所もある。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Sarangkot（サランコット）</div><div class="area-night">—</div></div>
+        <div class="area-equiv">河口湖の天上山展望台＋朝霧高原のパラグライダー場に相当</div>
+        <div class="area-tags"><span class="tag">展望</span><span class="tag">日の出</span><span class="tag">パラグライダー</span></div>
+        <div class="area-desc">ペワ湖北側の尾根上、標高約1,600mの展望地。<strong>日の出にアンナプルナ連峰が赤く染まるのを見に、未明から車とバイクが列をなす</strong>。<strong>ポカラのパラグライダーはここから飛んで湖畔に降りる</strong>のが定番ルート（§09）。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Phewa Lake / Peace Pagoda</div><div class="area-night">—</div></div>
+        <div class="area-equiv">芦ノ湖＋箱根の元箱根に相当</div>
+        <div class="area-tags"><span class="tag">湖</span><span class="tag">ボート</span><span class="tag">寺院</span></div>
+        <div class="area-desc"><strong>面積4.4km²、ネパールで2番目に大きい湖</strong>とされる。色とりどりの手漕ぎボートで湖上の<strong>バラヒ寺院</strong>へ渡るのが定番。南岸の丘には<strong>日本山妙法寺が建てた白い世界平和パゴダ（シャンティ・ストゥーパ）</strong>が立ち、湖越しに山と街を一望できる。ラムサール条約登録湿地。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Old Bazaar（プラノ・バザール）</div><div class="area-night">—</div></div>
+        <div class="area-equiv">川越の蔵造り通りに相当</div>
+        <div class="area-tags"><span class="tag">旧市街</span><span class="tag">ネワール商人</span><span class="tag">寺院</span></div>
+        <div class="area-desc">1770年代にカスキ王が<strong>カトマンズから呼び寄せたネワール商人の16家族</strong>が開いた市場が起源。<strong>レンガと木彫りのネワール様式の家並み</strong>と、ポカラの守護女神を祀る<strong>ビンダバシニ寺院</strong>が残る。観光客が少なく、ポカラが「交易の街」だった頃の顔が見られる唯一の場所。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Mahendrapul / New Road / Chipledhunga</div><div class="area-night">🌙</div></div>
+        <div class="area-equiv">松本の中町＋駅前通りに相当</div>
+        <div class="area-tags"><span class="tag">商業</span><span class="tag">地元の繁華街</span><span class="tag">峡谷</span></div>
+        <div class="area-desc">地元向けの商店・銀行・電器店・衣料品店が集まる<strong>ポカラの実際の中心街</strong>。マヘンドラプル（マヘンドラ橋）では、<strong>幅数mの割れ目の底をセティ川が流れる峡谷</strong>を橋の上から覗き込める（§05）。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Begnas / Rupa（旧レクナート）</div><div class="area-night">—</div></div>
+        <div class="area-equiv">富士五湖の西湖・精進湖（静かな側の湖）に相当</div>
+        <div class="area-tags"><span class="tag">湖</span><span class="tag">農村</span><span class="tag">2017年合併</span></div>
+        <div class="area-desc">市の東端、2017年に合併した旧レクナート市の湖。<strong>ペワ湖より観光化されておらず、湖畔のホームステイや養殖魚料理</strong>が楽しめる。<strong>市域が国内最大になったのは、この農村部を丸ごと取り込んだため</strong>。</div>
+      </div>
+
+      <div class="area-card">
+        <div class="area-header"><div class="area-name">Hemja / Tibetan Settlements</div><div class="area-night">—</div></div>
+        <div class="area-equiv">住宅地の中の小さな横浜中華街に相当</div>
+        <div class="area-tags"><span class="tag">チベット難民</span><span class="tag">手工芸</span><span class="tag">僧院</span></div>
+        <div class="area-desc">1950年代末以降に逃れてきた<strong>チベット難民の定住地が市内外に4か所</strong>ある（タシ・パルケル、タシリン等）。絨毯工房や僧院があり、<strong>レイクサイドで土産物を売るチベット系の人々の多くはここから来ている</strong>。</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">気候 — ネパール屈指の多雨都市</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>ケッペン気候区分</th><th>コード</th><th>特徴</th></tr>
+      <tr><td>温暖冬季少雨気候（モンスーン型の温帯）</td><td><strong>Cwa</strong></td><td><strong>年降水量3,868mm（1991–2020平年値）、年平均気温21.5℃</strong>。冬は乾いて暖かく、夏はひたすら降る</td></tr>
+    </table></div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Monthly Precipitation — Pokhara (mm, 1991–2020)</div>
+      <div class="chart-scroll"><svg class="chart" viewBox="0 0 720 300" role="img" aria-label="ポカラの月別降水量">
+        <line class="grid" x1="62" y1="222" x2="704" y2="222"/><text class="ytick" x="54" y="225.5">200</text>
+        <line class="grid" x1="62" y1="174" x2="704" y2="174"/><text class="ytick" x="54" y="177.5">400</text>
+        <line class="grid" x1="62" y1="126" x2="704" y2="126"/><text class="ytick" x="54" y="129.5">600</text>
+        <line class="grid" x1="62" y1="78" x2="704" y2="78"/><text class="ytick" x="54" y="81.5">800</text>
+        <line class="grid" x1="62" y1="30" x2="704" y2="30"/><text class="ytick" x="54" y="33.5">1,000</text>
+        <rect x="76" y="264.8" width="36" height="5.2" fill="#111"/>
+        <rect x="128" y="261.6" width="36" height="8.4" fill="#111"/>
+        <rect x="180" y="254.7" width="36" height="15.3" fill="#111"/>
+        <rect x="232" y="236.0" width="36" height="34.0" fill="#111"/>
+        <rect x="284" y="184.9" width="36" height="85.1" fill="#111"/>
+        <rect x="336" y="114.4" width="36" height="155.6" fill="#111"/>
+        <rect x="388" y="44.2" width="36" height="225.8" fill="#111"/>
+        <rect x="440" y="68.5" width="36" height="201.5" fill="#111"/>
+        <rect x="492" y="117.6" width="36" height="152.4" fill="#111"/>
+        <rect x="544" y="231.8" width="36" height="38.2" fill="#111"/>
+        <rect x="596" y="265.9" width="36" height="4.1" fill="#111"/>
+        <rect x="648" y="267.2" width="36" height="2.8" fill="#111"/>
+        <text class="peaklabel" x="406" y="36" text-anchor="middle">7月 941mm</text>
+        <text class="xtick" x="94" y="286">1</text><text class="xtick" x="146" y="286">2</text><text class="xtick" x="198" y="286">3</text>
+        <text class="xtick" x="250" y="286">4</text><text class="xtick" x="302" y="286">5</text><text class="xtick" x="354" y="286">6</text>
+        <text class="xtick" x="406" y="286">7</text><text class="xtick" x="458" y="286">8</text><text class="xtick" x="510" y="286">9</text>
+        <text class="xtick" x="562" y="286">10</text><text class="xtick" x="614" y="286">11</text><text class="xtick" x="666" y="286">12</text>
+      </svg></div>
+      <div class="chart-note"><strong>6〜9月の4か月で年間の約8割</strong>が降る。12月はわずか11.5mm——<strong>同じ街とは思えない落差</strong>。出典：WMO／ネパール水文気象局。</div>
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>季節</th><th>時期</th><th>中身</th></tr>
+      <tr><td><strong>秋（ポストモンスーン）</strong></td><td><strong>10月〜11月</strong></td><td><strong>ベストシーズン</strong>。雨が上がり空気が洗われ、<strong>山が最もくっきり見える</strong>。トレッキングの最繁忙期で、ダサイン・ティハールの大祭もこの時期</td></tr>
+      <tr><td>冬（乾季）</td><td>12月〜2月</td><td>1月の平均最高19.9℃・最低7.1℃。<strong>日中は暖かく、朝晩だけ冷える</strong>。降水は月10〜30mm台で晴天が続くが、朝霧が出やすい</td></tr>
+      <tr><td>春（プレモンスーン）</td><td>3月〜5月</td><td>最高気温は30℃前後まで上がる。<strong>春霞と山火事の煙で山が見えにくくなる</strong>のが難点。5月には雨量が355mmまで増える</td></tr>
+      <tr><td><strong>雨季（モンスーン）</strong></td><td><strong>6月〜9月</strong></td><td><strong>7月だけで941mm</strong>——東京の年降水量（約1,600mm）の6割近くが1か月で降る計算。<strong>山はほぼ雲の中</strong>で、土砂崩れで道路が寸断されやすい</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>なぜポカラだけこんなに降るのか。</strong>
+      ベンガル湾から北上してくる南西モンスーンの湿った空気が、<strong>ポカラのすぐ北で標高7,000〜8,000m級のアンナプルナ山群にぶつかり、一気に持ち上げられて雨を落とす</strong>（地形性降雨）。
+      ポカラから北西に入ったルムレ（Lumle）は年5,000mmを超える<strong>ネパール有数の多雨地点</strong>とされ、
+      ポカラ盆地はちょうど「雨の壁」の手前にある。逆に、<strong>山を越えた先のムスタン（ジョムソン）は雨陰で乾いた高原砂漠</strong>になる——
+      <strong>直線距離で100kmもない範囲に、熱帯のような多雨地帯と砂漠が並んでいる</strong>のがこの地域の地理の面白さだ。
+      カトマンズと比べても<strong>年降水量は2倍以上</strong>ある。
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">地形 — 湖と峡谷と7,000m級の壁</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ポカラ盆地の特徴は<strong>「標高差」</strong>に尽きる。市街地は標高822m、真北にそびえるマチャプチャレは6,993m——
+      <strong>高低差は6,000m超</strong>。しかも途中に視界を遮る前山がほとんどないため、
+      <strong>湖畔のカフェの椅子に座ったまま7,000m級の峰を見上げられる</strong>。世界的に見てもこれほど標高差の大きい景観を持つ都市は珍しいとされる。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>地形要素</th><th>中身</th></tr>
+      <tr><td><strong>マチャプチャレ（Machapuchare）</strong></td><td><strong>6,993m</strong>。ポカラから最も近い高峰で、山頂が二つに割れた形から<strong>「フィッシュテール（魚の尾）」</strong>と呼ばれる。<strong>シヴァ神の住む聖山として登山が禁止されており、未踏峰</strong>。1957年に英国隊（ジミー・ロバーツ隊長、ウィルフリッド・ノイスら）が山頂直下約50mまで迫ったが、<strong>国王の許可条件に従い山頂には立たなかった</strong>。それ以後、正式な登頂許可は出ていない</td></tr>
+      <tr><td><strong>アンナプルナ山群</strong></td><td>主峰<strong>アンナプルナI峰（8,091m）は1950年、人類が初めて登頂した8,000m峰</strong>（フランス隊、モーリス・エルゾーグら）。ポカラからはアンナプルナII・IV、ラムジュン・ヒマール、そしてダウラギリ（8,167m）まで横一列に見える</td></tr>
+      <tr><td><strong>セティ川（Seti Gandaki）の峡谷</strong></td><td>「セティ」は「白」の意。<strong>石灰分を含んだ乳白色の水</strong>が街の真ん中を流れる。<strong>盆地を作る厚い堆積層を川が深く削り込み、場所によっては幅数m・深さ数十mの割れ目</strong>になっている。マヘンドラプルやKIシン橋から覗ける</td></tr>
+      <tr><td><strong>盆地の正体</strong></td><td>ポカラ盆地の地面は<strong>アンナプルナ方面から押し寄せた巨大な土石流・岩屑の堆積物</strong>でできている。研究者の間では<strong>中世（1100〜1400年頃）の大地震に伴う大規模な崩壊</strong>が起源とする説が有力。<strong>街そのものが『山が崩れて流れてきた土砂の上』に載っている</strong></td></tr>
+      <tr><td>湖群</td><td>ペワ湖（4.4km²）、ベグナス湖、ルパ湖など。<strong>土砂が谷をせき止めてできた湖</strong>とされ、ペワ湖は流入する土砂と湖岸の不法占拠で年々縮小していることが問題になっている（§16）</td></tr>
+      <tr><td>石灰岩の洞窟と滝</td><td>デヴィの滝（パタレ・チャンゴ）、グプテシュワール洞窟、マヘンドラ洞窟、バット洞窟——<strong>地下に水が潜り込む石灰質の地形</strong>が観光資源になっている</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>2012年5月5日、セティ川の鉄砲水。</strong>
+      晴れた朝、ポカラ北方のカラパニ付近を<strong>土砂と氷塊を含んだ泥流</strong>が突然襲い、<strong>72人が死亡・行方不明</strong>になった。
+      原因は<strong>アンナプルナIV峰の西面で起きた岩と氷の大崩落</strong>と、それによってせき止められた水の一気の放出だったとNASAなどの調査で結論づけられている。
+      <strong>「盆地を作ったのと同じ種類の現象が、いまも続いている」</strong>ことを示した事件で、ポカラの防災を考えるうえで避けて通れない。
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">歴史 — カスキ王国の冬の都から観光都市へ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>年</th><th>出来事</th></tr>
+      <tr><td>1000 / 1255 / 1344</td><td><strong>中世の大地震</strong>。盆地を埋める巨大な堆積物の形成と関係があるとされる（§05）</td></tr>
+      <tr><td>14世紀半ば</td><td>カスキ王国の初代王<strong>クラマンダン・シャハ・カド</strong>が、現在のポカラ北部バトゥレチャウルを<strong>冬の都</strong>とする。ポカラは高地の王国にとって「冬を越す暖かい低地」だった</td></tr>
+      <tr><td><strong>1770年代</strong></td><td>カスキ王が<strong>カトマンズ盆地のバクタプルからネワール商人16家族を招き</strong>、市場（バザール）を開かせる。インド平原とチベットを結ぶ<strong>塩と穀物の交易路の中継地</strong>として発展する</td></tr>
+      <tr><td><strong>1786</strong></td><td><strong>ゴルカ王国（シャハ朝）がカスキを併合</strong>し、ポカラはネパール王国の一部になる</td></tr>
+      <tr><td>1950年代末〜</td><td><strong>チベット難民</strong>が流入し、周辺に定住地ができる</td></tr>
+      <tr><td><strong>1958</strong></td><td><strong>ポカラ空港（旧空港）開港</strong>。道路より先に空路がつながった</td></tr>
+      <tr><td>1950s–60s</td><td>マラリア対策が進み、それまで敬遠されていた温暖な盆地に丘陵部からの移住が増える</td></tr>
+      <tr><td>1960s</td><td><strong>英国軍がグルカ兵の募集拠点をポカラにも置く</strong>（§08）。<strong>1964年、元グルカ将校ジミー・ロバーツがネパール初のトレッキング会社を創業</strong>し、アンナプルナ周辺のトレッキング観光が始まる</td></tr>
+      <tr><td><strong>1968 / 1974</strong></td><td><strong>シッダールタ・ハイウェイ（インド国境方面）開通（1968）、中国の援助によるプリトビ・ハイウェイ（カトマンズ方面）開通（1974）</strong>。これでポカラは陸路で国内外とつながり、ヒッピーとバックパッカーの時代が始まる</td></tr>
+      <tr><td>1996–2006</td><td><strong>マオイスト内戦</strong>。周辺山間部が戦場になる一方、ポカラ盆地は比較的安全で人口の受け皿になった</td></tr>
+      <tr><td>2015</td><td><strong>ゴルカ地震（M7.8）</strong>。震源はポカラとカトマンズの間だったが、ポカラ市街の被害は比較的軽かった。同年の新憲法でポカラは<strong>ガンダキ州（当初は「第4州」）の州都</strong>に</td></tr>
+      <tr><td><strong>2017</strong></td><td><strong>レクナートと合併し「ポカラ・レクナート・メトロポリタン市」発足 → 面積464km²で国内最大の市</strong>に（のちにポカラ・メトロポリタン市へ改称）</td></tr>
+      <tr><td><strong>2023</strong></td><td><strong>1月1日、ポカラ国際空港開港。2週間後の1月15日、同空港への着陸進入中のイエティ航空691便が墜落し72人全員死亡</strong>（§10・§11）</td></tr>
+      <tr><td>2025</td><td><strong>9月のZ世代（Gen Z）抗議運動で、州首相府・ガンダキ州議会など行政機関の建物の多くが焼き討ちされる</strong>（§16）</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>歴史の読み筋。</strong>ポカラの歴史は<strong>「交通がつながるたびに、街の役割が書き換わってきた」</strong>の一言で説明できる。
+      徒歩の時代は<strong>塩の交易路の宿場</strong>、空港と道路ができると<strong>グルカ兵の募集拠点とトレッカーの玄関口</strong>、州制導入で<strong>州都</strong>——
+      そして2023年の国際空港は<strong>「インドを経由せずに世界とつながる街」</strong>への書き換えを狙ったものだった。
+      その最後の書き換えだけが、開港から3年半以上うまくいっていない（§10）。
+    </div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">経済 — 観光と「ラフレ」の送金</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ポカラ経済は<strong>①観光・サービス・製造業で約58%、②送金（リミッタンス）で約20%、③農業で約16%</strong>という構成だとされる。
+      注目すべきは<strong>送金が経済の5分の1を占める</strong>点で、これはネパール全体の特徴をそのまま濃縮したものだ。
+      ネパールでは外国の軍隊に勤める兵士や海外出稼ぎ者を<strong>「ラフレ（Lahure）」</strong>と呼ぶ——
+      もともとは<strong>19世紀にパンジャーブのシク王国の都ラホールへ傭兵として出ていった人々</strong>を指した言葉で、
+      <strong>ポカラは「ラフレの街」の代名詞</strong>になってきた。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>柱</th><th>中身</th></tr>
+      <tr><td><strong>観光</strong></td><td>アンナプルナ保全地域の入域者だけで<strong>年50.8万人（2025/26年度）</strong>（§09）。市内のホテルは<strong>5つ星2軒を含め約300軒</strong>とされ、レイクサイドの宿・飲食・旅行代理店・パラグライダー・ボートが雇用の受け皿になっている</td></tr>
+      <tr><td><strong>送金・年金</strong></td><td>湾岸諸国・マレーシアへの出稼ぎ送金に加え、<strong>英国・インド・シンガポール警察のグルカ兵の給与と年金</strong>が流れ込む。<strong>ネパール全体の送金受取額は2024/25年度で約1.72兆ルピー（前年比+19.2%）</strong>に達し、その最大の受け皿の一つがポカラ周辺の丘陵地帯だ</td></tr>
+      <tr><td>不動産</td><td>送金と年金の使い道として<strong>土地と住宅への投資</strong>が根強く、盆地の宅地化と地価上昇の主因とされる。湖岸の不法占拠問題（§16）も根は同じ</td></tr>
+      <tr><td>農業</td><td>盆地の水田（稲作）と、合併した旧レクナート側の農村部。<strong>市域の大半はいまも農地と森林</strong></td></tr>
+      <tr><td>州都機能</td><td>ガンダキ州政府・州議会、国軍西部師団司令部、病院・大学（ポカラ大学、トリブバン大学プリトビ・ナラヤン・キャンパス等）が<strong>行政・教育・医療の地域中心</strong>としての雇用を生む</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：送金経済の強さと弱さ。</strong>
+      送金は<strong>景気に左右されにくく、家計を確実に潤す</strong>一方で、<strong>使い道が消費と不動産に偏り、地元で産業を育てる投資に回りにくい</strong>。
+      ポカラの街並みに<strong>新しい3〜5階建ての住宅が次々と建つのに、工場はほとんどない</strong>のはこの構造の表れ。
+      国全体の構造は<a href="261002_nepal.html">ネパールのページ</a>で扱っている。
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">グルカ兵とポカラ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      <strong>英国陸軍のグルカ兵は、全員がポカラで選ばれる。</strong>
+      市内の<strong>ブリティッシュ・グルカ・キャンプ（British Gurkha Camp Pokhara）</strong>は英国軍の<strong>グルカ兵募集の本拠地</strong>で、
+      毎年の選抜コースはここで行われる。同じ敷地には<strong>グルカ年金の記録</strong>と、退役兵を支える慈善団体<strong>グルカ福祉トラスト（GWT）の本部</strong>も置かれている。
+      <strong>採用から老後まで、グルカ兵の一生の事務がポカラに集まっている</strong>と言っていい。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>倍率</strong></td><td><strong>2025年入隊（Intake 25）：1.3万人超の応募から274人</strong>。<strong>2026年入隊（Intake 26）：1.4万人超から323人</strong>。<strong>倍率40〜50倍</strong>という狭き門</td></tr>
+      <tr><td>選抜の中身</td><td>名物の<strong>「ドコ・レース」（竹かごに約25kgの砂袋を背負って山道を駆け上がる）</strong>、2kmの走力テスト、ジェリカン運搬、英語・数学の筆記、面接。合格者はポカラで導入訓練を受けた後、<strong>英国キャタリックの歩兵訓練所で39週間</strong>の訓練に送られる</td></tr>
+      <tr><td><strong>拠点の変遷</strong></td><td>英国グルカ・ネパール（BGN）は<strong>1960年に東のダランと西のパクリハワで活動を始め、のちにポカラへ拡大</strong>。<strong>1989年にダランの駐屯地が閉鎖</strong>されて本部機能はカトマンズへ、<strong>募集はポカラに集約</strong>された</td></tr>
+      <tr><td><strong>なぜポカラなのか</strong></td><td>グルカ兵の主な出身民族である<strong>グルン人・マガール人の故郷がポカラ周辺の丘陵部</strong>にあるため。市の母語人口でグルン語が<strong>11%</strong>を占めるのもその表れ（§01）</td></tr>
+      <tr><td>グルカ福祉トラスト</td><td>英国軍の年金を受け取れない（勤続年数が足りない等）<strong>高齢の元グルカ兵や未亡人に、福祉年金・無料医療を提供</strong>。ネパール各地に約20か所の地域福祉センターを持ち、本部はポカラ。<strong>3,000人超</strong>の元兵士・遺族が福祉年金などを受けているとされる</td></tr>
+      <tr><td>王室とのつながり</td><td><strong>2025年2月の入隊式（274人）には、英国のエドワード王子（エディンバラ公）夫妻がサプライズで出席</strong>した。英・ネパール関係200年余りの象徴として、グルカは外交の言葉にもなっている</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>グルカの経済効果は「給料」より「その後」に大きい。</strong>
+      英国陸軍の給与と年金は<strong>ネパールの平均所得とは桁が違う</strong>ため、退役したグルカ兵は故郷の村ではなく<strong>ポカラの盆地に家を建てて住む</strong>のが典型的なパターンだった。
+      2009年に英国が<strong>1997年以前に退役したグルカ兵にも英国定住権を認めた</strong>（女優ジョアンナ・ラムリーらの運動が知られる）ことで、
+      その後は<strong>家族ごと英国に移る人</strong>も増えた。<strong>ポカラの住宅街の空き家と、英国アルダーショット周辺のネパール人コミュニティは同じ物語の両端</strong>にある。
+    </div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">観光 — アンナプルナの玄関口とパラグライダー</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ポカラは<strong>アンナプルナ保全地域（ACAP）へのトレッキングの起点</strong>。
+      ネパール観光の二大山岳エリアのうち、エベレスト側の玄関口が<a href="261002_namche.html">ナムチェ・バザール</a>（ルクラ経由）なら、
+      アンナプルナ側の玄関口がポカラという関係にある。<strong>エベレスト側が「飛行機で山の中に入る」のに対し、ポカラは「街から歩いて山に入れる」</strong>のが大きな違いだ。
+    </div>
+
+    <div class="sub-h">アンナプルナ保全地域の入域者（2025/26年度：2025年7月〜2026年7月）</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>人数</th><th>メモ</th></tr>
+      <tr><td><strong>外国人入域者 合計</strong></td><td><strong>508,476</strong></td><td><strong>前年度（278,113）から倍増</strong>、169か国から</td></tr>
+      <tr><td>うち南アジア</td><td>384,145</td><td>全体の約76%</td></tr>
+      <tr><td><strong>1位 インド</strong></td><td><strong>375,797</strong></td><td><strong>全体の約74%</strong>。ムクティナート（ヒンドゥー・仏教共通の聖地）への巡礼と、ジョムソン方面への道路整備が背景とされる</td></tr>
+      <tr><td>2位 中国</td><td>12,539</td><td></td></tr>
+      <tr><td>3位 米国</td><td>9,884</td><td></td></tr>
+      <tr><td>4位 英国</td><td>9,859</td><td></td></tr>
+      <tr><td>5位 フランス</td><td>7,939</td><td></td></tr>
+    </table></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>アクティビティ</th><th>中身</th></tr>
+      <tr><td><strong>トレッキング</strong></td><td>定番は<strong>アンナプルナ・ベースキャンプ（ABC、聖域＝サンクチュアリ）</strong>、<strong>アンナプルナ・サーキット（一周）</strong>、<strong>プーンヒル（ゴレパニ）</strong>の3つ。プーンヒルは3〜4日で回れ、短期旅行者でも8,000m峰の朝焼けが見られる。<strong>近年は車道の延伸でサーキットの一部区間がジープ道になり、「歩く価値」が議論になっている</strong></td></tr>
+      <tr><td><strong>パラグライダー</strong></td><td><strong>サランコットから飛び立ちペワ湖畔に降りる</strong>タンデム飛行は、ポカラ観光の看板。<strong>商業飛行は2001年に始まり</strong>、2021年時点で<strong>69社・パイロット356人</strong>が登録されていた。<strong>新空港の東西向き滑走路の進入・出発経路がサランコット上空と重なり</strong>、開港前後に飛行エリアの移転や制限が問題になった。2025年5月にはペワ湖上空での飛行が再開されたと報じられている</td></tr>
+      <tr><td>ボート・湖</td><td>ペワ湖の手漕ぎボート、バラヒ寺院、湖畔のカヤック</td></tr>
+      <tr><td>その他</td><td>ウルトラライト機の遊覧飛行、ジップライン、バンジージャンプ、セティ川やカリ・ガンダキ川のラフティング</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：「インド人観光客の街」への変化。</strong>
+      ACAPの入域者の<strong>4人に3人はインド人</strong>になった。インド人はビザ不要・陸路で入国でき、ルピーもそのまま使える。
+      欧米のトレッカーが<strong>長期間・低予算で歩く</strong>のに対し、インド人旅行者は<strong>短期間・車で移動・ホテルとレストランにお金を落とす</strong>——
+      <strong>同じ「観光客」でもポカラに求めるものがまったく違う</strong>。レイクサイドの街並みが欧米バックパッカー向けから変わりつつあるのは、この客層の入れ替わりによる。
+    </div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">空港 — 2つのポカラ空港と「国際線が来ない国際空港」</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ポカラには<strong>空港が2つ</strong>ある。市街地のど真ん中にある<strong>旧ポカラ空港（1958年開港・国内線）</strong>と、
+      市の東に造られた<strong>ポカラ国際空港（2023年1月1日開港）</strong>だ。
+      新空港は<strong>中国輸出入銀行の融資で中国企業が建設した約2.16億ドルの事業</strong>だったが、
+      <strong>開港から3年半以上、定期国際線が1本も定着しなかった</strong>。
+      <strong>2026年9月23日にようやくflydubaiのドバイ便が毎日運航を始めた</strong>——これが「初の本格的な定期国際線」になった。
+    </div>
+
+    <div class="sub-h">2つの空港の比較</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>旧ポカラ空港（PKR）</th><th>ポカラ国際空港（PHH）</th></tr>
+      <tr><td>開港</td><td><strong>1958年7月4日</strong></td><td><strong>2023年1月1日</strong>（ダハル首相が開港式、初便はブッダ・エア）</td></tr>
+      <tr><td>滑走路</td><td><strong>1,433m</strong>（舗装）</td><td><strong>2,500m</strong>（1本）</td></tr>
+      <tr><td>対応機材</td><td>ATR72・ツインオッターなどのプロペラ機。<strong>エプロンにはプロペラ機8機しか並べられない</strong></td><td><strong>ICAOコード4D、ボーイング737・エアバスA320級</strong>まで</td></tr>
+      <tr><td>処理能力</td><td>—</td><td>年100万人（国内線・国際線ターミナル合計）</td></tr>
+      <tr><td>現在の役割</td><td>2023年1月に定期便の大半が新空港へ移転。<strong>ヘリコプター、山岳遊覧・救助、ジョムソン行きなどの山岳路線</strong>が残るとされる</td><td>カトマンズ便など国内線のほぼすべてと、国際線</td></tr>
+      <tr><td>建設・資金</td><td>ネパール民間航空局（CAAN）</td><td><strong>中国CAMCエンジニアリング</strong>が施工。<strong>中国輸出入銀行の優遇借款</strong>（下表）</td></tr>
+    </table></div>
+
+    <div class="sub-h">新空港の融資条件</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>総事業費</strong></td><td><strong>約2.16億ドル（約220億ルピー）</strong>。入札時の中国側提示額はネパールの見積もりの約2倍で、交渉で約3割引き下げられた</td></tr>
+      <tr><td><strong>融資</strong></td><td><strong>中国輸出入銀行の優遇借款 約2.15億ドル</strong>。2016年に契約</td></tr>
+      <tr><td><strong>金利・期間</strong></td><td><strong>融資の約25%が無利子、残り約75%が年利約2%</strong>。<strong>返済期間20年・うち据置7年</strong></td></tr>
+      <tr><td>その他の資金</td><td>アジア開発銀行（約3,700万ドル、融資・贈与）、OPEC基金（約1,100万ドル）</td></tr>
+      <tr><td><strong>無償化の要請</strong></td><td><strong>2024年8月、ネパール政府は中国に対し融資の贈与（無償資金）への切り替えを正式に要請</strong>。同年のオリ首相の訪中でも議題になったとされるが、<strong>合意は公表されていない</strong></td></tr>
+    </table></div>
+
+    <div class="sub-h">国際線の実績（2023→2026）</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>時期</th><th>中身</th></tr>
+      <tr><td>2023年6月</td><td><strong>初の国際便は四川航空のチャーター便（中国・成都から）</strong>。その後も四川航空のチャーターが<strong>20数便</strong>飛んだとされる</td></tr>
+      <tr><td>2024年11月時点</td><td>開港から22か月で<strong>チャーター5便＋商業便1便</strong>にとどまったと報じられた</td></tr>
+      <tr><td><strong>2025年4月1日</strong></td><td><strong>ヒマラヤ航空がラサ（チベット）〜ポカラの週1便を開設</strong>（初便107人）。<strong>搭乗率の低迷で、のちに運休</strong></td></tr>
+      <tr><td>2025年9〜10月</td><td><strong>ブータン航空がパロ〜ポカラのチャーター4便</strong>（各126席、ツアー商品として）</td></tr>
+      <tr><td>2026年7月</td><td>政府が<strong>2028年9月半ばまで、定期国際線の駐機料・着陸料・航行援助料を全額免除、地上支援料を50%引き</strong>とする優遇策を承認</td></tr>
+      <tr><td><strong>2026年9月23日</strong></td><td><strong>flydubaiがドバイ〜ポカラを毎日運航で開設（FZ1165/1166、ボーイング737 MAX 8・165席）</strong>。所要は往路約4.5時間・復路約5.5時間。<strong>初日はドバイ発113人・ポカラ発152人</strong>。ポカラ発の多くはガンダキ州からの出稼ぎ労働者とされる</td></tr>
+    </table></div>
+
+    <div class="sub-h">なぜ国際線が来なかったのか</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>理由</th><th>中身</th></tr>
+      <tr><td><strong>①インドの空域</strong></td><td>ネパールに入る国際線の<strong>約9割は南部シマラ上空の1か所の進入ポイント</strong>を通る。ネパールは2014年以降、<strong>ジャナクプル・バイラハワ・ネパールガンジ（・マヘンドラナガル）経由の新ルート</strong>をインドに求めてきたが、インドは<strong>ゴーラクプル空軍基地など軍事施設への安全保障上の懸念</strong>を理由に認めてこなかった。<strong>西から来る便はポカラに入るのに約185km余計に飛ぶ必要がある</strong>。<strong>2026年7月、約10年ぶりに両国の協議再開が決まった</strong></td></tr>
+      <tr><td><strong>②インド便がない</strong></td><td>最大の旅行需要がある<strong>インドが、ポカラへの国際路線を承認していない</strong>と報じられている。<strong>インド人観光客は陸路で大量に来ている（§09）のに、空からは来られない</strong>という皮肉な状態</td></tr>
+      <tr><td><strong>③需要</strong></td><td>外国人旅行者の多くは<strong>カトマンズで入国して周遊</strong>し、ポカラへは国内線かバスで来る。<strong>ポカラ発着だけで1機を埋める需要が見込みにくい</strong>。ラサ便の撤退がそれを示した</td></tr>
+      <tr><td>④設備と品質への疑念</td><td>議会の小委員会の報告書は、<strong>滑走路工事の未完了部分への支払い、燃料設備・空調の未完成、仕様を下回る施工品質</strong>などを指摘した（下記）</td></tr>
+    </table></div>
+
+    <div class="sub-h">「一帯一路」と汚職をめぐる論争</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>論点</th><th>中身</th></tr>
+      <tr><td><strong>BRI案件か否か</strong></td><td><strong>中国側は開港後、ポカラ空港を「一帯一路（BRI）のネパールにおける旗艦プロジェクト」と表明</strong>した。一方ネパール政府は、<strong>融資契約（2016年）はネパールのBRI参加（2017年）より前で、BRIの案件ではない</strong>との立場で、外相が公式に否定した。<strong>インドとの関係への配慮と、国内の「中国依存」批判を避けたい事情</strong>が背景にある</td></tr>
+      <tr><td><strong>「債務の罠」議論</strong></td><td>インドのメディアは<strong>パキスタンのグワダル港やスリランカのハンバントタ港</strong>と並べて「債務の罠」の事例と報じた。ただし<strong>金利2%・20年返済は条件としては比較的緩い</strong>とする見方もあり、<strong>本質は「金利」より「収入が上がらないこと」</strong>にある</td></tr>
+      <tr><td><strong>収支</strong></td><td>2023/24年度の空港収入は<strong>約3.49億ルピー、支出は約1.34億ルピー</strong>と報じられた。<strong>運営単体では黒字だが、その収入はほぼ国内線由来</strong>で、約220億ルピーの借入の返済原資には遠く及ばない</td></tr>
+      <tr><td><strong>議会の調査（2025年）</strong></td><td>国民民主党（RPP）党首<strong>ラジェンドラ・リンデン</strong>率いる議会会計委員会の小委員会が<strong>約140億ルピー規模の不正</strong>を指摘する報告書（36ページ）をまとめ、<strong>税金約1,600万ドルの免除</strong>なども問題視した。報告は汚職防止委員会（CIAA）に送られた</td></tr>
+      <tr><td><strong>起訴（2025年12月〜）</strong></td><td><strong>2025年12月7日、CIAAが元大臣5人・元次官10人・CAAN幹部・中国CAMCを含む55人を、約83.6億ルピーの不正使用で特別裁判所に起訴</strong>。<strong>2026年3月には工事中の約4.6億ルピーの横領をめぐり21人を対象とする3件目の起訴</strong>があったとされる</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：ポカラ空港は「借金の問題」ではなく「空の地政学の問題」。</strong>
+      2%の金利は払えない額ではない。問題は、<strong>中国の金で造った空港に、インドが空のルートを開かない</strong>ことだ。
+      ネパールは<strong>中国とインドという2つの大国の間で、どちらにも寄りすぎないよう綱渡りをしてきた国</strong>で、
+      ポカラ空港はその綱渡りが<strong>コンクリートの形で失敗した例</strong>として読まれている。
+      flydubaiの就航は<strong>中国でもインドでもない第三国（湾岸）への出稼ぎ需要</strong>で突破口を開いたもので、<strong>ポカラの経済構造（§07）にいちばん合った路線</strong>がようやく見つかったとも言える。
+    </div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">エアラインと航空事故</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ポカラは<strong>カトマンズ以外で最も旅客の多い空港</strong>。2025年の旅客数は<strong>88.7万人（到着42.7万・出発45.9万）</strong>、発着回数は<strong>26,782回</strong>で、
+      発着回数では<strong>ルクラ（エベレストの玄関口）に次ぐ国内2位</strong>だった（ネパール民間航空局の集計として報道）。
+      カトマンズ〜ポカラは<strong>約25分</strong>のフライトで、<strong>陸路の半日をほぼ一瞬に縮める</strong>。
+    </div>
+
+    <div class="sub-h">主な就航エアライン</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>航空会社</th><th>主な路線・特徴</th></tr>
+      <tr><td><strong>ブッダ・エア（Buddha Air）</strong></td><td>ネパール最大の民間航空会社。ATR72/42でカトマンズ便を<strong>1日12便前後</strong>運航（時刻表データ）。バイラハワ・バラトプル・バドラプルなど地方都市とポカラを直結する路線も持つ</td></tr>
+      <tr><td><strong>イエティ航空（Yeti Airlines）</strong></td><td>ATR72でカトマンズ便を<strong>1日10便前後</strong>。2023年1月の691便事故の運航会社。タラ・エアは同じグループ</td></tr>
+      <tr><td>シュリー航空（Shree Airlines）</td><td>カトマンズ便を<strong>1日2便程度</strong>（時刻表データ）</td></tr>
+      <tr><td>その他の国内線</td><td>ネパール航空、シムリック航空、サミット航空、シタ航空など</td></tr>
+      <tr><td><strong>タラ・エア（Tara Air）</strong></td><td><strong>ジョムソン（ムスタン）行きの山岳路線</strong>。DHC-6ツインオッターなどのSTOL（短距離離着陸）機を使う。<strong>カリ・ガンダキ渓谷は昼前から強風が吹くため、運航は早朝に限られる</strong>とされる</td></tr>
+      <tr><td>国際線</td><td><strong>flydubai（ドバイ、毎日・2026年9月〜）</strong>。過去にヒマラヤ航空（ラサ、週1・運休）、四川航空・ブータン航空のチャーター（§10）</td></tr>
+    </table></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>運賃の目安</th><th>中身</th></tr>
+      <tr><td><strong>外国人ドル運賃</strong></td><td>ネパールの国内線は<strong>外国人にはネパール人と別建ての米ドル運賃</strong>が適用される。カトマンズ〜ポカラは片道<strong>90〜100ドル前後</strong>とされる（時期・会社により変動）</td></tr>
+      <tr><td>ネパール人運賃</td><td>ルピー建てで、外国人運賃より大幅に安い</td></tr>
+    </table></div>
+
+    <div class="sub-h">ポカラ発着の主な航空事故</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>日付</th><th>便</th><th>中身</th></tr>
+      <tr><td><strong>2023年1月15日</strong></td><td><strong>イエティ航空691便</strong>（ATR72-500）</td><td><strong>カトマンズ発ポカラ行き。新空港への着陸進入中にセティ川の峡谷に墜落し、乗員乗客72人全員が死亡</strong>。開港からわずか2週間後だった。<strong>最終報告書の結論は、副操縦士席側の操縦士がフラップを操作するつもりで、両エンジンのコンディション・レバーを誤ってフェザー位置に動かした</strong>——プロペラがフェザリング（推力ゼロ）になり、<strong>失速して墜落した</strong>。<strong>新しい空港・周囲の地形による高いワークロードとストレス</strong>、クロスチェックの欠如が寄与要因とされた</td></tr>
+      <tr><td><strong>2022年5月29日</strong></td><td><strong>タラ・エア197便</strong>（DHC-6ツインオッター）</td><td><strong>旧ポカラ空港発ジョムソン行き。離陸約12分後に消息を絶ち、ムスタン郡の山腹で発見。22人全員が死亡</strong>。<strong>原因は、悪天候で計器気象状態に入りながら針路を監視・維持できず、地形接近警報装置（TAWS）が作動しない状態だったことによるCFIT（正常な機体のまま地面に激突）</strong>。出発をためらう機長に周囲が強く飛行を促していたことも明らかになった</td></tr>
+      <tr><td>2014年</td><td>ネパール航空（ツインオッター）</td><td>ポカラ発ジュムラ行きが墜落、18人死亡</td></tr>
+      <tr><td>2002年</td><td>ツインオッター</td><td>ジョムソン関連路線で墜落、18人死亡</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：ポカラの航空リスクは「山・天気・人」。</strong>
+      691便は<strong>機体の故障ではなく人間の操作ミス</strong>、197便は<strong>天候判断と同調圧力</strong>が原因だった。
+      ネパールの航空当局はEUの航空安全リストで長く問題視されてきた経緯があり、<strong>「新しい空港・新しい手順」が事故の背景にあった</strong>691便は、
+      インフラを造ることと安全に運用することが別物だということを示した。
+    </div>
+  </div>
+
+  <div class="sec" id="s12">
+    <div class="sec-label"><span class="num">12</span><span class="sec-title">陸路 — プリトビ・ハイウェイ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>プリトビ・ハイウェイ</strong></td><td><strong>カトマンズ近郊のナウビセ〜ポカラの全長174km</strong>（カトマンズ市内からは約200km）。<strong>1967年に中国政府の援助で着工し、1974年に完成</strong>。ダディン・チトワン・タナフンなどを通る<strong>片側1車線の山岳道路</strong>で、トリスリ川やマルシャンディ川の渓谷沿いを走る</td></tr>
+      <tr><td>所要時間</td><td>バスで<strong>6〜8時間程度</strong>とされる。<strong>渋滞・工事・土砂崩れ次第で大きく延びる</strong>のが常態</td></tr>
+      <tr><td>バス</td><td><strong>ツーリストバス</strong>（カトマンズのタメル近くから出発、ポカラのツーリストバスパーク着）と、地元向けのローカルバス・マイクロバス。<strong>途中の食堂休憩込みで朝発・午後着</strong>が典型</td></tr>
+      <tr><td><strong>問題点</strong></td><td><strong>土砂崩れが多く、交通量も多い</strong>。マレク〜ガルチ付近の悪路、ダマウリのマディ川橋（370m）の基礎の弱さなど、<strong>国の大動脈なのに脆い</strong></td></tr>
+      <tr><td>途中の見どころ</td><td><strong>ムグリン</strong>（チトワン・ルンビニ方面への分岐点）、ロープウェイで登る<strong>マナカマナ寺院</strong></td></tr>
+      <tr><td>シッダールタ・ハイウェイ</td><td>ポカラから南へ、タンセンを経て<strong>インド国境のスナウリ（バイラハワ）</strong>へ。1968年開通の<strong>ポカラ初の自動車道路</strong>で、ルンビニ方面にも抜けられる</td></tr>
+    </table></div>
+
+    <div class="sub-h">飛行機と陸路の比較（カトマンズ〜ポカラ）</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th></th><th>飛行機</th><th>ツーリストバス</th></tr>
+      <tr><td>所要</td><td><strong>約25分</strong>（空港までの移動・待ち時間は別）</td><td><strong>6〜8時間程度</strong></td></tr>
+      <tr><td>費用（外国人）</td><td>片道90〜100ドル前後とされる</td><td>格段に安い（会社・クラスで差）</td></tr>
+      <tr><td>リスク</td><td>天候による欠航・遅延。<strong>山の視界が悪い日は飛ばない</strong></td><td>渋滞・土砂崩れ・山道の交通事故</td></tr>
+      <tr><td>向く人</td><td>日程が短い人</td><td>渓谷の景色を見たい人、予算重視の人</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s13">
+    <div class="sec-label"><span class="num">13</span><span class="sec-title">市の財政 — 2年連続の縮小予算</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ポカラ・メトロポリタン市の予算は<strong>2025/26年度の83.5億ルピーから、2026/27年度は71.5億ルピーへ約11.9億ルピー（約14%）減った</strong>。
+      背景にあるのは<strong>自主財源の伸び悩み</strong>で、2026年5月には<strong>「年度の10か月で予算の36%しか執行できず、事業者への支払いが止まっている」</strong>と報じられた。
+      <strong>国内最大の面積を持つ市が、国内最大級の財政難に陥りつつある</strong>のが2026年のポカラだ。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>2025/26年度（2082/83）</th><th>2026/27年度（2083/84）</th></tr>
+      <tr><td><strong>予算総額</strong></td><td><strong>83.5億ルピー</strong></td><td><strong>71.5億ルピー</strong>（▲11.9億）</td></tr>
+      <tr><td>経常支出</td><td>—</td><td>39.4億ルピー（55.1%）</td></tr>
+      <tr><td>資本支出</td><td>—</td><td>32.1億ルピー（44.9%）</td></tr>
+      <tr><td>最大の配分先</td><td>グリーン・強靭なインフラ、観光振興</td><td><strong>インフラ開発 28.9億ルピー（40.48%）</strong></td></tr>
+      <tr><td>主な財源</td><td>内部収入見込み52.2億、連邦の条件付き補助31.3億、連邦の歳入分与3.3億、連邦の均衡化補助5.3億ルピーなど（報道ベース）</td><td>税関連の歳入動員38.7億、うち自主財源24.8億、歳入分与1.03億ルピーなど（報道ベース）</td></tr>
+      <tr><td>提出者</td><td colspan="2">マンジュ・デヴィ・グルン副市長（市議会＝Municipal Assemblyに提出）</td></tr>
+    </table></div>
+
+    <details class="raw">
+      <summary>補足：ネパールの会計年度と予算の読み方</summary>
+      <div class="rawbody"><table class="t">
+        <tr><th>項目</th><th>中身</th></tr>
+        <tr><td>会計年度</td><td>ネパール暦（ビクラム暦）に基づき、<strong>7月半ば〜翌年7月半ば</strong>。地方自治体の予算は毎年6月下旬（アサール月）に議会へ提出される</td></tr>
+        <tr><td>報道の数字</td><td>財源の内訳は報道ごとに区分や表記がばらつくため、<strong>総額と経常・資本の比率以外は「報道ベース」</strong>として扱うのが無難</td></tr>
+        <tr><td>2025年の予算作成</td><td>2025年6月には<strong>市長の訪中日程に合わせて予算書が短時間で作られ誤りがあった</strong>と地元紙に批判された</td></tr>
+      </table></div>
+    </details>
+
+    <div class="info-box">
+      <strong>読みどころ：空港の借金は市ではなく国のもの。</strong>
+      ポカラ国際空港の借入はネパール政府（財務省→CAAN）の債務で、市の財政とは別だ。
+      ただ<strong>「国際空港ができれば観光客と税収が増える」という前提で組まれた市の成長シナリオ</strong>は、空港の不振と一緒に崩れた。
+      2026/27年度の縮小予算は、<strong>その前提を一度リセットした数字</strong>として読むことができる。
+    </div>
+  </div>
+
+  <div class="sec" id="s14">
+    <div class="sec-label"><span class="num">14</span><span class="sec-title">食・観光スポット</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="callout">
+      ポカラの食は<strong>「ネパールの家庭料理」と「トレッカー向けの多国籍料理」の二層</strong>。
+      レイクサイドではピザ・ステーキ・イスラエル料理・韓国料理・日本食まで揃う一方、
+      本当にポカラらしいのは<strong>ムスタン（ジョムソン）から下りてきたタカリー族の定食</strong>と<strong>湖の魚</strong>だ。
+    </div>
+
+    <div class="food-grid">
+      <div class="food-card"><div class="food-name">Dal Bhat / ダルバート</div><div class="food-desc">豆スープ（ダル）＋ご飯（バート）＋野菜のおかず＋漬物（アチャール）。<strong>ネパール人が1日2回食べる国民食</strong>で、<strong>おかわり自由</strong>が基本。トレッキング中の燃料もこれ。</div></div>
+      <div class="food-card"><div class="food-name">Thakali Khana / タカリー定食</div><div class="food-desc"><strong>ジョムソン周辺のタカリー族</strong>の流儀のダルバート。ギー、そばの実、干し肉、ヒマラヤの香辛料ジンブーなどが入り、<strong>「ダルバートの最高峰」</strong>とされる。ポカラにも名店が多い。</div></div>
+      <div class="food-card"><div class="food-name">Momo / モモ</div><div class="food-desc">チベット由来の蒸し餃子。<strong>チベット難民の定住地がある街</strong>らしく、チベット系の店のモモは一段上。トマトベースのタレ（アチャール）で食べる。</div></div>
+      <div class="food-card"><div class="food-name">Fried Fish / 湖の揚げ魚</div><div class="food-desc">ペワ湖・ベグナス湖周辺で、<strong>養殖や湖で獲れた魚をスパイスで揚げたもの</strong>。<strong>山国ネパールで魚が名物になる珍しい街</strong>。</div></div>
+      <div class="food-card"><div class="food-name">Sel Roti / セルロティ</div><div class="food-desc">米粉のリング状の揚げパン。<strong>ダサイン・ティハールの祭りに欠かせない</strong>甘いおやつ。</div></div>
+      <div class="food-card"><div class="food-name">Gurung Food / グルン料理</div><div class="food-desc">グルン人の村の料理。トウモロコシやヒエ、そば粉の主食（ディド）と発酵青菜グンドゥルックなど。<strong>グルカ兵の故郷の味</strong>。</div></div>
+    </div>
+
+    <div class="sub-h">観光スポット</div>
+    <div class="spot-grid">
+      <div class="spot-card"><div class="spot-name">ペワ湖とバラヒ寺院</div><div class="spot-loc">レイクサイド</div><div class="spot-desc">手漕ぎボートで湖上の小島の<strong>バラヒ寺院（ヒンドゥー教の女神を祀る）</strong>へ。<strong>朝の凪いだ湖面に山が映る時間</strong>が一番美しい。</div></div>
+      <div class="spot-card"><div class="spot-name">サランコット</div><div class="spot-loc">ペワ湖北の尾根</div><div class="spot-desc">標高約1,600m。<strong>日の出のアンナプルナ連峰</strong>を見るならここ。パラグライダーの離陸地でもある。</div></div>
+      <div class="spot-card"><div class="spot-name">世界平和パゴダ（シャンティ・ストゥーパ）</div><div class="spot-loc">ペワ湖南岸の丘</div><div class="spot-desc"><strong>日本の日蓮宗系教団・日本山妙法寺が建てた</strong>白い仏塔。<strong>湖・街・ヒマラヤを一枚に収められる</strong>夕方がおすすめ。ボートで渡って登ることもできる。</div></div>
+      <div class="spot-card"><div class="spot-name">国際山岳博物館</div><div class="spot-loc">市の南部</div><div class="spot-desc">ヒマラヤ登山史、8,000m峰14座、山岳民族の文化を扱う。<strong>1950年のアンナプルナ初登頂の資料</strong>など、登山好きなら半日いられる。</div></div>
+      <div class="spot-card"><div class="spot-name">デヴィの滝（パタレ・チャンゴ）</div><div class="spot-loc">ダムサイド南</div><div class="spot-desc">ペワ湖から流れ出た水が<strong>地中の穴へ吸い込まれるように落ちる</strong>滝。<strong>雨季（7〜9月）に水量が最大</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">グプテシュワール・マハデヴ洞窟</div><div class="spot-loc">デヴィの滝の向かい</div><div class="spot-desc">シヴァ神を祀る鍾乳洞。<strong>洞窟の奥で、デヴィの滝の水が地下を流れ落ちる様子</strong>が見られる。</div></div>
+      <div class="spot-card"><div class="spot-name">セティ川峡谷（マヘンドラプル）</div><div class="spot-loc">市街中心</div><div class="spot-desc"><strong>街の真ん中に口を開けた幅数mの深い割れ目</strong>。乳白色の水が見えるかどうかという深さで、<strong>ポカラの地形の成り立ち（§05）を一目で理解できる</strong>場所。</div></div>
+      <div class="spot-card"><div class="spot-name">旧市街とビンダバシニ寺院</div><div class="spot-loc">プラノ・バザール</div><div class="spot-desc">ネワール様式の家並みと、<strong>ポカラの守護女神ビンダバシニ</strong>の寺院。土曜の朝は参拝者で混む。</div></div>
+      <div class="spot-card"><div class="spot-name">チベット難民キャンプ</div><div class="spot-loc">ヘムジャ／市南部</div><div class="spot-desc">絨毯工房や僧院を見学できる。<strong>1959年以降のチベット現代史がそのまま生活の場として残っている</strong>。</div></div>
+      <div class="spot-card"><div class="spot-name">ベグナス湖</div><div class="spot-loc">市東部（旧レクナート）</div><div class="spot-desc"><strong>ペワ湖より静かで、観光地化の手前</strong>の湖。湖畔のホームステイで一泊するのもいい。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s15">
+    <div class="sec-label"><span class="num">15</span><span class="sec-title">ゆかりの著名人</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>人物</th><th>メモ</th></tr>
+      <tr><td><strong>ジミー・ロバーツ（J.O.M. Roberts）</strong></td><td>1916–1997。元グルカ将校で<strong>「トレッキングの父」</strong>。<strong>1964年にネパール初のトレッキング会社「マウンテン・トラベル」を創業</strong>し、ヒマラヤを「登山家だけのもの」から「歩く旅行者のもの」に変えた。1957年のマチャプチャレ遠征の隊長。<strong>晩年はポカラの湖畔で希少なキジの飼育場を営み、1997年にそこで亡くなった</strong></td></tr>
+      <tr><td><strong>ウィルフリッド・ノイス</strong></td><td>英国の登山家・作家。1953年のエベレスト初登頂隊員で、<strong>1957年にマチャプチャレの山頂直下まで迫った</strong>——<strong>この山の唯一の公式な登攀記録</strong>を残した</td></tr>
+      <tr><td><strong>モーリス・エルゾーグ</strong></td><td>フランスの登山家。<strong>1950年、アンナプルナI峰で人類初の8,000m峰登頂</strong>。凍傷で手足の指の大半を失った。著書『処女峰アンナプルナ』は世界的ベストセラーに</td></tr>
+      <tr><td><strong>クラマンダン・シャハ・カド</strong></td><td>14世紀、<strong>カスキ王国の初代王</strong>。ポカラ北部バトゥレチャウルを冬の都とした</td></tr>
+      <tr><td>エドワード王子（エディンバラ公）夫妻</td><td>英国国王チャールズ3世の弟。<strong>2025年2月、ポカラのグルカ兵入隊式に出席</strong>し、周辺のトレッキング道も歩いた</td></tr>
+      <tr><td>ダナ・ラージ・アチャルヤ</td><td>現ポカラ市長（2022年〜）。統一社会主義党</td></tr>
+      <tr><td>カドガラージ・パウデル ／ ビナ・グルン</td><td><strong>2026年3月の総選挙で、国民独立党（RSP）からそれぞれカスキ1区・3区で当選</strong>した下院議員。<strong>伝統的に統一共産党（UML）が強かったカスキで新党が勝った</strong>ことが、全国的なRSP大勝の象徴の一つになった</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s16">
+    <div class="sec-label"><span class="num">16</span><span class="sec-title">直近の出来事（2023→2026）</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>時期</th><th>出来事</th></tr>
+      <tr><td><strong>2023年1月1日</strong></td><td><strong>ポカラ国際空港 開港</strong>（§10）</td></tr>
+      <tr><td><strong>2023年1月15日</strong></td><td><strong>イエティ航空691便墜落、72人全員死亡</strong>（§11）</td></tr>
+      <tr><td>2023年6月</td><td>四川航空のチャーター便で<strong>初の国際便</strong></td></tr>
+      <tr><td>2024年8月</td><td><strong>ネパール政府が中国に空港融資の無償化を正式要請</strong></td></tr>
+      <tr><td><strong>2025年2月6〜7日</strong></td><td><strong>英国エドワード王子夫妻がグルカ兵入隊式（274人）に出席</strong>（§08）</td></tr>
+      <tr><td>2025年4月1日</td><td><strong>ヒマラヤ航空のラサ便（週1）が就航</strong>。のちに需要不足で運休</td></tr>
+      <tr><td><strong>2025年4〜5月</strong></td><td><strong>議会小委員会（リンデン委員長）が空港建設で約140億ルピー規模の不正を指摘</strong>し、報告書はCIAAへ</td></tr>
+      <tr><td>2025年5月</td><td>ペワ湖上空でのパラグライダー飛行が再開</td></tr>
+      <tr><td><strong>2025年9月8〜9日</strong></td><td><strong>Z世代（Gen Z）抗議運動がポカラにも波及。州首相府、ガンダキ州議会（議会事務局・図書館など）、カスキ郡行政事務所など、連邦・州・郡の官庁の多くが放火され、公用車172台が焼損・破壊された</strong>。全国では政権が倒れる事態に発展した</td></tr>
+      <tr><td>2025年9〜10月</td><td>ブータン航空のパロ〜ポカラのチャーター4便</td></tr>
+      <tr><td><strong>2025年12月7日</strong></td><td><strong>CIAAが空港建設をめぐり元大臣5人を含む55人と中国CAMCを起訴</strong>（約83.6億ルピー）</td></tr>
+      <tr><td><strong>2026年3月5日</strong></td><td><strong>総選挙。国民独立党（RSP）が下院275議席中182議席の大勝</strong>、カスキでもRSPが議席を得た。<strong>3月27日、前カトマンズ市長のバレンドラ（バレン）・シャハが首相に就任</strong>（詳しくは<a href="261002_nepal.html">ネパール</a>・<a href="261002_kathmandu.html">カトマンズ</a>のページ）</td></tr>
+      <tr><td>2026年3月</td><td>空港をめぐる3件目の起訴（21人、約4.6億ルピー）とされる</td></tr>
+      <tr><td><strong>2026年4月4日</strong></td><td><strong>ペワ湖の保護帯（湖岸65m）内の違法建築の取り壊しが開始</strong>。初日にリゾートのプールや塀など約30棟。<strong>最高裁は2018年から繰り返し湖の保全と撤去を命じていた</strong>。湖岸には1,055本の境界杭が設置された</td></tr>
+      <tr><td>2026年5月</td><td>湖に流れ込むフィルケ川の流路内の構造物約160棟の撤去が開始。<strong>市の財政難（予算執行率36%・支払い停止）が報道される</strong>（§13）</td></tr>
+      <tr><td>2026年6月</td><td><strong>2026/27年度予算71.5億ルピー</strong>（前年度比▲11.9億）</td></tr>
+      <tr><td><strong>2026年7月</strong></td><td><strong>政府が国際定期便の空港使用料免除（2028年9月まで）を承認。ネパールとインドが約10年ぶりに航空路（進入ポイント）協議の再開で合意</strong>。アンナプルナ保全地域の入域者が年50.8万人と過去最多</td></tr>
+      <tr><td><strong>2026年9月23日</strong></td><td><strong>flydubaiのドバイ〜ポカラ毎日運航が開始</strong>——開港3年9か月で初の本格的な定期国際線</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：2025〜2026年は「後始末と再起動」の2年。</strong>
+      空港は<strong>起訴（後始末）とドバイ便（再起動）</strong>、湖は<strong>違法建築の撤去（後始末）</strong>、政治は<strong>Gen Z運動による焼き討ち（破壊）とRSP政権の誕生（再起動）</strong>。
+      ポカラは<strong>過去10年の「造りすぎ・建てすぎ・見逃しすぎ」を清算している最中</strong>にある。
+    </div>
+  </div>
+
+  <div class="sec" id="s17">
+    <div class="sec-label"><span class="num">17</span><span class="sec-title">行くなら</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>ベストシーズン</strong></td><td><strong>10〜11月</strong>。モンスーン明けで山が最もよく見える。次点は<strong>12〜2月</strong>（晴天が多いが朝霧あり）。<strong>6〜9月は山がほぼ見えず、道路も寸断されやすい</strong>（§04）</td></tr>
+      <tr><td>おすすめ滞在日数</td><td><strong>街だけなら2〜3泊</strong>（サランコットの日の出、湖とパゴダ、旧市街）。<strong>プーンヒルを歩くなら＋4〜5日、ABCなら＋7〜10日</strong>が目安</td></tr>
+      <tr><td>拠点にするなら</td><td><strong>レイクサイド</strong>（何でも揃う）。<strong>静かさ重視ならダムサイド</strong>、<strong>湖と山の景色重視ならサランコットの山上ロッジ</strong>や湖の南岸の宿</td></tr>
+      <tr><td><strong>アクセス</strong></td><td>日本からの直行便はないため、<strong>カトマンズ乗り継ぎで国内線（約25分）かバス（6〜8時間程度）</strong>。湾岸経由なら<strong>2026年9月からドバイ〜ポカラ直行（flydubai）</strong>という選択肢もできた</td></tr>
+      <tr><td>市内交通</td><td>タクシー（料金は乗る前に交渉）、配車アプリ（Pathao・InDriveなど）、レンタルバイク・自転車。<strong>レイクサイド内は徒歩で十分</strong></td></tr>
+      <tr><td><strong>トレッキングの手続き</strong></td><td><strong>ACAP入域許可</strong>が必要。<strong>2023年以降、ネパール政府は外国人の単独トレッキングを原則禁止し、登録ガイドの同行を義務づけた</strong>とされる。最新の規則は出発前に確認</td></tr>
+      <tr><td>治安</td><td><strong>凶悪犯罪は少なく、夜のレイクサイドも概ね安全</strong>。注意すべきは<strong>①山道・道路の交通事故 ②トレッキング中の高山病と天候急変 ③パラグライダーやアクティビティ会社の選び方（安全記録を確認）</strong></td></tr>
+      <tr><td>お金</td><td>ネパール・ルピー。<strong>レイクサイドにはATMが多い</strong>が、山に入ると現金のみ。トレッキング前に十分な現金を用意する</td></tr>
+      <tr><td>電源</td><td>230V。プラグはC/D/M型が中心で、<strong>日本のA型は変換プラグが必要</strong>なことが多い。<strong>計画停電は近年ほぼ解消された</strong>とされる</td></tr>
+      <tr><td>入国</td><td>日本国籍は<strong>観光ビザが必要（到着ビザまたはオンライン申請）</strong>。条件・料金は変わるので出発前に在日ネパール大使館等で確認</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s18">
+    <div class="sec-label"><span class="num">18</span><span class="sec-title">Index — 関連ページ</span><span class="sec-updated">Last updated: 2026-10-02</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>ページ</th><th>関係</th></tr>
+      <tr><td><a href="261002_nepal.html"><strong>ネパール（国）</strong></a></td><td>国全体の政治・経済・送金構造・中印の間の外交。ポカラの「なぜ」の多くはここで説明される</td></tr>
+      <tr><td><a href="261002_kathmandu.html"><strong>カトマンズ</strong></a></td><td>首都・第1の都市。<strong>ポカラから約200km東、国内線で約25分</strong>。トリブバン国際空港がネパール最大の空の玄関口</td></tr>
+      <tr><td><a href="261002_namche.html"><strong>ナムチェ・バザール</strong></a></td><td><strong>エベレスト側のトレッキング拠点</strong>。アンナプルナ側の拠点であるポカラと対になる</td></tr>
+      <tr><td><a href="index.html">geo-history index</a></td><td>他の国・都市のリサーチ一覧</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>National Statistics Office (Nepal)「National Population and Housing Census 2021」／ citypopulation.de「Pokhara (Metropolitan City)」／ edusanjal「Pokhara Metropolitan City」</li>
+      <li>Wikipedia「Pokhara」「Pokhara International Airport」「Pokhara Airport (domestic)」「Prithvi Highway」「Machapuchare」「Lekhnath」「British Gurkhas Nepal」「J. O. M. Roberts」</li>
+      <li>The Kathmandu Post「Pokhara Lekhnath becomes largest metropolitan city」（2017年3月）／「Illegal structures on Phewa lakeside torn down」（2026年4月4日）／「Nepal and India to resume talks on air entry routes after decade-long lull」（2026年7月17日）</li>
+      <li>WMO / Department of Hydrology and Meteorology（Nepal）気候平年値 1991–2020（Wikipedia「Pokhara」掲載表）／ Lumle の降水量に関する研究（Tribhuvan University Central Library）</li>
+      <li>NASA Earth Observatory「Seti River clues」／ The Kathmandu Post「Avalanche caused Seti flash flood: NASA」（2014年）／ dialogue.earth「Mystery of the Seti River flood」</li>
+      <li>Brigade of Gurkhas（gurkhabde.com）「The best 274 have been selected for Recruit Intake 25」「323 new Trainee Gurkhas join the Brigade of Gurkhas at a Parade in Pokhara」／ Himal Press「British royal couple meets new Gurkha recruits in Pokhara」（2025年2月）／ The Gurkha Welfare Trust</li>
+      <li>Onlinekhabar English / The Annapurna Express / Myrepublica「Annapurna area welcomes visitors from 169 countries in last fiscal year」（2026年7月）</li>
+      <li>Nepali Times「Pokhara paragliders to relocate」（2021年）／ Kantipur「Paragliding over Phewatal started again」（2025年5月）</li>
+      <li>Nepal Rastra Bank 送金統計（Nepse Trading / Onlinekhabar 報道経由）</li>
+      <li>Kantipur「Letter to China to convert loan of Pokhara Airport into grant」（2024年8月）「International flight at Pokhara Airport after a year」（2024年11月）「Domestic flights and passenger traffic high at Pokhara, Lukla, and Bhairahawa airports」（2026年1月）</li>
+      <li>The New York Times（Oman Observer転載）「Nepal asks China to wipe away a loan」「Airport built in Nepal was littered with corruption, inquiry finds」／ Tribune India「Nepal parliamentary panel finds graft worth billions in China-built Pokhara airport」／ Outlook India「Nepal foreign minister rejects China's claim of building Pokhara airport under BRI」</li>
+      <li>OCCRP / SCMP / The Week「Nepal files corruption charges against 55 officials, Chinese contractor over Pokhara airport」（2025年12月）／ Himal Press「CIAA files corruption case against 55 individuals, Chinese firm」</li>
+      <li>Myrepublica「Half of the airports in Nepal operating at loss」（2023/24年度の空港別収支）／ The Annapurna Express「Bid to boost flights」（2026年7月23日）</li>
+      <li>Nepali Times「Pokhara-Lhasa」（2025年4月）／ Diplomat Nepal「International flights from Pokhara to Bhutan set to begin」（2025年）</li>
+      <li>ShareSansar「Flydubai begins regular commercial flights between Pokhara and Dubai today」（2026年9月23日）／ WAM「flydubai becomes first airline to launch scheduled international flights to Pokhara」／ Onlinekhabar English（就航初週の旅客数）「Lessons from Pokhara airport and flydubai」</li>
+      <li>The Kathmandu Post「Pilot pulled wrong lever on flight NYT 691: probe report」（2023年12月29日）／ Asia News Network「Feathered propellers resulted in loss of thrust in Yeti plane in Pokhara」</li>
+      <li>Aircraft Accident Investigation Commission「Tara Air 9N-AET Accident Investigation Report」／ Aviation Safety Network</li>
+      <li>flightsfrom.com（カトマンズ〜ポカラの時刻表データ）／ Buddha Air 外国人運賃に関する旅行会社の案内</li>
+      <li>Onlinekhabar English「Pokhara metropolis unveils budget of Rs 8.35 billion」（2025年6月）／ Himal Press「Pokhara proposes to spend Rs 8.35 billion in 2025/26」／ Myrepublica・B360 Nepal・Ratopati「Pokhara Metropolitan City unveils Rs 7.15 billion budget」（2026年6月）／ Kantipur「Pokhara Metropolitan City's treasury is emptying」（2026年5月）</li>
+      <li>Himal Press「Gandaki: 172 vehicles torched, vandalized during last week's protest」「All government offices in Pokhara in ruins」（2025年9月）</li>
+      <li>Kantipur「RSP candidate Bina Gurung wins in Kaski-3」（2026年3月）／ Rane Worldview「Nepal: RSP sweeps parliamentary elections」／ All India Radio「Balendra Shah to take oath as Nepal Prime Minister today」（2026年3月27日）</li>
+      <li>CLAIR「駒ヶ根市の国際交流事例」／ JICA 草の根技術協力（駒ヶ根市・ポカラ市）</li>
+      <li>Nepali Times「Hiking with Jimmy」／ The Himalayan Club「In Memoriam」</li>
+    </ul>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>
