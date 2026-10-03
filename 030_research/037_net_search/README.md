@@ -47,6 +47,7 @@ Dwarkesh系ファイルは5セクション構成：原文（verbatim）／英語
 
 | ファイル | 種別 | 題名 | 公開日 | 依頼日 |
 |--------|------|------|--------|--------|
+| [261003_mhi_shimonoseki_shipbuilding.html](261003_mhi_shimonoseki_shipbuilding.html) | 記事 | 三菱重工、1千億円投じ下関の造船能力増強 — 長州出島に船体ブロック工場・国が最大400億円（共同通信） | 2026-10-02 | 2026-10-03 |
 | [260924_ilb_moritz_outsider.html](260924_ilb_moritz_outsider.html) | Podcast | Michael Moritz — 40年の投資と執筆／「よそ者（Ausländer）」という原体験（Invest Like the Best EP.491「The Outsider」） | 2026-09-16 | 2026-09-24 |
 | [260918_pivot_caddi_physical_limits.html](260918_pivot_caddi_physical_limits.html) | YouTube | AI時代にこそ、日本の製造業は強い — 物的限界・118工程の並列化・暗黙知というIP（PIVOT × キャディ加藤勇志郎） | 2026-09-17 | 2026-09-18 |
 | [260904_pg_yc_ambition_formidable.html](260904_pg_yc_ambition_formidable.html) | YouTube | Paul Graham On Startups, Ambition, and Great Founders — 野心・formidable・「AGIは線ではなくにじみ」（Y Combinator × PG／聞き手 Vivian Shen） | 2026-09-03 | 2026-09-04 |
