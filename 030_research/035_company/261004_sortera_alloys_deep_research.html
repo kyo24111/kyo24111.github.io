@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sortera Technologies — 混ざったアルミスクラップを「合金別」に仕分けるAI選別</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .person{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:14px}
+  .person .p-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:3px}
+  .person .p-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:800;color:var(--text)}
+  .person .p-role{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--accent);padding:2px 9px;border-radius:4px}
+  .person .p-line{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7}
+  .person ul{list-style:none;padding:0;margin:0}
+  .person li{font-size:13.5px;color:var(--mid);line-height:1.8;padding:6px 0 6px 16px;position:relative;border-bottom:1px solid var(--border)}
+  .person li:last-child{border-bottom:none}
+  .person li::before{content:'';position:absolute;left:0;top:15px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .person li b,.person li strong{color:var(--text);font-weight:700}
+  .person .p-quote{margin-top:12px;padding:11px 15px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13px;line-height:1.8;color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa details[open]{background:var(--bg);border-color:var(--accent)}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:flex-start;gap:10px;line-height:1.65}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{background:var(--card2)}
+  .qa details[open] summary:hover{background:var(--surface)}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .qa summary::after{content:'+';margin-left:auto;padding-left:10px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem;line-height:1;flex-shrink:0}
+  .qa details[open] summary::after{content:'\2212'}
+  /* 回答本文。qa-a を付け忘れた <p> でも崩れないよう summary 以外の直下要素すべてに効かせる */
+  .qa details>*:not(summary){margin:0 0 10px;padding:0 18px 0 48px;font-size:13.5px;color:var(--mid);line-height:1.85;overflow-wrap:anywhere}
+  .qa details>*:not(summary):last-child{margin-bottom:16px}
+  .qa details>*:not(summary) b,.qa details>*:not(summary) strong{color:var(--text);font-weight:700}
+  .qa details>*:not(summary) a{color:var(--text)}
+  .qa details>ul,.qa details>ol{padding-left:66px}
+  .col-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin:22px 0}
+  .col-box .col-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--accent);display:inline-block;padding:3px 10px;border-radius:4px;margin-bottom:14px}
+  .col-box h3{margin-top:0;margin-bottom:12px;font-size:1.05rem}
+  .col-box p{font-size:13.5px;line-height:1.9}
+  .col-box .col-sub{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:20px 0 8px;padding-top:16px;border-top:1px solid var(--border)}
+  .col-box blockquote{margin:14px 0;padding:12px 18px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.85;color:var(--text)}
+  .col-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+  .col-num .n{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+  .col-num .n .v{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;line-height:1.1;margin-bottom:3px}
+  .col-num .n .l{font-size:11px;color:var(--muted);line-height:1.5}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.qa details>*:not(summary){padding-left:18px}.qa details>ul,.qa details>ol{padding-left:36px}.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-solid">Company Deep Research</span>
+    <span class="badge badge-white">Aluminum Recycling</span>
+    <span class="badge badge-white">Physical AI / Hard Infra</span>
+    <span class="badge badge-white">2026-10-04</span>
+  </div>
+  <h1>Sortera、混ざったアルミ屑を「合金ごと」に仕分ける</h1>
+  <div class="hero-sub">Sortera Technologies（旧Sortera Alloys、本社：インディアナ州Markle）は、廃車のシュレッダー屑から出る<strong>「合金がごちゃ混ぜのアルミ（twitch）」</strong>を、レーザー・X線蛍光（XRF）・高速カメラとAIで<strong>1片10ミリ秒</strong>で判定し、<strong>356・380・319などの指定合金の原料</strong>に仕分ける。売るのは機械ではなく<strong>仕分けたアルミそのもの</strong>。2026年5月にテネシー2号工場が稼働し、処理能力は<strong>年2.4億ポンド</strong>になった。</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">~$120M</div><div class="lbl">Total Raised (reported)</div></div>
+    <div class="kpi"><div class="val">240M lbs</div><div class="lbl">Annual Capacity (2 plants)</div></div>
+    <div class="kpi"><div class="val">&gt;95%</div><div class="lbl">Sorting Accuracy</div></div>
+    <div class="kpi"><div class="val">10 ms</div><div class="lbl">Per-Piece Decision</div></div>
+    <div class="kpi"><div class="val">Aug 2025</div><div class="lbl">Cash-Flow Positive</div></div>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#s1">News Summary</a></li>
+    <li><a href="#s2">What It Is</a></li>
+    <li><a href="#s3">Technology</a></li>
+    <li><a href="#s4">Value Chain</a></li>
+    <li><a href="#s5">Unit Economics</a></li>
+    <li><a href="#s6">Funding History &amp; Team</a></li>
+    <li><a href="#s-founders">Founder Profiles</a></li>
+    <li><a href="#s-customers">Main Customers</a></li>
+    <li><a href="#s8">Competitive Map</a></li>
+    <li><a href="#s-peers">Peer Financials — 決算読み比べ</a></li>
+    <li><a href="#s-japan">Japan Connections</a></li>
+    <li><a href="#s-story">Founding Story</a></li>
+    <li><a href="#s9">Bull / Base / Bear</a></li>
+    <li><a href="#s11">Q&amp;A</a></li>
+    <li><a href="#s-vocab">Vocabulary</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="s1">
+  <div class="sec-label"><span class="num">01</span>News Summary</div>
+  <h2>2号工場が稼働し、能力は倍に。アルミ高が追い風</h2>
+  <p>2026年5月、Sortera Technologiesはテネシー州Lebanon（ナッシュビル近郊）の<strong>2号工場をフル稼働</strong>させた。会社発表では「予定どおり・予算内」で立ち上がり、<strong>初週から売り物になる高純度材を出荷</strong>した。インディアナ州Markleの1号工場と合わせ、年間処理能力は<strong>約2.4億ポンド（約10.9万トン）</strong>になる。</p>
+  <p>資金は2025年11月20日に発表した<strong>$45M</strong>のラウンドで手当てした。TechCrunchによると内訳は<strong>equity $20M＋debt $25M</strong>。リードはT. Rowe Price助言口座とVXI Capital、参加はYamaha Motor Ventures、Overlay Capital。Trinity Capitalが設備ファイナンスを付けた。Canary Mediaは累計調達を<strong>約$120M</strong>と報じている。</p>
+  <p>CEOのMichael Siemerによると、Markle工場は24時間稼働・フル稼働で、<strong>2025年8月からキャッシュフローが黒字</strong>。2026年はアルミ価格が年初から約20%上がり、米国内では関税で<strong>Midwest premiumが1ポンド$1を超える</strong>異常事態になった。輸入地金が高いほど、国内のスクラップを地金の代わりに使える会社の価値は上がる。</p>
+  <div class="callout"><strong>CEOのコメント：</strong>「この仕分けていないアルミを誰もが狙ってきたが、誰も開けられなかった（nobody's been able to unlock it）」「世界中の自動車OEMが、少なくとも2回はインディアナに来ている」（TechCrunch, 2025-11）。</div>
+  <div class="warn-box">
+    <div class="w-title">表記揺れ・確認事項</div>
+    <ul>
+      <li><b>社名：</b>2020年創業時は<b>Sortera Alloys</b>。2023年8月に<b>Sortera Technologies</b>へ改称（合金以外の素材にも広げるため）。本ページは「Sortera」で統一。</li>
+      <li><b>所在地：</b>2020年の進出先はFort Wayne市内（909 N. Coliseum Blvd）。量産工場はFort Wayneの南西約25マイルの<b>Markle</b>。現在の本社表記もMarkle。研究拠点は<b>テキサス州Austin</b>（2023年開設）。</li>
+      <li><b>累計調達額：</b>公表ラウンドを足すと$10M＋$10M＋$30.5M＋$45M＝<b>$95.5M</b>（2025年はdebt込み）。会社のプレス一覧には2024年6月の「$44.4M」（Axios報道）もあるが、内容は確認できなかった。Canary Mediaの「約$120M」は、このどこかを含む数字と読める。</li>
+      <li><b>依頼時の仮説の検証：</b>「Nand Kochhar創業」「Arconicからのスピンアウト」は<b>どちらも誤り</b>。創業者は<b>Nalin Kumar</b>と<b>Manuel Garcia Jr.</b>で、母体はKumarのUHV Technologies（テキサス州Fort Worth）とARPA-Eのプログラム。投資家に「Clear Venture」は見当たらない。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sec-label"><span class="num">02</span>What It Is</div>
+  <h2>「選別機メーカー」ではなく「アルミ原料メーカー」</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Founded</div><div class="v">2020（母体UHV Technologiesは1994）</div></div>
+    <div class="kv-item"><div class="k">HQ</div><div class="v">Markle, Indiana（Fort Wayne近郊）</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">Michael Siemer（2022-04〜）</div></div>
+    <div class="kv-item"><div class="k">Founders</div><div class="v">Nalin Kumar, Ph.D.／Manuel Garcia Jr.</div></div>
+    <div class="kv-item"><div class="k">Plants</div><div class="v">Markle, IN（20万sq ft・2023）／Lebanon, TN（2026-05）</div></div>
+    <div class="kv-item"><div class="k">Capacity</div><div class="v">~240M lbs/yr（2工場合計）</div></div>
+    <div class="kv-item"><div class="k">Products</div><div class="v">356・380・319（鋳物）、3105系（展伸材）向けの合金原料</div></div>
+    <div class="kv-item"><div class="k">Revenue / Valuation</div><div class="v">非公開（累計調達~$120M）</div></div>
+  </div>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">何を買うか：自動車シュレッダー由来の混合アルミ</div><div class="ind-desc">廃車をシュレッダーで砕くと、鉄を磁石で抜いた残りが<b>zorba</b>（非鉄の混合物）。そこから比重選別（heavy media）でアルミを集めたのが<b>twitch</b>。中身は鋳物・押出・圧延の<b>いろいろな合金が混ざったまま</b>なので、安く、多くは海外へ輸出されてきた。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">何をするか：1片ずつ合金を判定して仕分ける</div><div class="ind-desc">ポテトチップ大の破片をベルトに流し、<b>レーザー・XRF・高速カメラ</b>で読み、AIが合金グレードを決め、<b>エアジェット</b>で指定のビンに吹き分ける。精度は<b>95%超</b>。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">何を売るか：指定合金の「レシピどおりの原料」</div><div class="ind-desc">鋳造所（cast house）やダイカスト、圧延メーカーが<b>そのまま炉に入れられる</b>成分の揃った原料。一次アルミ（新地金）や合金元素の追加投入を減らせる。リサイクルアルミは新地金の<b>約5%のエネルギー</b>で作れる。</div></div></div>
+  </div>
+  <div class="callout"><strong>ポイント：</strong>TOMRAやSteinertは<strong>選別機を売る</strong>。Sorteraは<strong>自分で工場を持ち、屑を買って原料を売る</strong>。機械のマージンではなく、<strong>「混ざった屑」と「仕分けた原料」の価格差</strong>で稼ぐモデル。だから資本は重いが、取れる付加価値は大きい。</div>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sec-label"><span class="num">03</span>Technology</div>
+  <h2>XRF＋レーザー＋カメラのセンサーフュージョンと、AIの「見た目」判定</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>要素</th><th>中身</th><th>何を見分けるか</th></tr></thead>
+    <tbody>
+      <tr><td>XRF（X線蛍光）</td><td>X線を当て、元素ごとに出る蛍光X線を測る</td><td>Si・Cu・Zn・Mg・Feなど合金元素の量</td></tr>
+      <tr><td>レーザー</td><td>形状・高さ・位置の計測。特許ではLIBS（レーザー誘起ブレークダウン分光）も代替センサーとして記載</td><td>破片の位置と体積、表面の組成</td></tr>
+      <tr><td>高速カメラ＋機械学習</td><td>色・質感・形・表面の見た目で分類</td><td>鋳物（ゴツい・ザラつく）か、押出・圧延（板・棒）か</td></tr>
+      <tr><td>排出機構</td><td>エアジェット（主）、プッシャー、トラップドア、ロボット</td><td>1片10ミリ秒で行き先を決めて吹き分け</td></tr>
+    </tbody>
+  </table></div>
+  <p>中核特許の一つ<strong>US11964304B2「Sorting between metal alloys」</strong>は、発明者がNalin Kumar、Manuel Garcia Jr.、Isha Maun。<strong>優先日は2015年7月</strong>で、ARPA-E METALS時代の研究にさかのぼる。2024年12月に米エネルギー省（DOE）へのconfirmatory license（政府資金で生まれた発明に付く実施権）が登録されている。会社は2022年時点で<strong>特許25件超（出願中含む）</strong>と説明していた。</p>
+  <p>技術の肝は、<strong>XRFだけでは区別しにくい「似た合金」を、見た目の特徴と組み合わせて当てる</strong>点。鋳物合金（Siが多い）と展伸材（Siが少ない）の大分けはXRFで十分だが、展伸材の中の細かいグレード分けや、塗装・汚れのある破片では、表面だけ読むXRFが外れる。そこを画像とAIで補う。</p>
+  <div class="callout"><strong>筆者の読み：</strong>Siemerは「精度が90%を超えると、マージンが大きく伸びる」と話している。合金の「レシピ」には不純物の上限があり、95%で受け入れられる原料が90%だと規格外になる。<strong>精度は「良いと嬉しい」ではなく、売れるか売れないかの閾値</strong>。データが溜まるほど精度が上がる仕組みなので、工場を回した量そのものが参入障壁になる。</div>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sec-label"><span class="num">04</span>Value Chain</div>
+  <h2>アルミリサイクルの中で、「選別」は最も手薄だった</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>工程</th><th>中身</th><th>主なプレイヤー</th></tr></thead>
+    <tbody>
+      <tr><td>① 回収・解体</td><td>廃車・建材・家電を集める</td><td>地場のスクラップヤード、自動車解体業</td></tr>
+      <tr><td>② シュレッダー</td><td>砕いて鉄を磁選。残りがzorba</td><td>SA Recycling、Schnitzer（Radius）、Cleveland-Cliffs系など</td></tr>
+      <tr><td>③ 比重・渦電流選別</td><td>zorbaからアルミを集めてtwitchに</td><td>heavy media plant。多くは輸出</td></tr>
+      <tr><td>④ <b>合金別選別</b></td><td>twitchを合金グレードごとに分ける（<b>Sorteraはここ</b>）</td><td>Sortera。選別機ならTOMRA、Steinert</td></tr>
+      <tr><td>⑤ 溶解・合金化</td><td>炉で溶かし、成分を調整して二次合金・スラブ・ビレットに</td><td>Real Alloy、Matalco、Novelis、Hydro、Constellium</td></tr>
+      <tr><td>⑥ 加工</td><td>ダイカスト、圧延、押出</td><td>Tier1部品メーカー、Novelis、Constellium、Kobe Steel系</td></tr>
+      <tr><td>⑦ 最終製品</td><td>車体・エンジン部品・建材・缶</td><td>自動車OEM、建材、飲料缶</td></tr>
+    </tbody>
+  </table></div>
+  <p>米国はアルミの<strong>回収</strong>はそれなりにできているが、③で止まり、合金が混ざったtwitchは<strong>韓国・台湾・中国・インドなどへ輸出</strong>されてきた。輸出先で鋳物用の二次合金（ADC12、A380相当）に溶かされ、<strong>エンジン部品などになって戻ってくる</strong>。混ぜたまま溶かすと「一番ゆるい規格」の合金にしかならない（down-cycling）。</p>
+  <p>Sorteraは④を挟むことで、<strong>屑を「より高い規格の合金」の原料にする（up-cycling）</strong>。とくに展伸材（3xxx・5xxx・6xxx）を取り出せれば、Novelisの自動車用シートのような<strong>高付加価値の圧延品に戻せる</strong>。Siemerは「2024〜25年に北米でスクラップ溶解能力が約25億ポンド増える」と話していた。溶かす炉が増えても、<strong>入れる原料の「仕分け」が足りない</strong>のが今の米国の構造。</p>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sec-label"><span class="num">05</span>Unit Economics</div>
+  <h2>「混ざった屑」と「仕分けた原料」の価格差 ― 筆者試算</h2>
+  <p>Sorteraは売上・利益を開示していない。以下は公開情報からの<strong>筆者試算</strong>で、会社の数字ではない。</p>
+  <div class="col-num">
+    <div class="n"><div class="v">~109 kt</div><div class="l">240M lbs ÷ 2,204.6。2工場の年間処理能力</div></div>
+    <div class="n"><div class="v">$0.02/lb</div><div class="l">母体UHVのFort Worth選別機の選別コスト（2020年DOE資料）</div></div>
+    <div class="n"><div class="v">&gt;$1/lb</div><div class="l">Midwest premium単体（2026年2月に$2,182/t＝過去最高）</div></div>
+    <div class="n"><div class="v">$200〜300M</div><div class="l">フル稼働時の売上のオーダー（筆者推計）</div></div>
+  </div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>前提</th><th>値</th><th>根拠</th></tr></thead>
+    <tbody>
+      <tr><td>処理量</td><td>170M lbs/yr</td><td>能力240M lbs × 稼働率70%（2号工場の立ち上がり期間を考慮、筆者推定）</td></tr>
+      <tr><td>製品の売値</td><td>$1.3〜1.7/lb</td><td>米国の地金オールイン価格（LME＋Midwest premium）の6〜7割と置いた（筆者推定）</td></tr>
+      <tr><td>売上</td><td>$220〜290M/yr</td><td>170M lbs × $1.3〜1.7</td></tr>
+      <tr><td>原料（twitch）との差</td><td>$0.15〜0.30/lb</td><td>仕分け後の原料と未選別twitchのスプレッド（筆者推定）</td></tr>
+      <tr><td>選別＋物流＋歩留まりロス</td><td>$0.05〜0.10/lb</td><td>選別そのものは$0.02/lb級。残りは人件費・電力・残渣の処分（筆者推定）</td></tr>
+      <tr><td>粗い営業利益</td><td>$15〜40M/yr</td><td>170M lbs × ($0.10〜0.20)。償却・本社費前</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><strong>読み筋：</strong>売上の大半は<strong>屑の買い値の転売</strong>で、利益はスプレッドの部分だけ。だから<strong>アルミ価格が上がるほど売上は膨らむが、利益が増えるかはスプレッド次第</strong>。2026年の状況は2つの意味で追い風。①<strong>Section 232の関税（2025年6月から50%）でMidwest premiumが$1/lbを超え</strong>、輸入地金の代わりになる国内原料の価値が上がった。②中東の紛争で世界の生産の約1割が揺れ、LMEも上がった。逆に、関税が下がって輸入地金が安くなる、または中国・アジアがtwitchを高値で買い戻す局面では、<strong>屑の調達コストが上がり、スプレッドが縮む</strong>。</div>
+  <details>
+    <summary style="cursor:pointer;font-size:13px;font-weight:700;margin:8px 0">参考：UHV Technologiesが示した「仕分けると価値が上がる」例（2020年、自動車由来の非鉄屑4万ポンド）</summary>
+    <div class="t-wrap"><table class="t">
+      <thead><tr><th>区分</th><th>重量（lbs）</th><th>単価（$/lb）</th><th>価値</th></tr></thead>
+      <tbody>
+        <tr><td>未選別のまま</td><td>40,679</td><td>1.00</td><td>$40.7K</td></tr>
+        <tr><td>Copper</td><td>14,170</td><td>2.20</td><td>$31.2K</td></tr>
+        <tr><td>Brass</td><td>8,890</td><td>1.80</td><td>$16.0K</td></tr>
+        <tr><td>Zinc</td><td>12,270</td><td>0.75</td><td>$9.2K</td></tr>
+        <tr><td>Aluminum</td><td>4,583</td><td>0.55</td><td>$2.5K</td></tr>
+        <tr><td>その他（硬貨・基板・SUS・残渣）</td><td>766</td><td>—</td><td>$1.2K</td></tr>
+        <tr><td><b>仕分け後の合計</b></td><td>40,679</td><td>—</td><td><b>$60.1K（+48%）</b></td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:12px;color:var(--muted)">出典：Nalin Kumar, DOE BETO workshop資料（2020-02）。単価は当時の資料の数字で、現在の相場ではない。</p>
+  </details>
+</div>
+
+<div class="sec" id="s6">
+  <div class="sec-label"><span class="num">06</span>Funding History &amp; Team</div>
+  <h2>ARPA-Eの研究から、2工場・累計~$120Mへ</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2014〜2019</span><span class="tl-title">ARPA-E METALSで研究（UHV Technologies）</span></div><div class="tl-body">軽量車・航空機向けの金属リサイクルを狙ったDOEのプログラム。Fort Worthで<b>年1億ポンド級</b>の自動車屑の選別機を実証。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2020-10</span><span class="tl-title">Chrysalix RoboValley Fundが出資（金額非開示）</span></div><div class="tl-body">Sortera Alloysとして独立。カナダのクリーンテックVC。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2020-11</span><span class="tl-title">Fort Wayneに進出（最大$4.2M投資・100人雇用）</span></div><div class="tl-body">インディアナ州IEDCが最大$1Mの条件付き税控除。当時の従業員はTX 15人＋IN 6人。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2021-11</span><span class="tl-title">$10M（Breakthrough Energy Ventures リード）</span></div><div class="tl-body">ビル・ゲイツ系のBEV。パートナーCarmichael Roberts「スクラップ金属は参入点として非常に良い」。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2022-04</span><span class="tl-title">Michael SiemerがCEOに。KumarはCTOへ</span></div><div class="tl-body">研究会社から「工場を回す会社」への切り替え。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2022-07</span><span class="tl-title">Series B $10M（Assembly Ventures リード）＋Novelis提携</span></div><div class="tl-body">BEVとNovelisも参加。7月19日にNovelisと戦略提携。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2023-Q1</span><span class="tl-title">Markle工場（20万sq ft）稼働</span></div><div class="tl-body">2022年12月に「pre-production材で精度95%超」を達成。2023年3月にAustin（TX）にR&amp;D拠点。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2023-08</span><span class="tl-title">Series C $30.5M（RA Capital–Planetary Health リード）</span></div><div class="tl-body">T. Rowe Price、<b>三菱商事 Mineral Resources Group</b>（Business Incubation Unit）、Macquarie GIG Energy Transition Solutions（MGETS）が参加。社名をSortera Technologiesに。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2024</span><span class="tl-title">CFO・事業開発を増強</span></div><div class="tl-body">5月にCurt SacksがSVP&amp;CFO。6月に「$44.4M」のAxios報道（詳細未確認）。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025-01</span><span class="tl-title">Kenneth Leetが取締役会議長</span></div><div class="tl-body">元Goldman Sachsパートナー。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025-08</span><span class="tl-title">キャッシュフロー黒字化</span></div><div class="tl-body">Markle工場の24時間フル稼働で。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025-11-20</span><span class="tl-title">$45M（equity $20M＋debt $25M）</span></div><div class="tl-body">T. Rowe Price助言口座＋VXI Capitalリード。Yamaha Motor Ventures、Overlay Capital参加。Trinity Capitalが設備ファイナンス。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2026-05</span><span class="tl-title">Lebanon（TN）2号工場がフル稼働</span></div><div class="tl-body">能力が倍の~240M lbs/yrに。COO Ben Pope「複雑な技術を速くスケールできることの証明」。</div></div></div>
+  </div>
+  <h3>Investors</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead"><span class="lead-tag">Lead</span><div class="vc-name">Breakthrough Energy Ventures</div><div class="vc-role">2021 lead / Series B</div><div class="vc-desc">ビル・ゲイツ系の気候テックVC。アルミの脱炭素の文脈で入った最初の大口。</div></div>
+    <div class="vc-card lead"><span class="lead-tag">Lead</span><div class="vc-name">Assembly Ventures</div><div class="vc-role">Series B lead（2022）</div><div class="vc-desc">デトロイト拠点のモビリティ系VC。共同創業者Chris Thomasがコメント。自動車OEMへの橋渡し役。</div></div>
+    <div class="vc-card lead"><span class="lead-tag">Lead</span><div class="vc-name">RA Capital – Planetary Health</div><div class="vc-role">Series C lead（2023）</div><div class="vc-desc">バイオ投資で有名なRA Capitalの気候ファンド（$120M規模）。「近い将来の黒字化」を重視する方針。</div></div>
+    <div class="vc-card lead"><span class="lead-tag">Lead</span><div class="vc-name">T. Rowe Price / VXI Capital</div><div class="vc-role">2025 lead</div><div class="vc-desc">T. Rowe PriceはSeries Cから継続。上場前のクロスオーバー投資家が入っている点はIPOの布石とも読める（筆者の読み）。</div></div>
+    <div class="vc-card"><div class="vc-name">Novelis</div><div class="vc-role">Strategic（2022）</div><div class="vc-desc">世界最大のアルミ圧延・リサイクル会社（Hindalco子会社）。出資＋原料の引き取り提携。</div></div>
+    <div class="vc-card"><div class="vc-name">三菱商事 MRG／Yamaha Motor Ventures</div><div class="vc-role">Japanese strategic</div><div class="vc-desc">2023年に三菱商事の金属資源グループ、2025年にヤマハ発動機のCVCが参加（§11）。</div></div>
+    <div class="vc-card"><div class="vc-name">Chrysalix</div><div class="vc-role">First VC（2020）</div><div class="vc-desc">バンクーバーのクリーンテックVC。RoboValley Fund（ロボット・AI）から出資。</div></div>
+    <div class="vc-card"><div class="vc-name">Macquarie GIG MGETS／Trinity Capital</div><div class="vc-role">Infra / Debt</div><div class="vc-desc">インフラ投資のMacquarieと、ベンチャーデットのTrinity。工場を担保にした資金で希薄化を抑える。</div></div>
+  </div>
+  <h3>Management</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Name</th><th>Role</th><th>経歴</th></tr></thead>
+    <tbody>
+      <tr><td>Michael Siemer</td><td>President &amp; CEO</td><td>元OSIsoft President、Devon Energy VP（§07）</td></tr>
+      <tr><td>Nalin Kumar, Ph.D.</td><td>Founder / 元CEO→CTO</td><td>UHV Technologies創業者。米国特許66件（§07）</td></tr>
+      <tr><td>Manuel Garcia Jr.</td><td>Co-founder / VP AI &amp; Data Science</td><td>中核特許の共同発明者</td></tr>
+      <tr><td>Ben Pope</td><td>COO</td><td>2号工場の立ち上げを指揮（前職は未確認）</td></tr>
+      <tr><td>Curt Sacks</td><td>SVP &amp; CFO（2024-05〜）</td><td>元Zero Motorcycles CFO、上場企業GigOptix・Endwave CFO</td></tr>
+      <tr><td>Kenneth Leet</td><td>Chairman（2025-01〜）</td><td>元Goldman Sachsパートナー（産業セクター）、Pritzker Organization President、Cerberus</td></tr>
+      <tr><td>Bill Caesar</td><td>Independent Director（2021-01〜）</td><td>廃棄物・リサイクル業界の経営者（詳細はSources参照）</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s-founders">
+  <div class="sec-label"><span class="num">07</span>Founder Profiles</div>
+  <h2>30年選手の発明家と、エネルギー×データの経営者</h2>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Nalin Kumar, Ph.D.</span><span class="p-role">Founder / CTO</span></div>
+    <div class="p-line">インド出身の材料・電子工学者。米国特許66件。UHV Technologies（通称nanoRANCH）を1994年に共同創業し、25年以上社長。</div>
+    <ul>
+      <li><b>学歴：</b>1983年 Thapar Institute of Engineering and Technology（パンジャブ州Patiala）でB.E.。渡米し、<b>Drexel University（フィラデルフィア）</b>で1985年M.S.（電気工学）、<b>1988年Ph.D.</b>。</li>
+      <li><b>MCC（Microelectronics and Computer Technology Corporation、Austin）：</b>米半導体・コンピュータ企業の共同研究コンソーシアム。Packaging &amp; Interconnect Groupで銅ポリイミドのマルチチップモジュール、高温超伝導、<b>ダイヤモンドを使った電界放出ディスプレイ</b>などを率い、<b>50件超の特許</b>。</li>
+      <li><b>SI Diamond Technology：</b>ナノ結晶ダイヤモンドの電界放出カソードの発明が、<b>上場スピンオフ</b>につながった。同社でVP兼R&amp;D・技術・IP担当ディレクター。LightMatrix TechnologiesのPresidentも務めた。</li>
+      <li><b>UHV Technologies（1994〜）：</b>テキサス州Fort Worth。2010年代に<b>ARPA-E METALS</b>の資金で金属選別を研究し、Fort Worthで<b>年1億ポンド級・選別コスト$0.02/lb</b>の自動車屑選別機を動かした。同じ技術で、ごみから缶・ペットボトル・ガラスを分ける用途も提案していた。</li>
+      <li><b>Sortera（2020〜）：</b>Manuel Garciaと創業し、創業CEO。2022年4月にSiemerへCEOを渡してCTOへ。</li>
+    </ul>
+    <div class="p-quote">「この新しい施設で、私たちの技術を次の段階へ引き上げる」（2020年11月、Fort Wayne進出時）</div>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Manuel Garcia Jr.</span><span class="p-role">Co-founder / VP AI &amp; Data Science</span></div>
+    <div class="p-line">AI・データサイエンスの責任者。中核特許US11964304B2の共同発明者。学歴・前職は公開情報で確認できなかった。</div>
+    <ul>
+      <li>UHV時代から選別のAIを担当していたと読める（特許の優先日2015年に名前がある、筆者の読み）。</li>
+      <li>発言：「混合スクラップを固有のアルミ合金に仕分けることで、北米にまだ存在しない<b>自動車産業の新しい循環</b>が作れる」。</li>
+    </ul>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Michael Siemer</span><span class="p-role">President &amp; CEO</span></div>
+    <div class="p-line">2022年4月6日就任。技術者出身で、産業データ（OT）とエネルギーの経営経験を持つ。</div>
+    <ul>
+      <li><b>学歴：</b>Syracuse UniversityでB.S.（電気工学）、Colorado State UniversityでM.S.（電気工学）、Oklahoma Christian UniversityでMBA。</li>
+      <li><b>3M</b>でキャリアを始め、オクラホマの石油ガス会社<b>SandRidge Energy</b>を経て、<b>Devon Energy</b>でVP, Operations Technology（現場設備のデータ・制御）。</li>
+      <li><b>OSIsoft</b>のPresident。工場・発電所の時系列データ基盤「PI System」の会社で、在任中に経営委員会を作り、<b>サブスクリプションへの移行</b>を進めた。OSIsoftはその後AVEVA（Schneider Electric系）が約$5Bで買収。</li>
+      <li>「センサーのデータで重い設備を回す」経験が、そのままSorteraの工場運営に効く人選。</li>
+    </ul>
+    <div class="p-quote">「この経験豊富なチームを率い、重工業の循環性に大きなインパクトを与えたい」（就任時）</div>
+  </div>
+</div>
+
+<div class="sec" id="s-customers">
+  <div class="sec-label"><span class="num">08</span>Main Customers</div>
+  <h2>自動車OEM・Tier1・鋳造所、そしてNovelis</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>顧客・パートナー</th><th>関係</th><th>確度</th></tr></thead>
+    <tbody>
+      <tr><td>Novelis</td><td>2022年7月に戦略提携＋出資。自動車由来のtwitchから<b>圧延シート材を回収</b>し、自動車用シートの再生材比率を上げる。Novelisは2026年までにCO₂を30%減、2050年までにカーボンニュートラルが目標</td><td>公表</td></tr>
+      <tr><td>自動車OEM</td><td>CEO「世界中のOEMが少なくとも2回はインディアナに来た」。社名は非公表</td><td>CEO発言</td></tr>
+      <tr><td>Tier1部品メーカー・鋳造所</td><td>356・380・319（エンジン・ホイール・ケース類の鋳物合金）の原料として</td><td>会社説明</td></tr>
+      <tr><td>建材・航空・包装</td><td>3105系（建材・缶ふた等）、航空向けにも供給と説明</td><td>会社説明</td></tr>
+    </tbody>
+  </table></div>
+  <p>原料の仕入れ先は、自動車シュレッダー・heavy media plantなどのスクラップ業者。具体名は出ていない。2号工場をテネシーに置いたのは、<strong>日産（Smyrna）、GM（Spring Hill）、VW（Chattanooga）、トヨタ系・デンソーなど部品メーカーが集まる南部の自動車回廊</strong>に近く、仕入れと出荷の両方で輸送が短くなるため（会社は「Battery Belt・南部の自動車製造回廊」と表現）。</p>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sec-label"><span class="num">09</span>Competitive Map</div>
+  <h2>「機械を売る」「溶かす」「仕分けて売る」の三つ巴</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th>型</th><th>Sorteraとの関係</th></tr></thead>
+    <tbody>
+      <tr><td>TOMRA（ノルウェー・上場）</td><td>選別機メーカー。X線透過・XRF・LIBS（AUTOSORT PULSE）</td><td>技術の競合。ただし<b>機械を売る</b>ので、買った側（リサイクラー）が競合になる</td></tr>
+      <tr><td>Steinert（独・非上場）</td><td>選別機メーカー。LIBS・XRF選別機</td><td>同上</td></tr>
+      <tr><td>Novelis（Hindalco子会社）</td><td>圧延＋自社リサイクル。Bay Minette（AL）新工場など</td><td>顧客かつ株主。将来は内製・買収もあり得る</td></tr>
+      <tr><td>Hydro（ノルウェー・上場）</td><td>押出＋リサイクル。米Cassopolis（MI）にビレット用リサイクル工場</td><td>原料（屑）の取り合い</td></tr>
+      <tr><td>Matalco（Rio Tinto系）</td><td>北米のビレット・スラブの二次溶解大手</td><td>屑の取り合い／顧客候補</td></tr>
+      <tr><td>Real Alloy（Elah Holdings）</td><td>北米の二次合金（鋳物用）大手</td><td>鋳物合金の原料で一番近い競合・顧客候補</td></tr>
+      <tr><td>Alcoa／Century（一次アルミ）</td><td>製錬で新地金を作る</td><td>Sorteraの原料は<b>輸入新地金の代替</b>。関税が高いほどSorteraが有利</td></tr>
+      <tr><td>AMP（米・ロボット選別）</td><td>家庭ごみ（MRF）のAI選別</td><td>「AI×リサイクル」の同類。対象は家庭ごみで、合金別ではない</td></tr>
+      <tr><td><b>Sortera</b></td><td><b>工場を持って合金別に仕分け、原料を売る</b></td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p>Sorteraの強みは、<strong>選別機メーカーと違い「工場の運転データ」が自社に溜まる</strong>こと、そして<strong>溶解メーカーと違い溶かす前に分けられる</strong>こと。弱みは、選別機の性能が上がれば、Real AlloyやMatalcoが<strong>TOMRAの機械を買って自前で同じことをする</strong>可能性がある点。</p>
+</div>
+
+<div class="sec" id="s-peers">
+  <div class="sec-label"><span class="num">10</span>Peer Financials — 決算読み比べ</div>
+  <h2>事業の「純度」で、決算の見え方がまるで違う</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th>FY</th><th>Revenue</th><th>Adj. EBITDA / EBITA</th><th>Margin</th><th>何の会社に見えるか</th></tr></thead>
+    <tbody>
+      <tr><td>TOMRA</td><td>2025</td><td>€1.32B</td><td>EBITA ~€174M</td><td>13.2%</td><td>機械メーカー。売上の大半は飲料容器回収機（Collection）。Recyclingは四半期€46〜75M規模</td></tr>
+      <tr><td>Novelis</td><td>FY26（〜2026-03）</td><td>$18.4B</td><td>$1.6B</td><td>~8.7%</td><td>圧延の「加工賃」会社。地金価格が上がると売上が膨らみ、率は下がる</td></tr>
+      <tr><td>Constellium</td><td>2025</td><td>$8.4B</td><td>$846M（price lag除き$720M）</td><td>~10%</td><td>圧延・押出。メタルラグ（在庫評価）でEBITDAが動く</td></tr>
+      <tr><td>Alcoa</td><td>2025</td><td>$12.8B</td><td>$2.0B</td><td>~16%</td><td>一次アルミ＋アルミナ。LMEと電力価格に利益が直結</td></tr>
+      <tr><td>Sortera</td><td>—</td><td>非公開（筆者推計$200〜300M級の能力）</td><td>CF黒字（2025-08〜）</td><td>—</td><td>「屑のスプレッド」会社</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:12px;color:var(--muted)">TOMRAのEBITA額は売上×マージンからの筆者計算。Marginは同様にEBITDA÷売上で計算。</p>
+  <div class="col-box">
+    <div class="col-lbl">Reading</div>
+    <h3>決算の読み方 — Sorteraが上場したら、どの物差しで測られるか</h3>
+    <p><b>TOMRA</b>は「機械を売る会社」なので、売上は地金価格と関係なく、利益率は2桁。ただしリサイクル選別機の部門は景気（スクラップ業者の設備投資）で四半期ごとに大きく振れる。2025年Q4のRecyclingは前年の過去最高四半期から27%減。</p>
+    <p><b>Novelis・Constellium</b>は売上の大半が<b>地金代のパススルー</b>。2026年のように地金とMidwest premiumが上がると、売上は増えても率は下がる。Novelisは2025年9月以降のOswego（NY）工場の火災で出荷が5%減り、EBITDAは約$104Mの減益要因。<b>本当の実力は「トン当たりEBITDA」</b>で見る（Novelis FY26は$1.6B÷3,557kt＝<b>約$450/t</b>、筆者計算）。</p>
+    <p><b>Alcoa</b>は自社で地金を作るので、<b>LMEが上がれば利益がそのまま増える</b>。逆に下がれば赤字にもなる。</p>
+    <div class="col-sub">Sorteraの場合</div>
+    <p>Sorteraの売上も地金連動のパススルー型で、<b>売上だけ見ると大きく、率は薄く見える</b>。比べるべきは「トン当たりの仕分けスプレッド」と「工場1つあたりの立ち上げ期間・資本コスト」。上場するなら、TOMRAのような機械メーカーの倍率ではなく、<b>リサイクル・素材会社の倍率（EV/EBITDA一桁台後半）</b>で測られる可能性が高い。一方で「AIで精度を上げ続ける」ストーリーが通れば、テック寄りの倍率がつく余地もある（筆者の読み）。</p>
+  </div>
+</div>
+
+<div class="sec" id="s-japan">
+  <div class="sec-label"><span class="num">11</span>Japan Connections</div>
+  <h2>株主に三菱商事とヤマハ発動機。日本のアルミ業界にも直結する</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>日本企業</th><th>関係</th><th>確度</th></tr></thead>
+    <tbody>
+      <tr><td>三菱商事（Mineral Resources Group）</td><td>2023年Series Cに<b>Business Incubation Unit経由で出資</b>。アルミ地金・原料のトレーディングを持つ金属資源グループ</td><td>公表</td></tr>
+      <tr><td>ヤマハ発動機（Yamaha Motor Ventures）</td><td>2025年$45Mラウンドに参加。二輪・船外機でアルミダイカストを大量に使う会社</td><td>公表</td></tr>
+      <tr><td>UACJ</td><td>米国でTri-Arrows Aluminum（Logan Aluminum、ケンタッキー）を通じて缶材を作る。缶材は再生材比率が高く、<b>展伸材系スクラップの取り合い・調達先候補</b>の関係（<a href="260730_uacj_deep_research.html">UACJのページ</a>）</td><td>筆者の読み</td></tr>
+      <tr><td>神戸製鋼所</td><td>米ケンタッキー州Bowling Greenで自動車用アルミ押出・加工（Kobelco Aluminum Products &amp; Extrusions）。自動車アルミの再生材比率を上げる需要側</td><td>筆者の読み</td></tr>
+      <tr><td>豊田通商</td><td>トヨタ系の金属リサイクル・アルミ合金の調達を担う。テネシー・ケンタッキーのトヨタ系工場への原料供給で接点の可能性</td><td>筆者の読み</td></tr>
+      <tr><td>日本の二次合金メーカー（ダイカスト用ADC12）</td><td>米国から輸出されるtwitchのアジアでの買い手の一部。Sorteraが米国内で仕分けて使う量が増えるほど、<b>アジアへのtwitch供給は細る</b></td><td>筆者の読み</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><strong>筆者の読み：</strong>日本の自動車メーカーは米国でも「再生アルミ比率」の開示と調達を迫られている。<strong>米国で作る日系車の部品に、米国内で合金別に仕分けた再生材を使う</strong>という流れが進めば、Sorteraは日系Tier1・商社にとって自然な調達先になる。三菱商事とヤマハ発動機がすでに株主にいるのは、日本側からの「入口」が開いていることを意味する。</div>
+</div>
+
+<div class="sec" id="s-story">
+  <div class="sec-label"><span class="num">12</span>Founding Story</div>
+  <h2>ダイヤモンドディスプレイの発明家が、廃車の山に行き着くまで</h2>
+  <div class="col-box">
+    <div class="col-lbl">Story</div>
+    <h3>「見た目で分ける」技術は、ごみの選別から始まった</h3>
+    <p>Nalin Kumarは1980〜90年代、テキサスのMCCで半導体パッケージやダイヤモンドの電界放出ディスプレイを研究し、上場スピンオフ（SI Diamond Technology）まで経験した発明家だった。1994年に自分の研究会社UHV Technologiesを作り、ナノ材料や照明など「何でも作る」技術ラボとして25年回してきた。</p>
+    <p>転機は2010年代のARPA-E。DOEは軽量車・航空機の金属を安く作り直す研究に資金を出す<b>METALSプログラム</b>を始め、UHVは<b>シュレッダー屑から合金を仕分ける</b>テーマで採択された。Kumarの資料には、当時の発想がそのまま残っている。「見た目（LOOKS）で分類する。家庭ごみなら缶・ペットボトル・ガラス、アルミなら展伸・押出・鋳物」。zorbaを銅・真鍮・亜鉛・SUSなど<b>15種類</b>に分け、トラック1台分の屑の価値を<b>約1.5倍</b>にする試算も示していた。</p>
+    <blockquote>「Use / Recover / Recycle EVERYTHING（すべてを使い、回収し、循環させる）」— UHVの2020年DOE資料のスローガン</blockquote>
+    <div class="col-sub">2020年：テキサスからインディアナへ</div>
+    <p>2020年、技術をSortera Alloysとして切り出し、Chrysalixの出資を受けてインディアナ州Fort Wayneへ移った。当時の従業員はテキサス15人、インディアナ6人。Fort Wayneを選んだのは、<b>中西部の自動車産業と、その廃車・屑の集まる場所</b>だから。Indianaは州として最大$1Mの税控除を付けた。</p>
+    <div class="col-sub">2022年：発明家から経営者へバトン</div>
+    <p>BEVとAssemblyの資金が入ると、Kumarは<b>石油ガスとOSIsoftで「センサーで重い設備を回す」経験を積んだ</b>Michael SiemerにCEOを渡し、自分はCTOへ。研究会社が工場会社になる典型的な交代。その後2年で、20万sq ftのMarkle工場を立ち上げ、2025年8月に黒字化、2026年5月に2号工場を予算内で立ち上げた。</p>
+  </div>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sec-label"><span class="num">13</span>Bull / Base / Bear</div>
+  <h2>評価額の見通しとExitシナリオ（NFA）</h2>
+  <div class="warn-box">
+    <div class="w-title">Not Financial Advice</div>
+    <ul>
+      <li>Sorteraは<b>非上場</b>で、評価額は一度も公表されていない。以下はすべて<b>筆者推計</b>で、投資助言ではない。</li>
+    </ul>
+  </div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Scenario</th><th>前提</th><th>評価額（筆者推計）</th><th>Exit</th></tr></thead>
+    <tbody>
+      <tr><td>Bull</td><td>3〜4号工場へ展開（年5億ポンド級）。精度向上で展伸材を高値で売る。関税が続き、Midwest premiumが高止まり。銅・チタンへ横展開</td><td>$1.5〜3B</td><td>IPO（T. Rowe Priceが入っている前提を活かす）、またはNovelis/Hydro/Rio Tinto級による買収</td></tr>
+      <tr><td>Base</td><td>2工場をフル稼働、EBITDA $30〜60M。3号工場はdebt中心で建てる</td><td>$400〜800M</td><td>戦略買収（アルミ圧延・二次合金・総合商社）</td></tr>
+      <tr><td>Bear</td><td>関税緩和で地金安・スプレッド縮小。選別機の汎用化で優位が薄れる。2号工場の稼働率が上がらない</td><td>$150〜300M（累計調達付近）</td><td>顧客・株主（Novelis等）による救済的買収、または設備＋技術の切り売り</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Leading Indicators — 何を見れば分かるか</h3>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">Midwest premiumとSection 232</div><div class="ind-desc">$1/lb超が続くかどうか。関税の引き下げ・国別例外（カナダ等）が出ると、スプレッドに直撃。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">3号工場の発表</div><div class="ind-desc">場所（メキシコ国境・南東部・中西部）と資金の組み方（equityかdebtか、DOE融資か）。debt中心で建てられれば事業が「インフラ化」した証拠。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">OEMとの長期契約の公表</div><div class="ind-desc">社名入りの引取契約（offtake）が出るか。今はNovelis以外の名前が出ていない。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">米国のtwitch輸出量</div><div class="ind-desc">輸出が減れば国内で仕分けて使う量が増えている証拠。アジア向け価格（cif）が上がれば、Sorteraの仕入れ値も上がる。</div></div></div>
+    <div class="ind-item"><div class="ind-num">5</div><div><div class="ind-title">TOMRA・SteinertのLIBS選別機の受注</div><div class="ind-desc">Real Alloy・Matalco級が自前で合金別選別を始めると、Sorteraのモデルの希少性が下がる。</div></div></div>
+  </div>
+</div>
+
+<div class="sec qa" id="s11">
+  <div class="sec-label"><span class="num">14</span>Q&amp;A</div>
+  <details><summary>アルミの「合金」とは？なぜ混ざると困る？</summary>
+    <div class="qa-a">アルミ製品のほとんどは純アルミではなく、Si・Cu・Mg・Znなどを少し混ぜた<b>合金</b>。用途ごとにレシピ（成分の上限・下限）が決まっている。鋳物用（例：380はSiとCuが多い）と、板・押出用（例：5xxxはMg、6xxxはMg＋Si）では中身がまるで違う。混ぜたまま溶かすと、<b>一番不純物に寛容な鋳物合金</b>にしか使えない。</div>
+  </details>
+  <details><summary>twitchとzorbaの違いは？</summary>
+    <div class="qa-a"><b>zorba</b>は、廃車をシュレッダーで砕いて鉄を抜いた後の<b>非鉄の混合物</b>（アルミ・銅・真鍮・亜鉛・SUSなど）。<b>twitch</b>は、zorbaを比重選別（heavy media）にかけて<b>アルミだけを集めたもの</b>。ただしアルミの中の合金はまだ混ざっている。Sorteraはtwitchをさらに合金別に分ける。</div>
+  </details>
+  <details><summary>なぜ今まで誰もやらなかった？</summary>
+    <div class="qa-a">①<b>合金の差は見た目でほぼ分からず</b>、XRFも表面しか読めない。②1片ずつ判定するので<b>処理量が出にくい</b>。③twitchは輸出すれば「そこそこの値段」で売れたので、手間をかける動機が弱かった。Sorteraは①②をセンサーフュージョンとAIで解き、③は関税と脱炭素の需要で状況が変わった。</div>
+  </details>
+  <details><summary>Sorteraは選別機を売らないの？</summary>
+    <div class="qa-a">売らない（2026年時点）。<b>自社で工場を持ち、屑を買って原料を売る</b>。機械を売るとノウハウが外に出て、顧客が競合になる。運転データを自社に溜め続けることで精度を上げる、というのが戦略と読める。</div>
+  </details>
+  <details><summary>アルミ価格が上がると、Sorteraは儲かる？</summary>
+    <div class="qa-a"><b>売上は増えるが、利益はスプレッド次第</b>。屑の買い値も一緒に上がるので、差が広がらなければ利益は増えない。ただ2026年は、関税でMidwest premiumが$1/lbを超え、「国内で地金の代わりになる原料」に追加の価値が付いた。これはスプレッドを広げる方向に効く。</div>
+  </details>
+  <details><summary>「up-cycling」とは何が違う？</summary>
+    <div class="qa-a">普通のリサイクルは混ぜて溶かすので、元より<b>低い規格</b>の合金になりがち（down-cycling）。Sorteraは仕分けてから溶かすので、<b>元と同じか、より高い規格</b>の製品に戻せる。たとえば車のボディ板を、また車のボディ板に戻す（closed loop）。</div>
+  </details>
+  <details><summary>Novelisは顧客なのに、なぜ株主でもある？</summary>
+    <div class="qa-a">Novelisは自動車用アルミシートで再生材比率を上げたい。そのためには<b>展伸材だけを取り出した屑</b>が要る。出資して関係を深め、優先的に原料を確保する狙いと読める。裏返すと、Sorteraが大きくなれば<b>Novelisが買収に動く</b>可能性もある（筆者の読み）。</div>
+  </details>
+  <details><summary>関税（Section 232）がなくなったら？</summary>
+    <div class="qa-a">Midwest premiumが下がり、輸入地金が安くなる。Sorteraの原料の売値も下がるので、<b>スプレッドは縮む</b>。ただ、自動車OEMの再生材比率の目標（CO₂削減）は関税と関係なく残る。<b>関税は「上振れ要因」、脱炭素は「土台」</b>と分けて見るのがよい。</div>
+  </details>
+  <details><summary>次に何を仕分ける？</summary>
+    <div class="qa-a">CEOは<b>銅とチタン</b>の検討を挙げている。2023年の社名変更（Alloys→Technologies）も「アルミ以外へ」の布石。銅は単価が高く、チタンは航空機の削りくずのリサイクルで価値が大きい。</div>
+  </details>
+</div>
+
+<div class="sec" id="s-vocab">
+  <div class="sec-label"><span class="num">15</span>Vocabulary</div>
+  <h2>本件の英単語 — 語源・類義語・よく出る使い方</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Word</th><th>意味</th><th>語源</th><th>類義語・対比</th><th>よく出る使い方</th></tr></thead>
+    <tbody>
+      <tr><td>alloy</td><td>合金</td><td>古仏語<i>aloier</i>（結びつける）。ラテン語<i>alligare</i>（縛る）から</td><td>対比：pure metal／primary</td><td>"sort scrap into specific <b>alloys</b>"</td></tr>
+      <tr><td>upcycling</td><td>元より高い価値の製品に再生すること</td><td>up ＋ recycling</td><td>対比：downcycling</td><td>"domestic <b>upcycling</b> space"</td></tr>
+      <tr><td>feedstock</td><td>工程に入れる原料</td><td>feed（供給する）＋ stock（蓄え）</td><td>raw material／charge（炉への投入物）</td><td>"aluminum alloy <b>feedstock</b> market"</td></tr>
+      <tr><td>shredder</td><td>破砕機。廃車を細かく砕く</td><td>shred（細く裂く、古英語<i>screade</i>）</td><td>crusher／granulator</td><td>"auto <b>shredder</b> residue"</td></tr>
+      <tr><td>premium</td><td>（地域・品質の）上乗せ価格</td><td>ラテン語<i>praemium</i>（報酬・褒美）</td><td>surcharge／spread</td><td>"the US Midwest <b>premium</b>"</td></tr>
+      <tr><td>spread</td><td>2つの価格の差</td><td>古英語<i>sprǣdan</i>（広げる）</td><td>margin／differential</td><td>"scrap-to-primary <b>spread</b>"</td></tr>
+      <tr><td>cast house</td><td>鋳造工場（溶かして鋳塊にする所）</td><td>cast（投げる→型に流す）＋ house</td><td>foundry（鋳物工場）</td><td>"reduce <b>cast house</b> costs"</td></tr>
+      <tr><td>wrought</td><td>展伸材（圧延・押出で形を作る合金）</td><td>work の古い過去分詞形</td><td>対比：cast（鋳物）</td><td>"<b>wrought</b> 3105 alloy"</td></tr>
+      <tr><td>fluorescence</td><td>蛍光。X線を当てると元素固有の光（X線）が出る</td><td>鉱物fluorite（蛍石）から。ラテン語<i>fluere</i>（流れる）</td><td>LIBS（レーザー誘起ブレークダウン分光）</td><td>"X-ray <b>fluorescence</b> sensors"</td></tr>
+      <tr><td>cash-flow positive</td><td>現金収支が黒字</td><td>—</td><td>profitable（会計上の黒字）とは別</td><td>"<b>cash-flow positive</b> since August"</td></tr>
+      <tr><td>offtake</td><td>生産物の引取（契約）</td><td>take off の名詞化</td><td>purchase agreement</td><td>"a long-term <b>offtake</b> with an OEM"</td></tr>
+      <tr><td>closed loop</td><td>同じ用途の製品に戻す循環</td><td>closed（閉じた）＋ loop（輪）</td><td>circularity／open loop</td><td>"<b>closed-loop</b> recycling of auto sheet"</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://www.prnewswire.com/news-releases/sortera-scales-solution-to-the-mixed-aluminum-problem-with-45-million-in-funding-and-new-tennessee-facility-302620885.html" target="_blank" rel="noopener">PR Newswire — Sortera $45M &amp; Tennessee facility（2025-11-20）</a></li>
+    <li><a href="https://techcrunch.com/2025/11/20/sortera-is-turning-americas-scrap-aluminum-problem-into-cash" target="_blank" rel="noopener">TechCrunch — Sortera is turning America's scrap aluminum problem into cash</a></li>
+    <li><a href="https://www.canarymedia.com/articles/clean-aluminum/aluminum-recycler-sortera-funding-ai" target="_blank" rel="noopener">Canary Media — Sortera raises $45M</a></li>
+    <li><a href="https://www.alcircle.com/news/sortera-technologies-doubles-capacity-with-new-tennessee-facility-deploying-physical-ai-to-strengthen-the-us-supply-chain-for-high-purity-recycled-alu-118585" target="_blank" rel="noopener">AL Circle — Tennessee facility doubles capacity（2026-05）</a></li>
+    <li><a href="https://www.therobotreport.com/sortera-uses-physical-ai-to-double-capacity-in-a-tennessee-sorting-facility/" target="_blank" rel="noopener">The Robot Report — Sortera physical AI, Tennessee</a></li>
+    <li><a href="https://www.alcircle.com/news/sorteras-ai-sorting-system-is-quietly-rewriting-the-rules-of-aluminium-recycling-116292" target="_blank" rel="noopener">AL Circle — Sortera's AI sorting system</a></li>
+    <li><a href="https://www.alcircle.com/news/ai-recycling-startups-see-opportunity-as-aluminium-prices-surge-118613" target="_blank" rel="noopener">AL Circle — AI recycling startups as aluminium prices surge</a></li>
+    <li><a href="https://www.sorteratechnologies.com/news-press" target="_blank" rel="noopener">Sortera — News &amp; Press</a></li>
+    <li><a href="https://www.sorteratechnologies.com/sortera-alloys-chooses-fort-wayne-for-manufacturing-operation" target="_blank" rel="noopener">Sortera — Chooses Fort Wayne（2020-11）</a></li>
+    <li><a href="https://aluminiumtoday.com/news/sortera-alloys-announces-funding-led-by-breakthrough-energy-ventures-driving-efforts-to-reuse-waste-from-end-of-life-products" target="_blank" rel="noopener">Aluminium Today — BEV-led $10M（2021）</a></li>
+    <li><a href="https://www.assemblyventures.com/news/sortera-alloys-announces-10-million-funding-round" target="_blank" rel="noopener">Assembly Ventures — $10M Series B（2022-07）</a></li>
+    <li><a href="https://investors.novelis.com/2022-07-19-Novelis-Announces-Partnership-with-Innovative-Recycling-Startup-Sortera-Alloys" target="_blank" rel="noopener">Novelis — Partnership with Sortera Alloys（2022-07-19）</a></li>
+    <li><a href="https://pulse2.com/sortera-technologies-30-5-million-funding/" target="_blank" rel="noopener">Pulse 2.0 — $30.5M Series C（2023-08）</a></li>
+    <li><a href="https://www.chrysalix.com/news/sortera-alloys-names-new-ceo-michael-siemer" target="_blank" rel="noopener">Chrysalix — Sortera names CEO Michael Siemer</a></li>
+    <li><a href="https://www.alcircle.com/news/sortera-technologies-welcomes-curt-sacks-as-the-senior-vice-president-cfo-110778" target="_blank" rel="noopener">AL Circle — Curt Sacks CFO</a></li>
+    <li><a href="https://investorshangout.com/kenneth-leet-appointed-chairman-at-sortera-technologies-inc-198316-/" target="_blank" rel="noopener">Kenneth Leet appointed Chairman</a></li>
+    <li><a href="https://www.alcircle.com/news/interview/detail/101854/as-we-head-into-2024-2025-we-believe-there-will-be-a-very-large-increase-in-scrap-melting-capacity-throughout-north-america-of-approximately-2-5-billi" target="_blank" rel="noopener">AL Circle — Michael Siemer interview</a></li>
+    <li><a href="https://www.insideindianabusiness.com/articles/scrap-metal-recycler-expanding-to-facility-near-markle" target="_blank" rel="noopener">Inside Indiana Business — Markle facility</a></li>
+    <li><a href="https://www.energy.gov/sites/prod/files/2020/03/f72/beto-18-msw-wkshp-feb-2020-kumar.pdf" target="_blank" rel="noopener">DOE BETO — Nalin Kumar, UHV Technologies（2020-02）</a></li>
+    <li><a href="https://patents.google.com/patent/US11964304" target="_blank" rel="noopener">Google Patents — US11964304B2 Sorting between metal alloys</a></li>
+    <li><a href="https://www.aminer.org/profile/nalin-kumar/64c846df6097cb443c0495fc" target="_blank" rel="noopener">AMiner — Nalin Kumar profile</a></li>
+    <li><a href="https://www.argusmedia.com/en/news/2222035-north-american-heavy-media-plants-look-to-asia" target="_blank" rel="noopener">Argus — North American heavy media plants look to Asia</a></li>
+    <li><a href="https://markets.financialcontent.com/stocks/article/marketminute-2026-2-26-aluminum-decoupling-us-midwest-premium-hits-record-2182-on-tariff-tension" target="_blank" rel="noopener">MarketMinute — Midwest premium record $2,182（2026-02）</a></li>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/0001304280/000130428026000016/novelisq4fy26results.htm" target="_blank" rel="noopener">Novelis — Q4 FY26 results（SEC 8-K）</a></li>
+    <li><a href="https://constellium.com/news/constellium-reports-strong-fourth-quarter-and-full-year-2025-results" target="_blank" rel="noopener">Constellium — FY2025 results</a></li>
+    <li><a href="https://www.businesswire.com/news/home/20260117526434/en/Alcoa-Corporation-Reports-Fourth-Quarter-and-Full-Year-2025-Results/" target="_blank" rel="noopener">Alcoa — FY2025 results</a></li>
+    <li><a href="https://www.inderes.fi/en/releases/tomra-strong-finish-to-2025-with-record-quarter-in-collection-and-solid-quarter-in-recycling-and-food" target="_blank" rel="noopener">TOMRA — Q4 2025 release</a></li>
+    <li><a href="https://globalventuring.com/corporate/yamaha-motor-sustainability-fund/" target="_blank" rel="noopener">Global Venturing — Yamaha Motor sustainability fund</a></li>
+  </ul>
+  <p style="font-size:11px;color:var(--muted);margin-top:14px">Last updated: 2026-10-04</p>
+</div>
+
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+</body>
+</html>
