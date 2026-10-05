@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIデータセンターと電気工事士（a16z Machine Age Fund）｜電気技師とは・なぜ重要か・日米比較</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#111;--sub:#555;--line:#ddd;--bg:#fff;--soft:#f6f6f6;--soft2:#efefef;
+         --f1:#111;--f2:#7a7a7a;--f3:#cfcfcf; }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{ margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.9;font-size:16px;letter-spacing:.01em;-webkit-font-smoothing:antialiased; }
+  .wrap{max-width:820px;margin:0 auto;padding:56px 22px 96px}
+  .mono{font-family:'Poppins',"SFMono-Regular",Menlo,Consolas,monospace}
+
+  header{border-bottom:2px solid var(--ink);padding-bottom:26px;margin-bottom:40px}
+  .kicker{font-size:12px;letter-spacing:.18em;color:var(--sub);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:26px;line-height:1.5;margin:0 0 18px;font-weight:700}
+  .meta{font-size:13px;color:var(--sub);line-height:1.85}
+  .meta a{color:var(--sub)}
+  .people{margin-top:14px;font-size:13.5px;color:var(--ink)}
+  .people b{font-weight:700}
+  .people span{color:var(--sub)}
+
+  section{margin:48px 0}
+  h2{ font-size:13px;letter-spacing:.14em;color:var(--ink);text-transform:uppercase;
+    border-bottom:1px solid var(--line);padding-bottom:8px;margin:0 0 22px;font-weight:700; }
+  h3{font-size:17px;margin:34px 0 12px;font-weight:700}
+
+  .tldr{background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:24px 26px}
+  .tldr p{margin:0 0 12px;font-size:16.5px}
+  .tldr p:last-child{margin-bottom:0}
+  .tldr .n{display:inline-block;width:22px;color:var(--sub);font-weight:700}
+
+  ul.key{list-style:none;margin:0;padding:0}
+  ul.key li{position:relative;padding:0 0 14px 26px;font-size:15.5px}
+  ul.key li:before{content:"—";position:absolute;left:0;color:var(--sub)}
+
+  .detail p{margin:0 0 16px}
+  .lead{color:var(--sub);font-size:14px;margin:-6px 0 18px}
+  blockquote{ margin:22px 0;padding:14px 20px;border-left:3px solid var(--ink);
+    background:var(--soft);font-size:15.5px;color:var(--ink) }
+  blockquote .who{display:block;font-size:12px;color:var(--sub);margin-top:8px}
+
+  details.script{border:1px solid var(--line);border-radius:6px;margin-top:16px}
+  details.script summary{ cursor:pointer;padding:16px 20px;font-weight:700;font-size:14px;list-style:none;
+    display:flex;justify-content:space-between;align-items:center }
+  details.script summary::-webkit-details-marker{display:none}
+  details.script summary .hint{font-size:12px;color:var(--sub);font-weight:400}
+  details.script[open] summary{border-bottom:1px solid var(--line)}
+  .script-body{padding:8px 22px 26px}
+
+  .note{font-size:12.5px;color:var(--sub);background:var(--soft);border:1px solid var(--line);
+    border-radius:6px;padding:14px 18px;line-height:1.8}
+  .note code{font-family:inherit;background:var(--soft2);padding:1px 5px;border-radius:3px}
+
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--sub)}
+  hr.d{border:0;border-top:1px dashed var(--line);margin:30px 0}
+
+  /* charts / figs */
+  .fig{border:1px solid var(--line);border-radius:6px;padding:22px 22px 18px;margin:0 0 22px;background:#fff}
+  .fig .cap{font-size:13.5px;font-weight:700;margin-bottom:3px}
+  .fig .sub{font-size:11.5px;color:var(--sub);margin-bottom:16px;line-height:1.6}
+  .fig .src{font-size:10.5px;color:var(--sub);margin-top:14px;letter-spacing:.02em}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .scard{border:1px solid var(--line);border-radius:6px;padding:16px 16px 14px;background:var(--soft)}
+  .scard .big{font-size:26px;font-weight:700;font-family:'Poppins',monospace;line-height:1.1}
+  .scard .lb{font-size:11.5px;color:var(--sub);margin-top:6px;line-height:1.5}
+
+  .flow{display:flex;flex-direction:column;gap:0}
+  .flow .box{border:1px solid var(--ink);border-radius:6px;padding:11px 16px;background:#fff;text-align:center}
+  .flow .box b{font-size:14px} .flow .box small{display:block;color:var(--sub);font-size:11px;margin-top:2px}
+  .flow .box.b1{background:var(--soft)}
+  .flow .box.b3{background:var(--f1);color:#fff} .flow .box.b3 small{color:rgba(255,255,255,.7)}
+  .flow .arrow{align-self:center;color:var(--sub);font-size:13px;padding:6px 0;font-weight:700}
+  .figrow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.figrow{grid-template-columns:1fr}}
+
+  /* generic table */
+  table.data{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:13px}
+  table.data th,table.data td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6}
+  table.data th{background:var(--soft);font-weight:700;white-space:nowrap}
+  table.data td.n{font-family:'Poppins',monospace;white-space:nowrap}
+
+  /* Q&A */
+  .qna{margin-top:8px}
+  .qna .item{border:1px solid var(--line);border-radius:6px;margin-bottom:14px;overflow:hidden}
+  .qna .item summary{ cursor:pointer;list-style:none;padding:16px 20px;font-weight:700;font-size:15.5px;line-height:1.6;
+    display:flex;gap:12px;align-items:flex-start;background:var(--soft) }
+  .qna .item summary::-webkit-details-marker{display:none}
+  .qna .item summary .qmark{font-family:'Poppins',monospace;color:var(--sub);font-size:14px;flex-shrink:0;margin-top:1px}
+  .qna .item summary .plus{margin-left:auto;color:var(--sub);font-weight:400;font-size:18px;flex-shrink:0;transition:transform .15s}
+  .qna .item[open] summary{border-bottom:1px solid var(--line)}
+  .qna .item[open] summary .plus{transform:rotate(45deg)}
+  .qna .ans{padding:18px 22px 6px}
+  .qna .ans p{margin:0 0 14px}
+  .qna .ans ul{margin:0 0 16px;padding-left:20px}
+  .qna .ans li{margin-bottom:8px}
+  .qna .ans b{font-weight:700}
+  .qna .tbl{width:100%;border-collapse:collapse;margin:6px 0 18px;font-size:13.5px}
+  .qna .tbl th,.qna .tbl td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top;line-height:1.6}
+  .qna .tbl th{background:var(--soft);font-weight:700;white-space:nowrap}
+
+  /* bars */
+  .bars{display:flex;flex-direction:column;gap:8px}
+  .bar{display:grid;grid-template-columns:118px 1fr 56px;gap:10px;align-items:center;font-size:13px}
+  .bar .bt{background:var(--soft2);height:14px;border-radius:2px;overflow:hidden}
+  .bar .bt i{display:block;height:100%;background:var(--f2)}
+  .bar.hl .bt i{background:var(--f1)}
+  .bar .bv{text-align:right;font-size:12.5px}
+  @media(max-width:480px){.bar{grid-template-columns:92px 1fr 48px;font-size:12px}}
+  /* side toc */
+  .toc{display:none}
+  @media(min-width:1280px){
+    .toc{display:block;position:fixed;top:96px;left:max(16px,calc(50% - 410px - 230px));width:190px;font-size:12.5px;line-height:1.5}
+    .toc-lab{font-size:10px;letter-spacing:.16em;color:var(--sub);text-transform:uppercase;margin-bottom:10px}
+    .toc a{display:block;color:var(--sub);text-decoration:none;padding:5px 0 5px 12px;border-left:2px solid var(--line)}
+    .toc a:hover{color:var(--ink)}
+    .toc a.cur{color:var(--ink);font-weight:700;border-left-color:var(--ink)}
+  }
+  section{scroll-margin-top:80px}
+  .wrap{padding-top:96px}
+  table.data{display:block;overflow-x:auto}
+</style>
+</head>
+<body>
+<!-- ns:shared-nav -->
+<style>
+.ns-bar{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;gap:16px;padding:0 26px;z-index:99999;font-family:'Poppins','Poppins','Noto Sans JP',monospace;border-bottom:1px solid rgba(255,255,255,.09)}
+.ns-logo{color:#fff;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:.1em;transition:opacity .15s;flex-shrink:0;font-family:'Poppins',monospace}
+.ns-logo:hover{opacity:.55}
+.ns-sep{width:1px;height:15px;background:rgba(255,255,255,.16);flex-shrink:0}
+.ns-back{color:rgba(255,255,255,.5);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:.06em;display:inline-flex;align-items:center;gap:7px;transition:color .15s;white-space:nowrap;font-family:'Poppins','Noto Sans JP',sans-serif}
+.ns-back .chev{display:inline-block;transition:transform .18s ease;font-size:14px;line-height:1}
+.ns-back:hover{color:#fff}
+.ns-back:hover .chev{transform:translateX(-3px)}
+.ns-sp{flex:1}
+.ns-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;flex-shrink:0;border-radius:6px;transition:background .15s}
+.ns-btn:hover{background:rgba(255,255,255,.08)}
+.ns-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.ns-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.ns-btn.open span:nth-child(2){opacity:0}
+.ns-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.ns-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99998;cursor:pointer}
+.ns-ov.open{display:block}
+.ns-panel{position:fixed;top:0;right:0;bottom:0;width:260px;max-width:82vw;background:#111;z-index:99999;transform:translateX(100%);transition:transform .25s ease;padding:64px 30px 40px;font-family:'Poppins','Noto Sans JP',sans-serif;overflow-y:auto}
+.ns-panel.open{transform:translateX(0)}
+.ns-sec{margin-bottom:26px}
+.ns-lab{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.ns-a{display:block;color:rgba(255,255,255,.82);text-decoration:none;font-size:13px;font-weight:600;padding:6px 0;letter-spacing:-.01em;transition:color .12s}
+.ns-a:hover{color:#fff}
+.ns-a.cur{color:#fff;opacity:.45}
+@media(max-width:600px){.ns-bar{gap:12px;padding:0 16px}}
+</style>
+<div class="ns-bar">
+  <a class="ns-logo" href="/index.html">24111</a>
+  <span class="ns-sep"></span>
+  <a class="ns-back" href="index.html"><span class="chev">&lsaquo;</span>net search</a>
+  <span class="ns-sp"></span>
+  <button class="ns-btn" id="nsBtn" onclick="nsToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="ns-ov" id="nsOv" onclick="nsToggle()"></div>
+<nav class="ns-panel" id="nsPanel">
+  <a class="ns-a" href="/index.html" style="opacity:.5;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="ns-sec">
+    <div class="ns-lab">Research</div>
+    <a class="ns-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="ns-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="ns-a" href="/030_research/035_company/index.html">company</a>
+    <a class="ns-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="ns-a cur" href="/030_research/037_net_search/index.html">net search</a>
+  </div>
+</nav>
+<script>function nsToggle(){document.getElementById('nsBtn').classList.toggle('open');document.getElementById('nsPanel').classList.toggle('open');document.getElementById('nsOv').classList.toggle('open')}</script>
+<!-- /ns:shared-nav -->
+
+<nav class="toc" id="toc">
+  <div class="toc-lab mono">Contents</div>
+  <a href="#s-tldr">3行まとめ</a>
+  <a href="#s-video">動画での発言</a>
+  <a href="#s-what">電気技師とは</a>
+  <a href="#s-why">なぜ重要か</a>
+  <a href="#s-dc">800V DCで何が変わる</a>
+  <a href="#s-jpus">日米比較（一覧）</a>
+  <a href="#s-us">米国の仕組み</a>
+  <a href="#s-jp">日本の仕組み</a>
+  <a href="#s-points">論点</a>
+  <a href="#s-qna">Q&amp;A</a>
+  <a href="#s-note">出典</a>
+</nav>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker mono">YouTube Digest &middot; a16z</div>
+  <h1>AIが「電気工事士」を大量に生む<br>― 電気技師とは何か・なぜ重要か・日米の違い</h1>
+  <div class="meta">
+    元動画：a16z「Why Top Founders Are Racing Into AI Infrastructure」（2026-08-28公開・54分）<br>
+    出演：Ben Horowitz / Martin Casado / Raghu Raghuram（a16z）、聞き手 Erik Torenberg<br>
+    URL：<a href="https://www.youtube.com/watch?v=Zx1Ec8LWFeM" target="_blank" rel="noopener">youtube.com/watch?v=Zx1Ec8LWFeM</a>
+  </div>
+  <div class="people">
+    <span>※動画の本題はa16zの新ファンド<b>「Machine Age Fund」</b>（チップ・メモリ・ネットワーク・電力・冷却などAIインフラ全般）。このページは、その中の<b>29:30前後の「電気工事士が足りない」という発言</b>を起点に、電気技師とは何か・なぜAI時代に重要か・日米の制度の違いを周辺リサーチで深掘りしたもの。</span>
+  </div>
+</header>
+
+<!-- ================= TL;DR ================= -->
+<section id="s-tldr">
+  <h2>3行まとめ</h2>
+  <div class="tldr">
+    <p><span class="n mono">1</span>AIデータセンターは<b>建設費の45〜70%が電気工事</b>。ラック1台の電力は空冷時代の5〜10kWから100kW超へ、2027年には<b>約600kW（NVIDIA Kyber）</b>に向かう。ここまで来ると交流（AC）では配電しきれず、<b>800V直流（DC）</b>で給電する設計に切り替わる。</p>
+    <p><span class="n mono">2</span>動画では「800V DCは危険で、扱える電気工事業者が足りない。<b>米国の電気工事士のうちDC給電の認定を持つのは2%だけ</b>」「AIは仕事を奪うと言われるが、<b>大量の電気工事士を生む</b>」と語られる。実際、MicrosoftのBrad Smithは電気工事士不足を<b>米国でのDC拡張の最大のボトルネック</b>と呼び、Meta（1.15億ドル）・Google（1,500万ドル）・BlackRock（1億ドル）が自前で育成に乗り出している。</p>
+    <p><span class="n mono">3</span>日米では制度の作りがまるで違う。米国は<b>州ごとの免許＋4〜5年の有給見習い（徒弟制）＋職能別労組IBEW</b>。日本は<b>国家資格（第一種・第二種電気工事士／電気主任技術者）を試験で取り、会社（サブコン）に属して働く</b>。さらに<b>800V DCは米国の規格（NEC）では「1,000V以下」の枠内だが、日本の電技では直流750V超＝「高圧」</b>に入る。DCの直流化は日本では人と規制の両方の整理が要る。</p>
+  </div>
+</section>
+
+<!-- ================= VIDEO ================= -->
+<section id="s-video">
+  <h2>動画での発言（28:00〜36:00）</h2>
+  <p class="lead">チャプター「Rack Power, Liquid Cooling &amp; the Data Center Redesign」→「44 Gigawatts by 2028」の流れの中で出てくる。</p>
+
+  <div class="point">
+    <div class="point-id">29:40 · Raghu Raghuram</div>
+    <h3>800V DCを扱える電気工事業者がいない<span class="jp">DC認定は2%</span></h3>
+    <div class="quote-block en"><div class="lang">EN</div><div class="text">The other thing that happens when these data centers are sending 800 volts to the rack is it's become so dangerous, number one, but secondly, we don't have enough electrical contractors that have the expertise to deal with the 800 [volts] inside the data center, because this is high voltage. Only 2% of electrical engineers — or electricians — in the US have been certified on DC power.</div></div>
+    <div class="quote-block"><div class="lang">JP</div><div class="text">ラックに800Vを送るようになると、まず危険になる。次に、データセンター内の800Vを扱える専門性を持った電気工事業者が足りない。高電圧だからだ。米国の電気工事士のうち、DC給電の認定を受けているのは2%しかいない。</div></div>
+  </div>
+
+  <div class="point">
+    <div class="point-id">30:10 · Ben Horowitz / Raghu Raghuram</div>
+    <h3>AIは電気工事士を大量に生む<span class="jp">Metaの無償訓練</span></h3>
+    <div class="quote-block en"><div class="lang">EN</div><div class="text">Now Meta's got a whole program to train people up… It's like a new Job Corps where they train people for free to do this job. But you know it's funny — AI is taking all the jobs. AI is going to create a lot of new electricians.</div></div>
+    <div class="quote-block"><div class="lang">JP</div><div class="text">今ではMetaが人を育てるプログラムを丸ごと持っている。無料でこの仕事を訓練する、新しいジョブ・コーみたいなものだ。面白いのは、AIは仕事を全部奪うと言われているのに、AIは大量の電気工事士を生み出すということだ。</div></div>
+    <div class="comment">続けて「大手クラウドはサーバーの据え付けをロボットにやらせる実験を猛烈に進めている」という話が出る。つまり<b>当面は人、その先は一部ロボット</b>という見立て。</div>
+  </div>
+
+  <div class="point">
+    <div class="point-id">35:00 · Ben Horowitz</div>
+    <h3>なぜ速く建てられないのか<span class="jp">ソフトウェアの問題ではない</span></h3>
+    <div class="quote-block en"><div class="lang">EN</div><div class="text">First of all, right now, you need humans to build them… you need permits, you need access to power… we've got shortages of transformers and turbines… This is not a software problem. It's not just like a bunch of engineers can work weekends.</div></div>
+    <div class="quote-block"><div class="lang">JP</div><div class="text">まず、今は人間が建てる必要がある。許認可が要るし、つなげる電力が要る。変圧器もタービンも足りない。これはソフトウェアの問題ではない。エンジニアが週末返上で働けば片づく話ではない。</div></div>
+    <div class="comment">前振りの数字は「<b>2028年までに新設DCで約44GWの追加電力が要るが、系統の増強見込みは約25GW</b>」。電力そのもの（発電・送電）と、それを建物の中まで引き込む電気工事の<b>両方</b>が詰まっている、という構図。</div>
+  </div>
+</section>
+
+<!-- ================= WHAT ================= -->
+<section id="s-what">
+  <h2>電気技師とは何か</h2>
+  <p>日本語の「電気技師」は指す範囲があいまいな言葉で、英語では大きく<b>2つの職業</b>に分かれる。動画の話者も一度「electrical engineer」と言いかけて「electricians」と言い直している。足りないと言われているのは主に<b>後者（現場の職人）</b>。</p>
+
+  <div class="verbs">
+    <div class="v"><b>Electrical Engineer（電気技術者）</b><span>設計する人。大学の電気工学科卒が中心。受変電・配電の系統設計、機器選定、短絡電流やアークの計算、図面を描く。米国ではPE（Professional Engineer）、日本では電気主任技術者（電験）や技術士が近い。</span></div>
+    <div class="v"><b>Electrician（電気工事士）</b><span>施工する人。図面をもとに幹線・ケーブルを敷設し、盤・変圧器・UPS・バスダクトをつなぎ、通電試験までやる。手に技能を持つ<b>職人（trade）</b>。米国は州の免許、日本は第一種・第二種電気工事士。</span></div>
+  </div>
+
+  <h3>AIデータセンターの電気まわりで働く人たち</h3>
+  <div class="tbl-scroll">
+  <table class="cmp">
+    <tr><th>職種</th><th>何をするか</th><th>DCでの役割</th></tr>
+    <tr><td class="hd w">Lineworker（送配電線工）</td><td>電柱・鉄塔・地中線など、発電所からDCの敷地までの送配電線を張る</td><td>電力会社側。系統接続の工期を左右する</td></tr>
+    <tr><td class="hd w">Inside Wireman（屋内配線工）</td><td>建物の中の受変電設備・幹線・盤・コンセントを施工する。いわゆる電気工事士の主力</td><td>DCで最も人数が要る層。1棟のピーク時に建設作業員は最大1,500人</td></tr>
+    <tr><td class="hd w">高圧・特高の専門工</td><td>変電所、特別高圧の受電設備、ガス絶縁開閉装置（GIS）などを据え付ける</td><td>GW級DCは自前の変電所を持つ</td></tr>
+    <tr><td class="hd w">Commissioning技術者</td><td>完成した電気・冷却設備を負荷をかけて試験し、仕様どおり動くか確かめる</td><td>引き渡し前の最後の関門</td></tr>
+    <tr><td class="hd w">Critical Facility技術者</td><td>稼働後のDCに常駐し、UPS・発電機・配電を保守する</td><td>運用フェーズの電気技師</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- ================= WHY ================= -->
+<section id="s-why">
+  <h2>なぜ電気工事士が重要なのか</h2>
+
+  <div class="fig">
+    <div class="cap">データセンター建設費に占める電気工事の割合</div>
+    <div class="sub">電気工事は建設費の最大の費目。GPUを買うお金があっても、電気を引き込む人がいなければ動かない。</div>
+    <div class="bars">
+      <div class="bar hl"><span>電気工事（上限）</span><span class="bt"><i style="width:70%"></i></span><span class="bv mono">70%</span></div>
+      <div class="bar"><span>電気工事（下限）</span><span class="bt"><i style="width:45%"></i></span><span class="bv mono">45%</span></div>
+    </div>
+    <div class="src">出典：Fortune（2026-03-02）ほか。サーバー・GPU本体を除く建設費ベース。</div>
+  </div>
+
+  <div class="takeaways">
+    <div class="takeaway"><div class="tt">① 建設費の半分以上が「電気」</div><div class="td">DCは見た目は箱だが、中身は<b>巨大な受変電所＋配電網</b>。建設費の45〜70%が電気工事で、ピーク時は1棟に最大1,500人の作業員が入る。電気の人が足りないと工期がそのまま延びる。</div></div>
+    <div class="takeaway"><div class="tt">② 電力密度が上がるほど、仕事が難しく・危険になる</div><div class="td">ラック電力は5〜10kW → 100〜150kW → 約600kWへ。同じ床面積に流れる電流が桁違いになり、<b>交流から800V直流</b>へ、空冷から液冷へ移る。新しい知識（DCのアーク対策など）を持つ人が<b>ほとんどいない</b>。</div></div>
+    <div class="takeaway"><div class="tt">③ 需要が急に跳ねた（ハイパースケーラーの一番の悩み）</div><div class="td">MicrosoftのBrad Smithは2025年に「電気工事人材の不足が<b>米国のDC拡張の最大の課題</b>」と述べ、2026年3月にも同じ認識を示した。Microsoftは<b>75マイル（約120km）離れた場所から電気工事士を連れてきている</b>。Oracleの一部案件は人手不足もあって2027年→2028年にずれた。</div></div>
+    <div class="takeaway"><div class="tt">④ 供給側は高齢化で減っていく</div><div class="td">米国では毎年約<b>2万人</b>の電気工事士が引退し、組合員の約<b>30%が50〜70歳</b>。今後10年で<b>30万人以上</b>の新規の電気工事士が要るとされる（McKinseyは2030年に13万人不足と推計）。日本も建設業の<b>36.6%が55歳以上、29歳以下は11.6%</b>。</div></div>
+    <div class="takeaway"><div class="tt">⑤ 育てるのに時間がかかる（お金で縮められない）</div><div class="td">米国で一人前（Journeyman）になるには<b>4〜5年・8,000〜10,000時間</b>の見習いが要る。GPUは発注すれば届くが、職人は5年前に育て始めていないと今いない。動画の「これはソフトウェアの問題ではない」がまさにここ。</div></div>
+    <div class="takeaway"><div class="tt">⑥ AIで仕事が「増える」側の代表例</div><div class="td">ホワイトカラーの仕事をAIが代替する一方で、AIを動かす物理インフラを造る仕事は増える。動画の「AI is going to create a lot of new electricians」はこの逆説。米国では<b>Gen Zが職業訓練校の電気科に流れ</b>、ある学校では入学者が4年で4倍以上になった。</div></div>
+  </div>
+</section>
+
+<!-- ================= DC ================= -->
+<section id="s-dc">
+  <h2>800V DCで何が変わるのか</h2>
+
+  <div class="fig">
+    <div class="cap">ラック1台あたりの電力の推移（目安）</div>
+    <div class="sub">数値は代表的な構成の目安。最も大きいKyber（2027年予定）を100%として横幅を揃えている。</div>
+    <div class="bars">
+      <div class="bar"><span>従来の空冷サーバー</span><span class="bt"><i style="width:1.7%"></i></span><span class="bv mono">5–10kW</span></div>
+      <div class="bar"><span>H100世代</span><span class="bt"><i style="width:7%"></i></span><span class="bv mono">~40kW</span></div>
+      <div class="bar"><span>GB200 NVL72</span><span class="bt"><i style="width:21%"></i></span><span class="bv mono">~130kW</span></div>
+      <div class="bar hl"><span>Kyber（Rubin Ultra）</span><span class="bt"><i style="width:100%"></i></span><span class="bv mono">~600kW</span></div>
+    </div>
+    <div class="src">出典：動画（5〜10kW→100〜150kW）、NVIDIA技術ブログ（800 VDCはKyberと同時に2027年に本格導入）、業界報道。</div>
+  </div>
+
+  <h3>なぜ交流をやめて直流にするのか</h3>
+  <p>同じ電力を送るなら、<b>電圧を上げれば電流が減り、ケーブルを細くでき、熱で失う電力も減る</b>。600kWのラックを従来の低い電圧の交流で給電すると、ラックの裏が<b>銅のケーブルの束</b>で埋まり、重さも発熱も現実的でなくなる。そこで建物の入口近くで一度だけ直流800Vに変換し、ラックまで直流で送る。交流→直流の変換を何度も繰り返さないので効率も上がる。NVIDIAはこれを<b>800 VDCアーキテクチャ</b>としてGoogle・Microsoftと共にOCP（Open Compute Project）で共通仕様にしようとしている。</p>
+
+  <h3>なぜ直流は危ないのか（電気工事士の新しい知識）</h3>
+  <ul class="key">
+    <li><b>アークが消えにくい。</b>交流は1秒に100〜120回、電流がゼロになる瞬間がある（ゼロクロス）。遮断器を開けるとこのタイミングでアーク（空中を飛ぶ放電）が自然に消える。直流には<b>ゼロになる瞬間がない</b>ので、アークが続き、遮断器もコネクタも専用設計が要る。</li>
+    <li><b>感電・アークフラッシュの評価方法が違う。</b>米国の作業安全規格NFPA 70Eにも直流の章はあるが、800Vクラスの大電流DCを日常的に扱う現場はこれまでほとんどなかった。手順書・保護具・訓練を新しく作る必要がある。</li>
+    <li><b>規格がまだ固まっていない。</b>OCPで要件を詰めている最中で、機器メーカーごとに作法が違う。だから「DCの認定を持つ人が2%」という話になる（この2%は話者の発言で、公開統計は見つからなかった）。</li>
+  </ul>
+  <blockquote>動画ではHorowitzが「エジソンは交流の危険さを示すために動物を感電させてみせた。皮肉なことに、今度は直流が危ない」と笑いを取っている（19世紀末の「電流戦争」）。<span class="who">— 28:30付近</span></blockquote>
+
+  <h3>電圧区分の日米差：800V DCは日本では「高圧」</h3>
+  <div class="tbl-scroll">
+  <table class="cmp">
+    <tr><th></th><th>米国（NEC＝NFPA 70）</th><th>日本（電気設備技術基準）</th></tr>
+    <tr><td class="hd w">区切り</td><td>2023年版で多くの条文の区切りを600V→<b>1,000V</b>に引き上げ。1,000V超が「高電圧」の扱い</td><td>低圧＝<b>直流750V以下</b>・交流600V以下／高圧＝直流750V超〜7,000V以下／特別高圧＝7,000V超</td></tr>
+    <tr><td class="hd w">800V DCは</td><td><b>1,000V以下の枠内</b>（既存の考え方の延長で扱える）</td><td><b>「高圧」に入る</b>。設備の保安・施工の扱いが一段重くなる</td></tr>
+    <tr><td class="hd w">意味</td><td>規格の上では入りやすい。足りないのは人の経験</td><td>規制の整理（区分の見直しや運用の明確化）と、高圧を扱える人材の両方が要る</td></tr>
+  </table>
+  </div>
+  <p class="lead" style="margin-top:12px">日本でも国内の電気設備の法規が800V DCの受け入れの課題になると指摘されている。なお日本は2008〜2012年度にNEDOの研究でDCの高電圧直流（HVDC、当時は380V級）給電を実証し、NTTなど通信系では直流給電の長い経験がある。</p>
+</section>
+
+<!-- ================= JP vs US ================= -->
+<section id="s-jpus">
+  <h2>日米比較（一覧）</h2>
+  <div class="tbl-scroll">
+  <table class="cmp">
+    <tr><th></th><th>米国</th><th>日本</th></tr>
+    <tr><td class="hd w">呼び名</td><td>Electrician（Apprentice → Journeyman → Master）、会社はElectrical Contractor</td><td>電気工事士（第二種・第一種）、会社は登録電気工事業者（サブコン）</td></tr>
+    <tr><td class="hd w">免許を出すのは</td><td><b>州</b>（一部は市・郡。州の統一免許がない州もある）。州をまたぐと取り直し・相互承認が要る</td><td><b>国家資格</b>（経済産業省所管、免状は都道府県知事が交付）。全国で有効</td></tr>
+    <tr><td class="hd w">取り方</td><td><b>先に働く</b>。有給の見習いで4〜5年・8,000〜10,000時間の実務＋座学 → Journeyman試験。Masterはさらに約4,000時間</td><td><b>先に試験</b>。第二種は誰でも受験でき、実務経験なしで免状が出る。第一種は試験＋実務3年</td></tr>
+    <tr><td class="hd w">何ができるか</td><td>ライセンスの範囲で住宅から大規模施設まで。工事ごとに<b>Permit（許可）とInspection（検査）</b>が入る</td><td>第二種＝住宅・小さな店舗（低圧受電）。第一種＝自家用で最大電力500kW未満まで。<b>500kW以上（DC・大工場）は電気工事士法の対象外</b>で、電気主任技術者の保安体制の下で施工する</td></tr>
+    <tr><td class="hd w">設計・保安側</td><td>PE（州のProfessional Engineer）が図面に押印</td><td>電気主任技術者（第三種〜第一種）が保安を監督。施工管理技士（1級・2級）が現場を管理</td></tr>
+    <tr><td class="hd w">規格</td><td>NEC（NFPA 70）を州が採用（3年ごと改訂）、作業安全はNFPA 70E・OSHA</td><td>電気設備技術基準（省令）と解釈、内線規程（民間）</td></tr>
+    <tr><td class="hd w">働き方</td><td>職能別の労組<b>IBEW</b>（約86万人・米加）＋事業者団体NECAが訓練校を運営。非組合系はABC・IEC。組合のHiring Hallから現場に派遣され、仕事のある州へ渡り歩く人も多い</td><td>電力系の大手サブコン（きんでん・関電工・九電工など）の<b>正社員</b>と、その下の協力会社という多層構造。企業内で育てる</td></tr>
+    <tr><td class="hd w">人数</td><td>約81.9万人（BLS・2024年）。2034年まで+9%、毎年約8.1万人の求人</td><td>試験合格者は多いが「免状を持つ人」と「実際に工事している人」の差が大きい</td></tr>
+    <tr><td class="hd w">賃金</td><td>中央値 約6.3万ドル（2025年）。DC地帯（北バージニア）の組合Journeymanは時給約60ドル＝年<b>12万ドル超</b>、残業込みで20万ドルも</td><td>電気工事従事者の平均 約<b>551万円</b>（2023年・平均42歳）。関電工は2025年に初任給を5万円上げ26万円に、作業長クラスは年収1,000万円超も</td></tr>
+    <tr><td class="hd w">不足の見通し</td><td>今後10年で30万人以上が必要。McKinseyは2030年に13万人不足</td><td>経産省：第一種は2020年代前半から約2万人不足、第二種は2045年に約3千人不足、第三種電気主任技術者は2045年に約4千人不足</td></tr>
+    <tr><td class="hd w">企業の打ち手</td><td>Meta 1.15億ドルの無償訓練＋就職保証、Google 1,500万ドル、BlackRock 1億ドル、Microsoftは遠方から呼び寄せ</td><td>大手サブコンの賃上げ・初任給引き上げ、資格要件の緩和（第一種の実務5年→3年、2021年）</td></tr>
+  </table>
+  </div>
+</section>
+
+<!-- ================= US ================= -->
+<section id="s-us">
+  <h2>米国の仕組み：徒弟制と労組</h2>
+  <div class="fig">
+    <div class="cap">米国の電気工事士のキャリアの階段</div>
+    <div class="sub">多くの州で3段階。見習い期間も給料が出る（働きながら学ぶ）。</div>
+    <div class="chain">
+      <div class="st"><b>Apprentice</b><small>見習い・州に登録<br>4〜5年</small></div>
+      <div class="ar">→</div>
+      <div class="st"><b>Journeyman</b><small>8,000〜10,000h<br>＋試験</small></div>
+      <div class="ar">→</div>
+      <div class="st"><b>Master</b><small>+約4,000h<br>＋試験</small></div>
+      <div class="ar">→</div>
+      <div class="st on"><b>Contractor</b><small>事業として<br>工事を請ける</small></div>
+    </div>
+    <div class="axis">組合系（IBEW＋NECAのElectrical Training Alliance）は約10,000時間、非組合系（ABC・IEC）は約8,000時間が目安。</div>
+  </div>
+  <ul class="key">
+    <li><b>州ごとの免許</b>なので、DCが建つ州（バージニア、テキサス、オハイオ、インディアナなど）に人がいなければ、他州から呼んでも免許の扱いが壁になることがある。</li>
+    <li><b>労組IBEWの存在感が大きい。</b>大型DCや公共案件は組合系が多く、賃金も高い。見習いの採用枠も労組と事業者団体が決めるので、需要が跳ねてもすぐには増やせない。商業系の見習いへの応募は2022→2024年で約7万→12万件（+70%）に増えた。</li>
+    <li><b>大企業が自分で育て始めた。</b>Metaの「America's Workforce Academy」は1.15億ドルで、2026年にインディアナ・ルイジアナ・オハイオ・テキサスで開始。無料で訓練し、NCCERの資格を取らせ、DC建設の仕事を保証する（動画の「新しいJob Corps」はこれ）。Googleは2025年にElectrical Training Allianceへ1,500万ドルを拠出した。</li>
+    <li><b>賃金が上がっている。</b>DC建設の作業員の平均年収は2026年初めに約8.18万ドルで、一般の商業建設より約32%高い。</li>
+  </ul>
+</section>
+
+<!-- ================= JP ================= -->
+<section id="s-jp">
+  <h2>日本の仕組み：国家資格と多層の請負</h2>
+  <div class="fig">
+    <div class="cap">日本の電気系資格の守備範囲</div>
+    <div class="sub">「工事する資格」と「保安を監督する資格」が分かれている。大規模なDCほど右側（主任技術者）の比重が増える。</div>
+    <div class="chain">
+      <div class="st"><b>第二種電気工事士</b><small>住宅・小店舗<br>（低圧受電）</small></div>
+      <div class="ar">→</div>
+      <div class="st"><b>第一種電気工事士</b><small>自家用<br>500kW未満</small></div>
+      <div class="ar">→</div>
+      <div class="st on"><b>電気主任技術者</b><small>第三種：5万V未満<br>第二種：17万V未満／第一種：全て</small></div>
+    </div>
+    <div class="axis">別系統に、現場の工程・品質・安全を管理する「電気工事施工管理技士（1級・2級、国交省所管）」がある。大型案件の監理技術者になるのは1級。</div>
+  </div>
+  <ul class="key">
+    <li><b>試験が先、実務は後。</b>第二種は学生でも取れるので資格保有者は多いが、実際に現場にいる人は別の話。米国のように「現場で数年鍛えた人しか一人前と呼ばない」仕組みではない。</li>
+    <li><b>大規模施設は工事士法の外。</b>最大電力500kW以上の需要設備（DC・大工場）は電気工事士法の対象外で、設置者が定める保安規程と電気主任技術者の監督で安全を担保する。DC本体の電気の安全を握るのは、工事士より<b>主任技術者（電験）</b>の層。その電験三種も2045年に約4千人不足の見通し。</li>
+    <li><b>大手サブコンが人を抱える。</b>DCの電気工事は、きんでん（関西電力系）・関電工（東京電力系）・九電工（九州電力系）などの設備工事会社が元請けや一次下請けになり、その下に協力会社が連なる。TSMC熊本では九州の電気工事業界がほぼ総出になった。</li>
+    <li><b>DCの立地が偏っている。</b>千葉県印西市、大阪、北海道（石狩など）、九州に新設が集中し、同じ地域で半導体工場の建設とも人を取り合う。</li>
+    <li><b>賃金は上がり始めた。</b>関電工は2025年4月に初任給を一律5万円上げて26万円にし、「高卒の技能者でも作業長になれば年収1,000万円超」と打ち出した。</li>
+  </ul>
+</section>
+
+<!-- ================= POINTS ================= -->
+<section id="s-points">
+  <h2>論点</h2>
+  <div class="takeaways">
+    <div class="takeaway"><div class="tt">1. AIの本当のボトルネックは「人×電気」</div><div class="td">a16zが新ファンドを「Machine Age」と名づけた理由は、ソフトウェアにお金を注いでも<b>下の機械（ハード）に制約される</b>時代になったから。そのハードの一番下に、電気を引き込む人がいる。GPU不足は数年で解けても、職人不足は育成年数ぶん遅れて解ける。</div></div>
+    <div class="takeaway"><div class="tt">2. 米国は「量」、日本は「年齢」と「規制」</div><div class="td">米国はDC特需で30万人規模の量が足りない。日本は需要の伸びは米国ほどではないが、高齢化で供給がじわじわ減り、さらに<b>800V DCが「高圧」に入る</b>という規制面の論点が乗る。</div></div>
+    <div class="takeaway"><div class="tt">3. 育成を誰が払うか</div><div class="td">米国ではMeta・Google・BlackRockのように<b>需要側の巨大企業が訓練費を払う</b>流れができた。日本は今のところサブコンの賃上げが中心。DC事業者・電力会社・国が育成に直接お金を出す形はまだ弱い。</div></div>
+    <div class="takeaway"><div class="tt">4. 次の打ち手は「工場で作って現場でつなぐ」</div><div class="td">現場の人手を減らすため、電源・配電をモジュール化して工場で組み、現場では据え付けるだけにする流れ（プレハブ化）と、動画にある<b>サーバー据え付けのロボット化</b>が並行して進む。それでも最後に通電して責任を持つのは免許を持った人間。</div></div>
+  </div>
+</section>
+
+<!-- ================= Q&A ================= -->
+<section id="s-qna">
+  <h2>Q&amp;A</h2>
+  <div class="qna">
+
+    <details class="item">
+      <summary><span class="qmark">Q1</span><span>「電気技師」「電気工事士」「電気主任技術者」は何が違う？</span><span class="plus">+</span></summary>
+      <div class="ans">
+        <p><b>電気技師</b>は一般的な呼び名で、資格名ではない。設計者（エンジニア）と施工者（職人）の両方を指しうる。</p>
+        <p><b>電気工事士</b>は、配線や機器の接続など<b>工事そのもの</b>をする国家資格。<b>電気主任技術者</b>（通称「電験」）は、ビルや工場、発電所の電気設備が<b>安全に動いているかを監督する</b>国家資格で、自分で配線するわけではない。英語にすると、前者がElectrician、後者は職務的にはFacility側のElectrical Engineerに近い。</p>
+      </div>
+    </details>
+
+    <details class="item">
+      <summary><span class="qmark">Q2</span><span>「米国の電気工事士の2%しかDC認定がない」は本当？</span><span class="plus">+</span></summary>
+      <div class="ans">
+        <p>話者（Raghu Raghuram）の発言で、出典は示されていない。調べた範囲では、この数字を裏づける公開統計は見つからなかった。そもそも米国には「DC給電」という単一の公的認定はなく、メーカーや業界団体の研修修了を指している可能性が高い。</p>
+        <p>ただ、<b>800V級の大電流DCを日常的に扱った経験のある人がごく少ない</b>という方向性自体は、NVIDIAや業界の解説（安全手順・訓練・認定の更新が必要）とも一致する。数字は「桁感」として受け止めるのが妥当。</p>
+      </div>
+    </details>
+
+    <details class="item">
+      <summary><span class="qmark">Q3</span><span>1GWはどれくらい？動画の「5万世帯」は合ってる？</span><span class="plus">+</span></summary>
+      <div class="ans">
+        <p>動画では「1GWは5万世帯ぶん」「人口4〜6万人のフラッグスタッフ市でも1GW未満」と話しているが、<b>5万世帯は少なすぎる</b>。米国の家庭は平均で1世帯あたり約1.2kW（年1万kWh強）使うので、1GWを一年中フルに使うと<b>約80万世帯ぶん</b>になる。日本の家庭（平均約0.5kW）なら約200万世帯ぶん。</p>
+        <p>どちらにせよ、<b>1GWのDCは原発1基ぶん</b>と覚えるのが早い。「2028年までに44GW」は原発44基ぶんの新しい需要ということになる。</p>
+      </div>
+    </details>
+
+    <details class="item">
+      <summary><span class="qmark">Q4</span><span>なぜ電気工事が建設費の半分以上を占めるの？</span><span class="plus">+</span></summary>
+      <div class="ans">
+        <p>DCの建物は基本的に「大きな倉庫」だが、中には<b>変電所、何系統もの受変電設備、UPS（無停電電源）と蓄電池、非常用発電機、何キロにもなる幹線とバスダクト</b>が入る。止まってはいけない施設なので、同じ設備を2系統（2N）持つことも多い。さらに冷却設備を動かすのも電気。結果として、建屋（躯体）よりも電気設備の方が高くなる。</p>
+      </div>
+    </details>
+
+    <details class="item">
+      <summary><span class="qmark">Q5</span><span>米国の電気工事士はなぜ給料が高いの？</span><span class="plus">+</span></summary>
+      <div class="ans">
+        <ul>
+          <li><b>参入に時間がかかる</b>：4〜5年の見習いを経ないと一人前になれず、供給がすぐには増えない。</li>
+          <li><b>労組の交渉力</b>：IBEWの地域支部が事業者団体と賃金協約を結ぶ。DCが集まる北バージニアの支部では時給約60ドル。</li>
+          <li><b>州免許が参入障壁</b>：他州からすぐには来られない。</li>
+          <li><b>大学進学のコストが高い</b>：学費ローンなしで「稼ぎながら学べる」ことが若い世代に再評価され、人気が出ている。</li>
+        </ul>
+        <p>中央値で見ると米国 約6.3万ドル（150円換算で約950万円）、日本 約551万円。単純比較で2倍弱だが、物価・社会保障の違いがある点には注意。</p>
+      </div>
+    </details>
+
+    <details class="item">
+      <summary><span class="qmark">Q6</span><span>日本の電気工事士はなぜ「資格は多いのに人が足りない」の？</span><span class="plus">+</span></summary>
+      <div class="ans">
+        <p>第二種電気工事士は受験資格がなく、学生や他業種の人も「持っておくと便利な資格」として取る。そのため<b>保有者数＝働き手の数ではない</b>。実際に工事をしている人は高齢化しており、建設業全体で55歳以上が36.6%、29歳以下は11.6%。若手が入ってこない理由は、きつい・危ない・賃金が見合わないというイメージと、多層の下請け構造で末端の単価が上がりにくいことにある。</p>
+      </div>
+    </details>
+
+    <details class="item">
+      <summary><span class="qmark">Q7</span><span>DCの電気工事にAIやロボットは使えないの？</span><span class="plus">+</span></summary>
+      <div class="ans">
+        <p>動画では「大手クラウドはサーバーをラックに入れる作業のロボット化を猛烈に試している」と語られる。サーバーの据え付けのような<b>同じ動作の繰り返し</b>はロボット向き。一方、ケーブルを這わせて端末を処理し、試験して通電させる作業は、現場ごとに条件が違い、<b>免許と責任</b>も伴うので、当面は人が中心。現実的には、電源や配電盤を工場でモジュールに組み上げて現場作業を減らす方向（プレハブ化）が先に効く。</p>
+      </div>
+    </details>
+
+    <details class="item">
+      <summary><span class="qmark">Q8</span><span>a16zの「Machine Age Fund」とは？</span><span class="plus">+</span></summary>
+      <div class="ans">
+        <p>a16zが2026年に立ち上げたAIインフラ特化のファンド。対象は「モデルが動く土台すべて」＝チップ、ネットワーク、インターコネクト、ストレージ、電源まで（電力会社のような重い規制業種は対象外）。動画では「ハード系に挑む起業家がこの1年で4倍に増えた」「主要部材は2027〜2028年まで売り切れ」「推論のコストが巨額なのでモデルごとに専用チップ（ASIC）を作っても採算が合う時代」といった話が出る。名前の由来は「AIではなく<b>機械の知能</b>であり、制約は下の機械にある」から。</p>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<!-- ================= NOTE ================= -->
+<section id="s-note">
+  <h2>編集メモ（出典と留意点）</h2>
+  <div class="note">
+    <b>一次情報</b>：a16z「Why Top Founders Are Racing Into AI Infrastructure」（YouTube・2026-08-28）。英語の自動字幕から該当箇所（28:00〜36:00）を抽出し、聞き取りの崩れを整えて引用した。<br>
+    <b>補足に使った情報</b>：
+    米国の人数・賃金・見通し＝<a href="https://www.bls.gov/ooh/construction-and-extraction/electricians.htm" target="_blank" rel="noopener">BLS Occupational Outlook Handbook（Electricians）</a>／
+    電気工事の費用比率・引退数・組合の年齢構成・Microsoft・Oracle・Google・見習い応募数・IBEW Local 26の賃金＝<a href="https://fortune.com/2026/03/02/ai-data-centers-electrician-shortage-gen-z-training-careers/" target="_blank" rel="noopener">Fortune（2026-03-02）</a>／
+    Metaの育成プログラム＝<a href="https://www.constructiondive.com/news/meta-workforce-academy-data-center-construction/822698/" target="_blank" rel="noopener">Construction Dive</a>・<a href="https://www.ibtimes.com/meta-bets-115-million-americas-skilled-trades-shortage-ai-data-center-boom-accelerates-3803898" target="_blank" rel="noopener">IBTimes</a>／
+    BlackRock＝<a href="https://fortune.com/2026/03/11/blackrock-skilled-trade-worker-training-investment-100-million-dollars-electricans-plumbers-hvac-technicals-six-figure-salaries-stable-jobs-gen-z-larry-fink" target="_blank" rel="noopener">Fortune（2026-03-11）</a>／
+    Brad Smithの発言＝<a href="https://news.slashdot.org/story/25/03/28/1447203/microsoft-president-calls-for-a-national-talent-strategy-for-electricians" target="_blank" rel="noopener">Slashdot（2025-03）</a>／
+    McKinseyの不足推計・DC建設作業員の賃金＝<a href="https://xenospectrum.com/ai-datacenter-electrician-shortage/" target="_blank" rel="noopener">XenoSpectrum</a>・<a href="https://www.cfodive.com/news/data-center-employers-face-acute-shortage-of-skilled-workers/829794/" target="_blank" rel="noopener">CFO Dive</a>／
+    800 VDCとKyber＝<a href="https://developer.nvidia.com/blog/nvidia-800-v-hvdc-architecture-will-power-the-next-generation-of-ai-factories" target="_blank" rel="noopener">NVIDIA技術ブログ</a>・<a href="https://nand-research.com/data-center-power-the-transition-to-800-vdc/" target="_blank" rel="noopener">NAND Research</a>／
+    日本の法規の課題・OCP＝<a href="https://blogs.itmedia.co.jp/business20/2026/09/ai800.html" target="_blank" rel="noopener">ITmediaオルタナティブ・ブログ</a>、<a href="https://www.nedo.go.jp/content/100870819.pdf" target="_blank" rel="noopener">NEDO（HVDC給電の研究）</a>／
+    米国の免許制度＝<a href="https://www.harborcompliance.com/how-to-become-a-licensed-electrician" target="_blank" rel="noopener">Harbor Compliance</a>ほか／
+    日本の不足推計＝<a href="https://www.meti.go.jp/shingikai/sankoshin/hoan_shohi/denryoku_anzen/hoan_jinzai/pdf/002_01_02.pdf" target="_blank" rel="noopener">経産省 電気保安人材WG資料</a>／
+    関電工の待遇＝<a href="https://tokyonewsmedia.com/archives/18455" target="_blank" rel="noopener">東京ニュースメディア（2026-02-17）</a>／
+    電気工事従事者の賃金＝厚労省「令和5年賃金構造基本統計調査」（<a href="https://www.tac-school.co.jp/kouza_denkikoujisi/denkikoujisi_guide/guide101_income.html" target="_blank" rel="noopener">TAC経由</a>）。
+    電気工事士・電気主任技術者の守備範囲、電技の電圧区分、NECの1,000V化、DCのアークの性質、IBEWの人数は既知の公開情報による。<br>
+    <b>留意</b>：「DC認定は2%」と「1GW＝5万世帯」は動画内の発言で、前者は裏づけ不明、後者は過小（Q3参照）。ラック電力の数値は構成によって幅がある。日米の賃金比較は為替150円の単純換算。
+  </div>
+</section>
+
+<footer>
+  YouTube＋周辺リサーチ &middot; a16z「Why Top Founders Are Racing Into AI Infrastructure」(2026-08-28) &middot; 作成 2026-10-05
+</footer>
+
+</div>
+
+<script>
+(function(){var links=[].slice.call(document.querySelectorAll('#toc a'));var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+function on(){var y=window.scrollY+120,cur=0;secs.forEach(function(s,i){if(s&&s.offsetTop<=y)cur=i});links.forEach(function(a,i){a.classList.toggle('cur',i===cur)})}
+window.addEventListener('scroll',on,{passive:true});on();})();
+</script>
+</body>
+</html>
