@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clinic AI Matrix</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#ffffff; --text:#111111; --mid:#444444; --muted:#888888; --border:#d8d8d8; --surface:#f5f5f5;
+  --l1:#fafafa; --l2:#eeeeee; --l3:#dddddd; --l4:#c8c8c8; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; line-height: 1.8; }
+.page { max-width: 1040px; margin: 0 auto; padding: 56px 16px 120px; }
+.breadcrumb { font-family: 'Poppins', monospace; font-size: 10px; letter-spacing: .14em; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; }
+.breadcrumb a { color: var(--mid); text-decoration: none; }
+h1 { font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.3; margin-bottom: 6px; }
+.sub { font-size: 13px; color: var(--muted); margin-bottom: 36px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+h2 { font-size: 1.15rem; font-weight: 700; margin: 44px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--text); }
+h3 { font-size: 1rem; font-weight: 700; margin: 22px 0 8px; }
+p { margin-bottom: 12px; color: var(--mid); }
+strong { color: var(--text); }
+ul { margin: 0 0 14px 20px; } li { margin-bottom: 6px; color: var(--mid); }
+.note { font-size: 12px; color: var(--muted); }
+
+/* matrix */
+.tbl { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 10px; }
+.mx { border-collapse: separate; border-spacing: 4px; min-width: 820px; width: 100%; font-size: 13px; }
+.mx th, .mx td { vertical-align: top; text-align: left; }
+.mx thead th { font-family: 'Poppins', sans-serif; padding: 8px 10px; border-bottom: 2px solid var(--text); }
+.mx thead th .lv { font-size: 11px; letter-spacing: .1em; color: var(--muted); display: block; }
+.mx thead th .nm { font-size: 14px; font-weight: 600; }
+.mx thead th .ds { font-family: 'Noto Sans JP', sans-serif; font-size: 11px; font-weight: 400; color: var(--mid); display: block; line-height: 1.5; }
+.mx tbody th { width: 150px; padding: 10px; border-right: 2px solid var(--text); }
+.mx tbody th .id { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; line-height: 1; display: block; margin-bottom: 4px; }
+.mx tbody th .nm { font-size: 13.5px; font-weight: 700; }
+.mx td { padding: 10px 12px; border-radius: 4px; line-height: 1.6; color: var(--text); position: relative; }
+.mx td .cid { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: .08em; color: var(--muted); display: block; margin-bottom: 2px; }
+.mx td.l1 { background: var(--l1); } .mx td.l2 { background: var(--l2); }
+.mx td.l3 { background: var(--l3); } .mx td.l4 { background: var(--l4); }
+.mx td.reg { background-image: repeating-linear-gradient(135deg, transparent 0 7px, rgba(0,0,0,.07) 7px 8px); }
+.mx td.reg .cid::after { content: " · 規制ゾーン"; color: var(--text); }
+.arrow { font-family: 'Poppins', sans-serif; font-size: 11px; letter-spacing: .12em; color: var(--muted); text-align: right; margin: 0 4px 4px; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 12px; color: var(--mid); margin: 6px 0 0; }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 1px solid var(--border); }
+
+/* compare */
+.cmp { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 560px; }
+.cmp th, .cmp td { border-bottom: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+.cmp th { font-family: 'Poppins', sans-serif; font-size: 11px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; }
+.cmp td:first-child { font-weight: 700; white-space: nowrap; }
+.callout { background: var(--surface); border-left: 3px solid var(--text); padding: 14px 18px; margin: 10px 0 16px; }
+.callout p { margin-bottom: 6px; color: var(--text); }
+.callout p:last-child { margin-bottom: 0; }
+
+@media (max-width: 600px) {
+  h1 { font-size: 1.4rem; }
+  .page { padding-top: 36px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="breadcrumb"><a href="../index.html">/ IDEAS</a> / 261005</div>
+<h1>Clinic AI Matrix</h1>
+<div class="sub">クリニック向け 4サービス × AI化の深さ 4段階。壁打ち用の叩き（セルの中身は仮置き）。</div>
+
+<h2>Matrix</h2>
+<div class="arrow">AI化が深くなる →</div>
+<div class="tbl">
+<table class="mx">
+  <thead>
+    <tr>
+      <th></th>
+      <th><span class="lv">LEVEL 1</span><span class="nm">Assist</span><span class="ds">人がAIを道具として使う</span></th>
+      <th><span class="lv">LEVEL 2</span><span class="nm">Automate</span><span class="ds">定型業務を自動化</span></th>
+      <th><span class="lv">LEVEL 3</span><span class="nm">Agent</span><span class="ds">AIが一次対応・人が承認</span></th>
+      <th><span class="lv">LEVEL 4</span><span class="nm">Autonomous</span><span class="ds">AIが回し、人は例外のみ</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th><span class="id">A</span><span class="nm">患者コミュニケーション</span></th>
+      <td class="l1"><span class="cid">A1</span>LINE / Web の FAQ 自動応答、留守電の文字起こし</td>
+      <td class="l2"><span class="cid">A2</span>予約・変更・キャンセルの自動受付とリマインド配信</td>
+      <td class="l3 reg"><span class="cid">A3</span>AI 電話受付 + Web 問診で事前聴取 → カルテ下書き</td>
+      <td class="l4 reg"><span class="cid">A4</span>受診前〜受診後フォロー（服薬・再診勧奨）まで自律対応</td>
+    </tr>
+    <tr>
+      <th><span class="id">B</span><span class="nm">マーケ</span></th>
+      <td class="l1"><span class="cid">B1</span>口コミ返信・ブログ / SNS 原稿の生成</td>
+      <td class="l2"><span class="cid">B2</span>MEO・HP 更新・広告運用の定型作業を自動化</td>
+      <td class="l3"><span class="cid">B3</span>来院データ × 施策の効果分析 → 次の施策を提案</td>
+      <td class="l4"><span class="cid">B4</span>患者 LTV を見て再来・自費メニュー案内を自動配信（CRM）</td>
+    </tr>
+    <tr>
+      <th><span class="id">C</span><span class="nm">BO代行</span></th>
+      <td class="l1"><span class="cid">C1</span>レセプト点検・シフト作成の補助ツール</td>
+      <td class="l2"><span class="cid">C2</span>レセプトチェック・会計・経費入力の自動化</td>
+      <td class="l3"><span class="cid">C3</span>AI を使う少人数で複数院の事務を一括代行（人月 → 件単価）</td>
+      <td class="l4"><span class="cid">C4</span>「AI 事務長」: 経営数値の可視化〜返戻対応まで自律</td>
+    </tr>
+    <tr>
+      <th><span class="id">D</span><span class="nm">AI導入支援</span></th>
+      <td class="l1"><span class="cid">D1</span>院長・スタッフ向け生成 AI 研修、院内利用ルール策定</td>
+      <td class="l2"><span class="cid">D2</span>業務棚卸し → ツール選定・導入伴走</td>
+      <td class="l3"><span class="cid">D3</span>電子カルテ・予約システムとの API 連携 / カスタム開発</td>
+      <td class="l4"><span class="cid">D4</span>医療法人グループ全体の AI 基盤・データ統合（多院展開）</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="legend">
+  <span><i style="background:var(--l1)"></i>L1</span>
+  <span><i style="background:var(--l2)"></i>L2</span>
+  <span><i style="background:var(--l3)"></i>L3</span>
+  <span><i style="background:var(--l4)"></i>L4</span>
+  <span><i style="background:repeating-linear-gradient(135deg,#fff 0 3px,#ccc 3px 4px)"></i>規制ゾーン（医師法・医療機器プログラムに触れうる）</span>
+</div>
+<p class="note">表は横スクロールできます。</p>
+
+<h2>懸念: A1 → A4（縦に深掘り）は市場が大きいのか / 時間がかかるのでは</h2>
+
+<div class="callout">
+  <p><strong>結論（仮説）: 1行だけを A1 → A4 で深掘りするのは、市場も時間も割に合いにくい。</strong></p>
+  <p>先に 1・2列目を横に取って同じ院に複数サービスを売る。深掘りは「院数の多い医療法人」かつ「規制の外側の行（B・C）」に絞る。</p>
+</div>
+
+<h3>深掘り（縦）が重くなる理由</h3>
+<ul>
+  <li><strong>1院あたりの財布が小さい</strong>: 個人開業医は院長が1人で決裁し、IT 予算は月数万円規模になりがち。L4 まで作り込んでも単価が比例して伸びない。</li>
+  <li><strong>A3・A4 は規制ゾーン</strong>: 問診から診断補助・症状に応じた案内に踏み込むと、医師法や医療機器プログラム（SaMD）の論点が出る。承認や確認のプロセスで年単位かかりうる。</li>
+  <li><strong>既存プレイヤーがいる</strong>: AI 問診・予約・オンライン診療はすでに専業 SaaS が押さえている領域（例: Ubie、CLINICS など。要確認）。L1〜L2 で勝負すると価格競争になる。</li>
+  <li><strong>電子カルテ連携が壁</strong>: L3 以上はカルテ・レセコンとの連携が前提。ベンダーが多く API も閉じていて、1社ずつ連携するのに時間がかかる。</li>
+</ul>
+
+<h3>市場の大きさ（ざっくり）</h3>
+<p>一般診療所は全国で約10万施設、歯科診療所は約6.7万施設（厚労省 医療施設調査ベース、数字は要確認）。院数は多いが、1院あたりの単価は低い。</p>
+<p class="note">試算（仮置き）: 10万院 × 月3万円 × 12ヶ月 ≒ 年360億円。全院が導入する前提でもこの規模なので、1行だけ深掘りするとシェアを取っても上限が低い。</p>
+
+<h3>縦 vs 横 の比較</h3>
+<div class="tbl">
+<table class="cmp">
+  <thead><tr><th>Approach</th><th>やること</th><th>Pros</th><th>Cons</th></tr></thead>
+  <tbody>
+    <tr><td>縦 (A1→A4)</td><td>1サービスを自律化まで作り込む</td><td>プロダクトとして尖る。データが溜まる</td><td>単価が伸びにくい・規制・連携で時間がかかる</td></tr>
+    <tr><td>横 (A1→D1)</td><td>L1〜L2 を4サービス束ねて同じ院へ</td><td>1院あたりの単価が上がる・すぐ売れる</td><td>差別化しにくい。人手が要る（受託寄り）</td></tr>
+    <tr><td>斜め (C3・D4 狙い)</td><td>多院展開の医療法人に BO 代行 + AI 基盤</td><td>決裁1回で数十院。規制の外側</td><td>対象社数が少ない。営業サイクルが長い</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h3>次に確かめること</h3>
+<ul>
+  <li>クリニックの IT / 外注予算の実態（月いくら・何に払っているか）</li>
+  <li>多院展開している医療法人（歯科・眼科・美容・皮膚科チェーン）の数と、事務コスト</li>
+  <li>A3 の「事前聴取 → カルテ下書き」がどこから医療機器プログラム扱いになるか</li>
+</ul>
+
+</div>
+</body>
+</html>
