@@ -65,3 +65,4 @@
 | [260417_kobold_metals_deep_research.html](260417_kobold_metals_deep_research.html) | KoBold Metals | AI × クリティカルミネラル探索 | 2026-04-17 |
 | [260829_flapping_airplanes_deep_research.html](260829_flapping_airplanes_deep_research.html) | Flapping Airplanes | AI基礎研究（データ効率） | 2026-08-29 |
 | [260829_etched_deep_research.html](260829_etched_deep_research.html) | Etched | Transformer専用ASIC（AI半導体） | 2026-08-29 |
+| [261005_cambridge_aerospace_deep_research.html](261005_cambridge_aerospace_deep_research.html) | Cambridge Aerospace | 防衛テック（低コスト迎撃ミサイル） | 2026-10-05 |
