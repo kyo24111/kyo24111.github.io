@@ -62,3 +62,4 @@ Kyoからお題（企業名＋トピック）を投げる → そのニュース
 | 2026-01-14 | Skild AI、$1.4B Series C（評価額 $14B超） | [260911_skild_ai_series_c.html](260911_skild_ai_series_c.html) |
 | 2026-09-15 | Wonder × DoorDash、$425Mの提携（Atomsとの競合検証つき） | [260917_wonder_doordash.html](260917_wonder_doordash.html) |
 
+| 2026-10-07 | Mecka、$60M Series B（Sequoiaリード・$100M run rate） | [261009_mecka_series_b.html](261009_mecka_series_b.html) |
