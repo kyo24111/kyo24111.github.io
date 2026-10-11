@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>京都 洛中・洛南 / Central &amp; South Kyoto — Geo Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+      .hero h1 { font-size: 32px; overflow-wrap: anywhere; }
+      .hero-eyebrow, .toc li, .spot-name, .crumb { overflow-wrap: anywhere; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* 人口推移グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 162px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+    /* ===== 京都ページ間のタブ ===== */
+    .pager-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: -24px 0 40px; }
+    .pager-tabs a { font-family: 'Poppins','Noto Sans JP',sans-serif; font-size: 12px; font-weight: 600; text-decoration: none; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; transition: all .15s; }
+    .pager-tabs a:hover { color: var(--accent); border-color: var(--accent); }
+    .pager-tabs a.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+    a.area-link { text-decoration: none; color: inherit; display: block; transition: border-color .15s; }
+    a.area-link:hover { border-color: var(--accent); }
+    .pager-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 56px; flex-wrap: wrap; }
+    .pager-foot a { flex: 1 1 200px; border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; text-decoration: none; color: var(--accent); font-size: 13px; font-weight: 700; }
+    .pager-foot a:hover { border-color: var(--accent); }
+    .pager-foot a span { display: block; font-family: 'Poppins',sans-serif; font-size: 10px; letter-spacing: .12em; color: var(--subtle); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
+    .pager-foot a.next { text-align: right; }
+    .spot-meta { display: grid; grid-template-columns: 88px 1fr; gap: 4px 12px; font-size: 12.5px; margin: 10px 0 12px; }
+    .spot-meta dt { color: var(--subtle); font-weight: 600; }
+    .spot-meta dd { color: var(--text); }
+    .spot-big { border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 18px; }
+    .spot-big h3 { font-size: 17px; font-weight: 700; color: var(--accent); margin-bottom: 2px; }
+    .spot-big .en { font-family: 'Poppins',sans-serif; font-size: 11px; color: var(--subtle); letter-spacing: .06em; margin-bottom: 8px; }
+    .spot-big p { font-size: 13.5px; color: var(--text); margin-bottom: 10px; }
+    .spot-big .tip { background: var(--surface); border-radius: 8px; padding: 10px 14px; font-size: 12.5px; color: var(--muted); }
+    .wh { display: inline-block; font-family: 'Poppins',sans-serif; font-size: 10px; font-weight: 700; background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+    @media (max-width: 520px) { .spot-meta { grid-template-columns: 74px 1fr; } .spot-big { padding: 18px 16px; } }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="260831_japan.html">japan</a>
+    <span class="sep">/</span>
+    <a href="261009_kyoto_city.html">kyoto city</a>
+    <span class="sep">/</span>
+    <span class="cur">rakuchu &amp; rakunan</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">City Research / Sightseeing ② — 261009</div>
+    <h1>洛中・洛南 / Central &amp; South Kyoto</h1>
+    <div class="hero-country">京都市 中京・上京・下京・南・左京（下鴨）・伏見区 / 碁盤の目の街なかに城と御所と市場、南に稲荷・醍醐・酒蔵</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">二条城 外国人訪問率</div>
+        <div class="kv-val">60.4%</div>
+        <div class="kv-note">2025年調査 / 京都で2位</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">伏見稲荷 外国人訪問率</div>
+        <div class="kv-val">53.0%</div>
+        <div class="kv-note">同 / 4位</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">東寺 五重塔</div>
+        <div class="kv-val">約55m</div>
+        <div class="kv-note">木造塔として日本一</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">二条城 市民の割合</div>
+        <div class="kv-val">約2%</div>
+        <div class="kv-note">入場者約207万人（2025年度）</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="pager-tabs">
+    <a href="261009_kyoto_city.html">京都市（総論）</a>
+    <a href="261009_kyoto_higashiyama.html">観光① 東山</a>
+    <a class="on" href="261009_kyoto_rakuchu.html">観光② 洛中・洛南</a>
+    <a href="261009_kyoto_rakuhoku.html">観光③ 洛北・洛西・嵐山</a>
+  </nav>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">洛中・洛南の全体像 — 一覧</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">二条城・京都御所 — 武家と公家の中心</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">錦市場・先斗町 — 街なか</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">京都駅周辺 — 東寺・東西本願寺・駅ビル・タワー</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">下鴨神社・糺の森</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">伏見 — 稲荷・醍醐寺・酒蔵・寺田屋</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">（市外）宇治・平等院</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">モデルコース</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">Index — 関連ページ</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">洛中・洛南の全体像 — 一覧</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      <strong>洛中</strong>は平安京の碁盤の目の上にある京都の街なか。<strong>二条城（武家）・京都御所（公家）・東西本願寺（宗教）・錦市場（町衆）</strong>と、<strong>京都の権力と生活の中心が歩ける範囲に並ぶ</strong>。<br>
+      <strong>洛南・伏見</strong>は京都駅の南。<strong>伏見稲荷（外国人訪問率4位）</strong>、桜の醍醐寺、秀吉の城下町・港町として栄えた<strong>伏見の酒蔵</strong>。<strong>地下鉄・JR・京阪で動けるので、バスの混雑と無縁</strong>なのがこのエリアの強み。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>スポット</th><th>最寄り</th><th>拝観料（大人）</th><th>時間</th><th>所要</th></tr>
+      <tr><td><a href="#nijo"><strong>二条城</strong></a> 🏛</td><td>地下鉄東西線 二条城前</td><td>入城＋二の丸御殿1,300円（本丸御殿+1,000円・要予約）</td><td>8:45〜16:00受付</td><td>1〜2h</td></tr>
+      <tr><td><a href="#gosho">京都御所</a></td><td>地下鉄烏丸線 今出川 徒歩5分</td><td><strong>無料・申込不要</strong></td><td>9:00〜（季節で16:00〜17:00）、月曜休</td><td>50分</td></tr>
+      <tr><td><a href="#nishiki">錦市場</a></td><td>地下鉄 四条・阪急 烏丸 徒歩3分</td><td>—</td><td>店ごと（水曜休が多い）</td><td>30〜60分</td></tr>
+      <tr><td><a href="#pontocho">先斗町</a></td><td>京阪 祇園四条・阪急 京都河原町</td><td>—</td><td>夕方以降</td><td>20〜30分</td></tr>
+      <tr><td><a href="#toji"><strong>東寺</strong></a> 🏛</td><td>近鉄 東寺 徒歩10分</td><td>金堂・講堂800円（特別公開期1,200〜2,000円）</td><td>8:00〜17:00（受付16:30）</td><td>1〜1.5h</td></tr>
+      <tr><td><a href="#nishihongwanji">西本願寺</a> 🏛</td><td>JR京都駅 徒歩15分</td><td>無料</td><td>5:30〜17:00</td><td>40〜60分</td></tr>
+      <tr><td><a href="#higashihongwanji">東本願寺</a></td><td>JR京都駅 徒歩7分</td><td>無料（渉成園は寄付700円〜）</td><td>5:50〜17:30（冬6:20〜16:30）</td><td>30〜90分</td></tr>
+      <tr><td><a href="#station">京都駅ビル</a></td><td>JR京都駅</td><td>無料</td><td>—</td><td>30〜45分</td></tr>
+      <tr><td><a href="#tower">京都タワー</a></td><td>京都駅前</td><td><strong>1,000円</strong>（2026-10-01〜）</td><td>10:00〜21:00</td><td>30〜45分</td></tr>
+      <tr><td><a href="#shimogamo">下鴨神社</a> 🏛</td><td>京阪 出町柳 徒歩10分</td><td>無料</td><td>6:30〜17:00</td><td>1h</td></tr>
+      <tr><td><a href="#inari"><strong>伏見稲荷大社</strong></a></td><td>JR奈良線 稲荷 すぐ／京阪 伏見稲荷 徒歩5分</td><td><strong>無料</strong></td><td><strong>24時間</strong></td><td>30分〜2h</td></tr>
+      <tr><td><a href="#daigoji">醍醐寺</a> 🏛</td><td>地下鉄東西線 醍醐</td><td>3か所共通1,500円（春1,800円）</td><td>9:00〜17:00</td><td>2h〜</td></tr>
+      <tr><td><a href="#sake">伏見の酒蔵</a></td><td>京阪 中書島 徒歩5分</td><td>月桂冠大倉記念館600円（試飲付）</td><td>9:30〜16:30</td><td>1〜2h</td></tr>
+      <tr><td><a href="#teradaya">寺田屋</a></td><td>京阪 中書島 徒歩7分</td><td>600円</td><td>10:00〜15:40</td><td>30分</td></tr>
+    </table></div>
+    <div class="chart-note">🏛＝世界遺産「古都京都の文化財」の構成資産。料金・時間は2026年10月時点。</div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">二条城・京都御所 — 武家と公家の中心</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="spot-big" id="nijo">
+      <h3>元離宮二条城<span class="wh">世界遺産</span></h3>
+      <div class="en">Nijo-jo Castle · 中京区 · 京都市が所有・運営</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>地下鉄東西線「二条城前」すぐ</dd>
+        <dt>拝観料</dt><dd>入城券800円／<strong>入城＋二の丸御殿1,300円</strong>／<strong>本丸御殿1,000円（要事前予約・入城券別）</strong>／展示収蔵館100円</dd>
+        <dt>時間</dt><dd>8:45〜16:00受付（17:00閉城）。休城12/29〜31。二の丸御殿は1・7・8・12月の火曜など休止あり</dd>
+        <dt>所要</dt><dd>1〜1.5時間（本丸御殿も見るなら約2時間）</dd>
+      </dl>
+      <p><strong>歴史</strong>：<strong>1603年、徳川家康</strong>が上洛時の宿所として築城。1626年、家光が<strong>後水尾天皇の行幸</strong>に向けて大改修。<strong>1867年、徳川慶喜が二の丸御殿で大政奉還の意思を表明</strong>——<strong>江戸幕府の始まりと終わりの両方の舞台</strong>。離宮を経て1939年に京都市へ下賜された。</p>
+      <p><strong>見どころ</strong>：<strong>国宝の二の丸御殿（6棟）と狩野派の障壁画</strong>、歩くと鳴る<strong>「鶯張り」の廊下</strong>、大政奉還の場面を人形で再現した大広間、<strong>特別名勝の二の丸庭園</strong>、唐門。<strong>本丸御殿は2024年9月から公開</strong>。</p>
+      <p><strong>料金の動き</strong>：2022年6月に1,030円→1,300円。そして<strong>2027年度中にも「市民1,000円／市民以外2,000円」の二重価格</strong>を導入する方針（2026-10報道）。<strong>入場者約207万人のうち市民は約2%</strong>——ほぼ観光客の施設であり、市の財政（§総論04）の観点から<strong>「観光客に払ってもらう」最初の公共施設</strong>になる。</p>
+      <div class="tip"><strong>混雑回避</strong>：<strong>8:45の開城直後</strong>が空いている。10〜14時は団体のピーク。本丸御殿は予約制なので先に枠を確保。</div>
+    </div>
+
+    <div class="spot-big" id="gosho">
+      <h3>京都御所</h3>
+      <div class="en">Kyoto Imperial Palace · 上京区 · 宮内庁管理</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>地下鉄烏丸線「今出川」徒歩5分（入口は西側の清所門）</dd>
+        <dt>料金</dt><dd><strong>無料・事前申込不要</strong>（手荷物検査あり）</dd>
+        <dt>時間</dt><dd>4〜8月9:00〜17:00、3・9月〜16:30、10〜2月〜16:00（目安）。<strong>月曜休</strong>（祝日なら翌日）、12/28〜1/4休</dd>
+        <dt>所要</dt><dd>約50分（6言語の無料音声ガイドアプリあり）</dd>
+      </dl>
+      <p><strong>歴史</strong>：1331年頃の光厳天皇の即位から<strong>1869年の東京遷都</strong>まで、天皇の住まい（内裏）だった。現在の建物は<strong>1855年に平安様式で再建</strong>されたもの。<strong>明治・大正・昭和の即位礼は紫宸殿で行われた</strong>。</p>
+      <p><strong>見どころ</strong>：正殿の<strong>紫宸殿</strong>（前庭に「左近の桜・右近の橘」）、清涼殿、小御所、御学問所、御常御殿、御池庭。<strong>2016年に通年公開</strong>が始まり、予約なしで入れるようになった。</p>
+      <p><strong>周辺</strong>：御所を囲む<strong>京都御苑</strong>は無料の大公園。葵祭（5/15）・時代祭（10/22）の行列はここから出発する。</p>
+      <div class="tip"><strong>混雑回避</strong>：平日の開門直後。<strong>無料で、混雑も少ない「穴場の一級品」</strong>。月曜休に注意。</div>
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">錦市場・先斗町 — 街なか</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="spot-big" id="nishiki">
+      <h3>錦市場</h3>
+      <div class="en">Nishiki Market · 京都錦市場商店街 · 中京区</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>地下鉄「四条」・阪急「烏丸」徒歩3分。四条通の1本北</dd>
+        <dt>営業</dt><dd>商店街としての休みはなし。<strong>店ごとに異なり、水曜休みの店が多い</strong></dd>
+        <dt>所要</dt><dd>30〜60分</dd>
+      </dl>
+      <p><strong>歴史</strong>：<strong>約390mのアーケード</strong>に約130店、「京の台所」。<strong>1311年には魚店の記録</strong>があり、1615年に幕府から魚問屋の称号を許された。<strong>画家・伊藤若冲は錦市場の青物問屋「桝源」の長男</strong>。</p>
+      <p><strong>見どころ</strong>：京漬物、湯葉・麩、だし巻き、川魚、刃物（有次）など。</p>
+      <p><strong>ルール</strong>：<strong>通りの幅が約3.5m</strong>しかないため、<strong>2018年から食べ歩きの自粛</strong>を要請。買ったものは<strong>店頭か店内のイートインで食べる</strong>。</p>
+      <div class="tip"><strong>混雑回避</strong>：昼前後がピーク。<strong>10時前後か夕方</strong>が狙い目。</div>
+    </div>
+
+    <div class="spot-big" id="pontocho">
+      <h3>先斗町</h3>
+      <div class="en">Pontocho · 中京区</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>京阪「祇園四条」・阪急「京都河原町」徒歩5分</dd>
+        <dt>場所</dt><dd>鴨川と高瀬川に挟まれた、三条〜四条間の<strong>約500mの石畳の路地</strong></dd>
+      </dl>
+      <p><strong>概要</strong>：京都の<strong>五花街の一つ</strong>。名前の由来はポルトガル語の<strong>ponta（先）・ponte（橋）</strong>とする説など諸説ある。千鳥の紋の提灯が目印。</p>
+      <p><strong>見どころ</strong>：<strong>先斗町歌舞練場</strong>（1927年）と<strong>鴨川をどり（5/1〜24）</strong>。<strong>鴨川納涼床</strong>（2026年度は5/1〜10/15、一部は9月末まで）——鴨川に張り出した床で食事をする京都の夏の風物詩。</p>
+      <div class="tip"><strong>混雑回避</strong>：週末18〜21時がピーク。<strong>写真は平日の昼か、点灯前後</strong>。</div>
+    </div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">京都駅周辺 — 東寺・東西本願寺・駅ビル・タワー</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="spot-big" id="toji">
+      <h3>東寺（教王護国寺）<span class="wh">世界遺産</span></h3>
+      <div class="en">To-ji · 東寺真言宗総本山 · 南区</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>近鉄「東寺」徒歩10分、JR京都駅から徒歩15分</dd>
+        <dt>拝観料</dt><dd>通年：<strong>金堂・講堂800円</strong>／観智院600円／共通1,200円（2025-03-20改定）。<strong>2026年秋</strong>：10/31〜11/25は五重塔初層＋金堂・講堂1,200円、全部入り共通2,000円。10/31〜12/13は夜間ライトアップ1,000円</dd>
+        <dt>時間</dt><dd>開門5:00〜17:00、金堂・講堂8:00〜17:00（受付16:30）</dd>
+        <dt>所要</dt><dd>1〜1.5時間</dd>
+      </dl>
+      <p><strong>歴史</strong>：796年頃、平安遷都に伴い<strong>羅城門の東に官寺として建立</strong>。<strong>823年、嵯峨天皇が空海に下賜</strong>し、真言密教の根本道場になった。<strong>平安京の遺構として唯一残る寺</strong>。</p>
+      <p><strong>見どころ</strong>：<strong>国宝の五重塔（1644年再建、約55m）——木造塔として日本一の高さ</strong>。新幹線の車窓から見えると「京都に着いた」合図。<strong>講堂の立体曼荼羅</strong>——空海が構想した21体の仏像で密教の世界を立体化したもの（多くが国宝）。金堂の薬師三尊、観智院（宮本武蔵筆の襖絵）。</p>
+      <div class="tip"><strong>混雑回避</strong>：8時直後が空いている。<strong>毎月21日の「弘法市」は露店が並び大混雑</strong>（それ目当てで行くのもあり）。</div>
+    </div>
+
+    <div class="spot-big" id="nishihongwanji">
+      <h3>西本願寺<span class="wh">世界遺産</span></h3>
+      <div class="en">Nishi Hongwan-ji · 龍谷山 本願寺 · 浄土真宗本願寺派本山 · 下京区</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>JR京都駅 徒歩15分</dd>
+        <dt>料金</dt><dd><strong>無料</strong>。1日4回の無料境内案内（約30分）</dd>
+        <dt>時間</dt><dd>5:30〜17:00</dd>
+        <dt>所要</dt><dd>40〜60分</dd>
+      </dl>
+      <p><strong>歴史</strong>：1591年、<strong>豊臣秀吉から寺地を寄進</strong>されて現在地へ。<strong>1602年に東本願寺が分立</strong>した（家康による本願寺勢力の分割とされる）。</p>
+      <p><strong>見どころ</strong>（いずれも国宝）：御影堂・阿弥陀堂、<strong>唐門（「日暮らし門」、見飽きず日が暮れるの意。2021年修復完了）</strong>、書院、北能舞台、京都三名閣の一つ<strong>飛雲閣</strong>（通常非公開）。境内の大イチョウは「逆さイチョウ」。</p>
+      <div class="tip"><strong>混雑</strong>：全体に空いている。<strong>国宝が無料で見られる、京都駅から歩ける寺</strong>。</div>
+    </div>
+
+    <div class="spot-big" id="higashihongwanji">
+      <h3>東本願寺（真宗本廟）</h3>
+      <div class="en">Higashi Hongan-ji · 真宗大谷派本山 · 下京区</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>JR京都駅 徒歩7分</dd>
+        <dt>料金</dt><dd>境内無料。飛地境内の<strong>渉成園は庭園維持寄付金700円以上</strong></dd>
+        <dt>時間</dt><dd>境内 3〜10月5:50〜17:30、11〜2月6:20〜16:30／渉成園 9:00〜17:00（冬〜16:00）</dd>
+        <dt>所要</dt><dd>境内30〜45分、渉成園を入れて＋45分</dd>
+      </dl>
+      <p><strong>歴史</strong>：1602年、<strong>徳川家康が教如に寺地を寄進</strong>して始まる。江戸時代に4度焼失し、<strong>現在の両堂は1895年の再建</strong>。</p>
+      <p><strong>見どころ</strong>：<strong>御影堂——正面76m・高さ38m、世界最大級の木造建築</strong>（2019年重文）。阿弥陀堂、御影堂門。<strong>「毛綱」</strong>——再建時に巨木を運ぶため、<strong>全国の女性門徒が自分の髪を編んで作った綱</strong>。名勝<strong>渉成園</strong>（枳殻邸）。</p>
+      <div class="tip"><strong>混雑</strong>：空いている。新幹線の待ち時間に寄れる。</div>
+    </div>
+
+    <div class="spot-big" id="station">
+      <h3>京都駅ビル</h3>
+      <div class="en">Kyoto Station Building · 下京区</div>
+      <dl class="spot-meta">
+        <dt>竣工</dt><dd>1997年（9月11日グランドオープン）、<strong>原広司設計</strong></dd>
+        <dt>料金</dt><dd>無料</dd>
+      </dl>
+      <p><strong>概要</strong>：4代目の駅舎。<strong>平安建都1200年記念事業として1991年に国際コンペ</strong>で原広司案が選ばれた。コンセプトは<strong>「歴史への門」</strong>で、平安京の碁盤の目を平面計画の基準にしている。高さ約60m。<strong>竣工時は「古都の景観を壊す」と大論争</strong>になった。</p>
+      <p><strong>見どころ</strong>：<strong>171段の大階段</strong>（LEDイルミネーション）、屋上の大空広場、空中径路、吹き抜けのアトリウム。原広司は梅田スカイビル・札幌ドームも設計。</p>
+    </div>
+
+    <div class="spot-big" id="tower">
+      <h3>ニデック京都タワー</h3>
+      <div class="en">Nidec Kyoto Tower · 下京区</div>
+      <dl class="spot-meta">
+        <dt>料金</dt><dd><strong>大人1,000円</strong>（2026-10-01改定、旧900円）・高校生800円・小中学生700円</dd>
+        <dt>時間</dt><dd>10:00〜21:00（最終入場20:30）</dd>
+      </dl>
+      <p><strong>概要</strong>：<strong>1964年12月開業、山田守設計</strong>。<strong>海のない京都を照らす「灯台」</strong>がモチーフで、鉄骨を使わないモノコック構造。<strong>高さ131mは京都市内で最も高い建物</strong>。地上100mの展望室。命名権で「ニデック京都タワー」——ここにも京都企業（§総論05）。</p>
+      <div class="tip"><strong>混雑回避</strong>：10時台が空いている。日没前後は混む。</div>
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">下鴨神社・糺の森</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="spot-big" id="shimogamo">
+      <h3>下鴨神社（賀茂御祖神社）<span class="wh">世界遺産</span></h3>
+      <div class="en">Shimogamo-jinja · 左京区</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>京阪「出町柳」徒歩10分。鴨川と高野川の合流点の北</dd>
+        <dt>料金</dt><dd>無料（大炊殿などの特別拝観は別料金）</dd>
+        <dt>時間</dt><dd>楼門内 6:30〜17:00</dd>
+        <dt>所要</dt><dd>1時間</dd>
+      </dl>
+      <p><strong>歴史</strong>：崇神天皇7年（紀元前90年）に瑞垣を修造した記録があるとされる、平安京以前からの古社。<strong>平安京の守護社</strong>で、21年ごとの式年遷宮がある。<strong>国宝の東西本殿は1863年の造替</strong>。上賀茂神社とともに<strong>葵祭（5/15）</strong>の舞台。</p>
+      <p><strong>見どころ</strong>：<strong>糺の森（約12.4ha）</strong>——京都盆地の原生林の植生を残す森を抜けて参道を歩く。朱の楼門、国宝の本殿2棟。<strong>河合神社</strong>（鏡絵馬・美麗祈願）、<strong>御手洗社（みたらし団子発祥の伝承）</strong>、相生社（縁結び）。</p>
+      <div class="tip"><strong>混雑回避</strong>：<strong>朝の糺の森</strong>が静か。葵祭、御手洗祭（7月）、七五三の時期は混む。出町ふたばの豆餅と合わせて。</div>
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">伏見 — 稲荷・醍醐寺・酒蔵・寺田屋</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+    <a id="south"></a>
+
+    <div class="spot-big" id="inari">
+      <h3>伏見稲荷大社</h3>
+      <div class="en">Fushimi Inari Taisha · 伏見区 · 全国約3万社の稲荷神社の総本宮</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd><strong>JR奈良線「稲荷」駅前すぐ</strong>（京都駅から2駅・約5分）、京阪「伏見稲荷」徒歩5分</dd>
+        <dt>料金</dt><dd><strong>無料</strong></dd>
+        <dt>時間</dt><dd><strong>24時間参拝可</strong>（授与所8:30〜18:00）</dd>
+        <dt>所要</dt><dd>千本鳥居〜奥社奉拝所 30〜60分／<strong>稲荷山のお山めぐり（約4km）約2時間</strong></dd>
+      </dl>
+      <p><strong>歴史</strong>：<strong>711年の初午の日に稲荷山に鎮座</strong>。渡来系の秦氏ゆかりの社とされる。1468年の応仁の乱の兵火で全焼し、1499年に本殿を再興。<strong>楼門は1589年に豊臣秀吉が寄進</strong>（1973年の解体修理で墨書が見つかり裏付けられた）。</p>
+      <p><strong>見どころ</strong>：楼門、本殿（稲荷造）、<strong>千本鳥居</strong>——2列に並ぶ朱の鳥居のトンネル。<strong>鳥居はお山全体で約1万基</strong>、願いが「通る（通った）」お礼として企業・個人が奉納したもの（裏に奉納者名と日付）。稲荷山の一ノ峰は標高233m、四ツ辻からは京都市街が見渡せる。境内は約26万坪。</p>
+      <p><strong>豆知識</strong>：鳥居の朱色は、朱（水銀）の防腐効果に由来。<strong>トリップアドバイザー「外国人に人気の日本の観光スポット」で2014〜2019年の6年連続1位</strong>（2020年版は2位）。</p>
+      <div class="tip"><strong>混雑回避</strong>：<strong>京都で唯一「朝6時でも夜でも行ける」大物</strong>。<strong>6〜9時と19時以降が空いている</strong>。千本鳥居の写真は、人の多い入口付近を過ぎて<strong>四ツ辻方面へ登るほど空く</strong>。土日祝10〜16時と正月三が日は大混雑。</div>
+    </div>
+
+    <div class="spot-big" id="daigoji">
+      <h3>醍醐寺<span class="wh">世界遺産</span></h3>
+      <div class="en">Daigo-ji · 真言宗醍醐派総本山 · 伏見区</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>地下鉄東西線「醍醐」徒歩約15分</dd>
+        <dt>拝観料</dt><dd>3か所共通（三宝院・霊宝館・伽藍）1,500円、2か所1,000円、1か所600円。<strong>春期（3/20〜4月第3日曜）は3か所1,800円</strong>。上醍醐入山料600円</dd>
+        <dt>時間</dt><dd>9:00〜17:00（12月第1日曜〜2月は16:30まで）</dd>
+        <dt>所要</dt><dd>2時間〜（上醍醐まで登るなら半日）</dd>
+      </dl>
+      <p><strong>歴史</strong>：874年頃、<strong>聖宝（理源大師）が上醍醐（醍醐山頂）で開創</strong>。寺名は「醍醐味なるかな」という縁起に由来。<strong>豊臣秀吉が三宝院・金堂などを復興</strong>した。</p>
+      <p><strong>見どころ</strong>：<strong>国宝の五重塔（951年完成）——京都府最古の木造建造物</strong>。国宝の金堂、<strong>三宝院</strong>（国宝の唐門・表書院、<strong>1598年に秀吉が自ら設計した庭園</strong>は特別史跡・特別名勝）、霊宝館。国宝建造物は計6棟。</p>
+      <p><strong>醍醐の花見</strong>：<strong>1598年、秀吉が約1,300人を招いて開いた豪華な花見</strong>——秀吉はその約5か月後に没した。いまも<strong>4月第2日曜に「豊太閤花見行列」</strong>が行われる。</p>
+      <div class="tip"><strong>混雑回避</strong>：<strong>桜（特に花見行列の日）と11月の紅葉期</strong>が混む。開門直後が狙い目。それ以外は空いている。</div>
+    </div>
+
+    <div class="spot-big" id="sake">
+      <h3>伏見の酒蔵</h3>
+      <div class="en">Fushimi Sake District · 伏見区（中書島・桃山）</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>京阪「中書島」「伏見桃山」徒歩5分</dd>
+        <dt>主な施設</dt><dd><strong>月桂冠大倉記念館</strong> 600円（20歳以上、きき酒3種＋おみやげ付、<strong>2026-07から完全キャッシュレス</strong>）9:30〜16:30／<strong>黄桜カッパカントリー</strong> 無料 10:00〜16:00（火曜休）／<strong>伏見十石舟</strong>（約50分、2026年は3/20〜12/6運航）</dd>
+        <dt>所要</dt><dd>1〜2時間</dd>
+      </dl>
+      <p><strong>概要</strong>：伏見は<strong>秀吉の伏見城の城下町</strong>で、宇治川・淀川で大坂とつながる<strong>港町</strong>だった。<strong>桃山丘陵からの良質な伏流水（「伏水」）</strong>で酒造りが栄え、兵庫の灘と並ぶ<strong>日本有数の酒どころ</strong>。京都市内総生産の<strong>食料品5,727億円</strong>（§総論03）の背景。</p>
+      <p><strong>見どころ</strong>：<strong>月桂冠（1637年創業）</strong>の記念館は1909年築の酒蔵を使う。柳と白壁の酒蔵が並ぶ濠川沿いを<strong>十石舟</strong>で下る。黄桜の河童資料館と地ビールの「黄桜酒場」。</p>
+      <div class="tip"><strong>メモ</strong>：伏見の地下水は、<strong>北陸新幹線の地下トンネル論争（§総論06）</strong>で京都側が守りたいものの代表。</div>
+    </div>
+
+    <div class="spot-big" id="teradaya">
+      <h3>寺田屋</h3>
+      <div class="en">Teradaya · 伏見区</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>京阪「中書島」徒歩7分</dd>
+        <dt>料金</dt><dd>600円（10:00〜15:40）。現在も宿として営業</dd>
+      </dl>
+      <p><strong>歴史</strong>：伏見の船宿。<strong>1862年の寺田屋騒動</strong>（薩摩藩士同士の粛清）と、<strong>1866年の坂本龍馬襲撃</strong>——入浴中の<strong>お龍が異変に気付き、裸のまま2階へ知らせた</strong>逸話で知られる。</p>
+      <p><strong>再建論争</strong>：<strong>2008年、京都市歴史資料館が「寺田屋は1868年の鳥羽伏見の戦いで焼失しており、現在の建物は再建」</strong>との見解を示した。旧建物の跡地は東隣の碑の建つ空き地とされる。</p>
+    </div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">（市外）宇治・平等院</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="spot-big" id="byodoin">
+      <h3>平等院<span class="wh">世界遺産</span></h3>
+      <div class="en">Byodo-in · 京都府<strong>宇治市</strong>（京都市外）</div>
+      <dl class="spot-meta">
+        <dt>最寄り</dt><dd>JR奈良線・京阪宇治線「宇治」徒歩10分。<strong>京都駅からJRで約20〜30分</strong></dd>
+        <dt>拝観料</dt><dd>庭園＋鳳翔館 大人700円。<strong>鳳凰堂内部は志納300円</strong>（20分ごと・各回50名、9:10から受付、現金のみ）</dd>
+        <dt>時間</dt><dd>庭園8:45〜17:30、鳳凰堂内部9:30〜16:10</dd>
+        <dt>所要</dt><dd>40分〜2時間</dd>
+      </dl>
+      <p><strong>歴史</strong>：<strong>1052年（末法初年とされた年）、関白藤原頼通</strong>が父・道長の別業を寺に改めた。1053年に阿弥陀堂（鳳凰堂）が落慶。</p>
+      <p><strong>見どころ</strong>：<strong>国宝の鳳凰堂</strong>、定朝作の<strong>阿弥陀如来坐像</strong>、<strong>雲中供養菩薩像</strong>（いずれも国宝）、浄土式庭園、ミュージアム鳳翔館。<strong>鳳凰堂は10円玉の図柄</strong>。鳳凰は2004年発行の旧1万円札の裏面（2024年の新札は東京駅）。</p>
+      <p><strong>宇治上神社</strong>：<strong>現存最古の神社建築</strong>（本殿は1060年頃）、国宝・世界遺産。宇治は<strong>宇治茶</strong>の本場で、抹茶スイーツの店が並ぶ。</p>
+      <div class="tip"><strong>混雑回避</strong>：<strong>鳳凰堂内部の拝観は朝一番に受付</strong>するのが確実。伏見稲荷と同じJR奈良線上なので、<strong>伏見稲荷（早朝）→宇治</strong>の組み合わせが効率的。</div>
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">モデルコース</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>コース</th><th>ルート</th><th>交通</th></tr>
+      <tr><td><strong>A. 洛中1日</strong></td><td>二条城（8:45）→ 京都御所 → 下鴨神社・糺の森 → 錦市場（夕方）→ 先斗町で夕食</td><td>地下鉄東西線・烏丸線＋京阪</td></tr>
+      <tr><td><strong>B. 伏見・宇治1日</strong></td><td>伏見稲荷（7:00）→ 東福寺 →（JR奈良線）宇治・平等院 →（京阪）中書島・伏見の酒蔵・寺田屋</td><td>JR奈良線＋京阪。<strong>バスを使わない</strong></td></tr>
+      <tr><td><strong>C. 京都駅半日</strong></td><td>東寺（8:00）→ 西本願寺 → 東本願寺・渉成園 → 京都タワー（夕方）</td><td>徒歩</td></tr>
+      <tr><td><strong>D. 桜の醍醐</strong></td><td>醍醐寺（9:00、3か所共通）→ 上醍醐 or 山科疏水</td><td>地下鉄東西線</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">Index — 関連ページ</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>ページ</th><th>内容</th></tr>
+      <tr><td><a href="261009_kyoto_city.html"><strong>京都市（総論）</strong></a></td><td>人口・経済・財政・京都企業・交通・観光統計・オーバーツーリズム対策・ホテル・桃鉄</td></tr>
+      <tr><td><a href="261009_kyoto_higashiyama.html"><strong>観光① 東山</strong></a></td><td>清水寺・祇園・八坂神社・高台寺・建仁寺・知恩院・平安神宮・南禅寺・哲学の道・銀閣寺・三十三間堂</td></tr>
+      <tr><td><a href="261009_kyoto_rakuhoku.html"><strong>観光③ 洛北・洛西・嵐山</strong></a></td><td>金閣寺・龍安寺・仁和寺・北野天満宮・大徳寺・上賀茂神社・大原・鞍馬・貴船／嵐山・嵯峨野・苔寺</td></tr>
+    </table></div>
+  </div>
+
+  <div class="pager-foot">
+    <a class="prev" href="261009_kyoto_higashiyama.html"><span>← Prev</span>観光① 東山</a>
+    <a class="next" href="261009_kyoto_rakuhoku.html"><span>Next →</span>観光③ 洛北・洛西・嵐山</a>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>元離宮二条城 公式（料金・案内・FAQ）／ 京都市公報（2022年・2024年の料金改定）／ 熊本日日新聞（共同配信）「二条城 二重価格」（2026-10-01）</li>
+      <li>宮内庁 京都御所 参観案内／ NAVITIME（月別時間）</li>
+      <li>京都錦市場商店街振興組合 公式（about・FAQ）／ 京都新聞（食べ歩き自粛 2018-11）／ 京都鴨川納涼床協同組合</li>
+      <li>東寺 公式（拝観料・五重塔・立体曼荼羅）／ 西本願寺 公式（参拝・飛雲閣）／ 東本願寺 公式（見どころ・渉成園）</li>
+      <li>京都駅ビル 公式（歴史）／ 京都タワー 公式（料金）・プレスリリース（2026-10改定）</li>
+      <li>下鴨神社 公式／ tabi-mag</li>
+      <li>伏見稲荷大社 公式（由緒・FAQ・境内図）／ ANA Japan Travel Planner／ るるぶ&amp;more／ 訪日ラボ（トリップアドバイザー順位 2019・2020）</li>
+      <li>醍醐寺 公式（拝観時間・歴史・三宝院）／ 月桂冠 公式（大倉記念館）／ 黄桜 公式（カッパカントリー）／ 伏見十石舟 公式</li>
+      <li>京都市歴史資料館「いしぶみデータベース」（寺田屋）／ 観光庁 多言語解説文DB（寺田屋）／ まっぷる</li>
+      <li>平等院 公式（拝観案内・歴史・FAQ）／ 日本銀行（10円硬貨・1万円券の図柄）</li>
+      <li>京都市「令和7年 京都観光総合調査」（外国人の訪問先）</li>
+    </ul>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>

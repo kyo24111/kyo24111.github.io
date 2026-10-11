@@ -1,0 +1,1075 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>京都市 / Kyoto City — Geo Research</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff; --surface: #f5f5f5; --card: #f0f0f0;
+      --border: #d8d8d8; --accent: #111111; --text: #1a1a1a;
+      --muted: #666666; --subtle: #999999;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.75; }
+    .wrap { max-width: 860px; margin: 0 auto; padding: 60px 24px 100px; }
+
+    .hero { background: var(--accent); color: #fff; border-radius: 16px; padding: 48px 44px; margin-bottom: 48px; }
+    .hero-eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: rgba(255,255,255,0.45); margin-bottom: 14px; }
+    .hero h1 { font-family: 'Poppins', sans-serif; font-size: 42px; font-weight: 700; line-height: 1.1; margin-bottom: 4px; }
+    .hero-country { font-size: 13px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    .kv { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    @media(max-width:640px){ .kv { grid-template-columns: repeat(2,1fr); } }
+    .kv-label { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(255,255,255,0.4); margin-bottom: 6px; }
+    .kv-val { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.15; }
+    .kv-note { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 4px; }
+
+    .toc { background: var(--surface); border-radius: 12px; padding: 24px 28px; margin-bottom: 56px; }
+    .toc-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .toc ol { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns: 1fr; } }
+    .toc li { font-size: 13px; color: var(--muted); }
+    .toc li a { color: inherit; text-decoration: none; }
+    .toc li a:hover { color: var(--accent); }
+    .toc-num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; color: var(--subtle); margin-right: 8px; }
+
+    .sec { margin-bottom: 60px; }
+    .sec-label { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+    .num { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 700; background: var(--accent); color: #fff; padding: 3px 9px; border-radius: 4px; }
+    .sec-title { font-family: 'Poppins', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent); }
+
+    .sub-h {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--accent);
+      margin: 28px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .t { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 20px; }
+    .t-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 20px; }
+    @media (max-width: 760px) {
+      .t { display: block; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .chart-title, .sec-title { word-break: break-word; }
+      .hero h1 { font-size: 32px; overflow-wrap: anywhere; }
+      .hero-eyebrow, .toc li, .spot-name, .crumb { overflow-wrap: anywhere; }
+    }
+    .t th { background: var(--surface); color: var(--muted); font-weight: 600; text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .t td { padding: 10px 14px; border-bottom: 1px solid var(--card); color: var(--text); vertical-align: top; }
+    .t tr:last-child td { border-bottom: none; }
+    .t strong { color: var(--accent); }
+
+    /* 人口推移グラフ */
+    .chart-wrap { border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px 10px; margin-bottom: 22px; }
+    .chart-title { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 10px; padding-left: 4px; }
+    .chart-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .chart { display: block; width: 100%; min-width: 660px; height: auto; overflow: visible; }
+    .chart .grid { stroke: var(--border); stroke-width: 1; }
+    .chart .line { fill: none; stroke: var(--accent); stroke-width: 2.2; stroke-linejoin: round; stroke-linecap: round; }
+    .chart .dot { fill: var(--bg); stroke: var(--accent); stroke-width: 2; }
+    .chart .dot.peak { fill: var(--accent); stroke: var(--accent); }
+    .chart .ytick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: end; }
+    .chart .xtick { font-family: 'Poppins', sans-serif; font-size: 11.5px; fill: var(--subtle); text-anchor: middle; }
+    .chart .peaklabel { font-family: 'Noto Sans JP', sans-serif; font-size: 12px; font-weight: 500; fill: var(--accent); }
+    .chart-note { font-size: 11.5px; color: var(--subtle); margin: 6px 0 0 4px; }
+    /* 生データの折りたたみ */
+    details.raw { border: 1px solid var(--border); border-radius: 10px; margin-bottom: 20px; }
+    details.raw > summary { cursor: pointer; list-style: none; padding: 11px 16px; font-family: 'Poppins', sans-serif; font-size: 11.5px; font-weight: 600; letter-spacing: .06em; color: var(--muted); }
+    details.raw > summary::-webkit-details-marker { display: none; }
+    details.raw > summary::before { content: '▸'; display: inline-block; margin-right: 8px; transition: transform .15s; }
+    details.raw[open] > summary::before { transform: rotate(90deg); }
+    details.raw > summary:hover { color: var(--accent); }
+    details.raw .rawbody { padding: 0 14px 6px; }
+    details.raw .t { margin-bottom: 12px; }
+    /* ===== 章ごとの Last updated ===== */
+    .sec-label { flex-wrap: wrap; }
+    .sec-updated {
+      margin-left: auto;
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: .04em;
+      color: var(--subtle);
+      white-space: nowrap;
+    }
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav {
+      position: fixed;
+      left: 20px;
+      top: 84px;
+      width: 216px;
+      max-height: calc(100vh - 162px);
+      overflow-y: auto;
+      padding: 12px 0 32px;
+      z-index: 10;
+      scrollbar-width: thin;
+    }
+    .side-nav::-webkit-scrollbar { width: 4px; }
+    .side-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    @media (max-width: 1320px) { .side-nav { display: none; } }
+    .side-nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--subtle);
+      padding-left: 14px;
+      margin-bottom: 8px;
+    }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link {
+      display: block;
+      color: #b4b4b4;
+      text-decoration: none;
+      padding: 6px 8px 6px 14px;
+      border-left: 2px solid transparent;
+      font-size: 12px;
+      line-height: 1.45;
+      transition: color .15s, border-color .15s, background .15s;
+    }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active {
+      color: var(--accent);
+      font-weight: 700;
+      border-left-color: var(--accent);
+      background: var(--surface);
+    }
+    .side-nav-num {
+      font-family: 'Poppins', sans-serif;
+      font-size: 10.5px;
+      color: var(--subtle);
+      margin-right: 6px;
+    }
+    .sec { scroll-margin-top: 76px; }
+    html { scroll-behavior: smooth; }
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 10px 10px 0; padding: 18px 22px; margin-bottom: 20px; font-size: 13.5px; color: var(--text); line-height: 1.8; }
+
+    .area-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media(max-width:560px){ .area-grid { grid-template-columns: 1fr; } }
+    .area-card { border: 1px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+    .area-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .area-name { font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: 700; color: var(--accent); }
+    .area-night { font-size: 14px; letter-spacing: 1px; }
+    .area-equiv { font-size: 11px; color: var(--subtle); margin-bottom: 10px; font-style: italic; }
+    .area-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .tag { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 4px; background: var(--surface); border: 1px solid var(--border); color: var(--muted); }
+    .tag.night { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .tag.upscale { background: #f0f0f0; border-color: #aaa; color: #333; }
+    .area-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+    .spot-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    @media(max-width:520px){ .spot-grid { grid-template-columns: 1fr; } }
+    .spot-card { border: 1px solid var(--border); border-radius: 10px; padding: 16px 18px; }
+    .spot-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .spot-loc { font-size: 11px; color: var(--subtle); margin-bottom: 8px; }
+    .spot-desc { font-size: 12.5px; color: var(--muted); line-height: 1.65; }
+
+    .food-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    @media(max-width:520px){ .food-grid { grid-template-columns: 1fr; } }
+    .food-card { background: var(--surface); border-radius: 10px; padding: 14px 16px; }
+    .food-name { font-family: 'Poppins', sans-serif; font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .food-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    .info-box { background: var(--surface); border-radius: 10px; padding: 20px 22px; font-size: 13.5px; line-height: 1.9; }
+    .info-box ul { list-style: none; }
+    .info-box ul li::before { content: '—'; color: var(--subtle); margin-right: 8px; }
+
+    .sources { margin-top: 72px; padding-top: 28px; border-top: 1px solid var(--border); }
+    .sources-title { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--subtle); margin-bottom: 14px; }
+    .sources ul { list-style: none; font-size: 12px; color: var(--subtle); line-height: 2; }
+    p { margin-bottom: 14px; font-size: 14px; }
+  
+    /* BREADCRUMB */
+    .crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 500; letter-spacing: .06em; margin-bottom: 26px; }
+    .crumb a { color: var(--subtle); text-decoration: none; transition: color .15s; }
+    .crumb a:hover { color: var(--accent); }
+    .crumb .sep { color: var(--border); }
+    .crumb .cur { color: var(--accent); font-weight: 700; }
+    /* ===== 京都ページ間のタブ ===== */
+    .pager-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: -24px 0 40px; }
+    .pager-tabs a { font-family: 'Poppins','Noto Sans JP',sans-serif; font-size: 12px; font-weight: 600; text-decoration: none; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px; transition: all .15s; }
+    .pager-tabs a:hover { color: var(--accent); border-color: var(--accent); }
+    .pager-tabs a.on { background: var(--accent); color: #fff; border-color: var(--accent); }
+    a.area-link { text-decoration: none; color: inherit; display: block; transition: border-color .15s; }
+    a.area-link:hover { border-color: var(--accent); }
+    .pager-foot { display: flex; justify-content: space-between; gap: 12px; margin-top: 56px; flex-wrap: wrap; }
+    .pager-foot a { flex: 1 1 200px; border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; text-decoration: none; color: var(--accent); font-size: 13px; font-weight: 700; }
+    .pager-foot a:hover { border-color: var(--accent); }
+    .pager-foot a span { display: block; font-family: 'Poppins',sans-serif; font-size: 10px; letter-spacing: .12em; color: var(--subtle); font-weight: 600; margin-bottom: 4px; text-transform: uppercase; }
+    .pager-foot a.next { text-align: right; }
+    .spot-meta { display: grid; grid-template-columns: 88px 1fr; gap: 4px 12px; font-size: 12.5px; margin: 10px 0 12px; }
+    .spot-meta dt { color: var(--subtle); font-weight: 600; }
+    .spot-meta dd { color: var(--text); }
+    .spot-big { border: 1px solid var(--border); border-radius: 12px; padding: 22px 24px; margin-bottom: 18px; }
+    .spot-big h3 { font-size: 17px; font-weight: 700; color: var(--accent); margin-bottom: 2px; }
+    .spot-big .en { font-family: 'Poppins',sans-serif; font-size: 11px; color: var(--subtle); letter-spacing: .06em; margin-bottom: 8px; }
+    .spot-big p { font-size: 13.5px; color: var(--text); margin-bottom: 10px; }
+    .spot-big .tip { background: var(--surface); border-radius: 8px; padding: 10px 14px; font-size: 12.5px; color: var(--muted); }
+    .wh { display: inline-block; font-family: 'Poppins',sans-serif; font-size: 10px; font-weight: 700; background: var(--accent); color: #fff; border-radius: 4px; padding: 1px 7px; margin-left: 8px; vertical-align: middle; }
+    @media (max-width: 520px) { .spot-meta { grid-template-columns: 74px 1fr; } .spot-big { padding: 18px 16px; } }
+</style>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+
+  <nav class="crumb">
+    <a href="index.html">geo</a>
+    <span class="sep">/</span>
+    <a href="260831_japan.html">japan</a>
+    <span class="sep">/</span>
+    <span>kyoto</span>
+    <span class="sep">/</span>
+    <span class="cur">kyoto city</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">City Research — 261009</div>
+    <h1>京都市 / Kyoto City</h1>
+    <div class="hero-country">日本 · 京都府 府庁所在地 / 1,200年の都に年6,279万人の観光客が押し寄せ、財政危機から立ち直りつつある「大学と観光とハイテク」の政令市 / 人口約143.0万</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">人口</div>
+        <div class="kv-val">1,430,062</div>
+        <div class="kv-note">2025国調確報 / 2020年比 ▲2.3%</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">観光客数</div>
+        <div class="kv-val">6,279万</div>
+        <div class="kv-note">2025年 / 初の6,000万人超</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">観光消費額</div>
+        <div class="kv-val">2兆474億</div>
+        <div class="kv-note">2025年 / 過去最高</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">学生の人口比</div>
+        <div class="kv-val">11.0%</div>
+        <div class="kv-note">15.7万人 / 政令市で突出</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="pager-tabs">
+    <a class="on" href="261009_kyoto_city.html">京都市（総論）</a>
+    <a href="261009_kyoto_higashiyama.html">観光① 東山</a>
+    <a href="261009_kyoto_rakuchu.html">観光② 洛中・洛南</a>
+    <a href="261009_kyoto_rakuhoku.html">観光③ 洛北・洛西・嵐山</a>
+  </nav>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">市としての特徴</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">人口推移 — 1985年ピークから自然減へ</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">経済規模と産業構造</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">市の財政 — 「財政破綻の危機」からの回復</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">京都企業 — なぜ東京に行かないのか</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">交通 — 地下鉄・市バス・北陸新幹線</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">空港アクセス — 空港を持たない観光都市</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">観光の全体像 — 6,279万人・2兆円</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">オーバーツーリズム対策</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">観光エリアガイド（総覧）</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">世界遺産「古都京都の文化財」</a></li>
+      <li><span class="toc-num">12</span><a href="#s12">年中行事と季節</a></li>
+      <li><span class="toc-num">13</span><a href="#s13">食・グルメ</a></li>
+      <li><span class="toc-num">14</span><a href="#s14">ダウンタウンとホテル</a></li>
+      <li><span class="toc-num">15</span><a href="#s15">直近の出来事（2024→2026）</a></li>
+      <li><span class="toc-num">16</span><a href="#s16">桃鉄の「京都」「祇園」「嵐山」</a></li>
+      <li><span class="toc-num">17</span><a href="#s17">行くなら</a></li>
+      <li><span class="toc-num">18</span><a href="#s18">Index — 関連ページ</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">市としての特徴</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      京都市を一言でいうと「<strong>1,200年分の文化財を抱えたまま、観光・大学・ハイテク製造の3本足で立っている政令市</strong>」。
+      <strong>人口1,430,062人（2025年国調確報）は2020年から▲33,661人・▲2.3%</strong>。ただし減少の中身は<strong>自然減（5年で▲4.5万人）</strong>で、社会動態はむしろ<strong>+1.4万人の転入超過</strong>。<br>
+      一方で観光は<strong>2025年に6,279万人・消費額2兆474億円</strong>と過去最高を更新し、<strong>市内総生産（6.8兆円）の3割に相当する額</strong>を観光客が落としている。
+      <a href="260929_fukuoka_city.html" style="color:inherit">福岡市が「若者を吸い込む商いの街」</a>なら、<strong>京都市は「世界から人を呼ぶが、子育て世代は大阪・滋賀に出ていく街」</strong>だ。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>位置</td><td>京都府南部。<strong>三方を山に囲まれた京都盆地</strong>の北半分に市街地があり、<strong>鴨川・桂川</strong>が南へ流れる。北部は2005年編入の旧京北町まで続く山林</td></tr>
+      <tr><td>面積</td><td><strong>827.83km²</strong>（2005年に京北町を編入して610km²→828km²）。人口密度は<strong>約1,727人/km²</strong>——市域の大半が山林のため、市街地の密度とは大きく乖離する</td></tr>
+      <tr><td><strong>人口</strong></td><td><strong>1,430,062人</strong>（2025年国調確報、2026-09-29公表）。世帯数757,287（+3.8%）、<strong>1世帯あたり1.89人は1920年の調査開始以来の最小</strong>。推計人口では<strong>神戸市（148.0万）に抜かれている</strong></td></tr>
+      <tr><td>年齢構成</td><td>15歳未満<strong>9.2%</strong>（過去最小）／15〜64歳62.2%／<strong>65歳以上28.5%</strong>（過去最大）</td></tr>
+      <tr><td><strong>大学のまち</strong></td><td><strong>学生157,407人・人口比11.0%</strong>（R7.5.1）。<strong>札幌2.7%・福岡4.7%・大阪1.4%</strong>と比べて桁違い。大学・短大は約36校、留学生約1.4万人（日本語学校含め約2.0万人）</td></tr>
+      <tr><td>昼夜間人口比率</td><td><strong>108.4</strong>（2020年国調ベースの算出値）。通勤・通学で周辺から人が流れ込む</td></tr>
+      <tr><td>行政区</td><td><strong>11区</strong>。最大は伏見区（27.0万）、最小は東山区（3.5万）。<strong>増えたのは都心の下京・中京・南の3区だけ</strong>（§02）</td></tr>
+      <tr><td><strong>市長</strong></td><td><strong>松井孝治</strong>（第27代、2024-02-25就任）。京都市生まれ、通産省→参院議員→鳩山内閣官房副長官→慶應大教授。<strong>2024年市長選は自民・立憲・公明・国民の推薦で、次点の福山和人氏に約1.6万票差</strong>（投票率41.67%）。前任は<strong>門川大作</strong>（2008〜2024、4期16年）</td></tr>
+      <tr><td>産業構造</td><td>市内総生産の<strong>第2次28.4%（製造業23.4%）／第3次71.5%</strong>（2022年度）。<a href="260929_fukuoka_city.html" style="color:inherit">福岡市（製造業3.6%）</a>と比べると<strong>京都は「ものづくり」の比重がかなり高い</strong></td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>「観光都市」のイメージと実態のズレ。</strong>
+      観光客は年6,279万人来るが、<strong>市の財政を支えているのは固定資産税（1,228億）と個人市民税（1,177億）</strong>で、<strong>宿泊税は61.8億（市税の約1.9%）</strong>にすぎなかった（2024年度）。
+      さらに<strong>学生が多い＝所得割を払う人が少ない</strong>ため、<strong>個人市民税は「他都市並みの年齢構成なら約135億円多い」</strong>と市自身が試算している。
+      「観光で潤っているはずなのに財政が苦しい」という京都の不思議は、ここから来ている（§04）。
+    </div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">人口推移 — 1985年ピークから自然減へ</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="chart-wrap">
+      <div class="chart-title">Population — Kyoto City 1950–2025 (Census)</div>
+      <div class="chart-scroll"><svg class="chart" viewBox="0 0 720 300" role="img" aria-label="京都市の人口推移 1950-2025">
+        <line class="grid" x1="62" y1="250" x2="704" y2="250"/><text class="ytick" x="54" y="253.5">100万</text>
+        <line class="grid" x1="62" y1="206" x2="704" y2="206"/><text class="ytick" x="54" y="209.5">110万</text>
+        <line class="grid" x1="62" y1="162" x2="704" y2="162"/><text class="ytick" x="54" y="165.5">120万</text>
+        <line class="grid" x1="62" y1="118" x2="704" y2="118"/><text class="ytick" x="54" y="121.5">130万</text>
+        <line class="grid" x1="62" y1="74" x2="704" y2="74"/><text class="ytick" x="54" y="77.5">140万</text>
+        <line class="grid" x1="62" y1="30" x2="704" y2="30"/><text class="ytick" x="54" y="33.5">150万</text>
+        <polyline class="line" points="62.0,205.2 104.8,160.2 147.6,124.7 190.4,89.4 233.2,65.6 276.0,47.1 318.8,41.9 361.6,39.1 404.4,47.1 447.2,45.9 490.0,44.2 532.8,41.1 575.6,41.4 618.4,40.9 661.2,46.0 704.0,60.8"/>
+        <circle class="dot" cx="62.0" cy="205.2" r="3.4"/><circle class="dot" cx="104.8" cy="160.2" r="3.4"/><circle class="dot" cx="147.6" cy="124.7" r="3.4"/><circle class="dot" cx="190.4" cy="89.4" r="3.4"/><circle class="dot" cx="233.2" cy="65.6" r="3.4"/><circle class="dot" cx="276.0" cy="47.1" r="3.4"/><circle class="dot" cx="318.8" cy="41.9" r="3.4"/>
+        <circle class="dot peak" cx="361.6" cy="39.1" r="4.2"/>
+        <circle class="dot" cx="404.4" cy="47.1" r="3.4"/><circle class="dot" cx="447.2" cy="45.9" r="3.4"/><circle class="dot" cx="490.0" cy="44.2" r="3.4"/><circle class="dot" cx="532.8" cy="41.1" r="3.4"/><circle class="dot" cx="575.6" cy="41.4" r="3.4"/><circle class="dot" cx="618.4" cy="40.9" r="3.4"/><circle class="dot" cx="661.2" cy="46.0" r="3.4"/><circle class="dot" cx="704.0" cy="60.8" r="3.4"/>
+        <text class="peaklabel" x="361.6" y="24" text-anchor="middle">1985年 147.9万（ピーク）</text>
+        <text class="peaklabel" x="700" y="84" text-anchor="end">2025年 143.0万</text>
+        <text class="xtick" x="62.0" y="286">1950</text>
+        <text class="xtick" x="190.4" y="286">1965</text>
+        <text class="xtick" x="318.8" y="286">1980</text>
+        <text class="xtick" x="447.2" y="286">1995</text>
+        <text class="xtick" x="575.6" y="286">2010</text>
+        <text class="xtick" x="700.0" y="286">2025</text>
+      </svg></div>
+      <div class="chart-note">国勢調査ベース。<strong>1975年から2015年までの40年間、ほぼ146〜148万人で横ばい</strong>。2020年から下降が見えはじめ、2025年に▲2.3%と明確に減った。</div>
+    </div>
+
+    <div class="sub-h">3つのフェーズ</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>時期</th><th>何が起きたか</th></tr>
+      <tr><td><strong>1950–1975 / 戦後の急増</strong></td><td>戦災をほぼ免れた都市として<strong>110万→146万</strong>。周辺町村の編入（1960年に610km²）と高度成長の流入</td></tr>
+      <tr><td><strong>1975–2015 / 40年の横ばい</strong></td><td><strong>1985年の147.9万がピーク</strong>。景観規制・高さ規制で都心に大量の住宅を供給できず、増えた分は<strong>洛西・醍醐などのニュータウン</strong>と市外（大津・草津・長岡京）へ流れた。2005年の京北町編入で数字上の上乗せ</td></tr>
+      <tr><td><strong>2015– / 自然減が主因の縮小</strong></td><td>2020→25年の5年間で<strong>自然動態▲44,642人（出生40,368／死亡85,010）</strong>、社会動態は<strong>+13,930人</strong>。前の5年（自然▲22,226）から<strong>自然減が倍増</strong>。社会増は外国人・学生が主で、<strong>日本人に限ると転出超過</strong></td></tr>
+    </table></div>
+
+    <details class="raw">
+      <summary>国勢調査人口 1950–2025 ／ 数値を表で見る</summary>
+      <div class="rawbody"><table class="t">
+        <tr><th>年</th><th>人口</th><th>増減率</th><th>備考</th></tr>
+        <tr><td>1950</td><td>1,101,854</td><td>+10.2%</td><td>面積536.45km²</td></tr>
+        <tr><td>1955</td><td>1,204,084</td><td>+9.3%</td><td></td></tr>
+        <tr><td>1960</td><td>1,284,818</td><td>+6.7%</td><td>610.61km²</td></tr>
+        <tr><td>1965</td><td>1,365,007</td><td>+6.2%</td><td></td></tr>
+        <tr><td>1970</td><td>1,419,165</td><td>+4.0%</td><td></td></tr>
+        <tr><td>1975</td><td>1,461,059</td><td>+3.0%</td><td></td></tr>
+        <tr><td>1980</td><td>1,473,065</td><td>+0.8%</td><td></td></tr>
+        <tr><td><strong>1985</strong></td><td><strong>1,479,218</strong></td><td>+0.4%</td><td><strong>国勢調査ベースのピーク</strong></td></tr>
+        <tr><td>1990</td><td>1,461,103</td><td>▲1.2%</td><td></td></tr>
+        <tr><td>1995</td><td>1,463,822</td><td>+0.2%</td><td></td></tr>
+        <tr><td>2000</td><td>1,467,785</td><td>+0.3%</td><td></td></tr>
+        <tr><td>2005</td><td>1,474,811</td><td>+0.5%</td><td>京北町編入、827.90km²</td></tr>
+        <tr><td>2010</td><td>1,474,015</td><td>▲0.1%</td><td></td></tr>
+        <tr><td>2015</td><td>1,475,183</td><td>+0.1%</td><td></td></tr>
+        <tr><td>2020</td><td>1,463,723</td><td>▲0.8%</td><td></td></tr>
+        <tr><td><strong>2025</strong></td><td><strong>1,430,062</strong></td><td><strong>▲2.3%</strong></td><td>確報（速報値は1,431,713）</td></tr>
+      </table></div>
+    </details>
+
+    <details class="raw">
+      <summary>行政区別人口（2025年確報） ／ 数値を表で見る</summary>
+      <div class="rawbody"><div class="t-wrap"><table class="t">
+        <tr><th>区</th><th>人口</th><th>2020年比</th><th>15歳未満</th><th>65歳以上</th></tr>
+        <tr><td>伏見区</td><td>269,891</td><td>▲2.9%</td><td>9.4%</td><td>29.6%</td></tr>
+        <tr><td>右京区</td><td>196,189</td><td>▲2.9%</td><td>9.8%</td><td>29.4%</td></tr>
+        <tr><td>左京区</td><td>162,180</td><td>▲2.3%</td><td>9.1%</td><td>28.6%</td></tr>
+        <tr><td>西京区</td><td>142,932</td><td>▲4.6%</td><td>11.0%</td><td>29.7%</td></tr>
+        <tr><td>山科区</td><td>128,186</td><td><strong>▲5.1%</strong></td><td>8.8%</td><td><strong>32.6%</strong></td></tr>
+        <tr><td>北区</td><td>114,210</td><td>▲2.5%</td><td>9.1%</td><td>30.1%</td></tr>
+        <tr><td>中京区</td><td>111,231</td><td><strong>+0.7%</strong></td><td>9.0%</td><td>25.2%</td></tr>
+        <tr><td>南区</td><td>102,653</td><td><strong>+0.7%</strong></td><td>10.0%</td><td>24.9%</td></tr>
+        <tr><td>下京区</td><td>84,410</td><td><strong>+2.0%</strong></td><td>8.2%</td><td>22.5%</td></tr>
+        <tr><td>上京区</td><td>83,053</td><td>▲0.9%</td><td>7.0%</td><td>26.2%</td></tr>
+        <tr><td>東山区</td><td>35,127</td><td>▲4.0%</td><td>6.8%</td><td>31.2%</td></tr>
+      </table></div></div>
+    </details>
+
+    <div class="info-box">
+      <strong>読みどころ：京都の人口問題は「出ていく人」より「家を建てられない」問題。</strong>
+      市の分析では、<strong>25〜39歳の結婚・子育て世代が家族ごと大阪府・府南部・滋賀県へ転出</strong>し、その主因は<strong>「条件に合う住宅が確保できない」</strong>こと。
+      景観条例と高さ規制で都心の床が増えず、地価は観光需要（ホテル用地）で上がる。
+      市は<strong>2023年4月に京都駅南側・西院などで高さ上限を20〜25m→31mへ緩和</strong>し、<strong>市営住宅の空き住戸を若者・子育て向けに転用</strong>する手を打ったが、
+      2025年国調では<strong>郊外の洛西（▲7.6%）・醍醐（▲7.9%）支所</strong>の落ち込みが目立ち、<strong>増えたのは都心3区（マンション＋外国人・学生）だけ</strong>だった。
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">経済規模と産業構造</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      <strong>市内総生産は名目6兆7,692億円（2022年度、+2.4%）</strong>、1人あたり市民所得<strong>325.2万円</strong>（京都府は312.9万円）。
+      <a href="260929_fukuoka_city.html#s02" style="color:inherit">福岡市（7.8兆円）</a>より一回り小さい。
+      特徴は<strong>製造業が1兆5,707億円・23.4%</strong>と大きいこと。その中身は<strong>①伏見の酒を含む食料品（5,727億）②電子部品（3,401億）③機械（2,451億）</strong>で、
+      <strong>「伝統産業」と「ハイテク部品」が同じ統計の中に並んでいる</strong>のが京都らしい。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>業種（2022年度・名目）</th><th>生産額（億円）</th><th>メモ</th></tr>
+      <tr><td><strong>製造業</strong></td><td><strong>15,707</strong></td><td>うち食料品5,727（▲11.7%）／電子部品・デバイス3,401／はん用・生産用・業務用機械2,451／電気機械1,048（▲30.6%）</td></tr>
+      <tr><td>不動産</td><td>7,813</td><td>帰属家賃を含む</td></tr>
+      <tr><td>卸売・小売</td><td>7,346</td><td></td></tr>
+      <tr><td>保健衛生・社会事業</td><td>6,367</td><td>京大病院・府立医大など</td></tr>
+      <tr><td>専門・科学技術・業務支援</td><td>5,617</td><td></td></tr>
+      <tr><td><strong>教育</strong></td><td><strong>4,184</strong></td><td>大学のまちの数字</td></tr>
+      <tr><td>金融・保険</td><td>3,398</td><td>京都銀行（京都FG）・京都中央信金</td></tr>
+      <tr><td>宿泊・飲食</td><td>1,751</td><td><strong>+37.2%</strong>（2022年度はコロナ明けの回復途上）</td></tr>
+      <tr><td>建設</td><td>3,338</td><td></td></tr>
+      <tr><td>第1次産業</td><td>54</td><td>0.08%。京野菜・北山杉など</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：観光消費2兆円と市内総生産6.8兆円は「同じ物差し」ではない。</strong>
+      観光消費額2兆474億円（2025年）は<strong>売上ベース</strong>で、市内総生産（付加価値ベース）の「宿泊・飲食1,751億」とは直接比べられない。
+      それでも<strong>経済波及効果2兆2,193億円</strong>という規模は、<strong>製造業の生産額（1.57兆）を上回る</strong>。
+      2022年度の統計はまだコロナの影を引きずっており、<strong>2024〜25年度の数字が出ると宿泊・飲食の比重は大きく上がる</strong>はずだ。
+    </div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">市の財政 — 「財政破綻の危機」からの回復</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      2021年6月、京都市は<strong>「このままでは2025年度に財政再生団体（＝財政破綻）に転落しかねない」</strong>と自ら公表した。
+      <strong>2021〜25年度で累計2,800億円の財源不足</strong>、借金返済用に積み立てていた<strong>公債償還基金を4割近く取り崩して穴埋め</strong>しており、それが<strong>2024年度に枯渇する</strong>見通しだった。<br>
+      そこから<strong>行財政改革計画（2021-2025）</strong>で人件費・事業を削り、<strong>2022年度以降は特別な財源対策なしで黒字</strong>。
+      2024年度決算は<strong>一般会計で+58億円の黒字</strong>、<strong>市税3,243億円は過去最高</strong>。
+      ただし<strong>経常収支比率100.4%</strong>（自由に使えるお金がゼロ）、<strong>将来負担比率132.0%</strong>は政令市の中でなお重い。
+    </div>
+
+    <div class="sub-h">財政指標（2024年度決算）</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>指標</th><th>京都市</th><th>前年度</th><th>参考：福岡市</th><th>読み方</th></tr>
+      <tr><td>財政力指数</td><td>0.81</td><td>0.80</td><td>0.87</td><td>政令市で12番目</td></tr>
+      <tr><td><strong>経常収支比率</strong></td><td><strong>100.4%</strong></td><td>98.5%</td><td>93.6%</td><td>100%超＝毎年の固定費だけで経常収入を使い切る</td></tr>
+      <tr><td>実質公債費比率</td><td>12.0%</td><td>11.8%</td><td>7.7%</td><td>早期健全化基準25%。単年度では12.71%に上昇</td></tr>
+      <tr><td><strong>将来負担比率</strong></td><td><strong>132.0%</strong></td><td>140.5%</td><td>58.8%</td><td>基準400%。改善中だが福岡の2倍以上</td></tr>
+      <tr><td>市債残高（全会計）</td><td colspan="3">1兆9,973億円（一般会計1兆5,151億、うち臨財債4,822億）。<strong>1人あたりは政令市で3番目に高い</strong></td><td>2002年度ピーク（臨財債除き2兆957億）から5,805億円減</td></tr>
+    </table></div>
+
+    <details class="raw">
+      <summary>市税の内訳・交付税・基金（2024年度） ／ 数値を表で見る</summary>
+      <div class="rawbody"><div class="t-wrap"><table class="t">
+        <tr><th>区分</th><th>金額（億円）</th><th>メモ</th></tr>
+        <tr><td><strong>一般会計 歳入</strong></td><td>9,801</td><td>歳出9,718。普通会計ベースでは歳入9,802・歳出9,717</td></tr>
+        <tr><td><strong>市税 合計</strong></td><td><strong>3,243</strong></td><td>過去最高（+42億）、徴収率99.2%も過去最高</td></tr>
+        <tr><td>　固定資産税</td><td>1,228</td><td>3年連続増</td></tr>
+        <tr><td>　個人市民税</td><td>1,177</td><td>定額減税で減少</td></tr>
+        <tr><td>　法人市民税</td><td>307</td><td>3年連続減</td></tr>
+        <tr><td>　その他</td><td>531</td><td>たばこ税・都市計画税・宿泊税など</td></tr>
+        <tr><td>　うち<strong>宿泊税</strong></td><td><strong>61.8</strong></td><td>収入済額（監査意見）。2026年3月の改定後は年約126億を見込む</td></tr>
+        <tr><td>地方交付税＋臨財債</td><td>812</td><td>交付税738＋臨財債74。<strong>1人あたりは他都市平均の約1.3倍</strong></td></tr>
+        <tr><td>財政調整基金</td><td>185</td><td></td></tr>
+        <tr><td>減債基金</td><td>27</td><td></td></tr>
+        <tr><td>その他特定目的基金</td><td>405</td><td></td></tr>
+        <tr><td>公債償還基金</td><td>2,002</td><td>2023年度決算。目標（2025年度末1,000億以上）を前倒しで達成</td></tr>
+      </table></div></div>
+    </details>
+
+    <details class="raw">
+      <summary>BS（財務書類・一般会計等、2024年度末） ／ 数値を表で見る</summary>
+      <div class="rawbody"><div class="t-wrap"><table class="t">
+        <tr><th>項目</th><th>2024年度末</th><th>2023年度末</th></tr>
+        <tr><td><strong>資産</strong></td><td><strong>3兆5,966億</strong></td><td>3兆6,805億</td></tr>
+        <tr><td>　固定資産</td><td>3兆4,950億（97.2%）</td><td></td></tr>
+        <tr><td>　流動資産</td><td>1,016億</td><td></td></tr>
+        <tr><td><strong>負債</strong></td><td><strong>1兆6,389億</strong></td><td>1兆6,665億</td></tr>
+        <tr><td>　うち市債</td><td>1兆4,026億</td><td></td></tr>
+        <tr><td><strong>純資産</strong></td><td><strong>1兆9,577億（54.4%）</strong></td><td>2兆140億</td></tr>
+        <tr><td>純行政コスト（PL）</td><td>6,853億</td><td></td></tr>
+      </table></div></div>
+    </details>
+
+    <div class="callout">
+      <strong>BS/PLの読みどころ。</strong>
+      <strong>資産3兆5,966億／負債1兆6,389億／純資産1兆9,577億</strong>。規模は<a href="260929_fukuoka_city.html#s03" style="color:inherit">福岡市（資産3兆4,342億・純資産比率55.6%）</a>とほぼ同じ。<br>
+      違いは<strong>トレンド</strong>。<strong>京都市は1年で資産が839億、純資産が563億減った</strong>——老朽化したインフラの減価償却に、新しい投資が追いついていない。
+      福岡市が<strong>純資産を1年で550億増やした</strong>のとは逆向きで、<strong>「借金は減らせたが、資産を食いつぶしながら」の回復</strong>と読める。<br>
+      <strong>なぜ京都は苦しいのか</strong>：①学生が多く個人市民税が薄い（他都市並みなら+135億）②<strong>寺社など非課税の土地が広く固定資産税が取りにくい</strong>③景観規制で高層化できず床面積（＝税源）が増えにくい④地下鉄東西線などの大型投資の借金。
+      観光客6,000万人の「混雑コスト」は市が負担し、「消費」は民間に落ちる——<strong>宿泊税の最高1万円への引き上げは、このギャップを埋めるための手段</strong>だ。
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">京都企業 — なぜ東京に行かないのか</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      京都は<strong>「本社を東京に移さないグローバル企業」</strong>の街として知られる。
+      <strong>任天堂（時価総額10.5兆円）・京セラ（5.3兆）・SCREEN（3.2兆）・ニデック（2.4兆）・ローム（2.0兆）</strong>と、
+      <strong>時価総額1兆円超の企業が京都市内だけで9社</strong>（2026-10-09終値）。隣の長岡京市には<strong>村田製作所（15.6兆円）</strong>がいる。
+      共通するのは<strong>「特定分野で世界トップシェアのニッチ部品・装置」</strong>を持ち、<strong>東京の国内市場にも官庁にも依存していない</strong>こと。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>企業</th><th>本社</th><th>時価総額</th><th>何で稼ぐか</th></tr>
+      <tr><td><strong>村田製作所</strong></td><td>長岡京市（市外）</td><td><strong>15兆6,451億</strong></td><td>積層セラミックコンデンサ（MLCC）で世界首位</td></tr>
+      <tr><td><strong>任天堂</strong></td><td>南区</td><td><strong>10兆4,860億</strong></td><td>ゲーム機・ソフト。花札・かるたの製造から始まった京都の会社</td></tr>
+      <tr><td><strong>京セラ</strong></td><td>伏見区</td><td>5兆3,160億</td><td>ファインセラミック部品・電子部品。稲盛和夫が1959年創業</td></tr>
+      <tr><td>SCREEN HD</td><td>上京区</td><td>3兆1,561億</td><td>半導体製造装置（洗浄装置で世界首位級）</td></tr>
+      <tr><td>ニデック</td><td>南区</td><td>2兆3,971億</td><td>精密小型モーター。旧日本電産、永守重信が創業</td></tr>
+      <tr><td>ローム</td><td>右京区</td><td>1兆9,922億</td><td>パワー半導体（SiC）・LSI</td></tr>
+      <tr><td>京都FG（京都銀行）</td><td>下京区</td><td>1兆3,555億</td><td>地銀。<strong>京都企業の株を長期保有し、その含み益が厚い</strong></td></tr>
+      <tr><td>オムロン</td><td>下京区</td><td>1兆3,189億</td><td>制御機器・ヘルスケア（血圧計）。<strong>世界初の自動改札機を開発</strong>（桃鉄の物件にもなっている）</td></tr>
+      <tr><td>島津製作所</td><td>中京区</td><td>1兆2,805億</td><td>分析・計測機器、医用機器。<strong>社員の田中耕一が2002年ノーベル化学賞</strong></td></tr>
+      <tr><td>堀場製作所</td><td>南区</td><td>1兆1,120億</td><td>排ガス測定装置・半導体用流量制御</td></tr>
+      <tr><td>GSユアサ</td><td>南区</td><td>5,533億</td><td>蓄電池</td></tr>
+      <tr><td>宝HD</td><td>下京区</td><td>5,108億</td><td>酒類（松竹梅）・バイオ</td></tr>
+      <tr><td>日本新薬</td><td>南区</td><td>2,369億</td><td>医薬品（希少疾患）</td></tr>
+      <tr><td>ワコールHD</td><td>南区</td><td>1,898億</td><td>女性下着（桃鉄の京都駅「女性下着会社」）</td></tr>
+      <tr><td>月桂冠</td><td>伏見区</td><td>非上場</td><td>清酒。伏見の酒蔵群の代表</td></tr>
+      <tr><td><strong>京都フュージョニアリング</strong></td><td>—</td><td>非上場</td><td>核融合炉の周辺機器。<strong>2026-08にシリーズDでエクイティ167.2億円</strong>（融資枠込み257.2億）。京大発</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>京都企業が東京に行かない理由（よく挙げられる論点）。</strong>
+      <ul>
+        <li><strong>市場が東京にない</strong>：顧客はAppleや世界の半導体・自動車メーカー。東京の官庁や国内大手に営業する必要が薄い</li>
+        <li><strong>遷都の歴史</strong>：明治の東京遷都で国内市場が縮み、「技術と人への投資」で生き残る方向に向かったという説明</li>
+        <li><strong>大学と研究者</strong>：京大・同志社・立命館などの人材と、学生人口11%の環境</li>
+        <li><strong>「隣と同じことはしない」文化</strong>：老舗の多い商習慣の中で、他社と被らないニッチを狙う発想が育った</li>
+        <li><strong>京都銀行との持ち合い</strong>：地元企業の株を京都銀行が長期保有し、安定株主になってきた</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">交通 — 地下鉄・市バス・北陸新幹線</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>交通機関</th><th>中身</th></tr>
+      <tr><td><strong>市営地下鉄</strong>（烏丸線・東西線）</td><td><strong>2路線だけ</strong>。東西線の建設費が重く、<strong>2008年度決算で経営健全化団体に指定</strong>（有利子負債5,231億）→2017年度に脱却→<strong>コロナで2020年度に再指定</strong>→2022年度に2年前倒しで脱却。
+        2024年度は<strong>1日40.2万人（過去最高）・経常黒字26億円</strong>。ただし<strong>累積欠損金▲3,076億・企業債残高3,131億</strong>が残る</td></tr>
+      <tr><td><strong>市バス</strong></td><td>2024年度<strong>1日34万人</strong>（2019年度比▲5.3%）。経常黒字10億円（支援約7億を含む）。<strong>83系統のうち黒字は23系統、赤字60系統</strong>（2025年度）。<strong>観光客で満員になり市民が乗れない</strong>問題が続き、2027年度に<strong>「市民優先価格」</strong>を導入予定（§09）</td></tr>
+      <tr><td>JR</td><td>京都駅は<strong>東海道新幹線・東海道線（琵琶湖線/JR京都線）・嵯峨野線・奈良線・湖西線</strong>の結節点。JR西日本では大阪駅に次ぐ規模</td></tr>
+      <tr><td>私鉄</td><td><strong>阪急京都線</strong>（河原町〜梅田）、<strong>京阪本線</strong>（出町柳・祇園四条〜淀屋橋）、<strong>近鉄京都線</strong>（京都〜奈良）、<strong>叡山電鉄</strong>（出町柳〜鞍馬・八瀬）、<strong>嵐電（京福）</strong>（四条大宮・北野白梅町〜嵐山）</td></tr>
+      <tr><td><strong>観光特急バス</strong></td><td><strong>EX100／EX101</strong>（2024年6月〜）。京都駅→五条坂（清水寺）・祇園・平安神宮・銀閣寺。<strong>大人500円（通常230円の約2倍）</strong>、土休日などのみ。2024年度平均<strong>2,369人/日</strong></td></tr>
+    </table></div>
+
+    <div class="sub-h">北陸新幹線（敦賀〜新大阪）— 京都の地下をどう通すか</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>中身</th></tr>
+      <tr><td>ルート</td><td><strong>小浜・京都ルート</strong>（2016年決定）。京都市内は<strong>ほぼ全区間が大深度地下トンネル</strong></td></tr>
+      <tr><td><strong>2026-07-15の決定</strong></td><td>与党整備委員会が<strong>「桂川案」</strong>を決定——<strong>京都駅ではなく、京都駅の西約5kmのJR桂川駅付近に地下新駅</strong>。「東西案」「南北案」（京都駅に地下駅）と「米原ルート」は不採用</td></tr>
+      <tr><td>事業費</td><td>国交省試算（2023年4月価格）：<strong>桂川案約3.4兆円</strong>、東西案約3.7兆、南北案約3.9兆。物価上昇込みでは東西案約5.3兆・南北案約5.2兆</td></tr>
+      <tr><td>工期・開業</td><td>早ければ<strong>2027年度中の着工</strong>を目指す。工期約26年で<strong>開業は2050年代</strong>とする報道あり</td></tr>
+      <tr><td><strong>京都側の反応</strong></td><td><strong>松井市長「根拠を示してほしい」「地方には地方の時間軸がある」</strong>（7/16）——財政負担と<strong>地下水への影響</strong>を懸念。<strong>京都仏教会（約1,100か寺）</strong>は、庭園の池や酒造・豆腐・染色を支える<strong>地下水（京都盆地の地下水盆）</strong>への影響を理由に反対・慎重の立場</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：京都にとって新幹線は「来てほしくない」インフラでもある。</strong>
+      金沢・福井は「早く大阪までつなげ」、国は「一日も早く全線開通を」（2026-08、高市首相）。
+      しかし京都市にとっては<strong>既に東海道新幹線で東京・大阪とつながっており、追加の便益は小さい</strong>。
+      それに対して<strong>地元負担（建設費の一部は沿線自治体負担）</strong>と、<strong>伏見の酒・湯豆腐・友禅染めを支えてきた地下水</strong>へのリスクを負う。
+      京都駅を避けた「桂川案」は、<strong>京都の中心部の地下を通さないことで反対を和らげる妥協案</strong>だが、市長は納得していない。
+    </div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">空港アクセス — 空港を持たない観光都市</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      年1,268万人の外国人観光客が来るのに、<strong>京都市（京都府）には旅客空港がない</strong>。
+      空の玄関は<strong>関西国際空港（KIX）</strong>と<strong>大阪国際空港（伊丹・ITM）</strong>、補助的に<strong>神戸空港（UKB）</strong>。
+      <strong>外国人観光客の大半は関空から特急はるか・リムジンバスで入る</strong>——<strong>京都の観光は、大阪の空港インフラに乗っている</strong>。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>空港</th><th>IATA</th><th>京都駅までの主な手段</th><th>役割</th></tr>
+      <tr><td><strong>関西国際空港</strong></td><td>KIX</td><td><strong>JR特急はるか 約75〜80分（3,000円台）</strong>／リムジンバス 約90〜100分（約2,800円）</td><td>国際線の玄関。外国人観光客の主ルート。<strong>はるかは京都駅止まりの直通特急</strong></td></tr>
+      <tr><td><strong>大阪国際空港（伊丹）</strong></td><td>ITM</td><td><strong>リムジンバス 約50〜55分（約1,500円）</strong></td><td>国内線。<strong>羽田・新千歳・那覇などからの国内客</strong>。ただし東京からは<strong>新幹線（約2時間10分）が圧倒的</strong></td></tr>
+      <tr><td>神戸空港</td><td>UKB</td><td>ポートライナー＋JR新快速で約1時間半</td><td>国内線中心。2025年から国際チャーター便</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>空港がないことの意味。</strong>
+      <ul>
+        <li><strong>東京からは新幹線</strong>：のぞみで東京〜京都は最速約2時間10分。羽田〜伊丹＋バスより速く、京都の国内観光は<strong>新幹線の都市</strong></li>
+        <li><strong>外国人の「京都日帰り」</strong>：関空・大阪に泊まって京都に日帰りする動きもあり、<strong>宿泊税の課税対象から漏れる</strong></li>
+        <li><strong>はるかの混雑</strong>：スーツケースを持った外国人で混む。2025年6月から京都駅で<strong>手ぶら観光（ホテルへの当日配送）</strong>を強化（§09）</li>
+      </ul>
+      関空・伊丹の詳細（エアライン・路線・滑走路）は大阪のページで扱う予定（未作成）。
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">観光の全体像 — 6,279万人・2兆円</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      2025年の京都観光は<strong>観光客6,279万人（初の6,000万人超）</strong>、<strong>観光消費額2兆474億円</strong>（日本人1兆1,963億／外国人8,510億）、<strong>経済波及効果2兆2,193億円</strong>——いずれも過去最高。<br>
+      外国人観光客は<strong>1,268万人</strong>で、<strong>訪日外国人4,268万人の約30%が京都に来ている</strong>計算になる（逆算値）。
+      ただし<strong>1人あたり消費は日本人23,874円に対し外国人67,133円</strong>と約2.8倍。<strong>人数は2割、消費は4割</strong>が外国人だ。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>年</th><th>観光客数</th><th>うち外国人</th><th>宿泊客（実数）</th><th>うち外国人宿泊</th><th>観光消費額</th></tr>
+      <tr><td>2015</td><td>5,684万</td><td>482万</td><td>1,362万</td><td>316万</td><td>9,704億</td></tr>
+      <tr><td>2019</td><td>5,352万</td><td>886万</td><td>1,317万</td><td>459万</td><td>1兆2,348億</td></tr>
+      <tr><td>2023</td><td>5,028万</td><td>709万</td><td>1,475万</td><td>485万</td><td>1兆5,304億</td></tr>
+      <tr><td>2024</td><td>5,606万</td><td>1,088万</td><td>1,630万</td><td>709万</td><td>1兆8,839億</td></tr>
+      <tr><td><strong>2025</strong></td><td><strong>6,279万</strong></td><td><strong>1,268万</strong></td><td><strong>1,659万</strong></td><td><strong>809万</strong></td><td><strong>2兆474億</strong></td></tr>
+    </table></div>
+    <div class="chart-note" style="margin-bottom:20px">2025年調査から推計方法が変わり（観光庁データ・宿泊税データを利用）、2019年分まで遡って修正済み。報道でよく見る「2024年の外国人宿泊821万人」は旧推計の値。</div>
+
+    <div class="sub-h">どこから来るか — 欧米比率の高さが京都の特徴</div>
+    <details class="raw">
+      <summary>外国人延べ宿泊者数 国・地域別 上位10（2025年） ／ 数値を表で見る</summary>
+      <div class="rawbody"><div class="t-wrap"><table class="t">
+        <tr><th>順位</th><th>国・地域</th><th>千人泊</th><th>構成比</th><th>前年比</th></tr>
+        <tr><td>1</td><td>中国</td><td>3,539</td><td>20.4%</td><td>108.8%</td></tr>
+        <tr><td>2</td><td><strong>米国</strong></td><td>2,740</td><td><strong>15.8%</strong></td><td>112.8%</td></tr>
+        <tr><td>3</td><td>台湾</td><td>1,259</td><td>7.3%</td><td>79.0%</td></tr>
+        <tr><td>4</td><td>オーストラリア</td><td>905</td><td>5.2%</td><td>100.3%</td></tr>
+        <tr><td>5</td><td>韓国</td><td>837</td><td>4.8%</td><td>90.9%</td></tr>
+        <tr><td>6</td><td>イタリア</td><td>626</td><td>3.6%</td><td>112.0%</td></tr>
+        <tr><td>7</td><td>英国</td><td>606</td><td>3.5%</td><td>112.4%</td></tr>
+        <tr><td>8</td><td>スペイン</td><td>588</td><td>3.4%</td><td>125.1%</td></tr>
+        <tr><td>9</td><td>フランス</td><td>558</td><td>3.2%</td><td>102.2%</td></tr>
+        <tr><td>10</td><td>ドイツ</td><td>484</td><td>2.8%</td><td>118.9%</td></tr>
+      </table></div></div>
+    </details>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>指標（2025年）</th><th>数値</th><th>読みどころ</th></tr>
+      <tr><td>地域別構成比</td><td>アジア42.0%／北米18.6%／<strong>欧州17.7%</strong>／オセアニア5.2%</td><td><strong>全国はアジア58.9%</strong>。京都は欧米豪が4割を超える</td></tr>
+      <tr><td><strong>2026年の変化</strong></td><td>2026年3月は<strong>米国27.4%で首位、中国は前年同月比▲64.9%</strong></td><td>中国政府の訪日自粛要請（2025年11月）の影響。主要ホテルでは2025年10月以降<strong>米国が1位</strong></td></tr>
+      <tr><td>外国人の訪問先</td><td>清水寺69.7%／二条城60.4%／祇園56.2%／伏見稲荷53.0%／京都駅周辺45.5%</td><td><strong>上位4か所に集中</strong>——これがオーバーツーリズムの正体</td></tr>
+      <tr><td>主要ホテル稼働率</td><td><strong>80.6%</strong>（全国61.8%）</td><td>外国人比率<strong>66.4%</strong>（全国27.2%）は過去最高</td></tr>
+      <tr><td><strong>ADR（主要ホテル）</strong></td><td><strong>21,286円</strong>（過去最高）</td><td>月別最高は<strong>4月30,640円</strong>（桜）。ADR5万円以上の10施設は平均<strong>103,318円</strong></td></tr>
+      <tr><td>繁閑差</td><td>最多11月／最少2月、差は<strong>1.3倍</strong></td><td>かつての「春秋だけ混む」から、通年で混む街に</td></tr>
+      <tr><td>満足度</td><td>満足：日本人90.9%／外国人97.3%</td><td>「残念なことがあった」は<strong>日本人47.2%</strong>（外国人21.0%）——<strong>混雑に不満を持つのは日本人</strong></td></tr>
+      <tr><td>修学旅行生</td><td>67万人</td><td>2019年は70万人</td></tr>
+    </table></div>
+
+    <div class="info-box">
+      <strong>読みどころ：日本人宿泊客が減っている。</strong>
+      宿泊客の実数は<strong>日本人990万（2023）→921万（2024）→849万（2025）</strong>と2年で▲14%。一方で外国人は485万→809万。
+      <strong>ホテル代の高騰（ADR2.1万円）と混雑で、日本人が京都に泊まらなくなっている</strong>。
+      2025年は大阪・関西万博の期間中に<strong>日本人宿泊が約11.5%減</strong>したという集計もある。
+      観光客数が過去最高でも、<strong>「日本人の京都離れ」と「外国人の京都集中」が同時に進んでいる</strong>。
+    </div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">オーバーツーリズム対策</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      京都市の対策は<strong>①分散（時間・場所・交通手段）②価格（宿泊税・二重価格）③規制（私道・民泊）</strong>の3つ。
+      2024年まではお願いと分散が中心だったが、<strong>2026年3月の宿泊税最高1万円、2027年度の市バス・二条城の「市民優先価格」</strong>と、<strong>観光客に明確に高い値段をつける段階</strong>に入った。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>施策</th><th>時期</th><th>中身</th><th>現状</th></tr>
+      <tr><td><strong>宿泊税の改定</strong></td><td><strong>2026-03-01施行</strong></td><td>宿泊料金で5段階：6千円未満200円／2万円未満400円／5万円未満1,000円／10万円未満4,000円／<strong>10万円以上10,000円（全国最高）</strong></td><td>税収見込み<strong>約126億円</strong>（2023年度52億の約2.4倍）</td></tr>
+      <tr><td><strong>市バス「市民優先価格」</strong></td><td><strong>2027年度中に導入予定</strong></td><td>市民230円→<strong>200円</strong>、市民以外<strong>350〜400円</strong>。マイナンバーカードと交通系ICカードを紐づけて判別</td><td>2026年9月時点で国交省と最終協議中、民間バス会社と調整中。<strong>全国初</strong></td></tr>
+      <tr><td><strong>二条城の二重価格</strong></td><td>2027年度中に導入方針</td><td>二の丸御殿セット券1,300円→<strong>市民1,000円／市民以外2,000円</strong></td><td>2025年度入場者約207万人のうち<strong>市民は約2%</strong></td></tr>
+      <tr><td>観光特急バス EX100/101</td><td>2024-06〜</td><td>京都駅→清水寺・祇園・銀閣寺方面に直行、500円</td><td>2024年度平均2,369人/日。毎日運行への拡大は未確認</td></tr>
+      <tr><td>市バス1日券の廃止</td><td>2023-09販売終了</td><td>地下鉄・バス1日券（1,100円）に一本化し、地下鉄へ誘導</td><td>—</td></tr>
+      <tr><td><strong>祇園の私道立入禁止</strong></td><td>2024-04〜</td><td>花見小路周辺の<strong>私道</strong>に地元協議会が「通り抜けできません」「罰金1万円」の高札。<strong>公道（花見小路本通り）は通行可</strong></td><td>「罰金」に法的拘束力はない（弁護士解説）。舞妓の無断撮影・追いかけが発端</td></tr>
+      <tr><td>手ぶら観光</td><td>2025-06〜強化</td><td>京都駅のロッカーから提携ホテルへ<strong>当日配送（1,500円〜）</strong></td><td>大きな荷物でバスに乗らせない</td></tr>
+      <tr><td>京都観光快適度マップ</td><td>継続</td><td>エリアごと・時間帯ごとの混雑予測（5段階）とライブカメラ</td><td>外国人の位置情報ビッグデータも予測に反映</td></tr>
+      <tr><td><strong>民泊・簡易宿所の規制強化</strong></td><td>2027年2月市会に条例改正案（予定）</td><td>常駐の義務付け、<strong>住居専用地域での「営業日ゼロ」</strong>（既存は対象外）を検討</td><td>現行は住居専用地域の家主不在型は1/15〜3/16のみ営業可。民泊系は客室の約7%だが<strong>苦情の74%</strong></td></tr>
+    </table></div>
+
+    <details class="raw">
+      <summary>宿泊施設数・客室数の推移（簡易宿所の急増） ／ 数値を表で見る</summary>
+      <div class="rawbody"><div class="t-wrap"><table class="t">
+        <tr><th>年度末</th><th>ホテル・旅館</th><th>簡易宿所</th><th>ホテル・旅館客室</th><th>簡易宿所客室</th><th>総客室数</th></tr>
+        <tr><td>2014年度</td><td>542</td><td>460</td><td>26,260</td><td>2,929</td><td>29,189</td></tr>
+        <tr><td>2015年度</td><td>532</td><td>696</td><td>26,297</td><td>3,489</td><td>29,786</td></tr>
+        <tr><td>2018年度</td><td>624</td><td>2,990</td><td>33,608</td><td>12,539</td><td>46,147</td></tr>
+        <tr><td>2019年度</td><td>656</td><td><strong>3,337</strong></td><td>36,243</td><td>17,228</td><td>53,471</td></tr>
+        <tr><td>2023年度</td><td>638</td><td>2,814</td><td>42,678</td><td>16,582</td><td>59,260</td></tr>
+        <tr><td><strong>2024年度</strong></td><td>630</td><td>2,956</td><td>42,257</td><td>17,803</td><td><strong>60,060</strong></td></tr>
+      </table></div></div>
+    </details>
+
+    <div class="info-box">
+      <strong>読みどころ：京都は「観光客を減らす」とは言わない。「観光客に払わせる」へ転換した。</strong>
+      客室数は<strong>10年で2.9万→6.0万室と倍増</strong>し、<strong>簡易宿所は460→3,337軒（5年で7倍）</strong>に膨らんだ。町家が宿に変わり、住民が出ていく——
+      人口の章（§02）で見た<strong>「子育て世代が住宅を確保できない」</strong>問題とつながっている。<br>
+      市の答えは<strong>価格</strong>だ。宿泊税は<strong>高級ホテルほど重く（最大1万円）</strong>、バスと二条城は<strong>「市民は安く、観光客は高く」</strong>。
+      <a href="261002_kathmandu.html" style="color:inherit">外国人料金が当たり前の国</a>は多いが、<strong>日本の自治体が公共交通で住民と観光客の運賃を分けるのは前例がない</strong>。
+    </div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">観光エリアガイド（総覧）</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      京都の観光地は<strong>大きく5つのエリア</strong>に分かれ、エリア間の移動に30〜60分かかる。<strong>1日に回れるのは1〜2エリア</strong>と考えるのが現実的。
+      各スポットの<strong>拝観料・時間・歴史・混雑回避のコツ</strong>は、エリア別の詳細ページにまとめた。
+    </div>
+
+    <div class="area-grid">
+      <a class="area-card area-link" href="261009_kyoto_higashiyama.html">
+        <div class="area-header"><span class="area-name">東山</span><span class="area-night">🌙🌙🌙</span></div>
+        <div class="area-equiv">京都観光の中心・東京なら浅草＋銀座</div>
+        <div class="area-tags"><span class="tag">寺社</span><span class="tag">花街</span><span class="tag night">祇園</span></div>
+        <div class="area-desc"><strong>清水寺・八坂神社・祇園・二年坂三年坂・高台寺・建仁寺・知恩院・南禅寺・哲学の道・銀閣寺・平安神宮・三十三間堂</strong>。外国人訪問率1位（清水寺69.7%）・3位（祇園56.2%）を抱える最混雑エリア。→ 観光①</div>
+      </a>
+      <a class="area-card area-link" href="261009_kyoto_rakuchu.html">
+        <div class="area-header"><span class="area-name">洛中（中心部）</span><span class="area-night">🌙🌙</span></div>
+        <div class="area-equiv">碁盤の目の街なか・御所と城と市場</div>
+        <div class="area-tags"><span class="tag">城</span><span class="tag">市場</span><span class="tag">商業</span></div>
+        <div class="area-desc"><strong>二条城・京都御所・錦市場・先斗町・東寺・西本願寺・東本願寺・下鴨神社・京都駅</strong>。四条河原町が繁華街の中心。→ 観光②</div>
+      </a>
+      <a class="area-card area-link" href="261009_kyoto_rakuchu.html#south">
+        <div class="area-header"><span class="area-name">伏見・洛南</span><span class="area-night">🌙</span></div>
+        <div class="area-equiv">稲荷・酒蔵・桜の醍醐</div>
+        <div class="area-tags"><span class="tag">神社</span><span class="tag">酒蔵</span></div>
+        <div class="area-desc"><strong>伏見稲荷大社（千本鳥居）・醍醐寺・伏見の酒蔵・寺田屋</strong>。伏見稲荷は終日参拝できるので早朝が狙い目。宇治（平等院）は市外。→ 観光②</div>
+      </a>
+      <a class="area-card area-link" href="261009_kyoto_rakuhoku.html">
+        <div class="area-header"><span class="area-name">洛北・洛西（金閣周辺）</span><span class="area-night">—</span></div>
+        <div class="area-equiv">北山の禅寺ベルト</div>
+        <div class="area-tags"><span class="tag">禅寺</span><span class="tag">庭園</span></div>
+        <div class="area-desc"><strong>金閣寺・龍安寺・仁和寺・北野天満宮・大徳寺・上賀茂神社</strong>、さらに北の<strong>大原・鞍馬・貴船</strong>。→ 観光③</div>
+      </a>
+      <a class="area-card area-link" href="261009_kyoto_rakuhoku.html#arashiyama">
+        <div class="area-header"><span class="area-name">嵐山・嵯峨野</span><span class="area-night">—</span></div>
+        <div class="area-equiv">京都の奥座敷・竹林と渡月橋</div>
+        <div class="area-tags"><span class="tag">自然</span><span class="tag">禅寺</span></div>
+        <div class="area-desc"><strong>渡月橋・竹林の小径・天龍寺・野宮神社・トロッコ列車・保津川下り・苔寺（予約制）</strong>。→ 観光③</div>
+      </a>
+    </div>
+
+    <div class="sub-h">定番ルート</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>エリア</th><th>ルート</th><th>交通</th></tr>
+      <tr><td><strong>東山（南）</strong></td><td>清水寺 → 産寧坂・二年坂 → 高台寺 → 八坂神社 → 祇園・花見小路</td><td>京阪 清水五条・祇園四条</td></tr>
+      <tr><td><strong>東山（北）・岡崎</strong></td><td>銀閣寺 → 哲学の道 → 南禅寺 → 平安神宮</td><td>地下鉄東西線 蹴上</td></tr>
+      <tr><td><strong>北山</strong></td><td>金閣寺 → 龍安寺 → 仁和寺（きぬかけの路）</td><td>嵐電 龍安寺・御室仁和寺</td></tr>
+      <tr><td><strong>嵐山</strong></td><td>天龍寺 → 竹林の小径 → 渡月橋</td><td>JR嵯峨野線 嵯峨嵐山／嵐電 嵐山</td></tr>
+      <tr><td><strong>伏見</strong></td><td>伏見稲荷（千本鳥居） → 東福寺 →（市外）宇治・平等院</td><td>JR奈良線 稲荷／京阪 伏見稲荷</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">世界遺産「古都京都の文化財」</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      <strong>1994年登録、日本で5件目の世界遺産</strong>。<strong>16の社寺と1つの城、計17資産</strong>で、<strong>うち14が京都市内</strong>、宇治市に2（平等院・宇治上神社）、滋賀県大津市に1（延暦寺）。
+      金閣・銀閣・清水寺の「有名どころ」だけでなく、<strong>高山寺（鳥獣戯画）・西芳寺（苔寺）のような予約制・郊外の寺</strong>も入っている。
+    </div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>#</th><th>構成資産</th><th>所在</th><th>詳細ページ</th></tr>
+      <tr><td>1</td><td>賀茂別雷神社（上賀茂神社）</td><td>北区</td><td><a href="261009_kyoto_rakuhoku.html">観光③</a></td></tr>
+      <tr><td>2</td><td>賀茂御祖神社（下鴨神社）</td><td>左京区</td><td><a href="261009_kyoto_rakuchu.html">観光②</a></td></tr>
+      <tr><td>3</td><td>教王護国寺（東寺）</td><td>南区</td><td><a href="261009_kyoto_rakuchu.html">観光②</a></td></tr>
+      <tr><td>4</td><td>清水寺</td><td>東山区</td><td><a href="261009_kyoto_higashiyama.html">観光①</a></td></tr>
+      <tr><td>5</td><td>醍醐寺</td><td>伏見区</td><td><a href="261009_kyoto_rakuchu.html#south">観光②</a></td></tr>
+      <tr><td>6</td><td>仁和寺</td><td>右京区</td><td><a href="261009_kyoto_rakuhoku.html">観光③</a></td></tr>
+      <tr><td>7</td><td>高山寺</td><td>右京区（栂尾）</td><td>—</td></tr>
+      <tr><td>8</td><td>西芳寺（苔寺）</td><td>西京区</td><td><a href="261009_kyoto_rakuhoku.html#arashiyama">観光③</a></td></tr>
+      <tr><td>9</td><td>天龍寺</td><td>右京区</td><td><a href="261009_kyoto_rakuhoku.html#arashiyama">観光③</a></td></tr>
+      <tr><td>10</td><td>鹿苑寺（金閣寺）</td><td>北区</td><td><a href="261009_kyoto_rakuhoku.html">観光③</a></td></tr>
+      <tr><td>11</td><td>慈照寺（銀閣寺）</td><td>左京区</td><td><a href="261009_kyoto_higashiyama.html">観光①</a></td></tr>
+      <tr><td>12</td><td>龍安寺</td><td>右京区</td><td><a href="261009_kyoto_rakuhoku.html">観光③</a></td></tr>
+      <tr><td>13</td><td>本願寺（西本願寺）</td><td>下京区</td><td><a href="261009_kyoto_rakuchu.html">観光②</a></td></tr>
+      <tr><td>14</td><td>元離宮二条城</td><td>中京区</td><td><a href="261009_kyoto_rakuchu.html">観光②</a></td></tr>
+      <tr><td>15</td><td>平等院</td><td>宇治市</td><td>（市外）</td></tr>
+      <tr><td>16</td><td>宇治上神社</td><td>宇治市</td><td>（市外）</td></tr>
+      <tr><td>17</td><td>延暦寺</td><td>滋賀県大津市（京都市にまたがる）</td><td>（市外）</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s12">
+    <div class="sec-label"><span class="num">12</span><span class="sec-title">年中行事と季節</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>行事・季節</th><th>日程</th><th>中身</th></tr>
+      <tr><td><strong>桜</strong></td><td>3月末〜4月上旬</td><td>2025年は開花3/27・満開4/5（京都地方気象台）。<strong>ホテルADRが年間最高（4月30,640円）</strong>になる最混雑期</td></tr>
+      <tr><td><strong>葵祭</strong></td><td>5月15日</td><td>京都三大祭の一つ。京都御所を10:30に出発し<strong>下鴨神社→上賀茂神社</strong>へ約8kmの行列。中心は勅使と<strong>斎王代</strong></td></tr>
+      <tr><td><strong>祇園祭</strong></td><td>7月1〜31日</td><td>八坂神社の祭礼。<strong>山鉾巡行は前祭7/17・後祭7/24</strong>、山鉾は計34基。前夜の「宵山」が最も混む。<strong>ユネスコ無形文化遺産</strong>（「山・鉾・屋台行事」）</td></tr>
+      <tr><td><strong>五山送り火</strong></td><td>8月16日</td><td>20:00に<strong>大文字</strong>、以降5分おきに<strong>妙法→船形→左大文字→鳥居形</strong>。お盆の精霊を送る</td></tr>
+      <tr><td><strong>時代祭</strong></td><td>10月22日</td><td>平安神宮の祭礼（1895年〜）。<strong>約2,000人・約2kmの行列が平安時代から明治維新までの衣装</strong>で京都御所→平安神宮。2026年は12:00御所出発</td></tr>
+      <tr><td><strong>紅葉</strong></td><td>11月中旬〜12月上旬</td><td><strong>月別観光客数は11月が年間最多</strong>。近年は遅れ気味で、<strong>2025年のカエデ紅葉観測は12月10日</strong>。2025年11月の主要ホテル稼働率86.9%</td></tr>
+      <tr><td>閑散期</td><td>1〜2月</td><td><strong>2月が年間最少</strong>。底冷えするが、ホテルが安く寺が空く。<strong>冬の特別公開</strong>（非公開文化財の公開）もこの時期</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s13">
+    <div class="sec-label"><span class="num">13</span><span class="sec-title">食・グルメ</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="food-grid">
+      <div class="food-card"><div class="food-name">京料理・懐石</div><div class="food-desc">有職料理（宮中）・精進料理（寺）・茶懐石・おばんざいが混ざって生まれた。<strong>ミシュラン京都・大阪2026で京都の三つ星は6店</strong>：瓢亭・一子相伝なかむら・祇園さゝ木・菊乃井本店・未在・<strong>美山荘（新規、6年ぶりの新三つ星）</strong>。瓢亭と菊乃井本店は17年連続</div></div>
+      <div class="food-card"><div class="food-name">おばんざい</div><div class="food-desc">京都の家庭の日常のおかず。旬の野菜・乾物・豆腐を使う惣菜。カウンターに大皿が並ぶ「おばんざい屋」が観光客向けにも多い</div></div>
+      <div class="food-card"><div class="food-name">湯豆腐</div><div class="food-desc"><strong>南禅寺・嵯峨野の名物</strong>。良質な地下水と精進料理の伝統が背景——<strong>北陸新幹線の地下水論争（§06）とつながる食文化</strong></div></div>
+      <div class="food-card"><div class="food-name">にしんそば</div><div class="food-desc">身欠きにしんの甘露煮を載せた温かいそば。<strong>南座横の「松葉」が発祥</strong>とされる。海から遠い京都で、保存食の魚を使った料理</div></div>
+      <div class="food-card"><div class="food-name">鯖寿司</div><div class="food-desc">若狭湾から京へ塩鯖を運んだ<strong>「鯖街道」</strong>の文化。祭りやハレの日の料理。「いづう」などの老舗</div></div>
+      <div class="food-card"><div class="food-name">京漬物</div><div class="food-desc">三大漬物は<strong>すぐき</strong>（上賀茂・乳酸発酵）、<strong>千枚漬</strong>（聖護院かぶら・冬限定）、<strong>しば漬</strong>（大原・赤紫蘇とナス）</div></div>
+      <div class="food-card"><div class="food-name">宇治抹茶・和菓子</div><div class="food-desc">宇治茶は京都府南部産。近年の世界的な抹茶ブームの中心。和菓子は茶の湯とともに発達し、<strong>八ッ橋・あぶり餅・葛きり</strong>などが名物</div></div>
+      <div class="food-card"><div class="food-name">京都ラーメン</div><div class="food-desc">3系統。①濃口醤油系：<strong>新福菜館</strong>（1938年屋台創業、ルーツとされる）・<strong>本家第一旭</strong>（京都駅東）②背脂醤油系 ③こってり鶏白湯系：<strong>天下一品</strong>（1971年創業）。<strong>京都は意外にラーメンの街</strong></div></div>
+    </div>
+
+    <div class="info-box" style="margin-top:18px">
+      <strong>八ッ橋の「創業年」裁判。</strong>
+      井筒八ッ橋本舗が、聖護院八ッ橋総本店の<strong>「創業元禄2年（1689）」表示は誤認表示</strong>だとして、差止めと600万円の賠償を求めて提訴（2018年）。
+      <strong>京都地裁（2020-06）・大阪高裁（2021-03）とも請求棄却</strong>——「300年以上前の言い伝えは検証できず、消費者も伝承と分かる」という判断。
+      <strong>老舗同士が「どちらが古いか」を裁判で争う</strong>のが京都らしい。<br>
+      <strong>錦市場</strong>（「京の台所」、幅約3.5mの通り）は2018年から<strong>食べ歩き自粛</strong>。買ったものは店頭・店内のイートインで食べるのがルール。
+    </div>
+  </div>
+
+  <div class="sec" id="s14">
+    <div class="sec-label"><span class="num">14</span><span class="sec-title">ダウンタウンとホテル</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="sub-h">ダウンタウン</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>エリア</th><th>中身</th></tr>
+      <tr><td><strong>四条河原町・烏丸</strong></td><td><strong>京都最大の繁華街・ビジネス街</strong>。高島屋・大丸、阪急京都河原町駅・烏丸駅。<strong>四条烏丸はオフィス街</strong>で京都銀行など金融機関が集まる</td></tr>
+      <tr><td><strong>京都駅周辺</strong></td><td>JR・近鉄・地下鉄の結節点。京都駅ビル（1997年、原広司設計）、京都タワー、伊勢丹。<strong>南区に任天堂・ニデック・ワコール・堀場など企業本社</strong>が並ぶ</td></tr>
+      <tr><td><strong>祇園・先斗町・木屋町</strong></td><td><strong>花街と夜の街</strong>。祇園甲部・宮川町・先斗町などの五花街。木屋町は学生・若者の飲み屋街</td></tr>
+      <tr><td>烏丸御池・室町</td><td>町家とオフィスとホテルが混在。<strong>THE HIRAMATSU京都</strong>など町家再生型の宿</td></tr>
+      <tr><td>岡崎</td><td>平安神宮・京都市京セラ美術館（市美術館の命名権）・国立近代美術館・ロームシアター京都。<strong>京都企業の命名権が並ぶ文化ゾーン</strong></td></tr>
+      <tr><td>出町柳・百万遍</td><td>京大・同志社の学生街。叡山電鉄の起点</td></tr>
+    </table></div>
+
+    <div class="sub-h">Tier 1 ホテル — 2014年以降の外資ラグジュアリー・ラッシュ</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>ホテル</th><th>開業</th><th>客室</th><th>特徴</th></tr>
+      <tr><td><strong>帝国ホテル 京都</strong></td><td><strong>2026-03-05</strong></td><td>55</td><td><strong>祇園甲部歌舞練場の敷地、登録有形文化財「弥栄会館」を一部保存</strong>。帝国ホテルとして30年ぶりの新規開業。LHW加盟</td></tr>
+      <tr><td><strong>カペラ京都</strong></td><td><strong>2026-03-22</strong></td><td>89</td><td>宮川町、旧新道小学校跡地。<strong>隈研吾設計</strong>、ブランドの日本初進出。温泉スイートあり</td></tr>
+      <tr><td>シックスセンシズ 京都</td><td>2024-04</td><td>81</td><td>東山。ブランドの日本初進出、ウェルネス重視</td></tr>
+      <tr><td>バンヤンツリー・東山 京都</td><td>2024-08</td><td>52</td><td>東山の高台。日本初進出</td></tr>
+      <tr><td>ROKU KYOTO, LXR</td><td>2021-09</td><td>114</td><td>鷹峯。ヒルトンLXRのアジア初進出</td></tr>
+      <tr><td>THE HIRAMATSU 京都</td><td>2020-03</td><td>29</td><td>室町三条の町家を保存・再生</td></tr>
+      <tr><td><strong>アマン京都</strong></td><td>2019-11</td><td>26</td><td>北区鷹峯の森の庭園</td></tr>
+      <tr><td><strong>パーク ハイアット 京都</strong></td><td>2019-10</td><td>70</td><td>高台寺の隣、料亭「山荘 京大和」の敷地内</td></tr>
+      <tr><td>フォーシーズンズ 京都</td><td>2016-10</td><td>123＋レジデンス57</td><td>東山。800年の池泉回遊式庭園「積翠園」</td></tr>
+      <tr><td><strong>ザ・リッツ・カールトン京都</strong></td><td>2014-02</td><td>134</td><td>鴨川二条。<strong>京都の外資ラグジュアリーの先駆け</strong></td></tr>
+      <tr><td>（予定）コートヤード・バイ・マリオット京都駅</td><td>2026年秋</td><td>270</td><td></td></tr>
+      <tr><td>（予定）シャングリ・ラ京都二条城（仮称）</td><td>2026年</td><td>77</td><td></td></tr>
+    </table></div>
+
+    <div class="callout">
+      <strong>京都のラグジュアリーホテルは「小さく、古いものの中に」建つ。</strong>
+      客室数は<strong>26〜134室</strong>と、<a href="260929_fukuoka_city.html#s10" style="color:inherit">福岡のヒルトン（1,052室）</a>のような大箱はない。
+      高さ規制で高層ホテルが建てられないため、<strong>学校跡地（カペラ・ザ・ゲート）・料亭の敷地（パークハイアット）・文化財（帝国ホテル）・町家（平松）</strong>を使う。<br>
+      その結果<strong>ADR5万円以上の10施設の平均は103,318円</strong>——ちょうど<strong>宿泊税の最高区分（10万円以上で1万円）</strong>に当たる層だ。
+    </div>
+  </div>
+
+  <div class="sec" id="s15">
+    <div class="sec-label"><span class="num">15</span><span class="sec-title">直近の出来事（2024→2026）</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>時期</th><th>出来事</th></tr>
+      <tr><td><strong>2024-02-04</strong></td><td><strong>市長選で松井孝治が初当選</strong>（2/25就任）。門川大作の16年が終わる</td></tr>
+      <tr><td>2024-04</td><td><strong>祇園の私道に立入禁止の高札</strong>。シックスセンシズ京都開業</td></tr>
+      <tr><td><strong>2024-06-01</strong></td><td><strong>観光特急バス（EX100/101）運行開始</strong></td></tr>
+      <tr><td>2025-01-14</td><td><strong>宿泊税の最高1万円への引き上げ方針を発表</strong></td></tr>
+      <tr><td>2025-04〜10</td><td><strong>大阪・関西万博</strong>。京都は日本人宿泊が減り、外国人が下支え</td></tr>
+      <tr><td>2025-11</td><td><strong>中国政府が訪日自粛を要請</strong>。京都の主要ホテルで米国が国別1位に</td></tr>
+      <tr><td>2025-12-10</td><td>京都のカエデ紅葉を観測（例年より大幅に遅い）</td></tr>
+      <tr><td>2026-02-25</td><td>市議会で<strong>市バスの市民優先価格（市民200円／市民以外350〜400円）</strong>の具体案を表明</td></tr>
+      <tr><td><strong>2026-03-01</strong></td><td><strong>宿泊税改定施行（最高1万円、全国最高）</strong></td></tr>
+      <tr><td><strong>2026-03</strong></td><td><strong>帝国ホテル京都（3/5）・カペラ京都（3/22）開業</strong>。3月の中国人宿泊は前年比▲64.9%</td></tr>
+      <tr><td>2026-04-23</td><td>ミシュラン京都・大阪2026。<strong>美山荘が新三つ星</strong></td></tr>
+      <tr><td><strong>2026-06</strong></td><td><strong>2025年観光総合調査</strong>：観光客6,279万人・消費額2兆474億円で過去最高</td></tr>
+      <tr><td><strong>2026-07-15</strong></td><td><strong>北陸新幹線「桂川案」決定</strong>。松井市長は「根拠を示してほしい」と反発</td></tr>
+      <tr><td>2026-08-24</td><td>京都フュージョニアリングがシリーズDで総額257.2億円</td></tr>
+      <tr><td>2026-09</td><td>民泊・簡易宿所の規制強化案（住居専用地域で営業日ゼロ）を公表。2027年2月市会に条例案の予定</td></tr>
+      <tr><td><strong>2026-09-29</strong></td><td><strong>2025年国勢調査確報：人口1,430,062人（▲2.3%）</strong>、1世帯1.89人は過去最小</td></tr>
+      <tr><td>2026-10-01</td><td><strong>二条城の二重価格（市民1,000円／市民以外2,000円）を2027年度に導入する方針</strong>が報じられる</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s16">
+    <div class="sec-label"><span class="num">16</span><span class="sec-title">桃鉄の「京都」「祇園」「嵐山」</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="callout">
+      <strong>桃鉄（～昭和 平成 令和も定番！～）で、京都市内には物件駅が3つある——京都・祇園・嵐山。</strong>
+      3駅の独占価格合計は<strong>8,064億円</strong>で、そのほとんどは京都駅の<strong>「宅配便会社」7,200億円</strong>1件（佐川急便は京都発祥）。
+      <a href="260929_fukuoka_city.html#s11" style="color:inherit">福岡市の2駅（1,260億円）</a>の6倍以上。
+      <strong>京都駅の物件は「ゲーム開発会社」「女性下着会社」「自動改札機会社」</strong>——任天堂・ワコール・オムロンという<strong>§05の京都企業そのもの</strong>になっている。
+    </div>
+
+    <div class="sub-h">京都駅（8物件）— 独占価格 7,971億円</div>
+    <div class="t-wrap"><table class="t">
+      <tr><th>物件</th><th>種類</th><th>価格</th><th>収益率</th><th>モデル（推定）</th></tr>
+      <tr><td><strong>宅配便会社</strong></td><td>商業</td><td><strong>7,200億円</strong></td><td>4%</td><td>佐川急便（SGホールディングス、京都本社）</td></tr>
+      <tr><td>自動改札機会社</td><td>工業</td><td>460億円</td><td>3%</td><td>オムロン</td></tr>
+      <tr><td>女性下着会社</td><td>商業</td><td>132億円</td><td>5%</td><td>ワコール</td></tr>
+      <tr><td><strong>ゲーム開発会社</strong></td><td>工業</td><td>102億円</td><td><strong>20%</strong></td><td>任天堂</td></tr>
+      <tr><td>鉄道博物館</td><td>観光</td><td>70億円</td><td>15%</td><td>京都鉄道博物館（梅小路）</td></tr>
+      <tr><td>あぶらとり紙屋</td><td>商業</td><td>5億円</td><td>10%</td><td></td></tr>
+      <tr><td>あぶり餅屋 ×2</td><td>食品</td><td>各1億円</td><td>10%</td><td>今宮神社門前</td></tr>
+    </table></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>駅</th><th>物件</th><th>独占価格</th></tr>
+      <tr><td><strong>祇園</strong>（8物件）</td><td>京の米料亭2億／鮨割烹3億／イタリアン料理店4億／天然かき氷屋1億／老舗コーヒー店1億／葛きり屋2億／生麩屋3億／帆布工場5億</td><td>21億円</td></tr>
+      <tr><td><strong>嵐山</strong>（5物件）</td><td>高級料亭×2 各5億／料亭億兆60億／湯豆腐料理屋×2 各1億</td><td>72億円</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s17">
+    <div class="sec-label"><span class="num">17</span><span class="sec-title">行くなら</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td><strong>ベストシーズン</strong></td><td>景色なら<strong>4月上旬（桜）と11月下旬〜12月上旬（紅葉）</strong>だが、ホテル代も混雑も最大。<strong>狙い目は1〜2月と6月</strong>（空いていて冬・夏の特別公開がある）</td></tr>
+      <tr><td>おすすめ滞在日数</td><td><strong>2〜3泊</strong>。1日目東山、2日目嵐山＋金閣周辺、3日目伏見稲荷（早朝）＋洛中</td></tr>
+      <tr><td>拠点にするなら</td><td><strong>四条烏丸〜河原町</strong>（阪急・地下鉄・京阪どこへも出やすい）。移動効率重視なら<strong>京都駅</strong></td></tr>
+      <tr><td><strong>移動</strong></td><td><strong>バスより鉄道</strong>。嵐山はJR嵯峨野線・嵐電、伏見稲荷はJR奈良線・京阪、東山は京阪・地下鉄東西線。地下鉄・バス1日券（1,100円）。土休日に京都駅から東山なら<strong>観光特急バス（500円）</strong></td></tr>
+      <tr><td><strong>混雑回避</strong></td><td><strong>朝が勝負</strong>。伏見稲荷は終日参拝可、清水寺は早朝から開門。<strong>京都観光快適度マップ</strong>で時間帯別の混雑予測を確認。荷物は<strong>手ぶら観光</strong>でホテルへ送る</td></tr>
+      <tr><td>予算感</td><td>主要ホテルの<strong>ADR約2.1万円</strong>（2025年、4月は3万円超）。宿泊税は2万円未満なら400円、2〜5万円で1,000円。拝観料は1か所400〜1,000円程度が目安</td></tr>
+      <tr><td>マナー</td><td><strong>祇園の私道に入らない、舞妓を追いかけて撮らない、錦市場で食べ歩きしない</strong></td></tr>
+      <tr><td>東京から</td><td><strong>のぞみで約2時間10分</strong>。伊丹空港経由より速い</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s18">
+    <div class="sec-label"><span class="num">18</span><span class="sec-title">Index — 関連ページ</span><span class="sec-updated">Last updated: 2026-10-09</span></div>
+
+    <div class="t-wrap"><table class="t">
+      <tr><th>ページ</th><th>内容</th></tr>
+      <tr><td><a href="261009_kyoto_higashiyama.html"><strong>観光① 東山</strong></a></td><td>清水寺・八坂神社・祇園・二年坂三年坂・高台寺・建仁寺・知恩院・南禅寺・哲学の道・銀閣寺・平安神宮・三十三間堂・永観堂</td></tr>
+      <tr><td><a href="261009_kyoto_rakuchu.html"><strong>観光② 洛中・洛南</strong></a></td><td>二条城・京都御所・錦市場・先斗町・東寺・東西本願寺・下鴨神社・京都駅／伏見稲荷・醍醐寺・伏見の酒蔵・寺田屋</td></tr>
+      <tr><td><a href="261009_kyoto_rakuhoku.html"><strong>観光③ 洛北・洛西・嵐山</strong></a></td><td>金閣寺・龍安寺・仁和寺・北野天満宮・大徳寺・上賀茂神社・大原・鞍馬・貴船／嵐山・嵯峨野・苔寺</td></tr>
+      <tr><td><a href="260929_fukuoka_city.html"><strong>福岡市</strong></a></td><td>比較用。人口増の政令市・財政・ホテル・桃鉄</td></tr>
+      <tr><td><a href="260831_japan.html"><strong>日本</strong></a></td><td>国全体</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>京都市「令和7年国勢調査 人口等基本集計（確報）」（2026-09-29）／「同 速報」（2026-05-20）／「令和2年国勢調査 概要」／「人口戦略アクション2023」／市長記者会見資料（R5.4.12）</li>
+      <li>京都市「大学のまち京都・学生のまち京都推進会議」第1回資料（2026）／ 生活ガイド.com（昼夜間人口比率）</li>
+      <li>京都市「市民経済計算 令和4年度推計」（2025-11-13）</li>
+      <li>京都市「令和6年度決算 参考データ集」／ 京都市監査委員「決算審査意見」「健全化判断比率審査意見」（R7.8）／ 京都府「R6決算財政指標」／ 京都市「財務書類（統一的な基準）R6・R5」／「行財政改革計画2021-2025 概要・総括（R6.9）」</li>
+      <li>株探（各社株価・時価総額、2026-10-09終値）／ 創業手帳・THE BRIDGE（京都フュージョニアリング シリーズD）／ MONEYPOST・ダイヤモンド「京都企業の血脈」</li>
+      <li>京都市交通局「令和6年度 経営状況」「令和7年度 市バス系統別収支」「経営健全化計画 完了報告書」／ data-max（地下鉄の経緯）／ 京都市交通局 観光特急バス資料</li>
+      <li>熊本日日新聞（共同配信）北陸新幹線・桂川案関連（2026-07〜08）／ tabiris・鉄道チャンネル（桂川案）</li>
+      <li>travelist（関空・伊丹から京都へのアクセス）</li>
+      <li>京都市産業観光局「令和7年 京都観光総合調査 概要・本冊」（2026-06）／ 京都市観光協会『データ年報2025確報』／ トラベルボイス（2026-01-21、2026-04-30、2026-09-08、2025-01-15）／ nippon.com・訪日ラボ（2025年京都観光）</li>
+      <li>Business Insider Japan「京都市バス 市民優先価格」（2026-09-23）／ 熊本日日新聞「二条城 二重価格」（2026-10-01）／ traicy「民泊規制強化案」（2026-09-07）／ Time Out・弁護士ドットコム（祇園の私道）／ 乗りものニュース（バス1日券廃止）</li>
+      <li>帝国ホテル 京都 開業リリース（2026-03-05）／ Impress Travel Watch（カペラ京都）／ 各ホテル開業時の報道（トラベルボイス・WWD・atpress・Precious・Michelin Guide）</li>
+      <li>京都観光Navi（葵祭）／ 祇園祭・五山送り火・時代祭2026の日程情報／ 京都地方気象台（2025年の桜・紅葉）</li>
+      <li>さきがけ・飲食店.COM（ミシュランガイド京都・大阪2026）／ Westlaw Japan 判例コラム第250号（八ッ橋訴訟）／ Walkerplus（京都ラーメン）／ mapple（錦市場）</li>
+      <li>tabi-mag・文化庁推薦書（古都京都の文化財）／ gamepedia（桃太郎電鉄 京都・祇園・嵐山）</li>
+    </ul>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>
