@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>48 New Biz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root { --bg:#ffffff; --text:#111111; --mid:#444444; --muted:#888888; --border:#d8d8d8; --surface:#f5f5f5; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans JP', sans-serif; font-size: 15px; line-height: 1.8; }
+.page { max-width: 1040px; margin: 0 auto; padding: 56px 16px 120px; }
+.breadcrumb { font-family: 'Poppins', monospace; font-size: 10px; letter-spacing: .14em; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; }
+.breadcrumb a { color: var(--mid); text-decoration: none; }
+h1 { font-size: 1.7rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.3; margin-bottom: 6px; }
+.sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+h2 { font-size: 1.15rem; font-weight: 700; margin: 40px 0 14px; padding-bottom: 8px; border-bottom: 2px solid var(--text); }
+h2:first-child { margin-top: 8px; }
+h3 { font-size: 1rem; font-weight: 700; margin: 22px 0 8px; }
+p { margin-bottom: 12px; color: var(--mid); }
+strong { color: var(--text); }
+ul, ol { margin: 0 0 14px 20px; } li { margin-bottom: 6px; color: var(--mid); }
+.note { font-size: 12px; color: var(--muted); }
+
+/* tabs */
+.tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--border); margin-bottom: 28px; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; position: sticky; top: 0; background: var(--bg); z-index: 5; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { flex: 0 0 auto; background: none; border: 0; border-bottom: 2px solid transparent; padding: 10px 14px; font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; }
+.tab:hover { color: var(--text); }
+.tab.on { color: var(--text); border-bottom-color: var(--text); }
+.panel { display: none; }
+.panel.on { display: block; }
+
+/* blocks */
+.callout { background: var(--surface); border-left: 3px solid var(--text); padding: 14px 18px; margin: 10px 0 16px; }
+.callout p { margin-bottom: 6px; color: var(--text); }
+.callout p:last-child { margin-bottom: 0; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 6px 0 20px; }
+.kpi { border: 1px solid var(--border); border-radius: 6px; padding: 14px 16px; }
+.kpi .k { font-family: 'Poppins', sans-serif; font-size: 10px; letter-spacing: .12em; color: var(--muted); text-transform: uppercase; }
+.kpi .v { font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 1.25rem; font-weight: 700; line-height: 1.4; }
+.kpi .d { font-size: 12px; color: var(--mid); line-height: 1.6; }
+.tbd { display: inline-block; font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 10px; font-weight: 600; letter-spacing: .04em; border: 1px dashed var(--text); color: var(--text); border-radius: 3px; padding: 0 6px; margin-left: 4px; vertical-align: 1px; white-space: nowrap; }
+
+/* tables */
+.tbl { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 14px; }
+.cmp { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 640px; }
+.cmp th, .cmp td { border-bottom: 1px solid var(--border); padding: 9px 10px; text-align: left; vertical-align: top; line-height: 1.65; }
+.cmp th { font-family: 'Poppins', sans-serif; font-size: 11px; letter-spacing: .08em; color: var(--muted); text-transform: uppercase; font-weight: 600; }
+.cmp td:first-child { font-weight: 700; white-space: nowrap; color: var(--text); }
+.cmp td { color: var(--mid); }
+.score { font-family: 'Poppins', sans-serif; letter-spacing: .1em; color: var(--text); white-space: nowrap; }
+
+/* idea cards */
+.ideas { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; margin-bottom: 18px; }
+.idea { border: 1px solid var(--border); border-radius: 8px; padding: 20px 20px 16px; }
+.idea .id { font-family: 'Poppins', sans-serif; font-size: 11px; letter-spacing: .14em; color: var(--muted); }
+.idea .t { font-size: 1.05rem; font-weight: 700; line-height: 1.4; margin: 2px 0 10px; }
+.idea dl { font-size: 13px; line-height: 1.65; }
+.idea dt { font-family: 'Poppins', sans-serif; font-size: 10px; letter-spacing: .1em; color: var(--muted); text-transform: uppercase; margin-top: 8px; }
+.idea dd { color: var(--mid); }
+.idea.open { border-style: dashed; background: var(--surface); }
+
+/* flow */
+.flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; counter-reset: st; margin: 6px 0 18px; }
+.step { border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; position: relative; }
+.step::before { counter-increment: st; content: "STEP " counter(st); font-family: 'Poppins', sans-serif; font-size: 10px; letter-spacing: .12em; color: var(--muted); display: block; }
+.step b { display: block; font-size: 14px; }
+.step span { font-size: 12.5px; color: var(--mid); line-height: 1.6; display: block; }
+
+/* checklist */
+.todo { list-style: none; margin-left: 0; }
+.todo li { padding: 8px 0 8px 28px; border-bottom: 1px solid var(--border); position: relative; }
+.todo li::before { content: ""; position: absolute; left: 2px; top: 13px; width: 13px; height: 13px; border: 1.5px solid var(--text); border-radius: 2px; }
+.todo .who { font-family: 'Poppins', sans-serif; font-size: 11px; color: var(--muted); margin-left: 6px; }
+
+/* transcript */
+.ts { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 560px; }
+.ts td { border-bottom: 1px solid var(--border); padding: 9px 10px; vertical-align: top; line-height: 1.7; color: var(--mid); }
+.ts td.tm { font-family: 'Poppins', sans-serif; font-size: 12px; color: var(--muted); white-space: nowrap; width: 92px; }
+.ts td.sp { font-weight: 700; color: var(--text); white-space: nowrap; width: 72px; }
+.ts tr.gap td { color: var(--muted); font-style: italic; background: var(--surface); }
+
+@media (max-width: 600px) {
+  h1 { font-size: 1.4rem; }
+  .page { padding-top: 36px; }
+  .tab { padding: 10px 11px; font-size: 12.5px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="breadcrumb"><a href="../index.html">/ IDEAS</a> / 261011</div>
+<h1>48 New Biz</h1>
+<div class="sub">高校48期の同期（加藤R・加藤A・佐藤）で立ち上げる新事業の議事録と事業ボード。2026-10-11 の雑談（73分）がベース。<span class="tbd">要確認</span> は未確定の項目。Last updated: 2026-10-11</div>
+
+<div class="tabs" role="tablist">
+  <button class="tab on" data-p="ov">Overview</button>
+  <button class="tab" data-p="ideas">Ideas</button>
+  <button class="tab" data-p="proc">Process</button>
+  <button class="tab" data-p="team">Team &amp; Money</button>
+  <button class="tab" data-p="todo">Homework</button>
+  <button class="tab" data-p="ts">Transcript</button>
+</div>
+
+<!-- ===== Overview ===== -->
+<section class="panel on" id="ov">
+<h2>Summary</h2>
+<div class="callout">
+  <p><strong>48期の3人で、小さく早く事業を立ち上げる。</strong>Kyo は社長ではなく「定期的に答えを渡す人」兼スポンサー。</p>
+  <p>出発点は「富裕層インバウンド × SNS集客」。ただし Kyo の見立てでは市場が小さく属人的なので、<strong>集客とお金の流れという変数を変えて選択肢を3つ出し、そこから選ぶ</strong>。</p>
+</div>
+
+<div class="kpis">
+  <div class="kpi"><div class="k">Members</div><div class="v">3 + Kyo</div><div class="d">加藤R・加藤A・佐藤が実働。Kyo はアドバイザー</div></div>
+  <div class="kpi"><div class="k">Entity</div><div class="v">まだ作らない</div><div class="d">作る場合は Kyo 100%。資金・株も当面は決めない</div></div>
+  <div class="kpi"><div class="k">Research</div><div class="v">約100h / 2週間</div><div class="d">3人合計。ハイペースなら2週間で終わる</div></div>
+  <div class="kpi"><div class="k">Pay</div><div class="v">当面無給</div><div class="d">合言葉は「一攫千金」</div></div>
+</div>
+
+<h2>Key Takeaways</h2>
+<ol>
+  <li><strong>集客がセンターピン。</strong>集客さえできれば仕入れ先との交渉力が上がり、利益率は後からついてくる。</li>
+  <li><strong>お金の流れを見る。</strong>お金は血のように流れている。どこでせき止め、何%抜くかを決めれば事業になる。</li>
+  <li><strong>先に撤退ラインを決める。</strong>強い仮説とスタンスを持ち、「いつまでに PMF を検証するか」を合意する。</li>
+  <li><strong>人は増やさない。</strong>オペレーションが重いモデル（旅行代理店型）は避け、送客やアフィリエイトでサボれる設計にする。</li>
+  <li><strong>AI をレバーにする。</strong>クリエイティブもアカウントも AI で量産し、安く何度も試して失敗を前提に回す。</li>
+</ol>
+
+<h2>Kyo's Lens</h2>
+<p>Kyo は2024年頭に富裕層インバウンドのガイド事業を自分で試している。顧客の評価は高かったがスケールしなかった。15年やっても売上100億が上限という感覚で、自分の時間軸には合わずに撤退した。</p>
+<ul>
+  <li>撤退の理由は「属人性」と「市場の小ささ」。インバウンドは B2C なので、中心に据えた時点で規模が小さい方に寄る。</li>
+  <li>本人の反省は「やってダメで引いてしまった。踏ん張って角度を変える賢さがなかった」。</li>
+  <li>今は「どの変数を動かせば Y が出るか」の関数が分かっているので、ショートカットを渡せる。</li>
+</ul>
+</section>
+
+<!-- ===== Ideas ===== -->
+<section class="panel" id="ideas">
+<h2>Idea Board</h2>
+<p>MTG で名前が挙がった選択肢。宿題として、ここから3つに絞り込み、スタンスを取る。</p>
+
+<div class="ideas">
+  <div class="idea">
+    <div class="id">A · STARTING POINT</div>
+    <div class="t">富裕層インバウンド体験 × SNS送客</div>
+    <dl>
+      <dt>How</dt><dd>地域別のTikTok／Instagramアカウント（中東向け、中華圏向け、米国向けなど）で集客し、体験事業者（工芸体験、食、相撲など）へ送客する。</dd>
+      <dt>Money</dt><dd>送客手数料・アフィリエイト・チケット販売。旅行代理店型は運営が重いので避ける。</dd>
+      <dt>Lever</dt><dd>送客数が増えるほど仕入れ値を下げられる（例：6人目から1万円→8,000円）。</dd>
+      <dt>Risk</dt><dd>市場が小さい。属人化しやすい。普通にやると埋もれる。</dd>
+    </dl>
+  </div>
+  <div class="idea">
+    <div class="id">B · MEDIA</div>
+    <div class="t">AI量産メディア</div>
+    <dl>
+      <dt>How</dt><dd>AI で作っていて儲かっているメディアを研究し、テーマ・地域・言語の変数を変えて量産する。音声で指示→生成→修正のループを回す。</dd>
+      <dt>Money</dt><dd>集客した層に合わせた商材販売・アフィリエイト。集客方法とビジネスモデルを連動させる。</dd>
+      <dt>Lever</dt><dd>何度でも作り直せる。アカウントを何本も作って、刺さるまで失敗させる。</dd>
+      <dt>Risk</dt><dd>埋もれる。商材の選び方次第で評判リスクがある。</dd>
+    </dl>
+  </div>
+  <div class="idea">
+    <div class="id">C · ARBITRAGE</div>
+    <div class="t">株主優待アグリゲーター</div>
+    <dl>
+      <dt>How</dt><dd>優待を使わない株主（資産として株を持っている層）から割安で仕入れ、オンラインで販売する。金券ショップのオンライン版。</dd>
+      <dt>Money</dt><dd>例：額面の2割で仕入れて9割で売るなど、仕入れと販売の差額を取る。</dd>
+      <dt>Lever</dt><dd>ニッチだが伸びやすい。お金の流れがシンプル。</dd>
+      <dt>Risk</dt><dd>規模の上限。優待の譲渡・転売に関する各社規約と法規制 <span class="tbd">要調査</span></dd>
+    </dl>
+  </div>
+  <div class="idea open">
+    <div class="id">D · OPEN</div>
+    <div class="t">4つ目の選択肢（宿題で探す）</div>
+    <dl>
+      <dt>How</dt><dd>今伸びているスモールビジネスをリサーチし、変数（集客チャネル、顧客、抜きどころ）を入れ替えて新しい案を出す。</dd>
+      <dt>Hint</dt><dd>「X をやれば Y が出る」という関数で考える。一昔前ならポケカ、ブランド品のリセールなど。</dd>
+    </dl>
+  </div>
+</div>
+
+<h2>Evaluation Axes</h2>
+<p>3案を比較するときの軸の叩き。スコアは MTG の発言から仮置きしたもので、宿題を通じて埋め直す。</p>
+<div class="tbl">
+<table class="cmp">
+  <thead><tr><th>Axis</th><th>問い</th><th>A インバウンド</th><th>B メディア</th><th>C 優待</th></tr></thead>
+  <tbody>
+    <tr><td>集客</td><td>センターピンを押さえられるか</td><td class="score">●●○</td><td class="score">●●●</td><td class="score">●○○</td></tr>
+    <tr><td>抜きどころ</td><td>お金の流れのどこで何%取るか</td><td class="score">●●○</td><td class="score">●●○</td><td class="score">●●●</td></tr>
+    <tr><td>非属人性</td><td>人が抜けても回るか</td><td class="score">●○○</td><td class="score">●●●</td><td class="score">●●○</td></tr>
+    <tr><td>市場規模</td><td>どこまで伸びるか</td><td class="score">●○○</td><td class="score">●●○</td><td class="score">●○○</td></tr>
+    <tr><td>運営の軽さ</td><td>採用せずに回せるか</td><td class="score">●○○</td><td class="score">●●●</td><td class="score">●●○</td></tr>
+  </tbody>
+</table>
+</div>
+<p class="note">● = 有利。仮置きなので、リサーチ後に3人のスタンスで上書きする。</p>
+</section>
+
+<!-- ===== Process ===== -->
+<section class="panel" id="proc">
+<h2>Decision Process</h2>
+<div class="flow">
+  <div class="step"><b>リサーチ</b><span>今熱いスモールビジネスとメディアを調べる（3人で約100h）</span></div>
+  <div class="step"><b>3案に絞る</b><span>変数を変えて選択肢を3つ出す</span></div>
+  <div class="step"><b>スタンスを取る</b><span>3人で「これがいい」を1つ決める</span></div>
+  <div class="step"><b>Kyo と壁打ち</b><span>「なぜそれか」を詰める。B に変える、または4つ目が出ることもある</span></div>
+  <div class="step"><b>検証</b><span>AI でアカウントやクリエイティブを量産し、早く失敗する</span></div>
+</div>
+
+<h2>Kill Line</h2>
+<div class="callout">
+  <p>MTG では「いつ辞めるかを先に決める」「いつまでに PMF を検証するか合意する」という話が出た。</p>
+  <p><strong>現時点では決めない</strong>（2026-10-11 Kyo 判断）。案が絞れた段階で、下の項目を改めて決める。</p>
+</div>
+<div class="tbl">
+<table class="cmp">
+  <thead><tr><th>Item</th><th>決めること</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>PMF の定義</td><td>何が起きたら「刺さった」とみなすか（フォロワー、送客数、売上など）</td><td>保留</td></tr>
+    <tr><td>期限</td><td>いつ判定するか</td><td>保留</td></tr>
+    <tr><td>撤退時の扱い</td><td>撤退したら次の案へ移るか、変数を変えて続けるか</td><td>保留</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2>Unit Economics の考え方</h2>
+<ul>
+  <li>目標から逆算する：月500万円の利益が出れば年6,000万円。そこにマルチプルを掛けて企業価値を見る。</li>
+  <li>「1,000万円投じたらいくらになるか」を、利益率の構造で説明できる状態にする。</li>
+  <li>集客ができていれば、仕入れ先は断れない。送客数で原価を下げて粗利を広げる。</li>
+</ul>
+
+<h2>Ops</h2>
+<ul>
+  <li>Slack を立て、MCP で会話を拾って Kyo に週次レポートを上げる案が出た <span class="tbd">要確認</span></li>
+  <li>やり取りは LINE グループが中心。</li>
+</ul>
+</section>
+
+<!-- ===== Team & Money ===== -->
+<section class="panel" id="team">
+<h2>Roles</h2>
+<div class="tbl">
+<table class="cmp">
+  <thead><tr><th>Who</th><th>Role</th><th>Note</th></tr></thead>
+  <tbody>
+    <tr><td>加藤R</td><td>実働メンバー</td><td>SNS集客と送客モデルの知見がある。「人は採らずサボれる設計に」という立場</td></tr>
+    <tr><td>加藤A</td><td>実働メンバー</td><td>前職で新規事業（コンシェルジュ系）の立ち上げを経験。集客重視。オペレーションの課題意識が強い</td></tr>
+    <tr><td>佐藤</td><td>実働メンバー</td><td>MTG での発言は少なめ</td></tr>
+    <tr><td>Kyo</td><td>アドバイザー兼スポンサー</td><td>社長でもメインでもない。定期的に答えを渡し、必要ならお金を出す</td></tr>
+  </tbody>
+</table>
+</div>
+<p>手を動かす人を後から足す場合は、月40万円程度で同期から招く案が出た。4人目以降の配分は揉めやすいので、役割は先に決めておく。</p>
+
+<h2>Money &amp; Entity</h2>
+<div class="tbl">
+<table class="cmp">
+  <thead><tr><th>Item</th><th>MTG で出た話</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>運転資金</td><td>約300万円あれば5〜6ヶ月もつという話が出た。出す場合は Kyo が出すが、今は出さない</td><td>保留</td></tr>
+    <tr><td>報酬</td><td>当面は無給</td><td>合意</td></tr>
+    <tr><td>法人</td><td>まだ作る必要がないので作らない。作る場合は Kyo 100% で設立する</td><td>決定</td></tr>
+    <tr><td>持分</td><td>パトロン型の出資なども話に出たが、今は決めない</td><td>保留</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+<!-- ===== Homework ===== -->
+<section class="panel" id="todo">
+<h2>Next Actions</h2>
+<ul class="todo">
+  <li>今熱いスモールビジネスとメディアをリサーチする（合計約100h、約2週間）<span class="who">加藤R・加藤A・佐藤</span></li>
+  <li>AI で作っていて儲かっているメディアを研究する<span class="who">加藤R・加藤A・佐藤</span></li>
+  <li>選択肢を3つに絞り、3人のスタンスを1つ決めて Kyo に持ってくる<span class="who">加藤R・加藤A・佐藤</span></li>
+  <li>Slack と週次レポートの体制を立てるか決める<span class="who">Kyo</span></li>
+</ul>
+
+<h2>Parked（今は決めない）</h2>
+<ul>
+  <li>法人の設立（作る場合は Kyo 100%）</li>
+  <li>運転資金の拠出（出す場合は Kyo）</li>
+  <li>株・持分の配分</li>
+  <li>撤退ライン（PMF の定義と期限）</li>
+</ul>
+</section>
+
+<!-- ===== Transcript ===== -->
+<section class="panel" id="ts">
+<h2>Transcript（整形版）</h2>
+<p class="note">tl;dv の対面録音から聞き取れた部分だけを整形したもの。話者は自動判定で、大半が混在ラベルのため推定を含む。抜けている時間帯がある。</p>
+<div class="tbl">
+<table class="ts">
+  <tbody>
+    <tr><td class="tm">00:00</td><td class="sp">Kyo</td><td>300万円を小さく配って回せば5〜6ヶ月はもつ。</td></tr>
+    <tr class="gap"><td class="tm">00:00–09:30</td><td class="sp">—</td><td>録音の抜け</td></tr>
+    <tr><td class="tm">09:31</td><td class="sp">加藤R</td><td>株は何%持つのか。パトロンとしてお金を出す形でいいのか。</td></tr>
+    <tr><td class="tm">14:53</td><td class="sp">加藤A</td><td>やることを決めて、その中で「いつ辞めるか」を先に決めた方がいい。</td></tr>
+    <tr><td class="tm">15:44</td><td class="sp">加藤R</td><td>失敗するのは意外と難しい。全員が強い仮説とスタンスを持つことが大事。</td></tr>
+    <tr><td class="tm">16:04</td><td class="sp">Kyo</td><td>検証が必要で、それが PMF のラインになる。それを「いつまでにやるか」を合意する。</td></tr>
+    <tr><td class="tm">18:16</td><td class="sp">加藤R</td><td>利益率の構造を示して「1,000万円がいくらまで行けるか」を話せるようにしたい。</td></tr>
+    <tr><td class="tm">21:04</td><td class="sp">Kyo</td><td>自分の目線は数百億円規模。インバウンドは B2C なので、中心に据えた時点で領域が小さい方に寄る。</td></tr>
+    <tr class="gap"><td class="tm">21:30–31:20</td><td class="sp">—</td><td>録音の抜け</td></tr>
+    <tr><td class="tm">31:27</td><td class="sp">加藤A</td><td>3人でアカウントを何度も作って失敗すればいい。どこかで刺さる。例えば富裕層向けの秘伝スポット（魚をさばく体験、相撲取りとの握手など）。集客が一番大事。</td></tr>
+    <tr><td class="tm">35:42</td><td class="sp">加藤R</td><td>旅行系のインフルエンサーやアカウントで攻めている例はたくさんある。</td></tr>
+    <tr><td class="tm">36:23</td><td class="sp">加藤R</td><td>知人に、地域別（中東向け、中華圏向けなど）に富裕層向けメディアを TikTok と Instagram で運営している例がある。コンセプトと集客の色がそれぞれ違う。</td></tr>
+    <tr><td class="tm">39:06</td><td class="sp">加藤R</td><td>ほぼ教科書がある。それを各自アレンジすればいい。なるべくサボれる設計に。</td></tr>
+    <tr><td class="tm">40:32</td><td class="sp">加藤A</td><td>旅行代理店型はオペレーションが大変、という話をしていた。</td></tr>
+    <tr><td class="tm">40:54</td><td class="sp">加藤R</td><td>アフィリエイトやチケット送客の方がいい。集客に困っている体験事業者（南部鉄器作り、土器作りなど）に電話して「こういうお客さんがいるので流しますよ」と伝える。人は採用しない方がいい。手を動かす人を同期から月40万円で、くらいでいい。</td></tr>
+    <tr><td class="tm">42:26</td><td class="sp">Kyo</td><td>役割分担はある程度あった方がいい。戦略を決める人、ひたすら手を動かす人、買い出しをする人。自分は社長でもメインでもなく、定期的に答えを渡す人。お金が必要なら出す。4人目以降の配分は揉めやすい。</td></tr>
+    <tr><td class="tm">46:00</td><td class="sp">Kyo</td><td>2024年頭、4つ目の事業として富裕層インバウンドを試した。自分でガイドもやったが、独自性が高くスケールしない。15年やって100億くらい。自分の目標の時間軸には足りずにやめた。</td></tr>
+    <tr><td class="tm">51:29</td><td class="sp">Kyo</td><td>撤退理由は属人性に加えて市場の小ささ。本来は踏ん張って角度を変えるべきだったが、その賢さがなかった。</td></tr>
+    <tr><td class="tm">52:07</td><td class="sp">Kyo</td><td>時代的に AI のレバーは必ず考えるべき。クリエイティブは音声で指示して何本でも試せる。「次は米国向けで」と言えばすぐ出てくる。AI で作っていて儲かっているメディアを研究するといい。</td></tr>
+    <tr><td class="tm">53:30</td><td class="sp">Kyo</td><td>メディアは集客方法とビジネスモデルが連動している。変数がたくさんある。</td></tr>
+    <tr><td class="tm">54:20</td><td class="sp">Kyo</td><td>前に考えた例が株主優待のアグリゲーター。優待を使わない株主から割安で仕入れ、オンラインで売って差額を取る。ニッチだが伸びる。</td></tr>
+    <tr><td class="tm">55:30</td><td class="sp">Kyo</td><td>ここ2年でビジネスをたくさん見て、お金の感覚が変わった。お金は血のように流れていて、どこでせき止めて何%取るかを考えればいい。月500万円なら年6,000万円、それにマルチプル。</td></tr>
+    <tr><td class="tm">56:24</td><td class="sp">Kyo</td><td>宿題：今熱いスモールビジネスやメディアをリサーチし、選択肢を3つ出して、3人で「これがいい」というスタンスを取って持ってきてほしい。なぜそれにしたかを壁打ちし、B の方がいいとなるか、変数を変えて4つ目が出るか。リサーチは3人で合計100時間くらい、ハイペースなら2週間。</td></tr>
+    <tr><td class="tm">59:04</td><td class="sp">加藤A</td><td>これまでは Codex や Claude の Artifacts で共有するくらいだった。AI を使えれば安く仮説検証を回せる。利益や exit の感覚が分かってよかった。</td></tr>
+    <tr><td class="tm">01:00:09</td><td class="sp">Kyo</td><td>法人はどうするか。LINE で話していた形でいい。ペーパーカンパニーとして登記するか、作らなくてもいい。当面は無給で、合言葉は「一攫千金」。</td></tr>
+    <tr><td class="tm">01:02:37</td><td class="sp">加藤A</td><td>前職では新規事業部署の3人目として、コンシェルジュ系の事業を立ち上げた。PM 的な立場だった。自分でやる方が勉強になる。</td></tr>
+    <tr><td class="tm">01:04:26</td><td class="sp">Kyo</td><td>頑張ってもうまくいかないことは多い。失敗前提でたくさん立ち上げた方がいい。</td></tr>
+    <tr><td class="tm">01:04:55</td><td class="sp">加藤R</td><td>普通にやると埋もれる。センターピンをずらした方がいい。集客できていれば、相手は売りたいので食いつく。</td></tr>
+    <tr><td class="tm">01:05:38</td><td class="sp">Kyo</td><td>例えばお酒なら、1万円で仕入れて1万5,000円で売るところを「6人目からは8,000円で」と交渉できる。相手は断れない。集客がセンターピン。Slack を立てて MCP で会話を拾い、週次でレポートが上がる形もいい。</td></tr>
+    <tr><td class="tm">01:09:45</td><td class="sp">Kyo</td><td>検証を回すだけでも、ビジネスマンとして普通に強くなる。</td></tr>
+    <tr><td class="tm">01:10:27</td><td class="sp">加藤R</td><td>設計さえ渡せば、あとはみんなで回していける。</td></tr>
+  </tbody>
+</table>
+</div>
+</section>
+
+</div>
+<script>
+(function () {
+  var tabs = document.querySelectorAll('.tab');
+  function show(id) {
+    tabs.forEach(function (t) { t.classList.toggle('on', t.dataset.p === id); });
+    document.querySelectorAll('.panel').forEach(function (p) { p.classList.toggle('on', p.id === id); });
+  }
+  tabs.forEach(function (t) {
+    t.addEventListener('click', function () {
+      show(t.dataset.p);
+      try { history.replaceState(null, '', '#' + t.dataset.p); } catch (e) {}
+    });
+  });
+  var h = location.hash.slice(1);
+  if (h && document.getElementById(h)) show(h);
+})();
+</script>
+</body>
+</html>
