@@ -66,3 +66,4 @@
 | [260829_flapping_airplanes_deep_research.html](260829_flapping_airplanes_deep_research.html) | Flapping Airplanes | AI基礎研究（データ効率） | 2026-08-29 |
 | [260829_etched_deep_research.html](260829_etched_deep_research.html) | Etched | Transformer専用ASIC（AI半導体） | 2026-08-29 |
 | [261005_cambridge_aerospace_deep_research.html](261005_cambridge_aerospace_deep_research.html) | Cambridge Aerospace | 防衛テック（低コスト迎撃ミサイル） | 2026-10-05 |
+| [261011_asml_deep_research.html](261011_asml_deep_research.html) | ASML | EUV露光装置（半導体製造装置） | 2026-10-11 |
