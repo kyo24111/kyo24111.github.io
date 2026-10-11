@@ -11,3 +11,9 @@
   - `nat` は国籍（複数可）、`genre` は Founder / Investor / Tech / AI / Industrialist / Finance / Ruler / Statesman / Military / Revolutionary / Scientist / Thinker / Philanthropy / Activist / Executive から選ぶ。
   - `added` は追加日（YYYY-MM-DD）。
 - フィルタはグループ内OR・グループ間AND。状態はURLハッシュに保存される。
+
+## chapters/（章ごとの横断ページ）
+
+- 各人物ページの `<section>` を `section-label`（英語ラベル）で章に振り分け、`chapters/<slug>.html` に全人物ぶん並べる（例: リーダー論 = `chapters/leadership.html`）。
+- `chapters/*.html` は生成物。手で編集しない。**人物を追加・編集したら `python3 gen_chapters.py` を再実行**。
+- 章の定義・ラベルの対応表は `gen_chapters.py` 冒頭の `CHAPTERS`。新しいラベルを使ったらそこに足す。CSSは `chapters/chapters.css`（手書き）。
