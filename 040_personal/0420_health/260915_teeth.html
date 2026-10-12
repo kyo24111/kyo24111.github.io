@@ -320,8 +320,13 @@ body{padding-top:48px!important;padding-bottom:60px!important}
     <div class="upd">Last updated: 2026-09-15</div>
   </section>
 
+  <!-- ========== 矯正（ローカル専用データがある時だけ出る） ========== -->
+  <section class="panel" id="p-ortho"></section>
+
 </div>
 
+<!-- 矯正データは gitignore された *_local.js。公開サイトでは読み込めず、タブも出ない -->
+<script src="260915_teeth_ortho_local.js"></script>
 <script>
 /* ============================================================
    TEETH — 32本の状態。status を書き換えると図もサマリーも変わる。
@@ -383,6 +388,8 @@ const LOGS = [
     note:'左上の5番・6番。削った部分にジルコニアを装着（自費）。費用・医院名は後で追記。'
   }
 ];
+
+if(window.ORTHO) ORTHO.patch(TEETH, LOGS);
 
 /* ============================================================ */
 const ARCH_JA = {U:'上', L:'下'};
@@ -554,6 +561,10 @@ const TABS = [
   {id:'log',   label:'治療履歴', n:String(LOGS.length)},
   {id:'know',  label:'知識', n:''}
 ];
+if(window.ORTHO){
+  TABS.splice(2, 0, {id:'ortho', label:'矯正', n:''});
+  ORTHO.render(document.getElementById('p-ortho'));
+}
 function buildTabs(){
   document.getElementById('tabs').innerHTML = TABS.map((t,i)=>
     '<button class="tab'+(i===0?' on':'')+'" data-id="'+t.id+'">'+t.label+(t.n?'<span class="n">'+t.n+'</span>':'')+'</button>'
