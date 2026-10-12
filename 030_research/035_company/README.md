@@ -67,3 +67,5 @@
 | [260829_etched_deep_research.html](260829_etched_deep_research.html) | Etched | Transformer専用ASIC（AI半導体） | 2026-08-29 |
 | [261005_cambridge_aerospace_deep_research.html](261005_cambridge_aerospace_deep_research.html) | Cambridge Aerospace | 防衛テック（低コスト迎撃ミサイル） | 2026-10-05 |
 | [261011_asml_deep_research.html](261011_asml_deep_research.html) | ASML | EUV露光装置（半導体製造装置） | 2026-10-11 |
+| [261013_nucor_deep_research.html](261013_nucor_deep_research.html) | Nucor | 鉄鋼（電炉ミニミル） | 2026-10-13 |
+| [261013_duke_energy_deep_research.html](261013_duke_energy_deep_research.html) | Duke Energy | 規制電力・ガス公益事業（原子力） | 2026-10-13 |

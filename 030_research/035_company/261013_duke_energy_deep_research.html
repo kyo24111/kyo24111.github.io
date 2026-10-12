@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Duke Energy Deep Research — 米南東部の規制電力会社とAIデータセンター需要</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .person{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:14px}
+  .person .p-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:3px}
+  .person .p-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:800;color:var(--text)}
+  .person .p-role{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--accent);padding:2px 9px;border-radius:4px}
+  .person .p-line{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7}
+  .person ul{list-style:none;padding:0;margin:0}
+  .person li{font-size:13.5px;color:var(--mid);line-height:1.8;padding:6px 0 6px 16px;position:relative;border-bottom:1px solid var(--border)}
+  .person li:last-child{border-bottom:none}
+  .person li::before{content:'';position:absolute;left:0;top:15px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .person li b,.person li strong{color:var(--text);font-weight:700}
+  .person .p-quote{margin-top:12px;padding:11px 15px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13px;line-height:1.8;color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa details[open]{background:var(--bg);border-color:var(--accent)}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:flex-start;gap:10px;line-height:1.65}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{background:var(--card2)}
+  .qa details[open] summary:hover{background:var(--surface)}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .qa summary::after{content:'+';margin-left:auto;padding-left:10px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem;line-height:1;flex-shrink:0}
+  .qa details[open] summary::after{content:'\2212'}
+  /* 回答本文。qa-a を付け忘れた <p> でも崩れないよう summary 以外の直下要素すべてに効かせる */
+  .qa details>*:not(summary){margin:0 0 10px;padding:0 18px 0 48px;font-size:13.5px;color:var(--mid);line-height:1.85;overflow-wrap:anywhere}
+  .qa details>*:not(summary):last-child{margin-bottom:16px}
+  .qa details>*:not(summary) b,.qa details>*:not(summary) strong{color:var(--text);font-weight:700}
+  .qa details>*:not(summary) a{color:var(--text)}
+  .qa details>ul,.qa details>ol{padding-left:66px}
+  .col-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin:22px 0}
+  .col-box .col-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--accent);display:inline-block;padding:3px 10px;border-radius:4px;margin-bottom:14px}
+  .col-box h3{margin-top:0;margin-bottom:12px;font-size:1.05rem}
+  .col-box p{font-size:13.5px;line-height:1.9}
+  .col-box .col-sub{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:20px 0 8px;padding-top:16px;border-top:1px solid var(--border)}
+  .col-box blockquote{margin:14px 0;padding:12px 18px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.85;color:var(--text)}
+  .col-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+  .col-num .n{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+  .col-num .n .v{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;line-height:1.1;margin-bottom:3px}
+  .col-num .n .l{font-size:11px;color:var(--muted);line-height:1.5}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.qa details>*:not(summary){padding-left:18px}.qa details>ul,.qa details>ol{padding-left:36px}.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+<style>
+/* ===== SIDE NAV（左サイド目次・scroll-spy）手本=industry系ページ ===== */
+.side-nav{position:fixed;left:20px;top:84px;width:216px;max-height:calc(100vh - 162px);overflow-y:auto;padding:12px 0 32px;z-index:10;scrollbar-width:thin;font-family:'Noto Sans JP',sans-serif}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@media (max-width:1320px){.side-nav{display:none}}
+@media (min-width:1321px){.page{margin-left:max(256px,calc((100% - 900px)/2))}}
+.side-nav-title{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-left:14px;margin-bottom:8px}
+.side-nav-list{list-style:none;padding:0;margin:0}
+.side-nav-link{display:block;color:#b4b4b4;text-decoration:none;padding:6px 8px 6px 14px;border-left:2px solid transparent;font-size:12px;line-height:1.45;transition:color .15s,border-color .15s,background .15s}
+.side-nav-link:hover{color:var(--text);border-left-color:var(--border)}
+.side-nav-link.active{color:var(--accent);font-weight:700;border-left-color:var(--accent);background:var(--surface)}
+.side-nav-num{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--muted);margin-right:6px}
+.sec{scroll-margin-top:76px}
+html{scroll-behavior:smooth}
+.updated{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.55);margin-top:14px;letter-spacing:.04em}
+.raw{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--card)}
+.raw>summary{cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700}
+.raw>div{padding:0 14px 14px}
+</style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="Contents"></aside>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-solid">Company Deep Research</span>
+    <span class="badge badge-white">NYSE: DUK</span>
+    <span class="badge badge-white">Regulated Electric &amp; Gas Utility</span>
+    <span class="badge badge-white">2026-10-13</span>
+  </div>
+  <h1>Duke Energy — 米南東部6州に電気を売る、全米最大級の規制電力会社</h1>
+  <div class="hero-sub">ノースカロライナ州シャーロットに本社を置く電力・ガス会社。NC・SC・FL・IN・OH・KYの<strong>約870万件</strong>に電気を、約160万件にガスを届ける。発電所と送配電網を州の規制当局（PUC）に認められた「料金の土台＝Rate base」に積み上げ、そこに<strong>認可ROE</strong>を掛けて利益を得る。AIデータセンターの新規契約が<strong>7.8 GW</strong>に達し、2026〜2030年に業界最大の<strong>$103Bの設備投資</strong>を計画する。</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$32.2B</div><div class="lbl">Revenue FY2025</div></div>
+    <div class="kpi"><div class="val">$6.31</div><div class="lbl">EPS FY2025</div></div>
+    <div class="kpi"><div class="val">$103B</div><div class="lbl">Capex Plan 2026–30</div></div>
+    <div class="kpi"><div class="val">7.8 GW</div><div class="lbl">Data-center ESAs（Aug 2026）</div></div>
+    <div class="kpi"><div class="val">$91.6B</div><div class="lbl">Market Cap（2026-10-12）</div></div>
+  </div>
+  <div class="updated">Last updated: 2026-10-13</div>
+</div>
+
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#s1">Summary</a></li>
+    <li><a href="#s2">How a Regulated Utility Makes Money</a></li>
+    <li><a href="#s3">Segments &amp; Service Territories</a></li>
+    <li><a href="#s4">Generation Mix &amp; Nuclear Fleet</a></li>
+    <li><a href="#s5">Financials (PL / BS / CF)</a></li>
+    <li><a href="#s6">Earnings &amp; Guidance 2026</a></li>
+    <li><a href="#s7">AI / Data-Center Load Growth</a></li>
+    <li><a href="#s8">M&amp;A History</a></li>
+    <li><a href="#s9">Policy &amp; Regulation</a></li>
+    <li><a href="#s10">Peers &amp; Comparison</a></li>
+    <li><a href="#s11">Supply Chain</a></li>
+    <li><a href="#s12">Founding Story</a></li>
+    <li><a href="#s13">Leadership</a></li>
+    <li><a href="#s14">Japan Connections</a></li>
+    <li><a href="#s15">Stock Analysis (NFA)</a></li>
+    <li><a href="#s16">Q&amp;A</a></li>
+    <li><a href="#s-vocab">Vocabulary</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="s1">
+  <div class="sec-label"><span class="num">01</span>Summary</div>
+  <h2>「設備を積むほど利益が増える」会社に、AIという追い風が来た</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Company</div><div class="v">Duke Energy Corporation</div></div>
+    <div class="kv-item"><div class="k">Founded</div><div class="v">1904年（Catawba川の水力発電所が運転開始）／1905年 Southern Power Company 設立</div></div>
+    <div class="kv-item"><div class="k">HQ</div><div class="v">Charlotte, North Carolina（Duke Energy Plaza）</div></div>
+    <div class="kv-item"><div class="k">Chair, President &amp; CEO</div><div class="v">Harry Sideris（CEO 2025年4月〜）</div></div>
+    <div class="kv-item"><div class="k">Customers</div><div class="v">電力 870万件（6州）／ガス 160万件（2026年6月）</div></div>
+    <div class="kv-item"><div class="k">Owned Capacity</div><div class="v">55,700 MW。うち原子力 約11 GW（11基・6サイト）</div></div>
+    <div class="kv-item"><div class="k">Segment Income FY2025</div><div class="v">Electric $5.34B／Gas $0.56B／Other −$0.99B（adjusted）</div></div>
+    <div class="kv-item"><div class="k">Dividend</div><div class="v">四半期$1.085（2026年7月増配）。<b>100年連続</b>で四半期配当</div></div>
+  </div>
+  <p>Duke Energyは発電・送電・配電を一体で持つ<strong>垂直統合型の規制電力会社</strong>（Ohioだけは送配電のみ）。電気料金は自由に決められず、州の公益事業委員会（PUC）が「この会社が投じた設備（Rate base）に、年何％のリターン（ROE）を認めるか」を審査して決める。だから<strong>成長＝設備投資を積み上げて、それを料金に入れてもらうこと</strong>になる。</p>
+  <p>2025年は売上$32.2B、EPS $6.31（+7%）。2026年2月に5年間の設備投資計画を$87B→<strong>$103B</strong>に引き上げ、Rate baseに当たる「earnings base」を年<strong>9.6%</strong>伸ばすとした。EPSは2025年中央値$6.30を起点に<strong>年5–7%成長</strong>、2028年からはレンジの上半分を目指す。2026年8月時点でデータセンターと結んだ電力供給契約（ESA）は<strong>7.8 GW</strong>。これは同社の原子力全体（約11 GW）の7割に当たる規模だ。</p>
+  <div class="callout"><strong>このページの結論（筆者の読み）：</strong>Dukeの株は「AI銘柄」ではなく<strong>債券に近い配当株</strong>で、PERは17倍台、配当利回りは3.7%。AI需要の恩恵は「売上が急に増える」形ではなく、<strong>Rate baseが年9–10%で積み上がる期間が長くなる</strong>形で出る。論点は①$103Bを料金に入れるとき、家庭の電気代の上昇に規制当局と政治がどこまで耐えるか（NCでは住宅向け+9.5%案に州司法長官が反対）、②その資金を株式の希薄化を抑えつつどう調達するか（Florida子会社の持分をBrookfieldに売却）、③データセンターの契約が本当に2027〜2030年に電力を使い始めるか、の3つ。</div>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sec-label"><span class="num">02</span>How a Regulated Utility Makes Money</div>
+  <h2>利益 ≒ Rate base × 自己資本比率 × 認可ROE</h2>
+  <p>規制電力会社の利益の式はシンプルで、<strong>Rate base（料金算定の基礎になる純設備額）× Equity ratio（資本構成のうち自己資本の割合）× Allowed ROE（認められた自己資本利益率）</strong>。燃料費や減価償却、利息、税金は「コスト」として料金で回収し、この式の分だけが株主の取り分になる。</p>
+  <div class="col-num">
+    <div class="n"><div class="v">$25.7B</div><div class="l">Duke Energy Carolinas のNC小売Rate base（2026年和解案）</div></div>
+    <div class="n"><div class="v">53%</div><div class="l">和解案の自己資本比率</div></div>
+    <div class="n"><div class="v">9.8%</div><div class="l">和解案のROE（申請は10.95%）</div></div>
+    <div class="n"><div class="v">≈$1.3B</div><div class="l">25.7×0.53×9.8%＝年間の株主取り分の目安（筆者計算）</div></div>
+  </div>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">Rate case（料金改定審査）</div><div class="ind-desc">会社が「これだけ設備に投資したので料金を上げたい」と州PUCに申請し、消費者代表（NCではPublic Staff）や州司法長官、大口需要家が反論する。和解（settlement）で落とし所を探るのが普通。数か月〜1年かかり、その間に投資した分は料金に入らない（<b>regulatory lag</b>）。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">Multi-year rate plan（複数年料金計画）</div><div class="ind-desc">NC（2021年の州法HB951で導入）やFloridaでは、3年分の料金改定をまとめて認めてもらう。2026年1月に「DEC NC Year 3」「DEF Year 2」が発効した、というのはこのこと。lagが縮み、EPSの見通しが立てやすくなる。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">Fuel pass-through（燃料費の素通し）</div><div class="ind-desc">ガスや石炭の値上がりは、燃料費調整条項（fuel clause / rider）で原則そのまま料金に転嫁され、<b>利益には影響しない</b>。2026年Q1にガス燃料費が前年比+20%でも、Dukeの利益は増えた。ただし請求額が上がるので、次のRate caseで政治的な逆風になる。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">垂直統合 vs 送配電のみ（T&amp;D）</div><div class="ind-desc">NC・SC・FL・IN・KYは発電所も料金規制の対象で、<b>発電所を建てればRate baseが増える</b>。Ohioは電力自由化州で、Duke Energy Ohioは送配電だけを持つ（発電所は2010年代半ばに売却）。データセンター需要で発電所を自前で建てられる垂直統合の州ほど、成長余地が大きい。</div></div></div>
+  </div>
+  <div class="callout"><strong>なぜ設備投資を増やしたがるのか：</strong>Rate baseが増えないと利益は増えない。だから規制電力会社のIRでは売上よりも<strong>「Capex plan」と「Rate base growth」</strong>が主役になる。逆に言えば、Free Cash Flowは配当を払う前の段階でほぼ毎年マイナス（§05）で、足りない分は社債と増資で埋め続ける。</div>
+  <p>関連ページ：industry <a href="../036_industry/0363_power_utility/260714_power_utility.html">電力 — 電力会社・系統・電力市場</a>／<a href="../036_industry/0364_power_generation/260714_power_generation.html">発電 — 電源種別と AI-DC 電源</a></p>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sec-label"><span class="num">03</span>Segments &amp; Service Territories</div>
+  <h2>利益の9割はElectric。6州・7つの電力子会社の集合体</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Segment</th><th>FY2024</th><th>FY2025</th><th>中身</th></tr></thead>
+    <tbody>
+      <tr><td><b>Electric Utilities &amp; Infrastructure</b></td><td>$4,838M</td><td><b>$5,337M</b></td><td>6州の電力子会社。Rate case（DEF・DEC SCなど）で1株$0.71の押し上げ</td></tr>
+      <tr><td>Gas Utilities &amp; Infrastructure</td><td>$499M</td><td>$559M</td><td>Piedmont Natural Gas（NC・SC）、Ohio・Kentuckyのガス配給。Tennessee事業は2026年3月にSpireへ売却</td></tr>
+      <tr><td>Other</td><td>$(795)M</td><td>$(985)M</td><td>持株会社の借入利息・本社費など。HoldCo debtが増えるとここが悪化する</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:12px;color:var(--muted)">Adjusted segment income。出典：Duke Energy FY2025 earnings release（8-K, 2026-02-10）。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Subsidiary</th><th>州</th><th>型</th><th>ルーツ・特徴</th></tr></thead>
+    <tbody>
+      <tr><td><b>Duke Energy Carolinas（DEC）</b></td><td>NC・SC西部</td><td>垂直統合</td><td>旧Duke Power。Catawba川の水力から始まった本流。Charlotte周辺</td></tr>
+      <tr><td><b>Duke Energy Progress（DEP）</b></td><td>NC・SC東部</td><td>垂直統合</td><td>旧Carolina Power &amp; Light（Raleigh）。2012年の合併で加わる。<b>2027年1月1日にDECへ統合</b>（規制当局が2026年に承認）</td></tr>
+      <tr><td><b>Duke Energy Florida（DEF）</b></td><td>FL（St. Petersburg・Orlando周辺）</td><td>垂直統合</td><td>旧Florida Power。2026年3月にBrookfieldが持株会社Florida Progressの9.2%を取得（最終19.7%まで）</td></tr>
+      <tr><td>Duke Energy Indiana（DEI）</td><td>IN</td><td>垂直統合</td><td>旧PSI Energy（2006年のCinergy買収）。石炭比率が高い。2021年にシンガポールGICが19.9%を$2.05Bで取得</td></tr>
+      <tr><td>Duke Energy Ohio（DEO）</td><td>OH（Cincinnati）</td><td>送配電＋ガス</td><td>旧Cincinnati Gas &amp; Electric。電力は自由化州のため発電を持たない</td></tr>
+      <tr><td>Duke Energy Kentucky（DEK）</td><td>KY北部</td><td>垂直統合＋ガス</td><td>DEOの子会社。Cincinnatiの対岸</td></tr>
+      <tr><td>Piedmont Natural Gas</td><td>NC・SC</td><td>ガス配給</td><td>2016年に$4.9Bで買収</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:12px;color:var(--muted)">出典：Duke Energy 10-K、Wikipedia、各社リリース。GICの出資は筆者の既知情報で、本ページの一次資料では照合していない。</p>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sec-label"><span class="num">04</span>Generation Mix &amp; Nuclear Fleet</div>
+  <h2>ガス43%・原子力36%・石炭19%。原子力は全米最大の「規制下」フリート</h2>
+  <div style="margin:14px 0 6px;overflow-x:auto;-webkit-overflow-scrolling:touch"><svg viewBox="0 0 760 110" width="100%" role="img" aria-label="Generation mix 2025" style="display:block;width:100%;min-width:560px;height:auto;font-family:Poppins,sans-serif"><rect x="40.0" y="30" width="292.4" height="40" fill="#111" stroke="#fff" stroke-width="1"/><text x="186.2" y="55" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">43.0%</text><rect x="332.4" y="30" width="241.4" height="40" fill="#555" stroke="#fff" stroke-width="1"/><text x="453.1" y="55" font-size="12" font-weight="700" fill="#fff" text-anchor="middle">35.5%</text><rect x="573.8" y="30" width="127.8" height="40" fill="#999" stroke="#fff" stroke-width="1"/><text x="637.7" y="55" font-size="12" font-weight="700" fill="#111" text-anchor="middle">18.8%</text><rect x="701.6" y="30" width="12.9" height="40" fill="#c8c8c8" stroke="#fff" stroke-width="1"/><rect x="714.6" y="30" width="5.4" height="40" fill="#e6e6e6" stroke="#fff" stroke-width="1"/><rect x="40" y="88" width="12" height="10" fill="#111" stroke="#bbb" stroke-width=".5"/><text x="58" y="97" font-size="10.5" fill="#444">Natural gas 43.0%</text><rect x="176" y="88" width="12" height="10" fill="#555" stroke="#bbb" stroke-width=".5"/><text x="194" y="97" font-size="10.5" fill="#444">Nuclear 35.5%</text><rect x="312" y="88" width="12" height="10" fill="#999" stroke="#bbb" stroke-width=".5"/><text x="330" y="97" font-size="10.5" fill="#444">Coal 18.8%</text><rect x="448" y="88" width="12" height="10" fill="#c8c8c8" stroke="#bbb" stroke-width=".5"/><text x="466" y="97" font-size="10.5" fill="#444">Solar 1.9%</text><rect x="584" y="88" width="12" height="10" fill="#e6e6e6" stroke="#bbb" stroke-width=".5"/><text x="602" y="97" font-size="10.5" fill="#444">Hydro他 0.8%</text><text x="40" y="18" font-size="10.5" fill="#888">Owned generation 2025 = 214.1 TWh（自社発電分のみ。購入電力は含まない）</text></svg></div>
+  <p style="font-size:12px;color:var(--muted)">出典：Duke Energy 2025 Sustainability Metrics Center（自社発電量：ガス92.2 TWh、原子力76.0 TWh、石炭40.2 TWh、太陽光4.1 TWh、合計214.1 TWh）。比率は筆者計算。10-KのEU&amp;I表は購入電力込みの別基準（ガス33.5%・原子力27.5%・石炭14.5%）。</p>
+  <h3>原子力：11基・約11 GW、2025年の設備利用率96.9%</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Plant</th><th>州</th><th>基数</th><th>容量（MW）</th><th>メモ</th></tr></thead>
+    <tbody>
+      <tr><td>Oconee</td><td>SC</td><td>3</td><td>2,554</td><td>DEC。最大のサイト</td></tr>
+      <tr><td>McGuire</td><td>NC</td><td>2</td><td>2,316</td><td>DEC。Charlotte北のNorman湖</td></tr>
+      <tr><td>Catawba</td><td>SC</td><td>2</td><td>2,310</td><td>DEC。地元の公営電力と共同所有</td></tr>
+      <tr><td>Brunswick</td><td>NC</td><td>2</td><td>1,870</td><td>DEP。沸騰水型（BWR）</td></tr>
+      <tr><td>Harris</td><td>NC</td><td>1</td><td>964</td><td>DEP。大型炉の新設候補地</td></tr>
+      <tr><td>Robinson</td><td>SC</td><td>1</td><td>759</td><td>DEP。2026年に運転期間を<b>2050年まで</b>延長する許可</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:12px;color:var(--muted)">出典：Duke Energy、ANS Nuclear Newsroom、T&amp;D World（2025年の設備利用率）。全米最大の原子力事業者は自由化市場のConstellationで、Dukeは「規制下（regulated）」で最大。</p>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">原子力のPTC（生産税額控除）約$600M</div><div class="ind-desc">IRAで既存原子力に付いた税額控除。Dukeは<b>顧客に還元</b>している（料金を下げる方向）。2026年Q1には太陽光・原子力・蓄電の税額控除を<b>最大$3.1B</b>（2028年までの発生分）売却する複数年契約を結んだ。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">新しい原子力：Belews Creek と W.S. Lee</div><div class="ind-desc">2025年末〜2026年初めにNRCへ<b>Belews Creek（NCの石炭火力サイト）の早期サイト許可（ESP）</b>を申請し、2026年2月に受理。最大2,250 MW、炉型は未定で、GE Vernova Hitachi BWRX-300・Holtec SMR-300・NuScale VOYGR・Westinghouse AP300・<b>TerraPower Natrium</b>・X-energy Xe-100の6種を包絡する。最初のSMRを2036年、600 MWを2037年までに。大型炉（AP1000級）はSCの<b>W.S. Lee</b>（2016年取得の建設運転一体許可を維持）とNCのHarrisが候補。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">ガス：約14 GWの新設、5 GWは着工済み</div><div class="ind-desc">2025年Q4に5 GWの「dispatchable（出力調整できる）」電源を着工。NCのPerson郡・Catawba郡の複合火力は2028年運転開始、SCのAnderson複合火力（約$3.2B、水素混焼対応）は2030年末。2031年までに<b>約14 GW</b>を足す。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">石炭は「延命」へ</div><div class="ind-desc">2025年10月のCarolinas Resource Planは、需要増を受けて<b>一部の石炭火力の運転延長</b>を盛り込んだ（ANS）。脱炭素の目標は維持しつつ、需要の伸びが速すぎて退役を後ろにずらす構図。</div></div></div>
+  </div>
+  <p>関連ページ：<a href="260406_terrapower_deep_research.html">TerraPower（Natrium）</a>／<a href="260409_oklo_deep_research.html">Oklo</a>／<a href="260420_radiant_nuclear_deep_research.html">Radiant</a>／<a href="260406_valar_atomics_deep_research.html">Valar Atomics</a></p>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sec-label"><span class="num">05</span>Financials (PL / BS / CF)</div>
+  <h2>10年で売上1.4倍、借金1.8倍。設備投資は$7.9B→$14.0B</h2>
+  <div style="margin:14px 0 6px;overflow-x:auto;-webkit-overflow-scrolling:touch"><svg viewBox="0 0 760 292" width="100%" role="img" aria-label="Revenue and net income 2016-2025" style="display:block;width:100%;min-width:620px;height:auto;font-family:Poppins,sans-serif"><line x1="56" y1="250.0" x2="744" y2="250.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="254.0" font-size="10" fill="#888" text-anchor="end">0</text><line x1="56" y1="218.6" x2="744" y2="218.6" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="222.6" font-size="10" fill="#888" text-anchor="end">5</text><line x1="56" y1="187.1" x2="744" y2="187.1" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="191.1" font-size="10" fill="#888" text-anchor="end">10</text><line x1="56" y1="155.7" x2="744" y2="155.7" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="159.7" font-size="10" fill="#888" text-anchor="end">15</text><line x1="56" y1="124.3" x2="744" y2="124.3" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="128.3" font-size="10" fill="#888" text-anchor="end">20</text><line x1="56" y1="92.9" x2="744" y2="92.9" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="96.9" font-size="10" fill="#888" text-anchor="end">25</text><line x1="56" y1="61.4" x2="744" y2="61.4" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="65.4" font-size="10" fill="#888" text-anchor="end">30</text><line x1="56" y1="30.0" x2="744" y2="30.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="34.0" font-size="10" fill="#888" text-anchor="end">35</text><rect x="65.4" y="107.1" width="24" height="142.9" fill="#d0d0d0"/><text x="77.4" y="102.1" font-size="10" font-weight="700" fill="#111" text-anchor="middle">22.7</text><rect x="91.4" y="236.5" width="24" height="13.5" fill="#111"/><text x="103.4" y="231.5" font-size="9.5" fill="#111" text-anchor="middle">2.1</text><text x="90.4" y="266" font-size="10.5" fill="#444" text-anchor="middle">2016</text><text x="90.4" y="280" font-size="9.5" fill="#888" text-anchor="middle">EPS $4.69</text><rect x="134.2" y="101.8" width="24" height="148.2" fill="#d0d0d0"/><text x="146.2" y="96.8" font-size="10" font-weight="700" fill="#111" text-anchor="middle">23.6</text><rect x="160.2" y="230.8" width="24" height="19.2" fill="#111"/><text x="172.2" y="225.8" font-size="9.5" fill="#111" text-anchor="middle">3.1</text><text x="159.2" y="266" font-size="10.5" fill="#444" text-anchor="middle">2017</text><text x="159.2" y="280" font-size="9.5" fill="#888" text-anchor="middle">EPS $4.57</text><rect x="203.0" y="95.9" width="24" height="154.1" fill="#d0d0d0"/><text x="215.0" y="90.9" font-size="10" font-weight="700" fill="#111" text-anchor="middle">24.5</text><rect x="229.0" y="233.2" width="24" height="16.8" fill="#111"/><text x="241.0" y="228.2" font-size="9.5" fill="#111" text-anchor="middle">2.7</text><text x="228.0" y="266" font-size="10.5" fill="#444" text-anchor="middle">2018</text><text x="228.0" y="280" font-size="9.5" fill="#888" text-anchor="middle">EPS $4.72</text><rect x="271.8" y="92.4" width="24" height="157.6" fill="#d0d0d0"/><text x="283.8" y="87.4" font-size="10" font-weight="700" fill="#111" text-anchor="middle">25.1</text><rect x="297.8" y="226.7" width="24" height="23.3" fill="#111"/><text x="309.8" y="221.7" font-size="9.5" fill="#111" text-anchor="middle">3.7</text><text x="296.8" y="266" font-size="10.5" fill="#444" text-anchor="middle">2019</text><text x="296.8" y="280" font-size="9.5" fill="#888" text-anchor="middle">EPS $5.06</text><rect x="340.6" y="103.1" width="24" height="146.9" fill="#d0d0d0"/><text x="352.6" y="98.1" font-size="10" font-weight="700" fill="#111" text-anchor="middle">23.4</text><rect x="366.6" y="242.0" width="24" height="8.0" fill="#111"/><text x="378.6" y="237.0" font-size="9.5" fill="#111" text-anchor="middle">1.3</text><text x="365.6" y="266" font-size="10.5" fill="#444" text-anchor="middle">2020</text><text x="365.6" y="280" font-size="9.5" fill="#888" text-anchor="middle">EPS $5.12</text><rect x="409.4" y="95.2" width="24" height="154.8" fill="#d0d0d0"/><text x="421.4" y="90.2" font-size="10" font-weight="700" fill="#111" text-anchor="middle">24.6</text><rect x="435.4" y="226.1" width="24" height="23.9" fill="#111"/><text x="447.4" y="221.1" font-size="9.5" fill="#111" text-anchor="middle">3.8</text><text x="434.4" y="266" font-size="10.5" fill="#444" text-anchor="middle">2021</text><text x="434.4" y="280" font-size="9.5" fill="#888" text-anchor="middle">EPS $5.24</text><rect x="478.2" y="69.2" width="24" height="180.8" fill="#d0d0d0"/><text x="490.2" y="64.2" font-size="10" font-weight="700" fill="#111" text-anchor="middle">28.8</text><rect x="504.2" y="234.7" width="24" height="15.3" fill="#111"/><text x="516.2" y="229.7" font-size="9.5" fill="#111" text-anchor="middle">2.4</text><text x="503.2" y="266" font-size="10.5" fill="#444" text-anchor="middle">2022</text><text x="503.2" y="280" font-size="9.5" fill="#888" text-anchor="middle">EPS $5.27</text><rect x="547.0" y="67.3" width="24" height="182.7" fill="#d0d0d0"/><text x="559.0" y="62.3" font-size="10" font-weight="700" fill="#111" text-anchor="middle">29.1</text><rect x="573.0" y="232.8" width="24" height="17.2" fill="#111"/><text x="585.0" y="227.8" font-size="9.5" fill="#111" text-anchor="middle">2.7</text><text x="572.0" y="266" font-size="10.5" fill="#444" text-anchor="middle">2023</text><text x="572.0" y="280" font-size="9.5" fill="#888" text-anchor="middle">EPS $5.56</text><rect x="615.8" y="59.2" width="24" height="190.8" fill="#d0d0d0"/><text x="627.8" y="54.2" font-size="10" font-weight="700" fill="#111" text-anchor="middle">30.4</text><rect x="641.8" y="222.3" width="24" height="27.7" fill="#111"/><text x="653.8" y="217.3" font-size="9.5" fill="#111" text-anchor="middle">4.4</text><text x="640.8" y="266" font-size="10.5" fill="#444" text-anchor="middle">2024</text><text x="640.8" y="280" font-size="9.5" fill="#888" text-anchor="middle">EPS $5.90</text><rect x="684.6" y="47.3" width="24" height="202.7" fill="#d0d0d0"/><text x="696.6" y="42.3" font-size="10" font-weight="700" fill="#111" text-anchor="middle">32.2</text><rect x="710.6" y="219.1" width="24" height="30.9" fill="#111"/><text x="722.6" y="214.1" font-size="9.5" fill="#111" text-anchor="middle">4.9</text><text x="709.6" y="266" font-size="10.5" fill="#444" text-anchor="middle">2025</text><text x="709.6" y="280" font-size="9.5" fill="#888" text-anchor="middle">EPS $6.31</text><rect x="56" y="8" width="12" height="10" fill="#d0d0d0"/><text x="74" y="17" font-size="10.5" fill="#444">Revenue（$B）</text><rect x="176" y="8" width="12" height="10" fill="#111"/><text x="194" y="17" font-size="10.5" fill="#444">Net income to common（$B, GAAP）／下段=Adjusted EPS</text></svg></div>
+  <p style="font-size:12px;color:var(--muted)">出典：SEC XBRL（Duke Energy 10-K、Total operating revenues／Net income available to common）。過去分は直近の10-Kで組み替え後の値（Commercial Renewablesを非継続事業に組み替え）。Adjusted EPSは各年の会社発表で、2016–23年は筆者の既知値（一次資料で照合しきれていない）。</p>
+  <div class="callout"><strong>読みどころ：</strong>①売上は2016→2025年で年率3.9%。燃料費の転嫁で年ごとに上下するので、規制電力会社では売上より<strong>Adjusted EPSの線（$4.69→$6.31、年率3.4%）</strong>を見る。②GAAPの純利益は2020年（Atlantic Coast Pipeline中止の減損）・2022–23年（Commercial Renewables売却関連の減損）に大きく凹んだが、調整後EPSは一度も前年を下回っていない（2017年を除く）。③2024年から伸びが加速（+6.1%、+6.9%）。Rate case と複数年料金計画が効き始めた。</div>
+  <div style="margin:14px 0 6px;overflow-x:auto;-webkit-overflow-scrolling:touch"><svg viewBox="0 0 760 278" width="100%" role="img" aria-label="Capex, operating cash flow and long-term debt" style="display:block;width:100%;min-width:620px;height:auto;font-family:Poppins,sans-serif"><line x1="56" y1="250.0" x2="744" y2="250.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="254.0" font-size="10" fill="#888" text-anchor="end">0</text><line x1="56" y1="206.0" x2="744" y2="206.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="210.0" font-size="10" fill="#888" text-anchor="end">20</text><line x1="56" y1="162.0" x2="744" y2="162.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="166.0" font-size="10" fill="#888" text-anchor="end">40</text><line x1="56" y1="118.0" x2="744" y2="118.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="122.0" font-size="10" fill="#888" text-anchor="end">60</text><line x1="56" y1="74.0" x2="744" y2="74.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="78.0" font-size="10" fill="#888" text-anchor="end">80</text><line x1="56" y1="30.0" x2="744" y2="30.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="34.0" font-size="10" fill="#888" text-anchor="end">100</text><rect x="65.4" y="234.9" width="24" height="15.1" fill="#d0d0d0"/><rect x="91.4" y="232.6" width="24" height="17.4" fill="#111"/><text x="103.4" y="227.6" font-size="9.5" fill="#111" text-anchor="middle">7.9</text><text x="90.4" y="266" font-size="10.5" fill="#444" text-anchor="middle">2016</text><rect x="134.2" y="235.4" width="24" height="14.6" fill="#d0d0d0"/><rect x="160.2" y="232.3" width="24" height="17.7" fill="#111"/><text x="172.2" y="227.3" font-size="9.5" fill="#111" text-anchor="middle">8.1</text><text x="159.2" y="266" font-size="10.5" fill="#444" text-anchor="middle">2017</text><rect x="203.0" y="234.2" width="24" height="15.8" fill="#d0d0d0"/><rect x="229.0" y="229.3" width="24" height="20.7" fill="#111"/><text x="241.0" y="224.3" font-size="9.5" fill="#111" text-anchor="middle">9.4</text><text x="228.0" y="266" font-size="10.5" fill="#444" text-anchor="middle">2018</text><rect x="271.8" y="231.9" width="24" height="18.1" fill="#d0d0d0"/><rect x="297.8" y="225.5" width="24" height="24.5" fill="#111"/><text x="309.8" y="220.5" font-size="9.5" fill="#111" text-anchor="middle">11.1</text><text x="296.8" y="266" font-size="10.5" fill="#444" text-anchor="middle">2019</text><rect x="340.6" y="230.5" width="24" height="19.5" fill="#d0d0d0"/><rect x="366.6" y="228.2" width="24" height="21.8" fill="#111"/><text x="378.6" y="223.2" font-size="9.5" fill="#111" text-anchor="middle">9.9</text><text x="365.6" y="266" font-size="10.5" fill="#444" text-anchor="middle">2020</text><rect x="409.4" y="231.8" width="24" height="18.2" fill="#d0d0d0"/><rect x="435.4" y="228.6" width="24" height="21.4" fill="#111"/><text x="447.4" y="223.6" font-size="9.5" fill="#111" text-anchor="middle">9.7</text><text x="434.4" y="266" font-size="10.5" fill="#444" text-anchor="middle">2021</text><rect x="478.2" y="237.0" width="24" height="13.0" fill="#d0d0d0"/><rect x="504.2" y="225.0" width="24" height="25.0" fill="#111"/><text x="516.2" y="220.0" font-size="9.5" fill="#111" text-anchor="middle">11.4</text><text x="503.2" y="266" font-size="10.5" fill="#444" text-anchor="middle">2022</text><rect x="547.0" y="228.3" width="24" height="21.7" fill="#d0d0d0"/><rect x="573.0" y="222.3" width="24" height="27.7" fill="#111"/><text x="585.0" y="217.3" font-size="9.5" fill="#111" text-anchor="middle">12.6</text><text x="572.0" y="266" font-size="10.5" fill="#444" text-anchor="middle">2023</text><rect x="615.8" y="222.9" width="24" height="27.1" fill="#d0d0d0"/><rect x="641.8" y="223.0" width="24" height="27.0" fill="#111"/><text x="653.8" y="218.0" font-size="9.5" fill="#111" text-anchor="middle">12.3</text><text x="640.8" y="266" font-size="10.5" fill="#444" text-anchor="middle">2024</text><rect x="684.6" y="222.9" width="24" height="27.1" fill="#d0d0d0"/><rect x="710.6" y="219.2" width="24" height="30.8" fill="#111"/><text x="722.6" y="214.2" font-size="9.5" fill="#111" text-anchor="middle">14.0</text><text x="709.6" y="266" font-size="10.5" fill="#444" text-anchor="middle">2025</text><polyline fill="none" stroke="#444" stroke-width="2" points="90.4,144.6 159.2,134.9 228.0,130.1 296.8,122.2 365.6,118.2 434.4,109.6 503.2,96.4 572.0,84.3 640.8,72.5 709.6,58.2"/><circle cx="90.4" cy="144.6" r="3.5" fill="#fff" stroke="#444" stroke-width="2"/><text x="90.4" y="135.6" font-size="10" font-weight="700" fill="#444" text-anchor="middle">48</text><circle cx="159.2" cy="134.9" r="3.5" fill="#fff" stroke="#444" stroke-width="2"/><text x="159.2" y="125.9" font-size="10" font-weight="700" fill="#444" text-anchor="middle">52</text><circle cx="228.0" cy="130.1" r="3.5" fill="#fff" stroke="#444" stroke-width="2"/><text x="228.0" y="121.1" font-size="10" font-weight="700" fill="#444" text-anchor="middle">54</text><circle cx="296.8" cy="122.2" r="3.5" fill="#fff" stroke="#444" stroke-width="2"/><text x="296.8" y="113.2" font-size="10" font-weight="700" fill="#444" text-anchor="middle">58</text><circle cx="365.6" cy="118.2" r="3.5" fill="#fff" stroke="#444" stroke-width="2"/><text x="365.6" y="109.2" font-size="10" font-weight="700" fill="#444" text-anchor="middle">60</text><circle cx="434.4" cy="109.6" r="3.5" fill="#fff" stroke="#444" stroke-width="2"/><text x="434.4" y="100.6" font-size="10" font-weight="700" fill="#444" text-anchor="middle">64</text><circle cx="503.2" cy="96.4" r="3.5" fill="#fff" stroke="#444" stroke-width="2"/><text x="503.2" y="87.4" font-size="10" font-weight="700" fill="#444" text-anchor="middle">70</text><circle cx="572.0" cy="84.3" r="3.5" fill="#fff" stroke="#444" stroke-width="2"/><text x="572.0" y="75.3" font-size="10" font-weight="700" fill="#444" text-anchor="middle">75</text><circle cx="640.8" cy="72.5" r="3.5" fill="#fff" stroke="#444" stroke-width="2"/><text x="640.8" y="63.5" font-size="10" font-weight="700" fill="#444" text-anchor="middle">81</text><circle cx="709.6" cy="58.2" r="3.5" fill="#fff" stroke="#444" stroke-width="2"/><text x="709.6" y="49.2" font-size="10" font-weight="700" fill="#444" text-anchor="middle">87</text><rect x="56" y="8" width="12" height="10" fill="#d0d0d0"/><text x="74" y="17" font-size="10.5" fill="#444">Operating CF</text><rect x="160" y="8" width="12" height="10" fill="#111"/><text x="178" y="17" font-size="10.5" fill="#444">Capex</text><line x1="230" y1="13" x2="250" y2="13" stroke="#444" stroke-width="2"/><text x="256" y="17" font-size="10.5" fill="#444">Long-term debt（含 current, $B）</text></svg></div>
+  <p style="font-size:12px;color:var(--muted)">出典：SEC XBRL（PaymentsToAcquirePropertyPlantAndEquipment、NetCashProvidedByOperatingActivities、LongTermDebt）。</p>
+  <div class="col-num">
+    <div class="n"><div class="v">$14.0B</div><div class="l">Capex FY2025（過去最高）。2026年以降は年$20B前後のペース</div></div>
+    <div class="n"><div class="v">−$1.7B</div><div class="l">FCF FY2025（OCF $12.3B − Capex $14.0B、筆者計算）。配当$3.3B前に既にマイナス</div></div>
+    <div class="n"><div class="v">$87.2B</div><div class="l">Long-term debt（current含む, 2025年末）</div></div>
+    <div class="n"><div class="v">$3.6B</div><div class="l">Interest expense FY2025（2023年は$3.0B）</div></div>
+  </div>
+  <details class="raw">
+    <summary>PL / CF — 10-Year Table（クリックで展開）</summary>
+    <div>
+    <div class="t-wrap"><table class="t">
+      <thead><tr><th>FY</th><th>Revenue</th><th>Operating income</th><th>Net income*</th><th>EPS (GAAP)</th><th>Adj. EPS</th><th>Operating CF</th><th>Capex</th><th>FCF</th><th>DPS</th></tr></thead>
+      <tbody>
+        <tr><td>2016</td><td>22.74</td><td>5.20</td><td>2.15</td><td>3.11</td><td>4.69</td><td>6.86</td><td>7.90</td><td>−1.04</td><td>3.36</td></tr>
+        <tr><td>2017</td><td>23.57</td><td>5.63</td><td>3.06</td><td>4.36</td><td>4.57</td><td>6.62</td><td>8.05</td><td>−1.43</td><td>3.49</td></tr>
+        <tr><td>2018</td><td>24.52</td><td>4.69</td><td>2.67</td><td>3.76</td><td>4.72</td><td>7.19</td><td>9.39</td><td>−2.20</td><td>3.64</td></tr>
+        <tr><td>2019</td><td>25.08</td><td>5.71</td><td>3.71</td><td>5.06</td><td>5.06</td><td>8.21</td><td>11.12</td><td>−2.91</td><td>3.75</td></tr>
+        <tr><td>2020</td><td>23.37</td><td>4.57</td><td><b>1.27</b></td><td>1.72</td><td>5.12</td><td>8.86</td><td>9.91</td><td>−1.05</td><td>3.82</td></tr>
+        <tr><td>2021</td><td>24.62</td><td>5.50</td><td>3.80</td><td>4.94</td><td>5.24</td><td>8.29</td><td>9.72</td><td>−1.43</td><td>3.90</td></tr>
+        <tr><td>2022</td><td>28.77</td><td>6.01</td><td>2.44</td><td>3.17</td><td>5.27</td><td>5.93</td><td>11.37</td><td><b>−5.44</b></td><td>3.98</td></tr>
+        <tr><td>2023</td><td>29.06</td><td>7.07</td><td>2.74</td><td>3.54</td><td>5.56</td><td>9.88</td><td>12.60</td><td>−2.73</td><td>4.06</td></tr>
+        <tr><td>2024</td><td>30.36</td><td>7.93</td><td>4.40</td><td>5.71</td><td>5.90</td><td>12.33</td><td>12.28</td><td>+0.05</td><td>4.14</td></tr>
+        <tr><td><b>2025</b></td><td><b>32.24</b></td><td><b>8.63</b></td><td><b>4.91</b></td><td><b>6.31</b></td><td><b>6.31</b></td><td>12.33</td><td><b>14.02</b></td><td>−1.69</td><td>4.22</td></tr>
+        <tr><td>2026e</td><td>—</td><td>—</td><td>—</td><td>—</td><td>6.55–6.80</td><td>—</td><td>~20（計画）</td><td>—</td><td>4.30**</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:12px;color:var(--muted)">単位：$B（EPS・DPSは$/株）。*Net income available to Duke Energy common stockholders（2016年は連結純利益）。FCF＝Operating CF − Capex（筆者計算）。**2026年は$1.065＋$1.065＋$1.085＋$1.085の宣言ベース合計（筆者計算）。2026年のCapexは$103B÷5年の単純平均。</p>
+    <p style="font-size:13px"><b>特筆点：</b>2022年のOCFが$5.9Bに落ちたのは、ガス価格の急騰で<b>燃料費を先払いし、料金での回収が後ろにずれた</b>ため（under-recovery）。fuel pass-throughは利益には中立でも、キャッシュには1〜2年のズレを生む。2024年に回収が進んでOCFが$12.3Bに戻り、10年で唯一FCFがプラスになった。</p>
+    </div>
+  </details>
+  <details class="raw">
+    <summary>BS — FY2024 / FY2025 / Jun-2026（クリックで展開）</summary>
+    <div>
+    <div class="t-wrap"><table class="t">
+      <thead><tr><th>Item</th><th>2024-12</th><th>2025-12</th><th>2026-06</th><th>コメント</th></tr></thead>
+      <tbody>
+        <tr><td>Total assets</td><td>186.3</td><td><b>195.7</b></td><td>—</td><td>ほぼすべてが発電所・送配電網と規制資産</td></tr>
+        <tr><td>Cash &amp; equivalents</td><td>0.31</td><td>0.25</td><td>0.67</td><td>現金はほとんど持たない。CPと与信枠で回す</td></tr>
+        <tr><td>Long-term debt（current含む）</td><td>80.7</td><td><b>87.2</b></td><td><b>88.9</b></td><td>2026年6月はLTD $82.2B＋1年内$6.7B</td></tr>
+        <tr><td>Short-term borrowings / CP</td><td>3.58</td><td>2.62</td><td>2.33</td><td>—</td></tr>
+        <tr><td>Duke stockholders' equity</td><td>50.1</td><td>51.8</td><td><b>54.8</b></td><td>2026年はBrookfieldの払い込み・増資で増加</td></tr>
+        <tr><td>Interest expense（年）</td><td>3.38</td><td>3.63</td><td>—</td><td>営業利益の42%</td></tr>
+        <tr><td>Available liquidity</td><td>—</td><td>—</td><td>8.5</td><td>うちMaster Credit Facility $8.0B</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:12px;color:var(--muted)">単位：$B。出典：SEC XBRL、Q2 2026 earnings release。</p>
+    <p style="font-size:13px"><b>特筆点：</b>負債/自己資本は約1.7倍（筆者計算）、金利費用は営業利益の4割強。<b>金利が1%上がると、借り換え分だけで年数百M$の負担増</b>になる。ただし金利費用もRate caseで料金に反映されるので、効くのは「次の料金改定までのラグ」の部分。格付け維持のため、Dukeは資金の一部を株式（増資・子会社持分の売却）で調達している（§08）。</p>
+    </div>
+  </details>
+</div>
+
+<div class="sec" id="s6">
+  <div class="sec-label"><span class="num">06</span>Earnings &amp; Guidance 2026</div>
+  <h2>上期のEPSは+12%。ガイダンスは据え置き、次の山場はNCの料金判断</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Metric</th><th>Q4 2025</th><th>Q1 2026</th><th>Q2 2026</th><th>FY2026 Guidance</th></tr></thead>
+    <tbody>
+      <tr><td>Revenue</td><td>~$7.9B</td><td>$9.18B</td><td><b>$7.59B</b></td><td>—</td></tr>
+      <tr><td>Reported EPS</td><td>$1.50</td><td>$1.97*</td><td>$1.38</td><td>非開示</td></tr>
+      <tr><td>Adjusted EPS</td><td>$1.50</td><td><b>$1.93</b>（前年$1.76）</td><td><b>$1.43</b>（前年$1.25）</td><td><b>$6.55–6.80</b></td></tr>
+      <tr><td>Electric segment（adj.）</td><td>—</td><td>~$1.4B</td><td>$1.31B</td><td>—</td></tr>
+      <tr><td>Data-center ESAs（累計）</td><td>~4.9 GW</td><td>7.6 GW</td><td><b>7.8 GW</b></td><td>15.4 GW（〜2027年上期）</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:12px;color:var(--muted)">出典：Duke Energy 8-K（Q4 2025・Q2 2026）、Utility Dive（Q1 2026）。Q1売上は上期$16.77B−Q2 $7.59Bの筆者計算。Q4 2025売上は二次情報（247wallst）。*Q1 reportedは上期reported $3.35−Q2 $1.38から筆者計算（Tennessee売却益を含む）。</p>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">Q2の+$0.18は「料金改定」の積み上げ</div><div class="ind-desc">Indiana Step 2（+$0.03）、DEC SC（+$0.02）、DEF Year 2（+$0.02）、DEP SC（+$0.02）、Kentucky（+$0.01）など。Electricのadjusted segment incomeは$1,194M→$1,310M。減価償却と金利の増加で一部相殺。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">GAAPとadjustedの差＝NC料金の和解コスト</div><div class="ind-desc">Q2の$0.05の差は、DECのNC Rate caseの和解に伴う税引後$39M（税引前$51M）の費用。上期はTennessee売却益$368M（1株$0.22）がGAAPに乗っている。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">ガイダンスと長期目標</div><div class="ind-desc">2026年 $6.55–6.80（中央値$6.675は+5.9%）。2030年まで<b>年5–7%</b>（2025年中央値$6.30起点）、<b>2028年からレンジ上半分</b>。CFOはBrian Savoy。Sideris CEOは「毎月$1B超を投資している。業界最大の規制設備投資計画だ」と述べた。</div></div></div>
+  </div>
+  <div class="callout"><strong>次の決算：</strong>Q3 2026は<b>2026年11月5日</b>予定（stockanalysis.com）。同じ11月に<b>NC Utilities CommissionがDECの料金和解（ROE 9.8%）を判断</b>する見込みで、2027年1月1日発効。2027年1月のDEC・DEP統合と合わせ、来年2月のQ4決算で2027年ガイダンスと新しい5年計画（2027–31年）が出る。</div>
+</div>
+
+<div class="sec" id="s7">
+  <div class="sec-label"><span class="num">07</span>AI / Data-Center Load Growth</div>
+  <h2>契約済み7.8 GW、パイプライン15.4 GW。ただし需要の本格化は2030年代</h2>
+  <div style="margin:14px 0 6px;overflow-x:auto;-webkit-overflow-scrolling:touch"><svg viewBox="0 0 760 230" width="100%" role="img" aria-label="Data center electric service agreements" style="display:block;width:100%;min-width:620px;height:auto;font-family:Poppins,sans-serif"><line x1="56" y1="200.0" x2="744" y2="200.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="204.0" font-size="10" fill="#888" text-anchor="end">0</text><line x1="56" y1="157.5" x2="744" y2="157.5" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="161.5" font-size="10" fill="#888" text-anchor="end">4</text><line x1="56" y1="115.0" x2="744" y2="115.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="119.0" font-size="10" fill="#888" text-anchor="end">8</text><line x1="56" y1="72.5" x2="744" y2="72.5" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="76.5" font-size="10" fill="#888" text-anchor="end">12</text><line x1="56" y1="30.0" x2="744" y2="30.0" stroke="#e3e3e3" stroke-width="1"/><text x="50" y="34.0" font-size="10" fill="#888" text-anchor="end">16</text><rect x="102.0" y="147.9" width="80" height="52.1" fill="#111"/><text x="142.0" y="141.9" font-size="12" font-weight="700" fill="#111" text-anchor="middle">4.9 GW*</text><text x="142.0" y="218" font-size="10.5" fill="#444" text-anchor="middle">2026-02（Q4'25）</text><rect x="274.0" y="119.2" width="80" height="80.8" fill="#111"/><text x="314.0" y="113.2" font-size="12" font-weight="700" fill="#111" text-anchor="middle">7.6 GW</text><text x="314.0" y="218" font-size="10.5" fill="#444" text-anchor="middle">2026-05（Q1'26）</text><rect x="446.0" y="117.1" width="80" height="82.9" fill="#111"/><text x="486.0" y="111.1" font-size="12" font-weight="700" fill="#111" text-anchor="middle">7.8 GW</text><text x="486.0" y="218" font-size="10.5" fill="#444" text-anchor="middle">2026-08（Q2'26）</text><rect x="618.0" y="36.4" width="80" height="163.6" fill="#ececec" stroke="#888" stroke-dasharray="3 2"/><text x="658.0" y="30.4" font-size="12" font-weight="700" fill="#111" text-anchor="middle">15.4 GW</text><text x="658.0" y="218" font-size="10.5" fill="#444" text-anchor="middle">目標（〜2027上期）</text><text x="56" y="16" font-size="10.5" fill="#444">Executed data-center ESAs（累計, GW）　*2月値は5月の7.6 GW−新規2.7 GWからの筆者逆算</text></svg></div>
+  <p style="font-size:12px;color:var(--muted)">出典：Utility Dive（2026-05）、WFAE（2026-08）、PRE/WHQR（2026-05）。</p>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">誰と契約しているか</div><div class="ind-desc">報道で名前が出ているのは<b>Microsoft・Amazon・Digital Realty</b>ほかハイパースケール開発事業者（2026年5月）。2024年にはCarolinasで<b>Amazon・Google・Microsoft・Nucor</b>とクリーン電力の新料金（ACE tariffs）でMoUを結んだ。DEC・DEP統合の和解には<b>Google・Nucor・Walmart</b>も加わった。社別のGW内訳は開示されていない。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">どこで伸びるか — FloridaとIndiana</div><div class="ind-desc">Sideris CEO（2026年8月）：「新しい需要の大半は<b>FloridaとIndiana</b>。Carolinas・Ohio・Kentuckyにも追加の機会がある」。FloridaとIndianaの大口案件に紐づき、<b>$5–10Bの追加投資余地</b>があるとされる（二次情報）。一方NCでは、複数の市や郡がデータセンターのモラトリアムを可決し、Charlotteも検討中。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">契約条件 — 「使わなくても払う」</div><div class="ind-desc">最低需要（minimum demand）、与信保証、返金可能な建設前払い（refundable capital advances）、途中解約金（termination charges）を契約に入れる。データセンターが撤退しても、<b>その分の発電所のコストが一般家庭に回らない</b>ようにする仕組み（take-or-pay）。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">時間軸</div><div class="ind-desc">電力の使用開始は早くて<b>2027年下期〜2028年</b>、ランプアップは2030年代前半、フル稼働は2030年代半ば。7.8 GWのうち約3分の2はすでに建設中。2028年は新しいガス火力の運転開始と重なる「鍵の年」になる。</div></div></div>
+  </div>
+  <div class="col-box">
+    <span class="col-lbl">Column</span>
+    <h3>「データセンターは何を負担しているのか？」— 料金公聴会の声</h3>
+    <p>2026年、NCでDECが住宅向け料金の18%引き上げを申請すると（のち和解で圧縮）、各地の公聴会で同じ質問が繰り返された。</p>
+    <blockquote>「みんなの料金が上がるなら、データセンターは何を負担しているの？」— NC州Lee郡の住民（PRE/WHQR、2026年5月）</blockquote>
+    <div class="col-sub">会社の答えと、残る論点</div>
+    <p>Dukeの答えは「大口契約は最低支払い条件付きで、むしろ固定費を多くの需要で分け合えるので長期的には家庭の負担を下げる」。州司法長官Jeff Jacksonは和解に加わらず、<strong>和解後も住宅向けは平均9.5%上がる</strong>と反論した。AI需要の恩恵を株主が受け、そのコストを誰が払うのかという問いは、今後の全Rate caseについて回る。</p>
+    <div class="col-num">
+      <div class="n"><div class="v">18%</div><div class="l">DECの当初の住宅向け値上げ申請</div></div>
+      <div class="n"><div class="v">11.6%</div><div class="l">2026年6月の修正申請</div></div>
+      <div class="n"><div class="v">7.4%</div><div class="l">和解案の全需要家平均（2年合計）</div></div>
+      <div class="n"><div class="v">9.5%</div><div class="l">AG事務所が試算した住宅向け</div></div>
+    </div>
+  </div>
+  <p>関連ページ：<a href="260401_power_dc_startups.html">データセンター電力スタートアップ</a>／<a href="260513_crusoe_energy_deep_research.html">Crusoe Energy</a>／industry <a href="../036_industry/data_center.html">Data Center</a>／<a href="../036_industry/0362_dc_cooling/260714_cooling_market.html">DC Cooling</a></p>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sec-label"><span class="num">08</span>M&amp;A History</div>
+  <h2>買って大きくなり、売って「純粋な規制会社」になった</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1997</span><span class="tl-title">Duke Power＋PanEnergy → Duke Energy</span></div><div class="tl-body">ヒューストンのガスパイプライン会社と合併。トレーディングや海外発電に手を広げた時代の始まり。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2006</span><span class="tl-title">Cinergy買収（Ohio・Indiana・Kentucky）</span></div><div class="tl-body">CinergyのCEOだった<b>Jim Rogers</b>がDukeのCEOに。2007年にはガスパイプライン事業をSpectra Energyとして分離。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2012-07-02</span><span class="tl-title">Progress Energy合併（約$32B）— 全米最大の電力会社に</span></div><div class="tl-body">NC東部・SC・Floridaが加わる。合併当日にProgressのCEO <b>Bill Johnson</b>が新会社のCEOに就いたが、<b>その夜のうちに辞任</b>（下のColumn）。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2016</span><span class="tl-title">Piedmont Natural Gas買収（$4.9B）／中南米事業を$1.2Bで売却</span></div><div class="tl-body">規制ガス事業を足し、海外発電から撤退。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2020-07</span><span class="tl-title">Atlantic Coast Pipelineを中止</span></div><div class="tl-body">Dominionと進めた約$8Bのガスパイプライン。訴訟と許認可の遅れで断念し、2020年のGAAP利益が$1.27Bに落ち込む主因になった。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2023-10</span><span class="tl-title">Commercial Renewablesを売却（EV $2.8B）</span></div><div class="tl-body">非規制の大規模太陽光・風力・蓄電3.4 GWを<b>Brookfield Renewable</b>へ（手取り約$1.1B）。Lynn Good CEOは<b>「完全な規制電力会社への転換の最終段階」</b>と位置づけた。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2026-03-03</span><span class="tl-title">BrookfieldがDuke Energy Floridaに出資（総額$6B）</span></div><div class="tl-body">第1回で持株会社Florida Progressの9.19%を<b>約$2.8B</b>で取得。2028年6月までに$3.2Bを追加し、最終的に19.7%（Dukeが80.3%を保持・運営）。$2Bを設備投資に、$4Bを持株会社の借金返済に充てる。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2026-03-31</span><span class="tl-title">Piedmontのテネシー事業をSpireへ売却（$2.48B）</span></div><div class="tl-body">Nashville周辺の20万件超・パイプライン約3,800マイル。約$0.8BでPiedmontの借金を返し、残る約$1.5B（税引後）を規制投資へ。</div></div></div>
+  </div>
+  <div class="col-box">
+    <span class="col-lbl">Column</span>
+    <h3>合併当日の夜に辞めたCEO — Bill Johnson事件（2012）</h3>
+    <p>Progress Energyとの合併条件は「ProgressのCEO Bill JohnsonがCEO、DukeのJim Rogersは会長」。ところが2012年7月2日の午後に合併が完了すると、<strong>旧Duke出身者が多数を占める新取締役会が同日夜にJohnsonの退任を決め</strong>、翌朝Rogersが CEOに戻ると発表された。</p>
+    <blockquote>「取締役会は、彼のスタイルが統合後の会社のリーダーシップにふさわしい、あるいは移植できるとは考えなかった」— Jim Rogers、NC公益事業委員会での証言（2012年7月10日）</blockquote>
+    <div class="col-sub">その後</div>
+    <p>Johnsonへの退職関連支払いは<strong>最大$44.4M</strong>と報じられ、NC州司法長官Roy Cooperが調査に乗り出した。委員会は費用を顧客ではなく株主に負担させ、Rogersが2013年末までに退任することで和解。2013年7月、CFOだった<strong>Lynn Good</strong>がCEOに就いた。Johnsonはのちに連邦政府系の<strong>TVA（テネシー川流域開発公社）のCEO</strong>になった。</p>
+    <div class="col-num">
+      <div class="n"><div class="v">$32B</div><div class="l">合併規模（全米最大の電力会社に）</div></div>
+      <div class="n"><div class="v">1日未満</div><div class="l">JohnsonのCEO在任期間</div></div>
+      <div class="n"><div class="v">$44.4M</div><div class="l">報道された退職関連支払いの上限</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sec-label"><span class="num">09</span>Policy &amp; Regulation</div>
+  <h2>州の料金審査、連邦の税制と原子力規制、そして石炭灰の遺産</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>テーマ</th><th>中身</th><th>Dukeへの影響</th></tr></thead>
+    <tbody>
+      <tr><td><b>州PUC</b></td><td>NCUC（NC）、SC PSC、FPSC（FL）、IURC（IN）、PUCO（OH）、KYPSC</td><td>ROE・資本構成・投資の認可を決める最大の変数。NCのDEC和解案はROE 9.8%・自己資本53%</td></tr>
+      <tr><td>NC州法 HB951（2021）／SB266（2025）</td><td>HB951：NCのCO2削減目標と複数年料金計画。SB266：2030年の中間目標を撤廃（州議会が知事の拒否権を覆して成立）</td><td>石炭延命・ガス新設の余地が広がる一方、環境団体との対立は続く</td></tr>
+      <tr><td><b>IRA税額控除</b></td><td>既存原子力のPTC（45U）、太陽光・蓄電のITC/PTC、transferability（税額控除の売却）</td><td>原子力PTC約$600Mを顧客に還元。$3.1Bの控除売却で資金調達。2025年7月の税制法（OBBBA）で風力・太陽光の控除は段階縮小、原子力・蓄電は相対的に維持</td></tr>
+      <tr><td><b>NRC</b></td><td>運転期間延長（SLR）、新設のESP・COL</td><td>Robinsonが2050年まで。Belews Creek ESPは2027年ごろ判断の見込み</td></tr>
+      <tr><td><b>石炭灰（coal ash）</b></td><td>2014年2月のDan River流出（約39,000トン）</td><td>2015年に子会社3社が連邦Clean Water Act違反で有罪答弁、<b>$102M</b>。NCの灰ため池32か所を2029年までに閉鎖。2021年に<b>$1.1B</b>の処理費を株主負担で吸収する和解</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:12px;color:var(--muted)">出典：DOJ（2015）、Wikipedia、Utility Dive、NC Newsline、各社リリース。SB266とOBBBAの記述は筆者の既知情報で、本ページの一次資料では照合していない。</p>
+  <div class="warn-box">
+    <div class="w-title">Dan River事故の教訓（筆者）</div>
+    <ul>
+      <li><b>数千ドルの点検を省いた結果：</b>報道によれば、事故前にDukeは雨水管の<b>約$5,000のカメラ点検</b>を見送っていた。数か月後にその管が破れ、灰がDan川に流れ込んだ。</li>
+      <li><b>「規制資産」にできないコスト：</b>罰金と一部の処理費は料金に入れられず、株主負担になった。規制電力会社の利益が「保証されている」わけではない例。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec" id="s10">
+  <div class="sec-label"><span class="num">10</span>Peers &amp; Comparison</div>
+  <h2>決算読み比べ — 売上は最大、利益率は「中くらい」、投資計画は最大</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th>地盤</th><th>Revenue FY2025</th><th>Operating income</th><th>Op. margin</th><th>Net income</th><th>EPS (GAAP)</th><th>Capex plan 2026–30</th></tr></thead>
+    <tbody>
+      <tr><td><b>Duke Energy</b></td><td>NC・SC・FL・IN・OH・KY</td><td><b>$32.2B</b></td><td>$8.63B</td><td>26.8%</td><td>$4.91B</td><td>$6.31</td><td><b>$103B</b></td></tr>
+      <tr><td>NextEra Energy</td><td>FL（FPL）＋全米の再エネ開発（NEER）</td><td>$27.4B</td><td>$8.28B</td><td><b>30.2%</b></td><td><b>$6.84B</b></td><td>$3.30</td><td>—</td></tr>
+      <tr><td>Southern Company</td><td>GA・AL・MS（Vogtle 3・4号機）</td><td>$29.6B</td><td>$7.29B</td><td>24.7%</td><td>$4.34B</td><td>$3.92</td><td>$81B</td></tr>
+      <tr><td>American Electric Power</td><td>OH・TX・OKなど11州、送電網最大</td><td>$21.9B</td><td>$5.32B</td><td>24.3%</td><td>$3.58B</td><td>$6.66</td><td>$78B</td></tr>
+      <tr><td>Dominion Energy</td><td>VA（世界最大のDC集積地）・SC</td><td>$16.5B</td><td>$4.41B</td><td>26.7%</td><td>$2.97B</td><td>$3.45</td><td>—</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:12px;color:var(--muted)">出典：各社10-K（SEC XBRL）。Op. marginは筆者計算。Capex planはDuke 8-K、Southern・AEPはReuters factbox（2026-05）。NextEra・Dominionの5年計画は本ページでは照合できず「—」。</p>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">NextEra — 規制＋非規制のハイブリッド</div><div class="ind-desc">Florida Power &amp; Light（規制）と、全米最大の再エネ開発NextEra Energy Resources（非規制）の二本立て。Dukeが2023年に手放した「非規制の再エネ」を本業として大きく持つ。利益率は最も高いが、金利と税制の影響を受けやすい。Florida半島ではDEFと隣り合う。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">Southern — 新設原子力をやり切った会社</div><div class="ind-desc">GeorgiaのVogtle 3・4号機（AP1000）を2023〜24年に運転開始。予算超過と遅延の末に完成させた経験は、Dukeが大型炉に踏み込むかどうかの参照点になる。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">Dominion — データセンターの本場</div><div class="ind-desc">Northern Virginiaのデータセンター集積地を抱える。SCではDukeと隣接（旧SCANA）。洋上風力（CVOW）にも投資。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">AEP — 送電網の会社</div><div class="ind-desc">765kVの超高圧送電網を全米最大規模で持つ。OhioではDuke Energy Ohioと同じく送配電中心。EPSの絶対値（$6.66）はDukeと近い。</div></div></div>
+  </div>
+  <div class="callout"><strong>筆者の読み：</strong>EPSの絶対額は株数の違いで比べられないので、見るべきは<strong>利益率と投資計画の大きさ</strong>。Dukeは売上・投資計画とも最大で、利益率は平均的。「最大のRate baseを、平均的なROEで回す」会社であり、成長率（5–7%）も同業の典型的な範囲にある。違いを生むのは<strong>FloridaとCarolinasの人口流入</strong>と、<strong>規制下での原子力の大きさ</strong>。</div>
+</div>
+
+<div class="sec" id="s11">
+  <div class="sec-label"><span class="num">11</span>Supply Chain</div>
+  <h2>ボトルネックはガスタービン・変圧器・人手</h2>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">GE Vernova — 7HAガスタービン最大11台</div><div class="ind-desc">2025年4月、既に確保した8台に加え、<b>最大11台の7HA</b>と関連機器を調達する枠組みで合意。GE VernovaがSC州Greenvilleの工場を増強することが前提。世界のガスタービンはGE Vernova・Siemens Energy・Mitsubishi Heavy（三菱重工）の3社寡占で、納期は数年待ち。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">変圧器・開閉器</div><div class="ind-desc">大型変圧器は全米で不足し、納期が2〜4年に延びている（業界全般）。Duke個別の調達先・契約は本ページでは確認できなかった。供給側にはHitachi Energy、Siemens Energy、日立・東芝などがいる。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">原子炉ベンダー</div><div class="ind-desc">既存炉はB&amp;W（Oconee）、Westinghouse（McGuire・Catawba・Harris・Robinson）、GE（Brunswick）。新設はBelews CreekのESPで6炉型を比較中（§04）。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">燃料</div><div class="ind-desc">ガスはTranscoなどの州間パイプラインに依存。NCは州内にガス田がなく、パイプライン容量が制約。Atlantic Coast Pipelineの中止（2020年）がいまも響く。</div></div></div>
+  </div>
+</div>
+
+<div class="sec" id="s12">
+  <div class="sec-label"><span class="num">12</span>Founding Story</div>
+  <h2>タバコ王が、川の水で紡績工場を回そうとした</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1890</span><span class="tl-title">James B. Duke、American Tobacco Companyを設立</span></div><div class="tl-body">紙巻きタバコの自動巻き機（Bonsack machine）をいち早く導入し、競合を買収してタバコ市場を支配。1911年に米最高裁の反トラスト判決で分割される。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1900–1904</span><span class="tl-title">Catawba川に水力発電所</span></div><div class="tl-body">医師の<b>Walker Gill Wylie</b>と兄弟がCatawba Power Companyをつくり、SC州Fort Mill近くの発電所が1904年に運転開始（4月30日説。Dukeはこれを創業日とする）。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1905</span><span class="tl-title">Southern Power Company設立</span></div><div class="tl-body">1904年、Duke・Wylie・技師<b>William States Lee</b>がニューヨークで会合。DukeはWylieの$50,000に同額を出し、1905年6月に会社をつくった。Piedmont地方の<b>紡績工場に電気を売る</b>のが目的で、電力が工場をNew Englandから南部へ引き寄せた。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1924-12</span><span class="tl-title">The Duke Endowment設立、Trinity College→Duke University</span></div><div class="tl-body">Dukeは自宅のあるCharlotteで<b>$40M</b>の財団を設立。受益先はDuke University・Davidson College・Furman University・Johnson C. Smith University、Carolinasの病院、孤児院、メソジスト教会。財団の資産の中心は<b>Duke Powerの株式</b>だった。同年、社名がDuke Power Companyに。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1925-10</span><span class="tl-title">James B. Duke死去</span></div><div class="tl-body">遺産の多くを財団と大学に残した。会社はW.S. Leeが率いた。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1973–1974</span><span class="tl-title">Oconee原子力発電所が運転開始</span></div><div class="tl-body">水力の会社が、自社設計・自社建設で原子力に進んだ。いまも3基が稼働する最大のサイト。</div></div></div>
+  </div>
+  <div class="col-box">
+    <span class="col-lbl">Column</span>
+    <h3>電力会社と大学が同じ名前である理由</h3>
+    <p>Duke Universityは「Duke Energyの大学」ではない。Dukeが1924年に設立した<strong>The Duke Endowment</strong>が、Trinity Collegeに巨額の寄付をする条件として、父Washington Dukeの名を冠して改名させた。その寄付の原資が、紡績工場に電気を売る会社＝Duke Powerの配当だった。</p>
+    <blockquote>電力会社が稼いだ配当が、Carolinasの大学と病院を支える — 1世紀続くこの構図が、Dukeの「100年連続配当」の重みを別の角度から説明している（筆者の読み）。</blockquote>
+    <div class="col-sub">名前に残る創業者たち</div>
+    <p>SCの大型原子力の候補地<strong>「W.S. Lee」</strong>は、1905年の創業技師William States Leeの名。Catawba川の11の貯水池（Lake Norman、Lake Wylieなど）にも、創業期の人名が残る。</p>
+    <div class="col-num">
+      <div class="n"><div class="v">$50,000</div><div class="l">1904年にDukeがWylieと同額出資</div></div>
+      <div class="n"><div class="v">$40M</div><div class="l">1924年のThe Duke Endowment設立時の信託</div></div>
+      <div class="n"><div class="v">100年</div><div class="l">四半期配当の連続年数（2026年）</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="sec" id="s13">
+  <div class="sec-label"><span class="num">13</span>Leadership</div>
+  <h2>タバコ王、合併劇の主役、12年の安定運転、そして現場出身のCEO</h2>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Harry Sideris</span><span class="p-role">Chair, President &amp; CEO</span></div>
+    <div class="p-line">NC State University（工学）、Campbell University MBA。2025年4月1日からCEO。</div>
+    <ul>
+      <li><b>前職：</b>1996年に<b>Progress Energy（旧Carolina Power &amp; Light）</b>へ入社。CarolinasとFloridaの発電所で運転・保守・技術の職を重ねた<b>現場出身</b>。2012年の合併で「Progress側」からDukeに入った人物がトップに立った。</li>
+      <li><b>Duke：</b>環境・安全担当SVP、Florida州プレジデント、Chief Distribution Officer、顧客体験担当EVPを経て、2024年4月にPresident。</li>
+      <li><b>CEOとしての主な決定：</b>Brookfieldへの<b>Florida持分売却（$6B）</b>とSpireへのTennessee売却、設備投資計画の$103Bへの拡大、DEC・DEPの統合、データセンターとの7.8 GW契約。</li>
+    </ul>
+    <div class="p-quote">「新しい需要の大半はFloridaとIndianaにある。Carolinas、Ohio、Kentuckyにも追加の機会がある」（2026年8月、Q2決算）</div>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Lynn Good</span><span class="p-role">CEO 2013–2025</span></div>
+    <div class="p-line">Miami University（Ohio）卒の会計士。Arthur Andersenのパートナーを経てCinergyに。</div>
+    <ul>
+      <li>2006年のCinergy買収でDukeへ。CFOを経て、Bill Johnson事件後の<b>2013年7月にCEO</b>。</li>
+      <li>在任中に、Dan River事故の処理、Atlantic Coast Pipelineの中止、海外・非規制事業の売却を進め、<b>「完全な規制電力会社」への転換</b>を完成させた。2021年にはElliott Managementから事業分割を迫られたが、退けた。</li>
+      <li>2025年3月末に会長兼CEOを退任。</li>
+    </ul>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">James Buchanan Duke</span><span class="p-role">Founder</span></div>
+    <div class="p-line">1856年NC州Durham近郊生まれ、1925年没。父Washington Dukeのタバコ事業を継いだ。</div>
+    <ul>
+      <li><b>タバコ：</b>1880年代にBonsack巻き機で紙巻きタバコを大量生産し、1890年にAmerican Tobacco Companyを設立。1902年にはBritish American Tobacco（BAT）の設立にも関わった。</li>
+      <li><b>電力：</b>1905年にSouthern Power Companyを設立。水力の電気で南部の紡績業を育て、その工場が自社の大口顧客になるという地域開発型のビジネス。</li>
+      <li><b>慈善：</b>1924年にThe Duke Endowment。Trinity CollegeをDuke Universityに。</li>
+    </ul>
+    <div class="p-quote">Charlotteの「Trail of History」には、彼の銅像がある。</div>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Jim Rogers</span><span class="p-role">CEO 2006–2013</span></div>
+    <div class="p-line">Cinergy CEOから、2006年の買収でDuke CEOに（1947–2018）。</div>
+    <ul>
+      <li>電力業界で早くから<b>炭素価格の導入を支持</b>した異色の経営者。Progress合併を主導したが、Johnson事件で規制当局の厳しい追及を受け、2013年に退任。</li>
+    </ul>
+  </div>
+  <p style="font-size:12px;color:var(--muted)">出典：Duke Energy（Leadership・Illumination）、USEA、WRAL、Power Engineering、Charlotte Trail of History。Good・Rogersの経歴の一部は筆者の既知情報。</p>
+</div>
+
+<div class="sec" id="s14">
+  <div class="sec-label"><span class="num">14</span>Japan Connections</div>
+  <h2>東芝のWestinghouseに振り回され、トヨタの電池工場に電線を通した</h2>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">東芝 / Westinghouse — 2つの原子力計画が消えた</div><div class="ind-desc">Dukeは<b>SCのW.S. Lee</b>とFloridaの<b>Levy</b>で、Westinghouse製AP1000を2基ずつ建てる許可を持っていた。東芝傘下だったWestinghouseが<b>2017年3月に米連邦破産法11条</b>を申請すると、Dukeは同年8月にLeeの計画中止を申請し、Levyも正式に中止（Levyの未回収費用約$150Mは株主負担）。Leeの許可は今も維持しており、大型炉の候補地として復活しつつある。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">トヨタ — NC州Libertyの電池工場</div><div class="ind-desc">トヨタの米国初の電池工場（Toyota Battery Manufacturing North Carolina、2025年11月に生産開始、年30 GWh規模）の敷地では、Dukeが<b>525kVの送電線と鉄塔を移設</b>し、トヨタはその見返りにエネルギー・クレジットを得た。Dukeはこのメガサイトの誘致にも関わった。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">日立 — BWRX-300が候補炉型に</div><div class="ind-desc">Belews Creek ESPの6炉型の1つが<b>GE Vernova Hitachi</b>のBWRX-300。日米の投資枠組み（2025年10月のファクトシート）では、BWRX-300やAP1000の米国建設に<b>日立・三菱重工・東芝・IHI</b>の参画が想定されている。Dukeがどの炉型を選ぶかは、日本の原子力サプライチェーンにも関係する。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">三菱重工 — タービン</div><div class="ind-desc">世界のガスタービン3強の1つ。Dukeは非規制時代にTexasのLos Vientos II風力（202 MW）で三菱重工の2.4 MW風車84基を採用した（その後Brookfieldへ売却）。現在のガスタービン大型発注はGE Vernova。</div></div></div>
+  </div>
+  <p>日本の電力会社やガス会社がDukeに直接出資している例は、本ページの調査では見つからなかった。Dukeの子会社に出資しているのはシンガポールのGIC（Indiana）とカナダのBrookfield（Florida）で、<strong>「規制電力会社の子会社持分」は海外の長期資金に人気の資産</strong>になっている。</p>
+  <p style="font-size:12px;color:var(--muted)">出典：NucNet・WFAE・ENR（2017年の中止）、Progressive Railroading・3BL（トヨタ）、財務省「日米投資に関するファクトシート」（2025-10-29）、NAWindpower（Los Vientos）。</p>
+</div>
+
+<div class="sec" id="s15">
+  <div class="sec-label"><span class="num">15</span>Stock Analysis (NFA)</div>
+  <h2>10年で株価+51%、配当込みで約2.2倍。AI相場の中で「置いていかれた」電力株</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Price</div><div class="v">$117.49（NYSE）— 2026-10-12</div></div>
+    <div class="kv-item"><div class="k">Market Cap / EV</div><div class="v">$91.6B ／ $183B</div></div>
+    <div class="kv-item"><div class="k">PER</div><div class="v">17.6x（実績）／17.3x（予想）</div></div>
+    <div class="kv-item"><div class="k">EV / EBITDA</div><div class="v">11.0x</div></div>
+    <div class="kv-item"><div class="k">P / B</div><div class="v">1.69x</div></div>
+    <div class="kv-item"><div class="k">Dividend</div><div class="v">年$4.34（$1.085×4）・利回り3.69%・配当性向65%</div></div>
+    <div class="kv-item"><div class="k">52-week Range</div><div class="v">$112.40 〜 $134.49</div></div>
+    <div class="kv-item"><div class="k">Consensus</div><div class="v">目標株価$134.94（22社・Buy）。Beta 0.35</div></div>
+  </div>
+  <div style="margin:14px 0 6px;overflow-x:auto;-webkit-overflow-scrolling:touch"><svg viewBox="0 0 760 268" width="100%" role="img" aria-label="DUK year-end share price" style="display:block;width:100%;min-width:620px;height:auto;font-family:Poppins,sans-serif"><line x1="56" y1="230.0" x2="744" y2="230.0" stroke="#e3e3e3"/><text x="50" y="234.0" font-size="10" fill="#888" text-anchor="end">$60</text><line x1="56" y1="201.4" x2="744" y2="201.4" stroke="#e3e3e3"/><text x="50" y="205.4" font-size="10" fill="#888" text-anchor="end">$70</text><line x1="56" y1="172.9" x2="744" y2="172.9" stroke="#e3e3e3"/><text x="50" y="176.9" font-size="10" fill="#888" text-anchor="end">$80</text><line x1="56" y1="144.3" x2="744" y2="144.3" stroke="#e3e3e3"/><text x="50" y="148.3" font-size="10" fill="#888" text-anchor="end">$90</text><line x1="56" y1="115.7" x2="744" y2="115.7" stroke="#e3e3e3"/><text x="50" y="119.7" font-size="10" fill="#888" text-anchor="end">$100</text><line x1="56" y1="87.1" x2="744" y2="87.1" stroke="#e3e3e3"/><text x="50" y="91.1" font-size="10" fill="#888" text-anchor="end">$110</text><line x1="56" y1="58.6" x2="744" y2="58.6" stroke="#e3e3e3"/><text x="50" y="62.6" font-size="10" fill="#888" text-anchor="end">$120</text><line x1="56" y1="30.0" x2="744" y2="30.0" stroke="#e3e3e3"/><text x="50" y="34.0" font-size="10" fill="#888" text-anchor="end">$130</text><text x="84.7" y="246" font-size="10" fill="#444" text-anchor="middle">2015</text><text x="84.7" y="260" font-size="9" fill="#888" text-anchor="middle">$3.24</text><text x="142.0" y="246" font-size="10" fill="#444" text-anchor="middle">2016</text><text x="142.0" y="260" font-size="9" fill="#888" text-anchor="middle">$3.36</text><text x="199.3" y="246" font-size="10" fill="#444" text-anchor="middle">2017</text><text x="199.3" y="260" font-size="9" fill="#888" text-anchor="middle">$3.49</text><text x="256.7" y="246" font-size="10" fill="#444" text-anchor="middle">2018</text><text x="256.7" y="260" font-size="9" fill="#888" text-anchor="middle">$3.64</text><text x="314.0" y="246" font-size="10" fill="#444" text-anchor="middle">2019</text><text x="314.0" y="260" font-size="9" fill="#888" text-anchor="middle">$3.75</text><text x="371.3" y="246" font-size="10" fill="#444" text-anchor="middle">2020</text><text x="371.3" y="260" font-size="9" fill="#888" text-anchor="middle">$3.82</text><text x="428.7" y="246" font-size="10" fill="#444" text-anchor="middle">2021</text><text x="428.7" y="260" font-size="9" fill="#888" text-anchor="middle">$3.90</text><text x="486.0" y="246" font-size="10" fill="#444" text-anchor="middle">2022</text><text x="486.0" y="260" font-size="9" fill="#888" text-anchor="middle">$3.98</text><text x="543.3" y="246" font-size="10" fill="#444" text-anchor="middle">2023</text><text x="543.3" y="260" font-size="9" fill="#888" text-anchor="middle">$4.06</text><text x="600.7" y="246" font-size="10" fill="#444" text-anchor="middle">2024</text><text x="600.7" y="260" font-size="9" fill="#888" text-anchor="middle">$4.14</text><text x="658.0" y="246" font-size="10" fill="#444" text-anchor="middle">2025</text><text x="658.0" y="260" font-size="9" fill="#888" text-anchor="middle">$4.22</text><text x="715.3" y="246" font-size="10" fill="#444" text-anchor="middle">2026-10</text><polyline fill="none" stroke="#111" stroke-width="2" points="84.7,197.5 142.0,179.7 199.3,161.1 256.7,154.9 314.0,140.8 371.3,139.8 428.7,101.7 486.0,107.2 543.3,124.2 600.7,93.6 658.0,66.5 715.3,65.7"/><circle cx="84.7" cy="197.5" r="3.5" fill="#111"/><text x="84.7" y="188.5" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">71</text><circle cx="142.0" cy="179.7" r="3.5" fill="#111"/><text x="142.0" y="170.7" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">78</text><circle cx="199.3" cy="161.1" r="3.5" fill="#111"/><text x="199.3" y="152.1" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">84</text><circle cx="256.7" cy="154.9" r="3.5" fill="#111"/><text x="256.7" y="145.9" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">86</text><circle cx="314.0" cy="140.8" r="3.5" fill="#111"/><text x="314.0" y="131.8" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">91</text><circle cx="371.3" cy="139.8" r="3.5" fill="#111"/><text x="371.3" y="130.8" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">92</text><circle cx="428.7" cy="101.7" r="3.5" fill="#111"/><text x="428.7" y="92.7" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">105</text><circle cx="486.0" cy="107.2" r="3.5" fill="#111"/><text x="486.0" y="98.2" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">103</text><circle cx="543.3" cy="124.2" r="3.5" fill="#111"/><text x="543.3" y="115.2" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">97</text><circle cx="600.7" cy="93.6" r="3.5" fill="#111"/><text x="600.7" y="84.6" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">108</text><circle cx="658.0" cy="66.5" r="3.5" fill="#111"/><text x="658.0" y="57.5" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">117</text><circle cx="715.3" cy="65.7" r="3.5" fill="#111"/><text x="715.3" y="56.7" font-size="9.5" font-weight="700" fill="#111" text-anchor="middle">117</text><text x="56" y="16" font-size="10.5" fill="#444">DUK 年末終値（$）／下段=その年の1株配当（declared）。2026-10は10月12日の値</text></svg></div>
+  <p style="font-size:12px;color:var(--muted)">出典：chartrow.com（年末終値）、stockanalysis.com（2026-10-12）、SEC XBRL（DPS）。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>時期</th><th>株価</th><th>何が起きたか</th></tr></thead>
+    <tbody>
+      <tr><td>2015年末</td><td>$71.39</td><td>金利上昇観測で公益株が売られる（年−14.5%）</td></tr>
+      <tr><td>2020年末</td><td>$91.56</td><td>コロナ。Atlantic Coast Pipeline中止</td></tr>
+      <tr><td>2021年末</td><td>$104.90</td><td>Elliottの圧力、GICのIndiana出資（年+19%配当込み）</td></tr>
+      <tr><td>2023年末</td><td>$97.04</td><td>金利5%台。債券と比べて配当の魅力が落ちた</td></tr>
+      <tr><td>2025年末</td><td>$117.21</td><td>データセンター需要と$103B計画への期待（配当込み+12.7%）</td></tr>
+      <tr><td>2026-10-12</td><td><b>$117.49</b></td><td>52週高値$134台から、NCの料金審査・増資懸念で調整。年初来ほぼ横ばい（52週では−7.5%）</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Bull / Base / Bear（筆者推計、2028年EPS基準）</h3>
+  <p>前提：2025年中央値$6.30から年5–7%成長なら、2028年EPSは<b>$7.29〜$7.72</b>（筆者計算）。会社は「2028年からレンジ上半分」としているので、Baseは6%成長の約$7.50に置く。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Scenario</th><th>前提</th><th>EPS 2028</th><th>PER</th><th>株価の目安</th></tr></thead>
+    <tbody>
+      <tr><td><b>Bull</b></td><td>データセンター契約が15.4 GWまで積み上がり、Florida・Indianaで$5–10Bの追加投資が認められる。NCの和解がそのまま承認。金利低下で公益株のPERが上がる</td><td>~$7.72（+7%）</td><td>19x</td><td>~$147</td></tr>
+      <tr><td><b>Base</b></td><td>計画どおり年6%前後。ROEは9.8%前後で横ばい。増資による希薄化は計画の範囲（2030年までに約$10Bと報道）</td><td>~$7.50（+6%）</td><td>17x</td><td>~$128</td></tr>
+      <tr><td><b>Bear</b></td><td>料金への政治的反発でROEが9.5%を割り込み、regulatory lagが拡大。データセンターの一部が延期・撤回。金利上昇でPER低下</td><td>~$7.10（+4%）</td><td>14x</td><td>~$99</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><strong>見立て（筆者の読み・NFA）：</strong>今の$117はBaseの$128より1割ほど低く、<strong>「NCの料金判断とFlorida・Indianaの追加投資」の不確実性を少し割り引いた水準</strong>。期待リターンの大半は配当（3.7%）＋EPS成長（5–7%）＝年9–10%前後で、株価の変動は小さい（Beta 0.35）。逆に言えば、<strong>AIで株価が倍になる銘柄ではない</strong>。AI需要の上振れを取りに行くなら、Dukeよりもタービン（GE Vernova）や、自由化市場で原子力を持つConstellation・Vistraのほうが感応度が高い。</div>
+  <h3>Leading Indicators — 何を見ればよいか</h3>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">NCUCのDEC料金判断（2026年11月）</div><div class="ind-desc">ROE 9.8%・自己資本53%がそのまま通るか。DEPの次回Rate caseの前例にもなる。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">ESAの累計GW</div><div class="ind-desc">7.8 GW → 15.4 GW（2027年上期）への転換ペース。四半期ごとの決算で開示される。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">2027年ガイダンスと新しい5年計画（2027年2月）</div><div class="ind-desc">$103Bがどこまで増えるか、増資額がどう変わるか。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">米10年金利</div><div class="ind-desc">配当利回り3.7%の株は、債券利回りとの比較で評価される。金利の上下がPERを直接動かす。</div></div></div>
+    <div class="ind-item"><div class="ind-num">5</div><div><div class="ind-title">ハリケーン</div><div class="ind-desc">Florida・Carolinasは毎年ハリケーンが来る。復旧費は証券化（storm securitization）で回収できるが、一時的に負債とキャッシュフローを圧迫する。</div></div></div>
+  </div>
+  <div class="warn-box">
+    <div class="w-title">NFA — 投資助言ではない</div>
+    <ul>
+      <li>本章は公開情報をもとにした<b>筆者の個人的な整理</b>で、特定の銘柄の売買を勧めるものではない（Not Financial Advice）。</li>
+      <li>Bull/Base/BearのEPS・PER・株価は<b>筆者推計</b>で、会社の予想や証券会社の目標株価ではない。株価・指標は2026年10月12日時点。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec" id="s16">
+  <div class="sec-label"><span class="num">16</span>Q&amp;A</div>
+  <h2>基礎から深掘りまで</h2>
+  <div class="qa">
+    <details><summary>電力会社の利益は「保証されている」のか？</summary><div class="qa-a">保証されているのは<b>「稼ぐ機会」</b>であって利益そのものではない。認可ROEは「適切に運営すればこのくらい稼いでよい」という上限・目安で、実際のROE（earned ROE）は、料金改定までのラグ、天候（冷夏・暖冬で販売量が減る）、料金に入れてもらえない費用（Dan Riverの罰金など）で下回ることが多い。Dukeが2028年から「上半分」と言えるのは、複数年料金計画でラグが縮むから。</div></details>
+    <details><summary>なぜ規制電力会社はいつも借金を増やしているのか？</summary><div class="qa-a">設備投資が営業キャッシュフローを上回り続けるから。2025年はOCF $12.3Bに対しCapex $14.0B、そのうえ配当$3.3Bを払う。差額は社債・増資・資産売却で埋める。これは失敗ではなく<b>ビジネスモデルそのもの</b>で、新しい設備がRate baseに入って利益を生む。問題になるのは、金利が上がって調達コストが認可ROEに近づくときと、格付けが下がるとき。</div></details>
+    <details><summary>データセンターの需要が来なかったら、作った発電所のコストは誰が払う？</summary><div class="qa-a">Dukeは大口契約に<b>最低需要・与信保証・建設前払い・解約金</b>を入れており、データセンター側が撤退しても一定の支払いが残るようにしている。それでも足りない部分は、最終的には次のRate caseで「その投資は妥当だったか（prudence）」が審査される。妥当と認められれば全顧客の料金に、認められなければ株主負担になる。</div></details>
+    <details><summary>なぜFloridaの子会社の一部をBrookfieldに売ったのか？</summary><div class="qa-a">$103Bの投資を全部借金でまかなうと格付けが下がり、全部を新株で出すと1株利益が薄まる。<b>子会社の少数持分を売る</b>のはその中間で、Dukeは経営権（80.3%）を残したまま$6Bの自己資本を得た。Brookfieldにとっては、規制で守られた安定配当を長期に受け取れる「super-core」資産。2021年のGIC（Indiana 19.9%）と同じ手法。</div></details>
+    <details><summary>DEC（Carolinas）とDEP（Progress）を統合すると何が変わる？</summary><div class="qa-a">2012年の合併後も、2つの電力会社は別々の料金・別々の発電計画で運営されてきた。統合（2027年1月1日、DECが存続会社）で発電所の運用・燃料調達・予備力を一体化し、Dukeは<b>2040年までに約$2.3Bの顧客の節約</b>を見込む。料金はしばらく別々のまま。</div></details>
+    <details><summary>Dukeは原子力を新設するのか？</summary><div class="qa-a">まだ「検討」段階。SMRはBelews CreekのESPをNRCに申請中（最初の1基は2036年、600 MWを2037年までに）。大型炉は2016年取得のW.S. Leeの許可を維持し、Harrisと並べて検討している。SouthernのVogtleが予算を大きく超えた前例があるので、<b>建設費の超過を誰が負担するか</b>（州・連邦の支援、共同出資）が決まらないと最終投資判断には進みにくい。</div></details>
+    <details><summary>Ohioだけ「送配電のみ」なのはなぜ？</summary><div class="qa-a">Ohioは1999年の州法で電力を自由化し、発電は市場競争、送配電だけが規制の対象になった。Duke Energy Ohioは旧Cincinnati Gas &amp; Electricの発電所を2010年代半ばに売却し、送配電とガスの会社になった。データセンター向けに自前で発電所を建ててRate baseに入れることができないので、成長の中心は送電網の増強になる。</div></details>
+    <details><summary>なぜ「100年連続配当」が重要なのか？</summary><div class="qa-a">Dukeの株主には年金や個人の配当投資家が多く、配当は株価を支える最大の理由。減配すれば株価が大きく下がり、増資のコストも上がる。だから経営陣は配当性向（2025年は65%前後）を保ちつつ、増配幅を小さく（年2%前後）抑えて成長投資に回している。2026年は$1.065→$1.085（+1.9%）。</div></details>
+  </div>
+</div>
+
+<div class="sec" id="s-vocab">
+  <div class="sec-label"><span class="num">17</span>Vocabulary</div>
+  <h2>本件の英単語 — 語源・類義語・よく出る使い方</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Word</th><th>意味</th><th>語源</th><th>類義語・対比</th><th>よく出る使い方</th></tr></thead>
+    <tbody>
+      <tr><td>rate base</td><td>料金算定の基礎となる純設備額</td><td>rate＝ラテン語<i>rata</i>（決められた割合）</td><td>earnings base／regulated asset base（英国はRAB）</td><td>"9.6% <b>earnings base</b> growth through 2030"</td></tr>
+      <tr><td>rate case</td><td>料金改定の審査（申請〜決定）</td><td>case＝ラテン語<i>casus</i>（出来事・訴訟）</td><td>rate proceeding／tariff filing</td><td>"filed a <b>rate case</b> with the NCUC"</td></tr>
+      <tr><td>allowed ROE</td><td>認可された自己資本利益率</td><td>allow＝古仏語<i>alouer</i>（割り当てる）</td><td>対比：earned ROE（実績）</td><td>"an <b>allowed ROE</b> of 9.8%"</td></tr>
+      <tr><td>settlement</td><td>（審査中の）和解・合意</td><td>settle（落ち着かせる）＋ -ment</td><td>stipulation／agreement</td><td>"a comprehensive <b>settlement</b> with Public Staff"</td></tr>
+      <tr><td>regulatory lag</td><td>投資してから料金に反映されるまでの遅れ</td><td>lag＝遅れる（16世紀、子どもの遊びの「最後尾」から）</td><td>対比：formula rate／rider</td><td>"multiyear plans reduce <b>regulatory lag</b>"</td></tr>
+      <tr><td>rider</td><td>本料金に上乗せする特定費用の追加料金</td><td>ride（乗る）＋ -er。契約書の「追加条項」</td><td>surcharge／tracker／clause</td><td>"fuel cost <b>rider</b>"</td></tr>
+      <tr><td>pass-through</td><td>コストをそのまま料金に転嫁すること</td><td>pass（通す）＋ through</td><td>flow-through／recovery</td><td>"fuel costs are a <b>pass-through</b>"</td></tr>
+      <tr><td>vertically integrated</td><td>発電・送電・配電を一社で持つ</td><td>vertical＝ラテン語<i>vertex</i>（頂点）</td><td>対比：wires-only／T&amp;D utility</td><td>"a <b>vertically integrated</b> utility in the Carolinas"</td></tr>
+      <tr><td>large load</td><td>大口の新規需要（データセンター・工場）</td><td>load＝荷・負荷</td><td>hyperscale demand</td><td>"<b>large load</b> tariff"</td></tr>
+      <tr><td>ESA</td><td>Electric Service Agreement、電力供給契約</td><td>service＝ラテン語<i>servitium</i>（奉仕）</td><td>PPA（電力購入契約、発電側との契約）</td><td>"7.8 GW of executed <b>ESAs</b>"</td></tr>
+      <tr><td>take-or-pay</td><td>使わなくても最低額は払う契約条件</td><td>「取るか、払うか」</td><td>minimum bill／demand charge</td><td>"<b>take-or-pay</b> provisions for data centers"</td></tr>
+      <tr><td>dispatchable</td><td>必要なときに出力を上げ下げできる（電源）</td><td>dispatch＝伊語<i>dispacciare</i>（急送する）</td><td>firm。対比：intermittent（太陽光・風力）</td><td>"5 GW of new <b>dispatchable</b> generation"</td></tr>
+      <tr><td>capacity factor</td><td>設備利用率（実発電量÷最大可能発電量）</td><td>capacity＝ラテン語<i>capax</i>（入れられる）</td><td>utilization</td><td>"a record 96.9% <b>capacity factor</b>"</td></tr>
+      <tr><td>early site permit</td><td>原子炉の立地だけを先に認める許可（ESP）</td><td>permit＝ラテン語<i>permittere</i>（通す）</td><td>対比：COL（建設・運転一体許可）</td><td>"submitted an <b>early site permit</b> application"</td></tr>
+      <tr><td>prudence</td><td>（投資の）妥当性・慎重さ</td><td>ラテン語<i>prudentia</i>（先を見る力）</td><td>reasonableness。対比：imprudent → disallowance</td><td>"a <b>prudence</b> review of plant costs"</td></tr>
+      <tr><td>dilution</td><td>増資による1株価値の希薄化</td><td>ラテン語<i>diluere</i>（水で薄める）</td><td>対比：accretion</td><td>"minority stake sales avoid equity <b>dilution</b>"</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/1326160/000132616026000007/er-20251231xearningsreleas.htm" target="_blank" rel="noopener">Duke Energy — FY2025 earnings release（8-K）</a></li>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/0001326160/000132616026000037/er-20260630xearningsreleas.htm" target="_blank" rel="noopener">Duke Energy — Q2 2026 earnings release（8-K）</a></li>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/1326160/000132616026000014/duk-20251231.htm" target="_blank" rel="noopener">Duke Energy — FY2025 Form 10-K</a></li>
+    <li><a href="https://data.sec.gov/api/xbrl/companyfacts/CIK0001326160.json" target="_blank" rel="noopener">SEC XBRL company facts — Duke Energy（10年分のPL/CF/BS）</a></li>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/0001326160/000132616026000026/duk-20260331.htm" target="_blank" rel="noopener">Duke Energy — Q1 2026 Form 10-Q（Brookfield第1回）</a></li>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/1326160/000110465926022610/tm267351d1_8k.htm" target="_blank" rel="noopener">Duke Energy — 8-K: Brookfield first closing（2026-03）</a></li>
+    <li><a href="https://s201.q4cdn.com/583395453/files/doc_downloads/2026/2025-Sustainability-Metrics-Center.pdf" target="_blank" rel="noopener">Duke Energy — 2025 Sustainability Metrics Center</a></li>
+    <li><a href="https://investors.duke-energy.com/news/news-details/2026/Duke-Energy-announces-dividend-payments-to-shareholders/default.aspx" target="_blank" rel="noopener">Duke Energy — Dividend announcement（2026）</a></li>
+    <li><a href="https://investors.duke-energy.com/news/news-details/2025/Duke-Energy-and-GE-Vernova-announce-significant-arrangement-for-gas-turbines-and-associated-equipment/default.aspx" target="_blank" rel="noopener">Duke Energy — GE Vernova gas turbine arrangement（2025-04）</a></li>
+    <li><a href="https://www.duke-energy.com/resource-hub/business/for-your-information/illumination/building-the-future-harry-sideris-leads-dukeenergy" target="_blank" rel="noopener">Duke Energy Illumination — Harry Sideris</a></li>
+    <li><a href="https://usea.org/node/3015" target="_blank" rel="noopener">USEA — Harry Sideris profile</a></li>
+    <li><a href="https://www.utilitydive.com/news/duke-energy-earnings-anderson-gas-plant/819428/" target="_blank" rel="noopener">Utility Dive — Duke Q1 2026, Anderson gas plant</a></li>
+    <li><a href="https://www.wfae.org/text/energy-environment/2026-08-04/duke-energy-announces-2-6b-in-profits-as-state-regulators-deliberate-on-utilitys-rate-hike-request" target="_blank" rel="noopener">WFAE — Duke Q2 2026 & rate case（2026-08）</a></li>
+    <li><a href="https://www.publicradioeast.org/2026-05-05/duke-energy-announces-nearly-1-6-billion-in-profit-courts-new-data-center-development-in-the-carolinas" target="_blank" rel="noopener">Public Radio East — Duke Q1 2026, data centers</a></li>
+    <li><a href="https://www.foxcarolina.com/2026/07/21/nc-ag-rejects-duke-energy-rate-settlement-residential-bills-could-rise-95/" target="_blank" rel="noopener">Fox Carolina — NC AG rejects rate settlement（9.5%）</a></li>
+    <li><a href="https://ncnewsline.com/2026/07/21/nc-ag-jackson-rejects-duke-energys-proposed-rate-increase/" target="_blank" rel="noopener">NC Newsline — AG Jackson rejects proposed increase</a></li>
+    <li><a href="https://www.utilitydive.com/news/duke-energy-merge-carolina-utilities/757776/" target="_blank" rel="noopener">Utility Dive — Duke to merge Carolinas utilities</a></li>
+    <li><a href="https://www.renewableenergyworld.com/energy-business/energy-finance/brookfield-invests-6b-in-nearly-20-interest-in-duke-energy-florida/" target="_blank" rel="noopener">Renewable Energy World — Brookfield $6B in Duke Energy Florida</a></li>
+    <li><a href="https://investors.spireenergy.com/news/news-details/2026/Spire-completes-acquisition-of-Tennessee-Piedmont-Natural-Gas-business-from-Duke-Energy/default.aspx" target="_blank" rel="noopener">Spire — Completes Tennessee Piedmont acquisition</a></li>
+    <li><a href="https://utilitydive.com/news/duke-energy-sale-brookefield-unregulated-commercial-renewables/652776" target="_blank" rel="noopener">Utility Dive — Commercial renewables sale to Brookfield</a></li>
+    <li><a href="https://www.ans.org/news/2025-10-06/article-7430/duke-energy-plans-new-nuclear-buildout-in-2025-strategic-plan/" target="_blank" rel="noopener">ANS — Duke new nuclear in 2025 resource plan</a></li>
+    <li><a href="https://www.tdworld.com/reliability-and-resiliency/news/55360431/duke-energys-nuclear-plants-record-capacity-factor-of-969-in-2025" target="_blank" rel="noopener">T&amp;D World — Nuclear capacity factor 96.9%（2025）</a></li>
+    <li><a href="https://www.nucnet.org/news/duke-energy-submits-early-site-permit-application-for-new-nuclear-development-in-north-carolina-1-1-2026" target="_blank" rel="noopener">NucNet — Belews Creek early site permit</a></li>
+    <li><a href="https://neutronbytes.com/2026/01/03/duke-energy-submits-early-site-permit-at-coal-plant-site/" target="_blank" rel="noopener">Neutron Bytes — ESP at coal plant site</a></li>
+    <li><a href="https://www.nucnet.org/news/duke-energy-announces-cancellation-of-levy-ap1000-nuclear-station" target="_blank" rel="noopener">NucNet — Levy AP1000 cancellation（2017）</a></li>
+    <li><a href="https://world-nuclear-news.org/articles/duke-seeks-to-cancel-plans-for-lee-ap1000s" target="_blank" rel="noopener">World Nuclear News — Duke seeks to cancel Lee AP1000s</a></li>
+    <li><a href="https://www.justice.gov/archives/opa/pr/duke-energy-subsidiaries-plead-guilty-and-sentenced-pay-102-million-clean-water-act-crimes" target="_blank" rel="noopener">DOJ — Duke subsidiaries plead guilty, $102M（2015）</a></li>
+    <li><a href="https://grist.org/news-2/duke-ceo-bill-johnson-resigns-after-one-day-gets-44-million-in-severance/" target="_blank" rel="noopener">Grist — Bill Johnson resigns after one day</a></li>
+    <li><a href="https://www.power-eng.com/operations-maintenance/unexpected-leadership-change-during-duke-progress-merger-under-investigation/" target="_blank" rel="noopener">Power Engineering — Leadership change under investigation（2012）</a></li>
+    <li><a href="https://www.powermag.com/history-of-power-duke-energys-century-old-legacy/" target="_blank" rel="noopener">POWER — Duke Energy's century-old legacy</a></li>
+    <li><a href="https://www.encyclopedia.com/books/politics-and-business-magazines/duke-energy-corporation" target="_blank" rel="noopener">Encyclopedia.com — Duke Energy Corporation history</a></li>
+    <li><a href="https://ncpedia.org/node/2366" target="_blank" rel="noopener">NCpedia — Duke Power Company</a></li>
+    <li><a href="https://charlottetrailofhistory.org/sculptures/james-b-duke" target="_blank" rel="noopener">Charlotte Trail of History — James B. Duke</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Duke_Energy" target="_blank" rel="noopener">Wikipedia — Duke Energy</a></li>
+    <li><a href="https://www.progressiverailroading.com/RailPrime/Details/Toyotas-first-domestic-battery-plant-coming-to-North-Carolina-NS-line--65472" target="_blank" rel="noopener">Progressive Railroading — Toyota battery plant, NC</a></li>
+    <li><a href="https://www.mof.go.jp/policy/international_policy/convention/dialogue/251029_fact_sheet_1.pdf" target="_blank" rel="noopener">財務省 — 日米投資ファクトシート（2025-10-29）</a></li>
+    <li><a href="https://nawindpower.com/duke-inks-deals-with-siemens-mitsubishi-for-texas-wind-project" target="_blank" rel="noopener">NAWindpower — Los Vientos turbines（Siemens・MHI）</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/duke-energy-buys-11-ge-vernova-natural-gas-turbines-to-help-meet-growing-data-center-power-demand/" target="_blank" rel="noopener">DCD — Duke buys 11 GE Vernova turbines</a></li>
+    <li><a href="https://datacenterdynamics.com/en/news/duke-energy-to-include-take-or-pay-provisions-in-us-data-center-agreements" target="_blank" rel="noopener">DCD — Take-or-pay provisions</a></li>
+    <li><a href="https://environmentenergyleader.com/stories/innovative-energy-solutions-on-the-horizon-as-duke-energy-partners-with-amazon-google-and,1407" target="_blank" rel="noopener">Environment+Energy Leader — Amazon/Google/Microsoft/Nucor MoU</a></li>
+    <li><a href="https://boereport.com/2026/05/19/some-of-the-biggest-power-companies-in-us/" target="_blank" rel="noopener">Reuters factbox via BOE Report — Biggest US power companies（capex plans）</a></li>
+    <li><a href="https://stockanalysis.com/stocks/duk/statistics/" target="_blank" rel="noopener">stockanalysis.com — DUK statistics</a></li>
+    <li><a href="https://chartrow.com/quote/duk/returns" target="_blank" rel="noopener">chartrow — DUK returns by year</a></li>
+  </ul>
+  <p style="font-size:11px;color:var(--muted);margin-top:14px">Last updated: 2026-10-13</p>
+</div>
+
+</div>
+
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.page > .sec[id]');
+    if (!secs.length) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-label');
+      if (!t) return;
+      ids.push(sec.id);
+      var n = t.querySelector('.num');
+      var num = n ? n.textContent.trim() : ('0' + (i + 1)).slice(-2);
+      var label = t.textContent.replace(num, '').trim();
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + label + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+</body>
+</html>
