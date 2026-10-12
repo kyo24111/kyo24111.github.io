@@ -63,3 +63,5 @@ Kyoからお題（企業名＋トピック）を投げる → そのニュース
 | 2026-09-15 | Wonder × DoorDash、$425Mの提携（Atomsとの競合検証つき） | [260917_wonder_doordash.html](260917_wonder_doordash.html) |
 
 | 2026-10-07 | Mecka、$60M Series B（Sequoiaリード・$100M run rate） | [261009_mecka_series_b.html](261009_mecka_series_b.html) |
+| 2025-11-20 | Sortera、$45M調達＋テネシー第2工場（混合アルミの合金別選別） | [261013_sortera_aluminum.html](261013_sortera_aluminum.html) |
+| 2026-09-28 | Instinct、$1B Series C（評価額$10B・パーソナルAIエージェント） | [261013_instinct_series_c.html](261013_instinct_series_c.html) |
