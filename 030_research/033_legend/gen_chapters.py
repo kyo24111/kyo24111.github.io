@@ -44,6 +44,9 @@ CHAPTERS = [
      "1日のルーティン・お酒・娯楽・健康・趣味",
      {"Private Life", "Personal Life", "Daily Life", "Routine", "Hobbies", "Interests",
       "Hobbies — Mindset"}),
+    ("vices", "嗜好", "Vices",
+     "酒・タバコ・ギャンブル・大麻・性",
+     {"Vices"}),
     ("money", "お金", "Money",
      "お金との向き合い方・稼ぎ方・使い方",
      {"Money"}),
@@ -123,6 +126,36 @@ def extract(f):
         body = re.sub(r"<table\b.*?</table>", lambda t: f'<div class="tblx">{t.group(0)}</div>', body, flags=re.S)
         out.append({"slug": slug, "h2": h2, "anchor": anchor, "body": fix_links(body.strip())})
     return out
+
+
+VICE_KEYS = [("お酒", "酒"), ("タバコ", "タバコ"), ("ギャンブル", "ギャンブル"),
+             ("大麻・薬物", "大麻・薬物"), ("性・恋愛遍歴", "性")]
+VICE_LEVELS = ["多い", "ほどほど", "控えめ", "なし", "不明"]
+
+
+def vice_matrix(blocks):
+    """嗜好章: 人物×5項目の判定タグ（【多い】等）を一覧表にする"""
+    rows, tally = [], {k: {lv: 0 for lv in VICE_LEVELS} for k, _ in VICE_KEYS}
+    for b in blocks:
+        body = " ".join(sec["body"] for sec in b["secs"])
+        cells = []
+        for key, _ in VICE_KEYS:
+            m = re.search(r'class="key">' + re.escape(key) + r'</span>\s*<span class="val">.*?【(.+?)】', body, re.S)
+            lv = m.group(1) if m and m.group(1) in VICE_LEVELS else "不明"
+            tally[key][lv] += 1
+            cells.append(f'<td class="vm vm-{VICE_LEVELS.index(lv)}">{lv}</td>')
+        rows.append(f'<tr><th><a href="#p-{b["f"]}">{esc(b["p"]["name"])}</a></th>{"".join(cells)}</tr>')
+    head = "".join(f"<th>{esc(lb)}</th>" for _, lb in VICE_KEYS)
+    sumrows = "".join(
+        f'<tr class="vm-sum"><th>{lv}</th>' + "".join(f"<td>{tally[k][lv]}</td>" for k, _ in VICE_KEYS) + "</tr>"
+        for lv in VICE_LEVELS)
+    return f"""<section class="vmx">
+  <div class="vmx-h">Matrix — 判定タグ一覧</div>
+  <p class="vmx-note">各ページの判定タグ（多い / ほどほど / 控えめ / なし / 不明）を集約。名前クリックで本文へ。性は「控えめ」＝一人のパートナー中心。</p>
+  <div class="tblx"><table class="vmt"><thead><tr><th>集計</th>{head}</tr></thead><tbody>{sumrows}</tbody></table></div>
+  <div class="tblx"><table class="vmt"><thead><tr><th>人物</th>{head}</tr></thead><tbody>{"".join(rows)}</tbody></table></div>
+</section>
+"""
 
 
 def years(p):
@@ -269,7 +302,7 @@ def render_chapter(ch, blocks):
     </select>
     <button class="ctl btn" id="all" type="button">Expand all</button>
   </div>
-  <div class="cnt"><b id="cnt">{len(blocks)}</b> / {len(blocks)} people</div>
+  {vice_matrix(blocks) if slug == "vices" else ""}<div class="cnt"><b id="cnt">{len(blocks)}</b> / {len(blocks)} people</div>
   <div id="list">
 {chr(10).join(arts)}
   </div>
