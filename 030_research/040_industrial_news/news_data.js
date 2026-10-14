@@ -880,3 +880,162 @@ NEWS.push({
     { t: 'Pulse 2.0', u: 'https://pulse2.com/cuprum-metals-raises-19-4-million-to-scale-copper-extraction-technology/' }
   ]
 });
+
+/* ================================================================ ENERGY */
+
+NEWS.push({
+  id: 'type-one-series-b',
+  industry: 'Energy', type: 'Funding', region: 'US', startup: true,
+  company: 'Type One Energy',
+  title_en: 'Fusion startup Type One Energy raises $200M Series B to build a stellarator power plant at TVA\'s Bull Run site',
+  title_ja: '核融合のType One Energy、$200MのSeries Bを調達。TVAのBull Run跡地にステラレーター型の発電所を建設へ',
+  amount: '$200M', amount_sub: 'Series B／累計 ~$400M',
+  date: '2026-10-06', posted: '2026-10-14',
+  players: 'Breakthrough Energy Ventures, Clutterbuck Capital（共同リード）／Lowercarbon Capital／Siemens Energy Ventures／TVA',
+  en: [
+    'Knoxville-based fusion company Type One Energy has raised a $200 million Series B, {{co-led|共同リード|lead investorは条件（評価額・取締役席）を決める主導役。co-leadは2社以上でその役を分け合うことで、大型・人気ラウンドに多い。}} by Breakthrough Energy Ventures and Clutterbuck Capital.',
+    'New investors include Lowercarbon Capital and Siemens Energy Ventures, bringing the company\'s total funding to about $400 million.',
+    'The money will fund Project Infinity at the Tennessee Valley Authority\'s former Bull Run coal plant, where Type One plans an engineering prototype followed by a commercial {{stellarator|ステラレーター|ねじれた磁場コイルでプラズマを閉じ込める核融合炉の方式。トカマクより設計は難しいが、連続運転に向くとされる。}} power plant.',
+    'The round follows the company\'s receipt of an initial operating {{license|許認可|米国では核融合は原子炉(fission)と別枠で、州レベルの放射性物質規制の枠組みで扱う方針になっている。}} from the State of Tennessee.',
+    'TVA, the largest public power {{utility|電力会社|発電・送配電を担う事業者。TVAは連邦政府が所有する公社で、米国最大の公営電力会社。}} in the US, has agreed to work with Type One on the plant, which targets deployment by the mid-2030s.'
+  ],
+  ja: [
+    'Knoxvilleの核融合企業Type One Energyが、$200MのSeries Bを調達した。Breakthrough Energy VenturesとClutterbuck Capitalが共同でリードした。',
+    'Lowercarbon CapitalとSiemens Energy Venturesが新たに加わり、累計の調達額は約$400Mになった。',
+    '資金は、テネシー川流域開発公社（TVA）の旧Bull Run石炭火力跡地で進めるProject Infinityに充てる。まず工学的な試作機を作り、その後ステラレーター型の商用発電所を建てる計画だ。',
+    '今回の調達は、テネシー州から最初の運転許可を得たのに続くもの。',
+    '米国最大の公営電力会社であるTVAが発電所の建設で協力することに合意しており、2030年代半ばの稼働を目指す。'
+  ],
+  expr: [
+    { en: 'follow ~', ja: '〜に続く（〜を受けて）', note: '"The round follows ~" は「この調達は〜に続くものだ」という因果・時系列の定型。comes on the heels of ~ も同義で、より勢いのある言い方。', ex: 'The announcement follows months of speculation.' },
+    { en: 'bring total funding to ~', ja: '累計調達額を〜にする', note: '資金調達記事の定型。bringing its total raised to ~ とも。', ex: 'The round brings total funding to $400 million.' },
+    { en: 'target ~ by ~', ja: '〜までに〜を目指す', note: 'aim for より報道的。targets deployment by the mid-2030s のように、目標の時期とセットで使う。', ex: 'The company targets first power by 2030.' },
+    { en: 'mid-2030s', ja: '2030年代半ば', note: 'early- / mid- / late- + 年代で、ざっくりした時期を言う。具体的な年を約束していないことに注意。', ex: 'Commercial fusion is unlikely before the late 2030s.' }
+  ],
+  context: [
+    { h: 'Breakthrough Energy × Lowercarbon', b: 'Breakthrough Energy VenturesはBill Gatesが率いる気候テックファンド。Lowercarbon CapitalはChris Sacca（Twitter・Uberの初期投資家）のファンド。著名投資家が核融合に張っている例。' },
+    { h: 'トカマク vs ステラレーター', b: '最大手のCommonwealth Fusion Systems（CFS）はトカマク型で、三菱商事・三井物産・NTT・関西電力・JERAなど日本企業12社が出資している。Type Oneはステラレーター型。ねじれたコイルの製造は難しいが、プラズマが安定しやすく連続運転に向く。' },
+    { h: '※報道の揺れ', b: '発電所の出力は、会社発表では400MWe、2025年のTVAとの合意では350MWe。「2034年」の目標年を書いた見出しもあるが、裏が取れたのは「2030年代半ば」まで。' },
+    { h: 'また石炭火力跡地', b: 'AWSのHomer Cityと同じく、旧石炭火力の跡地（送電線・用地・許認可を引き継げる）が次世代の電源の立地になっている。' }
+  ],
+  sources: [
+    { t: 'TechCrunch', u: 'https://techcrunch.com/2026/10/06/type-one-energy-raised-200m-to-build-a-fusion-power-plant-by-2034/' },
+    { t: 'ESG Today', u: 'https://esgtoday.com/type-one-raises-200-million-to-build-first-ever-commercial-fusion-energy-plant' },
+    { t: 'Neutron Bytes（TVA 350MW）', u: 'https://neutronbytes.com/2025/09/20/tva-and-type-one-energy-to-build-350-mw-fusion-plant/' }
+  ]
+});
+
+NEWS.push({
+  id: 'quaise-jera-series-b',
+  industry: 'Energy', type: 'Funding', region: 'JP×US', startup: true,
+  company: 'Quaise Energy × JERA / Idemitsu',
+  title_en: 'Superhot geothermal startup Quaise raises a Series B with strategic backing from JERA and Idemitsu',
+  title_ja: '超高温地熱のQuaise、Series Bを調達。JERAと出光が戦略出資',
+  amount: '$134M', amount_sub: 'Series B 1st close（最終 $180Mの報道も）',
+  date: '2026-07-07', posted: '2026-10-14',
+  players: 'Prelude Ventures（リード）／JERA Ventures／Idemitsu（出光興産）／Nabors Industries（報道）',
+  en: [
+    'Quaise Energy, a Houston-based MIT spinout, has raised $134 million in the first close of its Series B, led by Prelude Ventures with {{strategic investments|戦略出資|リターンだけでなく自社事業とのシナジーを目的にした事業会社の出資。JERAは発電、出光は掘削・資源の知見を持つ。}} from Japan\'s JERA and Idemitsu.',
+    'Quaise is developing {{millimeter-wave drilling|ミリ波掘削|ドリルの刃で岩を削るのではなく、核融合研究由来の大出力ミリ波で岩を溶かし蒸発させて掘る。深く硬い岩盤ほど有利とされる。}} to reach {{superhot|超高温の|地熱業界では概ね374℃（水の臨界点）以上を指す。超臨界水は通常の地熱より桁違いに多くのエネルギーを運ぶ。}} rock at 300 to 500 degrees Celsius, far deeper than conventional geothermal wells.',
+    'The funding supports Project Obsidian in Oregon, which Quaise calls the world\'s first commercial superhot geothermal plant; its first 50-megawatt phase could come online as early as 2030.',
+    'JERA, Japan\'s largest power generator, invested through its corporate venture arm, JERA Ventures.'
+  ],
+  ja: [
+    'MIT発でHoustonに拠点を置くQuaise Energyが、Series Bの1次クローズで$134Mを調達した。リードはPrelude Venturesで、日本のJERAと出光が戦略出資した。',
+    'Quaiseが開発するのはミリ波掘削で、通常の地熱井よりはるかに深い、300〜500℃の超高温の岩盤まで掘ることを目指す。',
+    '資金は、オレゴン州のProject Obsidianに充てる。Quaiseが「世界初の商用の超高温地熱発電所」と呼ぶ案件で、第1期の50MWは早ければ2030年に稼働する。',
+    '日本最大の発電会社JERAは、CVCのJERA Venturesを通じて出資した。'
+  ],
+  expr: [
+    { en: 'first close', ja: '1次クローズ', note: '大型ラウンドは何回かに分けて締める。first close で一部が着金し、final close で全額が確定する。報道で金額が割れる原因になりやすい。', ex: 'The fund held a first close at $300 million.' },
+    { en: 'come online', ja: '稼働を始める', note: '発電所・データセンター・設備が「動き出す」。bring ~ online（〜を稼働させる）、go offline（停止する）。', ex: 'The new reactor is expected to come online in 2029.' },
+    { en: 'as early as ~', ja: '早ければ〜に', note: '最速のシナリオであることを示す。as soon as とほぼ同じだが、時期の見込みを報じるときはこちらが定番。', ex: 'A decision could come as early as next week.' }
+  ],
+  context: [
+    { h: '次世代地熱の2つの流派', b: '①Fervo型：シェール掘削の技術（水平掘り・水圧破砕）で人工的に貯留層を作るEGS。②Quaise型：超深く掘って超高温の岩盤から熱を取る。②は当たれば出力が桁違いだが、技術リスクは大きい。' },
+    { h: '日本勢が地熱に張る理由', b: '日本は地熱資源量で世界3位だが、国立公園規制や温泉事業者との調整で開発が進まなかった。米国で技術を獲得して国内へ持ち帰る、という読みができる。JERAはCFS（核融合）にも出資している。' },
+    { h: '※報道の揺れ', b: '7月の1次クローズは$134M（累計$230M）。その後、掘削大手Nabors Industriesの$35Mを含めて$180Mで最終クローズしたという報道もあるが、裏取りは1ソースのみ。' }
+  ],
+  sources: [
+    { t: 'Energy Global（1st close）', u: 'https://www.energyglobal.com/other-renewables/10072026/quaise-energy-raises-us134-million-in-first-close-of-series-b/' },
+    { t: 'Insurance Edge（JERA）', u: 'https://insurance-edge.net/2026/07/14/jera-invests-in-us-based-geothermal-energy-company/' },
+    { t: 'Runtime Wire（$180M final）', u: 'https://runtimewire.com/article/quaise-energy-180m-series-b-nabors-geothermal' }
+  ]
+});
+
+NEWS.push({
+  id: 'fervo-series-e-mitsui',
+  industry: 'Energy', type: 'Funding', region: 'JP×US', startup: true,
+  company: 'Fervo Energy × Mitsui / MHI / Google',
+  title_en: 'Fervo Energy raises $462M with Google, Mitsui and Mitsubishi Heavy Industries to scale next-generation geothermal',
+  title_ja: 'Fervo Energy、Google・三井物産・三菱重工から$462Mを調達。次世代地熱を拡大',
+  amount: '$462M', amount_sub: 'Series E＋$421M project debt（2026/3）',
+  date: '2025-12-10', posted: '2026-10-14',
+  players: 'Google／Mitsui & Co.（三井物産）／Mitsubishi Heavy Industries（三菱重工）／Sumitomo Mitsui Trust Bank（融資）',
+  en: [
+    'Fervo Energy has raised $462 million in a Series E, with Google, Mitsui & Co. and Mitsubishi Heavy Industries among the new investors.',
+    'Fervo adapts {{horizontal drilling|水平掘削|垂直に掘ったあと横に曲げて掘り進める技術。シェール革命を起こした手法で、Fervoはこれを地熱に持ち込んだ。}} and other techniques from the shale industry to create {{enhanced geothermal systems|強化地熱システム（EGS）|天然の熱水がない高温の岩盤に人工的に割れ目と水の通り道を作り、熱を取り出す方式。}} in hot rock that lacks natural reservoirs.',
+    'The money will help complete Cape Station in Utah, a 500-megawatt project, while starting development on several others.',
+    'In March 2026, Fervo also closed $421 million in {{non-recourse|ノンリコース（非遡及型）の|返済原資をそのプロジェクトの収益だけに限定する融資。親会社に請求が及ばないので、プロジェクトの事業性そのものが評価されたことを意味する。}} project financing for the first phase of Cape Station.'
+  ],
+  ja: [
+    'Fervo EnergyがSeries Eで$462Mを調達した。新たな投資家にGoogle、三井物産、三菱重工が入った。',
+    'Fervoは水平掘削などシェール業界の技術を応用し、天然の貯留層がない高温の岩盤に強化地熱システム（EGS）を作る。',
+    '資金は、ユタ州の500MW案件Cape Stationの完成に充てつつ、ほかの複数案件の開発にも着手する。',
+    'Fervoは2026年3月、Cape Station第1期向けに$421Mのノンリコースのプロジェクトファイナンスも組成した。'
+  ],
+  expr: [
+    { en: 'among ~', ja: '〜の中に（含まれて）', note: '"with A, B and C among the new investors" で「新たな投資家にはA・B・Cが含まれる」。全員を列挙していないことを示す便利な形。', ex: 'Toyota was among the backers.' },
+    { en: 'adapt A from B', ja: 'Bの技術をAに応用する', note: 'adapt は「（別の用途に）合わせて作り変える」。adopt（採用する）と混同しやすいので注意。', ex: 'They adapted techniques from the oil and gas industry.' },
+    { en: 'project financing', ja: 'プロジェクトファイナンス', note: '会社の信用ではなく、個別プロジェクトの将来キャッシュフローを返済原資にする融資。発電所・インフラの標準的な資金調達法。', ex: 'The solar farm was funded through project financing.' }
+  ],
+  context: [
+    { h: 'Googleとの電力契約', b: 'FervoはGoogleと396MWのPPAを結んでいて、2030年6月までに約1GWまで拡大するオプションがある。地熱は天候に左右されないfirm powerなので、DCとの相性がいい。' },
+    { h: '三井グループの多層的な関与', b: '三井物産が株式出資、三井住友信託銀行（NY支店）がプロジェクト融資に参加している。三菱重工はタービンなどの機器面での関与が見込まれる。日本の商社・重工・銀行がそろって米国の地熱に入っている構図。' },
+    { h: '※補足', b: '三井物産の出資額は非公表。三菱重工の役割（機器供給など）は筆者の読み。' }
+  ],
+  sources: [
+    { t: 'TechCrunch', u: 'https://techcrunch.com/2025/12/10/google-invests-in-fervos-462m-round-to-unlock-even-more-geothermal-energy' },
+    { t: 'Business Wire（$421M project financing）', u: 'https://www.businesswire.com/news/home/20260319005742/en/Fervo-Energy-Secures-$421-Million-in-Non-Recourse-Project-Financing-for-Cape-Station' },
+    { t: 'Nikkei Asia（三井物産）', u: 'https://asia.nikkei.com/business/energy/mitsui-co.-to-invest-in-us-geothermal-startup-eyeing-data-center-power' },
+    { t: 'Renewable Energy World（Google PPA）', u: 'https://www.renewableenergyworld.com/energy-business/new-project-development/fervo-energy-and-google-ink-largest-ever-geothermal-ppa-to-power-data-centers/' }
+  ]
+});
+
+NEWS.push({
+  id: 'bwrx300-japan-us',
+  industry: 'Energy', type: 'Project', region: 'JP×US', startup: false,
+  company: 'GE Vernova Hitachi × Japan-US deal',
+  title_en: 'GE Vernova Hitachi SMRs to be deployed in Tennessee and Alabama under the $550B Japan-US investment deal',
+  title_ja: '日米の$550B投資合意の一環で、GE Vernova日立のSMRをテネシー・アラバマに建設へ',
+  amount: '最大 $40B', amount_sub: 'BWRX-300（300MWe級）',
+  date: '2026-03-25', posted: '2026-10-14',
+  players: 'GE Vernova Hitachi Nuclear Energy／US Department of Commerce／日本政府（$550B投資枠）',
+  en: [
+    'The US Commerce Department has announced a deal under which GE Vernova Hitachi will deploy its BWRX-300 {{small modular reactors|小型モジュール炉（SMR）|出力300MW前後以下の小型原子炉。工場でモジュールを作って現地で組み立てるため、工期とコストの削減が期待される。}} at sites in Tennessee and Alabama.',
+    'The projects, valued at up to $40 billion, are part of the $550 billion Japan-US trade and investment {{agreement|合意|2025年の日米関税交渉の合意。日本が米国に$550Bを投資する枠組みで、案件は米国側が選ぶ。}}.',
+    'The BWRX-300 is a 300-megawatt {{boiling water reactor|沸騰水型原子炉（BWR）|炉心で水を沸騰させ、その蒸気で直接タービンを回す方式。日本では東京電力・中部電力などが採用している。}} designed by the joint venture of GE Vernova and Japan\'s Hitachi.',
+    'The deal signals that Japanese capital is being {{channeled|振り向けられる|channel＝水路。資金や努力を特定の方向に流し込むこと。}} into US nuclear power to meet rising electricity demand from AI data centers.'
+  ],
+  ja: [
+    '米商務省が、GE Vernova日立がBWRX-300という小型モジュール炉（SMR）をテネシー州とアラバマ州の用地に建設する案件を発表した。',
+    '総額は最大$40Bで、日米の$550Bの通商・投資合意の一部になる。',
+    'BWRX-300は出力300MWの沸騰水型原子炉で、GE Vernovaと日本の日立の合弁が設計した。',
+    'AIデータセンターによる電力需要の増加に応えるため、日本の資金が米国の原子力に振り向けられていることを示す案件だ。'
+  ],
+  expr: [
+    { en: 'under which ~', ja: 'その下で〜する（〜という内容の）', note: '"a deal under which A will do B" は契約・合意の中身を説明する定型。関係代名詞の前に前置詞が来る形に慣れておくと、契約書も読みやすくなる。', ex: 'They signed an agreement under which the city will buy the power.' },
+    { en: 'valued at ~', ja: '〜と評価される、総額〜の', note: '案件規模・企業価値の両方に使う。up to を付けると上限額。', ex: 'The contract is valued at up to $2 billion.' },
+    { en: 'signal that ~', ja: '〜ということを示す', note: 'show より「兆し・シグナルを送る」ニュアンス。市場や政策の意図を読む記事で頻出。', ex: 'The rate cut signals that the Fed is worried about growth.' }
+  ],
+  context: [
+    { h: '日米$550B投資の中身', b: '2025年の関税交渉で、日本は米国への$550Bの投資枠に合意した。案件は米国側が選び、エネルギー・半導体・重要鉱物などが対象。SMRと原子力に10兆円規模が向かうという報道もある。' },
+    { h: 'BWRX-300の位置づけ', b: 'カナダ・オンタリオ州（OPG）で北米初の建設が進んでいて、TVAも導入を検討している。日立は、GEとの合弁を通じて原子炉の設計そのものに関与している。' },
+    { h: '※補足', b: '「AI DCの電力需要に応えるため」という位置づけは、報道の文脈から筆者がまとめたもの。NuScaleへの約$25Bの日本出資という報道もあるが、未確認。' }
+  ],
+  sources: [
+    { t: 'ANS Nuclear Newswire', u: 'https://www.ans.org/news/2026-03-25/article-7878/new-us-bwrx300-projects-get-japanese-investment/' },
+    { t: 'Nuclear Engineering International', u: 'https://www.neimagazine.com/news/us-japan-in-smr-deal/' },
+    { t: 'Seoul Economic Daily（第3弾・SMR）', u: 'https://en.sedaily.com/international/2026/06/12/japans-third-us-investment-targets-smrs-with-over-10' }
+  ]
+});

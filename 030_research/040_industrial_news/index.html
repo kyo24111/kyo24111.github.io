@@ -12,8 +12,8 @@
       --bg:#ffffff; --surface:#f5f5f5; --hover:#ededed; --border:#e0e0e0;
       --text:#111111; --mid:#444444; --muted:#888888; --dim:#cccccc;
       /* industry labels（意味を持つラベルなので配色可） */
-      --i-steel:#455a64; --i-dc:#3949ab; --i-robotics:#00796b; --i-cooling:#0277bd; --i-aluminum:#607d8b; --i-copper:#a0522d;
-      --b-steel:#eceff1; --b-dc:#e8eaf6; --b-robotics:#e0f2f1; --b-cooling:#e1f5fe; --b-aluminum:#f1f3f5; --b-copper:#fbe9e7;
+      --i-steel:#455a64; --i-dc:#3949ab; --i-robotics:#00796b; --i-cooling:#0277bd; --i-aluminum:#607d8b; --i-copper:#a0522d; --i-energy:#b45309;
+      --b-steel:#eceff1; --b-dc:#e8eaf6; --b-robotics:#e0f2f1; --b-cooling:#e1f5fe; --b-aluminum:#f1f3f5; --b-copper:#fbe9e7; --b-energy:#fff4e0;
     }
     body { background: var(--bg); color: var(--text); font-family: 'Poppins', 'Noto Sans JP', sans-serif; min-height: 100vh; padding-top: 56px !important; padding-bottom: 68px !important; }
 
@@ -77,32 +77,49 @@
     .tags { display: flex; flex-wrap: wrap; gap: 4px; }
     .empty { padding: 40px; text-align: center; color: var(--muted); font-size: 12px; display: none; }
 
-    /* drawer */
-    .dr-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); z-index: 10000; display: none; }
+    /* detail modal（通常＝大きいmodal / 全画面＝左に目次） */
+    .dr-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 10000; display: none; }
     .dr-overlay.open { display: block; }
-    .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(760px, 100vw); background: #fff; z-index: 10001; transform: translateX(100%); transition: transform .22s ease; display: flex; flex-direction: column; box-shadow: -8px 0 30px rgba(0,0,0,.12); visibility: hidden; }
-    .drawer.open { transform: translateX(0); visibility: visible; }
-    .dr-head { padding: 22px 28px 0; border-bottom: 1px solid var(--border); flex-shrink: 0; }
-    .dr-top { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
-    .dr-close { margin-left: auto; background: none; border: 1px solid var(--dim); width: 32px; height: 32px; border-radius: 2px; cursor: pointer; font-size: 16px; line-height: 1; color: var(--mid); }
-    .dr-close:hover { border-color: #111; color: #111; }
-    .dr-title-en { font-size: 17px; font-weight: 700; letter-spacing: -.01em; line-height: 1.4; }
-    .dr-title-ja { font-size: 12.5px; color: var(--mid); margin-top: 6px; line-height: 1.6; }
-    .dr-meta { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 16px 0; }
+    .modal { position: fixed; z-index: 10001; background: #fff; display: flex; flex-direction: column; visibility: hidden; opacity: 0;
+      top: 50%; left: 50%; width: min(1040px, calc(100vw - 48px)); height: calc(100vh - 64px); transform: translate(-50%, -48%);
+      border-radius: 6px; box-shadow: 0 24px 80px rgba(0,0,0,.28); transition: opacity .16s ease, transform .16s ease; overflow: hidden; }
+    .modal.open { visibility: visible; opacity: 1; transform: translate(-50%, -50%); }
+    .modal.full { top: 0; left: 0; width: 100vw; height: 100vh; transform: none; border-radius: 0; }
+    .md-bar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 20px; border-bottom: 1px solid var(--border); flex-shrink: 0; background: #fff; }
+    .md-btns { margin-left: auto; display: flex; gap: 6px; }
+    .md-btn { font-family: inherit; background: #fff; border: 1px solid var(--dim); height: 32px; padding: 0 12px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: 600; color: var(--mid); display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; }
+    .md-btn:hover { border-color: #111; color: #111; }
+    .md-btn kbd { font-family: inherit; font-size: 9.5px; color: var(--muted); border: 1px solid var(--border); border-radius: 3px; padding: 1px 5px; }
+    .md-btn.dark { background: #111; color: #fff; border-color: #111; }
+    .md-btn.dark:hover { background: #333; color: #fff; }
+    .md-btn.dark kbd { color: rgba(255,255,255,.6); border-color: rgba(255,255,255,.25); }
+    .md-wrap { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr); }
+    .modal.full .md-wrap { grid-template-columns: 220px minmax(0, 1fr); }
+    .md-toc { display: none; border-right: 1px solid var(--border); padding: 28px 0 28px 24px; overflow-y: auto; }
+    .modal.full .md-toc { display: block; }
+    .md-toc .tl { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 10px; }
+    .md-toc a { display: block; font-size: 11.5px; color: var(--muted); text-decoration: none; padding: 6px 12px 6px 12px; border-left: 2px solid var(--border); }
+    .md-toc a:hover { color: #111; }
+    .md-toc a.on { color: #111; font-weight: 700; border-left-color: #111; }
+    .md-toc .tsub { font-size: 10.5px; padding-left: 22px; }
+    .dr-body { overflow-y: auto; padding: 26px 36px 80px; min-height: 0; scroll-behavior: smooth; }
+    .modal.full .dr-body { padding: 36px 56px 100px; }
+    .md-inner { max-width: 820px; }
+    .modal.full .md-inner { margin: 0 auto; }
+    .dr-title-en { font-size: 20px; font-weight: 700; letter-spacing: -.015em; line-height: 1.4; }
+    .dr-title-ja { font-size: 13px; color: var(--mid); margin-top: 8px; line-height: 1.7; }
+    .dr-meta { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin: 18px 0 8px; }
     .dr-meta > div { background: #fff; padding: 9px 12px; min-width: 0; }
     .dr-meta .k { font-size: 8.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
     .dr-meta .v { font-size: 12.5px; font-weight: 700; margin-top: 2px; overflow-wrap: anywhere; }
     .dr-meta .v small { display: block; font-size: 10px; font-weight: 500; color: var(--muted); }
     .dr-meta .wide { grid-column: 1 / -1; }
     .dr-meta .wide .v { font-weight: 500; font-size: 11.5px; line-height: 1.55; }
-    .dr-tabs { display: flex; gap: 0; overflow-x: auto; margin: 0 -28px; padding: 0 28px; }
-    .dr-tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 10px 14px; font-family: inherit; font-size: 11px; font-weight: 600; letter-spacing: .04em; color: var(--muted); cursor: pointer; white-space: nowrap; }
-    .dr-tab:hover { color: #111; }
-    .dr-tab.active { color: #111; border-bottom-color: #111; }
-    .dr-body { overflow-y: auto; padding: 22px 28px 60px; flex: 1; }
-    .pane { display: none; }
-    .pane.active { display: block; }
-
+    .dsec { padding-top: 34px; scroll-margin-top: 8px; }
+    .dsec-h { display: flex; align-items: baseline; gap: 10px; padding-bottom: 10px; border-bottom: 2px solid #111; margin-bottom: 18px; }
+    .dsec-h .no { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .1em; }
+    .dsec-h h3 { font-size: 14px; font-weight: 700; letter-spacing: -.01em; }
+    .dsec-h .hint { margin-left: auto; font-size: 10px; color: var(--muted); }
     .en-tools { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; font-size: 10.5px; color: var(--muted); }
     .en-tools label { display: inline-flex; gap: 6px; align-items: center; cursor: pointer; color: var(--mid); font-weight: 600; }
     .para { margin-bottom: 16px; }
@@ -153,11 +170,14 @@
       .main { padding: 0 16px 60px; }
       .ptabs { padding: 0 16px; }
       .flabel { width: 100%; }
-      .dr-head { padding: 16px 16px 0; }
-      .dr-tabs { margin: 0 -16px; padding: 0 16px; }
-      .dr-body { padding: 18px 16px 60px; }
+      .modal, .modal.open { top: 0; left: 0; width: 100vw; height: 100vh; transform: none; border-radius: 0; }
+      .modal.full .md-wrap { grid-template-columns: minmax(0, 1fr); }
+      .modal.full .md-toc { display: none; }
+      .md-bar { padding: 10px 16px; }
+      .md-btn kbd, #mdFull { display: none; }
+      .dr-body, .modal.full .dr-body { padding: 20px 16px 70px; }
       .dr-meta { grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .dr-title-en { font-size: 15.5px; }
+      .dr-title-en { font-size: 16.5px; }
       .word { grid-template-columns: minmax(0,1fr); gap: 2px; }
       .para .p-en { font-size: 14px; }
       .snav { padding: 0 16px !important; }
@@ -221,7 +241,7 @@
 <header class="page-header">
   <div class="breadcrumb"><a href="/index.html">24111</a> / research</div>
   <h1>industrial news</h1>
-  <div class="sub">製鉄・データセンター・ロボティクス・冷却・ミネラル（アルミ／銅）の気になるニュースを集めたDB。US発のスタートアップを中心に、日本の大企業×USの急成長企業の動きも拾う。<br>行を押すと detail が開く（English／日本語／Expressions／Industry Context）。どんな観点で選んでいるかは <a href="criteria.html" style="color:#fff">Selection Criteria</a> へ。点線の単語は hover（スマホは tap）で和訳と解説が出る。</div>
+  <div class="sub">エネルギー・データセンター・冷却・製鉄・ミネラル（アルミ／銅）・ロボティクスの気になるニュースを集めたDB。US発のスタートアップを中心に、日本の大企業×USの急成長企業の動きも拾う。<br>行を押すと詳細がmodalで開く（⌘/Ctrl+Enterで全画面）。どんな観点で選んでいるかは <a href="criteria.html" style="color:#fff">Selection Criteria</a> へ。点線の単語は hover（スマホは tap）で和訳と解説が出る。</div>
 </header>
 <nav class="ptabs"><a class="on" href="index.html">News DB</a><a href="criteria.html">Selection Criteria</a></nav>
 
@@ -257,10 +277,13 @@
 </main>
 
 <div class="dr-overlay" id="drOverlay"></div>
-<aside class="drawer" id="drawer" aria-hidden="true">
-  <div class="dr-head" id="drHead"></div>
-  <div class="dr-body" id="drBody"></div>
-</aside>
+<div class="modal" id="drawer" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="md-bar" id="mdBar"></div>
+  <div class="md-wrap">
+    <nav class="md-toc" id="mdToc"></nav>
+    <div class="dr-body" id="drBody"></div>
+  </div>
+</div>
 <div id="tip"></div>
 
 <footer class="snav-footer">
@@ -277,8 +300,8 @@
 <script src="news_data.js"></script>
 <script>
 (function(){
-  var IND_KEY = { 'Steel':'steel', 'Data Center':'dc', 'Robotics':'robotics', 'Cooling':'cooling', 'Aluminum':'aluminum', 'Copper':'copper' };
-  var IND_ORDER = ['Steel','Data Center','Robotics','Cooling','Aluminum','Copper'];
+  var IND_KEY = { 'Steel':'steel', 'Data Center':'dc', 'Robotics':'robotics', 'Cooling':'cooling', 'Aluminum':'aluminum', 'Copper':'copper', 'Energy':'energy' };
+  var IND_ORDER = ['Energy','Data Center','Cooling','Steel','Aluminum','Copper','Robotics'];
   var state = { industry:'all', type:'all', region:'all', q:'', sortK:'date', sortDir:'desc' };
 
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
@@ -374,72 +397,93 @@
     var tr = e.target.closest('tr'); if (tr) openDetail(tr.dataset.id, true);
   });
 
-  // ---------- drawer
+  // ---------- detail modal
   var drawer = document.getElementById('drawer'), ov = document.getElementById('drOverlay');
-  var showJa = false;
+  var showJa = false, isFull = false, curId = null;
   try { showJa = localStorage.getItem('in_showja') === '1'; } catch(e) {}
+  var SECS = [['s-en','English'], ['s-ja','日本語'], ['s-expr','Expressions'], ['s-ctx','Industry Context'], ['s-src','Sources']];
+  function sec(i, inner, hint){ return '<section class="dsec" id="' + SECS[i][0] + '"><div class="dsec-h"><span class="no">0' + (i + 1) + '</span><h3>' + SECS[i][1] + '</h3>' + (hint ? '<span class="hint">' + hint + '</span>' : '') + '</div>' + inner + '</section>'; }
   function openDetail(id, push){
     var n = NEWS.filter(function(x){ return x.id === id; })[0]; if (!n) return;
+    curId = id;
     document.querySelectorAll('#tbody tr').forEach(function(r){ r.classList.toggle('sel', r.dataset.id === id); });
     var tags = indLabel(n.industry) + ' <span class="tag">' + esc(n.type) + '</span> <span class="tag' + (n.region === 'JP×US' ? ' jpus' : '') + '">' + esc(n.region) + '</span>' + (n.startup ? ' <span class="tag st">Startup</span>' : '');
-    document.getElementById('drHead').innerHTML =
-      '<div class="dr-top">' + tags + '<button class="dr-close" id="drClose" aria-label="close">×</button></div>' +
-      '<div class="dr-title-en">' + esc(n.title_en) + '</div>' +
-      '<div class="dr-title-ja">' + esc(n.title_ja) + '</div>' +
+    document.getElementById('mdBar').innerHTML = tags +
+      '<div class="md-btns"><button class="md-btn" id="mdFull" title="⌘/Ctrl + Enter"></button><button class="md-btn dark" id="drClose">Close <kbd>Esc</kbd></button></div>';
+
+    var wl = words(n);
+    var head = '<div class="dr-title-en">' + esc(n.title_en) + '</div><div class="dr-title-ja">' + esc(n.title_ja) + '</div>' +
       '<div class="dr-meta">' +
         '<div><div class="k">Company</div><div class="v">' + esc(n.company) + '</div></div>' +
         '<div><div class="k">Amount</div><div class="v">' + esc(n.amount) + '<small>' + esc(n.amount_sub) + '</small></div></div>' +
         '<div><div class="k">News Date</div><div class="v">' + esc(n.date) + '</div></div>' +
         '<div><div class="k">Posted</div><div class="v">' + esc(n.posted) + '</div></div>' +
         '<div class="wide"><div class="k">Players</div><div class="v">' + esc(n.players) + '</div></div>' +
-      '</div>' +
-      '<div class="dr-tabs" id="drTabs">' +
-        '<button class="dr-tab active" data-p="en">English</button>' +
-        '<button class="dr-tab" data-p="ja">日本語</button>' +
-        '<button class="dr-tab" data-p="expr">Expressions</button>' +
-        '<button class="dr-tab" data-p="ctx">Industry Context</button>' +
-        '<button class="dr-tab" data-p="src">Sources</button>' +
       '</div>';
-
-    var wl = words(n);
-    var en = '<div class="pane active" data-p="en"><div class="en-tools"><label><input type="checkbox" id="jaToggle"' + (showJa ? ' checked' : '') + '> 段落ごとに日本語を並べる</label><span>· 点線の単語＝hover / tapで和訳</span></div>' +
+    var en = '<div class="en-tools"><label><input type="checkbox" id="jaToggle"' + (showJa ? ' checked' : '') + '> 段落ごとに日本語を並べる</label></div>' +
       '<div id="paras" class="' + (showJa ? 'show-ja' : '') + '">' +
       (n.en||[]).map(function(p, i){ return '<div class="para"><div class="p-en">' + gloss(p) + '</div><div class="p-ja">' + esc((n.ja||[])[i]||'') + '</div></div>'; }).join('') + '</div>' +
-      (wl.length ? '<div class="h-sec">Words in this article (' + wl.length + ')</div><div class="words">' + wl.map(function(w){ return '<div class="word"><div class="w">' + esc(w.w) + '</div><div><div class="wj">' + esc(w.j) + '</div>' + (w.n ? '<div class="wn">' + esc(w.n) + '</div>' : '') + '</div></div>'; }).join('') + '</div>' : '') +
-      '</div>';
-    var ja = '<div class="pane" data-p="ja">' + (n.ja||[]).map(function(p){ return '<p class="p-jaonly">' + esc(p) + '</p>'; }).join('') + '</div>';
-    var ex = '<div class="pane" data-p="expr">' + (n.expr||[]).map(function(e){ return '<div class="expr"><div class="e">' + esc(e.en) + '</div><div class="j">' + esc(e.ja) + '</div>' + (e.note ? '<div class="n">' + esc(e.note) + '</div>' : '') + (e.ex ? '<div class="x">' + esc(e.ex) + '</div>' : '') + '</div>'; }).join('') + '</div>';
-    var cx = '<div class="pane" data-p="ctx">' + (n.context||[]).map(function(c){ return '<div class="ctx"><h4>' + esc(c.h) + '</h4><p>' + esc(c.b) + '</p></div>'; }).join('') +
-      (n.link ? '<a class="deep" href="' + esc(n.link) + '">深掘りページを開く →</a>' : '') + '</div>';
-    var sr = '<div class="pane" data-p="src"><ul class="src-list">' + (n.sources||[]).map(function(s){ return '<li><a href="' + esc(s.u) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a></li>'; }).join('') + '</ul></div>';
+      (wl.length ? '<div class="h-sec" id="s-words">Words in this article (' + wl.length + ')</div><div class="words">' + wl.map(function(w){ return '<div class="word"><div class="w">' + esc(w.w) + '</div><div><div class="wj">' + esc(w.j) + '</div>' + (w.n ? '<div class="wn">' + esc(w.n) + '</div>' : '') + '</div></div>'; }).join('') + '</div>' : '');
+    var ja = (n.ja||[]).map(function(p){ return '<p class="p-jaonly">' + esc(p) + '</p>'; }).join('');
+    var ex = (n.expr||[]).map(function(e){ return '<div class="expr"><div class="e">' + esc(e.en) + '</div><div class="j">' + esc(e.ja) + '</div>' + (e.note ? '<div class="n">' + esc(e.note) + '</div>' : '') + (e.ex ? '<div class="x">' + esc(e.ex) + '</div>' : '') + '</div>'; }).join('');
+    var cx = (n.context||[]).map(function(c){ return '<div class="ctx"><h4>' + esc(c.h) + '</h4><p>' + esc(c.b) + '</p></div>'; }).join('') +
+      (n.link ? '<a class="deep" href="' + esc(n.link) + '">深掘りページを開く →</a>' : '');
+    var sr = '<ul class="src-list">' + (n.sources||[]).map(function(s){ return '<li><a href="' + esc(s.u) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a></li>'; }).join('') + '</ul>';
     var body = document.getElementById('drBody');
-    body.innerHTML = en + ja + ex + cx + sr;
-    body.scrollTop = 0;
+    body.innerHTML = '<div class="md-inner">' + head + sec(0, en, '点線の単語＝hover / tapで和訳') + sec(1, ja) + sec(2, ex) + sec(3, cx) + sec(4, sr) + '</div>';
+    body.style.scrollBehavior = 'auto'; body.scrollTop = 0; body.style.scrollBehavior = '';
 
+    document.getElementById('mdToc').innerHTML = '<div class="tl">Contents</div>' + SECS.map(function(x){ return '<a href="#' + x[0] + '" data-s="' + x[0] + '">' + x[1] + '</a>' + (x[0] === 's-en' && wl.length ? '<a class="tsub" href="#s-words" data-s="s-words">Words (' + wl.length + ')</a>' : ''); }).join('');
     document.getElementById('drClose').onclick = closeDetail;
-    document.getElementById('drTabs').onclick = function(e){
-      var t = e.target.closest('.dr-tab'); if (!t) return;
-      document.querySelectorAll('.dr-tab').forEach(function(x){ x.classList.toggle('active', x === t); });
-      body.querySelectorAll('.pane').forEach(function(p){ p.classList.toggle('active', p.dataset.p === t.dataset.p); });
-      body.scrollTop = 0; hideTip();
-    };
+    document.getElementById('mdFull').onclick = function(){ setFull(!isFull); };
     document.getElementById('jaToggle').onchange = function(e){
       showJa = e.target.checked;
       document.getElementById('paras').classList.toggle('show-ja', showJa);
       try { localStorage.setItem('in_showja', showJa ? '1' : '0'); } catch(err) {}
     };
+    setFull(isFull);
     drawer.classList.add('open'); ov.classList.add('open'); drawer.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
+    spy();
     if (push && location.hash !== '#' + id) history.replaceState(null, '', '#' + id);
   }
+  function setFull(on){
+    isFull = on;
+    drawer.classList.toggle('full', on);
+    var b = document.getElementById('mdFull');
+    if (b) b.innerHTML = (on ? '⤡ 縮小' : '⤢ 全画面で開く') + ' <kbd>⌘↵</kbd>';
+    spy();
+  }
   function closeDetail(){
+    if (!drawer.classList.contains('open')) return;
     drawer.classList.remove('open'); ov.classList.remove('open'); drawer.setAttribute('aria-hidden', 'true');
-    document.body.style.overflow = ''; hideTip();
+    document.body.style.overflow = ''; hideTip(); curId = null;
+    setFull(false);
     document.querySelectorAll('#tbody tr.sel').forEach(function(r){ r.classList.remove('sel'); });
     history.replaceState(null, '', location.pathname + location.search);
   }
   ov.addEventListener('click', closeDetail);
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { if (tipEl.classList.contains('show')) hideTip(); else closeDetail(); } });
+  document.addEventListener('keydown', function(e){
+    var open = drawer.classList.contains('open');
+    if (e.key === 'Escape') { if (tipEl.classList.contains('show')) hideTip(); else closeDetail(); }
+    else if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      if (open) setFull(!isFull);
+      else { var sel = document.querySelector('#tbody tr.sel') || document.querySelector('#tbody tr'); if (sel) { isFull = true; openDetail(sel.dataset.id, true); } }
+    }
+  });
+  // 目次のscroll-spy（全画面時）
+  function spy(){
+    var body = document.getElementById('drBody'), links = document.querySelectorAll('#mdToc a'); if (!links.length) return;
+    var top = body.getBoundingClientRect().top + 40, cur = links[0];
+    links.forEach(function(a){ var t = document.getElementById(a.dataset.s); if (t && t.getBoundingClientRect().top <= top) cur = a; });
+    links.forEach(function(a){ a.classList.toggle('on', a === cur); });
+  }
+  document.getElementById('mdToc').addEventListener('click', function(e){
+    var a = e.target.closest('a'); if (!a) return; e.preventDefault();
+    var t = document.getElementById(a.dataset.s), b = document.getElementById('drBody'); if (t) b.scrollTop = t.getBoundingClientRect().top - b.getBoundingClientRect().top + b.scrollTop - 12;
+  });
+  document.getElementById('drBody').addEventListener('scroll', spy, { passive: true });
 
   // ---------- tooltip（hover: PC / tap: スマホ）
   var tipEl = document.getElementById('tip'), tipOn = null;

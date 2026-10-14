@@ -6,6 +6,7 @@
 Kyoが「読みたくなる」ニュースを集めるためのルール。指示が来るたびに追記する（日付つき）。
 
 ## 対象テーマ
+- エネルギー（energy）— 発電側。核融合・地熱（EGS/超高温）・SMR・PPA
 - 製鉄（steel / steelmaking）
 - データセンター
 - ロボティクス（robotics）
@@ -30,7 +31,7 @@ Kyoが「読みたくなる」ニュースを集めるためのルール。指�
 ## ページ（index.html）の構成
 - 一覧カラム: Headline（企業・日英見出し）/ Industry（色ラベル）/ Type / Region（JP×USを強調）/ Amount / News Date / Posted（掲載日）
 - フィルタ: Industry・Type・Region のチップ＋キーワード検索。列見出しでソート
-- detail（右drawer、URL `#id` で直リンク可）: **English / 日本語 / Expressions / Industry Context / Sources**
+- detail（大きいmodal、URL `#id` で直リンク可）: **English / 日本語 / Expressions / Industry Context / Sources** をタブにせず縦に並べる。「全画面で開く」or ⌘/Ctrl+Enter で全画面（左に目次・scroll-spy）、Close/Escで一覧へ戻る
   - English: 段落ごとの英文。難しめの単語は `{{word|和訳|解説}}` → hover（スマホはtap）で和訳と解説。「段落ごとに日本語を並べる」トグル付き。末尾に Words in this article を自動生成
   - Expressions: 記事中の英語表現を「意味・ニュアンス・例文」で丁寧に解説（英語学習を兼ねる）
   - Industry Context: 業界の周辺知識。推測や補足は「※補足」「読み」と明示
@@ -53,3 +54,4 @@ Kyoが「読みたくなる」ニュースを集めるためのルール。指�
 - 2026-10-14: Industryラベルはこのページ限定で色付きバッジ（frame＋bg色）。他ページのモノクローム規約の例外。
 - 2026-10-14: hoverの解説を1〜2文に拡充（全106語）。
 - 2026-10-14: 選定の観点をまとめた criteria.html（Selection Criteria）を追加。index とタブで接続、テーマから ?ind= で絞り込みリンク。
+- 2026-10-14: Energyを追加。detailを大きいmodalに変更（タブ廃止・縦並び）、⌘/Ctrl+Enterで全画面＋左目次、CloseでDBへ戻る。
