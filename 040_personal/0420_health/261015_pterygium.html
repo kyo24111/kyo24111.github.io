@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pterygium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#ffffff; --surface:#f5f5f5; --card:#f0f0f0; --border:#d8d8d8;
+  --accent:#111111; --mid:#444444; --muted:#888888; --dim:#bbbbbb; --text:#111111; --white:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:14px;line-height:1.75;-webkit-text-size-adjust:100%}
+.page{max-width:980px;margin:0 auto;padding:32px 16px 80px}
+
+.hero{background:var(--accent);color:var(--white);border-radius:12px;padding:16px 22px 14px;margin-bottom:14px}
+.hero-tag{font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px}
+.hero h1{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:-.02em;line-height:1.2}
+.hero-sub{font-size:.72rem;color:rgba(255,255,255,.6);margin-top:4px}
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.tab{font-size:12.5px;padding:7px 16px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--mid);cursor:pointer;white-space:nowrap;font-family:inherit}
+.tab:hover{border-color:var(--accent);color:var(--accent)}
+.tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.panel{display:none}
+.panel.on{display:block}
+
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.card-h{font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+h2{font-size:15px;font-weight:700;margin-bottom:6px}
+p+p{margin-top:6px}
+ul{padding-left:1.2em}
+li{margin:2px 0}
+.note{background:#fff;border-left:2px solid var(--accent);padding:8px 10px;margin-top:10px;font-size:12px;line-height:1.65}
+.note b{font-family:'Poppins',sans-serif;font-size:8.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+.todo{color:var(--muted);border-bottom:1px dashed var(--dim)}
+
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px}
+.stat-k{font-family:'Poppins',sans-serif;font-size:8.5px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.stat-v{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;letter-spacing:-.02em;line-height:1.3}
+.stat-v small{font-size:.68rem;font-weight:600;color:var(--muted);margin-left:2px}
+.stat-d{font-size:11px;color:var(--mid);line-height:1.5}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:720px){.grid2{grid-template-columns:1fr}}
+
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:12.5px;background:#fff}
+th,td{border:1px solid var(--border);padding:7px 9px;text-align:left;vertical-align:top}
+th{background:var(--card);font-weight:700;font-size:11.5px;white-space:nowrap}
+td.c{text-align:center;white-space:nowrap}
+
+.eye{display:block;width:100%;max-width:520px;height:auto;margin:6px auto 0}
+.cap{font-size:11px;color:var(--muted);text-align:center;margin-top:4px}
+
+details{background:#fff;border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:8px}
+summary{cursor:pointer;font-weight:700;font-size:13.5px}
+details[open] summary{margin-bottom:6px}
+.updated{font-family:'Poppins',sans-serif;font-size:10px;color:var(--muted);margin-top:24px;text-align:right}
+</style>
+</head>
+<body>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-tag">Health / Eye</div>
+  <h1>Pterygium（翼状片）</h1>
+  <div class="hero-sub">白目の結膜が黒目（角膜）に三角形に入り込む良性の病気。自分の状態・受診履歴・手術判断の材料をまとめる。</div>
+</div>
+
+<div class="tabs" id="tabs">
+  <button class="tab on" data-p="summary">Summary</button>
+  <button class="tab" data-p="mycase">My Case</button>
+  <button class="tab" data-p="basics">基礎知識</button>
+  <button class="tab" data-p="surgery">治療・手術</button>
+  <button class="tab" data-p="daily">予防・日常</button>
+  <button class="tab" data-p="qa">Q&amp;A</button>
+</div>
+
+<!-- ============ Summary ============ -->
+<section class="panel on" id="summary">
+  <div class="stats">
+    <div class="stat"><div class="stat-k">Nature</div><div class="stat-v">良性</div><div class="stat-d">がんではない。命・失明に直結しない</div></div>
+    <div class="stat"><div class="stat-k">Main cause</div><div class="stat-v">紫外線</div><div class="stat-d">屋外活動・乾燥・ホコリが加速要因</div></div>
+    <div class="stat"><div class="stat-k">Cure</div><div class="stat-v">手術のみ</div><div class="stat-d">目薬は充血・違和感の対症療法</div></div>
+    <div class="stat"><div class="stat-k">Recurrence</div><div class="stat-v">〜10<small>%</small></div><div class="stat-d">結膜自家移植の場合の目安。単純切除だと大幅に上がる</div></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Key takeaways</div>
+    <ul>
+      <li><b>放置しても多くはゆっくり進むだけ</b>。ただし瞳孔側に伸びると<b>乱視が増え</b>、瞳孔にかかると視力が落ちる。</li>
+      <li><b>手術のタイミング</b>：乱視が増えてきた／見た目が気になる／充血・異物感が続く／瞳孔に近づいてきた、のどれか。小さいうちに取る方が角膜の傷も小さい。</li>
+      <li><b>術式が再発率を決める</b>：「切って終わり（単純切除）」ではなく、<b>結膜自家移植（弁の移植）</b>を併用する術式を選ぶ。保険適用・日帰り。</li>
+      <li><b>術後の紫外線対策</b>が再発防止の要。サングラス（UVカット＋横からの光も防ぐ形）を常用。</li>
+      <li>bucket listにある「翼状片手術」の判断材料＝<b>①乱視の推移 ②先端と瞳孔の距離 ③見た目のストレス</b>。</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Next actions</div>
+    <ul>
+      <li>次回受診時に聞く：<b>左右どちらか／鼻側か耳側か／何mm侵入しているか／乱視度数</b> → My Caseに記入</li>
+      <li>手術を勧められたら：<b>術式（結膜自家移植か）・MMC等の併用・再発率・費用・術後の通院回数</b>を確認（Q&amp;A参照）</li>
+      <li>屋外（ゴルフ・旅行・海）ではUVカットサングラスを常用</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ My Case ============ -->
+<section class="panel" id="mycase">
+  <div class="card">
+    <div class="card-h">Profile</div>
+    <div class="tbl-wrap"><table>
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td>かかりつけ</td><td>飯田橋眼科クリニック（医療法人社団慶翔会）／03-5276-2722／Web予約=Bee診察予約</td></tr>
+      <tr><td>左右・部位</td><td><span class="todo">未記入（例：右眼・鼻側）</span></td></tr>
+      <tr><td>進行度（Grade）</td><td><span class="todo">未記入（角膜への侵入 mm／瞳孔までの距離）</span></td></tr>
+      <tr><td>乱視</td><td><span class="todo">未記入（検査時の度数を時系列で残す）</span></td></tr>
+      <tr><td>症状</td><td><span class="todo">未記入（充血・異物感・ゴロゴロ・見た目）</span></td></tr>
+      <tr><td>処方</td><td><span class="todo">未記入（点眼薬名）</span></td></tr>
+      <tr><td>方針</td><td>手術を検討中（bucket listに「翼状片手術」）</td></tr>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Visit log</div>
+    <div class="tbl-wrap"><table>
+      <tr><th>日付</th><th>場所</th><th>内容</th></tr>
+      <tr><td class="c">2025-09-17</td><td>飯田橋眼科</td><td><span class="todo">受診目的・所見を追記</span></td></tr>
+      <tr><td class="c">2026-04-14</td><td>飯田橋眼科</td><td><span class="todo">受診目的・所見を追記</span></td></tr>
+      <tr><td class="c">2026-04-15</td><td>飯田橋眼科</td><td><span class="todo">前日に続く再受診（検査？）。所見を追記</span></td></tr>
+    </table></div>
+    <div class="note"><b>Source</b>Gmail（個人）の予約完了メールから抽出。受診理由は記録がないため、翼状片関連かどうかは未確認。</div>
+  </div>
+</section>
+
+<!-- ============ 基礎知識 ============ -->
+<section class="panel" id="basics">
+  <div class="card">
+    <div class="card-h">What it is</div>
+    <h2>白目の組織が黒目に「翼」の形で伸びてくる</h2>
+    <p>結膜（白目を覆う膜）の下の線維血管組織が増殖し、角膜（黒目）の表面に三角形に入り込む。形が鳥の翼に似ていることから「翼状片」。英語は <b>pterygium</b>（ギリシャ語 pteryx＝翼）。</p>
+    <p>9割以上が<b>鼻側（目頭側）</b>に出る。鼻の側面で反射した紫外線が目頭側の角膜縁に集中するため（Coroneoの「周辺光集光」説）。</p>
+    <svg class="eye" viewBox="0 0 520 220" role="img" aria-label="翼状片の模式図">
+      <path d="M20 110 Q260 -10 500 110 Q260 230 20 110 Z" fill="#fff" stroke="#111" stroke-width="2"/>
+      <circle cx="260" cy="110" r="72" fill="#e8e8e8" stroke="#888" stroke-width="1.5"/>
+      <circle cx="260" cy="110" r="26" fill="#111"/>
+      <path d="M40 110 L120 72 Q200 98 222 110 Q200 122 120 148 Z" fill="#bbb" stroke="#444" stroke-width="1.2" opacity=".85"/>
+      <path d="M70 100 Q140 104 214 109 M70 120 Q140 116 214 111 M90 90 Q150 100 200 108" stroke="#666" stroke-width=".8" fill="none"/>
+      <text x="66" y="186" font-family="Noto Sans JP" font-size="12" fill="#444">翼状片（鼻側から侵入）</text>
+      <text x="300" y="196" font-family="Noto Sans JP" font-size="12" fill="#444">角膜（黒目）／瞳孔</text>
+      <text x="400" y="40" font-family="Noto Sans JP" font-size="12" fill="#444">結膜（白目）</text>
+      <line x1="216" y1="110" x2="216" y2="160" stroke="#111" stroke-dasharray="3 3"/>
+      <text x="196" y="174" font-family="Poppins" font-size="10" fill="#111">head</text>
+    </svg>
+    <div class="cap">先端（head）が瞳孔に近づくほど乱視・視力低下が起きやすい</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h">Risk factors</div>
+      <ul>
+        <li><b>紫外線</b>（最大要因）：屋外時間が長い・低緯度・海や雪の照り返し</li>
+        <li>乾燥・風・ホコリ・砂</li>
+        <li>男性・30〜50代以降で多い</li>
+        <li>家族歴（体質的な素因もあるとされる）</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-h">Symptoms</div>
+      <ul>
+        <li>目頭の充血、ゴロゴロ・異物感、乾き</li>
+        <li>見た目（白目の一部が盛り上がって赤い）</li>
+        <li>進行すると角膜が引っ張られ<b>倒乱視</b>が増える</li>
+        <li>瞳孔にかかると視力低下</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Grading（臨床でよく使う目安）</div>
+    <div class="tbl-wrap"><table>
+      <tr><th>段階</th><th>先端の位置</th><th>影響</th><th>対応の目安</th></tr>
+      <tr><td class="c">Grade 1</td><td>角膜輪部（黒目の縁）を越えたばかり</td><td>ほぼ無症状</td><td>経過観察・UV対策</td></tr>
+      <tr><td class="c">Grade 2</td><td>輪部と瞳孔縁の中間あたりまで</td><td>乱視が出始める</td><td>症状・見た目次第で手術検討</td></tr>
+      <tr><td class="c">Grade 3</td><td>瞳孔縁に達する／越える</td><td>乱視増大・視力低下</td><td>手術推奨</td></tr>
+    </table></div>
+    <div class="note"><b>Note</b>分類法は複数ある（侵入長mm・厚み/血管の見え方による活動性分類など）。担当医がどの物差しで見ているかを聞くとよい。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Similar conditions</div>
+    <ul>
+      <li><b>瞼裂斑（pinguecula）</b>：白目の黄色っぽい盛り上がり。角膜には入り込まない。翼状片の前段階・兄弟分とされ、原因（紫外線）も同じ。</li>
+      <li><b>偽翼状片</b>：外傷・やけど・炎症の後にできる癒着。部位を選ばない。</li>
+      <li><b>結膜腫瘍（OSSN等）</b>：まれだが見た目が似ることがある。急に大きくなる・形が不整なら病理検査。</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============ 治療・手術 ============ -->
+<section class="panel" id="surgery">
+  <div class="card">
+    <div class="card-h">Non-surgical</div>
+    <p>点眼（人工涙液・抗炎症薬）で<b>充血や異物感は和らぐ</b>が、翼状片自体は消えない・縮まない。根治は手術のみ。</p>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Surgical options</div>
+    <div class="tbl-wrap"><table>
+      <tr><th>術式</th><th>内容</th><th>再発率の目安</th><th>コメント</th></tr>
+      <tr><td>単純切除（bare sclera）</td><td>切り取って白目をむき出しのまま治す</td><td class="c">高い（約20〜40%以上）</td><td>現在は単独では非推奨</td></tr>
+      <tr><td><b>結膜自家移植</b>（conjunctival autograft）</td><td>切除後、上方の健康な結膜を薄く切り取り移植</td><td class="c">約2〜13%</td><td>現在の標準。保険の「弁の移植を要するもの」</td></tr>
+      <tr><td>MMC併用</td><td>マイトマイシンC（抗がん剤）を術中に少量塗布し増殖を抑える</td><td class="c">低い</td><td>再発例・若年で使われることが多い。強膜が薄くなる等の副作用に注意</td></tr>
+      <tr><td>羊膜移植</td><td>結膜の代わりに羊膜を貼る</td><td class="c">自家移植よりやや高め</td><td>大きい・再発例・緑内障手術の予定がある場合など</td></tr>
+      <tr><td>フィブリン糊固定</td><td>移植片を縫わずに生体糊で固定</td><td class="c">同等</td><td>術後の痛み・異物感が少ない、手術時間が短い</td></tr>
+    </table></div>
+    <div class="note"><b>Point</b>メタ解析では単純切除の再発オッズは結膜自家移植の約6倍。<b>若い・男性・活動性が高い（赤く厚い）</b>ほど再発しやすい。</div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h">Flow</div>
+      <ul>
+        <li>術前検査（視力・乱視・角膜形状）</li>
+        <li>手術：点眼＋局所麻酔、<b>片眼30〜60分・日帰り</b></li>
+        <li>当日は眼帯。翌日・1週・1か月・3か月…と通院</li>
+        <li>点眼（抗菌・ステロイド）を数週〜数か月</li>
+        <li>再発は<b>術後半年〜1年以内</b>が多い</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-h">After surgery</div>
+      <ul>
+        <li>1〜2週間はゴロゴロ・充血・痛み（移植部）</li>
+        <li>洗顔・洗髪は数日〜1週間制限、プール・サウナは数週間NG（医師の指示に従う）</li>
+        <li>デスクワークは数日で可、運動は1〜2週後から</li>
+        <li>充血が完全に引くのは1〜3か月</li>
+        <li>乱視が減り、<b>眼鏡/コンタクトの度数が変わる</b>ことがある</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-h">Cost</div>
+    <p>保険適用（K224 翼状片手術（弁の移植を要するもの））。3割負担・片眼・日帰りで<b>おおむね1〜3万円台</b>が目安（術前検査・薬剤・再診料で変わる）。正確な額はクリニックで確認。</p>
+    <p>民間の医療保険・生命保険の<b>手術給付金</b>対象になることが多いので、加入中の保険を確認。</p>
+  </div>
+</section>
+
+<!-- ============ 予防・日常 ============ -->
+<section class="panel" id="daily">
+  <div class="card">
+    <div class="card-h">UV protection</div>
+    <ul>
+      <li><b>UVカット率99%以上（UV400）</b>のサングラス。色の濃さとUVカットは無関係（濃いだけだと瞳孔が開いて逆効果）。</li>
+      <li><b>横からの光</b>が鼻側に集まるので、顔に沿うラップアラウンド型やフレームが大きめのものが有利。</li>
+      <li>つばのある帽子で上からの光を減らす（目に届く紫外線を約半分に）。</li>
+      <li>UVカット付きのメガネ・コンタクトでも、コンタクトは白目を覆わないので不十分。</li>
+      <li>要注意シーン：ゴルフ・海・雪山・旅行（低緯度）・ランニング</li>
+    </ul>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-h">Dryness</div>
+      <ul>
+        <li>エアコン・飛行機内では人工涙液</li>
+        <li>PC作業時はまばたきを意識、加湿</li>
+        <li>風・砂の多い場所では保護メガネ</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-h">Watch signs</div>
+      <ul>
+        <li>見え方がぼやける・乱視が増えた</li>
+        <li>急に大きくなった・色や形がいつもと違う</li>
+        <li>強い痛み・充血が続く</li>
+      </ul>
+      <div class="note"><b>Action</b>いずれかがあれば予約を前倒しして受診。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ Q&A ============ -->
+<section class="panel" id="qa">
+  <details open><summary>放っておくとどうなる？</summary>
+    <p>多くは数年単位でゆっくり進むか、途中で止まる。瞳孔にかかるまで伸びると視力が落ち、手術後も角膜に濁りが残りやすい。「大きくなる前に取る」方が結果はきれい。</p>
+  </details>
+  <details><summary>いつ手術すべき？</summary>
+    <p>①乱視が増えてきた ②先端が瞳孔に近づいてきた ③充血・異物感が続く ④見た目がストレス、のいずれか。急ぐ病気ではないので、<b>仕事の繁忙期や屋外イベントを避けて</b>日程を組めばよい。</p>
+  </details>
+  <details><summary>再発したらどうなる？</summary>
+    <p>再手術は可能だが、再発した翼状片は初回より勢いが強く、癒着もしやすい。だから<b>初回に再発率の低い術式</b>を選ぶのが大事。</p>
+  </details>
+  <details><summary>両目同時にやれる？</summary>
+    <p>通常は片眼ずつ。術後しばらく見えにくい・眼帯をするため、もう片方の目で生活できるようにする。</p>
+  </details>
+  <details><summary>手術前に医師に聞くことリスト</summary>
+    <ul>
+      <li>私の翼状片はどのGradeか、何mm侵入しているか</li>
+      <li>術式は結膜自家移植か？ MMCや羊膜は使うか？ 縫合か糊か？</li>
+      <li>先生の症例での再発率は？</li>
+      <li>術後の通院回数・期間、仕事・運動・飲酒・入浴の制限</li>
+      <li>費用（総額目安）と診断書の取り扱い（保険請求用）</li>
+      <li>術後に乱視がどれくらい減る見込みか（眼鏡の作り直しのタイミング）</li>
+    </ul>
+  </details>
+  <details><summary>レーシック・ICL・白内障手術との関係は？</summary>
+    <p>翼状片があると角膜の形が歪むため、<b>屈折矯正や白内障手術の度数計算がずれる</b>。将来これらを受ける可能性があるなら、翼状片を先に治してから数か月おいて計測するのが一般的。</p>
+  </details>
+</section>
+
+<div class="updated">Last updated: 2026-10-15</div>
+</div>
+
+<script>
+document.getElementById('tabs').addEventListener('click', e => {
+  const b = e.target.closest('.tab'); if (!b) return;
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t === b));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === b.dataset.p));
+});
+</script>
+</body>
+</html>
