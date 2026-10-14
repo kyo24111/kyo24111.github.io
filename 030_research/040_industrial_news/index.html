@@ -12,7 +12,8 @@
       --bg:#ffffff; --surface:#f5f5f5; --hover:#ededed; --border:#e0e0e0;
       --text:#111111; --mid:#444444; --muted:#888888; --dim:#cccccc;
       /* industry labels（意味を持つラベルなので配色可） */
-      --i-steel:#5a6672; --i-dc:#3f51b5; --i-robotics:#00897b; --i-cooling:#0288d1; --i-aluminum:#8d99a6; --i-copper:#b87333;
+      --i-steel:#455a64; --i-dc:#3949ab; --i-robotics:#00796b; --i-cooling:#0277bd; --i-aluminum:#607d8b; --i-copper:#a0522d;
+      --b-steel:#eceff1; --b-dc:#e8eaf6; --b-robotics:#e0f2f1; --b-cooling:#e1f5fe; --b-aluminum:#f1f3f5; --b-copper:#fbe9e7;
     }
     body { background: var(--bg); color: var(--text); font-family: 'Poppins', 'Noto Sans JP', sans-serif; min-height: 100vh; padding-top: 56px !important; padding-bottom: 68px !important; }
 
@@ -40,9 +41,10 @@
     .search input:focus { outline: none; border-color: #111; }
 
     /* industry label */
-    .ind { display: inline-flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 600; letter-spacing: .04em; white-space: nowrap; }
-    .ind::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--c, #999); flex-shrink: 0; }
-    .fchip.active .ind::before { box-shadow: 0 0 0 1.5px #fff; }
+    /* industryだけはこのページ限定で色付きバッジ（frame＋bg） */
+    .ind { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; color: var(--c, #444); background: var(--b, #f5f5f5); border: 1px solid var(--c, #999); padding: 3px 9px; border-radius: 3px; line-height: 1.3; }
+    .fchip:has(.ind) { padding: 3px 6px; }
+    .fchip.active:has(.ind) { background: #fff; color: #111; border-color: #111; box-shadow: inset 0 0 0 1px #111; }
 
     /* table */
     .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); }
@@ -268,12 +270,12 @@
 <script src="news_data.js"></script>
 <script>
 (function(){
-  var IND_COLOR = { 'Steel':'var(--i-steel)', 'Data Center':'var(--i-dc)', 'Robotics':'var(--i-robotics)', 'Cooling':'var(--i-cooling)', 'Aluminum':'var(--i-aluminum)', 'Copper':'var(--i-copper)' };
+  var IND_KEY = { 'Steel':'steel', 'Data Center':'dc', 'Robotics':'robotics', 'Cooling':'cooling', 'Aluminum':'aluminum', 'Copper':'copper' };
   var IND_ORDER = ['Steel','Data Center','Robotics','Cooling','Aluminum','Copper'];
   var state = { industry:'all', type:'all', region:'all', q:'', sortK:'date', sortDir:'desc' };
 
   function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
-  function indLabel(i){ return '<span class="ind" style="--c:' + (IND_COLOR[i]||'#999') + '">' + esc(i) + '</span>'; }
+  function indLabel(i){ var k = IND_KEY[i]; return '<span class="ind"' + (k ? ' style="--c:var(--i-' + k + ');--b:var(--b-' + k + ')"' : '') + '>' + esc(i) + '</span>'; }
   // {{word|和訳|解説}} → glossed span
   var GL = /\{\{([^|}]+)\|([^|}]+)(?:\|([^}]+))?\}\}/g;
   function gloss(s){
