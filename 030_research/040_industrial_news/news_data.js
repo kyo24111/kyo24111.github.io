@@ -22,11 +22,11 @@ NEWS.push({
   date: '2026-10-01', posted: '2026-10-14',
   players: 'Khosla Ventures, Doerr Capital（共同リード）／Toyota Ventures／Niterra CVC（運用: Global Brain）／Gates Frontier／US Government',
   en: [
-    'Texas-based Hertha Metals has closed a $133.65 million Series A, including a $65 million {{equity investment|株式出資|返済義務のある融資(debt)ではなく、株を受け取る形の出資。政府が株主になる点がポイント}} from the US government.',
-    'The round was {{co-led|共同リード|複数の投資家が条件交渉を主導すること。leadは最大出資者で条件(valuation等)を決める役}} by Khosla Ventures and Doerr Capital, with participation from Toyota Ventures and the corporate venture fund of Niterra, managed by Global Brain.',
-    'Hertha\'s FLEX-HERS process replaces the conventional multi-stage, {{coal-dependent|石炭に依存した|高炉はコークス(石炭由来)で鉄鉱石を還元するためCO2排出が大きい}} {{blast furnace|高炉|鉄鉱石を還元して銑鉄をつくる巨大な炉。製鉄のCO2の大半はここで出る}} route with a single continuous {{reduction|還元|酸化鉄から酸素を取り除き鉄に戻す化学反応}} reactor.',
+    'Texas-based Hertha Metals has closed a $133.65 million Series A, including a $65 million {{equity investment|株式出資|融資(debt)と違い返済義務がなく、代わりに株を受け取る出資。政府が株主になるのは米国では異例で、国家安全保障案件の証拠と読める。}} from the US government.',
+    'The round was {{co-led|共同リード|lead investorは条件（評価額・取締役席）を決める主導役。co-leadは2社以上でその役を分け合うことで、大型・人気ラウンドに多い。}} by Khosla Ventures and Doerr Capital, with participation from Toyota Ventures and the corporate venture fund of Niterra, managed by Global Brain.',
+    'Hertha\'s FLEX-HERS process replaces the conventional multi-stage, {{coal-dependent|石炭に依存した|-dependent は「〜頼みの」を作る接尾辞（oil-dependent, export-dependent）。高炉はコークス（石炭を蒸し焼きにしたもの）で鉄鉱石を還元するため、CO2排出の大半がここから出る。}} {{blast furnace|高炉|blast＝熱風を吹き込むことから来た名前。高さ100m級の巨大設備で、一度火を入れると十数年は止めずに動かし続ける。}} route with a single continuous {{reduction|還元|化学の reduction は「量を減らす」ではなく「還元」。Fe2O3から酸素(O)を奪ってFeにする反応で、製鉄の本質はこの1工程。}} reactor.',
     'The money will fund Hertha Chalyx, a facility in Conroe, Texas, designed to produce 10,000 metric tons a year of steel-grade and magnet-grade iron, with operations expected in late 2027.',
-    'The company pitches the output as a {{domestic|国内の}} {{feedstock|原料|製造工程に投入される原材料}} for rare earth magnets used in fighter jets and missile guidance systems — an area where the US is heavily {{reliant on|〜に依存している}} China.'
+    'The company pitches the output as a {{domestic|国内の|経済記事では foreign/imported の対義語として「国産の」。domestic demand（内需）、domestic production（国内生産）のように使う。}} {{feedstock|原料|化学・素材の業界語で、工程に投入する原料（ナフサ、鉄鉱石、スクラップなど）。raw material よりプロセス寄りの響きがある。}} for rare earth magnets used in fighter jets and missile guidance systems — an area where the US is heavily {{reliant on|〜に依存している|dependent on とほぼ同義で、heavily reliant on ~（〜に大きく依存）が定番。サプライチェーン記事では対中依存を語る文脈で頻出。}} China.'
   ],
   ja: [
     'テキサスのHertha MetalsがSeries Aで$133.65Mを調達した。このうち$65Mは米政府による株式出資。',
@@ -64,10 +64,10 @@ NEWS.push({
   date: '2025-11-03', posted: '2026-10-14',
   players: 'Nucor（出資＋顧客）／Meta（EAC購入）／Toyota Tsusho／INTERFER／Breakthrough Energy Catalyst',
   en: [
-    'Colorado-based Electra, which makes iron through a low-temperature {{electrochemical|電気化学の|電気を使って化学反応を起こす。Electraは溶液中で鉄を電気分解で取り出す}} process, has signed {{advance purchase agreements|事前購入契約|まだ量産前の製品を将来買う約束。スタートアップにとっては需要の証明＝資金調達の材料になる}} with several industrial buyers.',
-    'Nucor, the largest US steelmaker and also an investor, will use Electra\'s iron in the {{electric arc furnaces|電気炉|スクラップや還元鉄を電気で溶かす炉。高炉よりCO2が少ない}} at its sheet mills.',
-    'Toyota Tsusho and Austria\'s INTERFER have also agreed to buy {{offtake|引き取り量|生産物を買い取る契約(offtake agreement)。資源・エネルギー業界の頻出語}} volumes.',
-    'Meta, in a less obvious move, made the first purchase of {{environmental attribute credits|環境価値クレジット|製品そのものではなく「削減されたCO2」の価値だけを切り出して売買する証書}} tied to the emissions Electra avoids.',
+    'Colorado-based Electra, which makes iron through a low-temperature {{electrochemical|電気化学の|電池・めっき・アルミ製錬と同じく、電気で化学反応を起こす分野。Electraは60℃程度の低温の溶液中で鉄を析出させる。}} process, has signed {{advance purchase agreements|事前購入契約|まだ量産前の製品を将来買う約束。量産前のスタートアップには需要の証明そのものになり、次の資金調達や政府融資の材料になる。}} with several industrial buyers.',
+    'Nucor, the largest US steelmaker and also an investor, will use Electra\'s iron in the {{electric arc furnaces|電気炉|略してEAF。電極間のアーク放電の熱でスクラップや還元鉄を溶かす。米国の粗鋼の約7割はすでにEAF製で、Nucorはその最大手。}} at its sheet mills.',
+    'Toyota Tsusho and Austria\'s INTERFER have also agreed to buy {{offtake|引き取り量|資源・エネルギーの業界語で、生産物を引き取る（買い取る）こと。offtake agreement が付いているとプロジェクトファイナンスが組みやすくなる。}} volumes.',
+    'Meta, in a less obvious move, made the first purchase of {{environmental attribute credits|環境価値クレジット|略してEAC。モノと「環境価値」を切り離して、後者だけを売買する仕組み。電力のRECと同じ発想を鉄に持ち込んだもの。}} tied to the emissions Electra avoids.',
     'The company is building a 500-ton-a-year demonstration plant in Jefferson County, Colorado, originally slated to start up in mid-2026.'
   ],
   ja: [
@@ -105,10 +105,10 @@ NEWS.push({
   date: '2026-03', posted: '2026-10-14',
   players: 'Boston Metal（MIT発）／ブラジル子会社',
   en: [
-    'Boston Metal, an MIT {{spinout|スピンアウト（大学・企業から独立した会社）}} developing {{molten oxide electrolysis|溶融酸化物電解|鉄鉱石を約1,600℃で溶かし、電気で直接鉄を取り出す方式。CO2の代わりに酸素が出る}}, said it would lay off 71 workers and close its operations in Woburn, Massachusetts.',
-    'The move followed a {{critical equipment failure|重大な設備故障}} at its Brazilian facility that {{derailed|頓挫させた|脱線させる→計画を狂わせる}} its scale-up plans.',
-    'The company will {{shift its focus|軸足を移す}} to its Brazilian subsidiary, which recovers high-value metals from mining waste.',
-    'The setback is a reminder of how hard it is to {{scale|規模拡大する}} high-temperature electrochemistry from the lab to industrial volumes.'
+    'Boston Metal, an MIT {{spinout|スピンアウト（大学・企業から独立した会社）|spin out（スピンアウトする）の名詞形。spinoff もほぼ同義だが、大学発のものは spinout と言われることが多い（MIT spinout など）。}} developing {{molten oxide electrolysis|溶融酸化物電解|略してMOE。アルミ製錬（ホール・エルー法）の鉄版のようなもので、排出は酸素だけ。代わりに超高温に耐える電極と炉材が技術的な壁になる。}}, said it would lay off 71 workers and close its operations in Woburn, Massachusetts.',
+    'The move followed a {{critical equipment failure|重大な設備故障|critical は「重大な、致命的な」。critical minerals（重要鉱物）、critical path（クリティカルパス）でも「欠かせない」のニュアンスで使われる。}} at its Brazilian facility that {{derailed|頓挫させた|rail（線路）から外れる＝脱線。計画・交渉・キャリアが「狂わされる」比喩として、受動態の be derailed by ~ でもよく出る。}} its scale-up plans.',
+    'The company will {{shift its focus|軸足を移す|pivot よりも穏やかで前向きに聞こえるので、リストラ発表の定番表現。refocus on ~ もよく使われる。}} to its Brazilian subsidiary, which recovers high-value metals from mining waste.',
+    'The setback is a reminder of how hard it is to {{scale|規模拡大する|動詞の scale は「規模を大きくする」。scale up（拡大）/ scale back（縮小）/ at scale（大規模に）のセットで覚える。}} high-temperature electrochemistry from the lab to industrial volumes.'
   ],
   ja: [
     '溶融酸化物電解を開発するMIT発のBoston Metalが、71人を解雇し、マサチューセッツ州Woburnの拠点を閉じると発表した。',
@@ -141,9 +141,9 @@ NEWS.push({
   date: '2026-10', posted: '2026-10-14',
   players: 'World Steel Association',
   en: [
-    'The World Steel Association has {{revised|修正した}} its 2026 forecast for global steel demand {{down|下方に}} to a slight contraction, from an earlier call of roughly flat demand at 1,722 million tonnes.',
-    'India is still expected to be the main source of growth, with domestic demand projected to {{surge|急増する}} 7.9% this year.',
-    'Weakness in China\'s property sector and {{sluggish|低調な、伸び悩む}} manufacturing in Europe continue to {{weigh on|〜の重しになる}} consumption elsewhere.'
+    'The World Steel Association has {{revised|修正した|予測・ガイダンスを「改める」。上方修正は revise up / upgrade、下方修正は revise down / cut と言う。}} its 2026 forecast for global steel demand {{down|下方に|revise ~ down で「下方修正する」。副詞を後ろに置くのが英語らしい形で、mark down（値下げ）、write down（減損）も同じ型。}} to a slight contraction, from an earlier call of roughly flat demand at 1,722 million tonnes.',
+    'India is still expected to be the main source of growth, with domestic demand projected to {{surge|急増する|急騰・急増。jump < surge < soar の順に勢いが強くなるイメージ。名詞でも a surge in demand のように使う。}} 7.9% this year.',
+    'Weakness in China\'s property sector and {{sluggish|低調な、伸び悩む|slug（ナメクジ）が語源で、のろのろした様子。景気・需要・売上が「伸び悩む」ときの定番形容詞。}} manufacturing in Europe continue to {{weigh on|〜の重しになる|「〜の上に重くのしかかる」。株価・需要・景況感が下がる原因を語るときの市況記事の定番。対義語のイメージは lift / boost。}} consumption elsewhere.'
   ],
   ja: [
     '世界鉄鋼協会（worldsteel）が、2026年の世界鉄鋼需要の予測を下方修正した。当初は1,722Mtでほぼ横ばいと見ていたが、「わずかな縮小」に変えた。',
@@ -175,9 +175,9 @@ NEWS.push({
   date: '2026-10', posted: '2026-10-14',
   players: 'ArcelorMittal',
   en: [
-    'ArcelorMittal is placing its Kryvyi Rih steelworks in Ukraine into {{cold standby|冷間待機|高炉の火を落として休止する状態。再稼働に時間とコストがかかる。hot standbyは火を残す}} after severe missile attacks {{halted|停止させた}} primary steel production.',
+    'ArcelorMittal is placing its Kryvyi Rih steelworks in Ukraine into {{cold standby|冷間待機|高炉の火を落とした休止。再稼働に数ヶ月と多額の費用がかかる。火を残して短期間で戻せる状態は hot standby / banking と呼ぶ。}} after severe missile attacks {{halted|停止させた|stop より硬い報道語。trading was halted（売買停止）、production halted（生産停止）のように受動態でも自動詞でも使う。}} primary steel production.',
     'The shutdown will take about two months to complete.',
-    'Kryvyi Rih is one of Ukraine\'s largest {{integrated|一貫（製鉄所）|製銑→製鋼→圧延までを一拠点で行う}} steel plants, and the move further {{erodes|侵食する、削る}} the country\'s output.'
+    'Kryvyi Rih is one of Ukraine\'s largest {{integrated|一貫（製鉄所）|integrated steel plant＝一貫製鉄所。原料から製品まで一拠点で作る形態で、日本の大手高炉メーカーの製鉄所もこの形。}} steel plants, and the move further {{erodes|侵食する、削る|波が岸を削るように、じわじわ減らす。margin erosion（利益率の低下）、erosion of trust（信頼の低下）のように名詞形も頻出。}} the country\'s output.'
   ],
   ja: [
     'ArcelorMittalが、ウクライナのKryvyi Rih製鉄所をcold standbyに移す。激しいミサイル攻撃で一次製鋼が止まったためだ。',
@@ -207,9 +207,9 @@ NEWS.push({
   date: '2026-10', posted: '2026-10-14',
   players: 'Cleveland-Cliffs／Ohio EPA／Nucor',
   en: [
-    'The Ohio Environmental Protection Agency has issued an environmental {{permit|許可}} allowing Cleveland-Cliffs\' $1 billion modernization of its Middletown Works to {{proceed|進む、着手する}}.',
+    'The Ohio Environmental Protection Agency has issued an environmental {{permit|許可|名詞は「許可証」、動詞は「許す」。permitting は許認可の手続き全体を指し、米国のインフラ案件では最大のボトルネックとされる。}} allowing Cleveland-Cliffs\' $1 billion modernization of its Middletown Works to {{proceed|進む、着手する|go ahead のフォーマル版。proceed with ~（〜を進める）の形が多い。名詞の proceeds は「（売却などの）手取り金」で別の意味になる。}}.',
     'Separately, Nucor is investing $105 million to expand production at its Crawfordsville, Indiana, facility.',
-    'The projects {{underscore|浮き彫りにする、強調する}} a steady wave of {{capital spending|設備投資}} by US steelmakers {{shielded|守られた}} by tariffs.'
+    'The projects {{underscore|浮き彫りにする、強調する|下線を引く＝強調する。highlight や emphasize のフォーマル版で、ニュース記事の締めの一文で多用される。}} a steady wave of {{capital spending|設備投資|略して capex（capital expenditure）。設備投資のことで、対義語は opex（運営費）。決算記事の基本語。}} by US steelmakers {{shielded|守られた|盾(shield)で守られた。関税・規制・独占で競争から守られている状態で、insulated from ~ もほぼ同義。}} by tariffs.'
   ],
   ja: [
     'Ohio州環境保護局（Ohio EPA）が環境許可を出し、Cleveland-CliffsによるMiddletown製鉄所の$1B近代化が動き出せるようになった。',
@@ -242,10 +242,10 @@ NEWS.push({
   date: '2026-10-10', posted: '2026-10-14',
   players: 'Sequoia Capital（シードをリード）／創業: Gerard Williams, John Bruno, Ram Srinivasan',
   en: [
-    'Nuvacore, a San Jose chip startup backed by Sequoia Capital, is raising hundreds of millions of dollars at a valuation of about $2.5 billion, Reuters reported, citing people {{familiar with the matter|事情に詳しい|匿名情報源を示すReutersの定型句}}.',
+    'Nuvacore, a San Jose chip startup backed by Sequoia Capital, is raising hundreds of millions of dollars at a valuation of about $2.5 billion, Reuters reported, citing people {{familiar with the matter|事情に詳しい|Reuters/Bloombergが匿名の情報源を示す定型句。この表現が付いた記事は「公式発表前の観測報道」と読むのが基本。}}.',
     'The company is only about six months old and has no product yet.',
-    'It was founded by Gerard Williams, John Bruno and Ram Srinivasan; Williams previously founded Nuvia, which Qualcomm {{acquired|買収した}} for about $1.4 billion in 2021.',
-    'Unusually, Nuvacore plans to design the core first and choose an {{instruction set architecture|命令セットアーキテクチャ（ISA）|CPUが理解する命令の体系。x86（Intel/AMD）とArmが二大勢力}} later, so its chip is not {{locked into|〜に縛られた、固定された}} x86 or Arm.',
+    'It was founded by Gerard Williams, John Bruno and Ram Srinivasan; Williams previously founded Nuvia, which Qualcomm {{acquired|買収した|acquire は M&A の基本動詞。buy より硬く、買収側は acquirer、被買収側は target と呼ぶ。}} for about $1.4 billion in 2021.',
+    'Unusually, Nuvacore plans to design the core first and choose an {{instruction set architecture|命令セットアーキテクチャ（ISA）|略してISA。ソフトとハードの境界となる「命令の語彙」。x86はIntel/AMD、ArmはApple/スマホ、RISC-Vはオープンな新興勢力。}} later, so its chip is not {{locked into|〜に縛られた、固定された|抜け出せない状態に固定されること。vendor lock-in（特定ベンダーへの依存）の動詞版で、IT・クラウドの文脈で頻出。}} x86 or Arm.',
     'The round has not closed, and the terms could still change.'
   ],
   ja: [
@@ -281,9 +281,9 @@ NEWS.push({
   date: '2026-10-08', posted: '2026-10-14',
   players: 'Matter Venture Partners, Tyche Partners（共同リード）／LG Technology Ventures／Gates Frontier／Engine Ventures ほか',
   en: [
-    'Massachusetts-based VEIR has closed an {{oversubscribed|応募超過の|募集額を上回る出資希望が集まった＝人気ラウンドのシグナル}} $110 million Series C, bringing its total funding to $225 million.',
-    'VEIR builds {{superconducting|超電導の|ある温度以下で電気抵抗がゼロになる性質。発熱・損失なしで大電流を流せる}} power delivery systems that pair superconducting cables with {{cryogenic|極低温の}} cooling.',
-    'The company argues that reliance on copper-based infrastructure is becoming a {{bottleneck|ボトルネック}} for large AI data center {{deployments|導入・展開}}, as power densities climb.',
+    'Massachusetts-based VEIR has closed an {{oversubscribed|応募超過の|募集枠を上回る出資希望が集まった状態。IPOでは「◯倍の応募」と言い、人気の裏付けとしてプレスリリースに必ず書かれる。}} $110 million Series C, bringing its total funding to $225 million.',
+    'VEIR builds {{superconducting|超電導の|超電導。ある温度以下で電気抵抗がゼロになる現象で、大電流を発熱も損失もなく流せる。MRIやリニアモーターカーで実用化されている。}} power delivery systems that pair superconducting cables with {{cryogenic|極低温の|一般に-150℃以下の極低温。液体窒素（-196℃）はその代表で、超電導ケーブルの冷却に使われる。}} cooling.',
+    'The company argues that reliance on copper-based infrastructure is becoming a {{bottleneck|ボトルネック|瓶の首のように、全体の流れを制限する一番細い部分。AIインフラでは電力・変圧器・冷却が典型的なボトルネックとされる。}} for large AI data center {{deployments|導入・展開|deploy は元は軍事用語の「（部隊を）配備する」。IT・インフラでは本番環境への導入・展開を指す。}}, as power densities climb.',
     '"This financing gives us the resources to move from demonstrating the potential of superconducting power delivery to manufacturing and deploying systems at commercial scale," said CEO Tim Heidel.'
   ],
   ja: [
@@ -319,9 +319,9 @@ NEWS.push({
   date: '2026-08-25', posted: '2026-10-14',
   players: 'Energize Capital, DCVC（共同リード）／Nvidia（前ラウンドで出資）',
   en: [
-    'Emerald AI has raised a $150 million Series A at a $1.05 billion valuation, {{co-led|共同リード}} by Energize Capital and DCVC.',
-    'Its software lets data centers {{flex|柔軟に増減させる}} their power draw when the grid is {{stressed|逼迫した}}, for example by shifting or slowing {{non-urgent|急ぎでない}} AI workloads.',
-    'The pitch is that flexible data centers can connect to the grid faster, because utilities do not have to plan for their full {{peak load|ピーク負荷|最大消費電力。送電網はピークに合わせて設備を作る必要がある}} at all times.'
+    'Emerald AI has raised a $150 million Series A at a $1.05 billion valuation, {{co-led|共同リード|lead investorは条件（評価額・取締役席）を決める主導役。co-leadは2社以上でその役を分け合うことで、大型・人気ラウンドに多い。}} by Energize Capital and DCVC.',
+    'Its software lets data centers {{flex|柔軟に増減させる|本来は「（筋肉を）曲げる」。電力業界では demand flexibility（需要の柔軟性）から、消費を上げ下げすることを flex と言う。}} their power draw when the grid is {{stressed|逼迫した|電力網が限界近くまで使われている状態。grid stress event は需給ひっ迫のこと。人に使えば「ストレスを受けた」の意味。}}, for example by shifting or slowing {{non-urgent|急ぎでない|non- を付けて否定形を作る。AIでは学習や一括(batch)処理が後回しにできる仕事、チャットの応答のような対話は急ぐ仕事とされる。}} AI workloads.',
+    'The pitch is that flexible data centers can connect to the grid faster, because utilities do not have to plan for their full {{peak load|ピーク負荷|需要が最大になる瞬間の負荷。送電網はピークに合わせて設備を作るため、ピークを下げられれば同じ設備でより多くの需要を受け入れられる。}} at all times.'
   ],
   ja: [
     'Emerald AIが、評価額$1.05BでSeries A $150Mを調達した。Energize CapitalとDCVCが共同でリードした。',
@@ -353,9 +353,9 @@ NEWS.push({
   date: '2026-10', posted: '2026-10-14',
   players: 'Constellation Energy／Google／Amazon',
   en: [
-    'Constellation has signed 20-year {{power purchase agreements|電力購入契約（PPA）|発電事業者と需要家が長期・固定条件で電力を売買する契約}} with Google and Amazon that support almost 1.1 gigawatts of nuclear {{expansions|増設}}.',
-    'The deals give Constellation the long-term {{revenue certainty|収益の確実性}} it needs to invest in {{uprates|出力増強|既存原子炉の出力を設備改修で引き上げること。新設より早く安い}} and other capacity additions.',
-    'Hyperscalers are increasingly {{locking in|確保する}} firm, carbon-free power for AI data centers years in advance.'
+    'Constellation has signed 20-year {{power purchase agreements|電力購入契約（PPA）|略してPPA。10〜20年の長期・固定条件で電力を売買する契約。発電所はこれを担保に建設資金を借りられる。}} with Google and Amazon that support almost 1.1 gigawatts of nuclear {{expansions|増設|原子力の文脈では、新しい炉を作るのではなく、既存の炉の出力増強や運転延長を指すことが多い。}}.',
+    'The deals give Constellation the long-term {{revenue certainty|収益の確実性|将来の売上の見通しが立つこと。巨額の設備投資をする電力・インフラ業界では、これが借入の可否を左右する。}} it needs to invest in {{uprates|出力増強|原子力の業界語で、既存の原子炉の出力を設備改修で引き上げること。新設より早く安いので、PPAで資金が付きやすい。}} and other capacity additions.',
+    'Hyperscalers are increasingly {{locking in|確保する|価格・供給・人材などを先に押さえて確定させる。lock in gains（利益を確定する）は投資の文脈でも使う。}} firm, carbon-free power for AI data centers years in advance.'
   ],
   ja: [
     'ConstellationがGoogleおよびAmazonと20年の電力購入契約（PPA）を結んだ。合わせて約1.1GW分の原子力の増設を支える。',
@@ -386,10 +386,10 @@ NEWS.push({
   date: '2026-10-12', posted: '2026-10-14',
   players: 'Stateline／Memphis市議会（xAI）',
   en: [
-    'Voters in at least three dozen cities, counties and townships will consider {{ballot measures|住民投票にかける案件}} in November that could ban data centers in their communities, Stateline reports.',
-    'Residents cite rising electricity bills, water use, noise and the {{loss of farmland|農地の喪失}}.',
-    'In Memphis, home to xAI\'s data centers, the city council {{postponed|延期した}} a vote on a year-long {{moratorium|モラトリアム（一時停止）|一定期間、新規の許可などを凍結すること}} despite protests.',
-    'The {{backlash|反発}} is turning local {{permitting|許認可}} into a real constraint on where AI infrastructure can be built.'
+    'Voters in at least three dozen cities, counties and townships will consider {{ballot measures|住民投票にかける案件|ballot は投票用紙。住民が直接賛否を投じる条例案・住民投票案件のことで、米国では選挙のたびに州・郡レベルで多数かけられる。}} in November that could ban data centers in their communities, Stateline reports.',
+    'Residents cite rising electricity bills, water use, noise and the {{loss of farmland|農地の喪失|米国のDCは中西部の農地に建つことが多く、地方部での反対の主な理由になっている。}}.',
+    'In Memphis, home to xAI\'s data centers, the city council {{postponed|延期した|delay より計画的な「延期」。日程を明確に後ろへずらすニュアンスがある。push back も口語でほぼ同じ意味。}} a vote on a year-long {{moratorium|モラトリアム（一時停止）|一定期間、新規の許可などを凍結すること。借金の返済猶予の意味もある。ラテン語の mora（遅延）が語源。}} despite protests.',
+    'The {{backlash|反発|機械の「反動・がた」が原義で、強い反発・揺り戻しを指す。public backlash、political backlash の形が多い。}} is turning local {{permitting|許認可|許認可手続き全体を指す。米国では環境審査（NEPA）を含めて数年かかることもあり、permitting reform は超党派の政策テーマになっている。}} into a real constraint on where AI infrastructure can be built.'
   ],
   ja: [
     '11月、少なくとも30数の市・郡・町で、地域へのデータセンター建設を禁じうる住民投票が行われる。Statelineが報じた。',
@@ -423,8 +423,8 @@ NEWS.push({
   players: 'Amazon Web Services／Homer City Energy Campus',
   en: [
     'AWS is planning a 36-building data center campus in Indiana County, Pennsylvania, at the Homer City Energy Campus — the site of what was once the state\'s largest coal-fired power plant.',
-    'The {{redevelopment|再開発}} pairs new gas-fired generation with data center capacity on the same site, {{sidestepping|回避する}} long waits for grid connections.',
-    'Former coal plants are attractive because they already have {{transmission|送電}} lines, water rights and {{industrial zoning|工業用の用途地域}}.'
+    'The {{redevelopment|再開発|既存の用地を作り直すこと。発電所や工場の跡地（brownfield）は、送電線や用地の許可を引き継げるのが強み。}} pairs new gas-fired generation with data center capacity on the same site, {{sidestepping|回避する|横に一歩よけてかわす。問題や規制をうまく回避するニュアンスで、sidestep the question（質問をはぐらかす）とも言う。}} long waits for grid connections.',
+    'Former coal plants are attractive because they already have {{transmission|送電|電力業界では高圧の「送電」を指し、家庭に近い低圧の distribution（配電）と区別する。車ならトランスミッション（変速機）。}} lines, water rights and {{industrial zoning|工業用の用途地域|zoning は用途地域の規制。工業用地として指定済みなら住民合意のハードルが下がり、DCの立地では大きな武器になる。}}.'
   ],
   ja: [
     'AWSが、ペンシルベニア州Indiana CountyのHomer City Energy Campusに、36棟のデータセンターキャンパスを計画している。かつて州最大の石炭火力発電所があった場所だ。',
@@ -456,9 +456,9 @@ NEWS.push({
   date: '2026-10-07', posted: '2026-10-14',
   players: '前回: Bezos Expeditions, Prysm Capital, Temasek（今回のリードは非公表）',
   en: [
-    'FieldAI, which builds software it calls a "universal general-purpose brain" for robots, has signed a {{term sheet|タームシート|出資条件の概要書。法的拘束力はなく、最終契約前の合意}} to raise about $700 million at a $10 billion valuation, according to reports.',
-    'That is roughly five times the $2 billion valuation it {{commanded|（価値・評価を）得た}} in August 2025, when it raised $405 million from investors including Bezos Expeditions and Temasek.',
-    'FieldAI does not make hardware; it licenses its models to run humanoids, robot dogs, drones and industrial {{rovers|探査・作業車両}}.',
+    'FieldAI, which builds software it calls a "universal general-purpose brain" for robots, has signed a {{term sheet|タームシート|出資・M&Aの主要条件をまとめた数ページの書面。法的拘束力はほぼなく、このあとデューデリジェンスを経て本契約に進む。}} to raise about $700 million at a $10 billion valuation, according to reports.',
+    'That is roughly five times the $2 billion valuation it {{commanded|（価値・評価を）得た|command は「（価格・敬意などを）当然のものとして得る」。command a premium（プレミアムがつく）の形でよく使う。}} in August 2025, when it raised $405 million from investors including Bezos Expeditions and Temasek.',
+    'FieldAI does not make hardware; it licenses its models to run humanoids, robot dogs, drones and industrial {{rovers|探査・作業車両|もとは「放浪者」。火星探査車（Mars rover）のように、不整地を自走する車両を指す。}}.',
     'The company says revenue plus signed contracts exceed $135 million across more than 30 customers.'
   ],
   ja: [
@@ -494,9 +494,9 @@ NEWS.push({
   players: 'SoftBank Group／Hyundai Motor Group／Marc Raibert（Boston Dynamics創業者）',
   en: [
     'SoftBank has agreed to acquire the Robotics and AI Institute, the research lab founded by Boston Dynamics founder Marc Raibert, from Hyundai Motor Group.',
-    'The deal is under review by the {{Committee on Foreign Investment in the United States|対米外国投資委員会（CFIUS）|外国企業による米国企業の買収を国家安全保障の観点から審査する機関}}, and the price was not {{disclosed|開示された}}.',
-    'Hyundai launched the institute in 2022 with more than $400 million to work on robot learning, {{athletic intelligence|身体的知能|走る・跳ぶなどの動的な運動能力をAIで実現する研究領域}} and related fields.',
-    'The purchase {{adds to|〜に加わる、上積みになる}} SoftBank\'s growing robotics bets, alongside its planned acquisition of ABB\'s robotics business for roughly $5.4 billion.'
+    'The deal is under review by the {{Committee on Foreign Investment in the United States|対米外国投資委員会（CFIUS）|略してCFIUS（シフィアス）。外国企業による米国企業の買収を、安全保障の観点から審査し、阻止することもできる。日本製鉄のUS Steel買収でも焦点になった。}}, and the price was not {{disclosed|開示された|公式に明らかにする。M&Aの記事は Terms were not disclosed（条件非公表）で締めることが多い。}}.',
+    'Hyundai launched the institute in 2022 with more than $400 million to work on robot learning, {{athletic intelligence|身体的知能|RAI Instituteが掲げる研究テーマで、走る・跳ぶ・バランスを取るといった動的な身体能力を指す。Boston Dynamicsのパルクールの系譜。}} and related fields.',
+    'The purchase {{adds to|〜に加わる、上積みになる|〜に上積みする、〜をさらに増やす。adds to concerns（懸念を強める）のように、ネガティブな文脈でもよく使う。}} SoftBank\'s growing robotics bets, alongside its planned acquisition of ABB\'s robotics business for roughly $5.4 billion.'
   ],
   ja: [
     'SoftBankが、Boston Dynamics創業者のMarc Raibertが立ち上げた研究所「Robotics and AI Institute」を、Hyundai Motor Groupから買収することで合意した。',
@@ -534,7 +534,7 @@ NEWS.push({
   en: [
     'Mecka has raised a $60 million Series B led by Sequoia, with Nvidia and Microsoft\'s venture fund M12 participating.',
     'The startup pays people to record themselves doing everyday tasks while wearing body sensors and using smartphones, then turns the footage into motion and hand-pose data for training robots.',
-    'It is a bet that human demonstrations, rather than {{teleoperation|遠隔操作|人がロボットを遠隔で操縦してデータを集める方式。高コストで規模が出にくい}}, can supply the {{sheer volume|圧倒的な量}} of data that robot foundation models need.'
+    'It is a bet that human demonstrations, rather than {{teleoperation|遠隔操作|人がロボットを遠隔で操縦し、その操作をデータとして集める方式。品質は高いが、1時間のデータに1時間の人手がかかるので規模が出ない。}}, can supply the {{sheer volume|圧倒的な量|sheer は「純然たる、とてつもない」。量や規模の大きさそのものに圧倒されるニュアンスで、sheer size / sheer luck とも言う。}} of data that robot foundation models need.'
   ],
   ja: [
     'MeckaがSequoiaのリードで$60MのSeries Bを調達した。NvidiaとMicrosoftのVCであるM12も参加した。',
@@ -567,8 +567,8 @@ NEWS.push({
   en: [
     'Frore Systems has raised $143 million in a Series D that values the company at $1.6 billion.',
     'The round was led by MVP Ventures, with participation from Fidelity, Mayfield and Qualcomm Ventures.',
-    'Frore makes {{cold plates|コールドプレート|チップに直接密着させ、内部に冷却液を流して熱を奪う金属板。direct-to-chip液冷の中核部品}} for AI chips, built around technology that grew out of its {{solid-state|半導体（可動部のない）|モーターやファンなどの機械的な可動部を持たない}} cooling chips for laptops.',
-    'As GPU {{thermal design power|熱設計電力（TDP）|チップが出す熱の設計上の上限。最新GPUは1,000Wを超える}} rises, air cooling is reaching its limits, pushing operators toward {{direct-to-chip|チップ直接（冷却）}} liquid cooling.'
+    'Frore makes {{cold plates|コールドプレート|GPUに直接密着させる金属板で、内部の細い流路に冷却液を流して熱を奪う。direct-to-chip液冷の中核部品。}} for AI chips, built around technology that grew out of its {{solid-state|半導体（可動部のない）|モーターや回転部品のような機械的な可動部を持たないこと。solid-state battery（全固体電池）、SSD（solid-state drive）と同じ solid-state。}} cooling chips for laptops.',
+    'As GPU {{thermal design power|熱設計電力（TDP）|略してTDP。チップが出す熱の設計上の上限。最新のAI GPUは1チップで1,000Wを超え、空冷では追いつかなくなっている。}} rises, air cooling is reaching its limits, pushing operators toward {{direct-to-chip|チップ直接（冷却）|略してDTC/D2C。冷却液をチップ直上まで引き込んで冷やす方式。サーバーごと液体に沈める immersion（液浸）と並ぶ二大液冷方式。}} liquid cooling.'
   ],
   ja: [
     'Frore SystemsがSeries Dで$143Mを調達した。評価額は$1.6B。',
@@ -600,10 +600,10 @@ NEWS.push({
   date: '2026-06-02', posted: '2026-10-14',
   players: 'Mitsubishi Electric／Carrier／Samsung Ventures（共同リード）',
   en: [
-    'ZutaCore, an Israeli startup, has raised a $100 million Series C to scale its waterless, {{two-phase|二相式の|冷媒が液体→気体に相変化するときの潜熱で熱を奪う方式。単相(液体のまま)より効率が高い}} direct-to-chip cooling.',
-    'The round was led by three {{strategic investors|戦略的投資家|リターンだけでなく自社事業とのシナジーを目的に出資する事業会社}}: Mitsubishi Electric, Carrier and Samsung Electronics through Samsung Ventures.',
+    'ZutaCore, an Israeli startup, has raised a $100 million Series C to scale its waterless, {{two-phase|二相式の|phase は相（固体・液体・気体）。冷媒が沸騰して気体になるときの潜熱を使うので、同じ流量で単相よりはるかに多くの熱を運べる。}} direct-to-chip cooling.',
+    'The round was led by three {{strategic investors|戦略的投資家|リターンだけでなく自社事業とのシナジーを目的に出資する事業会社。対義語は financial investor（VC・PE）。将来の買収の布石と読まれることも多い。}}: Mitsubishi Electric, Carrier and Samsung Electronics through Samsung Ventures.',
     'Calcalist estimates the company\'s valuation at close to $600 million.',
-    'Because its {{dielectric|絶縁性の|電気を通さない。万一漏れてもサーバーがショートしない}} fluid boils on the chip and never touches water, ZutaCore pitches the system as safer and more water-efficient than conventional liquid cooling.'
+    'Because its {{dielectric|絶縁性の|電気を通さない絶縁性の。冷却液が漏れてもサーバーがショートしないのが利点で、液浸冷却の液体もこの性質を持つ。}} fluid boils on the chip and never touches water, ZutaCore pitches the system as safer and more water-efficient than conventional liquid cooling.'
   ],
   ja: [
     'イスラエルのスタートアップZutaCoreが、水を使わない二相式direct-to-chip冷却の拡大に向けて、$100MのSeries Cを調達した。',
@@ -637,10 +637,10 @@ NEWS.push({
   date: '2025-11', posted: '2026-10-14',
   players: 'Daikin Applied（ダイキン工業の米国子会社）／Chilldyne／DDC Solutions',
   en: [
-    'Daikin Applied, the US arm of Japan\'s Daikin Industries, has acquired Chilldyne, a maker of direct-to-chip liquid cooling systems whose {{coolant distribution units|冷却液分配ユニット（CDU）|サーバーへ冷却液を送り、熱を受け取ったら施設側の冷水に渡す中継装置。液冷の心臓部}} offer up to 300 kW of cooling capacity.',
+    'Daikin Applied, the US arm of Japan\'s Daikin Industries, has acquired Chilldyne, a maker of direct-to-chip liquid cooling systems whose {{coolant distribution units|冷却液分配ユニット（CDU）|略してCDU。ラックへ冷却液を送り、温まった液の熱を施設側の冷水に渡す中継装置。液冷の心臓部とされる。}} offer up to 300 kW of cooling capacity.',
     'The deal came months after Daikin agreed to buy DDC Solutions, a California company that makes high-density server cabinets and cooling management software.',
     'Terms of neither deal were disclosed.',
-    'Daikin is also investing $163 million in a data center R&D lab in Plymouth, Minnesota, expected to open in 2027, as it moves from {{facility-level|施設レベルの}} chillers {{down to|〜まで（踏み込んで）}} the rack.'
+    'Daikin is also investing $163 million in a data center R&D lab in Plymouth, Minnesota, expected to open in 2027, as it moves from {{facility-level|施設レベルの|建物全体の単位。DCの冷却は、施設（チラー）→ 部屋（CRAH）→ ラック（CDU）→ チップ（コールドプレート）の階層で考える。}} chillers {{down to|〜まで（踏み込んで）|move down to ~ で「（より細かいレベルまで）踏み込む」。down to the last detail（細部に至るまで）の down to と同じ感覚。}} the rack.'
   ],
   ja: [
     'ダイキン工業の米国子会社Daikin Appliedが、Chilldyneを買収した。Chilldyneはdirect-to-chip液冷システムのメーカーで、同社のCDU（冷却液分配ユニット）は最大300kWの冷却能力を持つ。',
@@ -677,10 +677,10 @@ NEWS.push({
   date: '2026-08-26', posted: '2026-10-14',
   players: 'Energy Impact Partners（リード）／John Doerr／Founders Fund／Mantis VC／StepStone',
   en: [
-    'California startup Voya Energy has raised $35 million to build generators that run on an aluminum-based fuel made from {{scrap|スクラップ、くず}}.',
-    'The round was led by Energy Impact Partners and included {{billionaire venture capitalist|億万長者のベンチャーキャピタリスト}} John Doerr, Founders Fund, Mantis VC and StepStone, Bloomberg reported.',
-    'Aluminum stores a lot of energy for its weight; when it reacts with water it releases heat and hydrogen, which can be used to {{generate|発電する}} electricity without {{combustion|燃焼}} emissions at the site.',
-    'Voya plans to test its generators at customer sites by the end of 2027, {{positioning|位置づける}} them as a cleaner alternative to diesel backup for data centers.'
+    'California startup Voya Energy has raised $35 million to build generators that run on an aluminum-based fuel made from {{scrap|スクラップ、くず|金属くず。工場で出る端材（new scrap）と、使い終わった製品から出る老廃スクラップ（old scrap）に分かれる。}}.',
+    'The round was led by Energy Impact Partners and included {{billionaire venture capitalist|億万長者のベンチャーキャピタリスト|billion＝10億で、billionaire は資産10億ドル以上の人。John DoerrはGoogleとAmazonの初期投資家として知られる。}} John Doerr, Founders Fund, Mantis VC and StepStone, Bloomberg reported.',
+    'Aluminum stores a lot of energy for its weight; when it reacts with water it releases heat and hydrogen, which can be used to {{generate|発電する|電力業界では「発電する」。power generation（発電）、generator（発電機）、generation capacity（発電容量）とセットで使う。}} electricity without {{combustion|燃焼|燃焼。internal combustion engine（内燃機関、ICE）のcombustionで、EVの対義語としても頻出する。}} emissions at the site.',
+    'Voya plans to test its generators at customer sites by the end of 2027, {{positioning|位置づける|position A as B（AをBとして位置づける）。マーケティングのポジショニングと同じ語で、pitch A as B と言い換えられる。}} them as a cleaner alternative to diesel backup for data centers.'
   ],
   ja: [
     'カリフォルニアのスタートアップVoya Energyが$35Mを調達した。スクラップから作るアルミ系燃料で動く発電機を開発する。',
@@ -714,10 +714,10 @@ NEWS.push({
   date: '2026-01-26', posted: '2026-10-14',
   players: 'Emirates Global Aluminium（UAE）／Century Aluminum（Nasdaq: CENX）',
   en: [
-    'Emirates Global Aluminium and Century Aluminum have signed a joint development agreement to build a {{primary aluminum|一次アルミ（新地金）|ボーキサイト→アルミナ→電解でつくる新しいアルミ。リサイクル材(二次)の対義語}} {{smelter|製錬所}} in Inola, Oklahoma — the first new one in the US since 1980.',
-    'EGA will hold 60% of the {{joint venture|合弁事業}} and Century 40%.',
+    'Emirates Global Aluminium and Century Aluminum have signed a joint development agreement to build a {{primary aluminum|一次アルミ（新地金）|鉱石から作る新地金。製錬に大量の電力（1tあたり約14,000kWh）を使う。リサイクル材（secondary）は、その約5%のエネルギーで作れる。}} {{smelter|製錬所|鉱石から金属を取り出す製錬所。smelt は「溶かして精錬する」。アルミ・銅・亜鉛などの非鉄で使われることが多い。}} in Inola, Oklahoma — the first new one in the US since 1980.',
+    'EGA will hold 60% of the {{joint venture|合弁事業|略してJV。複数の企業が出資して作る共同事業会社。持分比率（今回は60/40）で主導権と利益配分が決まる。}} and Century 40%.',
     'At 750,000 tonnes a year, the plant would more than double current US primary aluminum production.',
-    'Construction is expected to start in late 2026 or early 2027, {{subject to|〜を条件として}} engineering work and a power supply agreement with the local utility.'
+    'Construction is expected to start in late 2026 or early 2027, {{subject to|〜を条件として|「〜を条件として、〜次第で」。契約・M&A記事の最重要表現の一つで、subject to regulatory approval（当局の承認が条件）が定番。}} engineering work and a power supply agreement with the local utility.'
   ],
   ja: [
     'Emirates Global AluminiumとCentury Aluminumが共同開発契約を結び、オクラホマ州Inolaに一次アルミの製錬所を建設する。米国で新しい製錬所ができるのは1980年以来。',
@@ -753,8 +753,8 @@ NEWS.push({
   link: '../039_startup_news/261013_sortera_aluminum.html',
   en: [
     'Indiana-based Sortera has raised $45 million and is opening a second plant in Lebanon, Tennessee, nearly doubling its capacity.',
-    'The company uses {{X-ray fluorescence|蛍光X線分析（XRF）|X線を当てて出てくる蛍光から元素組成を測る技術}}, optical sensors and AI to sort {{shredded|破砕された}} mixed aluminum from scrapped cars into individual {{alloys|合金}}.',
-    'Rather than selling machines, Sortera runs its own plants and earns the {{spread|価格差、スプレッド}} between low-value mixed scrap and high-value sorted alloys.'
+    'The company uses {{X-ray fluorescence|蛍光X線分析（XRF）|略してXRF。X線を当て、物質が返す蛍光X線のエネルギーから元素の組成を測る。スクラップの合金判別で標準的に使われる技術。}}, optical sensors and AI to sort {{shredded|破砕された|shredder（シュレッダー）で細かく破砕された。廃車は丸ごと破砕され、鉄・非鉄・樹脂に選り分けられる。}} mixed aluminum from scrapped cars into individual {{alloys|合金|合金。アルミは添加元素（Si, Mg, Cuなど）で番手が変わり（6061、380など）、混ざると価値が大きく下がる。}}.',
+    'Rather than selling machines, Sortera runs its own plants and earns the {{spread|価格差、スプレッド|2つの価格の差。トレーディングの bid-ask spread と同じ発想で、Sorteraは安い混合スクラップと高い選別済み合金の差で稼ぐ。}} between low-value mixed scrap and high-value sorted alloys.'
   ],
   ja: [
     'インディアナのSorteraが$45Mを調達し、テネシー州Lebanonで第2工場を稼働させる。処理能力はほぼ倍になる。',
@@ -787,9 +787,9 @@ NEWS.push({
   players: 'Khosla Ventures（リード）／a16z（Fortune報道）',
   en: [
     'Mariana Minerals, a two-year-old startup, has raised a $310 million Series B led by Khosla Ventures, valuing it at $1.5 billion.',
-    'The company runs copper and lithium mining and processing operations with its own software, aiming to make them more {{autonomous|自律的な}} and cheaper to operate.',
-    'Its first site, Copper One in Utah, is restarting a previously {{idled|休止していた}} copper mine.',
-    'Investors are {{betting|賭けている}} that AI demand — from data centers to power grids — will keep copper in short supply for years.'
+    'The company runs copper and lithium mining and processing operations with its own software, aiming to make them more {{autonomous|自律的な|自律的な。autonomous vehicle（自動運転車）、autonomous mining（無人化された鉱山）のように使い、automated（自動化された）より判断まで任せるニュアンスが強い。}} and cheaper to operate.',
+    'Its first site, Copper One in Utah, is restarting a previously {{idled|休止していた|idle（アイドリング）の動詞用法で、「休止させる」。閉山（close）とは違い、市況が戻れば再開できる状態を指す。}} copper mine.',
+    'Investors are {{betting|賭けている|bet on ~（〜に賭ける）。英語のビジネス記事は、投資を「賭け」として語るのが基本トーン。make a big bet / hedge one\'s bets（両賭けする）。}} that AI demand — from data centers to power grids — will keep copper in short supply for years.'
   ],
   ja: [
     '設立2年のスタートアップMariana Mineralsが、Khosla VenturesのリードでSeries B $310Mを調達した。評価額は$1.5B。',
@@ -824,9 +824,9 @@ NEWS.push({
   players: 'Orion Industrial Ventures（リード）／BHP Ventures／Twynam／Air Capital',
   en: [
     'Giraffe Bio, based in Argentina and Chile, has raised a $6.4 million seed round led by Orion Industrial Ventures, with BHP Ventures participating.',
-    'The startup designs {{mine-specific|鉱山ごとに最適化された}} biomolecules that raise copper recovery during {{flotation|浮遊選鉱|粉砕した鉱石を水と薬剤に入れ、泡に目的の鉱物を付着させて浮かせ分離する工程}}.',
-    'The compounds are produced by {{engineered microbes|遺伝子改変微生物}} grown in {{bioreactors|バイオリアクター（培養槽）}} and can be added to a mine\'s existing process without new equipment.',
-    'Even a small {{uptick|わずかな上昇}} in recovery rates can mean millions of dollars a year at a large copper mine.'
+    'The startup designs {{mine-specific|鉱山ごとに最適化された|-specific は「〜に特化した、〜固有の」。country-specific、customer-specific のように何にでも付けられる便利な接尾辞。}} biomolecules that raise copper recovery during {{flotation|浮遊選鉱|粉砕した鉱石を水と薬剤に入れて泡立て、目的の鉱物だけを泡に付着させて浮かせる選鉱法。銅の大半はこの工程を経て精鉱になる。}}.',
+    'The compounds are produced by {{engineered microbes|遺伝子改変微生物|engineered＝遺伝子を設計・改変した。合成生物学（synthetic biology）の基本語で、engineered yeast（改変酵母）のようにも使う。}} grown in {{bioreactors|バイオリアクター（培養槽）|微生物や細胞を培養するタンク。発酵食品や医薬品（バイオ医薬）の製造で使われるのと同じ設備。}} and can be added to a mine\'s existing process without new equipment.',
+    'Even a small {{uptick|わずかな上昇|小さな上昇。市況記事の頻出語で、対義語は downtick。an uptick in demand / hiring のように使う。}} in recovery rates can mean millions of dollars a year at a large copper mine.'
   ],
   ja: [
     'アルゼンチンとチリを拠点とするGiraffe Bioが、Orion Industrial Venturesのリードで$6.4Mのシード調達を行った。BHP Venturesも参加した。',
@@ -859,8 +859,8 @@ NEWS.push({
   players: 'Lundin Family Office（リード）／Woodline Partners／BHP Ventures',
   en: [
     'Cuprum Metals has raised a $19.4 million Series A led by the Lundin Family Office, with support from Woodline Partners and BHP Ventures.',
-    'Its water-based chemical {{leach|浸出|薬液で鉱石から金属を溶かし出す工程}} can extract copper from ores that conventional methods struggle with, and can even run on seawater.',
-    'That matters in {{arid|乾燥した}} mining regions such as Chile, where {{freshwater|淡水}} is scarce and politically sensitive.'
+    'Its water-based chemical {{leach|浸出|薬液で鉱石から金属を溶かし出す浸出。heap leaching（鉱石を野積みして薬液を散布する方式）は、低品位の銅鉱石で広く使われる。}} can extract copper from ores that conventional methods struggle with, and can even run on seawater.',
+    'That matters in {{arid|乾燥した|雨がほとんど降らない乾燥した土地。チリのアタカマ砂漠は世界最大の銅産地で、水の確保が鉱山運営の大きな論点になっている。}} mining regions such as Chile, where {{freshwater|淡水|海水(seawater)に対する淡水。鉱山・半導体工場・DCは、どれも淡水の大口消費者として地域と利害がぶつかりやすい。}} is scarce and politically sensitive.'
   ],
   ja: [
     'Cuprum Metalsが、Lundin Family OfficeのリードでSeries A $19.4Mを調達した。Woodline PartnersとBHP Venturesも支援した。',
