@@ -66,14 +66,14 @@ NEWS.push({
   en: [
     'Colorado-based Electra, which makes iron through a low-temperature {{electrochemical|電気化学の|電池・めっき・アルミ製錬と同じく、電気で化学反応を起こす分野。Electraは60℃程度の低温の溶液中で鉄を析出させる。}} process, has signed {{advance purchase agreements|事前購入契約|まだ量産前の製品を将来買う約束。量産前のスタートアップには需要の証明そのものになり、次の資金調達や政府融資の材料になる。}} with several industrial buyers.',
     'Nucor, the largest US steelmaker and also an investor, will use Electra\'s iron in the {{electric arc furnaces|電気炉|略してEAF。電極間のアーク放電の熱でスクラップや還元鉄を溶かす。米国の粗鋼の約7割はすでにEAF製で、Nucorはその最大手。}} at its sheet mills.',
-    'Toyota Tsusho and Austria\'s INTERFER have also agreed to buy {{offtake|引き取り量|資源・エネルギーの業界語で、生産物を引き取る（買い取る）こと。offtake agreement が付いているとプロジェクトファイナンスが組みやすくなる。}} volumes.',
+    'Toyota Tsusho and INTERFER Edelstahl have also agreed to buy {{offtake|引き取り量|資源・エネルギーの業界語で、生産物を引き取る（買い取る）こと。offtake agreement が付いているとプロジェクトファイナンスが組みやすくなる。}} volumes.',
     'Meta, in a less obvious move, made the first purchase of {{environmental attribute credits|環境価値クレジット|略してEAC。モノと「環境価値」を切り離して、後者だけを売買する仕組み。電力のRECと同じ発想を鉄に持ち込んだもの。}} tied to the emissions Electra avoids.',
     'The company is building a 500-ton-a-year demonstration plant in Jefferson County, Colorado, originally slated to start up in mid-2026.'
   ],
   ja: [
     '低温の電気化学プロセスで鉄をつくるコロラドのElectraが、複数の産業顧客と事前購入契約を結んだ。',
     '米国最大の鉄鋼メーカーで出資者でもあるNucorは、薄板工場の電気炉でElectraの鉄を使う。',
-    '豊田通商とオーストリアのINTERFERも引き取りに合意した。',
+    '豊田通商とINTERFER Edelstahlも引き取りに合意した。',
     'やや意外なのがMeta。Electraが削減した排出量にひもづく環境価値クレジットの最初の買い手になった。',
     '同社はコロラド州Jefferson Countyに年産500tのデモプラントを建設中で、当初は2026年半ばの稼働予定だった。'
   ],
@@ -135,18 +135,18 @@ NEWS.push({
   id: 'worldsteel-outlook-cut',
   industry: 'Steel', type: 'Market', region: 'Global', startup: false,
   company: 'World Steel Association',
-  title_en: 'worldsteel trims its 2026 demand outlook to a slight contraction; India remains the growth engine',
-  title_ja: 'worldsteel、2026年の鉄鋼需要見通しを「わずかな縮小」に下方修正。成長をけん引するのはインド',
-  amount: '1,722Mt', amount_sub: '2026年 世界需要（当初の横ばい予測）',
+  title_en: 'worldsteel\'s October outlook sees 2026 steel demand roughly flat to slightly down; India remains the growth engine',
+  title_ja: 'worldsteelの10月見通し、2026年の鉄鋼需要は横ばい〜わずかな縮小。成長をけん引するのはインド',
+  amount: '1,722Mt', amount_sub: '2026年 世界需要（4月予測は1,724Mt）',
   date: '2026-10', posted: '2026-10-14',
   players: 'World Steel Association',
   en: [
-    'The World Steel Association has {{revised|修正した|予測・ガイダンスを「改める」。上方修正は revise up / upgrade、下方修正は revise down / cut と言う。}} its 2026 forecast for global steel demand {{down|下方に|revise ~ down で「下方修正する」。副詞を後ろに置くのが英語らしい形で、mark down（値下げ）、write down（減損）も同じ型。}} to a slight contraction, from an earlier call of roughly flat demand at 1,722 million tonnes.',
+    'In its October short-range outlook, the World Steel Association {{revised|修正した|予測・ガイダンスを「改める」。上方修正は revise up / upgrade、下方修正は revise down / cut と言う。}} its 2026 forecast for global steel demand to about 1,722 million tonnes, {{down|下方に|revise ~ down で「下方修正する」。副詞を後ろに置くのが英語らしい形で、mark down（値下げ）、write down（減損）も同じ型。}} slightly from 1,724 million tonnes in April — essentially flat, though some outlets {{framed|（〜と）表現した|frame は「枠にはめる」→ 物事をどういう切り口で伝えるか。how the media frames the story（報道の切り取り方）。}} it as a slight contraction.',
     'India is still expected to be the main source of growth, with domestic demand projected to {{surge|急増する|急騰・急増。jump < surge < soar の順に勢いが強くなるイメージ。名詞でも a surge in demand のように使う。}} 7.9% this year.',
     'Weakness in China\'s property sector and {{sluggish|低調な、伸び悩む|slug（ナメクジ）が語源で、のろのろした様子。景気・需要・売上が「伸び悩む」ときの定番形容詞。}} manufacturing in Europe continue to {{weigh on|〜の重しになる|「〜の上に重くのしかかる」。株価・需要・景況感が下がる原因を語るときの市況記事の定番。対義語のイメージは lift / boost。}} consumption elsewhere.'
   ],
   ja: [
-    '世界鉄鋼協会（worldsteel）が、2026年の世界鉄鋼需要の予測を下方修正した。当初は1,722Mtでほぼ横ばいと見ていたが、「わずかな縮小」に変えた。',
+    '世界鉄鋼協会（worldsteel）が10月の短期見通しで、2026年の世界鉄鋼需要の予測を約1,722Mtに改めた。4月の1,724Mtからわずかに下げた形で、ほぼ横ばいだが、「わずかな縮小」と報じたメディアもある。',
     '主な成長源は引き続きインドで、国内需要は今年7.9%の急増が見込まれる。',
     '中国の不動産不振と欧州製造業の伸び悩みが、ほかの地域の消費の重しになり続けている。'
   ],
@@ -201,28 +201,32 @@ NEWS.push({
   id: 'cliffs-middletown',
   industry: 'Steel', type: 'Project', region: 'US', startup: false,
   company: 'Cleveland-Cliffs / Nucor',
-  title_en: 'Ohio EPA clears Cleveland-Cliffs\' $1B Middletown modernization; Nucor adds $105M in Indiana',
-  title_ja: 'Ohio EPA、Cleveland-CliffsのMiddletown工場$1B近代化を許可。NucorもIndianaで$105Mの増産投資',
-  amount: '$1B', amount_sub: '＋Nucor $105M',
+  title_en: 'Cleveland-Cliffs\' $1B Middletown blast furnace overhaul awaits Ohio EPA\'s final permit; Nucor adds $105M for utility structures',
+  title_ja: 'Cleveland-CliffsのMiddletown高炉改修（$1B）、Ohio EPAの最終許可待ち。Nucorは送電鉄塔・電柱の工場に$105M',
+  amount: '$1B', amount_sub: '高炉改修＋コージェネ／Nucor $105M',
   date: '2026-10', posted: '2026-10-14',
-  players: 'Cleveland-Cliffs／Ohio EPA／Nucor',
+  players: 'Cleveland-Cliffs／Ohio EPA／Nucor（Towers & Structures）',
   en: [
-    'The Ohio Environmental Protection Agency has issued an environmental {{permit|許可|名詞は「許可証」、動詞は「許す」。permitting は許認可の手続き全体を指し、米国のインフラ案件では最大のボトルネックとされる。}} allowing Cleveland-Cliffs\' $1 billion modernization of its Middletown Works to {{proceed|進む、着手する|go ahead のフォーマル版。proceed with ~（〜を進める）の形が多い。名詞の proceeds は「（売却などの）手取り金」で別の意味になる。}}.',
-    'Separately, Nucor is investing $105 million to expand production at its Crawfordsville, Indiana, facility.',
-    'The projects {{underscore|浮き彫りにする、強調する|下線を引く＝強調する。highlight や emphasize のフォーマル版で、ニュース記事の締めの一文で多用される。}} a steady wave of {{capital spending|設備投資|略して capex（capital expenditure）。設備投資のことで、対義語は opex（運営費）。決算記事の基本語。}} by US steelmakers {{shielded|守られた|盾(shield)で守られた。関税・規制・独占で競争から守られている状態で、insulated from ~ もほぼ同義。}} by tariffs.'
+    'Cleveland-Cliffs is moving ahead with a roughly $1 billion project at its Middletown Works in Ohio, but the plan is no longer the {{hydrogen-ready|水素対応の|将来は水素で鉄鉱石を還元できる設計。Cliffsは当初、高炉をこの方式のDRIに置き換える計画だった。}} plant it once promised.',
+    'Instead of replacing the {{coal-fired|石炭を燃料とする|ここでは高炉がコークス（石炭由来）を使うこと。}} blast furnace, Cliffs will {{refurbish|改修する|設備を全面的に手入れして使い続けること。高炉の場合は炉内の耐火物を張り替える「巻き替え（reline）」が中心。}} it and add {{cogeneration|コージェネ（熱電併給）|1つの燃料から電気と熱を同時に取り出す設備。工場の排ガスを発電に回して電力コストを下げる。}} equipment.',
+    'Ohio EPA has issued a draft air permit for the project; as of the latest reports, a final decision was still expected within months.',
+    'Separately, Nucor is investing $105 million to expand its utility tower and pole operations, a bet on the {{build-out|整備・拡張|インフラを大規模に作り広げること。grid build-out＝送電網の拡充。}} of the power grid rather than on new steelmaking capacity.'
   ],
   ja: [
-    'Ohio州環境保護局（Ohio EPA）が環境許可を出し、Cleveland-CliffsによるMiddletown製鉄所の$1B近代化が動き出せるようになった。',
-    'これとは別に、NucorがIndiana州Crawfordsvilleの工場で、増産のため$105Mを投じる。',
-    '関税に守られた米国の鉄鋼メーカーが、設備投資を着実に続けていることを示す動きだ。'
+    'Cleveland-CliffsがオハイオのMiddletown製鉄所で約$1Bの計画を進めている。ただし、以前に約束していた水素対応の設備ではなくなった。',
+    'Cliffsは、石炭を使う高炉を置き換えるのではなく改修し、コージェネ設備を追加する。',
+    'Ohio EPAは計画の大気許可のドラフトを出している。最新の報道では、最終判断は数ヶ月以内とされていた。',
+    'これとは別に、Nucorは送電鉄塔・電柱の事業の拡張に$105Mを投じる。新しい製鋼能力ではなく、送電網の拡充に賭ける投資だ。'
   ],
   expr: [
-    { en: 'underscore ~', ja: '〜を浮き彫りにする', note: 'highlight / emphasize のフォーマル版。ニュースの締めの一文で多用される。', ex: 'The deal underscores investor appetite for AI infrastructure.' },
-    { en: 'shielded by ~', ja: '〜に守られて', note: '関税・規制・独占で競争から守られている状態。insulated from ~ も同義。', ex: 'Shielded by tariffs, domestic mills raised prices.' }
+    { en: 'no longer ~', ja: 'もはや〜ではない', note: '方針転換を語る定番。"is no longer the plan it once promised" で「かつて約束した計画ではなくなった」。', ex: 'The company is no longer pursuing the hydrogen plant.' },
+    { en: 'instead of ~ing', ja: '〜する代わりに', note: '計画変更の中身を対比で示す。rather than ~ もほぼ同義（最終文の rather than on new capacity）。', ex: 'Instead of building a new plant, they upgraded the old one.' },
+    { en: 'a bet on ~', ja: '〜への賭け', note: '投資の意図を一言で言い表す定番。a bet on AI demand / a bet on the grid。', ex: 'The acquisition is a bet on rising electricity demand.' }
   ],
   context: [
-    { h: '※読み', b: '「関税に守られた投資の波」という位置づけは筆者の読み。米国は鉄鋼に高率の関税（Section 232）をかけており、国内メーカーは価格と稼働率を維持しやすい。' },
-    { h: 'Middletownの意味', b: 'Middletownは旧AK Steelの高炉一貫工場。Cliffsはここで高炉をDRI＋電気炉に置き換える計画を持っていた。今回の$1Bの中身がその脱炭素プランなのかは要確認。' }
+    { h: '脱炭素からの後退', b: 'Cliffsは以前、Middletownの高炉を水素対応のDRI＋電気炉に置き換える計画（米エネルギー省の補助金つき）を掲げていたが、それを取りやめて高炉の延命に切り替えた。グリーンスチールの政策支援が細るなかでの象徴的な判断。' },
+    { h: '※報道の揺れ', b: 'ニュースのまとめサイトには「Ohio EPAが許可を出した」とあるが、一次報道（7〜8月）ではドラフト段階。最終許可が出たかは確認できていない。' },
+    { h: 'Nucorの$105Mは「鉄塔」', b: 'Nucorの投資は製鋼ではなく、Towers & Structures事業（送電鉄塔・電柱）の拡張。AI DCの電力需要で送電網の工事が増えていることの裏返し。' }
   ],
   sources: [
     { t: 'Steel on the Net', u: 'https://www.steelonthenet.com/news/latest-news.php' },
@@ -350,7 +354,7 @@ NEWS.push({
   title_en: 'Constellation signs 20-year nuclear power deals with Google and Amazon, backing ~1.1 GW of expansions',
   title_ja: 'Constellation、GoogleとAmazonの両社と20年の原子力PPAを締結。約1.1GWの増設を支える',
   amount: '~1.1GW', amount_sub: '20-year PPA',
-  date: '2026-10', posted: '2026-10-14',
+  date: '2026-10-06', posted: '2026-10-14',
   players: 'Constellation Energy／Google／Amazon',
   en: [
     'Constellation has signed 20-year {{power purchase agreements|電力購入契約（PPA）|略してPPA。10〜20年の長期・固定条件で電力を売買する契約。発電所はこれを担保に建設資金を借りられる。}} with Google and Amazon that support almost 1.1 gigawatts of nuclear {{expansions|増設|原子力の文脈では、新しい炉を作るのではなく、既存の炉の出力増強や運転延長を指すことが多い。}}.',
@@ -368,7 +372,7 @@ NEWS.push({
     { en: 'uprate', ja: '出力増強', note: '原子力業界の用語。power uprate。', ex: 'The utility filed for a 10% uprate.' }
   ],
   context: [
-    { h: '※詳細は要確認', b: '契約の詳細（どの炉か、金額）は今回の検索では確認できていない。業界ニュースレター経由の情報。' },
+    { h: '契約の中身', b: 'Amazon（9/30）はCalvert Cliffs原発から690MW（うち新規の出力増強は約190MW、$3B超、2030〜32年稼働）。Google（10/6）は6サイト11基の出力増強で890MW（$4.3B超、2028年から）。合計で約1.08GW。詳しくは解説（Deep Dive）へ。' },
     { h: '原子力×DCの流れ', b: '2024年のMicrosoft×Constellation（Three Mile Island再稼働）以降、既存原発の電力をハイパースケーラーが長期で買う契約が相次いでいる。新設よりも、既存炉の延命・出力増強の方が早いのがポイント。' }
   ],
   sources: [
@@ -403,7 +407,7 @@ NEWS.push({
     { en: 'cite ~', ja: '〜を理由として挙げる', note: '「引用する」だけでなく「理由に挙げる」の意味で頻出。', ex: 'The company cited weak demand for the layoffs.' }
   ],
   context: [
-    { h: '※補足', b: '住民が挙げる理由（電気料金・水・騒音・農地）は、一般的な反対理由として補ったもの。Stateline記事の全文では確認できていない。' },
+    { h: '反対の中身', b: '電気料金・水・騒音・農地という住民の懸念は、その後の報道でも確認できた。Ballotpediaの集計では8州で39件、うち約20件がオハイオ州。' },
     { h: 'AIインフラの3制約＋1', b: 'Power / Cooling / Location の3つの制約に、「Social license（地域の同意）」が4つ目として加わりつつある。日本でも千葉・印西や北海道の誘致で同じ論点が出てくる可能性がある。' }
   ],
   sources: [
@@ -436,7 +440,7 @@ NEWS.push({
     { en: 'brownfield', ja: '既存の産業跡地', note: '関連語。更地の新規開発は greenfield。跡地の再利用は brownfield redevelopment。', ex: 'Brownfield sites often come with existing grid connections.' }
   ],
   context: [
-    { h: '※補足', b: 'ガス火力の併設と、石炭跡地の利点（送電線・水利権・用途地域）は、Homer City再開発の一般的な構図として補ったもの。AWSの今回の計画の詳細は、ニュースレターの要約までしか確認できていない。' },
+    { h: '計画の中身', b: 'AWSは8/28に計画を提出。約1,100エーカーに36棟、建設は2026年12月〜2036年6月。電源は4.5GW級のガス火力（GE Vernovaのタービン7基、約$10B）で、石炭火力（1,884MW）は2023年7月に閉鎖済み。' },
     { h: '「電源ごと立地」モデル', b: '送電網の空きを待つのではなく、発電所の跡地に電源ごと構える。日本でも、旧火力・原発の周辺がDC立地の候補になる論点と地続き。' }
   ],
   sources: [
@@ -732,6 +736,7 @@ NEWS.push({
   ],
   context: [
     { h: 'アルミ＝電気の缶詰', b: '一次アルミの製錬（ホール・エルー法）は大量の電気を食い、コストの3〜4割が電力。米国で40年以上新設がなかったのは、電力が高く安定的に確保できなかったから。DCと同じく「電力の取り合い」の当事者になる。' },
+    { h: '地元の反発と電力', b: 'Inola市は建設許可の凍結を2027年4月7日まで延長し、住民投票を行うことにした。州司法長官による提訴や、エネルギー省の環境審査をめぐる住民訴訟も起きている。2026年6月末の時点でも、電力会社PSOとの電力契約は結ばれていない。' },
     { h: '※報道の揺れ', b: '着工時期は、Centuryの決算資料では2026年末、9月のEGAインタビューでは2027年初め。発表日にCENXの株価は7.4%下落した（少数持分への後退と受け止められた）。' }
   ],
   sources: [
@@ -826,20 +831,20 @@ NEWS.push({
     'Giraffe Bio, based in Argentina and Chile, has raised a $6.4 million seed round led by Orion Industrial Ventures, with BHP Ventures participating.',
     'The startup designs {{mine-specific|鉱山ごとに最適化された|-specific は「〜に特化した、〜固有の」。country-specific、customer-specific のように何にでも付けられる便利な接尾辞。}} biomolecules that raise copper recovery during {{flotation|浮遊選鉱|粉砕した鉱石を水と薬剤に入れて泡立て、目的の鉱物だけを泡に付着させて浮かせる選鉱法。銅の大半はこの工程を経て精鉱になる。}}.',
     'The compounds are produced by {{engineered microbes|遺伝子改変微生物|engineered＝遺伝子を設計・改変した。合成生物学（synthetic biology）の基本語で、engineered yeast（改変酵母）のようにも使う。}} grown in {{bioreactors|バイオリアクター（培養槽）|微生物や細胞を培養するタンク。発酵食品や医薬品（バイオ医薬）の製造で使われるのと同じ設備。}} and can be added to a mine\'s existing process without new equipment.',
-    'Even a small {{uptick|わずかな上昇|小さな上昇。市況記事の頻出語で、対義語は downtick。an uptick in demand / hiring のように使う。}} in recovery rates can mean millions of dollars a year at a large copper mine.'
+    'The company\'s CEO says the molecules can lift recovery by up to five percentage points, while many mines would be happy with an {{uptick|わずかな上昇|小さな上昇。市況記事の頻出語で、対義語は downtick。an uptick in demand / hiring のように使う。}} of just one or two.'
   ],
   ja: [
     'アルゼンチンとチリを拠点とするGiraffe Bioが、Orion Industrial Venturesのリードで$6.4Mのシード調達を行った。BHP Venturesも参加した。',
     '同社は、浮遊選鉱の工程で銅の回収率を上げる、鉱山ごとに最適化したバイオ分子を設計する。',
     'この化合物は、バイオリアクターで培養した遺伝子改変微生物が作る。新しい設備なしで、鉱山の既存プロセスに加えられる。',
-    '大規模な銅鉱山では、回収率がわずかに上がるだけでも年に数百万ドルの差になる。'
+    'CEOによれば回収率を最大5ポイント上げられるという。多くの鉱山は1〜2ポイントの改善でも満足するとされる。'
   ],
   expr: [
     { en: 'uptick', ja: 'わずかな上昇', note: '市況記事の頻出語。対義語は downtick。an uptick in demand。', ex: 'There was an uptick in hiring last quarter.' },
     { en: 'drop-in', ja: '既存のものにそのまま差し込める', note: '記事中にはないが関連語。drop-in replacement（そのまま置き換え可能な代替品）は素材・燃料系スタートアップの定番の売り文句。', ex: 'It\'s a drop-in replacement for diesel.' }
   ],
   context: [
-    { h: '※補足', b: '「回収率がわずかに上がるだけで年に数百万ドル」は一般論として補ったもの。具体的な改善幅はTechCrunchの記事で要確認。' },
+    { h: '※補足', b: '「最大+5ポイント」はCEOの発言で、試験した鉱山名や結果はまだ公開されていない。金額への換算は解説（Deep Dive）のQ&Aに試算として載せている。' },
     { h: 'BHPの張り方', b: 'BHP Venturesは、Electra（鉄）、Cuprum Metals（銅の浸出）、Giraffe Bio（銅の選鉱）と、上流の素材スタートアップに幅広く出資している。世界最大の鉱山会社が「回収率の改善」に張っているのは、新しい鉱山を開くより早く安いからだ。' }
   ],
   sources: [
@@ -889,7 +894,7 @@ NEWS.push({
   company: 'Type One Energy',
   title_en: 'Fusion startup Type One Energy raises $200M Series B to build a stellarator power plant at TVA\'s Bull Run site',
   title_ja: '核融合のType One Energy、$200MのSeries Bを調達。TVAのBull Run跡地にステラレーター型の発電所を建設へ',
-  amount: '$200M', amount_sub: 'Series B／累計 ~$400M',
+  amount: '$200M', amount_sub: 'Series B／累計 ~$400M（報道・補助金等込みとみられる）',
   date: '2026-10-06', posted: '2026-10-14',
   players: 'Breakthrough Energy Ventures, Clutterbuck Capital（共同リード）／Lowercarbon Capital／Siemens Energy Ventures／TVA',
   en: [
@@ -931,7 +936,7 @@ NEWS.push({
   company: 'Quaise Energy × JERA / Idemitsu',
   title_en: 'Superhot geothermal startup Quaise raises a Series B with strategic backing from JERA and Idemitsu',
   title_ja: '超高温地熱のQuaise、Series Bを調達。JERAと出光が戦略出資',
-  amount: '$134M', amount_sub: 'Series B 1st close（最終 $180Mの報道も）',
+  amount: '$134M', amount_sub: 'Series B 1st close → 最終 $180M',
   date: '2026-07-07', posted: '2026-10-14',
   players: 'Prelude Ventures（リード）／JERA Ventures／Idemitsu（出光興産）／Nabors Industries（報道）',
   en: [
@@ -954,7 +959,7 @@ NEWS.push({
   context: [
     { h: '次世代地熱の2つの流派', b: '①Fervo型：シェール掘削の技術（水平掘り・水圧破砕）で人工的に貯留層を作るEGS。②Quaise型：超深く掘って超高温の岩盤から熱を取る。②は当たれば出力が桁違いだが、技術リスクは大きい。' },
     { h: '日本勢が地熱に張る理由', b: '日本は地熱資源量で世界3位だが、国立公園規制や温泉事業者との調整で開発が進まなかった。米国で技術を獲得して国内へ持ち帰る、という読みができる。JERAはCFS（核融合）にも出資している。' },
-    { h: '※報道の揺れ', b: '7月の1次クローズは$134M（累計$230M）。その後、掘削大手Nabors Industriesの$35Mを含めて$180Mで最終クローズしたという報道もあるが、裏取りは1ソースのみ。' }
+    { h: '※報道の揺れ', b: '7月の1次クローズは$134M（累計$230M）。その後、掘削大手Nabors Industriesの$35Mを含めて$180Mで最終クローズした（累計$280M、複数ソースで確認）。' }
   ],
   sources: [
     { t: 'Energy Global（1st close）', u: 'https://www.energyglobal.com/other-renewables/10072026/quaise-energy-raises-us134-million-in-first-close-of-series-b/' },

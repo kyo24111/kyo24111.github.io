@@ -35,14 +35,17 @@ Kyoが「読みたくなる」ニュースを集めるためのルール。指�
   - English: 段落ごとの英文。難しめの単語は `{{word|和訳|解説}}` → hover（スマホはtap）で和訳と解説。「段落ごとに日本語を並べる」トグル付き。末尾に Words in this article を自動生成
   - Expressions: 記事中の英語表現を「意味・ニュアンス・例文」で丁寧に解説（英語学習を兼ねる）
   - Industry Context: 業界の周辺知識。推測や補足は「※補足」「読み」と明示
+- 冒頭に「ひとことで」、03に **解説（Deep Dive）**＝観点／数字で見る／関連プレイヤー（Startups・大企業）／Q&A（開閉）
+  - データは `deep/<id>.json`（日本語・常体・シンプル）→ `python3 build_deep.py` で `news_deep.js` を生成（手で編集しない）
 - startup news に深掘りページがあるものは `link` で導線
 
 ## 追加の手順
 1. `news_data.js` に `NEWS.push({...})` を1ブロック足す（既存ブロックをテンプレに）
 2. en は 3〜5文。glossは1記事5〜8語、解説は1〜2文（語法・ニュアンス＋業界での意味）。expr は3〜5個（例文つき）
 3. Posted＝掲載日、date＝ニュースが出た日（不明なら `2026-10` のように月まで）
-4. `030_research` 配下は公開repo → 追加後はpush
-5. 指示（テーマ追加・優先順位の変更など）が来たら、このREADMEと **criteria.html の両方**を更新する（Themes / Candidates / Instruction Log）
+4. `deep/<id>.json` も作る（tldr / angles 3〜4 / stats 3〜5（出典URL必須）/ players startups・corps 各3〜5 / qa 3〜5 / sources）→ `python3 build_deep.py`
+5. `030_research` 配下は公開repo → 追加後はpush
+6. 指示（テーマ追加・優先順位の変更など）が来たら、このREADMEと **criteria.html の両方**を更新する（Themes / Candidates / Instruction Log）
 
 ## 指示ログ
 - 2026-10-14: 製鉄・データセンター周りのニュース。2-3行サマリで3つずつ。
@@ -55,3 +58,4 @@ Kyoが「読みたくなる」ニュースを集めるためのルール。指�
 - 2026-10-14: hoverの解説を1〜2文に拡充（全106語）。
 - 2026-10-14: 選定の観点をまとめた criteria.html（Selection Criteria）を追加。index とタブで接続、テーマから ?ind= で絞り込みリンク。
 - 2026-10-14: Energyを追加。detailを大きいmodalに変更（タブ廃止・縦並び）、⌘/Ctrl+Enterで全画面＋左目次、CloseでDBへ戻る。
+- 2026-10-14: 全件に日本語の解説（Deep Dive）を追加：ひとことで／観点／数字で見る／関連スタートアップ・大企業／Q&A。調査で判明した既存記述の誤り（Cliffsの$1Bの中身、worldsteelの表現、Giraffe Bioの金額試算など）も修正。

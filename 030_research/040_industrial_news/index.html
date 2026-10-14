@@ -115,6 +115,36 @@
     .dr-meta .v small { display: block; font-size: 10px; font-weight: 500; color: var(--muted); }
     .dr-meta .wide { grid-column: 1 / -1; }
     .dr-meta .wide .v { font-weight: 500; font-size: 11.5px; line-height: 1.55; }
+    /* deep dive（日本語の補足） */
+    .tldr { margin: 16px 0 4px; padding: 14px 16px; background: var(--surface); border-left: 3px solid #111; font-size: 14px; line-height: 1.85; font-weight: 500; }
+    .tldr b { display: block; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .dd-h { font-size: 12px; font-weight: 700; margin: 26px 0 10px; display: flex; align-items: center; gap: 8px; scroll-margin-top: 8px; }
+    .dd-h::before { content: ""; width: 3px; height: 13px; background: #111; }
+    .dd-h:first-child { margin-top: 0; }
+    .angles { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+    .angle { border: 1px solid var(--border); padding: 12px 14px; }
+    .angle .ah { font-size: 11px; font-weight: 700; letter-spacing: .02em; margin-bottom: 4px; }
+    .angle .ab { font-size: 12.5px; line-height: 1.8; color: var(--mid); }
+    .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .stat { background: #fff; padding: 12px 14px; min-width: 0; }
+    .stat .sk { font-size: 10.5px; color: var(--muted); font-weight: 600; line-height: 1.4; }
+    .stat .sv { font-size: 16px; font-weight: 700; margin-top: 4px; letter-spacing: -.01em; overflow-wrap: anywhere; line-height: 1.3; }
+    .stat .sn { font-size: 10px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+    .stat .sn a { color: var(--muted); }
+    .players { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .pcol .pl { font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
+    .pl-item { padding: 9px 0; border-top: 1px solid var(--border); font-size: 12px; line-height: 1.7; }
+    .pl-item .pn { font-weight: 700; color: #111; }
+    .pl-item .pn a { color: #111; }
+    .pl-item .pd { color: var(--mid); }
+    .qa details { border: 1px solid var(--border); margin-bottom: 6px; }
+    .qa summary { cursor: pointer; padding: 11px 14px; font-size: 13px; font-weight: 700; list-style: none; display: flex; gap: 10px; }
+    .qa summary::-webkit-details-marker { display: none; }
+    .qa summary::before { content: "Q"; font-weight: 700; color: var(--muted); }
+    .qa summary::after { content: "+"; margin-left: auto; color: var(--muted); }
+    .qa details[open] summary::after { content: "−"; }
+    .qa .qa-a { padding: 0 14px 12px 34px; font-size: 12.5px; line-height: 1.85; color: var(--mid); }
+    .dd-empty { font-size: 12px; color: var(--muted); }
     .dsec { padding-top: 34px; scroll-margin-top: 8px; }
     .dsec-h { display: flex; align-items: baseline; gap: 10px; padding-bottom: 10px; border-bottom: 2px solid #111; margin-bottom: 18px; }
     .dsec-h .no { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .1em; }
@@ -177,6 +207,8 @@
       .md-btn kbd, #mdFull { display: none; }
       .dr-body, .modal.full .dr-body { padding: 20px 16px 70px; }
       .dr-meta { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .angles, .players { grid-template-columns: minmax(0,1fr); }
+      .stats { grid-template-columns: repeat(2, minmax(0,1fr)); }
       .dr-title-en { font-size: 16.5px; }
       .word { grid-template-columns: minmax(0,1fr); gap: 2px; }
       .para .p-en { font-size: 14px; }
@@ -298,6 +330,7 @@
 </footer>
 
 <script src="news_data.js"></script>
+<script src="news_deep.js"></script>
 <script>
 (function(){
   var IND_KEY = { 'Steel':'steel', 'Data Center':'dc', 'Robotics':'robotics', 'Cooling':'cooling', 'Aluminum':'aluminum', 'Copper':'copper', 'Energy':'energy' };
@@ -401,8 +434,20 @@
   var drawer = document.getElementById('drawer'), ov = document.getElementById('drOverlay');
   var showJa = false, isFull = false, curId = null;
   try { showJa = localStorage.getItem('in_showja') === '1'; } catch(e) {}
-  var SECS = [['s-en','English'], ['s-ja','日本語'], ['s-expr','Expressions'], ['s-ctx','Industry Context'], ['s-src','Sources']];
+  var SECS = [['s-en','English'], ['s-ja','日本語'], ['s-deep','解説（Deep Dive）'], ['s-expr','Expressions'], ['s-ctx','Industry Context'], ['s-src','Sources']];
+  var DEEP_SUB = [['d-angles','観点'], ['d-stats','数字で見る'], ['d-players','関連プレイヤー'], ['d-qa','Q&A']];
   function sec(i, inner, hint){ return '<section class="dsec" id="' + SECS[i][0] + '"><div class="dsec-h"><span class="no">0' + (i + 1) + '</span><h3>' + SECS[i][1] + '</h3>' + (hint ? '<span class="hint">' + hint + '</span>' : '') + '</div>' + inner + '</section>'; }
+  function deepHtml(d){
+    if (!d) return '<div class="dd-empty">準備中</div>';
+    var h = '';
+    if ((d.angles||[]).length) h += '<div class="dd-h" id="d-angles">観点</div><div class="angles">' + d.angles.map(function(a){ return '<div class="angle"><div class="ah">' + esc(a.h) + '</div><div class="ab">' + esc(a.b) + '</div></div>'; }).join('') + '</div>';
+    if ((d.stats||[]).length) h += '<div class="dd-h" id="d-stats">数字で見る</div><div class="stats">' + d.stats.map(function(x){ return '<div class="stat"><div class="sk">' + esc(x.k) + '</div><div class="sv">' + esc(x.v) + '</div><div class="sn">' + (x.u ? '<a href="' + esc(x.u) + '" target="_blank" rel="noopener">' + esc(x.note || 'source') + '</a>' : esc(x.note||'')) + '</div></div>'; }).join('') + '</div>';
+    var pl = d.players || {};
+    function plist(arr){ return (arr||[]).map(function(x){ return '<div class="pl-item"><span class="pn">' + (x.u ? '<a href="' + esc(x.u) + '" target="_blank" rel="noopener">' + esc(x.name) + '</a>' : esc(x.name)) + '</span>　<span class="pd">' + esc(x.note) + '</span></div>'; }).join(''); }
+    if ((pl.startups||[]).length || (pl.corps||[]).length) h += '<div class="dd-h" id="d-players">関連プレイヤー</div><div class="players"><div class="pcol"><div class="pl">Startups</div>' + plist(pl.startups) + '</div><div class="pcol"><div class="pl">大企業</div>' + plist(pl.corps) + '</div></div>';
+    if ((d.qa||[]).length) h += '<div class="dd-h" id="d-qa">Q&amp;A</div><div class="qa">' + d.qa.map(function(x, i){ return '<details' + (i === 0 ? ' open' : '') + '><summary>' + esc(x.q) + '</summary><div class="qa-a">' + esc(x.a) + '</div></details>'; }).join('') + '</div>';
+    return h;
+  }
   function openDetail(id, push){
     var n = NEWS.filter(function(x){ return x.id === id; })[0]; if (!n) return;
     curId = id;
@@ -430,10 +475,17 @@
       (n.link ? '<a class="deep" href="' + esc(n.link) + '">深掘りページを開く →</a>' : '');
     var sr = '<ul class="src-list">' + (n.sources||[]).map(function(s){ return '<li><a href="' + esc(s.u) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a></li>'; }).join('') + '</ul>';
     var body = document.getElementById('drBody');
-    body.innerHTML = '<div class="md-inner">' + head + sec(0, en, '点線の単語＝hover / tapで和訳') + sec(1, ja) + sec(2, ex) + sec(3, cx) + sec(4, sr) + '</div>';
+    var d = (typeof DEEP !== 'undefined') ? DEEP[n.id] : null;
+    if (d && d.tldr) head += '<div class="tldr"><b>ひとことで</b>' + esc(d.tldr) + '</div>';
+    if (d && (d.sources||[]).length) {
+      var seen = {}; (n.sources||[]).forEach(function(x){ seen[x.u] = 1; });
+      var extra = d.sources.filter(function(x){ return !seen[x.u]; });
+      if (extra.length) sr += '<div class="h-sec">Deep Dive の出典</div><ul class="src-list">' + extra.map(function(x){ return '<li><a href="' + esc(x.u) + '" target="_blank" rel="noopener">' + esc(x.t) + '</a></li>'; }).join('') + '</ul>';
+    }
+    body.innerHTML = '<div class="md-inner">' + head + sec(0, en, '点線の単語＝hover / tapで和訳') + sec(1, ja) + sec(2, deepHtml(d)) + sec(3, ex) + sec(4, cx) + sec(5, sr) + '</div>';
     body.style.scrollBehavior = 'auto'; body.scrollTop = 0; body.style.scrollBehavior = '';
 
-    document.getElementById('mdToc').innerHTML = '<div class="tl">Contents</div>' + SECS.map(function(x){ return '<a href="#' + x[0] + '" data-s="' + x[0] + '">' + x[1] + '</a>' + (x[0] === 's-en' && wl.length ? '<a class="tsub" href="#s-words" data-s="s-words">Words (' + wl.length + ')</a>' : ''); }).join('');
+    document.getElementById('mdToc').innerHTML = '<div class="tl">Contents</div>' + SECS.map(function(x){ return '<a href="#' + x[0] + '" data-s="' + x[0] + '">' + x[1] + '</a>' + (x[0] === 's-en' && wl.length ? '<a class="tsub" href="#s-words" data-s="s-words">Words (' + wl.length + ')</a>' : '') + (x[0] === 's-deep' && d ? DEEP_SUB.filter(function(y){ return document.getElementById(y[0]); }).map(function(y){ return '<a class="tsub" href="#' + y[0] + '" data-s="' + y[0] + '">' + y[1] + '</a>'; }).join('') : ''); }).join('');
     document.getElementById('drClose').onclick = closeDetail;
     document.getElementById('mdFull').onclick = function(){ setFull(!isFull); };
     document.getElementById('jaToggle').onchange = function(e){
