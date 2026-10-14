@@ -80,6 +80,7 @@ Dwarkesh系ファイルは5セクション構成：原文（verbatim）／英語
 
 | ファイル | 種別 | 題名 | 公開日 | 依頼日 |
 |--------|------|------|--------|--------|
+| [261015_blackstone_masayoshi_son.html](261015_blackstone_masayoshi_son.html) | YouTube | 孫正義、ブラックストーンに登場 — 「これまでの全部はウォームアップ」・超知能・ロボット・70%の法則（Inside Blackstone × Christine Anderson／Debrief Steve Schwarzman） | 2026-10-13 | 2026-10-15 |
 | [261013_cheeky_pint_muse_wonder.html](261013_cheeky_pint_muse_wonder.html) | YouTube | Muse Wonder：ザッカーバーグ×ワンの「1,000億ドルのAI」— Meta初のフロンティアモデルとMSLの作り方（Cheeky Pint × John Collison） | 2026-10-12 | 2026-10-13 |
 | [261005_a16z_ai_electricians.html](261005_a16z_ai_electricians.html) | YouTube | AIが「電気工事士」を大量に生む — 電気技師とは何か・なぜ重要か・日米の違い（a16z Machine Age Fund回） | 2026-08-28 | 2026-10-05 |
 | [261003_mhi_shimonoseki_shipbuilding.html](261003_mhi_shimonoseki_shipbuilding.html) | 記事 | 三菱重工、1千億円投じ下関の造船能力増強 — 長州出島に船体ブロック工場・国が最大400億円（共同通信） | 2026-10-02 | 2026-10-03 |
