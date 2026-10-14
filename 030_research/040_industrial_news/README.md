@@ -1,6 +1,6 @@
 # 040_industrial_news — industrial news
 
-ページ: [index.html](index.html)（DB view → 行を押すとdetail）。データは [news_data.js](news_data.js) の `NEWS` 配列1本。
+ページ: [index.html](index.html)（DB view → 行を押すとdetail）／[criteria.html](criteria.html)（選定の観点＝Selection Criteria。ヘッダ下のタブで行き来）。データは [news_data.js](news_data.js) の `NEWS` 配列1本。
 
 
 Kyoが「読みたくなる」ニュースを集めるためのルール。指示が来るたびに追記する（日付つき）。
@@ -41,6 +41,7 @@ Kyoが「読みたくなる」ニュースを集めるためのルール。指�
 2. en は 3〜5文。glossは1記事5〜8語、解説は1〜2文（語法・ニュアンス＋業界での意味）。expr は3〜5個（例文つき）
 3. Posted＝掲載日、date＝ニュースが出た日（不明なら `2026-10` のように月まで）
 4. `030_research` 配下は公開repo → 追加後はpush
+5. 指示（テーマ追加・優先順位の変更など）が来たら、このREADMEと **criteria.html の両方**を更新する（Themes / Candidates / Instruction Log）
 
 ## 指示ログ
 - 2026-10-14: 製鉄・データセンター周りのニュース。2-3行サマリで3つずつ。
@@ -51,3 +52,4 @@ Kyoが「読みたくなる」ニュースを集めるためのルール。指�
 - 2026-10-14: industrial newsページ化（net searchの横）。DB view＋detail。内容＝英文・和訳・英語表現の詳細解説・industry周辺知識。英語学習は丁寧に、難単語はhoverで和訳＋解説。
 - 2026-10-14: Industryラベルはこのページ限定で色付きバッジ（frame＋bg色）。他ページのモノクローム規約の例外。
 - 2026-10-14: hoverの解説を1〜2文に拡充（全106語）。
+- 2026-10-14: 選定の観点をまとめた criteria.html（Selection Criteria）を追加。index とタブで接続、テーマから ?ind= で絞り込みリンク。

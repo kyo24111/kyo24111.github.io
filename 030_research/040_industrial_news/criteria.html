@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>24111 / industrial news — criteria</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg:#ffffff; --surface:#f5f5f5; --border:#e0e0e0; --text:#111111; --mid:#444444; --muted:#888888; --dim:#cccccc;
+      --i-steel:#455a64; --i-dc:#3949ab; --i-robotics:#00796b; --i-cooling:#0277bd; --i-aluminum:#607d8b; --i-copper:#a0522d;
+      --b-steel:#eceff1; --b-dc:#e8eaf6; --b-robotics:#e0f2f1; --b-cooling:#e1f5fe; --b-aluminum:#f1f3f5; --b-copper:#fbe9e7;
+    }
+    body { background: var(--bg); color: var(--text); font-family: 'Poppins', 'Noto Sans JP', sans-serif; min-height: 100vh; padding-top: 56px !important; padding-bottom: 68px !important; }
+    a { color: inherit; }
+
+    .page-header { background: #111; color: #fff; padding: 36px 48px 32px; }
+    .breadcrumb { font-size: 10px; letter-spacing: .1em; color: rgba(255,255,255,.2); margin-bottom: 10px; }
+    .breadcrumb a { color: rgba(255,255,255,.45); text-decoration: none; }
+    .page-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.02em; }
+    .page-header .sub { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 8px; line-height: 1.8; max-width: 760px; }
+    .ptabs { background: #111; padding: 0 48px; display: flex; border-top: 1px solid #222; overflow-x: auto; }
+    .ptabs a { color: rgba(255,255,255,.45); text-decoration: none; font-size: 11px; font-weight: 600; letter-spacing: .06em; padding: 12px 16px 11px; border-bottom: 2px solid transparent; white-space: nowrap; }
+    .ptabs a:first-child { padding-left: 0; }
+    .ptabs a:hover { color: #fff; }
+    .ptabs a.on { color: #fff; border-bottom-color: #fff; }
+
+    .layout { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 48px; max-width: 1180px; padding: 0 48px 80px; }
+    .toc { position: sticky; top: 80px; align-self: start; padding-top: 40px; }
+    .toc a { display: block; font-size: 11px; color: var(--muted); text-decoration: none; padding: 5px 0 5px 10px; border-left: 2px solid var(--border); }
+    .toc a:hover { color: #111; }
+    .toc a.on { color: #111; font-weight: 700; border-left-color: #111; }
+    .content { min-width: 0; }
+
+    section { padding-top: 40px; scroll-margin-top: 64px; }
+    .sec-h { display: flex; align-items: baseline; gap: 12px; padding-bottom: 12px; border-bottom: 2px solid #111; margin-bottom: 20px; }
+    .sec-h .no { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .1em; }
+    .sec-h h2 { font-size: 15px; font-weight: 700; letter-spacing: -.01em; }
+    p.lead { font-size: 13.5px; line-height: 1.95; color: var(--mid); margin-bottom: 14px; }
+    .note { font-size: 11px; color: var(--muted); line-height: 1.7; margin-top: 8px; }
+
+    /* thesis */
+    .thesis { border: 1px solid #111; padding: 22px 24px; margin-bottom: 18px; }
+    .thesis .q { font-size: 17px; font-weight: 700; line-height: 1.6; letter-spacing: -.01em; }
+    .thesis .en { font-size: 12px; color: var(--muted); margin-top: 6px; font-style: italic; }
+    .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .kpi { background: #fff; padding: 14px 16px; }
+    .kpi .k { font-size: 8.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+    .kpi .v { font-size: 22px; font-weight: 700; margin-top: 2px; }
+    .kpi .s { font-size: 10px; color: var(--muted); }
+
+    /* map */
+    .map { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .map .layer { border: 1px solid var(--border); padding: 14px 16px; }
+    .map .layer .lh { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+    .map .layer .lt { font-size: 13.5px; font-weight: 700; margin: 4px 0 8px; }
+    .map .layer .lb { font-size: 11.5px; color: var(--mid); line-height: 1.75; }
+    .map .layer .chips { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
+
+    /* priority */
+    .prio { counter-reset: p; list-style: none; }
+    .prio li { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 14px; padding: 16px 0; border-top: 1px solid var(--border); }
+    .prio li:first-child { border-top: none; padding-top: 4px; }
+    .prio .rk { font-size: 22px; font-weight: 700; line-height: 1; }
+    .prio .t { font-size: 14px; font-weight: 700; }
+    .prio .d { font-size: 12.5px; color: var(--mid); line-height: 1.85; margin-top: 4px; }
+    .prio .ex { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+    .ex a { font-size: 10.5px; font-weight: 600; text-decoration: none; border: 1px solid var(--dim); padding: 3px 8px; border-radius: 2px; color: var(--mid); }
+    .ex a:hover { border-color: #111; color: #111; }
+
+    /* industry badge（このページ群限定の色付き） */
+    .ind { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .04em; white-space: nowrap; color: var(--c, #444); background: var(--b, #f5f5f5); border: 1px solid var(--c, #999); padding: 3px 9px; border-radius: 3px; line-height: 1.3; text-decoration: none; }
+
+    /* themes */
+    .themes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .theme { border: 1px solid var(--border); border-top: 3px solid var(--c, #111); padding: 16px 18px; display: flex; flex-direction: column; }
+    .theme .top { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+    .theme .cnt { margin-left: auto; font-size: 10px; color: var(--muted); font-weight: 600; text-decoration: none; }
+    .theme .cnt:hover { color: #111; text-decoration: underline; }
+    .theme .why { font-size: 13px; font-weight: 700; line-height: 1.6; margin-bottom: 10px; }
+    .theme dl { font-size: 11.5px; line-height: 1.75; }
+    .theme dt { font-size: 9px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-top: 8px; }
+    .theme dd { color: var(--mid); }
+    .theme .tag-niche { font-size: 9px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--dim); padding: 2px 6px; border-radius: 2px; color: var(--muted); }
+
+    /* lens table */
+    .tbl-wrap { overflow-x: auto; border: 1px solid var(--border); }
+    table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 12px; }
+    th { background: #111; color: #fff; font-size: 9.5px; letter-spacing: .09em; text-transform: uppercase; text-align: left; padding: 10px 14px; font-weight: 600; }
+    td { padding: 12px 14px; border-top: 1px solid var(--border); vertical-align: top; line-height: 1.7; color: var(--mid); }
+    td:first-child { font-weight: 700; color: #111; white-space: nowrap; }
+    .two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .box { border: 1px solid var(--border); padding: 16px 18px; }
+    .box h3 { font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+    .box ul { padding-left: 18px; font-size: 12px; line-height: 1.9; color: var(--mid); }
+
+    /* candidates */
+    .cand { border: 1px dashed var(--dim); padding: 14px 16px; margin-bottom: 8px; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 14px; }
+    .cand .n { font-weight: 700; font-size: 13px; }
+    .cand .n small { display: block; font-size: 9px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-top: 2px; }
+    .cand .b { font-size: 12px; color: var(--mid); line-height: 1.8; }
+
+    /* format */
+    .fmt { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .fmt > div { background: #fff; padding: 14px; }
+    .fmt .h { font-size: 11px; font-weight: 700; }
+    .fmt .b { font-size: 11px; color: var(--mid); line-height: 1.7; margin-top: 6px; }
+
+    /* log */
+    .log { list-style: none; border-left: 2px solid var(--border); margin-left: 6px; }
+    .log li { position: relative; padding: 0 0 16px 20px; font-size: 12.5px; line-height: 1.75; color: var(--mid); }
+    .log li::before { content: ""; position: absolute; left: -6px; top: 6px; width: 10px; height: 10px; border-radius: 50%; background: #fff; border: 2px solid #111; }
+    .log .d { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: .06em; display: block; }
+
+    .snav-footer { justify-content: space-between !important; }
+    .footer-stats { font-size: 10px; font-weight: 500; color: rgba(255,255,255,.35); letter-spacing: .06em; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: minmax(0, 1fr); gap: 0; }
+      .toc { display: none; }
+      .fmt { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 700px) {
+      .page-header { padding: 28px 16px 24px; }
+      .ptabs { padding: 0 16px; }
+      .layout { padding: 0 16px 60px; }
+      .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .map, .themes, .two { grid-template-columns: minmax(0, 1fr); }
+      .cand { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+      .thesis { padding: 18px; }
+      .thesis .q { font-size: 15px; }
+      .snav { padding: 0 16px !important; }
+    }
+
+    /* snav */
+    .snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+    .snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+    .snav-logo:hover{opacity:.6}
+    .snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+    .snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+    .snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+    .snav-btn.open span:nth-child(2){opacity:0}
+    .snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+    .snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+    .snav-overlay.open{display:block}
+    .snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto;visibility:hidden}
+    .snav-panel.open{transform:translateX(0);visibility:visible}
+    .snav-sec{margin-bottom:28px}
+    .snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+    .snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+    .snav-a:hover{color:#fff}
+    .snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+  </style>
+</head>
+<body>
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+    <a class="snav-a" href="/030_research/040_industrial_news/index.html">industrial news</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<header class="page-header">
+  <div class="breadcrumb"><a href="/index.html">24111</a> / research / <a href="index.html">industrial news</a></div>
+  <h1>Selection Criteria</h1>
+  <div class="sub">industrial news に何を載せて、何を載せないか。Kyoから受けた指示を、選定の観点としてまとめたページ。指示が増えるたびに更新する。</div>
+</header>
+<nav class="ptabs"><a href="index.html">News DB</a><a class="on" href="criteria.html">Selection Criteria</a></nav>
+
+<div class="layout">
+  <nav class="toc" id="toc">
+    <a href="#thesis">Thesis</a>
+    <a href="#map">Theme Map</a>
+    <a href="#priority">Priority</a>
+    <a href="#themes">Themes</a>
+    <a href="#lens">Signals</a>
+    <a href="#candidates">Candidates</a>
+    <a href="#format">Format</a>
+    <a href="#log">Instruction Log</a>
+  </nav>
+
+  <main class="content">
+
+    <section id="thesis">
+      <div class="sec-h"><span class="no">01</span><h2>Thesis — 一言でいうと</h2></div>
+      <div class="thesis">
+        <div class="q">AIを物理的に支えるレイヤー（素材・電力・冷却・ロボット）で、US発のスタートアップが勃興する瞬間を拾う。</div>
+        <div class="en">Catch the moment new US startups rise in the physical layer beneath AI — materials, power, cooling and robots.</div>
+      </div>
+      <p class="lead">ソフトのAIニュースは net search や startup news に任せる。ここで追うのは、鉄・アルミ・銅・電力・熱といった「重い」領域で起きている変化。とくに<strong>誰がお金を出したか</strong>（日本の大企業か、著名VCか、政府か）を見る。</p>
+      <div class="kpis" id="kpis"></div>
+    </section>
+
+    <section id="map">
+      <div class="sec-h"><span class="no">02</span><h2>Theme Map — 6テーマのつながり</h2></div>
+      <p class="lead">6テーマはばらばらではなく、「AIインフラの3制約（Power / Cooling / Location）」と、それを作る素材でつながっている。</p>
+      <div class="map">
+        <div class="layer">
+          <div class="lh">Layer 1 · Materials</div>
+          <div class="lt">何でできているか</div>
+          <div class="lb">DCの建屋・送電網・変圧器・モーターは、鉄・アルミ・銅でできている。素材の脱炭素と脱中国が同時に進んでいる。</div>
+          <div class="chips" data-inds="Steel,Aluminum,Copper"></div>
+        </div>
+        <div class="layer">
+          <div class="lh">Layer 2 · Infrastructure</div>
+          <div class="lt">どこで、何の電気で動くか</div>
+          <div class="lb">電力の確保、熱の処理、立地と地域の同意。DCはこの3制約で成長スピードが決まる。</div>
+          <div class="chips" data-inds="Data Center,Cooling"></div>
+        </div>
+        <div class="layer">
+          <div class="lh">Layer 3 · Physical AI</div>
+          <div class="lt">AIが体を持つ</div>
+          <div class="lb">ロボットの「脳」（基盤モデル）と「体」（機体・部品）。工場・倉庫・鉱山・建設現場など、上の2層の現場に入っていく。</div>
+          <div class="chips" data-inds="Robotics"></div>
+        </div>
+      </div>
+      <p class="note">横断例: アルミを燃料にDCの非常用電源を作る（Voya Energy）／Metaがグリーン鉄の環境価値を買う（Electra）／超電導ケーブルの給電に極低温冷却が要る（VEIR）。</p>
+    </section>
+
+    <section id="priority">
+      <div class="sec-h"><span class="no">03</span><h2>Priority — 選ぶときの優先順位</h2></div>
+      <ol class="prio" id="prio">
+        <li data-ex="hertha-series-a,nuvacore-raise,mariana-minerals-series-b,giraffe-bio-seed"><span class="rk">1</span><div><div class="t">新しいスタートアップの勃興（ベスト）</div><div class="d">新規の調達、新しいプレイヤーの登場、評価額の急騰。「設立2年で$1.5B」「製品前で$2.5B」のように、勢いが数字に出ているものを最優先する。</div><div class="ex"></div></div></li>
+        <li data-ex="zutacore-mitsubishi,daikin-chilldyne-ddc,softbank-rai-institute,electra-offtakes"><span class="rk">2</span><div><div class="t">日本の大企業 × USの急成長企業</div><div class="d">出資（CVC含む）・買収・オフテイク・共同開発。どの日本企業が、どのUSスタートアップに、どんな形で張ったか。Region が <b>JP×US</b> のものがこれにあたる。</div><div class="ex"></div></div></li>
+        <li data-ex="electra-offtakes,constellation-nuclear-ppa,ega-century-oklahoma"><span class="rk">3</span><div><div class="t">大企業との関連はポジティブに扱う</div><div class="d">Nucor・Meta・BHP・ハイパースケーラーなど、大企業が顧客や出資者として入っているのは「需要の証明」として評価する。</div><div class="ex"></div></div></li>
+        <li data-ex="veir-series-c,frore-series-d,boston-metal-woburn"><span class="rk">4</span><div><div class="t">deeptechなテックアジェンダもOK</div><div class="d">超電導、溶融酸化物電解、二相式冷却など、技術そのものの論点。失敗事例（Boston Metal）も、どの技術ルートが生き残るかを見る材料として拾う。</div><div class="ex"></div></div></li>
+      </ol>
+      <p class="note">地域は <b>US中心</b>、日本もOK。そのほかの地域（イスラエルのZutaCore、南米のGiraffe Bioなど）は、日本企業やUSの大手が絡む場合に拾う。</p>
+    </section>
+
+    <section id="themes">
+      <div class="sec-h"><span class="no">04</span><h2>Themes — テーマごとに見ていること</h2></div>
+      <div class="themes" id="themeCards"></div>
+    </section>
+
+    <section id="lens">
+      <div class="sec-h"><span class="no">05</span><h2>Signals — 記事のどこを見るか</h2></div>
+      <p class="lead">同じ「$100M調達」でも、誰が出したかで意味が変わる。記事を読むときに見ているシグナルはこれ。</p>
+      <div class="tbl-wrap">
+        <table>
+          <thead><tr><th>Signal</th><th>見る理由</th><th>例</th></tr></thead>
+          <tbody>
+            <tr><td>Lead investor</td><td>条件を決めた投資家。Khosla・Sequoia・a16zなら、技術の目利きが入った証拠になる。</td><td>Mariana（Khosla）、Nuvacore（Sequoia）</td></tr>
+            <tr><td>Strategic / CVC</td><td>事業会社の出資は、将来の顧客・買収の布石。特に日本企業のCVCはここで拾う。</td><td>ZutaCore（三菱電機）、Hertha（Toyota Ventures・Niterra）</td></tr>
+            <tr><td>Offtake / PPA</td><td>「買う約束」は売上の先行指標。量産前のスタートアップでは調達より重い。</td><td>Electra（Nucor・豊田通商）、Constellation（Google・Amazon）</td></tr>
+            <tr><td>Government money</td><td>政府の出資・融資・補助金は、安全保障の案件である印。脱中国の文脈で読む。</td><td>Hertha（米政府 $65M出資）</td></tr>
+            <tr><td>Valuation jump</td><td>前のラウンドから何倍になったか。期待の熱量がそのまま出る。</td><td>FieldAI（約5倍・$10B）</td></tr>
+            <tr><td>Notable people</td><td>a16z・Sequoiaのパートナー、US著名人が何を言ったか。誰が張ったかは見もの。</td><td>Voya（John Doerr・Founders Fund）</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="two" style="margin-top:14px">
+        <div class="box"><h3>拾うもの</h3><ul><li>一次情報（プレスリリース・SEC提出書類）で裏が取れる調達・提携</li><li>報道の揺れがあるものは、揺れごと書く（タームシート段階か、確定か）</li><li>失敗・撤退でも、技術ルートの勝ち負けが見えるもの</li></ul></div>
+        <div class="box"><h3>落とすもの</h3><ul><li>日々の価格市況や決算速報だけで、構造の変化がないもの</li><li>USにも日本にも絡まない地域ローカルの小型調達</li><li>アグリゲーターにしか出てこず、裏が取れない数字</li></ul></div>
+      </div>
+      <p class="note">※「落とすもの」は指示から逆算した運用ルール。違和感があれば修正する。</p>
+    </section>
+
+    <section id="candidates">
+      <div class="sec-h"><span class="no">06</span><h2>Candidates — テーマ候補（採否待ち）</h2></div>
+      <p class="lead">アルミ・銅以外の非鉄。いまの6テーマとのつながりが濃い順に並べている。</p>
+      <div class="cand"><div class="n">レアアース（NdPr）<small>Recommended</small></div><div class="b">EV・ロボット・防衛のモーター磁石。中国の輸出規制が効いていて、米政府はUSA Rare Earthsに8%出資するなど直接張っている。製鉄のHertha（磁石向けの高純度鉄）、ロボティクス（アクチュエーター）とつながる。</div></div>
+      <div class="cand"><div class="n">ガリウム・ゲルマニウム<small>Recommended</small></div><div class="b">パワー半導体・光通信に欠かせない。中国が輸出を規制し、米国では亜鉛の精錬残渣や石炭灰から回収する研究に予算がついている。DC（光インターコネクト・電源）とつながる。</div></div>
+      <div class="cand"><div class="n">アンチモン・タングステン<small>Defense</small></div><div class="b">弾薬・防衛向け。Pentagonが米国のアンチモン企業に$245Mを発注している。a16zのAmerican Dynamism（防衛・産業系の投資テーマ）の文脈で、スタートアップが出てきやすい。</div></div>
+      <div class="cand"><div class="n">リチウム・ニッケル<small>Low priority</small></div><div class="b">電池の本命だが、価格の低迷が続く。ネタの数は多いが新しさは薄め。</div></div>
+    </section>
+
+    <section id="format">
+      <div class="sec-h"><span class="no">07</span><h2>Format — 1件をどう書くか</h2></div>
+      <p class="lead">ニュースを読む練習と、英語の練習を兼ねる。detailは5タブ構成。</p>
+      <div class="fmt">
+        <div><div class="h">English</div><div class="b">3〜5文の英文。難しめの単語は点線付きで、hover（スマホはtap）で和訳と1〜2文の解説が出る。</div></div>
+        <div><div class="h">日本語</div><div class="b">段落ごとの和訳。Englishタブで英文の下に並べることもできる。</div></div>
+        <div><div class="h">Expressions</div><div class="b">記事中の英語表現を3〜5個。意味・ニュアンス・例文まで丁寧に書く。</div></div>
+        <div><div class="h">Industry Context</div><div class="b">業界の周辺知識。推測や補足には「※補足」「読み」と明記する。</div></div>
+        <div><div class="h">Sources</div><div class="b">一次情報を優先する。報道で数字が割れているものは揺れごと書く。</div></div>
+      </div>
+      <p class="note">チャットでニュースを頼まれたときは、テーマごとに3本、2〜3行のサマリ、末尾にソースURL。拾えなかったもの（著名人コメントなど）も正直に書く。</p>
+    </section>
+
+    <section id="log">
+      <div class="sec-h"><span class="no">08</span><h2>Instruction Log — 指示の履歴</h2></div>
+      <ul class="log">
+        <li><span class="d">2026-10-14</span>製鉄・データセンター周りのニュースを、2〜3行サマリで3つずつ。</li>
+        <li><span class="d">2026-10-14</span>USスタートアップ中心（日本OK）。大企業との関連はポジティブ。deeptechもOKで、ベストは新興スタートアップの勃興。a16z・Sequoia・US著名人のコメントを添える。日本の大企業×USの急成長企業のコラボは特に嬉しい。</li>
+        <li><span class="d">2026-10-14</span>ロボティクスを追加。</li>
+        <li><span class="d">2026-10-14</span>冷却を追加（ニッチなので数ヶ月前まで遡ってOK）。</li>
+        <li><span class="d">2026-10-14</span>ミネラルを追加（特にアルミ・銅）。ほかの非鉄は候補として提示。</li>
+        <li><span class="d">2026-10-14</span>industrial newsをページ化。中身は英文・和訳・英語表現の詳細解説・業界の周辺知識。英語学習は丁寧に、難しい単語はhoverで和訳と解説。</li>
+        <li><span class="d">2026-10-14</span>Industryラベルは色付きバッジに（このページ限定）。hoverの解説を1〜2文に拡充。</li>
+        <li><span class="d">2026-10-14</span>選定の観点をまとめたこのページ（Selection Criteria）を追加。</li>
+      </ul>
+    </section>
+
+    <p class="note" style="margin-top:32px">Last updated: 2026-10-14</p>
+  </main>
+</div>
+
+<footer class="snav-footer"><div class="footer-stats" id="fstat"></div><div></div></footer>
+
+<script src="news_data.js"></script>
+<script>
+(function(){
+  var KEY = { 'Steel':'steel', 'Data Center':'dc', 'Robotics':'robotics', 'Cooling':'cooling', 'Aluminum':'aluminum', 'Copper':'copper' };
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function badge(i, href){ var k = KEY[i]; return '<a class="ind" href="' + (href || ('index.html?ind=' + encodeURIComponent(i))) + '" style="--c:var(--i-' + k + ');--b:var(--b-' + k + ')">' + esc(i) + '</a>'; }
+  function count(f){ return NEWS.filter(f).length; }
+  var byId = {}; NEWS.forEach(function(n){ byId[n.id] = n; });
+
+  // KPIs
+  var total = NEWS.length, jp = count(function(n){ return n.region === 'JP×US'; }), st = count(function(n){ return n.startup; });
+  document.getElementById('kpis').innerHTML = [
+    ['Entries', total, 'ニュース数'],
+    ['Themes', Object.keys(KEY).length, 'テーマ（＋候補4）'],
+    ['Startups', Math.round(st / total * 100) + '%', st + '件がスタートアップ'],
+    ['JP×US', jp, '日本企業×US企業']
+  ].map(function(k){ return '<div class="kpi"><div class="k">' + k[0] + '</div><div class="v">' + k[1] + '</div><div class="s">' + k[2] + '</div></div>'; }).join('');
+  document.getElementById('fstat').textContent = total + ' entries · Last updated: 2026-10-14';
+
+  // map chips
+  document.querySelectorAll('.map .chips').forEach(function(el){
+    el.innerHTML = el.dataset.inds.split(',').map(function(i){ return badge(i); }).join('');
+  });
+
+  // priority examples
+  document.querySelectorAll('#prio li').forEach(function(li){
+    li.querySelector('.ex').innerHTML = li.dataset.ex.split(',').filter(function(id){ return byId[id]; }).map(function(id){
+      return '<a href="index.html#' + id + '">' + esc(byId[id].company) + '</a>';
+    }).join('');
+  });
+
+  // theme cards
+  var THEMES = [
+    { i:'Steel', why:'脱炭素と経済安保で、100年変わらなかった高炉ルートが動き出している。', pick:'高炉を使わない製鉄（水素DRI・電解）のスタートアップ、高純度鉄、米国の設備投資と関税。', watch:'どの技術ルートが量産までたどり着くか（Hertha・Electra vs Boston Metalの失速）。' },
+    { i:'Data Center', why:'AIの成長スピードを決めるのは、電力・立地・地域の同意。', pick:'DC向けチップ・給電・電源のスタートアップ、原子力などのPPA、立地をめぐる政治。', watch:'送電網の接続待ちを、ソフト（Emerald）・オンサイト電源（AWS Homer City）・超電導（VEIR）のどれで解くか。' },
+    { i:'Robotics', why:'フィジカルAIに資金が集中している。ヒューマノイドへのVC投資は2025年通年の倍以上。', pick:'ロボットの「脳」（基盤モデル）、学習データ、SoftBankなど日本勢の買収・出資。', watch:'「脳」3強（Physical Intelligence・Skild・FieldAI）の評価額が、どこで売上に裏付けられるか。' },
+    { i:'Cooling', why:'GPUの発熱が空冷の限界を超え、液冷が標準になった。日本の空調大手の主戦場。', pick:'液冷（direct-to-chip・液浸・二相式）のスタートアップ、日本の空調・電機大手による出資・買収。', watch:'出資型（三菱電機）・買収型（ダイキン）・自社開発型（ニデック）のどれが勝つか。', niche:true },
+    { i:'Aluminum', why:'アルミは「電気の缶詰」。製錬は電力の取り合いで、DCと同じ制約を抱える。', pick:'スクラップの高度リサイクル、米国の製錬所の新設、アルミの新しい用途（エネルギー媒体など）。', watch:'「再生」（Sortera・LOOPARTS）と「エネルギー化」（Voya）で、スクラップの出口が増えること。' },
+    { i:'Copper', why:'AIの配線・変圧器・送電網はすべて銅。新しい鉱山は開くまでに15年かかる。', pick:'回収率を上げる技術（バイオ・浸出）、休止鉱山の再稼働、自律運営の鉱山。', watch:'BHPなど資源メジャーが、どのスタートアップに張っているか。' }
+  ];
+  document.getElementById('themeCards').innerHTML = THEMES.map(function(t){
+    var k = KEY[t.i], c = count(function(n){ return n.industry === t.i; });
+    return '<div class="theme" style="--c:var(--i-' + k + ')"><div class="top">' + badge(t.i) + (t.niche ? ' <span class="tag-niche">Niche · 数ヶ月遡りOK</span>' : '') +
+      '<a class="cnt" href="index.html?ind=' + encodeURIComponent(t.i) + '">' + c + ' entries →</a></div>' +
+      '<div class="why">' + esc(t.why) + '</div><dl><dt>拾うもの</dt><dd>' + esc(t.pick) + '</dd><dt>ウォッチしている論点</dt><dd>' + esc(t.watch) + '</dd></dl></div>';
+  }).join('');
+
+  // toc scroll-spy
+  var links = Array.prototype.slice.call(document.querySelectorAll('#toc a'));
+  var secs = links.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  function spy(){
+    var y = window.scrollY + 120, cur = 0;
+    secs.forEach(function(s, i){ if (s && s.offsetTop <= y) cur = i; });
+    links.forEach(function(a, i){ a.classList.toggle('on', i === cur); });
+  }
+  window.addEventListener('scroll', spy, { passive: true }); spy();
+})();
+</script>
+</body>
+</html>

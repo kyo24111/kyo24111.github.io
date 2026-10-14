@@ -25,6 +25,11 @@
     .page-header .sub { font-size: 11px; color: rgba(255,255,255,.45); margin-top: 8px; letter-spacing: .02em; line-height: 1.8; max-width: 760px; }
 
     .main { max-width: 1280px; padding: 0 48px 80px; }
+    .ptabs { background: #111; padding: 0 48px; display: flex; gap: 0; border-top: 1px solid #222; overflow-x: auto; }
+    .ptabs a { color: rgba(255,255,255,.45); text-decoration: none; font-size: 11px; font-weight: 600; letter-spacing: .06em; padding: 12px 16px 11px; border-bottom: 2px solid transparent; white-space: nowrap; }
+    .ptabs a:first-child { padding-left: 0; }
+    .ptabs a:hover { color: #fff; }
+    .ptabs a.on { color: #fff; border-bottom-color: #fff; }
     .cat-block { margin-top: 36px; }
     .cat-header { display: flex; align-items: baseline; gap: 12px; margin-bottom: 18px; padding-bottom: 12px; border-bottom: 2px solid #111; }
     .cat-title { font-size: 12px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
@@ -146,6 +151,7 @@
     @media (max-width: 700px) {
       .page-header { padding: 28px 16px 24px; }
       .main { padding: 0 16px 60px; }
+      .ptabs { padding: 0 16px; }
       .flabel { width: 100%; }
       .dr-head { padding: 16px 16px 0; }
       .dr-tabs { margin: 0 -16px; padding: 0 16px; }
@@ -215,8 +221,9 @@
 <header class="page-header">
   <div class="breadcrumb"><a href="/index.html">24111</a> / research</div>
   <h1>industrial news</h1>
-  <div class="sub">製鉄・データセンター・ロボティクス・冷却・ミネラル（アルミ／銅）の気になるニュースを集めたDB。US発のスタートアップを中心に、日本の大企業×USの急成長企業の動きも拾う。<br>行を押すと detail が開く（English／日本語／Expressions／Industry Context）。点線の単語は hover（スマホは tap）で和訳と解説が出る。</div>
+  <div class="sub">製鉄・データセンター・ロボティクス・冷却・ミネラル（アルミ／銅）の気になるニュースを集めたDB。US発のスタートアップを中心に、日本の大企業×USの急成長企業の動きも拾う。<br>行を押すと detail が開く（English／日本語／Expressions／Industry Context）。どんな観点で選んでいるかは <a href="criteria.html" style="color:#fff">Selection Criteria</a> へ。点線の単語は hover（スマホは tap）で和訳と解説が出る。</div>
 </header>
+<nav class="ptabs"><a class="on" href="index.html">News DB</a><a href="criteria.html">Selection Criteria</a></nav>
 
 <main class="main">
   <div class="cat-block">
@@ -461,6 +468,15 @@
   });
   bodyEl.addEventListener('scroll', hideTip);
 
+  // criteria.html からの絞り込みリンク（?ind=Steel など）
+  (function(){
+    var p = new URLSearchParams(location.search), map = { ind:'f-industry', type:'f-type', region:'f-region' };
+    Object.keys(map).forEach(function(k){
+      var v = p.get(k); if (!v) return;
+      var chip = document.querySelector('#' + map[k] + ' .fchip[data-v="' + v.replace(/"/g, '') + '"]');
+      if (chip) chip.click();
+    });
+  })();
   renderTable();
   if (location.hash.length > 1) openDetail(decodeURIComponent(location.hash.slice(1)), false);
 })();
