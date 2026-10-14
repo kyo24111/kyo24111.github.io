@@ -1,4 +1,7 @@
-# News Curation — 指示集
+# 040_industrial_news — industrial news
+
+ページ: [index.html](index.html)（DB view → 行を押すとdetail）。データは [news_data.js](news_data.js) の `NEWS` 配列1本。
+
 
 Kyoが「読みたくなる」ニュースを集めるためのルール。指示が来るたびに追記する（日付つき）。
 
@@ -24,9 +27,25 @@ Kyoが「読みたくなる」ニュースを集めるためのルール。指�
 - 1本あたり2〜3行のサマリ
 - 末尾にソースURL
 
+## ページ（index.html）の構成
+- 一覧カラム: Headline（企業・日英見出し）/ Industry（色ラベル）/ Type / Region（JP×USを強調）/ Amount / News Date / Posted（掲載日）
+- フィルタ: Industry・Type・Region のチップ＋キーワード検索。列見出しでソート
+- detail（右drawer、URL `#id` で直リンク可）: **English / 日本語 / Expressions / Industry Context / Sources**
+  - English: 段落ごとの英文。難しめの単語は `{{word|和訳|解説}}` → hover（スマホはtap）で和訳と解説。「段落ごとに日本語を並べる」トグル付き。末尾に Words in this article を自動生成
+  - Expressions: 記事中の英語表現を「意味・ニュアンス・例文」で丁寧に解説（英語学習を兼ねる）
+  - Industry Context: 業界の周辺知識。推測や補足は「※補足」「読み」と明示
+- startup news に深掘りページがあるものは `link` で導線
+
+## 追加の手順
+1. `news_data.js` に `NEWS.push({...})` を1ブロック足す（既存ブロックをテンプレに）
+2. en は 3〜5文。glossは1記事5〜8語。expr は3〜5個（例文つき）
+3. Posted＝掲載日、date＝ニュースが出た日（不明なら `2026-10` のように月まで）
+4. `030_research` 配下は公開repo → 追加後はpush
+
 ## 指示ログ
 - 2026-10-14: 製鉄・データセンター周りのニュース。2-3行サマリで3つずつ。
 - 2026-10-14: USスタートアップ中心(日本OK)／大企業との関連はポジティブ／deeptechもOK・ベストは新興スタートアップ／a16z・Sequoia・US著名人のコメントを添える／日本大企業×US急成長企業のコラボ歓迎。
 - 2026-10-14: ロボティクスをテーマに追加。前回の出力（スタートアップ中心・JP×USの関係・取れなかったものの明記）は好評。
 - 2026-10-14: 冷却を追加（ニッチ・数ヶ月前まで遡ってOK）。
 - 2026-10-14: ミネラル領域を追加（特にアルミ・銅）。それ以外の注目非鉄は候補として提示、採否待ち。
+- 2026-10-14: industrial newsページ化（net searchの横）。DB view＋detail。内容＝英文・和訳・英語表現の詳細解説・industry周辺知識。英語学習は丁寧に、難単語はhoverで和訳＋解説。
