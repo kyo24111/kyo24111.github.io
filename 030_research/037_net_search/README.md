@@ -80,6 +80,7 @@ Dwarkesh系ファイルは5セクション構成：原文（verbatim）／英語
 
 | ファイル | 種別 | 題名 | 公開日 | 依頼日 |
 |--------|------|------|--------|--------|
+| [261016_pivot_tamura_370tn_power.html](261016_pivot_tamura_370tn_power.html) | YouTube | 高市370兆円投資の罠 — AIより電力にもっと張れ（AIの正体は8割ハードウェア・電力は分母・撤退基準）（PIVOT × 田村耕太郎） | 2026-10-12 | 2026-10-16 |
 | [261015_blackstone_masayoshi_son.html](261015_blackstone_masayoshi_son.html) | YouTube | 孫正義、ブラックストーンに登場 — 「これまでの全部はウォームアップ」・超知能・ロボット・70%の法則（Inside Blackstone × Christine Anderson／Debrief Steve Schwarzman） | 2026-10-13 | 2026-10-15 |
 | [261013_cheeky_pint_muse_wonder.html](261013_cheeky_pint_muse_wonder.html) | YouTube | Muse Wonder：ザッカーバーグ×ワンの「1,000億ドルのAI」— Meta初のフロンティアモデルとMSLの作り方（Cheeky Pint × John Collison） | 2026-10-12 | 2026-10-13 |
 | [261005_a16z_ai_electricians.html](261005_a16z_ai_electricians.html) | YouTube | AIが「電気工事士」を大量に生む — 電気技師とは何か・なぜ重要か・日米の違い（a16z Machine Age Fund回） | 2026-08-28 | 2026-10-05 |
