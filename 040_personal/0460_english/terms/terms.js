@@ -5,7 +5,8 @@
    - ✓（known）の語は本文を英語に置き換える（ルー大柴スタイル）。hover で元の日本語
    - ページ先頭に Content / Terms のタブを出す。Terms はこのページに出てくる語の一覧
    - ✓ はブラウザ（localStorage）に保存。kyo24111.github.io 配下の全ページで共有
-   - Export で「DBとの差分」をコピー → Claude に貼れば terms_data.js の known を更新する
+   - 「Sync to DB」で ✓ の一覧を GitHub API 経由で terms_known.js に commit（初回だけトークン入力）
+     サイトへの反映は Pages の再ビルド後（1〜2分）。それまではブラウザ側の✓で表示する
    - 統合DBページ（#termDb がある）では一覧表だけを描く
    ========================================================================== */
 (function () {
@@ -15,17 +16,28 @@
   var BASE = SELF.replace(/040_personal\/0460_english\/terms\/terms\.js.*$/, '');
   var HUB = BASE + '040_personal/0460_english/terms/261017_term_db.html';
   var KEY = 'kyo.terms.known.v1';
+  var TOKEN_KEY = 'kyo.terms.gh';
+  var REPO = 'kyo24111/kyo24111.github.io', BRANCH = 'main';
+  var KNOWN_PATH = '040_personal/0460_english/terms/terms_known.js';
+  var DB = null;   // terms_known.js の id 集合
   var FIELDS = ['science', 'industry', 'market', 'finance', 'law', 'general'];
 
   /* ---------- state ---------- */
   var over = {};
   try { over = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch (e) { over = {}; }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(over)); } catch (e) {} }
-  function isKnown(t) { return Object.prototype.hasOwnProperty.call(over, t.id) ? !!over[t.id] : !!t.known; }
+  function dbKnown(t) { return DB ? DB.has(t.id) : !!t.known; }
+  function isKnown(t) { return Object.prototype.hasOwnProperty.call(over, t.id) ? !!over[t.id] : dbKnown(t); }
   function setKnown(t, v) {
-    if (v === !!t.known) delete over[t.id]; else over[t.id] = v;
+    if (v === dbKnown(t)) delete over[t.id]; else over[t.id] = v;
     save(); refresh();
   }
+  /* DB に反映済みになった✓はブラウザ側から消す */
+  function prune() {
+    Object.keys(over).forEach(function (id) { var t = byId[id]; if (!t || over[id] === dbKnown(t)) delete over[id]; });
+    save();
+  }
+  function pending() { return Object.keys(over).length; }
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function pageKey() {
@@ -69,6 +81,9 @@
     '.tx-foot{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;font-size:12px;color:#999}',
     '.tx-foot a{color:#111}',
     '.tx-btn{appearance:none;border:1px solid #111;background:#111;color:#fff;border-radius:8px;padding:6px 12px;font-family:Poppins,sans-serif;font-size:11.5px;font-weight:600;cursor:pointer}',
+    '.tx-btn:disabled{background:#fff;color:#aaa;border-color:#d8d8d8;cursor:default}',
+    '.tx-link{appearance:none;border:none;background:none;padding:0;font:inherit;font-size:12px;color:#999;text-decoration:underline;cursor:pointer}',
+    '.tx-msg{color:#666}',
     '.tx-out{width:100%;margin-top:10px;font-family:ui-monospace,Menlo,monospace;font-size:11.5px;border:1px solid #d8d8d8;border-radius:8px;padding:8px;min-height:64px}',
     '.tx-empty{padding:24px;text-align:center;color:#999;font-size:13px}'
   ].join('\n');
@@ -136,7 +151,7 @@
       '<button class="tx-chip on" data-st="all">All</button><button class="tx-chip" data-st="todo">To learn</button><button class="tx-chip" data-st="known">Known</button></div>' +
       (opt.fields ? '<div class="tx-tools tx-fields"></div>' : '') +
       '<div class="tx-scroll"><table class="tx-t"><thead></thead><tbody></tbody></table></div>' +
-      '<div class="tx-foot"><button class="tx-btn tx-exp">Export ✓</button><span>✓の差分をコピー → Claude に貼ると DB の known に反映</span>' +
+      '<div class="tx-foot"><button class="tx-btn tx-sync"></button><span class="tx-msg"></span><button class="tx-link tx-exp">Copy diff</button>' +
       (opt.hubLink ? '<a href="' + HUB + '">統合 Term DB →</a>' : '') + '</div>';
     var tb = host.querySelector('tbody');
     host.querySelector('thead').innerHTML = '<tr><th>✓</th><th>English</th><th>日本語</th><th>Field</th><th>Definition</th>' + (opt.src ? '<th>Source</th>' : '') + '</tr>';
@@ -158,6 +173,7 @@
       setKnown(byId[c.dataset.id], c.checked);
     });
     host.querySelector('.tx-exp').addEventListener('click', function () { exportDiff(host); });
+    host.querySelector('.tx-sync').addEventListener('click', function () { sync(host); });
 
     function draw() {
       var all = opt.list(), rows = all.filter(function (t) {
@@ -174,6 +190,9 @@
       var nk = all.filter(isKnown).length;
       host.querySelector('.tx-stat').innerHTML = 'Known ' + nk + ' / ' + all.length + '<span>' + Math.round(all.length ? nk / all.length * 100 : 0) + '%</span>';
       host.querySelector('.tx-meter i').style.width = (all.length ? nk / all.length * 100 : 0) + '%';
+      var sb = host.querySelector('.tx-sync'), np = pending();
+      sb.textContent = np ? 'Sync to DB (' + np + ')' : 'Synced';
+      sb.disabled = !np || syncing;
       tb.innerHTML = rows.length ? rows.map(function (t) {
         var k = isKnown(t);
         return '<tr class="' + (k ? 'k' : '') + '"><td class="ck"><input type="checkbox" data-id="' + esc(t.id) + '"' + (k ? ' checked' : '') + ' aria-label="' + esc(t.en) + '"></td>' +
@@ -189,9 +208,48 @@
     return draw;
   }
 
+  /* ---------- Sync to DB（GitHub Contents API で terms_known.js を上書き） ---------- */
+  var syncing = false;
+  function msg(host, s) { host.querySelector('.tx-msg').textContent = s; }
+  function sync(host) {
+    var tok = '';
+    try { tok = localStorage.getItem(TOKEN_KEY) || ''; } catch (e) {}
+    if (!tok) {
+      tok = (prompt('GitHub の fine-grained token を貼ってください（初回のみ・このブラウザに保存）\n対象: ' + REPO + ' だけ / 権限: Contents = Read and write') || '').trim();
+      if (!tok) return;
+      try { localStorage.setItem(TOKEN_KEY, tok); } catch (e) {}
+    }
+    var ids = T.filter(isKnown).map(function (t) { return t.id; }).sort();
+    var body = '/* known（理解済み）の正本。Terms タブの「Sync to DB」ボタンが GitHub API でこのファイルを上書きする。手で直してもよい */\n' +
+      'window.TERMS_KNOWN = ' + JSON.stringify(ids, null, 1).replace(/\n\s*/g, ' ') + ';\n';
+    var url = 'https://api.github.com/repos/' + REPO + '/contents/' + KNOWN_PATH;
+    var hd = { 'Authorization': 'Bearer ' + tok, 'Accept': 'application/vnd.github+json' };
+    syncing = true; redraws.forEach(function (f) { f(); }); msg(host, 'Saving…');
+    fetch(url + '?ref=' + BRANCH, { headers: hd, cache: 'no-store' })
+      .then(function (r) { if (r.status === 404) return {}; if (!r.ok) throw r; return r.json(); })
+      .then(function (cur) {
+        return fetch(url, { method: 'PUT', headers: hd, body: JSON.stringify({
+          message: 'terms: known update (' + ids.length + ' known)', branch: BRANCH,
+          content: btoa(unescape(encodeURIComponent(body))), sha: cur.sha
+        }) });
+      })
+      .then(function (r) { if (!r.ok) throw r; return r.json(); })
+      .then(function () {
+        DB = new Set(ids); prune();
+        syncing = false; refresh();
+        msg(host, 'Saved ✓ ' + ids.length + ' known — サイトへの反映は1〜2分後');
+      })
+      .catch(function (r) {
+        syncing = false; redraws.forEach(function (f) { f(); });
+        var st = r && r.status;
+        if (st === 401 || st === 403) { try { localStorage.removeItem(TOKEN_KEY); } catch (e) {} msg(host, 'トークンが無効です。もう一度押すと再入力できます'); }
+        else msg(host, '保存に失敗しました' + (st ? '（' + st + '）' : '') + '。Copy diff で Claude に渡してください');
+      });
+  }
+
   function exportDiff(host) {
     var known = [], unknown = [];
-    T.forEach(function (t) { var k = isKnown(t); if (k && !t.known) known.push(t.id); if (!k && t.known) unknown.push(t.id); });
+    T.forEach(function (t) { var k = isKnown(t), d = dbKnown(t); if (k && !d) known.push(t.id); if (!k && d) unknown.push(t.id); });
     var txt = 'terms known update\n' + JSON.stringify({ known: known, unknown: unknown });
     var out = host.querySelector('.tx-out');
     if (!out) { out = document.createElement('textarea'); out.className = 'tx-out'; out.readOnly = true; host.appendChild(out); }
@@ -244,7 +302,8 @@
 
   /* ---------- init ---------- */
   function init() {
-    buildIndex(); addCss();
+    if (window.TERMS_KNOWN) DB = new Set(window.TERMS_KNOWN);
+    buildIndex(); prune(); addCss();
     var hub = document.getElementById('termDb');
     if (hub) { redraws.push(table(hub, { list: function () { return T; }, src: true, fields: true })); return; }
     busy = true; walk(document.body); busy = false;
@@ -262,12 +321,18 @@
     }).observe(document.body, { childList: true, subtree: true });
   }
 
-  function start() {
-    if (window.TERMS) return init();
+  function load(file, done) {
     var s = document.createElement('script');
-    s.src = BASE + '040_personal/0460_english/terms/terms_data.js';
-    s.onload = init;
+    s.src = BASE + '040_personal/0460_english/terms/' + file + '?v=' + Date.now();   // known は頻繁に変わるのでキャッシュさせない
+    s.onload = s.onerror = done;
     document.head.appendChild(s);
+  }
+  function start() {
+    var n = 0, need = (window.TERMS ? 0 : 1) + (window.TERMS_KNOWN ? 0 : 1);
+    if (!need) return init();
+    function one() { if (++n === need) init(); }
+    if (!window.TERMS) load('terms_data.js', one);
+    if (!window.TERMS_KNOWN) load('terms_known.js', one);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
 })();
