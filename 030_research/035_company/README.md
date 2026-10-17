@@ -69,3 +69,4 @@
 | [261011_asml_deep_research.html](261011_asml_deep_research.html) | ASML | EUV露光装置（半導体製造装置） | 2026-10-11 |
 | [261013_nucor_deep_research.html](261013_nucor_deep_research.html) | Nucor | 鉄鋼（電炉ミニミル） | 2026-10-13 |
 | [261013_duke_energy_deep_research.html](261013_duke_energy_deep_research.html) | Duke Energy | 規制電力・ガス公益事業（原子力） | 2026-10-13 |
+| [261017_powerx_deep_research.html](261017_powerx_deep_research.html) | PowerX | 系統用蓄電システム（BESS・国産組立／中国製セル） | 2026-10-17 |
