@@ -924,6 +924,20 @@
   .ex-toc .n { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 11px; color: var(--muted); min-width: 20px; }
   .ex-toc .c { margin-left: auto; font-family: 'Poppins', sans-serif; font-size: 10.5px; color: var(--muted); white-space: nowrap; }
   #view-exercises section.domain { scroll-margin-top: 80px; }
+  @media (min-width: 1241px) { .ex-toc { display: none; } }  /* 広い画面では左サイドに出す */
+  #exSideNav .ex-snav-link { display: flex; gap: 8px; align-items: baseline; padding: 5px 0 5px 10px; border-left: 2px solid transparent; color: var(--muted); text-decoration: none; font-size: 12px; line-height: 1.5; }
+  #exSideNav .ex-snav-link:hover { color: var(--text); }
+  #exSideNav .ex-snav-link.active { color: var(--text); border-left-color: var(--text); font-weight: 600; }
+  #exSideNav .ex-snav-link .n { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; min-width: 18px; }
+  #exSideNav .ex-snav-link .c, .ex-toc .c { margin-left: auto; font-family: 'Poppins', sans-serif; font-size: 10px; white-space: nowrap; padding-left: 6px; }
+  #exSideNav .ex-snav-link.all-done .c { color: var(--text); font-weight: 700; }
+  #exSideNav .ex-snav-head { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px 10px; }
+  /* 問題ごとのチェック */
+  #view-exercises .ex-check { appearance: none; flex: 0 0 auto; width: 18px; height: 18px; border: 1.5px solid #bbb; border-radius: 4px; background: #fff; cursor: pointer; align-self: center; padding: 0; font-size: 12px; line-height: 15px; color: #fff; text-align: center; }
+  #view-exercises .ex-check:hover { border-color: var(--text); }
+  #view-exercises .q.solved .ex-check { background: var(--text); border-color: var(--text); }
+  #view-exercises .q.solved .qno { color: var(--muted); }
+  #view-exercises .q.solved .qbody { opacity: .55; }
 </style>
 </head>
 <body>
@@ -942,6 +956,7 @@
   </div>
 </header>
 <aside class="side-nav" id="sideNav"></aside>
+<aside class="side-nav hidden" id="exSideNav" aria-label="演習の目次"></aside>
 <div class="page">
 
   <!-- ===== NOTES TAB ===== -->
@@ -4756,7 +4771,27 @@
       </div>
 
       <div class="section" id="inv-2x2-why">
-        <h2>なぜ「入れ替えて符号」なのか — 掛けると E になるように作られている</h2>
+        <h2>Q. det = 1 なら「右上・左下の符号を反転」だけでいい？ — 入れ替えて符号の理由</h2>
+        <div class="formula" style="font-size:14px">
+          <span class="key">A. 半分正解・半分ハズレ。</span><br>
+          ✓ <b>右上・左下（b, c）の符号反転</b>は正しい。<br>
+          ✕ でもそれだけではダメ。<b>左上・右下（a, d）の入れ替え</b>も必ず要る。<br>
+          det = 1 で省けるのは、最後の「<b>det で割る</b>」だけ。
+        </div>
+
+        <p><b>なぜ「符号反転だけ」に見えたのか</b>：演習07 Q1 の A = [[2, 1], [3, 2]] は <span class="hl">a = d = 2</span>。入れ替えても見た目が変わらないので、符号反転しかしていないように見えた。</p>
+
+        <div class="tbl-scroll"><table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px;min-width:520px">
+          <thead><tr><th style="padding:8px 10px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.06em;color:var(--muted);text-align:left;white-space:nowrap">A（det = 1）</th><th style="padding:8px 10px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.06em;color:var(--muted);text-align:left;white-space:nowrap">✓ 入れ替え＋符号反転</th><th style="padding:8px 10px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.06em;color:var(--muted);text-align:left;white-space:nowrap">✕ 符号反転だけ</th><th style="padding:8px 10px;border-bottom:2px solid var(--accent);font-family:'Poppins',sans-serif;font-size:11px;letter-spacing:.06em;color:var(--muted);text-align:left;white-space:nowrap">✕ の A⁻¹A の (1,1)</th></tr></thead>
+          <tbody>
+            <tr><td style="padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle">Q1 <span class="matrix"><table><tr><td>2</td><td>1</td></tr><tr><td>3</td><td>2</td></tr></table></span></td><td style="padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle"><span class="matrix"><table><tr><td>2</td><td>−1</td></tr><tr><td>−3</td><td>2</td></tr></table></span></td><td style="padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle"><span class="matrix"><table><tr><td>2</td><td>−1</td></tr><tr><td>−3</td><td>2</td></tr></table></span><br><span style="font-size:12px;color:var(--muted)">a = d なので偶然同じ</span></td><td style="padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle">2·2 − 1·3 = <b>1</b>（たまたま正解）</td></tr>
+            <tr><td style="padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle">Q2 <span class="matrix"><table><tr><td>3</td><td>5</td></tr><tr><td>1</td><td>2</td></tr></table></span></td><td style="padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle"><span class="matrix"><table><tr><td>2</td><td>−5</td></tr><tr><td>−1</td><td>3</td></tr></table></span></td><td style="padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle"><span class="matrix"><table><tr><td>3</td><td>−5</td></tr><tr><td>−1</td><td>2</td></tr></table></span></td><td style="padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle">3·3 − 5·1 = <b>4</b> ≠ 1 ✕</td></tr>
+            <tr><td style="padding:8px 10px;vertical-align:middle">Q5 <span class="matrix"><table><tr><td>5</td><td>2</td></tr><tr><td>2</td><td>1</td></tr></table></span></td><td style="padding:8px 10px;vertical-align:middle"><span class="matrix"><table><tr><td>1</td><td>−2</td></tr><tr><td>−2</td><td>5</td></tr></table></span></td><td style="padding:8px 10px;vertical-align:middle"><span class="matrix"><table><tr><td>5</td><td>−2</td></tr><tr><td>−2</td><td>1</td></tr></table></span></td><td style="padding:8px 10px;vertical-align:middle">5·5 − 2·2 = <b>21</b> ≠ 1 ✕</td></tr>
+          </tbody>
+        </table></div>
+        <p class="step" style="font-size:13px">覚え方：<b>対角は「場所を入れ替え」、反対角は「符号を反転」</b>。動かすものが違う。a = d の行列は入れ替えの効果が見えないので、練習には a ≠ d の Q2・Q5 を使う。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">なぜこの形になるのか — 掛けると det × E になるように作られている</h3>
         <p>ゴールは A⁻¹A = E、つまり<span class="hl">対角が 1、それ以外が 0</span>。候補 X = [[d, −b], [−c, a]] を A に掛けてみる（左は行、右は列）。</p>
         <div class="tbl-scroll"><table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px">
           <tr><td style="padding:7px 10px;border-bottom:1px solid var(--border)">(1,1)：(d, −b)·(a, c)</td><td style="padding:7px 10px;border-bottom:1px solid var(--border)">da − bc</td><td style="padding:7px 10px;border-bottom:1px solid var(--border)"><span class="hl">= det</span></td></tr>
@@ -4773,11 +4808,7 @@
         <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">対角が det になる仕組み — 面積</h3>
         <p>(d, −b)·(a, c) = ad − bc は、A の2本の列 (a, c) と (b, d) が作る平行四辺形の面積そのもの（<a href="#determinant" onclick="gotoSection('determinant');return false;">行列式の章</a>の ad − bc）。なので対角には det が出てくる。</p>
 
-        <div class="formula" style="font-size:13.5px">
-          <span class="key">注意：</span>det = 1 でも <b>a と d の入れ替え</b>は必要。符号反転だけでは足りない。<br>
-          例：A = [[2, 1], [1, 1]]（det = 1）→ A⁻¹ = [[1, −1], [−1, 2]]。検算すると A·A⁻¹ = [[2−1, −2+2], [1−1, −1+2]] = E ✓<br>
-          符号だけ反転した [[2, −1], [−1, 1]] だと、(1,1) = 2·2 + 1·(−1) = 3 になって E にならない。
-        </div>
+        
       </div>
 
       <div class="section" id="inv-cofactor">
@@ -7388,11 +7419,11 @@
 
     <!-- ============ 領域07 2×2逆行列 基礎問題集 ============ -->
     <section class="domain">
-      <h2><span class="no">07</span>2×2 逆行列 基礎問題集（3問＋トラップ1問）</h2>
+      <h2><span class="no">07</span>2×2 逆行列 基礎問題集（10問）</h2>
       <p class="sub">公式：A=[[a,b],[c,d]] → A⁻¹ = 1/(ad−bc)·[[d,−b],[−c,a]]。「対角を入れ替え・反対角の符号反転・det で割る」を手が覚えるまで。</p>
 
       <div class="formula" style="border-left-color:#1d4e89;background:#f0f4ff;font-size:13px">
-        <span class="key">Tip — なぜ全問 det = 1 にしてあるか（意図）：</span>この3問は <span class="hl">わざと det = 1 になる行列だけ</span>を選んでいる。det = 1 だと最後の「1/det で割る」が省け、<span class="key">「対角を入れ替える・反対角の符号を反転する」という逆行列の"型"だけ</span>に集中できる。分数計算で気が散らずに手の動きを染み込ませるための設計。型が体に入ったら、det ≠ 1（分数が出る）の問題や 3×3 に進む。
+        <span class="key">Tip — なぜ全問 det = 1 にしてあるか（意図）：</span>Q1〜Q3・Q5 は <span class="hl">わざと det = 1 になる行列だけ</span>を選んでいる。det = 1 だと最後の「1/det で割る」が省け、<span class="key">「対角を入れ替える・反対角の符号を反転する」という逆行列の"型"だけ</span>に集中できる。分数計算で気が散らずに手の動きを染み込ませるための設計。型が体に入ったら、Q6（det = −1）・Q7（det = 2、分数が出る）・Q8（対角行列の近道）・Q9（逆行列を持たない条件）・Q10（連立方程式に使う）へ。Q4 はトラップ。
       </div>
 
       <div class="q">
@@ -7426,6 +7457,60 @@
           <p>det = 2·2 − 4·1 = 4 − 4 = <span class="res">0</span> → <span class="res">逆行列は存在しない</span>（公式の 1/det が 0 で割れない）。</p>
           <p class="step">なぜ潰れるか：1行目 (2,4) = 2 ×（2行目 (1,2)）で<span class="hl">行が一次従属</span> ＝ rank = 1（フルランクでない）。列も (2,1) と (4,2)=2×(2,1) で従属。<br>幾何：この変換は平面を1本の直線に潰す。潰れた後から元の点を復元できない＝巻き戻し不能。</p>
           <p class="step"><span class="key">教訓：</span>逆行列は「まず det を計算 → 0 なら即"存在しない"で終了」。手を動かす前の det チェックが最初の関門。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q5</span><div class="qbody"><div class="pl">A = <span class="mtx"><table><tr><td>5</td><td>2</td></tr><tr><td>2</td><td>1</td></tr></table></span> の A⁻¹ を求めよ。</div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p>det = 5·1 − 2·2 = <span class="res">1</span>。a と d（5 と 1）を入れ替え、b と c の符号を反転。</p>
+          <div class="pl">A⁻¹ = <span class="mtx"><table><tr><td>1</td><td>−2</td></tr><tr><td>−2</td><td>5</td></tr></table></span></div>
+          <p class="step">a ≠ d なので<b>入れ替えが効く</b>例。符号反転だけの [[5, −2], [−2, 1]] にすると、A⁻¹A の (1,1) = 5·5 + (−2)·2 = 21 になって E にならない。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q6</span><div class="qbody"><div class="pl">A = <span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>1</td><td>1</td></tr></table></span> の A⁻¹ を求めよ。</div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p>det = 1·1 − 2·1 = <span class="res">−1</span>。det が負でも 0 でなければ逆行列はある。入れ替え・符号反転してから <b>1/(−1) 倍</b>＝全成分の符号をもう一度反転。</p>
+          <div class="pl">A⁻¹ = (−1)·<span class="mtx"><table><tr><td>1</td><td>−2</td></tr><tr><td>−1</td><td>1</td></tr></table></span> = <span class="mtx"><table><tr><td>−1</td><td>2</td></tr><tr><td>1</td><td>−1</td></tr></table></span></div>
+          <p class="step">det &lt; 0 は「裏返し（向きの反転）」を含む変換。面積の倍率は |det| = 1 なので大きさは変わらない。<br>検算：A·A⁻¹ の (1,1) = 1·(−1) + 2·1 = 1、(1,2) = 1·2 + 2·(−1) = 0 ✓</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q7</span><div class="qbody"><div class="pl">A = <span class="mtx"><table><tr><td>4</td><td>2</td></tr><tr><td>1</td><td>1</td></tr></table></span> の A⁻¹ を求めよ。</div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p>det = 4·1 − 2·1 = <span class="res">2</span>。ここで初めて「det で割る」が効く。</p>
+          <div class="pl">A⁻¹ = ½·<span class="mtx"><table><tr><td>1</td><td>−2</td></tr><tr><td>−1</td><td>4</td></tr></table></span> = <span class="mtx"><table><tr><td>½</td><td>−1</td></tr><tr><td>−½</td><td>2</td></tr></table></span></div>
+          <p class="step">A は面積を 2 倍にする変換なので、A⁻¹ は面積を ½ にして戻す。det(A⁻¹) = ½·2 − (−1)(−½) = 1 − ½ = ½ ＝ 1/det(A) ✓</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q8</span><div class="qbody"><div class="pl">A = <span class="mtx"><table><tr><td>2</td><td>0</td></tr><tr><td>0</td><td>5</td></tr></table></span>（対角行列）の A⁻¹ を求めよ。</div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p>det = 2·5 − 0 = <span class="res">10</span>。公式どおりなら ⅒·[[5, 0], [0, 2]]。</p>
+          <div class="pl">A⁻¹ = <span class="mtx"><table><tr><td>½</td><td>0</td></tr><tr><td>0</td><td>⅕</td></tr></table></span></div>
+          <p class="step"><b>近道：</b>対角行列の逆行列は<span class="hl">対角成分をそれぞれ逆数にするだけ</span>。x 方向を 2 倍・y 方向を 5 倍する変換を戻すには、x を ½ 倍・y を ⅕ 倍すればいい。対角化（A = PDP⁻¹）がありがたい理由の一つがこれ。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q9</span><div class="qbody"><div class="pl">A = <span class="mtx"><table><tr><td>k</td><td>2</td></tr><tr><td>3</td><td>6</td></tr></table></span> が<span class="key">逆行列を持たない</span>ような k を求めよ。</div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p>逆行列なし ⇔ det = 0。det = 6k − 2·3 = 6k − 6 = 0 より <span class="res">k = 1</span>。</p>
+          <p class="step">k = 1 のとき 2列目 (2, 6) = 2 × 1列目 (1, 3)。2本の列が同じ直線に乗る → 平面が潰れる → 戻せない。<br>「逆行列を持たない」と言われたら、まず det = 0 の方程式を立てる。</p>
+        </div></details>
+      </div>
+
+      <div class="q">
+        <div class="qhead"><span class="qno">Q10</span><div class="qbody"><div class="pl">連立方程式 &nbsp;2x + y = 4、3x + 2y = 7&nbsp; を、<span class="key">逆行列を使って</span>解け。（ヒント：Q1 の行列）</div></div></div>
+        <details><summary>解答・解説</summary><div class="ans">
+          <p>A = [[2, 1], [3, 2]]、b = (4, 7) として A·(x, y) = b。両辺に左から A⁻¹ を掛けて (x, y) = A⁻¹ b。Q1 より A⁻¹ = [[2, −1], [−3, 2]]。</p>
+          <div class="pl">(x, y) = <span class="mtx"><table><tr><td>2</td><td>−1</td></tr><tr><td>−3</td><td>2</td></tr></table></span><span class="mtx"><table><tr><td>4</td></tr><tr><td>7</td></tr></table></span> = <span class="mtx"><table><tr><td>2·4 − 7</td></tr><tr><td>−3·4 + 2·7</td></tr></table></span> = <span class="mtx"><table><tr><td>1</td></tr><tr><td>2</td></tr></table></span></div>
+          <p>よって <span class="res">x = 1, y = 2</span>。検算：2·1 + 2 = 4 ✓、3·1 + 2·2 = 7 ✓</p>
+          <p class="step">逆行列を一度作っておけば、右辺 b が何に変わっても「掛けるだけ」で解ける。<a href="261017_inverse_q1_visual.html#s6">Q1 詳細解説 §06</a> も参照。</p>
         </div></details>
       </div>
     </section>
@@ -8535,6 +8620,8 @@ function switchTab(name, el) {
   document.getElementById('view-' + name).classList.add('active');
   const sideNav = document.getElementById('sideNav');
   if (sideNav) sideNav.classList.toggle('hidden', name !== 'notes');
+  const exNav = document.getElementById('exSideNav');
+  if (exNav) exNav.classList.toggle('hidden', name !== 'exercises');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -8547,7 +8634,7 @@ function exUpdateCounts(){
   const all = document.querySelectorAll('#view-exercises details');
   const open = document.querySelectorAll('#view-exercises details[open]').length;
   const el = document.getElementById('exCounts');
-  if (el) el.textContent = '問題 ' + all.length + ' 問 / 開いている ' + open;
+  if (el) el.textContent = '問題 ' + all.length + ' 問 / 解けた ' + (el.dataset.solved || 0) + ' / 開いている ' + open;
 }
 document.querySelectorAll('#view-exercises details').forEach(d=>d.addEventListener('toggle', exUpdateCounts));
 exUpdateCounts();
@@ -10035,25 +10122,66 @@ updateDoneSummary();
   });
 })();
 
-// ===== EXERCISES TOC（領域の h2 から自動生成） =====
-(function buildExToc() {
-  const nav = document.getElementById('exToc');
-  if (!nav) return;
-  const items = [];
-  document.querySelectorAll('#view-exercises section.domain').forEach(sec => {
-    const h = sec.querySelector('h2'); if (!h) return;
-    const no = (h.querySelector('.no') || {}).textContent || '';
-    const title = h.textContent.replace(no, '').trim();
-    if (!sec.id) sec.id = 'ex-d' + (no || items.length + 1);
-    const nq = sec.querySelectorAll('.q').length;
-    items.push('<li><a href="#' + sec.id + '" data-ex="' + sec.id + '"><span class="n">' + no + '</span><span>' + title + '</span><span class="c">' + nq + '問</span></a></li>');
+// ===== EXERCISES：問題ごとのチェック ＋ 目次（左サイド / 狭い画面は上部） =====
+(function buildExercises() {
+  const KEY = 'linalg-ex-solved-v1';
+  let solved;
+  try { solved = new Set(JSON.parse(localStorage.getItem(KEY) || '[]')); } catch (e) { solved = new Set(); }
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify([...solved])); } catch (e) {} };
+  const secs = [...document.querySelectorAll('#view-exercises section.domain')];
+
+  secs.forEach((sec, i) => {
+    const h = sec.querySelector('h2');
+    const no = (h && h.querySelector('.no') || {}).textContent || String(i + 1);
+    if (!sec.id) sec.id = 'ex-d' + no;
+    sec.querySelectorAll('.q').forEach(q => {
+      const qno = (q.querySelector('.qno') || {}).textContent || '';
+      const id = sec.id + ':' + qno;
+      const b = document.createElement('button');
+      b.type = 'button'; b.className = 'ex-check'; b.textContent = '✓';
+      b.title = '解けたらチェック'; b.setAttribute('aria-label', qno + ' 解けた');
+      const head = q.querySelector('.qhead');
+      head.insertBefore(b, head.firstChild);
+      const paint = () => { const on = solved.has(id); q.classList.toggle('solved', on); b.setAttribute('aria-pressed', on); };
+      b.addEventListener('click', () => { solved.has(id) ? solved.delete(id) : solved.add(id); save(); paint(); render(); });
+      paint();
+    });
   });
-  nav.innerHTML = '<div class="ex-toc-title">Contents</div><ol>' + items.join('') + '</ol>';
-  nav.addEventListener('click', e => {
+
+  const nav = document.getElementById('exToc'), side = document.getElementById('exSideNav');
+  function render() {
+    let tot = 0, dn = 0;
+    const rows = secs.map(sec => {
+      const h = sec.querySelector('h2');
+      const no = (h.querySelector('.no') || {}).textContent || '';
+      const title = h.textContent.replace(no, '').trim();
+      const qs = sec.querySelectorAll('.q'), d = sec.querySelectorAll('.q.solved').length;
+      tot += qs.length; dn += d;
+      return { id: sec.id, no, title, n: qs.length, d };
+    });
+    if (nav) nav.innerHTML = '<div class="ex-toc-title">Contents</div><ol>' + rows.map(r =>
+      '<li><a href="#' + r.id + '" data-ex="' + r.id + '"><span class="n">' + r.no + '</span><span>' + r.title + '</span><span class="c">' + r.d + '/' + r.n + '</span></a></li>').join('') + '</ol>';
+    if (side) {
+      const act = (side.querySelector('.active') || {}).dataset;
+      side.innerHTML = '<div class="ex-snav-head">演習 ' + dn + ' / ' + tot + '</div>' + rows.map(r =>
+        '<a class="ex-snav-link' + (r.d === r.n && r.n ? ' all-done' : '') + (act && act.ex === r.id ? ' active' : '') + '" href="#' + r.id + '" data-ex="' + r.id + '"><span class="n">' + r.no + '</span><span>' + r.title + '</span><span class="c">' + r.d + '/' + r.n + '</span></a>').join('');
+    }
+    const c = document.getElementById('exCounts');
+    if (c) c.dataset.solved = dn;
+    exUpdateCounts();
+  }
+  [nav, side].forEach(el => el && el.addEventListener('click', e => {
     const a = e.target.closest('[data-ex]'); if (!a) return;
     e.preventDefault();
     document.getElementById(a.dataset.ex).scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
+  }));
+  // scroll-spy
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting || !side) return;
+    side.querySelectorAll('[data-ex]').forEach(a => a.classList.toggle('active', a.dataset.ex === e.target.id));
+  }), { rootMargin: '-80px 0px -70% 0px' });
+  secs.forEach(sec => io.observe(sec));
+  render();
 })();
 </script>
 <script src="../../../040_personal/0460_english/terms/terms.js" defer></script>
