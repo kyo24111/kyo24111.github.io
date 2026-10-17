@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ベースメタル — industry 261017</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#ffffff; --surface:#f5f5f5; --card:#f0f0f0;
+      --border:#d8d8d8; --accent:#111111; --text:#1a1a1a;
+      --muted:#666666; --subtle:#999999;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Noto Sans JP', sans-serif; background:var(--bg); color:var(--text); line-height:1.75; }
+    .wrap { max-width:860px; margin:0 auto; padding:60px 24px 100px; }
+
+    .crumb { display:flex; flex-wrap:wrap; align-items:center; gap:7px; font-family:'Poppins',sans-serif; font-size:11px; font-weight:500; letter-spacing:.06em; margin-bottom:26px; }
+    .crumb a { color:var(--subtle); text-decoration:none; transition:color .15s; }
+    .crumb a:hover { color:var(--accent); }
+    .crumb .sep { color:var(--border); }
+    .crumb .cur { color:var(--accent); font-weight:700; }
+
+    .hero { background:var(--accent); color:#fff; border-radius:16px; padding:48px 44px; margin-bottom:34px; }
+    @media(max-width:560px){ .hero { padding:34px 24px; } }
+    .hero-eyebrow { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:14px; }
+    .hero h1 { font-family:'Poppins',sans-serif; font-size:40px; font-weight:700; line-height:1.1; margin-bottom:6px; letter-spacing:-.02em; }
+    @media(max-width:560px){ .hero h1 { font-size:30px; } }
+    .hero-sub { font-size:13px; color:rgba(255,255,255,0.55); margin-bottom:30px; line-height:1.7; }
+    .kv { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+    @media(max-width:640px){ .kv { grid-template-columns:repeat(2,1fr); } }
+    .kv-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:6px; }
+    .kv-val { font-family:'Poppins',sans-serif; font-size:19px; font-weight:700; color:#fff; line-height:1.15; }
+    .kv-note { font-size:11px; color:rgba(255,255,255,0.35); margin-top:4px; line-height:1.5; }
+
+    /* セクター内ページ切替 */
+    .pager { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:40px; }
+    .pager a { font-family:'Poppins',sans-serif; font-size:11.5px; font-weight:600; letter-spacing:.02em; text-decoration:none; color:var(--muted); border:1px solid var(--border); border-radius:999px; padding:6px 14px; transition:all .13s; }
+    .pager a:hover { border-color:#888; color:var(--accent); }
+    .pager a.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+    .toc { background:var(--surface); border-radius:12px; padding:24px 28px; margin-bottom:56px; }
+    .toc-title { font-family:'Poppins',sans-serif; font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--subtle); margin-bottom:14px; }
+    .toc ol { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns:1fr; } }
+    .toc li { font-size:13px; color:var(--muted); }
+    .toc li a { color:inherit; text-decoration:none; }
+    .toc li a:hover { color:var(--accent); }
+    .toc-num { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; color:var(--subtle); margin-right:8px; }
+
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav { position:fixed; left:20px; top:84px; width:216px; max-height:calc(100vh - 162px); overflow-y:auto; padding:12px 0 32px; z-index:10; scrollbar-width:thin; }
+    .side-nav::-webkit-scrollbar { width:4px; }
+    .side-nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+    @media (max-width:1320px) { .side-nav { display:none; } }
+    .side-nav-title { font-family:'Poppins',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--subtle); padding-left:14px; margin-bottom:8px; }
+    .side-nav-list { list-style:none; padding:0; margin:0; }
+    .side-nav-link { display:block; color:#b4b4b4; text-decoration:none; padding:6px 8px 6px 14px; border-left:2px solid transparent; font-size:12px; line-height:1.45; transition:color .15s, border-color .15s, background .15s; }
+    .side-nav-link:hover { color:var(--text); border-left-color:var(--border); }
+    .side-nav-link.active { color:var(--accent); font-weight:700; border-left-color:var(--accent); background:var(--surface); }
+    .side-nav-num { font-family:'Poppins',sans-serif; font-size:10.5px; color:var(--subtle); margin-right:6px; }
+    .sec { scroll-margin-top:76px; }
+    html { scroll-behavior:smooth; }
+
+    .sec { margin-bottom:60px; }
+    .sec-label { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .num { font-family:'Poppins',sans-serif; font-size:11px; font-weight:700; background:var(--accent); color:#fff; padding:3px 9px; border-radius:4px; }
+    .sec-title { font-family:'Poppins',sans-serif; font-size:18px; font-weight:700; color:var(--accent); }
+    @media(max-width:520px){ .sec-title { font-size:15.5px; } }
+
+    .sub-h { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:var(--accent); margin:28px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+
+    p { margin-bottom:14px; font-size:14px; }
+    a.il { color:inherit; }
+
+    .t-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:20px; }
+    .t { width:100%; border-collapse:collapse; font-size:13.5px; }
+    /* 狭い画面では潰さずに横スクロールさせる */
+    .t-scroll .t { min-width:560px; }
+    @media(max-width:620px){
+      .t-scroll { border:1px solid var(--border); border-radius:10px; }
+      .t-scroll .t th:first-child, .t-scroll .t td:first-child { position:sticky; left:0; background:var(--bg); }
+      .t-scroll .t th:first-child { background:var(--surface); }
+    }
+    .t th { background:var(--surface); color:var(--muted); font-weight:600; text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); font-size:12px; white-space:nowrap; }
+    .t td { padding:10px 14px; border-bottom:1px solid var(--card); color:var(--text); vertical-align:top; }
+    .t tr:last-child td { border-bottom:none; }
+    .t strong { color:var(--accent); }
+    .t .nw { white-space:nowrap; }
+
+    .callout { background:var(--surface); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:18px 22px; margin-bottom:20px; font-size:13.5px; line-height:1.85; }
+
+    /* バリューチェーン */
+    .vchain { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin-bottom:22px; }
+    .vstep { border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .vstep-h { background:var(--accent); color:#fff; padding:8px 12px; }
+    .vstep-n { font-family:'Poppins',sans-serif; font-size:8px; font-weight:700; letter-spacing:.12em; color:rgba(255,255,255,.45); }
+    .vstep-t { font-family:'Poppins',sans-serif; font-size:12px; font-weight:700; letter-spacing:.02em; }
+    .vstep-b { padding:11px 12px; font-size:11.5px; color:var(--muted); line-height:1.7; }
+
+    /* カード群 */
+    .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:20px; }
+    @media(max-width:560px){ .cards { grid-template-columns:1fr; } }
+    .card { border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
+    .card-n { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:var(--accent); margin-bottom:3px; }
+    .card-m { font-size:11px; color:var(--subtle); margin-bottom:9px; }
+    .card-d { font-size:12.5px; color:var(--muted); line-height:1.75; }
+    .tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:10px; }
+    .tag { font-family:'Poppins',sans-serif; font-size:9.5px; font-weight:600; padding:2px 8px; border-radius:4px; background:var(--surface); border:1px solid var(--border); color:var(--muted); }
+    .tag.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+    /* クロスリンク */
+    .xlink { border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:20px; }
+    .xlink-t { font-family:'Poppins',sans-serif; font-size:10px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; color:var(--subtle); margin-bottom:12px; }
+    .xlink ul { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:7px 20px; }
+    @media(max-width:560px){ .xlink ul { grid-template-columns:1fr; } }
+    .xlink li { font-size:12.5px; line-height:1.6; }
+    .xlink li a { color:var(--accent); text-decoration:none; border-bottom:1px solid var(--border); }
+    .xlink li a:hover { border-bottom-color:var(--accent); }
+    .xlink li span { color:var(--subtle); font-size:11.5px; }
+
+    .info-box { background:var(--surface); border-radius:10px; padding:20px 22px; font-size:13.5px; line-height:1.9; }
+    .info-box ul { list-style:none; }
+    .info-box ul li::before { content:'—'; color:var(--subtle); margin-right:8px; }
+    .info-box a { color:inherit; }
+
+    .sources { margin-top:72px; padding-top:28px; border-top:1px solid var(--border); }
+    .sources-title { font-family:'Poppins',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--subtle); margin-bottom:14px; }
+    .sources ul { list-style:none; font-size:12px; color:var(--subtle); line-height:2; }
+</style>
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../../index.html">24111</a><span class="s">/</span><a href="../../index.html">research</a><span class="s">/</span><a href="../index.html">industry</a><span class="s">/</span><a href="index.html">base_metals</a><span class="s">/</span><span class="c">ベースメタル</span></nav><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+<style>
+  .mx { width:100%; border-collapse:collapse; font-size:13px; min-width:560px; }
+  .mx th { background:var(--surface); color:var(--muted); font-weight:600; padding:10px 8px; border-bottom:1px solid var(--border); font-size:11.5px; white-space:nowrap; text-align:center; }
+  .mx th:first-child, .mx td:first-child { text-align:left; padding-left:14px; white-space:nowrap; }
+  .mx td { padding:10px 8px; border-bottom:1px solid var(--card); text-align:center; font-size:15px; }
+  .mx td:first-child { font-size:13px; }
+  .mx td.f { color:var(--accent); }
+  .mx td.h { color:#9a9a9a; }
+  .mx td.n { color:#d0d0d0; }
+  .legend { font-size:11.5px; color:var(--subtle); margin:-8px 0 20px; }
+  .grp { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+  @media(max-width:640px){ .grp { grid-template-columns:1fr; } }
+  .grp-c { border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .grp-h { background:var(--accent); color:#fff; padding:10px 14px; font-family:'Poppins',sans-serif; font-size:12.5px; font-weight:700; }
+  .grp-h small { display:block; font-size:9.5px; font-weight:600; letter-spacing:.12em; color:rgba(255,255,255,.5); text-transform:uppercase; }
+  .grp-b { padding:12px 14px; font-size:12.5px; color:var(--muted); line-height:1.75; }
+  .grp-b strong { color:var(--accent); }
+</style>
+
+  <nav class="crumb">
+    <a href="/index.html">24111</a>
+    <span class="sep">/</span>
+    <a href="../index.html">industry</a>
+    <span class="sep">/</span>
+    <span class="cur">base metals</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Industry Sector — 261017</div>
+    <h1>Base Metals / ベースメタル</h1>
+    <div class="hero-sub">LMEで取引される6つの非鉄金属。銅・アルミ・亜鉛・ニッケル・鉛・錫。それぞれ「何に強いか」がはっきり分かれていて、その強みがそのまま用途になっている。</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">対象</div>
+        <div class="kv-val">6金属</div>
+        <div class="kv-note">LMEの主要非鉄</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">市場が最大</div>
+        <div class="kv-val">銅</div>
+        <div class="kv-note">約$270B／年（概算）</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">量が最大</div>
+        <div class="kv-val">アルミ</div>
+        <div class="kv-note">一次地金 約7,200万t</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">量が最小</div>
+        <div class="kv-val">錫</div>
+        <div class="kv-note">約37万t（アルミの1/200）</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">ベースメタルとは</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">6つを一枚で</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">何に強いか — 強みマトリクス</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">方向性 — 3つのグループ</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">なぜそうなるか（science へ）</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">ベースメタルとは</span></div>
+    <div class="t-scroll"><table class="t">
+      <tr><td class="nw"><strong>定義</strong></td><td>貴金属（金・銀・白金）ではない、<strong>大量に使われる汎用の非鉄金属</strong>。空気や水で酸化・腐食しやすい＝「base（卑）」が語源。</td></tr>
+      <tr><td class="nw"><strong>実務上の範囲</strong></td><td><strong>LME（London Metal Exchange）の主要6金属</strong>を指すのが普通。鉄も理屈上は卑金属だが、鉄鋼は「Ferrous」として別枠（→ <a class="il" href="../0369_steelmaking/260905_stm.html">製鋼</a>）。</td></tr>
+      <tr><td class="nw"><strong>隣の分類</strong></td><td>貴金属（Au/Ag/PGM）／レアメタル・マイナーメタル（Li, Co など）／レアアース（→ <a class="il" href="../0370_rare_earths/index.html">レアアース</a>）。</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">6つを一枚で</span></div>
+    <div class="t-scroll"><table class="t">
+      <tr><th>金属</th><th>ひとことで</th><th>何に強いか</th><th>主な用途</th><th>年間量</th></tr>
+      <tr><td class="nw"><strong>Copper 銅</strong><br><span style="color:var(--subtle);font-size:11.5px">Cu</span></td><td>電気を運ぶ本命</td><td>電気・熱をよく通す（銀に次いで2位）</td><td>電線・送電網・モーター・EV・データセンター</td><td class="nw">精錬 約2,700万t</td></tr>
+      <tr><td class="nw"><strong>Aluminium アルミ</strong><br><span style="color:var(--subtle);font-size:11.5px">Al</span></td><td>軽い万能選手</td><td>軽い（鉄の約1/3）・錆びにくい・加工しやすい</td><td>自動車・航空機・建材・缶・送電線</td><td class="nw">一次 約7,200万t</td></tr>
+      <tr><td class="nw"><strong>Zinc 亜鉛</strong><br><span style="color:var(--subtle);font-size:11.5px">Zn</span></td><td>鉄の身代わり</td><td>自分が先に溶けて鉄を錆から守る</td><td>鋼材のメッキ（約半分）・ダイカスト・真鍮</td><td class="nw">約1,350万t</td></tr>
+      <tr><td class="nw"><strong>Nickel ニッケル</strong><br><span style="color:var(--subtle);font-size:11.5px">Ni</span></td><td>鉄を強くする添加剤</td><td>混ぜると錆びにくく粘り強くなる／電池の容量を上げる</td><td>ステンレス（約7割）・電池正極・超合金</td><td class="nw">約350万t</td></tr>
+      <tr><td class="nw"><strong>Lead 鉛</strong><br><span style="color:var(--subtle);font-size:11.5px">Pb</span></td><td>重くて柔らかい</td><td>重い・柔らかい・融けやすい・放射線を遮る</td><td>鉛蓄電池（約8割）・放射線遮蔽</td><td class="nw">約1,250万t</td></tr>
+      <tr><td class="nw"><strong>Tin 錫</strong><br><span style="color:var(--subtle);font-size:11.5px">Sn</span></td><td>電子部品の接着剤</td><td>低い温度で融ける（232℃）・無毒で錆びにくい</td><td>はんだ（約半分）・ブリキ缶</td><td class="nw">約37万t</td></tr>
+    </table></div>
+    <p style="font-size:12px;color:var(--subtle)">※ 年間量は2024〜25年頃の概算。市場規模（量×価格）は銅 ＞ アルミ ≫ ニッケル ＞ 亜鉛 ＞ 鉛 ＞ 錫 の順。</p>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">何に強いか — 強みマトリクス</span></div>
+    <div class="t-scroll"><table class="mx">
+      <tr><th>金属</th><th>電気を通す</th><th>軽い</th><th>錆び・防食</th><th>融けやすい</th><th>合金で効く</th><th>電池</th></tr>
+      <tr><td><strong>Cu 銅</strong></td><td class="f">●</td><td class="n">—</td><td class="h">○</td><td class="n">—</td><td class="h">○</td><td class="h">○</td></tr>
+      <tr><td><strong>Al アルミ</strong></td><td class="h">○</td><td class="f">●</td><td class="h">○</td><td class="h">○</td><td class="h">○</td><td class="h">○</td></tr>
+      <tr><td><strong>Zn 亜鉛</strong></td><td class="n">—</td><td class="n">—</td><td class="f">●</td><td class="h">○</td><td class="h">○</td><td class="h">○</td></tr>
+      <tr><td><strong>Ni ニッケル</strong></td><td class="n">—</td><td class="n">—</td><td class="f">●</td><td class="n">—</td><td class="f">●</td><td class="f">●</td></tr>
+      <tr><td><strong>Pb 鉛</strong></td><td class="n">—</td><td class="n">—</td><td class="h">○</td><td class="f">●</td><td class="n">—</td><td class="f">●</td></tr>
+      <tr><td><strong>Sn 錫</strong></td><td class="n">—</td><td class="n">—</td><td class="h">○</td><td class="f">●</td><td class="h">○</td><td class="n">—</td></tr>
+    </table></div>
+    <p class="legend">● = その金属の主役になる強み　○ = 効くが主役ではない　— = 特に強くない</p>
+    <div class="callout">
+      アルミの電気は○だが、<strong>重さあたりでは銅の約2倍</strong>電気を運べる。だから重さが効く高圧送電線はアルミ、狭い所に詰め込む配線・モーターは銅、と住み分けている。
+    </div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">方向性 — 3つのグループ</span></div>
+    <div class="grp">
+      <div class="grp-c">
+        <div class="grp-h"><small>Group 1</small>電気を運ぶ</div>
+        <div class="grp-b"><strong>銅・アルミ</strong><br>電化（EV・再エネ・送電網・データセンター）がそのまま需要になる。量も市場も6つの中で桁違い。</div>
+      </div>
+      <div class="grp-c">
+        <div class="grp-h"><small>Group 2</small>鉄を守る・強くする</div>
+        <div class="grp-b"><strong>亜鉛・ニッケル</strong><br>単体より「鉄と組み合わせて」使う。需要は鉄鋼・ステンレスの生産量に連動する。</div>
+      </div>
+      <div class="grp-c">
+        <div class="grp-h"><small>Group 3</small>くっつける・ためる</div>
+        <div class="grp-b"><strong>錫・鉛</strong>（＋ニッケル）<br>はんだと電池。量は小さいが、電子機器と自動車に欠かせない。ニッケルは電池でここにも入る。</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">なぜそうなるか（science へ）</span></div>
+    <p>「なぜ銅は電気を通すのか」「なぜ亜鉛を塗ると鉄が錆びないのか」といった性質の理屈は、science の元素DBに書いている。下のリンクで各元素のカードが直接開く。</p>
+    <div class="xlink">
+      <div class="xlink-t">Science — 元素DB</div>
+      <ul>
+        <li><a href="../../034_science/260707_elements.html#Cu">Cu 銅</a> <span>自由電子・導電率</span></li>
+        <li><a href="../../034_science/260707_elements.html#Al">Al アルミニウム</a> <span>酸化被膜・溶融塩電解</span></li>
+        <li><a href="../../034_science/260707_elements.html#Zn">Zn 亜鉛</a> <span>イオン化傾向・犠牲防食</span></li>
+        <li><a href="../../034_science/260707_elements.html#Ni">Ni ニッケル</a> <span>ステンレス・電池正極</span></li>
+        <li><a href="../../034_science/260707_elements.html#Pb">Pb 鉛</a> <span>鉛蓄電池の反応</span></li>
+        <li><a href="../../034_science/260707_elements.html#Sn">Sn 錫</a> <span>低融点・ブリキとトタン</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>International Copper Study Group（ICSG）World Copper Factbook — 精錬銅生産量</li>
+      <li>International Aluminium Institute（IAI）Primary Aluminium Production — 一次アルミ生産量</li>
+      <li>ILZSG（国際鉛亜鉛研究会）／INSG（国際ニッケル研究会）／International Tin Association — 各金属の生産量と用途構成</li>
+      <li>LME（London Metal Exchange）— 取引対象金属</li>
+    </ul>
+  </div>
+
+  <div class="sec" style="margin-top:40px">
+    <div class="info-box">
+      <ul>
+        <li><a href="../index.html">industry トップに戻る</a></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (secs.length < 3) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+
+</body>
+</html>
