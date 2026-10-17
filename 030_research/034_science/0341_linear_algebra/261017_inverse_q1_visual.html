@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>逆行列を目で見る — 演習07 Q1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --text:#111; --muted:#888; --border:#e6e6e6; --surface:#f6f6f6; --e1:#1d4e89; --e2:#b5462f; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { background:#fff; color:var(--text); font-family:'Noto Sans JP',sans-serif; font-size:15px; line-height:1.85; }
+  .wrap { max-width:760px; margin:0 auto; padding:28px 16px 100px; }
+  h1 { font-family:'Poppins','Noto Sans JP',sans-serif; font-size:1.45rem; font-weight:700; line-height:1.4; margin-bottom:6px; }
+  .lead { color:var(--muted); font-size:13px; margin-bottom:22px; }
+  .lead a { color:var(--text); }
+  h2 { font-family:'Poppins','Noto Sans JP',sans-serif; font-size:1.12rem; font-weight:700; margin:52px 0 12px; padding-top:14px; border-top:1px solid var(--border); scroll-margin-top:20px; }
+  h2 .no { font-size:11px; color:var(--muted); letter-spacing:.12em; display:block; margin-bottom:2px; }
+  p { margin:10px 0; }
+  .key { font-weight:700; }
+  .hl { background:#fff3a0; padding:0 4px; }
+  .mono { font-family:'Poppins',monospace; }
+  .e1 { color:var(--e1); font-weight:700; }
+  .e2 { color:var(--e2); font-weight:700; }
+  .box { background:var(--surface); border-left:3px solid var(--text); padding:12px 16px; margin:16px 0; font-size:14px; }
+  .q { border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin:14px 0 6px; }
+  .mtx { display:inline-block; vertical-align:middle; border-left:1.5px solid var(--text); border-right:1.5px solid var(--text); border-radius:4px; padding:0 4px; margin:0 3px; }
+  .mtx table { border-collapse:collapse; }
+  .mtx td { padding:1px 7px; text-align:center; font-family:'Poppins',sans-serif; font-size:14px; min-width:26px; }
+  .cv-wrap { border:1px solid var(--border); border-radius:12px; padding:10px; margin:16px 0 8px; }
+  canvas { width:100%; display:block; aspect-ratio:1/1; max-height:440px; touch-action:manipulation; }
+  .ctrl { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .ctrl button { appearance:none; border:1px solid var(--text); background:#fff; color:var(--text); border-radius:999px; padding:6px 14px; font-family:'Poppins','Noto Sans JP',sans-serif; font-size:12.5px; font-weight:600; cursor:pointer; }
+  .ctrl button.on, .ctrl button:active { background:var(--text); color:#fff; }
+  .cap { font-size:13px; color:#444; margin-top:8px; min-height:1.6em; }
+  .tbl-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:12px 0; }
+  table.t { border-collapse:collapse; width:100%; min-width:460px; font-size:13.5px; }
+  table.t th { text-align:left; background:var(--surface); color:#666; font-weight:600; font-size:12px; padding:8px 10px; border-bottom:1px solid #d8d8d8; white-space:nowrap; }
+  table.t td { padding:8px 10px; border-bottom:1px solid #f0f0f0; vertical-align:top; }
+  ol.steps { margin:8px 0 8px 22px; }
+  ol.steps li { margin:4px 0; }
+  .toc { border-top:1px solid var(--border); margin:0 0 10px; }
+  .toc a { display:flex; gap:10px; padding:7px 2px; border-bottom:1px solid var(--border); color:var(--text); text-decoration:none; font-size:13.5px; }
+  .toc a span { font-family:'Poppins',sans-serif; color:var(--muted); font-size:11px; min-width:22px; padding-top:2px; }
+  .side { position:fixed; top:90px; left:calc(50% + 400px); width:200px; font-size:12px; }
+  .side a { display:block; color:var(--muted); text-decoration:none; padding:3px 0 3px 10px; border-left:2px solid transparent; line-height:1.5; }
+  .side a.on { color:var(--text); border-left-color:var(--text); font-weight:600; }
+  @media (max-width:1240px) { .side { display:none; } }
+  .back { display:inline-block; margin-top:40px; font-size:13px; color:var(--text); }
+</style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../../index.html">24111</a><span class="s">/</span><a href="../../index.html">research</a><span class="s">/</span><a href="../index.html">science</a><span class="s">/</span><a href="index.html">linear_algebra</a><span class="s">/</span><span class="c">逆行列を目で見る</span></nav><!-- crumbs:end -->
+<nav class="side" id="sideNav"></nav>
+<div class="wrap">
+  <h1>逆行列を目で見る — 演習07 Q1</h1>
+  <p class="lead"><a href="260516_linear_algebra.html">Linear Algebra</a> の演習「07 2×2 逆行列」Q1 の詳細解説。計算の答えは出せている前提で、<b>その計算が平面の上で何をしているのか</b>を絵とアニメで追う。</p>
+
+  <div class="q">
+    <b>Q1.</b> A = <span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>3</td><td>2</td></tr></table></span> の A⁻¹ を求めよ。<br>
+    <b>答え.</b> det = 2·2 − 1·3 = 1 なので A⁻¹ = <span class="mtx"><table><tr><td>2</td><td>−1</td></tr><tr><td>−3</td><td>2</td></tr></table></span>
+  </div>
+
+  <div class="toc" id="toc"></div>
+
+  <!-- ===================== 1 ===================== -->
+  <h2 id="s1"><span class="no">01</span>A は平面をどう動かすか</h2>
+  <p>行列は「平面全体をぐにゃっと動かす変換」。どう動かすかは、<b>2本の基底ベクトルの行き先</b>だけで決まる。</p>
+  <ul style="margin:6px 0 6px 22px">
+    <li><span class="e1">e₁ = (1, 0)</span> の行き先 ＝ A の<b>1列目</b> (2, 3)</li>
+    <li><span class="e2">e₂ = (0, 1)</span> の行き先 ＝ A の<b>2列目</b> (1, 2)</li>
+  </ul>
+  <p>方眼紙のマス目全体が、この2本に引っ張られて斜めの平行四辺形のマス目になる。下の黒い点 p = (1, 1) は e₁ + e₂ なので、行き先も (2, 3) + (1, 2) = <span class="hl">(3, 5)</span>。</p>
+  <div class="cv-wrap">
+    <canvas id="cv1"></canvas>
+    <div class="ctrl"><button data-go="A">A をかける</button><button data-go="I">元に戻す</button></div>
+    <div class="cap" id="cap1"></div>
+  </div>
+  <div class="box"><span class="key">見るポイント：</span>マス目は斜めに歪むが、<b>まっすぐな線はまっすぐのまま、原点は動かない、マス目の間隔は均等</b>。これが「線形」変換の見た目。</div>
+
+  <!-- ===================== 2 ===================== -->
+  <h2 id="s2"><span class="no">02</span>A⁻¹ は、その動きを巻き戻す</h2>
+  <p>A⁻¹ は「A で動かした平面を、元の方眼紙に戻す変換」。A をかけてから A⁻¹ をかけると、何もしなかったのと同じ（＝単位行列 E）。</p>
+  <p class="mono" style="text-align:center">A⁻¹ A = E</p>
+  <p>(3, 5) に A⁻¹ をかけると (2·3 − 1·5, −3·3 + 2·5) = <span class="hl">(1, 1)</span>。ちゃんと p に戻る。</p>
+  <div class="cv-wrap">
+    <canvas id="cv2"></canvas>
+    <div class="ctrl"><button data-go="A">① A をかける</button><button data-go="back">② A⁻¹ で戻す</button></div>
+    <div class="cap" id="cap2"></div>
+  </div>
+  <p>逆に、何も無い状態から A⁻¹ を先にかけてもいい（A A⁻¹ = E）。2×2 の正方行列では、<b>左から掛けても右から掛けても</b>同じ A⁻¹ で戻る。</p>
+  <div class="cv-wrap">
+    <canvas id="cv2b"></canvas>
+    <div class="ctrl"><button data-go="Ainv">① A⁻¹ をかける</button><button data-go="back">② A で戻す</button></div>
+    <div class="cap" id="cap2b"></div>
+  </div>
+
+  <!-- ===================== 3 ===================== -->
+  <h2 id="s3"><span class="no">03</span>A⁻¹ の列は「A が e₁, e₂ に運んでくる元の点」</h2>
+  <p>A の列が「e₁, e₂ の行き先」だったのと同じで、<b>A⁻¹ の列は「A⁻¹ が e₁, e₂ を運ぶ先」</b>。言い換えると、<span class="hl">A をかけたらちょうど e₁, e₂ に着地する出発点</span>。</p>
+  <div class="tbl-scroll"><table class="t">
+    <tr><th>A⁻¹ の列</th><th>A をかけると</th><th>意味</th></tr>
+    <tr><td class="e1">u₁ = (2, −3)</td><td>(2·2 + 1·(−3), 3·2 + 2·(−3)) = <b>(1, 0)</b></td><td>e₁ に着地する出発点</td></tr>
+    <tr><td class="e2">u₂ = (−1, 2)</td><td>(2·(−1) + 1·2, 3·(−1) + 2·2) = <b>(0, 1)</b></td><td>e₂ に着地する出発点</td></tr>
+  </table></div>
+  <p>下で A をかけると、斜めに散らばっていた u₁, u₂ が、ぴったり e₁, e₂ に吸い込まれる。</p>
+  <div class="cv-wrap">
+    <canvas id="cv3"></canvas>
+    <div class="ctrl"><button data-go="A">A をかける</button><button data-go="I">元に戻す</button></div>
+    <div class="cap" id="cap3"></div>
+  </div>
+  <div class="box"><span class="key">ここが核心：</span>逆行列を求める ＝「A で e₁ に飛ぶ点はどこ？ e₂ に飛ぶ点はどこ？」という2本の連立方程式を解くこと。その答えを縦に並べたものが A⁻¹。掃き出し法の [A | E] → [E | A⁻¹] は、この2本を同時に解いている。</div>
+
+  <!-- ===================== 4 ===================== -->
+  <h2 id="s4"><span class="no">04</span>det = 1 は「面積が変わらない」</h2>
+  <p>det は「変換で面積が何倍になるか」。マス1個（面積 1 の正方形）は、A で平行四辺形になる。その面積は</p>
+  <p class="mono" style="text-align:center">det A = 2·2 − 1·3 = <b>1</b></p>
+  <p>形は大きく歪むのに、<span class="hl">面積はぴったり 1 のまま</span>。下のアニメの右上に、いまの面積（＝det）を出している。</p>
+  <div class="cv-wrap">
+    <canvas id="cv4"></canvas>
+    <div class="ctrl"><button data-go="A">A をかける</button><button data-go="I">元に戻す</button></div>
+    <div class="cap" id="cap4"></div>
+  </div>
+  <p>途中で面積がいったん 1.5 まで膨らむのは、アニメが E から A へまっすぐ成分を動かしているせい（途中の行列は A ではない）。<b>着地した A の時点では 1</b> に戻る。</p>
+  <p>A⁻¹ は A の巻き戻しなので、面積の倍率も逆数 1/det。det = 1 なら A⁻¹ の det も 1。だから公式の「1/det で割る」が要らず、<b>入れ替えて符号を反転するだけ</b>で済む。Q1〜Q3 がわざと det = 1 になっているのはこのため。</p>
+
+  <!-- ===================== 5 ===================== -->
+  <h2 id="s5"><span class="no">05</span>「入れ替えて符号反転」は、直交する矢印を作っている</h2>
+  <p>A⁻¹ A = E を成分で書くと、「A⁻¹ の行 × A の列」が</p>
+  <ul style="margin:6px 0 6px 22px">
+    <li>同じ番号どうし（1行目×1列目、2行目×2列目）→ <b>1</b></li>
+    <li>違う番号どうし（1行目×2列目、2行目×1列目）→ <b>0</b></li>
+  </ul>
+  <p>内積が 0 ＝ 2本の矢印が<b>直交</b>している。つまり A⁻¹ の1行目は「A の2列目に直交する矢印」、2行目は「A の1列目に直交する矢印」でなければならない。</p>
+  <p>矢印 (x, y) を 90° 回すと (y, −x)。<span class="hl">成分を入れ替えて片方の符号を反転</span>――これが公式の形の正体。</p>
+  <div class="tbl-scroll"><table class="t">
+    <tr><th>A⁻¹ の行</th><th>相手の列と（直交 → 0）</th><th>自分の列と（→ det = 1）</th></tr>
+    <tr><td>1行目 (2, −1)</td><td>2列目 (1, 2)：2·1 + (−1)·2 = <b>0</b></td><td>1列目 (2, 3)：2·2 + (−1)·3 = <b>1</b></td></tr>
+    <tr><td>2行目 (−3, 2)</td><td>1列目 (2, 3)：(−3)·2 + 2·3 = <b>0</b></td><td>2列目 (1, 2)：(−3)·1 + 2·2 = <b>1</b></td></tr>
+  </table></div>
+  <div class="cv-wrap">
+    <canvas id="cv5"></canvas>
+    <div class="ctrl"><button data-go="r1" class="on">1行目 (2, −1) を見る</button><button data-go="r2">2行目 (−3, 2) を見る</button></div>
+    <div class="cap" id="cap5"></div>
+  </div>
+  <p>「自分の列」との内積 ad − bc は、2本の列が作る平行四辺形の面積＝det。だから一般には A⁻¹A = det × E になり、最後に det で割る。det = 1 ならそのまま。</p>
+  <div class="box"><span class="key">注意：「det = 1 なら符号反転だけ」に見えるのは Q1 の偶然。</span>公式は「a と d を入れ替える＋b, c の符号を反転」。Q1 は a = d = 2 なので、入れ替えても見た目が変わらないだけ。Q2 の [[3, 5], [1, 2]] では入れ替えが効いて [[2, −5], [−1, 3]] になる（符号反転だけの [[3, −5], [−1, 2]] だと A⁻¹A の (1,1) が 3·3 − 5·1 = 4 になり E にならない）。</div>
+
+  <!-- ===================== 6 ===================== -->
+  <h2 id="s6"><span class="no">06</span>連立方程式として読む</h2>
+  <p>A x = b は連立方程式そのもの。</p>
+  <p class="mono" style="text-align:center">2x + y = α<br>3x + 2y = β</p>
+  <p>「A で b に飛んでくる出発点 x はどこ？」という問い。両辺に A⁻¹ をかければ一発で x = A⁻¹ b。</p>
+  <ol class="steps">
+    <li>b = (3, 5) なら x = (2·3 − 1·5, −3·3 + 2·5) = <b>(1, 1)</b></li>
+    <li>b = (1, 0) なら x = A⁻¹ の1列目 = <b>(2, −3)</b>（§03 の u₁）</li>
+    <li>b = (0, 1) なら x = A⁻¹ の2列目 = <b>(−1, 2)</b>（§03 の u₂）</li>
+  </ol>
+  <p>検算：2·1 + 1 = 3 ✓、3·1 + 2·1 = 5 ✓。</p>
+  <p>逆行列が1つ手元にあれば、右辺 b が何に変わっても「掛けるだけ」で解ける。これが逆行列を持っておく嬉しさ。</p>
+
+  <!-- ===================== 7 ===================== -->
+  <h2 id="s7"><span class="no">07</span>比較：Q4（トラップ）は巻き戻せない</h2>
+  <div style="margin:10px 0">同じ演習の Q4、B = <span class="mtx"><table><tr><td>2</td><td>4</td></tr><tr><td>1</td><td>2</td></tr></table></span> は det = 2·2 − 4·1 = <b>0</b>。2列目 (4, 2) が1列目 (2, 1) のちょうど2倍で、<span class="e1">e₁</span> と <span class="e2">e₂</span> の行き先が同じ直線に乗る。</div>
+  <div class="cv-wrap">
+    <canvas id="cv7"></canvas>
+    <div class="ctrl"><button data-go="B">B をかける</button><button data-go="I">元に戻す</button></div>
+    <div class="cap" id="cap7"></div>
+  </div>
+  <ul style="margin:6px 0 6px 22px">
+    <li><b>面積 0</b>：マス目が1本の線に潰れる。戻すには面積を 1/0 倍しないといけない → 不可能。</li>
+    <li><b>重なる</b>：白丸 (2, 0) と黒丸 (0, 1) が、どちらも (4, 2) に落ちる。(4, 2) を見ても元がどっちか分からない。</li>
+    <li><b>届かない</b>：線の外の点（例：(1, 0)）には、どの出発点からも行けない。</li>
+  </ul>
+  <p>Q1 の A は面積 1 のまま歪むだけなので、どの点も「1対1」で対応が残る。だから巻き戻せる。<b>det ≠ 0 かどうかが、巻き戻せるかどうかの分かれ目。</b></p>
+
+  <!-- ===================== 8 ===================== -->
+  <h2 id="s8"><span class="no">08</span>まとめ</h2>
+  <div class="tbl-scroll"><table class="t">
+    <tr><th>計算でやったこと</th><th>平面の上で起きていること</th></tr>
+    <tr><td>A の列 (2,3), (1,2)</td><td>e₁, e₂ の行き先</td></tr>
+    <tr><td>det = 1</td><td>面積が変わらない（潰れない）→ 巻き戻せる</td></tr>
+    <tr><td>入れ替えて符号反転</td><td>相手の列に直交する行を作る（90° 回転）</td></tr>
+    <tr><td>A⁻¹ の列 (2,−3), (−1,2)</td><td>A で e₁, e₂ に着地する出発点</td></tr>
+    <tr><td>A⁻¹ A = E</td><td>動かして戻すと、元の方眼紙</td></tr>
+  </table></div>
+  <a class="back" href="260516_linear_algebra.html">← Linear Algebra に戻る（演習 07 / 第10章 逆行列）</a>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const A = [[2, 1], [3, 2]], AI = [[2, -1], [-3, 2]], B = [[2, 4], [1, 2]], I = [[1, 0], [0, 1]];
+  const C1 = '#1d4e89', C2 = '#b5462f';
+  const mul = (M, v) => [M[0][0] * v[0] + M[0][1] * v[1], M[1][0] * v[0] + M[1][1] * v[1]];
+  const mm = (P, Q) => [[P[0][0]*Q[0][0]+P[0][1]*Q[1][0], P[0][0]*Q[0][1]+P[0][1]*Q[1][1]], [P[1][0]*Q[0][0]+P[1][1]*Q[1][0], P[1][0]*Q[0][1]+P[1][1]*Q[1][1]]];
+  const lerp = (P, Q, t) => P.map((r, i) => r.map((x, j) => x + (Q[i][j] - x) * t));
+  const det = M => M[0][0] * M[1][1] - M[0][1] * M[1][0];
+  const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  const f = x => (Math.abs(x) < 0.005 ? 0 : x).toFixed(Math.abs(x - Math.round(x)) < 0.005 ? 0 : 2).replace('-', '−');
+
+  function Plane(id, o) {
+    const cv = document.getElementById(id), ctx = cv.getContext('2d');
+    const R = o.range || [-4, 6, -4, 6];   // xmin xmax ymin ymax
+    let M = I, W = 0, H = 0, raf = 0;
+    function size() {
+      const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+      W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); draw();
+    }
+    const X = x => (x - R[0]) / (R[1] - R[0]) * W, Y = y => H - (y - R[2]) / (R[3] - R[2]) * H;
+    const P = v => [X(v[0]), Y(v[1])];
+    function line(a, b, col, w, dash) {
+      ctx.beginPath(); ctx.setLineDash(dash || []); ctx.strokeStyle = col; ctx.lineWidth = w;
+      const p = P(a), q = P(b); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); ctx.setLineDash([]);
+    }
+    function arrow(v, col, label, w) {
+      const o0 = P([0, 0]), p = P(v);
+      const dx = p[0] - o0[0], dy = p[1] - o0[1], L = Math.hypot(dx, dy);
+      ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = w || 2.4;
+      ctx.beginPath(); ctx.moveTo(o0[0], o0[1]); ctx.lineTo(p[0], p[1]); ctx.stroke();
+      if (L > 6) {
+        const ux = dx / L, uy = dy / L, h = 9;
+        ctx.beginPath(); ctx.moveTo(p[0], p[1]);
+        ctx.lineTo(p[0] - ux * h - uy * h * .5, p[1] - uy * h + ux * h * .5);
+        ctx.lineTo(p[0] - ux * h + uy * h * .5, p[1] - uy * h - ux * h * .5); ctx.closePath(); ctx.fill();
+      }
+      if (label) text(label, p[0] + 6, p[1] - 6, col, 600);
+    }
+    function dot(v, fill, label, ring) {
+      const p = P(v); ctx.beginPath(); ctx.arc(p[0], p[1], 5, 0, Math.PI * 2);
+      ctx.fillStyle = ring ? '#fff' : fill; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = fill; ctx.stroke();
+      if (label) text(label, p[0] + 8, p[1] + 14, fill, 500);
+    }
+    function text(s, x, y, col, wt) {
+      ctx.font = (wt || 500) + ' 12px Poppins, "Noto Sans JP", sans-serif'; ctx.fillStyle = col;
+      ctx.fillText(s, Math.min(x, W - ctx.measureText(s).width - 4), Math.max(y, 14));
+    }
+    function draw() {
+      if (!W) return;
+      ctx.clearRect(0, 0, W, H);
+      // 元の方眼（薄く）
+      for (let i = Math.ceil(R[0]); i <= R[1]; i++) line([i, R[2]], [i, R[3]], '#f2f2f2', 1);
+      for (let j = Math.ceil(R[2]); j <= R[3]; j++) line([R[0], j], [R[1], j], '#f2f2f2', 1);
+      line([R[0], 0], [R[1], 0], '#cfcfcf', 1); line([0, R[2]], [0, R[3]], '#cfcfcf', 1);
+      // 変換後の方眼
+      if (o.grid !== false) {
+        const N = 14;
+        for (let i = -N; i <= N; i++) {
+          line(mul(M, [i, -N]), mul(M, [i, N]), i === 0 ? '#777' : '#d6d6d6', i === 0 ? 1.3 : 1);
+          line(mul(M, [-N, i]), mul(M, [N, i]), i === 0 ? '#777' : '#d6d6d6', i === 0 ? 1.3 : 1);
+        }
+        // 単位正方形の行き先
+        const q = [[0, 0], [1, 0], [1, 1], [0, 1]].map(v => P(mul(M, v)));
+        ctx.beginPath(); q.forEach((p, k) => k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+        ctx.fillStyle = 'rgba(17,17,17,.10)'; ctx.fill(); ctx.strokeStyle = '#111'; ctx.lineWidth = 1.2; ctx.stroke();
+        arrow(mul(M, [1, 0]), C1, o.noBasisLabel ? '' : 'e₁→(' + f(M[0][0]) + ', ' + f(M[1][0]) + ')');
+        arrow(mul(M, [0, 1]), C2, o.noBasisLabel ? '' : 'e₂→(' + f(M[0][1]) + ', ' + f(M[1][1]) + ')');
+      }
+      if (o.extra) o.extra({ M, arrow, dot, line, text, P, W, H });
+      if (o.showDet) {
+        const d = det(M); ctx.font = '700 13px Poppins, sans-serif';
+        const s = '面積 = det = ' + f(d); ctx.fillStyle = '#111';
+        ctx.fillText(s, W - ctx.measureText(s).width - 10, 22);
+      }
+    }
+    function go(T, ms, done) {
+      cancelAnimationFrame(raf); const S = M, t0 = performance.now(); ms = ms || 1100;
+      (function step(now) {
+        const t = Math.min(1, (now - t0) / ms); M = lerp(S, T, ease(t)); draw();
+        if (t < 1) raf = requestAnimationFrame(step); else { M = T; draw(); done && done(); }
+      })(t0);
+    }
+    new ResizeObserver(size).observe(cv);
+    return { go, get M() { return M; }, set(Mx) { M = Mx; draw(); }, draw };
+  }
+
+  function bind(id, map) {
+    const box = document.getElementById(id).closest('.cv-wrap');
+    box.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
+      box.querySelectorAll('[data-go]').forEach(x => x.classList.toggle('on', x === b));
+      map[b.dataset.go]();
+    }));
+  }
+  const cap = (id, s) => { document.getElementById(id).innerHTML = s; };
+
+  /* 01 */
+  const p1 = Plane('cv1', { extra: g => { const v = mul(g.M, [1, 1]); g.dot(v, '#111', 'p → (' + f(v[0]) + ', ' + f(v[1]) + ')'); } });
+  cap('cap1', 'いまは元の方眼紙。<b>A をかける</b>を押すと、e₁ が (2,3)、e₂ が (1,2) へ伸び、マス目全体が付いていく。');
+  bind('cv1', {
+    A: () => p1.go(A, 1100, () => cap('cap1', 'e₁ → (2, 3)、e₂ → (1, 2)。灰色のマス（面積 1）は平行四辺形に。p = (1, 1) は (3, 5) へ。')),
+    I: () => p1.go(I, 900, () => cap('cap1', '元の方眼紙。'))
+  });
+
+  /* 02 */
+  const p2 = Plane('cv2', { extra: g => { const v = mul(g.M, [1, 1]); g.dot(v, '#111', '(' + f(v[0]) + ', ' + f(v[1]) + ')'); } });
+  cap('cap2', '① で A をかけ、② で A⁻¹ をかけて戻す。');
+  bind('cv2', {
+    A: () => p2.go(A, 1100, () => cap('cap2', 'A をかけた状態。点は (3, 5)。ここから A⁻¹ をかけると…')),
+    back: () => p2.go(mm(AI, p2.M), 1100, () => cap('cap2', 'A⁻¹ をかけて戻った。A⁻¹A = E なので、点も (1, 1) に戻る。'))
+  });
+  const p2b = Plane('cv2b', { extra: g => { const v = mul(g.M, [1, 1]); g.dot(v, '#111', '(' + f(v[0]) + ', ' + f(v[1]) + ')'); } });
+  cap('cap2b', '今度は A⁻¹ が先。e₁ は (2, −3)、e₂ は (−1, 2) へ行く。');
+  bind('cv2b', {
+    Ainv: () => p2b.go(AI, 1100, () => cap('cap2b', 'A⁻¹ をかけた状態。点 (1, 1) は (1, −1) へ。ここから A をかけると…')),
+    back: () => p2b.go(mm(A, p2b.M), 1100, () => cap('cap2b', 'A A⁻¹ = E。元の方眼紙に戻った。'))
+  });
+
+  /* 03 */
+  const p3 = Plane('cv3', { noBasisLabel: true, extra: g => {
+    const a = mul(g.M, [2, -3]), b = mul(g.M, [-1, 2]);
+    g.arrow(a, C1, 'u₁ (' + f(a[0]) + ', ' + f(a[1]) + ')', 3.2); g.arrow(b, C2, 'u₂ (' + f(b[0]) + ', ' + f(b[1]) + ')', 3.2);
+  } });
+  cap('cap3', '太い矢印が A⁻¹ の列 u₁ = (2, −3)、u₂ = (−1, 2)。A をかけると、どこに行く？');
+  bind('cv3', {
+    A: () => p3.go(A, 1300, () => cap('cap3', 'u₁ は (1, 0) ＝ e₁ に、u₂ は (0, 1) ＝ e₂ に着地。A⁻¹ の列は「A で e₁, e₂ に飛ぶ出発点」。')),
+    I: () => p3.go(I, 900, () => cap('cap3', '元に戻した。'))
+  });
+
+  /* 04 */
+  const p4 = Plane('cv4', { showDet: true });
+  cap('cap4', '右上の数字が、灰色のマスのいまの面積（＝ det）。');
+  bind('cv4', {
+    A: () => p4.go(A, 2200, () => cap('cap4', '着地した A では面積 1。形は大きく歪んだが、広さは変わっていない。')),
+    I: () => p4.go(I, 1400, () => cap('cap4', '元の方眼紙。面積 1。'))
+  });
+
+  /* 05：元の平面に A の列と A⁻¹ の行を描く（変換はしない） */
+  let row = 1;
+  const p5 = Plane('cv5', { grid: false, range: [-4, 4, -3, 5], extra: g => {
+    g.arrow([2, 3], row === 2 ? '#111' : '#bbb', '1列目 (2, 3)', 2);
+    g.arrow([1, 2], row === 1 ? '#111' : '#bbb', '2列目 (1, 2)', 2);
+    const r = row === 1 ? [2, -1] : [-3, 2], partner = row === 1 ? [1, 2] : [2, 3];
+    g.arrow(r, row === 1 ? C1 : C2, (row === 1 ? '1行目 ' : '2行目 ') + '(' + f(r[0]) + ', ' + f(r[1]) + ')', 3);
+    // 直角マーク
+    const s = 0.35, u = [r[0] / Math.hypot(...r) * s, r[1] / Math.hypot(...r) * s], w = [partner[0] / Math.hypot(...partner) * s, partner[1] / Math.hypot(...partner) * s];
+    const a = g.P(u), b = g.P([u[0] + w[0], u[1] + w[1]]), c = g.P(w);
+    const ctx = document.getElementById('cv5').getContext('2d');
+    ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.strokeStyle = '#111'; ctx.lineWidth = 1.2; ctx.stroke();
+  } });
+  const say5 = () => cap('cap5', row === 1
+    ? '1行目 (2, −1) は、2列目 (1, 2) を 90° 回したもの → 直交（内積 0）。1列目 (2, 3) との内積は 2·2 − 1·3 = 1 ＝ det。'
+    : '2行目 (−3, 2) は、1列目 (2, 3) を 90° 回したもの → 直交（内積 0）。2列目 (1, 2) との内積は −3 + 4 = 1 ＝ det。');
+  say5();
+  bind('cv5', { r1: () => { row = 1; p5.draw(); say5(); }, r2: () => { row = 2; p5.draw(); say5(); } });
+
+  /* 07 */
+  const p7 = Plane('cv7', { showDet: true, range: [-4, 6, -4, 6], extra: g => {
+    const a = mul(g.M, [2, 0]), b = mul(g.M, [0, 1]);
+    g.dot(a, '#111', '', true); g.dot(b, '#111', '');
+  } });
+  cap('cap7', '白丸 = (2, 0)、黒丸 = (0, 1)。B をかけると？');
+  bind('cv7', {
+    B: () => p7.go(B, 1500, () => cap('cap7', '平面全体が直線 y = x/2 に潰れた（面積 0）。白丸も黒丸も (4, 2) に重なる → どちらが元か区別できない。')),
+    I: () => p7.go(I, 1100, () => cap('cap7', '元の方眼紙。'))
+  });
+
+  /* 目次 + scroll-spy */
+  const hs = [...document.querySelectorAll('h2[id]')];
+  const items = hs.map(h => { const n = h.querySelector('.no').textContent, t = h.textContent.replace(n, '').trim(); return [h.id, n, t]; });
+  document.getElementById('toc').innerHTML = items.map(([id, n, t]) => '<a href="#' + id + '"><span>' + n + '</span>' + t + '</a>').join('');
+  const side = document.getElementById('sideNav');
+  side.innerHTML = items.map(([id, n, t]) => '<a href="#' + id + '" data-id="' + id + '">' + n + ' ' + t + '</a>').join('');
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) side.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id === e.target.id));
+  }), { rootMargin: '0px 0px -70% 0px' });
+  hs.forEach(h => io.observe(h));
+})();
+</script>
+<script src="../../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>

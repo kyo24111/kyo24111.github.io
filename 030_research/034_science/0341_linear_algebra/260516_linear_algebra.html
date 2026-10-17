@@ -908,6 +908,22 @@
   @media (max-width: 600px) {
     .notation-item { grid-template-columns: 1fr; gap: 4px; }
   }
+  /* チェック（履修済み）にした章・節では「未履修」ラベルを出さない */
+  #view-notes .section.done .tag-not-learned,
+  #view-notes .chapter.completed .tag-not-learned { display: none; }
+  #view-notes .section.done .subsection-pending { opacity: 1; }
+  .side-nav-item.done .side-nav-link.not-learned::after,
+  .side-nav-chapter.done .side-nav-link.not-learned::after { display: none; }
+  /* ===== Exercises TOC ===== */
+  .ex-toc { margin: 4px 0 28px; border-top: 1px solid var(--border); }
+  .ex-toc-title { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 14px 0 6px; }
+  .ex-toc ol { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0 18px; }
+  .ex-toc li { border-bottom: 1px solid var(--border); }
+  .ex-toc a { display: flex; gap: 10px; align-items: baseline; padding: 8px 2px; color: var(--text); text-decoration: none; font-size: 13.5px; }
+  .ex-toc a:hover { background: var(--surface); }
+  .ex-toc .n { font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 11px; color: var(--muted); min-width: 20px; }
+  .ex-toc .c { margin-left: auto; font-family: 'Poppins', sans-serif; font-size: 10.5px; color: var(--muted); white-space: nowrap; }
+  #view-exercises section.domain { scroll-margin-top: 80px; }
 </style>
 </head>
 <body>
@@ -929,7 +945,7 @@
 <div class="page">
 
   <!-- ===== NOTES TAB ===== -->
-  <div class="view active" id="view-notes">
+  <div class="view active" id="view-notes" data-terms-root>
 
     <div class="notes-controls">
       <span class="done-summary" id="doneSummary">0 / 0 項目 履修済み</span>
@@ -4594,7 +4610,7 @@
       <div class="chapter-meta">
         <div class="chapter-label">Chapter</div>
         <div class="chapter-status pending">📝 これから学ぶ</div>
-        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-09-02</div>
+        <div class="chapter-updated" style="margin-left:auto;font-size:12px;color:var(--muted)">Last updated: 2026-10-17</div>
       </div>
       <div class="chapter-title"><span class="vt" data-vocab="inverse-matrix" data-ja="逆行列">逆行列</span>（Inverse Matrix）</div>
 
@@ -4651,6 +4667,68 @@
         </div><!-- /.subsection-pending -->
       </div>
 
+      <div class="section" id="inv-singular">
+        <h2>深掘り — 逆行列を持たない行列はある。det = 0 と何がつながっているのか</h2>
+
+        <p><span class="key">逆行列を持たない行列は普通にある。</span>持たないパターンは2種類。</p>
+        <ul style="margin:8px 0 14px 20px;line-height:1.9">
+          <li><b>そもそも正方行列でない</b>（2×3 など）：入力と出力の次元が違うので「行って、そのまま戻る」が両方向で成り立たない。逆行列は<span class="hl">正方行列にしか定義されない</span>。</li>
+          <li><b>正方行列でも det = 0</b>：これを<span class="key">特異行列</span>（singular matrix）と呼ぶ。以下はこっちの話。</li>
+        </ul>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">具体例で「戻れない」を体験する</h3>
+        <div class="pl">A = <span class="matrix"><table><tr><td>1</td><td>2</td></tr><tr><td>2</td><td>4</td></tr></table></span> &nbsp;— 2列目が1列目のちょうど2倍</div>
+        <p>基底の行き先を見ると、e₁ → (1, 2)、e₂ → (2, 4)。<span class="hl">2本とも同じ直線 y = 2x の上</span>に乗ってしまう。だから平面全体が、この1本の直線に押しつぶされる。</p>
+
+        <div class="figbox" style="margin:14px 0">
+          <svg viewBox="0 0 400 190" xmlns="http://www.w3.org/2000/svg" font-family="Poppins, sans-serif" style="width:100%;max-width:440px;display:block;margin:0 auto">
+            <!-- left: before -->
+            <line x1="20" y1="150" x2="150" y2="150" stroke="#ccc"/><line x1="40" y1="170" x2="40" y2="40" stroke="#ccc"/>
+            <polygon points="40,150 100,150 100,90 40,90" fill="#eee" stroke="#111" stroke-width="1.4"/>
+            <text x="104" y="166" font-size="11" fill="#111">e₁</text><text x="22" y="92" font-size="11" fill="#111">e₂</text>
+            <text x="70" y="124" text-anchor="middle" font-size="11" fill="#555">面積 1</text>
+            <text x="85" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#111">変換前</text>
+            <!-- arrow -->
+            <line x1="165" y1="105" x2="215" y2="105" stroke="#111" stroke-width="1.4"/><polygon points="215,100 225,105 215,110" fill="#111"/>
+            <text x="195" y="96" text-anchor="middle" font-size="12" font-weight="700" fill="#111">A</text>
+            <!-- right: after -->
+            <line x1="230" y1="165" x2="380" y2="165" stroke="#ccc"/><line x1="250" y1="185" x2="250" y2="30" stroke="#ccc"/>
+            <line x1="240" y1="185" x2="325" y2="15" stroke="#bbb" stroke-dasharray="4 3"/>
+            <line x1="250" y1="165" x2="310" y2="45" stroke="#111" stroke-width="3"/>
+            <circle cx="270" cy="125" r="3" fill="#111"/><text x="276" y="129" font-size="10" fill="#111">(1,2)</text>
+            <circle cx="290" cy="85" r="3" fill="#111"/><text x="296" y="89" font-size="10" fill="#111">(2,4)</text>
+            <text x="330" y="30" font-size="10" fill="#777">y = 2x</text>
+            <text x="315" y="20" text-anchor="middle" font-size="11" font-weight="700" fill="#111">変換後</text>
+            <text x="330" y="150" font-size="11" fill="#555">面積 0</text>
+          </svg>
+        </div>
+
+        <p>潰れたせいで、逆変換（戻る操作）が作れなくなる。理由は2つある。</p>
+        <ul style="margin:8px 0 14px 20px;line-height:1.9">
+          <li><b>① 重なる</b>：A(2, 0) = (2, 4)、A(0, 1) = (2, 4)。<span class="hl">違う入力が同じ出力に重なる</span>。(2, 4) を受け取っても、元が (2, 0) だったのか (0, 1) だったのか決められない。差の (2, −1) は A(2, −1) = (0, 0)、つまり<a href="#image-kernel" onclick="gotoSection('image-kernel');return false;"><span class="vt" data-vocab="kernel" data-ja="核">核</span></a>に 0 以外のベクトルが入っている。</li>
+          <li><b>② 届かない</b>：出力は全部 y = 2x の上。たとえば (1, 0) にはどの入力からも行けない。だから「(1, 0) の元はどれ？」には答えがない。</li>
+        </ul>
+        <p>正方行列では、①と②は必ずセットで起きる（片方だけ、はない）。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">det = 0 と「逆行列なし」がつながる理由 — 3つの見方</h3>
+        <p><b>見方① 面積の倍率</b>：det は「変換で面積（体積）が何倍になるか」。上の例は det = 1·4 − 2·2 = <span class="hl">0</span> で、面積 1 の正方形が面積 0 の線分になる。戻すには面積を <span class="key">1/0 倍</span>しないといけないが、そんな操作は存在しない。</p>
+        <p><b>見方② 2×2 の公式</b>：A⁻¹ = <span class="key">1 / (ad − bc)</span> × [[d, −b], [−c, a]]。分母の ad − bc が det そのもの。det = 0 だと<span class="hl">0 で割ることになり、公式が壊れる</span>。</p>
+        <p><b>見方③ 積の det</b>：A A⁻¹ = E の両辺の det を取ると det(A) · det(A⁻¹) = det(E) = 1。det(A) = 0 なら「0 × 何か = 1」になり、そんな数はない。逆に det(A) ≠ 0 なら det(A⁻¹) = 1 / det(A) と決まる。</p>
+
+        <div class="formula" style="font-size:13.5px">
+          <span class="key">一本の線にまとめると：</span><br>
+          det(A) = 0 ⇔ 空間が潰れる ⇔ rank 落ち ⇔ 核に 0 以外のベクトルがある ⇔ <b>逆行列なし</b>
+        </div>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">この先で効いてくる場面 — 固有値の det(A − λE) = 0</h3>
+        <p><a href="#eigen" onclick="gotoSection('eigen');return false;">固有値</a>で出てくる det(A − λE) = 0 は、この一本の線の使い回し。</p>
+        <p class="step" style="line-height:1.9">Av = λv ⇔ (A − λE)v = 0。固有ベクトルは 0 でない v が欲しい。<br>
+        → A − λE の核に 0 以外が入ってほしい<br>
+        → A − λE が<span class="hl">逆行列を持たなくなる</span>ような λ を探す<br>
+        → <b>det(A − λE) = 0</b> を解く</p>
+        <p>固有値とは「A から λE を引いたら、ちょうど潰れる（特異になる）」ような λ のこと。逆行列の章と固有値の章は、det = 0 で一本につながっている。</p>
+      </div>
+
       <div class="section" id="inv-2x2">
         <h2>計算① 2×2 の公式 — 「入れ替えて符号、det で割る」<span class="status-tag tag-not-learned">未履修</span></h2>
         <div class="subsection-pending">
@@ -4675,6 +4753,31 @@
         </div>
         <p class="step" style="color:var(--muted);font-size:13.5px">検算：A·A⁻¹ の (1,1) = 4·0.6 + 7·(−0.2) = 2.4 − 1.4 = 1、(1,2) = 4·(−0.7) + 7·0.4 = −2.8 + 2.8 = 0 … I になる ✓</p>
         </div><!-- /.subsection-pending -->
+      </div>
+
+      <div class="section" id="inv-2x2-why">
+        <h2>なぜ「入れ替えて符号」なのか — 掛けると E になるように作られている</h2>
+        <p>ゴールは A⁻¹A = E、つまり<span class="hl">対角が 1、それ以外が 0</span>。候補 X = [[d, −b], [−c, a]] を A に掛けてみる（左は行、右は列）。</p>
+        <div class="tbl-scroll"><table style="width:100%;border-collapse:collapse;margin:12px 0;font-size:13.5px">
+          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--border)">(1,1)：(d, −b)·(a, c)</td><td style="padding:7px 10px;border-bottom:1px solid var(--border)">da − bc</td><td style="padding:7px 10px;border-bottom:1px solid var(--border)"><span class="hl">= det</span></td></tr>
+          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--border)">(1,2)：(d, −b)·(b, d)</td><td style="padding:7px 10px;border-bottom:1px solid var(--border)">db − bd</td><td style="padding:7px 10px;border-bottom:1px solid var(--border)">= 0</td></tr>
+          <tr><td style="padding:7px 10px;border-bottom:1px solid var(--border)">(2,1)：(−c, a)·(a, c)</td><td style="padding:7px 10px;border-bottom:1px solid var(--border)">−ca + ac</td><td style="padding:7px 10px;border-bottom:1px solid var(--border)">= 0</td></tr>
+          <tr><td style="padding:7px 10px">(2,2)：(−c, a)·(b, d)</td><td style="padding:7px 10px">−cb + ad</td><td style="padding:7px 10px"><span class="hl">= det</span></td></tr>
+        </table></div>
+        <p>結果は XA = <b>det × E</b>。だから <span class="key">det = 1 ならそのまま逆行列</span>、それ以外は det で割って 1 に揃える。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">0 になる仕組み — 符号反転の正体は「90° 回転」</h3>
+        <p>ベクトル (x, y) を 90° 回すと (y, −x) になる（成分を入れ替えて片方の符号を反転）。X の1行目 (d, −b) は、A の2列目 (b, d) を<span class="hl">90° 回したもの</span>。90° 回したベクトルは元と直交するので、内積はちょうど 0。2行目 (−c, a) も同じで、A の1列目 (a, c) と直交する。</p>
+        <p>つまり「入れ替えて符号」は、<span class="key">相手の列に直交する行を作る操作</span>。非対角を 0 にするための仕掛け。</p>
+
+        <h3 style="font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:24px;margin-bottom:10px;padding-left:10px;border-left:2px solid var(--accent)">対角が det になる仕組み — 面積</h3>
+        <p>(d, −b)·(a, c) = ad − bc は、A の2本の列 (a, c) と (b, d) が作る平行四辺形の面積そのもの（<a href="#determinant" onclick="gotoSection('determinant');return false;">行列式の章</a>の ad − bc）。なので対角には det が出てくる。</p>
+
+        <div class="formula" style="font-size:13.5px">
+          <span class="key">注意：</span>det = 1 でも <b>a と d の入れ替え</b>は必要。符号反転だけでは足りない。<br>
+          例：A = [[2, 1], [1, 1]]（det = 1）→ A⁻¹ = [[1, −1], [−1, 2]]。検算すると A·A⁻¹ = [[2−1, −2+2], [1−1, −1+2]] = E ✓<br>
+          符号だけ反転した [[2, −1], [−1, 1]] だと、(1,1) = 2·2 + 1·(−1) = 3 になって E にならない。
+        </div>
       </div>
 
       <div class="section" id="inv-cofactor">
@@ -6951,6 +7054,8 @@
       <span class="ex-counts" id="exCounts"></span>
     </div>
 
+    <nav class="ex-toc" id="exToc" aria-label="演習の目次"></nav>
+
     <!-- ============ 領域1 ============ -->
     <section class="domain">
       <h2><span class="no">01</span>行列のサイズ・次元</h2>
@@ -7291,7 +7396,7 @@
       </div>
 
       <div class="q">
-        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><div class="pl">A = <span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>3</td><td>2</td></tr></table></span> の A⁻¹ を求めよ。</div></div></div>
+        <div class="qhead"><span class="qno">Q1</span><div class="qbody"><div class="pl">A = <span class="mtx"><table><tr><td>2</td><td>1</td></tr><tr><td>3</td><td>2</td></tr></table></span> の A⁻¹ を求めよ。</div><p style="margin-top:6px;font-size:13px"><a href="261017_inverse_q1_visual.html" style="color:var(--text)">▶ 詳細解説：変換のイメージ（アニメ8節）— A が平面をどう動かし、A⁻¹ がどう巻き戻すか</a></p></div></div>
         <details><summary>解答・解説</summary><div class="ans">
           <p>det = 2·2 − 1·3 = <span class="res">1</span>。入れ替え・符号反転して 1/1 倍。</p>
           <div class="pl">A⁻¹ = <span class="mtx"><table><tr><td>2</td><td>−1</td></tr><tr><td>−3</td><td>2</td></tr></table></span></div>
@@ -9929,6 +10034,28 @@ updateDoneSummary();
     ]
   });
 })();
+
+// ===== EXERCISES TOC（領域の h2 から自動生成） =====
+(function buildExToc() {
+  const nav = document.getElementById('exToc');
+  if (!nav) return;
+  const items = [];
+  document.querySelectorAll('#view-exercises section.domain').forEach(sec => {
+    const h = sec.querySelector('h2'); if (!h) return;
+    const no = (h.querySelector('.no') || {}).textContent || '';
+    const title = h.textContent.replace(no, '').trim();
+    if (!sec.id) sec.id = 'ex-d' + (no || items.length + 1);
+    const nq = sec.querySelectorAll('.q').length;
+    items.push('<li><a href="#' + sec.id + '" data-ex="' + sec.id + '"><span class="n">' + no + '</span><span>' + title + '</span><span class="c">' + nq + '問</span></a></li>');
+  });
+  nav.innerHTML = '<div class="ex-toc-title">Contents</div><ol>' + items.join('') + '</ol>';
+  nav.addEventListener('click', e => {
+    const a = e.target.closest('[data-ex]'); if (!a) return;
+    e.preventDefault();
+    document.getElementById(a.dataset.ex).scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+})();
 </script>
+<script src="../../../040_personal/0460_english/terms/terms.js" defer></script>
 </body>
 </html>
