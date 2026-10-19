@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Patrick Collison — Tweets</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff; --surface: #f5f5f5; --surface2: #ebebeb;
+    --text: #111111; --sub: #555555; --muted: #888888; --border: #e0e0e0; --accent: #111111;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.85; font-size: 15px; }
+  a { color: inherit; }
+  .page { max-width: 820px; margin: 0 auto; padding: 48px 24px 120px; }
+
+  /* header */
+  .eyebrow { font-family: 'Poppins', sans-serif; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); }
+  h1 { font-family: 'Poppins', sans-serif; font-size: clamp(30px, 5vw, 46px); font-weight: 800; letter-spacing: -.02em; line-height: 1.15; margin: 8px 0 14px; }
+  .lead { color: var(--sub); font-size: 14px; }
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px 22px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--muted); }
+  .meta-row b { color: var(--text); font-family: 'Poppins', sans-serif; font-weight: 600; margin-left: 4px; }
+  .meta-row a { color: var(--text); }
+
+  /* controls */
+  .controls { position: sticky; top: 0; z-index: 20; background: rgba(255,255,255,.96); backdrop-filter: blur(6px); border-bottom: 1px solid var(--border); margin: 28px -24px 0; padding: 10px 24px; display: flex; flex-wrap: wrap; gap: 8px 18px; align-items: center; }
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 999px; overflow: hidden; }
+  .seg button { font: 500 12px 'Poppins','Noto Sans JP',sans-serif; background: #fff; color: var(--sub); border: 0; padding: 5px 12px; cursor: pointer; white-space: nowrap; }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.on { background: var(--accent); color: #fff; }
+  .ctl-label { font: 600 10px 'Poppins',sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-right: 6px; }
+  .ctl { display: inline-flex; align-items: center; }
+  .linkbtn { font: 500 12px 'Noto Sans JP',sans-serif; background: none; border: 0; color: var(--sub); text-decoration: underline; cursor: pointer; }
+
+  /* side nav */
+  .side-nav { position: fixed; left: 24px; top: 84px; width: 230px; max-height: calc(100vh - 140px); overflow-y: auto; padding: 8px 0 40px; font-size: 12px; z-index: 10; scrollbar-width: thin; }
+  @media (max-width: 1320px) { .side-nav { display: none; } }
+  .sn-day { font: 700 10px 'Poppins',sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #bbb; padding: 10px 0 2px 12px; }
+  .sn-day.active { color: var(--text); }
+  .sn-link { display: block; color: #aaa; text-decoration: none; padding: 4px 8px 4px 22px; border-left: 2px solid transparent; line-height: 1.45; }
+  .sn-link:hover { color: var(--text); border-left-color: var(--border); }
+  .sn-link.active { color: var(--text); font-weight: 700; border-left-color: var(--accent); background: var(--surface); }
+  .sn-link.rp { font-style: italic; }
+
+  /* day + card */
+  .day { font: 700 13px 'Poppins',sans-serif; letter-spacing: .08em; margin: 48px 0 0; padding-bottom: 8px; border-bottom: 2px solid var(--text); display: flex; justify-content: space-between; align-items: baseline; }
+  .day span { font: 500 11px 'Poppins',sans-serif; color: var(--muted); letter-spacing: .04em; }
+  .tw { padding: 28px 0 32px; border-bottom: 1px solid var(--border); scroll-margin-top: 64px; }
+  .tw-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 12px; color: var(--muted); }
+  .badge { font: 600 10px 'Poppins',sans-serif; letter-spacing: .08em; text-transform: uppercase; border: 1px solid var(--text); color: var(--text); padding: 1px 7px; border-radius: 3px; }
+  .badge.repost { border-style: dashed; color: var(--sub); border-color: var(--sub); }
+  .badge.quote { background: var(--surface2); border-color: var(--surface2); }
+  .tw-head .time { font-family: 'Poppins',sans-serif; color: var(--text); font-weight: 500; }
+  .tw-head .stats { margin-left: auto; font-family: 'Poppins',sans-serif; display: flex; gap: 10px; flex-wrap: wrap; }
+  .tw-head a { color: var(--sub); }
+  .tw h2 { font-size: 19px; font-weight: 700; line-height: 1.5; margin: 10px 0 14px; }
+  .author { font-size: 12px; color: var(--sub); margin: -6px 0 12px; }
+
+  /* body: paragraph pairs */
+  .pair { margin: 0 0 14px; }
+  .en { font-family: Georgia, 'Times New Roman', serif; font-size: 16px; line-height: 1.7; color: var(--text); white-space: pre-line; overflow-wrap: anywhere; }
+  .ja { font-size: 14px; line-height: 1.85; color: var(--sub); margin-top: 4px; padding-left: 12px; border-left: 2px solid var(--surface2); white-space: pre-line; }
+  body.v-en .ja { display: none; }
+  body.v-ja .en { display: none; }
+  body.v-ja .ja { margin-top: 0; padding-left: 0; border-left: 0; color: var(--text); font-size: 15px; }
+  .en a, .ja a { color: var(--text); text-decoration: underline; text-decoration-color: #bbb; }
+  .sep { text-align: center; color: var(--muted); margin: 18px 0; }
+
+  .quote { border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; margin: 6px 0 14px; background: #fafafa; }
+  .quote .qa { font: 600 11px 'Poppins',sans-serif; color: var(--muted); margin-bottom: 6px; }
+  .quote .en { font-size: 14.5px; }
+  .quote .ja { font-size: 13px; }
+  .media { display: block; margin: 4px 0 14px; position: relative; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); max-width: 480px; }
+  .media img { display: block; width: 100%; height: auto; }
+  .media .play { position: absolute; left: 10px; bottom: 10px; background: rgba(0,0,0,.75); color: #fff; font: 600 11px 'Poppins',sans-serif; padding: 3px 9px; border-radius: 4px; }
+
+  /* explain blocks */
+  details.ex { margin-top: 14px; border-top: 1px dashed var(--border); }
+  details.ex > summary { list-style: none; cursor: pointer; padding: 10px 0 6px; font: 700 11px 'Poppins','Noto Sans JP',sans-serif; letter-spacing: .12em; text-transform: uppercase; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  details.ex > summary::-webkit-details-marker { display: none; }
+  details.ex > summary::before { content: '+'; display: inline-block; width: 14px; font-weight: 500; }
+  details.ex[open] > summary::before { content: '–'; }
+  details.ex > summary small { font-weight: 500; color: var(--muted); letter-spacing: .04em; text-transform: none; }
+  .note { margin: 6px 0 14px; }
+  .note h3 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .note p { font-size: 14px; color: #333; }
+  .note b { font-weight: 700; color: var(--text); }
+  .tbl-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  table.mini { border-collapse: collapse; margin: 8px 0; font-size: 13px; min-width: 420px; width: 100%; }
+  table.mini th, table.mini td { border: 1px solid var(--border); padding: 5px 8px; text-align: left; vertical-align: top; }
+  table.mini th { background: var(--surface); font-weight: 700; white-space: nowrap; }
+  table.mini td:first-child { white-space: nowrap; font-weight: 500; }
+
+  .vocab { display: grid; grid-template-columns: minmax(130px, 200px) 1fr; border-top: 1px solid var(--border); margin-top: 6px; }
+  .vocab > div { padding: 7px 8px; border-bottom: 1px solid var(--border); font-size: 13.5px; }
+  .vocab .w { font-family: Georgia, serif; font-size: 15px; font-weight: 700; color: var(--text); overflow-wrap: anywhere; }
+  .vocab .w small { display: block; font: 500 10px 'Poppins',sans-serif; color: var(--muted); letter-spacing: .06em; margin-top: 1px; }
+  .vocab .m b { font-weight: 700; }
+  .vocab .m span { display: block; color: var(--sub); font-size: 12.5px; }
+  @media (max-width: 560px) {
+    .vocab { grid-template-columns: 1fr; }
+    .vocab .w { border-bottom: 0 !important; padding-bottom: 0 !important; }
+    .tw-head .stats { margin-left: 0; width: 100%; }
+    .en { font-size: 15.5px; }
+  }
+  .empty { color: var(--muted); font-size: 13px; padding: 30px 0; }
+  footer { margin-top: 56px; font-size: 12px; color: var(--muted); line-height: 1.8; }
+  footer code { font-size: 11.5px; background: var(--surface); padding: 1px 5px; border-radius: 3px; }
+</style>
+</head>
+<body class="v-both">
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../../index.html">24111</a><span class="s">/</span><a href="../../index.html">research</a><span class="s">/</span><a href="../index.html">legend</a><span class="s">/</span><a href="index.html">tweets</a><span class="s">/</span><span class="c">Patrick Collison</span></nav><!-- crumbs:end -->
+
+<nav class="side-nav" id="sideNav" aria-label="目次"></nav>
+
+<main class="page">
+  <div class="eyebrow">Legend / Tweets</div>
+  <h1>Patrick Collison</h1>
+  <p class="lead">Stripe CEO・Arc Institute共同創業者 <a href="https://x.com/patrickc" target="_blank" rel="noopener">@patrickc</a> の投稿を、原文・日本語訳・知識の解説・英単語の4点セットで読むページ。人物リサーチは <a href="../patrick_collison.html">Patrick Collison</a>。</p>
+  <div class="meta-row" id="metaRow"></div>
+
+  <div class="controls">
+    <span class="ctl"><span class="ctl-label">Show</span>
+      <span class="seg" id="segKind">
+        <button data-k="all" class="on">All</button><button data-k="own">本人</button><button data-k="repost">Repost</button>
+      </span></span>
+    <span class="ctl"><span class="ctl-label">Text</span>
+      <span class="seg" id="segView">
+        <button data-v="both" class="on">対訳</button><button data-v="en">原文</button><button data-v="ja">和訳</button>
+      </span></span>
+    <span class="ctl"><button class="linkbtn" id="btnOpen">解説・英単語を全部開く</button></span>
+  </div>
+
+  <div id="feed"></div>
+
+  <footer>
+    <div>Last updated: 2026-10-19</div>
+    <div>対象：直近10日（2026-10-09〜10-19 JST）。時刻はJST。リプライは取得元に出ないため対象外。数字（views/likes）は取得時点。</div>
+    <div>更新手順：<code>python3 fetch_tweets.py patrickc --days 10</code> で原文を取り直し（<code>patrickc_raw.js</code>）、新しいIDの和訳・解説・英単語を <code>patrickc_notes.js</code> に足す。</div>
+  </footer>
+</main>
+
+<script src="patrickc_raw.js"></script>
+<script src="patrickc_notes.js"></script>
+<script src="patrickc_notes_long.js"></script>
+<script>
+(function () {
+  'use strict';
+  var RAW = window.RAW_TWEETS || [], NOTES = window.TWEET_NOTES || {};
+  var POS = { n: 'noun', v: 'verb', adj: 'adj', adv: 'adv', phr: 'phrase', abbr: 'abbr', int: 'interj', 'n/v': 'noun / verb', 'adj/adv': 'adj / adv' };
+  var WD = ['日', '月', '火', '水', '木', '金', '土'];
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function linkify(s) {
+    return esc(s)
+      .replace(/https?:\/\/[^\s<]+[^\s<.,;:)!?'"」）]/g, function (u) { return '<a href="' + u + '" target="_blank" rel="noopener">' + u.replace(/^https?:\/\//, '') + '</a>'; })
+      .replace(/(^|[^\w/])@(\w{1,20})/g, '$1<a href="https://x.com/$2" target="_blank" rel="noopener">@$2</a>');
+  }
+  function jst(ts) { var d = new Date((ts + 9 * 3600) * 1000); return { y: d.getUTCFullYear(), m: d.getUTCMonth() + 1, d: d.getUTCDate(), w: WD[d.getUTCDay()], hh: ('0' + d.getUTCHours()).slice(-2), mm: ('0' + d.getUTCMinutes()).slice(-2) }; }
+  function num(n) { if (n == null) return '–'; if (n >= 1e6) return (n / 1e6).toFixed(2).replace(/\.?0+$/, '') + 'M'; if (n >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K'; return String(n); }
+  function paras(s) { return String(s || '').split(/\n\n+/); }
+
+  function pairs(en, ja) {
+    var e = paras(en), j = ja ? (Array.isArray(ja) ? ja : paras(ja)) : [];
+    return e.map(function (p, i) {
+      if (p.trim() === '—') return '<div class="sep">—</div>';
+      return '<div class="pair"><div class="en">' + linkify(p) + '</div>' + (j[i] ? '<div class="ja">' + linkify(j[i]) + '</div>' : '') + '</div>';
+    }).join('');
+  }
+
+  function card(t) {
+    var n = NOTES[t.id] || {}, d = jst(t.ts), own = t.kind !== 'repost';
+    var h = '<article class="tw" id="t' + t.id + '" data-kind="' + t.kind + '">';
+    h += '<div class="tw-head"><span class="badge ' + t.kind + '">' + { post: 'Post', quote: 'Quote', repost: 'Repost' }[t.kind] + '</span>';
+    h += '<span class="time">' + d.m + '/' + d.d + '（' + d.w + '）' + d.hh + ':' + d.mm + '</span>';
+    h += '<a href="' + esc(t.url) + '" target="_blank" rel="noopener">X で開く</a>';
+    h += '<span class="stats"><span>' + num(t.views) + ' views</span><span>' + num(t.likes) + ' likes</span><span>' + num(t.reposts) + ' RP</span><span>' + num(t.bookmarks) + ' saves</span></span></div>';
+    h += '<h2>' + esc(n.title || t.text.slice(0, 60)) + '</h2>';
+    if (!own) h += '<div class="author">元投稿：' + esc(t.author_name) + '（<a href="https://x.com/' + esc(t.author) + '" target="_blank" rel="noopener">@' + esc(t.author) + '</a>）</div>';
+    h += pairs(t.text, n.ja);
+    (t.media || []).forEach(function (m) {
+      if (m.thumb || m.type === 'photo') h += '<a class="media" href="' + esc(t.url) + '" target="_blank" rel="noopener"><img loading="lazy" alt="" src="' + esc(m.thumb || m.url) + '">' + (m.type === 'video' ? '<span class="play">▶ Video</span>' : '') + '</a>';
+    });
+    if (t.quote) h += '<div class="quote"><div class="qa">引用元 @' + esc(t.quote.author) + ' · <a href="' + esc(t.quote.url) + '" target="_blank" rel="noopener">open</a></div>' + pairs(t.quote.text, n.qja) + '</div>';
+    if (n.notes && n.notes.length) {
+      h += '<details class="ex" open><summary>知識の解説 <small>' + n.notes.length + '項目</small></summary>';
+      n.notes.forEach(function (x) { h += '<div class="note"><h3>' + esc(x.h) + '</h3><p>' + x.b.replace(/<table/g, '<div class="tbl-scroll"><table').replace(/<\/table>/g, '</table></div>') + '</p></div>'; });
+      h += '</details>';
+    }
+    if (n.vocab && n.vocab.length) {
+      h += '<details class="ex"' + (n.vocab.length <= 12 ? ' open' : '') + '><summary>英単語 <small>' + n.vocab.length + '語</small></summary><div class="vocab">';
+      n.vocab.forEach(function (v) { h += '<div class="w">' + esc(v.w) + '<small>' + esc(POS[v.pos] || v.pos || '') + '</small></div><div class="m"><b>' + esc(v.ja) + '</b>' + (v.note ? '<span>' + esc(v.note) + '</span>' : '') + '</div>'; });
+      h += '</div></details>';
+    }
+    if (!n.ja) h += '<p class="empty">和訳・解説はまだ（patrickc_notes.js に追記待ち）</p>';
+    return h + '</article>';
+  }
+
+  /* render */
+  var rows = RAW.slice().sort(function (a, b) { return b.ts - a.ts; });
+  var feed = document.getElementById('feed'), nav = document.getElementById('sideNav');
+  var html = '', navh = '<div class="sn-day" style="color:#888">Contents</div>', lastDay = '';
+  var groups = {};
+  rows.forEach(function (t) { var d = jst(t.ts), k = d.m + '/' + d.d; (groups[k] = groups[k] || []).push(t); });
+  rows.forEach(function (t) {
+    var d = jst(t.ts), k = d.m + '/' + d.d;
+    if (k !== lastDay) {
+      html += '<div class="day" id="d' + d.m + '-' + d.d + '" data-day="' + k + '">' + d.y + '.' + ('0' + d.m).slice(-2) + '.' + ('0' + d.d).slice(-2) + ' ' + d.w + '<span>' + groups[k].length + ' posts</span></div>';
+      navh += '<div class="sn-day" data-day="' + k + '">' + k + '（' + d.w + '）</div>';
+      lastDay = k;
+    }
+    html += card(t);
+    navh += '<a class="sn-link' + (t.kind === 'repost' ? ' rp' : '') + '" data-kind="' + t.kind + '" href="#t' + t.id + '">' + esc((NOTES[t.id] || {}).title || t.text.slice(0, 40)) + '</a>';
+  });
+  feed.innerHTML = html;
+  nav.innerHTML = navh;
+
+  /* meta */
+  var own = rows.filter(function (t) { return t.kind !== 'repost'; }).length;
+  var fetched = window.RAW_FETCHED ? (function () { var d = jst(Date.parse(window.RAW_FETCHED) / 1000); return d.y + '-' + ('0' + d.m).slice(-2) + '-' + ('0' + d.d).slice(-2) + ' ' + d.hh + ':' + d.mm + ' JST'; })() : '–';
+  document.getElementById('metaRow').innerHTML =
+    '<span>Period<b>2026-10-09 → 10-19</b></span><span>Posts<b>' + rows.length + '</b>（本人 ' + own + ' / Repost ' + (rows.length - own) + '）</span><span>Fetched<b>' + fetched + '</b></span>';
+
+  /* filters */
+  function setKind(k) {
+    document.querySelectorAll('.tw').forEach(function (el) { var kd = el.dataset.kind; el.style.display = (k === 'all' || (k === 'own' ? kd !== 'repost' : kd === 'repost')) ? '' : 'none'; });
+    document.querySelectorAll('.sn-link').forEach(function (el) { var kd = el.dataset.kind; el.style.display = (k === 'all' || (k === 'own' ? kd !== 'repost' : kd === 'repost')) ? '' : 'none'; });
+    document.querySelectorAll('.day').forEach(function (el) {
+      var n = el.nextElementSibling, vis = false;
+      while (n && !n.classList.contains('day')) { if (n.style.display !== 'none') vis = true; n = n.nextElementSibling; }
+      el.style.display = vis ? '' : 'none';
+    });
+  }
+  function seg(id, attr, fn) {
+    var box = document.getElementById(id);
+    box.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      box.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      fn(b.dataset[attr]);
+      try { localStorage.setItem('pc.tweets.' + id, b.dataset[attr]); } catch (err) {}
+    });
+    var saved = null; try { saved = localStorage.getItem('pc.tweets.' + id); } catch (err) {}
+    if (saved) { var b = box.querySelector('[data-' + attr + '="' + saved + '"]'); if (b) b.click(); }
+  }
+  seg('segKind', 'k', setKind);
+  seg('segView', 'v', function (v) { document.body.className = document.body.className.replace(/\bv-\w+/, '') + ' v-' + v; });
+  var opened = false;
+  document.getElementById('btnOpen').addEventListener('click', function () {
+    opened = !opened;
+    document.querySelectorAll('details.ex').forEach(function (d) { d.open = opened; });
+    this.textContent = opened ? '解説・英単語を全部閉じる' : '解説・英単語を全部開く';
+  });
+
+  /* scroll spy */
+  var links = {}; nav.querySelectorAll('.sn-link').forEach(function (a) { links[a.getAttribute('href').slice(1)] = a; });
+  var days = {}; nav.querySelectorAll('.sn-day[data-day]').forEach(function (a) { days[a.dataset.day] = a; });
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.tw'));
+  function spy() {
+    var cur = null;
+    for (var i = 0; i < cards.length; i++) { if (cards[i].style.display === 'none') continue; if (cards[i].getBoundingClientRect().top < 140) cur = cards[i]; else break; }
+    Object.keys(links).forEach(function (k) { links[k].classList.toggle('active', !!cur && k === cur.id); });
+    var day = null; if (cur) { var p = cur.previousElementSibling; while (p && !p.classList.contains('day')) p = p.previousElementSibling; day = p && p.dataset.day; }
+    Object.keys(days).forEach(function (k) { days[k].classList.toggle('active', k === day); });
+    if (cur && links[cur.id] && nav.offsetParent) { var a = links[cur.id], r = a.getBoundingClientRect(), nr = nav.getBoundingClientRect(); if (r.top < nr.top || r.bottom > nr.bottom) nav.scrollTop += r.top - nr.top - 80; }
+  }
+  window.addEventListener('scroll', spy, { passive: true }); spy();
+})();
+</script>
+<script src="../../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>
