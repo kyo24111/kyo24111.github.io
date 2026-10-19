@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ベースメタル 生産・埋蔵 — industry 261019</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:#ffffff; --surface:#f5f5f5; --card:#f0f0f0;
+      --border:#d8d8d8; --accent:#111111; --text:#1a1a1a;
+      --muted:#666666; --subtle:#999999;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Noto Sans JP', sans-serif; background:var(--bg); color:var(--text); line-height:1.75; }
+    .wrap { max-width:860px; margin:0 auto; padding:60px 24px 100px; }
+
+    .crumb { display:flex; flex-wrap:wrap; align-items:center; gap:7px; font-family:'Poppins',sans-serif; font-size:11px; font-weight:500; letter-spacing:.06em; margin-bottom:26px; }
+    .crumb a { color:var(--subtle); text-decoration:none; transition:color .15s; }
+    .crumb a:hover { color:var(--accent); }
+    .crumb .sep { color:var(--border); }
+    .crumb .cur { color:var(--accent); font-weight:700; }
+
+    .hero { background:var(--accent); color:#fff; border-radius:16px; padding:48px 44px; margin-bottom:34px; }
+    @media(max-width:560px){ .hero { padding:34px 24px; } }
+    .hero-eyebrow { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:14px; }
+    .hero h1 { font-family:'Poppins',sans-serif; font-size:40px; font-weight:700; line-height:1.1; margin-bottom:6px; letter-spacing:-.02em; }
+    @media(max-width:560px){ .hero h1 { font-size:30px; } }
+    .hero-sub { font-size:13px; color:rgba(255,255,255,0.55); margin-bottom:30px; line-height:1.7; }
+    .kv { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+    @media(max-width:640px){ .kv { grid-template-columns:repeat(2,1fr); } }
+    .kv-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:6px; }
+    .kv-val { font-family:'Poppins',sans-serif; font-size:19px; font-weight:700; color:#fff; line-height:1.15; }
+    .kv-note { font-size:11px; color:rgba(255,255,255,0.35); margin-top:4px; line-height:1.5; }
+
+    /* セクター内ページ切替 */
+    .pager { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:40px; }
+    .pager a { font-family:'Poppins',sans-serif; font-size:11.5px; font-weight:600; letter-spacing:.02em; text-decoration:none; color:var(--muted); border:1px solid var(--border); border-radius:999px; padding:6px 14px; transition:all .13s; }
+    .pager a:hover { border-color:#888; color:var(--accent); }
+    .pager a.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+    .toc { background:var(--surface); border-radius:12px; padding:24px 28px; margin-bottom:56px; }
+    .toc-title { font-family:'Poppins',sans-serif; font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--subtle); margin-bottom:14px; }
+    .toc ol { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns:1fr; } }
+    .toc li { font-size:13px; color:var(--muted); }
+    .toc li a { color:inherit; text-decoration:none; }
+    .toc li a:hover { color:var(--accent); }
+    .toc-num { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; color:var(--subtle); margin-right:8px; }
+
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav { position:fixed; left:20px; top:84px; width:216px; max-height:calc(100vh - 162px); overflow-y:auto; padding:12px 0 32px; z-index:10; scrollbar-width:thin; }
+    .side-nav::-webkit-scrollbar { width:4px; }
+    .side-nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+    @media (max-width:1320px) { .side-nav { display:none; } }
+    .side-nav-title { font-family:'Poppins',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--subtle); padding-left:14px; margin-bottom:8px; }
+    .side-nav-list { list-style:none; padding:0; margin:0; }
+    .side-nav-link { display:block; color:#b4b4b4; text-decoration:none; padding:6px 8px 6px 14px; border-left:2px solid transparent; font-size:12px; line-height:1.45; transition:color .15s, border-color .15s, background .15s; }
+    .side-nav-link:hover { color:var(--text); border-left-color:var(--border); }
+    .side-nav-link.active { color:var(--accent); font-weight:700; border-left-color:var(--accent); background:var(--surface); }
+    .side-nav-num { font-family:'Poppins',sans-serif; font-size:10.5px; color:var(--subtle); margin-right:6px; }
+    .sec { scroll-margin-top:76px; }
+    html { scroll-behavior:smooth; }
+
+    .sec { margin-bottom:60px; }
+    .sec-label { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .num { font-family:'Poppins',sans-serif; font-size:11px; font-weight:700; background:var(--accent); color:#fff; padding:3px 9px; border-radius:4px; }
+    .sec-title { font-family:'Poppins',sans-serif; font-size:18px; font-weight:700; color:var(--accent); }
+    @media(max-width:520px){ .sec-title { font-size:15.5px; } }
+
+    .sub-h { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:var(--accent); margin:28px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+
+    p { margin-bottom:14px; font-size:14px; }
+    a.il { color:inherit; }
+
+    .t-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:20px; }
+    .t { width:100%; border-collapse:collapse; font-size:13.5px; }
+    /* 狭い画面では潰さずに横スクロールさせる */
+    .t-scroll .t { min-width:560px; }
+    @media(max-width:620px){
+      .t-scroll { border:1px solid var(--border); border-radius:10px; }
+      .t-scroll .t th:first-child, .t-scroll .t td:first-child { position:sticky; left:0; background:var(--bg); }
+      .t-scroll .t th:first-child { background:var(--surface); }
+    }
+    .t th { background:var(--surface); color:var(--muted); font-weight:600; text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); font-size:12px; white-space:nowrap; }
+    .t td { padding:10px 14px; border-bottom:1px solid var(--card); color:var(--text); vertical-align:top; }
+    .t tr:last-child td { border-bottom:none; }
+    .t strong { color:var(--accent); }
+    .t .nw { white-space:nowrap; }
+
+    .callout { background:var(--surface); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:18px 22px; margin-bottom:20px; font-size:13.5px; line-height:1.85; }
+
+    /* バリューチェーン */
+    .vchain { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin-bottom:22px; }
+    .vstep { border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .vstep-h { background:var(--accent); color:#fff; padding:8px 12px; }
+    .vstep-n { font-family:'Poppins',sans-serif; font-size:8px; font-weight:700; letter-spacing:.12em; color:rgba(255,255,255,.45); }
+    .vstep-t { font-family:'Poppins',sans-serif; font-size:12px; font-weight:700; letter-spacing:.02em; }
+    .vstep-b { padding:11px 12px; font-size:11.5px; color:var(--muted); line-height:1.7; }
+
+    /* カード群 */
+    .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:20px; }
+    @media(max-width:560px){ .cards { grid-template-columns:1fr; } }
+    .card { border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
+    .card-n { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:var(--accent); margin-bottom:3px; }
+    .card-m { font-size:11px; color:var(--subtle); margin-bottom:9px; }
+    .card-d { font-size:12.5px; color:var(--muted); line-height:1.75; }
+    .tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:10px; }
+    .tag { font-family:'Poppins',sans-serif; font-size:9.5px; font-weight:600; padding:2px 8px; border-radius:4px; background:var(--surface); border:1px solid var(--border); color:var(--muted); }
+    .tag.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+    /* クロスリンク */
+    .xlink { border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:20px; }
+    .xlink-t { font-family:'Poppins',sans-serif; font-size:10px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; color:var(--subtle); margin-bottom:12px; }
+    .xlink ul { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:7px 20px; }
+    @media(max-width:560px){ .xlink ul { grid-template-columns:1fr; } }
+    .xlink li { font-size:12.5px; line-height:1.6; }
+    .xlink li a { color:var(--accent); text-decoration:none; border-bottom:1px solid var(--border); }
+    .xlink li a:hover { border-bottom-color:var(--accent); }
+    .xlink li span { color:var(--subtle); font-size:11.5px; }
+
+    .info-box { background:var(--surface); border-radius:10px; padding:20px 22px; font-size:13.5px; line-height:1.9; }
+    .info-box ul { list-style:none; }
+    .info-box ul li::before { content:'—'; color:var(--subtle); margin-right:8px; }
+    .info-box a { color:inherit; }
+
+    .sources { margin-top:72px; padding-top:28px; border-top:1px solid var(--border); }
+    .sources-title { font-family:'Poppins',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--subtle); margin-bottom:14px; }
+    .sources ul { list-style:none; font-size:12px; color:var(--subtle); line-height:2; }
+</style>
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../../index.html">24111</a><span class="s">/</span><a href="../../index.html">research</a><span class="s">/</span><a href="../index.html">industry</a><span class="s">/</span><a href="index.html">base_metals</a><span class="s">/</span><span class="c">ベースメタル 生産・埋蔵</span></nav><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap">
+<style>
+  .mx { width:100%; border-collapse:collapse; font-size:13px; min-width:560px; }
+  .mx th { background:var(--surface); color:var(--muted); font-weight:600; padding:10px 8px; border-bottom:1px solid var(--border); font-size:11.5px; white-space:nowrap; text-align:center; }
+  .mx th:first-child, .mx td:first-child { text-align:left; padding-left:14px; white-space:nowrap; }
+  .mx td { padding:10px 8px; border-bottom:1px solid var(--card); text-align:center; font-size:15px; }
+  .mx td:first-child { font-size:13px; }
+  .mx td.f { color:var(--accent); }
+  .mx td.h { color:#9a9a9a; }
+  .mx td.n { color:#d0d0d0; }
+  .legend { font-size:11.5px; color:var(--subtle); margin:-8px 0 20px; }
+  .grp { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+  @media(max-width:640px){ .grp { grid-template-columns:1fr; } }
+  .grp-c { border:1px solid var(--border); border-radius:12px; overflow:hidden; }
+  .grp-h { background:var(--accent); color:#fff; padding:10px 14px; font-family:'Poppins',sans-serif; font-size:12.5px; font-weight:700; }
+  .grp-h small { display:block; font-size:9.5px; font-weight:600; letter-spacing:.12em; color:rgba(255,255,255,.5); text-transform:uppercase; }
+  .grp-b { padding:12px 14px; font-size:12.5px; color:var(--muted); line-height:1.75; }
+  .grp-b strong { color:var(--accent); }
+</style>
+<style>
+  details.raw { border:1px solid var(--border); border-radius:10px; margin:-6px 0 22px; }
+  details.raw summary { cursor:pointer; padding:10px 14px; font-size:12.5px; color:var(--muted); font-weight:600; }
+  details.raw[open] summary { border-bottom:1px solid var(--border); }
+  details.raw .t-scroll { margin:0; }
+  .t td.r, .t th.r { text-align:right; white-space:nowrap; }
+  .pts { counter-reset:pt; list-style:none; margin-bottom:20px; }
+  .pts li { position:relative; padding:14px 0 14px 40px; border-bottom:1px solid var(--card); font-size:13.5px; line-height:1.85; }
+  .pts li::before { counter-increment:pt; content:counter(pt,decimal-leading-zero); position:absolute; left:0; top:15px; font-family:'Poppins',sans-serif; font-size:11px; font-weight:700; background:var(--accent); color:#fff; padding:2px 7px; border-radius:4px; }
+  .pts li strong { color:var(--accent); }
+</style>
+
+  <nav class="crumb">
+    <a href="/index.html">24111</a>
+    <span class="sep">/</span>
+    <a href="../index.html">industry</a>
+    <span class="sep">/</span>
+    <a href="261017_base_metals.html">base metals</a>
+    <span class="sep">/</span>
+    <span class="cur">supply</span>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-eyebrow">Industry Sector — 261019</div>
+    <h1>Base Metals — Supply</h1>
+    <div class="hero-sub">ベースメタルの生産と埋蔵。どこで掘り、どこで精錬し、あと何年あるか。<strong style="color:#fff">掘る国と精錬する国は違う</strong>。そして精錬の段階では、6金属のほとんどで中国が一番大きい。</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">銅の鉱山1位</div>
+        <div class="kv-val">チリ 23%</div>
+        <div class="kv-note">精錬は中国が48%</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">アルミ地金</div>
+        <div class="kv-val">中国 61%</div>
+        <div class="kv-note">政府の上限4,500万tに到達</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">ニッケル鉱山</div>
+        <div class="kv-val">インドネシア 67%</div>
+        <div class="kv-note">2020年に鉱石の輸出を禁止</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">可採年数が最短</div>
+        <div class="kv-val">亜鉛 約18年</div>
+        <div class="kv-note">埋蔵量÷年間生産量</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#s01">掘る → 精錬する — 4つの段階</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">6金属の生産・埋蔵・可採年数</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">誰が掘り、誰が精錬するか — 金属別</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">構造の読み方 — 6つのポイント</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">埋蔵量の読み方 — 可採年数はなぜ減らないか</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">リサイクル — 鉱山の外にある供給</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">隣の金属：チタンの生産</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">日本の立ち位置</a></li>
+    </ol>
+    <div style="margin-top:12px;font-size:12.5px">← 前のページ：<a class="il" href="261017_base_metals.html">ベースメタル（性質・用途・iPhone・対比）</a></div>
+  </div>
+
+  <p style="font-size:11.5px;color:var(--subtle)">Last updated: 2026-10-19 ／ 数字はUSGS Mineral Commodity Summaries 2026（2025年は推計値）。量は金属の含有量ベース。</p>
+
+  <div class="sec" id="s01">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">掘る → 精錬する — 4つの段階</span></div>
+    <div class="vchain">
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 1</div><div class="vstep-t">採掘 Mining</div></div><div class="vstep-b">鉱石を掘る。銅鉱石なら金属分は0.5〜1%程度で、1tの鉱石から銅は5〜10kgしか取れない。</div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 2</div><div class="vstep-t">選鉱 Concentrate</div></div><div class="vstep-b">砕いて泡に付けて浮かせ（浮遊選鉱）、銅精鉱（銅分25〜30%）にする。たいていは鉱山の近くで行い、ここで船に載せて輸出する。</div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 3</div><div class="vstep-t">製錬 Smelting</div></div><div class="vstep-b">炉で溶かして硫黄や鉄を飛ばし、粗銅（約99%）にする。輸入した精鉱を使う国が多い。</div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 4</div><div class="vstep-t">精錬 Refining</div></div><div class="vstep-b">電気分解で99.99%の地金（カソード）にする。LMEで取引されるのはこの形。</div></div>
+    </div>
+    <div class="callout">
+      アルミだけは流れが違い、<strong>ボーキサイト → アルミナ → 地金</strong>の3段階で進む。ボーキサイト約4〜5tからアルミナ約2t、そこから地金1tという比率。最後の電気分解で<strong>地金1tあたり約14MWh</strong>（日本の一般家庭の約3〜4年分）の電気を使うため、アルミの製錬所は電気の安い場所に建てる。
+    </div>
+  </div>
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">6金属の生産・埋蔵・可採年数</span></div>
+    <div class="t-scroll"><table class="t">
+      <tr><th>金属</th><th class="r">鉱山生産<br>2025e</th><th class="r">埋蔵量</th><th class="r">可採年数</th><th class="r">地金生産<br>2025e</th><th>鉱山1位</th><th>埋蔵1位</th></tr>
+      <tr><td class="nw"><strong>Cu 銅</strong></td><td class="r">2,300万t</td><td class="r">9.8億t</td><td class="r"><strong>約43年</strong></td><td class="r">2,900万t</td><td>チリ 23%</td><td>チリ 18%</td></tr>
+      <tr><td class="nw"><strong>Al アルミ</strong><br><span style="color:var(--subtle);font-size:11.5px">ボーキサイト</span></td><td class="r">4.4億t</td><td class="r">290億t</td><td class="r"><strong>約66年</strong></td><td class="r">7,400万t</td><td>ギニア 34%</td><td>ギニア 26%</td></tr>
+      <tr><td class="nw"><strong>Zn 亜鉛</strong></td><td class="r">1,300万t</td><td class="r">2.4億t</td><td class="r"><strong>約18年</strong></td><td class="r">—</td><td>中国 32%</td><td>豪州 27%</td></tr>
+      <tr><td class="nw"><strong>Ni ニッケル</strong></td><td class="r">390万t</td><td class="r">1.4億t超</td><td class="r"><strong>約36年</strong></td><td class="r">—</td><td>インドネシア 67%</td><td>インドネシア 44%</td></tr>
+      <tr><td class="nw"><strong>Pb 鉛</strong></td><td class="r">450万t</td><td class="r">9,500万t</td><td class="r"><strong>約21年</strong></td><td class="r">—</td><td>中国 42%</td><td>豪州 36%</td></tr>
+      <tr><td class="nw"><strong>Sn 錫</strong></td><td class="r">29万t</td><td class="r">600万t超</td><td class="r"><strong>約21年</strong></td><td class="r">—</td><td>中国 24%</td><td>インドネシア 23%</td></tr>
+    </table></div>
+    <p style="font-size:12px;color:var(--subtle)">※ 可採年数＝埋蔵量÷2025年の鉱山生産量。アルミはボーキサイトの値。「—」はUSGSが地金の世界合計を出していない金属。地金の量（前ページ02章）は鉱山生産より大きくなることがあり、その差はリサイクル分（06章）。</p>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">誰が掘り、誰が精錬するか — 金属別</span></div>
+    <div class="cards">
+      <div class="card"><div class="card-n">Cu 銅</div><div class="card-m">掘る＝南米・アフリカ／精錬＝中国</div><div class="card-d">鉱山はチリ23%・コンゴ民主共和国14%・ペルー12%。精錬は<strong>中国が48%</strong>で、自国の鉱山（8%）をはるかに上回る分を輸入した精鉱でまかなっている。コンゴは近年急成長し、ペルーを抜いて2位に。日本は鉱山ゼロだが精錬は世界4位。</div><div class="tags"><span class="tag">Chile</span><span class="tag">DRC</span><span class="tag">Peru</span><span class="tag on">China refining</span></div></div>
+      <div class="card"><div class="card-n">Al アルミ</div><div class="card-m">ボーキサイト＝ギニア／アルミナ・地金＝中国</div><div class="card-d">ボーキサイトはギニア34%・豪州22%・中国20%。アルミナは<strong>中国62%</strong>、地金も<strong>中国61%</strong>。それ以外は水力が安いカナダ・ノルウェー・アイスランド、ガスが安い中東（UAE・バーレーン）、石炭のインド・ロシア。</div><div class="tags"><span class="tag">Guinea</span><span class="tag">Australia</span><span class="tag on">China smelting</span></div></div>
+      <div class="card"><div class="card-n">Zn 亜鉛</div><div class="card-m">中国が掘って中国が使う</div><div class="card-d">鉱山は中国32%・ペルー12%・豪州8%・インド7%。埋蔵は豪州27%と中国25%がほぼ並ぶ。鉛と同じ鉱床から一緒に採れることが多い（鉛亜鉛鉱）。</div><div class="tags"><span class="tag on">China</span><span class="tag">Peru</span><span class="tag">Australia</span></div></div>
+      <div class="card"><div class="card-n">Ni ニッケル</div><div class="card-m">インドネシア一強</div><div class="card-d">鉱山は<strong>インドネシア67%</strong>。2位のフィリピンは7%しかない。埋蔵でもインドネシア44%・豪州18%・ブラジル11%。2025年は安値で豪州の生産が前年比54%減、休止する鉱山が相次いだ。</div><div class="tags"><span class="tag on">Indonesia</span><span class="tag">Philippines</span><span class="tag">Russia</span></div></div>
+      <div class="card"><div class="card-n">Pb 鉛</div><div class="card-m">鉱山は小さく、主役はリサイクル</div><div class="card-d">鉱山は中国42%・豪州11%。鉱山から出る鉛は年450万tだが、地金は約1,250万tある。<strong>差の大半は使用済みの鉛蓄電池から回収した再生鉛</strong>。</div><div class="tags"><span class="tag on">China</span><span class="tag">Australia</span><span class="tag">Recycling</span></div></div>
+      <div class="card"><div class="card-n">Sn 錫</div><div class="card-m">小さな市場に、不安定な産地</div><div class="card-d">鉱山は中国24%・インドネシア21%・ペルー11%・ブラジル10%・コンゴ民主共和国9%。かつて3位級だった<strong>ミャンマー</strong>は、ワ州が2023年に採掘を止め、2024年2万t → 2025年1.2万tに減った。市場が小さいので、1つの産地の止まり方で価格が大きく動く。</div><div class="tags"><span class="tag on">China</span><span class="tag">Indonesia</span><span class="tag">Myanmar</span></div></div>
+    </div>
+    <details class="raw"><summary>Raw data：銅（千t）</summary><div class="t-scroll"><table class="t"><tr><th>国</th><th class="r">鉱山 2024</th><th class="r">鉱山 2025e</th><th class="r">精錬 2024</th><th class="r">精錬 2025e</th><th class="r">埋蔵量</th></tr><tr><td class="nw">チリ</td><td class="r">5,510</td><td class="r">5,300</td><td class="r">1,940</td><td class="r">1,700</td><td class="r">180,000</td></tr><tr><td class="nw">コンゴ民主共和国</td><td class="r">2,990</td><td class="r">3,200</td><td class="r">2,560</td><td class="r">2,800</td><td class="r">80,000</td></tr><tr><td class="nw">ペルー</td><td class="r">2,740</td><td class="r">2,700</td><td class="r">385</td><td class="r">340</td><td class="r">85,000</td></tr><tr><td class="nw">中国</td><td class="r">1,840</td><td class="r">1,800</td><td class="r">12,400</td><td class="r">14,000</td><td class="r">41,000</td></tr><tr><td class="nw">ロシア</td><td class="r">1,020</td><td class="r">1,300</td><td class="r">896</td><td class="r">950</td><td class="r">80,000</td></tr><tr><td class="nw">米国</td><td class="r">1,050</td><td class="r">1,000</td><td class="r">921</td><td class="r">850</td><td class="r">47,000</td></tr><tr><td class="nw">ザンビア</td><td class="r">823</td><td class="r">940</td><td class="r">189</td><td class="r">270</td><td class="r">21,000</td></tr><tr><td class="nw">豪州</td><td class="r">765</td><td class="r">730</td><td class="r">434</td><td class="r">460</td><td class="r">100,000</td></tr><tr><td class="nw">カザフスタン</td><td class="r">724</td><td class="r">710</td><td class="r">498</td><td class="r">500</td><td class="r">20,000</td></tr><tr><td class="nw">メキシコ</td><td class="r">717</td><td class="r">690</td><td class="r">489</td><td class="r">480</td><td class="r">53,000</td></tr><tr><td class="nw">インドネシア</td><td class="r">1,010</td><td class="r">710</td><td class="r">349</td><td class="r">400</td><td class="r">21,000</td></tr><tr><td class="nw">ポーランド</td><td class="r">400</td><td class="r">410</td><td class="r">589</td><td class="r">560</td><td class="r">33,000</td></tr><tr><td class="nw">日本</td><td class="r">—</td><td class="r">—</td><td class="r">1,570</td><td class="r">1,400</td><td class="r">—</td></tr><tr><td class="nw">世界</td><td class="r">23,000</td><td class="r">23,000</td><td class="r">27,600</td><td class="r">29,000</td><td class="r">980,000</td></tr></table></div></details>
+    <details class="raw"><summary>Raw data：ボーキサイト・アルミナ・アルミ地金（千t）</summary><div class="t-scroll"><table class="t"><tr><th>国</th><th class="r">ボーキサイト 2025e</th><th class="r">ボーキサイト埋蔵</th><th class="r">アルミナ 2025e</th><th class="r">地金 2025e</th></tr><tr><td class="nw">ギニア</td><td class="r">150,000</td><td class="r">7,400,000</td><td class="r">360</td><td class="r">—</td></tr><tr><td class="nw">豪州</td><td class="r">97,000</td><td class="r">3,700,000</td><td class="r">17,000</td><td class="r">1,500</td></tr><tr><td class="nw">中国</td><td class="r">87,000</td><td class="r">710,000</td><td class="r">93,000</td><td class="r">45,000</td></tr><tr><td class="nw">ブラジル</td><td class="r">33,000</td><td class="r">1,700,000</td><td class="r">11,000</td><td class="r">1,200</td></tr><tr><td class="nw">インド</td><td class="r">25,000</td><td class="r">650,000</td><td class="r">8,200</td><td class="r">4,200</td></tr><tr><td class="nw">インドネシア</td><td class="r">10,000</td><td class="r">2,900,000</td><td class="r">1,500</td><td class="r">—</td></tr><tr><td class="nw">ベトナム</td><td class="r">3,800</td><td class="r">3,100,000</td><td class="r">1,500</td><td class="r">—</td></tr><tr><td class="nw">ジャマイカ</td><td class="r">6,200</td><td class="r">2,000,000</td><td class="r">1,500</td><td class="r">—</td></tr><tr><td class="nw">ロシア</td><td class="r">5,700</td><td class="r">650,000</td><td class="r">2,900</td><td class="r">3,900</td></tr><tr><td class="nw">カナダ</td><td class="r">—</td><td class="r">—</td><td class="r">1,500</td><td class="r">3,300</td></tr><tr><td class="nw">UAE</td><td class="r">—</td><td class="r">—</td><td class="r">2,300</td><td class="r">2,700</td></tr><tr><td class="nw">バーレーン</td><td class="r">—</td><td class="r">—</td><td class="r">—</td><td class="r">1,600</td></tr><tr><td class="nw">世界</td><td class="r">440,000</td><td class="r">29,000,000</td><td class="r">150,000</td><td class="r">74,000</td></tr></table></div></details>
+    <details class="raw"><summary>Raw data：亜鉛・鉛（千t）</summary><div class="t-scroll"><table class="t"><tr><th>国</th><th class="r">亜鉛 鉱山 2025e</th><th class="r">亜鉛 埋蔵</th><th class="r">鉛 鉱山 2025e</th><th class="r">鉛 埋蔵</th></tr><tr><td class="nw">中国</td><td class="r">4,100</td><td class="r">60,000</td><td class="r">1,900</td><td class="r">22,000</td></tr><tr><td class="nw">ペルー</td><td class="r">1,500</td><td class="r">18,000</td><td class="r">290</td><td class="r">5,000</td></tr><tr><td class="nw">豪州</td><td class="r">1,100</td><td class="r">64,000</td><td class="r">480</td><td class="r">34,000</td></tr><tr><td class="nw">インド</td><td class="r">870</td><td class="r">10,000</td><td class="r">220</td><td class="r">1,900</td></tr><tr><td class="nw">メキシコ</td><td class="r">780</td><td class="r">14,000</td><td class="r">200</td><td class="r">5,600</td></tr><tr><td class="nw">米国</td><td class="r">670</td><td class="r">9,300</td><td class="r">280</td><td class="r">4,600</td></tr><tr><td class="nw">ボリビア</td><td class="r">500</td><td class="r">—</td><td class="r">100</td><td class="r">1,600</td></tr><tr><td class="nw">ロシア</td><td class="r">430</td><td class="r">29,000</td><td class="r">260</td><td class="r">8,900</td></tr><tr><td class="nw">世界</td><td class="r">13,000</td><td class="r">240,000</td><td class="r">4,500</td><td class="r">95,000</td></tr></table></div></details>
+    <details class="raw"><summary>Raw data：ニッケル・錫（t）</summary><div class="t-scroll"><table class="t"><tr><th>国</th><th class="r">ニッケル 鉱山 2025e</th><th class="r">ニッケル 埋蔵</th><th class="r">錫 鉱山 2025e</th><th class="r">錫 埋蔵</th></tr><tr><td class="nw">インドネシア</td><td class="r">2,600,000</td><td class="r">62,000,000</td><td class="r">61,000</td><td class="r">1,400,000</td></tr><tr><td class="nw">フィリピン</td><td class="r">270,000</td><td class="r">4,800,000</td><td class="r">—</td><td class="r">—</td></tr><tr><td class="nw">ロシア</td><td class="r">200,000</td><td class="r">8,300,000</td><td class="r">4,500</td><td class="r">460,000</td></tr><tr><td class="nw">カナダ</td><td class="r">140,000</td><td class="r">2,200,000</td><td class="r">—</td><td class="r">—</td></tr><tr><td class="nw">ニューカレドニア</td><td class="r">140,000</td><td class="r">7,100,000</td><td class="r">—</td><td class="r">—</td></tr><tr><td class="nw">中国</td><td class="r">120,000</td><td class="r">4,400,000</td><td class="r">71,000</td><td class="r">1,200,000</td></tr><tr><td class="nw">豪州</td><td class="r">45,000</td><td class="r">25,000,000</td><td class="r">12,000</td><td class="r">570,000</td></tr><tr><td class="nw">ブラジル</td><td class="r">70,000</td><td class="r">16,000,000</td><td class="r">28,000</td><td class="r">700,000</td></tr><tr><td class="nw">ペルー</td><td class="r">—</td><td class="r">—</td><td class="r">33,000</td><td class="r">150,000</td></tr><tr><td class="nw">コンゴ民主共和国</td><td class="r">—</td><td class="r">—</td><td class="r">27,000</td><td class="r">91,000</td></tr><tr><td class="nw">ボリビア</td><td class="r">—</td><td class="r">—</td><td class="r">15,000</td><td class="r">400,000</td></tr><tr><td class="nw">ミャンマー</td><td class="r">—</td><td class="r">—</td><td class="r">12,000</td><td class="r">700,000</td></tr><tr><td class="nw">世界</td><td class="r">3,900,000</td><td class="r">>140,000,000</td><td class="r">290,000</td><td class="r">>6,000,000</td></tr></table></div></details>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">構造の読み方 — 6つのポイント</span></div>
+    <ol class="pts">
+      <li><strong>掘る国と精錬する国が違う。</strong>銅の鉱山は南米とアフリカにあるが、精錬の半分は中国。精鉱を船で運び、電気と人手のある国で地金にする。資源国は「精錬まで自国でやりたい」と考え、ここが次のポイントにつながる。</li>
+      <li><strong>資源国の「輸出禁止」カード。</strong>インドネシアは2020年にニッケル鉱石、2023年にボーキサイトの輸出を禁止し、製錬所を国内に建てさせた。ニッケルは中国資本の工場が一気に立ち上がり、世界シェア67%まで伸びた。その結果、2022年から供給過剰が続き、価格が下がって豪州の鉱山が止まった。</li>
+      <li><strong>中国のアルミは上限に張り付いている。</strong>中国政府は地金の生産能力を4,500万tで頭打ちにしている。2025年は生産4,500万t・能力4,500万tで、もう増やせない。今後の増産はインドネシア・インド・中東など中国の外で起きる。</li>
+      <li><strong>錫と銅は事故や紛争で止まりやすい。</strong>錫はミャンマー（ワ州の採掘停止）とコンゴ民主共和国（東部の紛争地帯に主力鉱山がある）が不安定。銅はインドネシアの巨大鉱山グラスバーグが2025年9月の事故で減産し、同国の生産が前年の101万tから71万tに落ちた。</li>
+      <li><strong>資源ナショナリズムは鉱山の権利にも及ぶ。</strong>ギニア政府は2025年8月、アルミナ工場の建設をめぐる対立から、UAE系アルミ大手の子会社のボーキサイト採掘権を取り消し、国営系企業に移した。</li>
+      <li><strong>米国も「重要鉱物」に入れ始めた。</strong>2025年11月の米国Critical Minerals List改定で、銅と鉛が新たに追加された。ベースメタルも「戦略物資」として扱われる段階に入っている。</li>
+    </ol>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">埋蔵量の読み方 — 可採年数はなぜ減らないか</span></div>
+    <div class="t-scroll"><table class="t">
+      <tr><th>言葉</th><th>意味</th><th>銅の例</th></tr>
+      <tr><td class="nw"><strong>埋蔵量 Reserves</strong></td><td>今の価格と技術で、<strong>採算が取れると確認された量</strong></td><td class="nw">9.8億t</td></tr>
+      <tr><td class="nw"><strong>資源量 Resources</strong></td><td>存在は分かっているが、今は採算が合わないものも含む量</td><td class="nw">確認済み 15億t（未採掘）</td></tr>
+      <tr><td class="nw"><strong>未発見資源</strong></td><td>地質から推定した、まだ見つかっていない量</td><td class="nw">約35億t（USGS推定）</td></tr>
+    </table></div>
+    <div class="callout">
+      可採年数（埋蔵量÷年間生産量）は「あと何年で枯れるか」ではない。<strong>埋蔵量は、価格が上がる・技術が進む・探鉱が進むたびに増える</strong>。銅の可採年数は何十年も前から40年前後のまま推移していて、掘った分だけ新しい埋蔵量が見つかっている。本当の制約は量よりも、<strong>品位の低下</strong>（同じ銅を得るのに掘る量が増える）と、<strong>新しい鉱山の立ち上げに10〜20年かかる</strong>ことの2つ。
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-n">資源量で見ると桁が違う</div><div class="card-m">USGS World Resources</div><div class="card-d">ボーキサイト550〜750億t、亜鉛19億t、鉛20億t超、ニッケル3.5億t超。可採年数18年の亜鉛も、資源量で見れば100年以上ある。</div></div>
+      <div class="card"><div class="card-n">海底という次のフロンティア</div><div class="card-m">マンガン団塊・コバルトリッチクラスト</div><div class="card-d">USGSは、海底の鉱床にニッケルが約45億t含まれると推定している（陸上の埋蔵量の30倍以上）。米国は2025年4月の大統領令で海底資源の開発を後押しし始めた。環境への影響が最大の論点。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">リサイクル — 鉱山の外にある供給</span></div>
+    <p>金属は溶かせば性質を落とさずに戻せる。そのためベースメタルでは、スクラップが「地上の鉱山」として大きな割合を占める。下は米国の例（USGS）。</p>
+    <div class="t-scroll"><table class="t">
+      <tr><th>金属</th><th>リサイクルの規模（米国 2025）</th><th>主な回収元</th></tr>
+      <tr><td class="nw"><strong>Pb 鉛</strong></td><td>再生鉛が国内消費の<strong>約70%</strong></td><td>使用済みの鉛蓄電池。回収の仕組みが最も完成している</td></tr>
+      <tr><td class="nw"><strong>Ni ニッケル</strong></td><td>スクラップ由来が消費の<strong>約60%</strong></td><td>ほとんどがステンレスのスクラップ。ステンレスに戻る</td></tr>
+      <tr><td class="nw"><strong>Al アルミ</strong></td><td>スクラップから約360万t。使用済み品由来だけで消費の約28%</td><td>缶・自動車・建材。再生には新しくつくる時の電気の約5%しか使わない</td></tr>
+      <tr><td class="nw"><strong>Sn 錫</strong></td><td>使用済み品由来が消費の約22%</td><td>はんだくず・ブリキ</td></tr>
+      <tr><td class="nw"><strong>Cu 銅</strong></td><td>工場の端材から76万t、使用済み品から16万t</td><td>電線・伸銅品の端材。米国は使用済みスクラップの多くを輸出している</td></tr>
+      <tr><td class="nw"><strong>ボーキサイト</strong></td><td>なし</td><td>鉱石なので、リサイクルはアルミ地金の段階で行う</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">隣の金属：チタンの生産</span></div>
+    <p>前ページ06章で比べたチタンを、同じ物差しで見る。精錬直後のチタンは多孔質のスポンジ状なので、「スポンジチタン」の量で数える。</p>
+    <div class="t-scroll"><table class="t">
+      <tr><th>国</th><th class="r">スポンジ 2024</th><th class="r">スポンジ 2025e</th><th class="r">シェア</th><th class="r">生産能力</th></tr>
+      <tr><td class="nw"><strong>中国</strong></td><td class="r">256,000t</td><td class="r">260,000t</td><td class="r">70%</td><td class="r">320,000t</td></tr>
+      <tr><td class="nw"><strong>日本</strong></td><td class="r">57,000t</td><td class="r">53,000t</td><td class="r">14%</td><td class="r">65,200t</td></tr>
+      <tr><td class="nw">ロシア</td><td class="r">33,000t</td><td class="r">25,000t</td><td class="r">7%</td><td class="r">46,500t</td></tr>
+      <tr><td class="nw">カザフスタン</td><td class="r">19,000t</td><td class="r">16,000t</td><td class="r">4%</td><td class="r">26,000t</td></tr>
+      <tr><td class="nw">サウジアラビア</td><td class="r">14,000t</td><td class="r">12,000t</td><td class="r">3%</td><td class="r">15,600t</td></tr>
+      <tr><td class="nw"><strong>世界</strong></td><td class="r">380,000t</td><td class="r">370,000t</td><td class="r">—</td><td class="r">470,000t</td></tr>
+    </table></div>
+    <div class="callout">
+      量は錫（29万t）より少し多い程度で、アルミ地金（7,400万t）の<strong>約200分の1</strong>。一方、酸化チタン顔料の生産能力は世界で約990万tあり、<strong>チタンの大半は金属ではなく白い粉として使われる</strong>。米国はスポンジを国内で生産しておらず、2025年の輸入の<strong>73%が日本から</strong>。航空機向けの高品位スポンジでは、日本が中国より重要な供給元になっている。
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">日本の立ち位置</span></div>
+    <div class="t-scroll"><table class="t">
+      <tr><th>金属</th><th>鉱山</th><th>製錬・精錬</th><th>主なプレイヤー</th></tr>
+      <tr><td class="nw"><strong>Cu 銅</strong></td><td>なし。商社や非鉄大手がチリ・ペルーの鉱山に出資</td><td><strong>精錬140万tで世界4位</strong>（中国・コンゴ・チリの次）。輸入した精鉱と、電子機器のスクラップ（都市鉱山）を処理する</td><td>JX金属・三菱マテリアル・住友金属鉱山</td></tr>
+      <tr><td class="nw"><strong>Al アルミ</strong></td><td>なし</td><td><strong>地金の製錬はゼロ</strong>。電気代が高く、2014年に最後の製錬所（日本軽金属 蒲原）が止まった。地金は輸入し、圧延・押出・ダイカストで強みを持つ</td><td>UACJ・日本軽金属など</td></tr>
+      <tr><td class="nw"><strong>Zn・Pb</strong></td><td>なし（国内の鉱山は2000年代までに閉山）</td><td>輸入した精鉱を製錬</td><td>三井金属・東邦亜鉛など</td></tr>
+      <tr><td class="nw"><strong>Ni ニッケル</strong></td><td>なし</td><td>フィリピンで、低品位の鉱石から高圧で抽出する工場（HPAL）を運営し、電池材料まで一貫して手がける</td><td>住友金属鉱山</td></tr>
+      <tr><td class="nw"><strong>Ti チタン</strong></td><td>なし</td><td><strong>スポンジチタン世界2位</strong>（14%）。航空機向けの高品位品が強い</td><td>大阪チタニウムテクノロジーズ・東邦チタニウム</td></tr>
+    </table></div>
+    <div class="callout">
+      日本は「掘る国」ではなく、<strong>輸入した原料を高品位な地金や素材に変える国</strong>。電気を大量に食うアルミ製錬からは撤退したが、銅精錬とスポンジチタンでは世界の上位にいる。
+    </div>
+  </div>
+
+  <div class="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>USGS, Mineral Commodity Summaries 2026 — Copper / Bauxite and Alumina / Aluminum / Zinc / Lead / Nickel / Tin / Titanium（2024年実績・2025年推計、埋蔵量・資源量・リサイクル）</li>
+      <li>International Aluminium Institute — アルミ製錬の電力原単位</li>
+      <li>ILZSG（国際鉛亜鉛研究会）— 精製鉛の生産量</li>
+    </ul>
+  </div>
+
+  <div class="sec" style="margin-top:40px">
+    <div class="info-box">
+      <ul>
+        <li><a href="261017_base_metals.html">← 前のページ：ベースメタル</a></li>
+        <li><a href="../index.html">industry トップに戻る</a></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を本文の節から生成し、スクロール位置に応じてハイライトする */
+(function () {
+  function build() {
+    var host = document.getElementById('sideNav');
+    if (!host) return;
+    var secs = document.querySelectorAll('.sec[id^="s"]');
+    if (secs.length < 3) { host.style.display = 'none'; return; }
+    var html = '<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    var ids = [];
+    secs.forEach(function (sec, i) {
+      var t = sec.querySelector('.sec-title');
+      if (!t) return;
+      if (!sec.id) sec.id = 'sec-auto-' + (i + 1);
+      ids.push(sec.id);
+      var num = ('0' + (i + 1)).slice(-2);
+      html += '<li><a class="side-nav-link" href="#' + sec.id + '" data-target="' + sec.id + '">' +
+              '<span class="side-nav-num">' + num + '</span>' + t.textContent.trim() + '</a></li>';
+    });
+    host.innerHTML = html + '</ul>';
+    spy(ids);
+  }
+  function spy(ids) {
+    if (!('IntersectionObserver' in window) || !ids.length) return;
+    var visible = {}, current = null;
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) visible[e.target.id] = 1; else delete visible[e.target.id];
+      });
+      var first = null;
+      for (var i = 0; i < ids.length; i++) { if (visible[ids[i]]) { first = ids[i]; break; } }
+      if (first && first !== current) {
+        current = first;
+        document.querySelectorAll('.side-nav-link').forEach(function (a) {
+          a.classList.toggle('active', a.dataset.target === first);
+        });
+      }
+    }, { rootMargin: '-12% 0px -70% 0px', threshold: 0 });
+    ids.forEach(function (id) { var el = document.getElementById(id); if (el) obs.observe(el); });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', build);
+  else build();
+})();
+</script>
+
+<script src="../../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>
