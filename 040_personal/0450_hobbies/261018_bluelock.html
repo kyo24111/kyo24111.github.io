@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, noarchive">
+<title>ブルーロック DB</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --panel:#ffffff; --line:#e8e8e8; --line2:#d4d4d4;
+    --txt:#111111; --muted:#888888; --accent:#111111; --head:#f7f7f5; --soft:#fbfbfa;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    background:var(--bg); color:var(--txt);
+    font-family:"Poppins","Noto Sans JP",sans-serif; line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:28px 20px 80px;}
+  @media (min-width:1280px){ .wrap{ max-width:min(1500px,94vw); } }
+  @media (max-width:640px){ .wrap{ padding:18px 12px 64px; } }
+
+  header{display:flex; align-items:baseline; gap:12px; flex-wrap:wrap;}
+  h1{font-size:1.5rem; font-weight:700; margin:0; letter-spacing:.02em;}
+  .sub{color:var(--muted); font-size:.82rem;}
+  .meta{color:var(--muted); font-size:.78rem; margin:6px 0 18px; line-height:1.5;}
+  .meta b{font-weight:600; color:var(--txt);}
+
+  /* ── ツールバー ── */
+  .tools{position:sticky; top:0; z-index:20; background:var(--bg); padding:10px 0 8px; border-bottom:1px solid var(--line);}
+  .row{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+  .row + .row{margin-top:8px;}
+  .search{position:relative; flex:1 1 260px; min-width:0;}
+  .search input{
+    width:100%; padding:9px 34px 9px 34px; font-size:.92rem; color:var(--txt);
+    font-family:inherit; background:var(--panel); border:1px solid var(--line2); border-radius:999px; outline:none;
+  }
+  .search input:focus{border-color:var(--accent);}
+  .search .ico{position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--muted); font-size:.85rem;}
+  .search .clr{position:absolute; right:8px; top:50%; transform:translateY(-50%); border:0; background:none; color:var(--muted); cursor:pointer; font-size:1rem; padding:2px 6px; display:none;}
+  .search.has .clr{display:block;}
+  .chip{
+    font-family:inherit; font-size:.76rem; color:var(--txt); background:var(--panel);
+    border:1px solid var(--line2); border-radius:999px; padding:5px 11px; cursor:pointer; white-space:nowrap;
+  }
+  .chip:hover{background:var(--head);}
+  .chip.on{background:var(--accent); color:#fff; border-color:var(--accent);}
+  .chip .n{opacity:.55; margin-left:5px; font-size:.72rem;}
+  .chipset{display:flex; gap:6px; flex-wrap:wrap; align-items:center;}
+  .chiplabel{font-size:.72rem; color:var(--muted); margin-right:2px;}
+  .tabs{display:flex; gap:6px;}
+  .tab{
+    font-family:inherit; font-size:.85rem; font-weight:600; padding:7px 16px; cursor:pointer;
+    background:var(--panel); border:1px solid var(--line2); border-radius:999px; color:var(--muted);
+  }
+  .tab.on{background:var(--accent); border-color:var(--accent); color:#fff;}
+  .count{font-size:.75rem; color:var(--muted); margin-left:auto;}
+
+  /* ── 絞り込みの開閉（既定は畳んでグラフを広く見せる） ── */
+  .ftoggle{
+    font-family:inherit; font-size:.78rem; font-weight:600; color:var(--muted);
+    background:var(--panel); border:1px solid var(--line2); border-radius:999px;
+    padding:6px 13px; cursor:pointer; display:inline-flex; align-items:center; gap:6px; white-space:nowrap;
+  }
+  .ftoggle:hover{background:var(--head); color:var(--txt);}
+  .ftoggle .fic{font-size:.62rem; line-height:1; transition:transform .15s;}
+  .ftoggle.open{background:var(--head); color:var(--txt);}
+  .ftoggle.open .fic{transform:rotate(90deg);}
+  .ftoggle .fnum{
+    font-size:.68rem; font-weight:700; color:#fff; background:var(--accent);
+    border-radius:999px; padding:1px 7px; margin-left:1px;
+  }
+  .fsum{
+    font-size:.74rem; color:var(--muted); min-width:0; overflow:hidden;
+    text-overflow:ellipsis; white-space:nowrap;
+  }
+  .fclear{
+    font-family:inherit; font-size:.72rem; color:var(--muted); background:none;
+    border:0; padding:2px 4px; cursor:pointer; text-decoration:underline; white-space:nowrap;
+  }
+  .fclear:hover{color:var(--txt);}
+  #filterrow[hidden]{display:none;}
+
+  /* ── 陣営バッジ（意味を持つラベルなので配色あり） ── */
+  .bdg{display:inline-block; font-size:.7rem; font-weight:600; padding:2px 8px; border-radius:999px; border:1px solid transparent; white-space:nowrap;}
+  .s-チームZ{background:#e6eef7; color:#1d4f85; border-color:#d3e2f1;}
+  .s-チームX{background:#f8e6e4; color:#93362a; border-color:#f0d4d0;}
+  .s-チームY{background:#f3efe2; color:#6b5b30; border-color:#e7e1cf;}
+  .s-チームW{background:#e7f3ea; color:#1f6b3c; border-color:#d4e9db;}
+  .s-チームV{background:#e9e7f6; color:#403690; border-color:#dbd8ef;}
+  .s-他の棟{background:#e6f1f8; color:#175f8c; border-color:#d2e5f2;}
+  .s-U-20日本代表{background:#fbe8ee; color:#93325a; border-color:#f3d6e0;}
+  .s-世界{background:#fdf1dc; color:#8a5a05; border-color:#f5e3c2;}
+  .s-運営・連合{background:#e8e6e2; color:#3d382f; border-color:#dad7d1;}
+  .s-家族・学校{background:#f1eee8; color:#5c5140; border-color:#e4e0d6;}
+  .s-other{background:#f2f2f0; color:#666; border-color:#e4e4e0;}
+  .bdg.k{background:var(--panel); color:var(--muted); border-color:var(--line2); font-weight:500;}
+  .bdg.st-脱落{background:#fbeaea; color:#a3252c; border-color:#f2d5d5;}
+  .bdg.st-敗者復活{background:#eef1f6; color:#33507a; border-color:#dde3ec;}
+
+  /* ── 顔アバター（画像が無ければ頭文字にフォールバック） ── */
+  .avw{position:relative; display:inline-block; border-radius:50%; overflow:hidden; vertical-align:middle;
+       border:1px solid var(--line2); background:var(--head); flex:0 0 auto;}
+  .avw img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block;}
+  .avw .mono{position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+             font-weight:700; color:#555; letter-spacing:0;}
+  .av-s{width:26px; height:26px;} .av-s .mono{font-size:.72rem;}
+  .av-l{width:64px; height:64px;} .av-l .mono{font-size:1.25rem;}
+  @media (max-width:640px){ .av-s{width:22px;height:22px;} }
+
+  /* ── グラフ ── */
+  .graphcard{position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); margin-top:14px;}
+  #svg{display:block; width:100%; height:66vh; min-height:380px; touch-action:none; background:
+     radial-gradient(circle at 1px 1px, #efefec 1px, transparent 0) 0 0/22px 22px;}
+  @media (max-width:640px){ #svg{height:58vh; min-height:320px;} }
+  .gctl{position:absolute; right:10px; top:10px; display:flex; flex-direction:column; gap:6px; z-index:2;}
+  .gbtn{width:30px; height:30px; border:1px solid var(--line2); background:rgba(255,255,255,.94); border-radius:8px; cursor:pointer; font-size:.9rem; color:var(--txt); font-family:inherit; line-height:1; padding:0;}
+  .gbtn:hover{background:var(--head);}
+  .glegend{position:absolute; left:10px; bottom:10px; z-index:2; background:rgba(255,255,255,.92); border:1px solid var(--line); border-radius:8px; padding:7px 9px; font-size:.68rem; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap; max-width:calc(100% - 60px);}
+  .glegend span{display:inline-flex; align-items:center; gap:4px;}
+  .lg-dot{width:9px; height:9px; border-radius:50%; border:1px solid #999; display:inline-block;}
+  .lg-sq{width:9px; height:9px; border:1px solid #999; display:inline-block; transform:rotate(45deg);}
+  .lg-ri{width:9px; height:9px; border-radius:50%; border:1px dashed #999; display:inline-block;}
+  .ghint{position:absolute; left:10px; top:10px; z-index:2; font-size:.68rem; color:var(--muted); background:rgba(255,255,255,.9); border:1px solid var(--line); border-radius:8px; padding:5px 8px;}
+  .n-lbl{font-size:10px; font-family:"Poppins","Noto Sans JP",sans-serif; fill:#333; paint-order:stroke; stroke:#fff; stroke-width:3px; stroke-linejoin:round; pointer-events:none; user-select:none;}
+  .n-lbl.big{font-size:12px; font-weight:600; fill:#111;}
+  .node{cursor:pointer;}
+  .node .shp{stroke:#8a8a8a; stroke-width:1.2px;}
+  .node.sel .shp{stroke:#111; stroke-width:2.5px;}
+  .node.hit .shp{stroke:#111; stroke-width:2.2px;}
+  .dim{opacity:.12;}
+  .lnk{stroke:#c9c9c4; stroke-width:1px; fill:none;}
+  .lnk.act{stroke:#555; stroke-width:1.8px;}
+  .lnk-lbl{font-size:10px; fill:#999; paint-order:stroke; stroke:#fff; stroke-width:2.5px; pointer-events:none; opacity:0;}
+  .lnk-lbl.act{opacity:1; fill:#555;}
+
+  /* ── テーブル ── */
+  .tablecard{border:1px solid var(--line); border-radius:12px; overflow:auto; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); max-height:74vh; margin-top:14px;}
+  table{border-collapse:separate; border-spacing:0; width:100%; min-width:820px;}
+  th,td{padding:10px 14px; text-align:left; border-bottom:1px solid var(--line); font-size:.88rem; white-space:nowrap;}
+  th.num,td.num{text-align:right; font-variant-numeric:tabular-nums;}
+  thead th{background:var(--head); color:var(--muted); font-weight:500; font-size:.78rem; position:sticky; top:0; z-index:2; border-bottom:1px solid var(--line2); cursor:pointer; user-select:none;}
+  thead th:hover{background:#efefec;}
+  thead th .ar{opacity:.35; font-size:.7rem; margin-left:3px;}
+  thead th.sorted{color:var(--txt);} thead th.sorted .ar{opacity:1;}
+  th.nm, td.nm{position:sticky; left:0; z-index:1; background:var(--panel); font-weight:600; border-right:1px solid var(--line2); min-width:168px;}
+  td.nm{display:table-cell;}
+  td.nm .nmbox{display:flex; align-items:center; gap:9px;}
+  @media (max-width:640px){ th.nm,td.nm{min-width:136px;} td.nm .nmbox{gap:7px;} }
+  thead th.nm{z-index:3; background:var(--head);}
+  tbody tr{cursor:pointer;}
+  tbody tr:hover td{background:var(--head);}
+  tbody tr:hover td.nm{background:#f0f0ee;}
+  td.sm{color:var(--muted); font-size:.82rem; white-space:normal; min-width:240px;}
+  .empty{padding:40px 16px; text-align:center; color:var(--muted); font-size:.85rem;}
+  @media (max-width:640px){ th,td{padding:9px 10px; font-size:.83rem;} th.nm,td.nm{min-width:112px;} }
+
+  /* ── あらすじ ── */
+  .story{margin-top:16px;}
+  .arc{border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); padding:18px 20px 16px; margin-bottom:14px;}
+  .arc.now{background:var(--soft); border-color:var(--line2);}
+  .ahead{display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .ano{font-size:.72rem; font-weight:700; letter-spacing:.1em; color:var(--muted); border:1px solid var(--line2); border-radius:6px; padding:1px 7px;}
+  .arc h2{font-size:1.05rem; font-weight:700; margin:0; letter-spacing:.01em;}
+  .aep{font-size:.72rem; font-weight:600; border:1px solid var(--line2); border-radius:999px; padding:2px 10px; max-width:100%;}
+  .avol{font-size:.74rem; color:var(--muted);}
+  .bep{display:block; font-weight:400; font-size:.68rem; color:var(--muted); margin-top:1px; letter-spacing:.02em;}
+  @media (max-width:640px){ .bep{display:inline; margin-left:7px;} }
+  .alead{font-size:.9rem; font-weight:500; margin:9px 0 12px; padding:10px 12px; background:var(--soft); border:1px solid var(--line); border-radius:9px;}
+  .arc.now .alead{background:#fff;}
+  .beat{display:grid; grid-template-columns:126px 1fr; gap:0 16px; padding:10px 0; border-top:1px solid var(--line);}
+  .beat .bh{font-size:.8rem; font-weight:600;}
+  .beat .bb{font-size:.86rem; color:#333; margin:0;}
+  @media (max-width:640px){ .beat{grid-template-columns:1fr; gap:3px;} .beat .bh{color:var(--muted);} }
+  .ameta{display:grid; grid-template-columns:auto 1fr; gap:4px 14px; font-size:.78rem; margin:10px 0 12px;
+         padding:10px 12px; border:1px solid var(--line); border-radius:9px; background:var(--panel);}
+  .ameta dt{color:var(--muted);} .ameta dd{margin:0;}
+  .aquote{margin:0 0 12px; padding:9px 13px; border-left:3px solid var(--line2); font-size:.86rem; color:#333;}
+  .aquote b{display:block; font-weight:400; font-size:.72rem; color:var(--muted); margin-top:3px;}
+  .arcfoot{margin-top:13px; padding-top:12px; border-top:1px solid var(--line);}
+  .arcfoot + .arcfoot{margin-top:9px; padding-top:9px; border-top:0;}
+  .fl{font-size:.72rem; color:var(--muted); margin-bottom:5px;}
+
+  /* ── あらすじ: 章の索引 ── */
+  .arcidx{border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.06); padding:14px 18px 12px; margin-bottom:14px;}
+  .arcidx h2{margin:0 0 2px; font-size:.95rem; font-weight:700;}
+  .arcidx .ixsub{font-size:.74rem; color:var(--muted); margin-bottom:9px;}
+  .ixlist{display:grid; grid-template-columns:repeat(auto-fill,minmax(268px,1fr)); gap:5px 14px;}
+  .ixrow{display:grid; grid-template-columns:30px 1fr; gap:0 8px; align-items:baseline; text-align:left;
+         background:none; border:0; border-top:1px solid var(--line); padding:7px 2px; cursor:pointer; font:inherit; color:inherit; width:100%;}
+  .ixrow:hover{background:var(--soft);}
+  .ixrow .ixno{font-size:.68rem; font-weight:700; letter-spacing:.06em; color:var(--muted);}
+  .ixrow .ixnm{font-size:.82rem; font-weight:600;}
+  .ixrow .ixmeta{grid-column:2; font-size:.7rem; color:var(--muted); margin-top:1px;}
+
+  /* ── あらすじ: 要点 / 復習チェック ── */
+  .apoints{margin:12px 0 2px; padding:11px 13px 9px; border:1px solid var(--line2); border-radius:9px; background:var(--soft);}
+  .arc.now .apoints{background:#fff;}
+  .apoints .fl{margin-bottom:6px; font-weight:600; color:#333;}
+  .apoints ul{margin:0; padding-left:17px;}
+  .apoints li{font-size:.84rem; color:#333; margin:0 0 4px;}
+  .achecks{margin-top:13px; padding-top:12px; border-top:1px solid var(--line);}
+  .achecks .qa{border:1px solid var(--line); border-radius:8px; margin-bottom:6px; background:var(--panel); overflow:hidden;}
+  .achecks .qa > summary{list-style:none; cursor:pointer; padding:9px 12px; font-size:.84rem; font-weight:600;
+                         display:flex; gap:9px; align-items:baseline;}
+  .achecks .qa > summary::-webkit-details-marker{display:none;}
+  .achecks .qa > summary::before{content:"Q"; font-size:.66rem; font-weight:700; color:var(--muted);
+                                 border:1px solid var(--line2); border-radius:4px; padding:1px 5px; flex:0 0 auto;}
+  .achecks .qa > summary:hover{background:var(--soft);}
+  .achecks .qa[open] > summary{border-bottom:1px solid var(--line);}
+  .achecks .qa .ans{margin:0; padding:9px 12px 10px 34px; font-size:.85rem; color:#333; background:var(--soft);}
+  .achecks .qtool{display:flex; gap:8px; margin-bottom:7px;}
+  .achecks .qbtn{font:inherit; font-size:.72rem; color:var(--muted); background:none; border:1px solid var(--line2);
+                 border-radius:6px; padding:3px 10px; cursor:pointer;}
+  .achecks .qbtn:hover{background:var(--soft); color:#111;}
+
+  /* ── 能力値（公式ガイドブック） ── */
+  .stats{margin:0 0 16px; border:1px solid var(--line); border-radius:9px; padding:11px 13px 9px; background:var(--soft);}
+  .stats .sthead{display:flex; align-items:baseline; justify-content:space-between; margin-bottom:8px;}
+  .stats .sttitle{font-size:.78rem; font-weight:600; letter-spacing:.03em;}
+  .stats .stsrc{font-size:.68rem; color:var(--muted);}
+  .strow{display:grid; grid-template-columns:56px 1fr 46px; align-items:center; gap:9px; padding:2px 0;}
+  .strow .k{font-size:.74rem; color:var(--muted);}
+  .strow .bar{height:6px; background:#e9e9e6; border-radius:3px; overflow:hidden;}
+  .strow .bar i{display:block; height:100%; background:#333; border-radius:3px;}
+  .strow .v{font-size:.8rem; font-weight:600; text-align:right; font-variant-numeric:tabular-nums;}
+  .strow.grade .v{font-size:.85rem;}
+
+  /* ── 詳解タブ ── */
+  .dd{margin-top:16px;}
+  .ddhead{border:1px solid var(--line); border-radius:12px; background:var(--panel); padding:18px 20px; margin-bottom:14px; box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .ddhead h2{margin:0; font-size:1.15rem; font-weight:700; letter-spacing:.01em;}
+  .ddhead .ddsub{font-size:.76rem; color:var(--muted); margin-top:4px;}
+  .ddhead .ddlead{font-size:.9rem; font-weight:500; margin-top:11px; padding:10px 12px; background:var(--soft); border:1px solid var(--line); border-radius:9px;}
+  .ddpart{border:1px solid var(--line); border-radius:12px; background:var(--panel); padding:16px 20px 14px; margin-bottom:12px; box-shadow:0 1px 3px rgba(0,0,0,.06);}
+  .ddpart > h3{margin:0 0 2px; font-size:1rem; font-weight:700; display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;}
+  .ddpart .ddep{font-size:.72rem; font-weight:500; color:var(--muted); border:1px solid var(--line2); border-radius:999px; padding:1px 9px;}
+  .ddpart p{font-size:.88rem; color:#333; margin:9px 0 0;}
+  .ddpart .ddnote{font-size:.8rem; color:var(--muted); margin-top:9px; padding-left:11px; border-left:2px solid var(--line2);}
+  .dditem{display:grid; grid-template-columns:132px 1fr; gap:0 16px; padding:9px 0; border-top:1px solid var(--line); margin-top:9px;}
+  .dditem:first-of-type{margin-top:11px;}
+  .dditem .ih{font-size:.82rem; font-weight:600;}
+  .dditem .ib{font-size:.87rem; color:#333; margin:0;}
+  @media (max-width:640px){ .dditem{grid-template-columns:1fr; gap:3px;} .dditem .ih{color:var(--muted);} }
+  .ddtable{margin-top:11px; border:1px solid var(--line); border-radius:9px; overflow-x:auto;}
+  .ddtable table{min-width:420px; width:100%;}
+  .ddtable th{background:var(--head); color:var(--muted); font-size:.76rem; font-weight:500; white-space:nowrap;}
+  .ddtable td{font-size:.85rem; white-space:normal; vertical-align:top;}
+  .ddtable td:first-child{white-space:nowrap; font-weight:600; width:1%;}
+  .ddnames{font-size:.84rem; color:#333; margin:6px 0 0; line-height:1.9;}
+  .ddsrc{font-size:.72rem; color:var(--muted); margin:4px 0 0;}
+
+  /* ── 詳細ドロワー ── */
+  .drawerhost{position:fixed; inset:0; overflow:hidden; pointer-events:none; z-index:50;}
+  .drawerhost .drawer{pointer-events:auto;}
+  .drawer{
+    position:fixed; top:0; right:0; height:100%; width:min(460px,92vw); background:var(--panel);
+    border-left:1px solid var(--line2); box-shadow:-8px 0 28px rgba(0,0,0,.10);
+    transform:translateX(101%); transition:transform .22s ease, visibility .22s; visibility:hidden;
+    z-index:50; display:flex; flex-direction:column;
+  }
+  .drawer.on{transform:translateX(0); visibility:visible;}
+  .dhead{padding:18px 20px 12px; border-bottom:1px solid var(--line); position:relative;}
+  .dhead .htop{display:flex; align-items:center; gap:12px;}
+  .dhead h2{margin:0; font-size:1.25rem; font-weight:700; letter-spacing:.01em; padding-right:34px;}
+  .dhead .yomi{color:var(--muted); font-size:.75rem; margin-top:1px;}
+  .dhead .bdgs{margin-top:9px; display:flex; gap:5px; flex-wrap:wrap;}
+  .dclose{position:absolute; right:12px; top:14px; border:1px solid var(--line2); background:var(--panel); border-radius:8px; width:28px; height:28px; cursor:pointer; color:var(--muted); font-size:1rem; line-height:1; padding:0;}
+  .dclose:hover{background:var(--head); color:var(--txt);}
+  .dbody{padding:16px 20px 40px; overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch;}
+  .dsum{font-size:.92rem; font-weight:500; margin:0 0 14px; padding:11px 13px; background:var(--soft); border:1px solid var(--line); border-radius:9px;}
+  .dgrid{display:grid; grid-template-columns:auto 1fr; gap:5px 14px; font-size:.82rem; margin-bottom:16px;}
+  .dgrid dt{color:var(--muted);}
+  .dgrid dd{margin:0;}
+  .dsec{margin-bottom:14px;}
+  .dsec h3{font-size:.8rem; font-weight:600; margin:0 0 4px; letter-spacing:.03em; color:var(--txt); display:flex; align-items:center; gap:7px;}
+  .dsec h3::after{content:""; flex:1; height:1px; background:var(--line);}
+  .dsec p{margin:0; font-size:.86rem; color:#333;}
+  .rels{display:flex; gap:6px; flex-wrap:wrap;}
+  .rel{font-family:inherit; font-size:.75rem; padding:4px 10px; border:1px solid var(--line2); border-radius:999px; background:var(--panel); cursor:pointer; color:var(--txt);}
+  .rel:hover{background:var(--head); border-color:var(--accent);}
+  .rel .rl{color:var(--muted); margin-left:5px; font-size:.68rem;}
+  /* ドロワーは非モーダル。開いている間も本文を触れるよう、広い画面では本文を左へ寄せる */
+  body.dopen .wrap{ padding-right:20px; }
+  @media (min-width:900px){
+    .wrap{ transition:margin-right .22s ease; }
+    body.dopen .wrap{ margin-right:min(460px,92vw); }
+  }
+  @media (max-width:640px){
+    .drawer{width:100%; height:72%; top:auto; bottom:0; border-left:0; border-top:1px solid var(--line2); border-radius:14px 14px 0 0; transform:translateY(101%);}
+    .drawer.on{transform:translateY(0);}
+    body.dopen .wrap{ padding-bottom:0; }
+  }
+  .foot{margin-top:18px; color:var(--muted); font-size:.72rem;}
+</style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">personal</a><span class="s">/</span><a href="index.html">hobbies</a><span class="s">/</span><span class="c">ブルーロック DB</span></nav><!-- crumbs:end -->
+<div class="wrap">
+  <header>
+    <h1>ブルーロック リサーチDB</h1>
+    <span class="sub" id="range"></span>
+  </header>
+  <div class="meta" id="note"></div>
+
+  <div class="tools">
+    <div class="row">
+      <div class="tabs">
+        <button class="tab on" data-view="graph">グラフ</button>
+        <button class="tab" data-view="table">テーブル</button>
+        <button class="tab" data-view="story">あらすじ</button>
+        <button class="tab" data-view="deep">詳解</button>
+      </div>
+      <div class="search" id="searchbox">
+        <span class="ico">⌕</span>
+        <input id="q" type="search" placeholder="人物・試合・チーム・武器・話数で検索（例: 潔 / 凪 / チームZ / 空間認識 / 第24話 / 2期5話 / 原作93話）" autocomplete="off">
+        <button class="clr" id="clr" aria-label="クリア">×</button>
+      </div>
+    </div>
+    <div class="row" id="filterbar">
+      <button class="ftoggle" id="ftoggle" aria-expanded="false" aria-controls="filterrow">
+        <span class="fic">▶</span>絞り込み<span class="fnum" id="fnum" hidden></span>
+      </button>
+      <span class="fsum" id="fsum"></span>
+      <button class="fclear" id="fclear" hidden>すべて解除</button>
+      <span class="count" id="count"></span>
+    </div>
+    <div class="row" id="filterrow" hidden>
+      <div class="chipset" id="kindchips"><span class="chiplabel">種別</span></div>
+      <div class="chipset" id="statechips"><span class="chiplabel">一次選考チーム</span></div>
+      <div class="chipset" id="epichips"><span class="chiplabel">初登場の章</span></div>
+      <div class="chipset" id="crewchips"><span class="chiplabel">到達段階</span></div>
+      <div class="chipset" id="originchips"><span class="chiplabel">ポジション</span></div>
+      <div class="chipset" id="ftypechips"><span class="chiplabel">武器の系統</span></div>
+    </div>
+  </div>
+
+  <div id="view-graph">
+    <div class="graphcard">
+      <svg id="svg"></svg>
+      <div class="ghint">ノードをタップで詳細 / ドラッグで移動</div>
+      <div class="gctl">
+        <button class="gbtn" id="zin" title="拡大">＋</button>
+        <button class="gbtn" id="zout" title="縮小">－</button>
+        <button class="gbtn" id="zfit" title="全体表示">⤢</button>
+      </div>
+      <div class="glegend">
+        <span><i class="lg-dot"></i>人物</span>
+        <span><i class="lg-sq"></i>試合</span>
+        <span><i class="lg-ri"></i>チーム・組織</span>
+        <span>色 = 一次選考チーム</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-table" style="display:none">
+    <div class="tablecard">
+      <table id="tbl">
+        <thead><tr>
+          <th class="nm" data-k="name">名前<span class="ar">↕</span></th>
+          <th data-k="kind">種別<span class="ar">↕</span></th>
+          <th data-k="epi">初登場の章<span class="ar">↕</span></th>
+          <th data-k="state">一次選考チーム<span class="ar">↕</span></th>
+          <th data-k="crew">到達段階<span class="ar">↕</span></th>
+          <th data-k="group">ポジション<span class="ar">↕</span></th>
+          <th data-k="klass">分類<span class="ar">↕</span></th>
+          <th data-k="origin">所属・出身<span class="ar">↕</span></th>
+          <th data-k="fruit">武器<span class="ar">↕</span></th>
+          <th data-k="ftype">系統<span class="ar">↕</span></th>
+          <th data-k="rank" class="num">ランク<span class="ar">↕</span></th>
+          <th data-k="hcm" class="num">身長<span class="ar">↕</span></th>
+          <th data-k="cv">声優<span class="ar">↕</span></th>
+          <th data-k="role">立場 / 結果<span class="ar">↕</span></th>
+          <th data-k="firstn">初登場<span class="ar">↕</span></th>
+          <th data-k="status">状態<span class="ar">↕</span></th>
+          <th data-k="summary">概要<span class="ar">↕</span></th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+      <div class="empty" id="tempty" style="display:none">該当なし</div>
+    </div>
+  </div>
+
+  <div id="view-deep" style="display:none">
+    <section class="dd">
+      <div class="ddhead">
+        <h2>絵心の選考設計 ── 300人を1人に絞る関門</h2>
+        <div class="ddsub">アニメ 第1〜29話 ／ 入寮テストから三次選考まで</div>
+        <p class="ddlead">青い監獄の選考は「上手い順」に残す仕組みではない。関門ごとにエゴの別の側面を試し、その側面を持たない者を落としていく。</p>
+      </div>
+
+      <div class="ddpart">
+        <h3>1. 関門の一覧 <span class="ddep">第1〜29話</span></h3>
+        <div class="ddtable"><table>
+          <thead><tr><th>関門</th><th>ルール</th><th>何を試したか</th><th>話数</th></tr></thead>
+          <tbody>
+            <tr><td>入寮テスト「オニごっこ」</td><td>12人1部屋・136秒。最後に当てられた1人が失格</td><td>格上を狙いにいけるか（逃げ切りは評価されない）</td><td>第1〜2話</td></tr>
+            <tr><td>一次選考</td><td>同棟5チームの総当たり。上位2チーム＋敗退チームの得点王1人ずつが通過</td><td>チームの勝利と自分のゴールが衝突したとき、どちらを取るか</td><td>第3〜11話</td></tr>
+            <tr><td>二次選考 1st</td><td>ホログラムGK相手に90分で100ゴール。クリア順がランキング</td><td>一人でゴールを奪い切る基礎体力</td><td>第12話</td></tr>
+            <tr><td>二次選考 2nd〜5th「奪敵決戦」</td><td>3人1組から。勝者が敗者から1人を奪い、5人になれば通過。2ndで負けて選ばれなければ失格</td><td>他人の武器を見極め、自分の進化の材料として選べるか</td><td>第13〜23話</td></tr>
+            <tr><td>三次選考 一次ノルマ「世界選抜戦」</td><td>通過時の5人チームで世界選抜5人と対戦（5点先取）</td><td>勝敗ではなく査定。世界基準での現在地</td><td>第23〜24話</td></tr>
+            <tr><td>三次選考「適性試験」</td><td>上位6人を固定選手に3チーム。残り29人が1試合ずつ加入</td><td>誰と組めば最も輝くか（化学反応の相性）</td><td>第25〜29話</td></tr>
+          </tbody>
+        </table></div>
+        <div class="dditem"><div class="ih">伍号棟のトリック</div><p class="ib">壱〜伍号棟の5棟と説明されたが、実際は5つ全てが伍号棟だった。全員が「自分は最下層のチームV〜Zにいる」と思い込まされ、実力者も底辺として扱われる。最初からハングリーさを引き出すための仕掛け。</p></div>
+        <div class="dditem"><div class="ih">得点王の復活枠</div><p class="ib">一次選考の初戦（チームX戦）が敵味方なしのボール争奪戦になったのは、敗退しても得点王だけは残れる特例のせい。馬狼・二子・鰐間（兄）がこの枠で勝ち上がっている。「チームのため」と「自分のため」を意図的に衝突させる設計。</p></div>
+        <div class="dditem"><div class="ih">奪うという選択</div><p class="ib">奪敵決戦では、勝った側が「誰を奪うか」を決める。潔が成早ではなく馬狼を選び、成早がそれに感謝して去った場面は、情けではなく必要で選ぶことがこの選考のルールだと示している。</p></div>
+      </div>
+
+      <div class="ddpart">
+        <h3>2. 潔の武器の変遷 <span class="ddep">第1〜38話</span></h3>
+        <div class="ddtable"><table>
+          <thead><tr><th>段階</th><th>手に入れたもの</th><th>きっかけ</th></tr></thead>
+          <tbody>
+            <tr><td>入寮時</td><td>武器なし（299位）</td><td>県大会決勝でパスを選んで負けた後悔</td></tr>
+            <tr><td>一次選考 X戦</td><td>「ゴールの匂い」</td><td>馬狼に完敗した試合で、点が生まれる場所を嗅ぐ感覚に気づく（第3〜4話）</td></tr>
+            <tr><td>一次選考 Y戦</td><td>空間認識（俯瞰で未来を読む）</td><td>國神の問いと二子との読み合い（第4〜5話）</td></tr>
+            <tr><td>一次選考 V戦</td><td>ダイレクトシュート＝「最後の欠片」</td><td>読んだ場所で受けて即座に打つ型の完成（第8〜11話）</td></tr>
+            <tr><td>二次選考</td><td>「喰う」── 他人の武器を取り込む</td><td>成早の裏抜け、凪との連携、馬狼から主役の座を奪う経験（第14〜18話）</td></tr>
+            <tr><td>二次 4th〜U-20</td><td>試合全体の支配と適応</td><td>凛との支配の奪い合い、凛と同じチームでの連動（第20〜38話）</td></tr>
+          </tbody>
+        </table></div>
+        <p class="ddnote">技術やフィジカルは最後まで平均的なまま。進化の中身はすべて「目」と「頭」と、自分を作り直す速さ（適応）である。</p>
+      </div>
+      <p class="ddsrc">典拠: Wikipedia「ブルーロック」用語・選考節、Blue Lock Wiki（Fandom）各試合ページ（本文は要約・再構成）。</p>
+    </section>
+
+    <section class="dd">
+      <div class="ddhead">
+        <h2>U-20日本代表戦 詳解 ── 7ゴールの読み方</h2>
+        <div class="ddsub">アニメ 第29〜38話 ／ 原作 第112〜149話</div>
+        <p class="ddlead">負ければ青い監獄は解体。スコアは4-3だが、試合の主役は前半と後半で入れ替わっている。前半は青い監獄の即興、後半は士道と冴。</p>
+      </div>
+
+      <div class="ddpart">
+        <h3>1. 前提 ── なぜこの試合が組まれたか <span class="ddep">第25〜29話</span></h3>
+        <p>世界選抜の招聘費用や保護者の苦情もあり、成果の出ない青い監獄を連合は打ち切ろうとしていた。絵心はその場で、現行のU-20日本代表との「特別壮行試合」を提案する。勝てば存続、負ければ解体。U-20側も、負ければ代表の座を失いかねない。</p>
+        <div class="dditem"><div class="ih">冴の条件</div><p class="ib">U-20の現有FWに見切りをつけた冴は「青い監獄から最低一人をこちらに入れる」ことを参加の条件にした。選ばれた士道は、才能はあっても他の選手と噛み合わずスタメンから外れていた選手である。</p></div>
+        <div class="dditem"><div class="ih">愛空の賭け</div><p class="ib">愛空は士道抜きで前半を戦いたいと冴に交渉した。自分たちのチームの力を確かめるためで、劣勢になれば士道を出す流れも想定していた。</p></div>
+      </div>
+
+      <div class="ddpart">
+        <h3>2. 先発 <span class="ddep">青い監獄 4-5-1 ／ U-20 4-3-3</span></h3>
+        <div class="ddtable"><table>
+          <thead><tr><th>ライン</th><th>青い監獄イレブン</th><th>U-20日本代表</th></tr></thead>
+          <tbody>
+            <tr><td>GK</td><td>我牙丸</td><td>不角</td></tr>
+            <tr><td>DF</td><td>蟻生・二子（CB）／千切（右）・蜂楽（左）</td><td>愛空（主将）・仁王（CB）／音留（右）・蛇来（左）</td></tr>
+            <tr><td>MF</td><td>烏（DMF）／乙夜（右）・雪宮（左）／凪・潔（トップ下）</td><td>若月・颯（DMF）／冴（OMF）</td></tr>
+            <tr><td>FW</td><td>凛（主将）</td><td>閃堂（CF）・超（左）・狐里（右）</td></tr>
+            <tr><td>交代</td><td>氷織 ← 千切／玲王 ← 二子／馬狼 ← 乙夜</td><td>士道 ← 若月</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="ddpart">
+        <h3>3. 得点経過 <span class="ddep">4-3</span></h3>
+        <div class="ddtable"><table>
+          <thead><tr><th>スコア</th><th>得点者</th><th>形と意味</th></tr></thead>
+          <tbody>
+            <tr><td>0-1</td><td>糸師冴</td><td>50m超のロングパスから攻撃を作り、閃堂のシュートを我牙丸が弾いたこぼれを角度のない位置から曲げて決める。「FWより点を取れないならストライカーを名乗るな」と味方を罵る。</td></tr>
+            <tr><td>1-1</td><td>凪</td><td>凛の即興のパスから常識外れのゴール。絵心は「指示を待たず自分で課題を解く者」を育てた成果だと語る。</td></tr>
+            <tr><td>2-1</td><td>糸師凛</td><td>潔と連動して勝ち越し。その前には、兄と同じ位置から利き足でない左で兄のゴールを再現しようとして、不角にポストへ弾かれている。</td></tr>
+            <tr><td>2-2</td><td>士道</td><td>後半投入。閃堂が囮になって二子へのファウルとFKを獲得し、士道が決める。二子はこの直前の決死のブロックで足首を痛めた。</td></tr>
+            <tr><td>2-3</td><td>士道</td><td>冴の導きでこの試合最初のフロー状態へ。U-20が逆転。絵心は「士道も青い監獄の産物だから、もう勝っている」と動じない。</td></tr>
+            <tr><td>3-3</td><td>馬狼</td><td>U-20は馬狼が潔を狩りに来ると読んで潔を固めた。馬狼はその裏をかいて凛を狩り、同点。上着を脱いでイエローカード。</td></tr>
+            <tr><td>4-3</td><td>潔</td><td>アディショナルタイム。冴と凛の兄弟の1対1で、凛が冴からボールを蹴り出す。愛空の届かない高さで落ちたボールを、潔がダイレクトで沈める。</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+
+      <div class="ddpart">
+        <h3>4. 試合の読みどころ</h3>
+        <div class="dditem"><div class="ih">U-20を強くしたのは青い監獄</div><p class="ib">逆転弾の士道は青い監獄が生んだ選手で、冴はその才能を引き出しただけ。どちらが勝っても「青い監獄の方法が正しい」ことが証明される構図になっている。絵心の「もう勝ってる」はその意味。</p></div>
+        <div class="dditem"><div class="ih">最後の砦・愛空</div><p class="ib">愛空はかつてFWで、「チームのため」を優先する日本のストライカー像に絶望してDFに転じた。青い監獄の選手たちを「自分が選べなかったアナザーストーリー」と見ながら、「日本サッカーが生まれ変わる最後の砦」として立ちはだかる。最後は自ら前線へ走ってシュート体勢に入ったが、凛のスライディングに阻まれた。</p></div>
+        <div class="dditem"><div class="ih">決勝点と第1話</div><p class="ib">第1話の潔は、ゴール前でパスを選んで負けた。最終話の潔は、凛と冴の兄弟喧嘩からこぼれたボールを自分で打って勝つ。物語の最初の問いに、最初の大舞台で答えた形になっている。</p></div>
+      </div>
+      <p class="ddsrc">典拠: Wikipedia「ブルーロック」登場人物節（愛空・閃堂・二子・絵心）、Blue Lock Wiki「Blue Lock vs Japan U-20」（本文は要約・再構成）。</p>
+    </section>
+  </div>
+
+  <div id="view-story" style="display:none">
+    <div class="story" id="story"></div>
+    <div class="empty" id="sempty" style="display:none">該当なし</div>
+  </div>
+
+  <div class="foot">データ: <code>261018_bluelock_data.js</code> — 追記するとグラフ・テーブル・詳細に自動反映。<br>
+    収録はTVアニメ第1期・第2期（U-20日本代表戦の決着まで）と劇場版『EPISODE 凪』。原作の「新英雄大戦」以降は第3期の範囲のため入れていません。
+    あらすじの見出しは原則アニメ公式サブタイトルで、U-20戦の章だけは前半／後半の区分にしています。<br>
+    人物・声優・ランク・試合結果は Wikipedia「ブルーロック」および Blue Lock Wiki（Fandom）に準拠（本文は要約・再構成）。身長・誕生日の原典は公式キャラクターブック『EGOIST BIBLE』。<br>
+    『ブルーロック』の著作権は金城宗幸・ノ村優介／講談社および各アニメ製作委員会に帰属します。個人の学習・整理目的の非営利ページです。</div>
+</div>
+
+<div class="drawerhost">
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <div class="dhead">
+    <button class="dclose" id="dclose" aria-label="閉じる">×</button>
+    <div class="htop">
+      <span id="d-av"></span>
+      <div>
+        <h2 id="d-name"></h2>
+        <div class="yomi" id="d-yomi"></div>
+      </div>
+    </div>
+    <div class="bdgs" id="d-bdgs"></div>
+  </div>
+  <div class="dbody" id="d-body"></div>
+</aside>
+</div>
+
+<script src="261018_bluelock_data.js?v=20261018"></script>
+<script>
+(function(){
+  "use strict";
+  const N = BLUELOCK.nodes;
+  const byId = Object.fromEntries(N.map(n => [n.id, n]));
+  const KIND_LABEL = {person:"人物", battle:"試合", faction:"チーム・組織"};
+  const STATE_FILL = {"チームZ":"#d5e3f2","チームX":"#f2d6d1","チームY":"#ebe4cf","チームW":"#d8ebdf",
+                      "チームV":"#dcd8ef","他の棟":"#d4e6f4","U-20日本代表":"#f6d7e2","世界":"#fbe7c4",
+                      "運営・連合":"#dedbd4","家族・学校":"#e6e1d5"};
+  const stateKey = s => (STATE_FILL[s] ? s : "other");
+
+  /* 人物プロフィール（能力値・CV・階級など） */
+  const PROF = BLUELOCK.profiles || {};
+  const prof = id => PROF[id] || null;
+  
+
+  /* 顔画像。manifest にある node だけ <img> を出し、読み込めなければ頭文字が残る */
+  const FDIR  = (BLUELOCK.faces && BLUELOCK.faces.dir) || "";
+  const FACES = new Set((BLUELOCK.faces && BLUELOCK.faces.ids) || []);
+  const faceURL = id => FDIR + id + ".jpg";
+  window.BLavFallback = el => {                     // 画像が無い環境では頭文字に差し替える
+    const w = el.parentNode; if (!w) return;
+    w.innerHTML = "";
+    const sp = document.createElement("span");
+    sp.className = "mono"; sp.textContent = w.dataset.mono || "";
+    w.appendChild(sp);
+  };
+  function avatarHTML(n, size){
+    const bg = STATE_FILL[n.state] || "#f0f0ee";
+    const ch = esc(String(n.name).replace(/[（(].*$/,"").slice(0,1));
+    return '<span class="avw av-' + size + '" data-mono="' + ch + '" style="background:' + bg + '">' +
+           (FACES.has(n.id)
+             ? '<img src="' + faceURL(n.id) + '" alt="" loading="lazy" onerror="BLavFallback(this)">'
+             : '<span class="mono">' + ch + '</span>') +
+           '</span>';
+  }
+
+  document.getElementById("range").textContent = "収録範囲: " + BLUELOCK.meta.range;
+  document.getElementById("note").innerHTML =
+    BLUELOCK.meta.note + " &nbsp;/&nbsp; 更新: <b>" + BLUELOCK.meta.updated + "</b>";
+
+  /* ── 索引: 逆参照（戦い→参加者） ── */
+  N.forEach(n => { n._in = []; });
+  N.forEach(n => (n.battles||[]).forEach(b => { if (byId[b]) byId[b]._in.push(n.id); }));
+  N.forEach(n => {
+    // 「第12話」→12、「第2期」→25（第2期の頭）、劇場版などは末尾
+    const fm = String(n.first).match(/第(\d+)話/);
+    n.firstn = fm ? +fm[1] : (/第2期/.test(n.first) ? 25 : 9999);
+    const pf = PROF[n.id] || {};
+    n.hcm = typeof pf.hcm === "number" ? pf.hcm : null;
+    n.cv  = pf.cv || "";
+    // ポジションは「OMF（背番号11）」「RWG→RSB」のような表記。チップ用に最初の役割だけにする
+    n.origin0 = String(n.group || "—").replace(/[（(].*$/, "").split("→")[0] || "—";
+    n._hay = [n.name, n.yomi, n.state, n.crew, n.group, n.role, n.klass, n.origin, n.epi,
+              n.fruit, n.ftype, n.status, n.summary, (n.tags||[]).join(" "), n.rk,
+              pf.cv, pf.epithet, pf.rank, pf.age, pf.birth,
+              (n.detail||[]).map(d => d.h + d.body).join(" ")].join(" ").toLowerCase();
+  });
+
+  /* ── あらすじの索引 ── */
+  const ARCS = BLUELOCK.arcs || [];
+  ARCS.forEach(a => {
+    // アニメ話数（a.ep）と原作話数（a.chapters）のレンジをそれぞれ解析する
+    const range = str => {
+      const m = String(str||"").match(/第?(\d+)(?:[〜~－-](\d+))?話/);
+      return m ? {a:+m[1], b:+(m[2] || m[1])} : null;
+    };
+    const an = range(a.ep);
+    a._segs = an ? [an] : [];
+    const cm = range(a.chapters);
+    a._chA = cm ? cm.a : null;
+    a._chB = cm ? cm.b : null;
+    a._hay = [a.name, a.ep, a.vols, a.chapters, a.era, a.sides, a.result, a.rank, a.lead,
+              (a.points||[]).join(" "),
+              (a.checks||[]).map(c => c.q + c.a).join(" "),
+              a.quote ? a.quote.t + a.quote.by : "",
+              [...(a.newcomers||[]), ...(a.deaths||[])].map(k => byId[k] ? byId[k].name : "").join(" "),
+              (a.beats||[]).map(b => (b.ep||"") + b.h + b.body).join(" "),
+              [...(a.keys||[]), ...(a.battles||[])].map(k => byId[k] ? byId[k].name + " " + byId[k].yomi : "").join(" ")
+             ].join(" ").toLowerCase();
+  });
+
+  /* ── エッジ（無向・重複排除） ── */
+  const EDGES = [];
+  const seen = new Set();
+  function addEdge(a, b, label){
+    if (!byId[a] || !byId[b] || a === b) return;
+    const k = a < b ? a+"|"+b : b+"|"+a;
+    if (seen.has(k)) return;
+    seen.add(k);
+    EDGES.push({a, b, label: label || ""});
+  }
+  N.forEach(n => {
+    (n.rel||[]).forEach(r => addEdge(n.id, r.to, r.label));
+    (n.battles||[]).forEach(b => addEdge(n.id, b, "参戦"));
+  });
+  const deg = {};
+  EDGES.forEach(e => { deg[e.a]=(deg[e.a]||0)+1; deg[e.b]=(deg[e.b]||0)+1; });
+  const neigh = {};
+  N.forEach(n => neigh[n.id] = new Set());
+  EDGES.forEach(e => { neigh[e.a].add(e.b); neigh[e.b].add(e.a); });
+
+  /* ── 状態 ── */
+  const S = { view:"graph", q:"", kind:"all", state:"all", epi:"all", crew:"all",
+              origin:"all", ftype:"all", sortK:"epi", sortD:1, sel:null };
+
+  /* ── フィルタチップ ── */
+  function buildChips(el, key, entries){
+    entries.forEach(([val, label, n]) => {
+      const b = document.createElement("button");
+      b.className = "chip" + (S[key] === val ? " on" : "");
+      b.dataset.val = val;
+      b.innerHTML = label + (n != null ? '<span class="n">' + n + "</span>" : "");
+      b.onclick = () => {
+        S[key] = val;
+        [...el.querySelectorAll(".chip")].forEach(c => c.classList.toggle("on", c.dataset.val === val));
+        render();
+      };
+      el.appendChild(b);
+    });
+  }
+  const cnt = (f) => N.filter(f).length;
+  buildChips(document.getElementById("kindchips"), "kind", [
+    ["all","すべて",N.length],
+    ["person","人物",cnt(n=>n.kind==="person")],
+    ["battle","試合",cnt(n=>n.kind==="battle")],
+    ["faction","チーム・組織",cnt(n=>n.kind==="faction")]
+  ]);
+  const states = [...new Set(N.map(n => n.state))].filter(s => STATE_FILL[s]);
+  buildChips(document.getElementById("statechips"), "state",
+    [["all","すべて",null]].concat(states.map(s => [s, s, cnt(n=>n.state===s)])));
+
+  /* 章／到達段階／ポジション／武器の系統の4軸。値は node から自動で拾う */
+  const axis = (key, label, get, sort) => {
+    let vals = [...new Set(N.map(get))].filter(v => v && v !== "—");
+    vals.sort(sort || ((a,b) => String(a).localeCompare(String(b), "ja")));
+    buildChips(document.getElementById(label), key,
+      [["all","すべて",null]].concat(vals.map(v => [v, v, cnt(n => get(n) === v)])));
+  };
+  axis("epi",    "epichips",    n => n.epi);
+  // 到達段階は五十音ではなく勝ち残りの順に並べる
+  const CREW_ORDER = ["入寮テストで脱落","一次選考で脱落","二次選考で脱落","二次選考で脱落（敗者復活へ）",
+                      "青い監獄（ベンチ外）","青い監獄（ベンチ）","青い監獄イレブン",
+                      "U-20日本代表（特別参加）","U-20日本代表","世界選抜","運営"];
+  const crewIdx = v => { const i = CREW_ORDER.indexOf(v); return i < 0 ? 99 : i; };
+  axis("crew",   "crewchips",   n => n.crew, (x, y) => crewIdx(x) - crewIdx(y));
+  axis("origin", "originchips", n => n.origin0);
+  axis("ftype",  "ftypechips",  n => n.ftype);
+
+  /* ── 検索 ── */
+  const qEl = document.getElementById("q"), sbox = document.getElementById("searchbox");
+  qEl.addEventListener("input", () => {
+    S.q = qEl.value.trim().toLowerCase();
+    sbox.classList.toggle("has", !!S.q);
+    render();
+  });
+  document.getElementById("clr").onclick = () => { qEl.value=""; S.q=""; sbox.classList.remove("has"); render(); qEl.focus(); };
+
+  const passFilter = n =>
+    (S.kind   === "all" || n.kind    === S.kind) &&
+    (S.state  === "all" || n.state   === S.state) &&
+    (S.epi    === "all" || n.epi     === S.epi) &&
+    (S.crew   === "all" || n.crew    === S.crew) &&
+    (S.origin === "all" || n.origin0 === S.origin) &&
+    (S.ftype  === "all" || n.ftype   === S.ftype);
+  const passSearch  = n => !S.q || n._hay.indexOf(S.q) >= 0;
+
+  /* ── 絞り込みの開閉（既定は畳む。選択中の条件はバーに要約で出す） ── */
+  const FKEYS = [["kind","種別"], ["state","一次選考チーム"], ["epi","章"],
+                 ["crew","到達段階"], ["origin","ポジション"], ["ftype","武器の系統"]];
+  const KINDLABEL = {person:"人物", battle:"試合", faction:"チーム・組織"};
+  const ftog = document.getElementById("ftoggle"), frow = document.getElementById("filterrow");
+  ftog.onclick = () => {
+    const open = frow.hidden;
+    frow.hidden = !open;
+    ftog.classList.toggle("open", open);
+    ftog.setAttribute("aria-expanded", String(open));
+    if (S.view === "graph"){ measure(); sim.alpha = .3; tick(); }   // 高さが変わるので測り直す
+  };
+  document.getElementById("fclear").onclick = () => {
+    FKEYS.forEach(([k]) => S[k] = "all");
+    document.querySelectorAll("#filterrow .chip").forEach(c => c.classList.toggle("on", c.dataset.val === "all"));
+    render();
+  };
+  function updateFilterBar(){
+    const act = FKEYS.filter(([k]) => S[k] !== "all");
+    const num = document.getElementById("fnum");
+    num.hidden = !act.length; num.textContent = act.length;
+    document.getElementById("fsum").textContent =
+      act.map(([k, lb]) => lb + ": " + (k === "kind" ? (KINDLABEL[S[k]] || S[k]) : S[k])).join(" / ");
+    document.getElementById("fclear").hidden = !act.length;
+  }
+
+  /* ── タブ ── */
+  document.querySelectorAll(".tab").forEach(t => t.onclick = () => {
+    S.view = t.dataset.view;
+    document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x === t));
+    ["graph","table","story","deep"].forEach(v => {
+      document.getElementById("view-" + v).style.display = S.view === v ? "" : "none";
+    });
+    // 絞り込みは人物/試合一覧にだけ効くので、あらすじ・詳解では絞り込みごと隠す
+    const off = (S.view === "story" || S.view === "deep");
+    ftog.style.display = off ? "none" : "";
+    document.getElementById("fsum").style.display = off ? "none" : "";
+    if (off){ frow.hidden = true; ftog.classList.remove("open"); ftog.setAttribute("aria-expanded","false"); }
+    render();
+    if (S.view === "graph") { sim.alpha = .35; tick(); }
+  });
+
+  /* ============ グラフ ============ */
+  const SVG = "http://www.w3.org/2000/svg";
+  const svg = document.getElementById("svg");
+  const gRoot = document.createElementNS(SVG,"g");
+  const gLink = document.createElementNS(SVG,"g");
+  const gLabl = document.createElementNS(SVG,"g");
+  const gNode = document.createElementNS(SVG,"g");
+  const gDefs = document.createElementNS(SVG,"defs");
+  gRoot.appendChild(gLink); gRoot.appendChild(gLabl); gRoot.appendChild(gNode);
+  svg.appendChild(gDefs); svg.appendChild(gRoot);
+
+  const P = {};      // id -> {x,y,vx,vy,fixed}
+  const view = {x:0, y:0, k:1};
+  let W = 900, H = 560;
+  function measure(){ const r = svg.getBoundingClientRect(); W = r.width || 900; H = r.height || 560; }
+
+  // 初期配置: 国ごとにゆるくクラスタ
+  const clusterAt = {};
+  (function seed(){
+    const groups = [...new Set(N.map(n => n.state))];
+    groups.forEach((g, i) => {
+      const a = (i / groups.length) * Math.PI * 2;
+      clusterAt[g] = {x: Math.cos(a) * 800, y: Math.sin(a) * 250};
+    });
+    N.forEach((n, i) => {
+      const c = clusterAt[n.state] || {x:0,y:0};
+      P[n.id] = {x: c.x + Math.cos(i*2.399)*95, y: c.y + Math.sin(i*2.399)*95, vx:0, vy:0};
+    });
+  })();
+
+  const radius = n => n.kind === "battle" ? 15 : n.kind === "faction" ? 13
+                   : FACES.has(n.id) ? Math.min(19, 11 + (deg[n.id]||0) * 0.9)
+                   : Math.min(15, 6 + (deg[n.id]||0) * 1.1);
+  // ラベルが長い／大きいノードほど強く反発させ、文字の重なりを減らす
+  const charge = n => 9 + radius(n) * 3 + String(n.name).length * 3.2;
+  const isBig  = n => n.kind !== "person" || (deg[n.id]||0) >= 5;
+  function boxOf(n){
+    const r = radius(n), cw = isBig(n) ? 12 : 10;
+    return {hw: Math.max(r, String(n.name).length * cw / 2) + 5, hh: r + 15};
+  }
+
+  const sim = {alpha:1, nodes:[], links:[]};
+  function step(){
+    const ns = sim.nodes, ls = sim.links, a = sim.alpha;
+    for (let i=0;i<ns.length;i++){
+      const A = P[ns[i].id];
+      for (let j=i+1;j<ns.length;j++){
+        const B = P[ns[j].id];
+        let dx = B.x-A.x, dy = B.y-A.y, d2 = dx*dx+dy*dy;
+        if (d2 < 1) { dx = (i-j)*.6 + .3; dy = (j-i)*.4 + .2; d2 = dx*dx+dy*dy; }
+        if (d2 > 900000) continue;
+        const f = ns[i]._c * ns[j]._c * 1.35 / d2 * a;
+        const d = Math.sqrt(d2), fx = dx/d*f, fy = dy/d*f;
+        A.vx -= fx; A.vy -= fy; B.vx += fx; B.vy += fy;
+      }
+    }
+    ls.forEach(l => {
+      const A = P[l.a], B = P[l.b];
+      const dx = B.x-A.x, dy = B.y-A.y, d = Math.sqrt(dx*dx+dy*dy) || .01;
+      const f = (d - l._rest) * l._k * a, fx = dx/d*f, fy = dy/d*f;
+      A.vx += fx; A.vy += fy; B.vx -= fx; B.vy -= fy;
+    });
+    ns.forEach(n => {
+      const p = P[n.id];
+      const c = clusterAt[n.state] || {x:0,y:0};
+      p.vx += (c.x - p.x) * .0014 * a;
+      p.vy += (c.y - p.y) * .0034 * a;
+      if (p.fixed) { p.vx = p.vy = 0; return; }
+      p.vx *= .82; p.vy *= .82;
+      p.x += Math.max(-24, Math.min(24, p.vx));
+      p.y += Math.max(-24, Math.min(24, p.vy));
+    });
+    collide(ns); collide(ns);
+    sim.alpha *= .988;
+  }
+
+  // ラベル込みの矩形として重なりを押し出す（文字の被りを防ぐ）
+  function collide(ns){
+    for (let i=0;i<ns.length;i++){
+      const ai = ns[i], A = P[ai.id];
+      for (let j=i+1;j<ns.length;j++){
+        const bj = ns[j], B = P[bj.id];
+        const dx = B.x - A.x, dy = B.y - A.y;
+        const ox = (ai._hw + bj._hw) - Math.abs(dx); if (ox <= 0) continue;
+        const oy = (ai._hh + bj._hh) - Math.abs(dy); if (oy <= 0) continue;
+        if (ox < oy){
+          const s = (dx >= 0 ? 1 : -1) * ox * .25;
+          if (!A.fixed) A.x -= s; if (!B.fixed) B.x += s;
+        } else {
+          const s = (dy >= 0 ? 1 : -1) * oy * .25;
+          if (!A.fixed) A.y -= s; if (!B.fixed) B.y += s;
+        }
+      }
+    }
+  }
+
+  let raf = null;
+  function tick(){
+    if (raf) return;
+    const loop = () => {
+      raf = null;
+      if (S.view !== "graph") return;
+      for (let i=0;i<2;i++) step();
+      draw();
+      if (sim.alpha > .02 || dragging) raf = requestAnimationFrame(loop);
+      else if (!view.touched) fit();   // 収束後に一度だけ全体表示に合わせ直す
+    };
+    raf = requestAnimationFrame(loop);
+  }
+
+  const el = {};   // id -> {g, shp, lbl}
+  function buildGraph(vis){
+    gLink.textContent = ""; gNode.textContent = ""; gLabl.textContent = ""; gDefs.textContent = "";
+    Object.keys(el).forEach(k => delete el[k]);
+    const set = new Set(vis.map(n => n.id));
+    vis.forEach(n => { n._c = charge(n); const b = boxOf(n); n._hw = b.hw; n._hh = b.hh; });
+    sim.nodes = vis;
+    sim.links = EDGES.filter(e => set.has(e.a) && set.has(e.b));
+    // 次数の高いノード（勢力・戦い）に繋がる辺は弱く長くする。でないと全ノードが一点に潰れる。
+    sim.links.forEach(l => {
+      const lo = Math.min(deg[l.a]||1, deg[l.b]||1), hi = Math.max(deg[l.a]||1, deg[l.b]||1);
+      l._k    = .034 / (1 + lo * 0.16);
+      l._rest = 120 + Math.min(180, hi * 2.6);
+    });
+
+    sim.links.forEach(l => {
+      const ln = document.createElementNS(SVG,"line");
+      ln.setAttribute("class","lnk");
+      l._el = ln; gLink.appendChild(ln);
+      const lb = document.createElementNS(SVG,"text");
+      lb.setAttribute("class","lnk-lbl"); lb.setAttribute("text-anchor","middle");
+      lb.textContent = l.label; l._lb = lb; gLabl.appendChild(lb);
+    });
+
+    vis.forEach(n => {
+      const g = document.createElementNS(SVG,"g");
+      g.setAttribute("class","node"); g.dataset.id = n.id;
+      const r = radius(n);
+      let shp;
+      if (n.kind === "battle"){
+        shp = document.createElementNS(SVG,"rect");
+        shp.setAttribute("x",-r); shp.setAttribute("y",-r);
+        shp.setAttribute("width",r*2); shp.setAttribute("height",r*2);
+        shp.setAttribute("rx",3); shp.setAttribute("transform","rotate(45)");
+      } else {
+        shp = document.createElementNS(SVG,"circle");
+        shp.setAttribute("r", r);
+        if (n.kind === "faction") shp.setAttribute("stroke-dasharray","3 2.5");
+      }
+      shp.setAttribute("class","shp");
+      shp.setAttribute("fill", STATE_FILL[n.state] || "#f0f0ee");
+      g.appendChild(shp);
+      // 顔画像を円でクリップして重ねる（読み込めなければ国の色だけが残る）
+      if (n.kind === "person" && FACES.has(n.id)){
+        const cid = "cp-" + n.id;
+        const cp = document.createElementNS(SVG,"clipPath");
+        cp.setAttribute("id", cid);
+        const cc = document.createElementNS(SVG,"circle");
+        cc.setAttribute("r", r - 1);
+        cp.appendChild(cc); gDefs.appendChild(cp);
+        const im = document.createElementNS(SVG,"image");
+        im.setAttribute("x", -r); im.setAttribute("y", -r);
+        im.setAttribute("width", r*2); im.setAttribute("height", r*2);
+        im.setAttribute("preserveAspectRatio","xMidYMid slice");
+        im.setAttribute("clip-path","url(#" + cid + ")");
+        im.setAttribute("href", faceURL(n.id));
+        im.addEventListener("error", () => im.remove());
+        g.appendChild(im);
+      }
+      const t = document.createElementNS(SVG,"text");
+      t.setAttribute("class","n-lbl" + (n.kind !== "person" || (deg[n.id]||0) >= 5 ? " big" : ""));
+      t.setAttribute("text-anchor","middle");
+      t.setAttribute("y", r + 11);
+      t.textContent = n.name;
+      g.appendChild(t);
+      el[n.id] = {g, shp};
+      gNode.appendChild(g);
+    });
+  }
+
+  function draw(){
+    sim.nodes.forEach(n => {
+      const p = P[n.id];
+      el[n.id].g.setAttribute("transform","translate(" + p.x.toFixed(1) + "," + p.y.toFixed(1) + ")");
+    });
+    sim.links.forEach(l => {
+      const A = P[l.a], B = P[l.b];
+      l._el.setAttribute("x1",A.x); l._el.setAttribute("y1",A.y);
+      l._el.setAttribute("x2",B.x); l._el.setAttribute("y2",B.y);
+      l._lb.setAttribute("x",(A.x+B.x)/2); l._lb.setAttribute("y",(A.y+B.y)/2 - 3);
+    });
+    applyTransform();
+  }
+  function applyTransform(){
+    gRoot.setAttribute("transform","translate(" + (W/2 + view.x) + "," + (H/2 + view.y) + ") scale(" + view.k + ")");
+  }
+
+  function paintGraphState(){
+    const hits = new Set(sim.nodes.filter(passSearch).map(n => n.id));
+    const focus = S.sel && el[S.sel] ? new Set([S.sel, ...neigh[S.sel]]) : null;
+    sim.nodes.forEach(n => {
+      const g = el[n.id].g;
+      const isHit = !S.q || hits.has(n.id);
+      const inFocus = !focus || focus.has(n.id);
+      g.classList.toggle("dim", !(isHit && inFocus));
+      g.classList.toggle("hit", !!S.q && hits.has(n.id));
+      g.classList.toggle("sel", S.sel === n.id);
+    });
+    sim.links.forEach(l => {
+      const act = S.sel && (l.a === S.sel || l.b === S.sel);
+      l._el.classList.toggle("act", !!act);
+      l._el.classList.toggle("dim", !!(focus && !act) || !!(S.q && !(hits.has(l.a) && hits.has(l.b))));
+      l._lb.classList.toggle("act", !!act);
+    });
+  }
+
+  function fit(){
+    measure();
+    if (!sim.nodes.length) return;
+    let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+    sim.nodes.forEach(n => { const p=P[n.id]; x0=Math.min(x0,p.x); y0=Math.min(y0,p.y); x1=Math.max(x1,p.x); y1=Math.max(y1,p.y); });
+    const pad = 60, w = (x1-x0)+pad*2, h = (y1-y0)+pad*2;
+    const kraw = Math.min(W/w, H/h);
+    // 画面が狭いときは縮めすぎず、主要ハブ（潔）を中心に置いてパンで見せる
+    const floor = W < 700 ? .82 : .5;
+    view.k = Math.max(floor, Math.min(1.55, kraw));
+    let cx = (x0+x1)/2, cy = (y0+y1)/2;
+    if (kraw < floor){
+      const hub = sim.nodes.slice().sort((a,b) => (deg[b.id]||0) - (deg[a.id]||0))[0];
+      if (hub){ cx = P[hub.id].x; cy = P[hub.id].y; }
+    }
+    view.x = -cx * view.k;
+    view.y = -cy * view.k;
+    applyTransform();
+  }
+
+  /* パン・ズーム・ドラッグ */
+  let dragging = null, panning = null;
+  svg.addEventListener("pointerdown", e => {
+    view.touched = true;                 // 一度でも触ったら自動フィットは止める
+    const g = e.target.closest(".node");
+    try { svg.setPointerCapture(e.pointerId); } catch (_) {}
+    if (g){
+      dragging = {id:g.dataset.id, moved:0};
+      P[dragging.id].fixed = true;
+    } else {
+      panning = {x:e.clientX, y:e.clientY, vx:view.x, vy:view.y};
+    }
+  });
+  svg.addEventListener("pointermove", e => {
+    if (dragging){
+      const p = P[dragging.id];
+      p.x += e.movementX / view.k; p.y += e.movementY / view.k;
+      dragging.moved += Math.abs(e.movementX) + Math.abs(e.movementY);
+      sim.alpha = Math.max(sim.alpha, .25); tick();
+    } else if (panning){
+      view.x = panning.vx + (e.clientX - panning.x);
+      view.y = panning.vy + (e.clientY - panning.y);
+      applyTransform();
+    }
+  });
+  svg.addEventListener("pointerup", e => {
+    if (dragging){
+      const d = dragging; dragging = null;
+      P[d.id].fixed = false;
+      if (d.moved < 5) open(d.id);
+      sim.alpha = Math.max(sim.alpha, .12); tick();
+    } else if (panning && Math.abs(e.clientX-panning.x) + Math.abs(e.clientY-panning.y) < 5){
+      // 背景タップ = 選択解除
+      if (S.sel){ S.sel = null; paintGraphState(); }
+    }
+    panning = null;
+  });
+  svg.addEventListener("pointercancel", () => { if (dragging) P[dragging.id].fixed = false; dragging = null; panning = null; });
+  svg.addEventListener("wheel", e => {
+    view.touched = true;
+    e.preventDefault();
+    const f = Math.exp(-e.deltaY * .0015);
+    const r = svg.getBoundingClientRect();
+    const cx = e.clientX - r.left - W/2, cy = e.clientY - r.top - H/2;
+    const k2 = Math.max(.2, Math.min(3.2, view.k * f));
+    view.x = cx - (cx - view.x) * (k2/view.k);
+    view.y = cy - (cy - view.y) * (k2/view.k);
+    view.k = k2; applyTransform();
+  }, {passive:false});
+  const zoomBy = f => { view.touched = true; view.k = Math.max(.2, Math.min(3.2, view.k*f)); view.x*=f; view.y*=f; applyTransform(); };
+  document.getElementById("zin").onclick  = () => zoomBy(1.25);
+  document.getElementById("zout").onclick = () => zoomBy(.8);
+  document.getElementById("zfit").onclick = () => fit();
+
+  /* ============ テーブル ============ */
+  const tbody = document.getElementById("tbody");
+  document.querySelectorAll("#tbl thead th").forEach(th => th.onclick = () => {
+    const k = th.dataset.k;
+    if (S.sortK === k) S.sortD *= -1; else { S.sortK = k; S.sortD = 1; }
+    render();
+  });
+  /* ランクは数値で持ち、どの段階の順位かを添えて表示する */
+  const rankTxt = n => n.rank ? n.rank + "位" + (n.rk && n.rk !== "—" ? "（" + n.rk + "）" : "") : "—";
+
+  function renderTable(rows){
+    document.querySelectorAll("#tbl thead th").forEach(th => {
+      const on = th.dataset.k === S.sortK;
+      th.classList.toggle("sorted", on);
+      th.querySelector(".ar").textContent = on ? (S.sortD > 0 ? "↑" : "↓") : "↕";
+    });
+    const k = S.sortK, d = S.sortD;
+    const sorted = rows.slice().sort((a,b) => {
+      let va = a[k], vb = b[k];
+      if (k === "rank"){
+        const na = a.rank || 0, nb = b.rank || 0;
+        if (!na && !nb) return a.name.localeCompare(b.name,"ja");
+        if (!na) return 1;
+        if (!nb) return -1;
+        return (na - nb) * d || a.name.localeCompare(b.name,"ja");
+      }
+      if (k === "hcm"){
+        if (va == null && vb == null) return a.name.localeCompare(b.name,"ja");
+        if (va == null) return 1;
+        if (vb == null) return -1;
+        return (vb - va) * d || a.name.localeCompare(b.name,"ja");
+      }
+      if (k === "firstn") return (va - vb) * d || a.name.localeCompare(b.name,"ja");
+      va = String(va == null ? "" : va); vb = String(vb == null ? "" : vb);
+      // 空欄・「—」は昇順/降順にかかわらず末尾へ送る
+      const ea = (!va || va === "—" || va === "なし"), eb = (!vb || vb === "—" || vb === "なし");
+      if (ea !== eb) return ea ? 1 : -1;
+      return va.localeCompare(vb, "ja") * d || a.firstn - b.firstn;
+    });
+    tbody.textContent = "";
+    sorted.forEach(n => {
+      const tr = document.createElement("tr");
+      tr.onclick = () => open(n.id);
+      tr.innerHTML =
+        '<td class="nm"><span class="nmbox">' + (n.kind === "person" ? avatarHTML(n,"s") : "") +
+          '<span>' + esc(n.name) + '</span></span></td>' +
+        '<td><span class="bdg k">' + KIND_LABEL[n.kind] + '</span></td>' +
+        '<td class="sm">' + esc(n.epi) + '</td>' +
+        '<td><span class="bdg s-' + stateKey(n.state) + '">' + esc(n.state) + '</span></td>' +
+        '<td>' + esc(n.crew || "—") + '</td>' +
+        '<td>' + esc(n.group || "—") + '</td>' +
+        '<td>' + esc(n.klass) + '</td>' +
+        '<td>' + esc(n.origin || "—") + '</td>' +
+        '<td>' + (n.fruit && n.fruit !== "—" ? esc(n.fruit) : "—") + '</td>' +
+        '<td>' + (n.ftype && n.ftype !== "なし" ? esc(n.ftype) : "—") + '</td>' +
+        '<td class="num">' + rankTxt(n) + '</td>' +
+        '<td class="num">' + (n.hcm != null ? n.hcm : "—") + '</td>' +
+        '<td>' + (n.cv ? esc(n.cv) : "—") + '</td>' +
+        '<td>' + esc(n.role) + '</td>' +
+        '<td>' + esc(n.first) + '</td>' +
+        '<td><span class="bdg' + (["脱落","敗者復活"].includes(n.status) ? " st-" + n.status : " k") + '">' + esc(n.status) + '</span></td>' +
+        '<td class="sm">' + esc(n.summary) + '</td>';
+      tbody.appendChild(tr);
+    });
+    document.getElementById("tempty").style.display = sorted.length ? "none" : "";
+  }
+  const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+  /* ============ あらすじ ============ */
+  const storyEl = document.getElementById("story");
+  function renderStory(){
+    /* 話数検索
+       「第24話」「24話」「#24」 → アニメの通し話数（第2期は第25〜38話）
+       「2期5話」「s2e5」         → 期ごとの話数を通し話数に換算
+       「原作93話」               → 原作の話数                       */
+    const q = S.q.replace(/[\s　]+/g, "");
+    const SEASON_BASE = {1:0, 2:24};
+    let ep = null, manga = false, mm;
+    if ((mm = q.match(/^原作第?(\d+)話?$/)))                 { ep = +mm[1]; manga = true; }
+    else if ((mm = q.match(/^(?:第)?([12])期第?(\d+)話?$/))) { ep = SEASON_BASE[mm[1]] + +mm[2]; }
+    else if ((mm = q.match(/^s([12])e(\d+)$/i)))            { ep = SEASON_BASE[mm[1]] + +mm[2]; }
+    else if ((mm = q.match(/^#(\d+)$/)))                    { ep = +mm[1]; }
+    else if ((mm = q.match(/^第?(\d+)話$/)))                 { ep = +mm[1]; }
+    const absEp = ep;
+    const hitEp = a => (a._segs || []).some(x => absEp >= x.a && absEp <= x.b);
+    const rows = ARCS.filter(a => {
+      if (!S.q) return true;
+      if (ep != null){
+        if (manga) return a._chA != null && ep >= a._chA && ep <= a._chB;
+        return hitEp(a);
+      }
+      return a._hay.indexOf(S.q) >= 0;
+    });
+    const idx = rows.length > 1
+      ? '<div class="arcidx"><h2>章の索引</h2>' +
+        '<div class="ixsub">全' + ARCS.length + '章 / ' + rows.length + '章を表示中。行をクリックでその章へ。各章末に要点と復習チェックあり。</div>' +
+        '<div class="ixlist">' + rows.map(a =>
+          '<button class="ixrow" data-arc="' + a.id + '">' +
+            '<span class="ixno">' + esc(a.no) + '</span>' +
+            '<span class="ixnm">' + esc(a.name) + '</span>' +
+            '<span class="ixmeta">' + esc(a.vols) + (a.year && a.year !== "—" ? " ・ " + esc(a.year) : "") +
+              (a.result && a.result !== "—" ? " ・ " + esc(a.result) : "") + '</span>' +
+          '</button>').join("") +
+        '</div></div>'
+      : "";
+    storyEl.innerHTML = idx + rows.map(a => {
+      const now = /進行中|放送中/.test(String(a.ep) + a.vols + (a.result||""));
+      const keys = (a.keys||[]).filter(k => byId[k]);
+      const bats = (a.battles||[]).filter(k => byId[k]);
+      const nc   = (a.newcomers||[]).filter(k => byId[k]);
+      const dd   = (a.deaths||[]).filter(k => byId[k]);
+      const meta = [["原作", a.chapters], ["対戦", a.sides], ["結果", a.result], ["潔の立場", a.rank]]
+        .filter(x => x[1] && x[1] !== "—")
+        .map(x => "<dt>" + x[0] + "</dt><dd>" + esc(x[1]) + "</dd>").join("");
+      return '<section class="arc' + (now ? " now" : "") + '" id="arc-' + a.id + '">' +
+        '<div class="ahead"><span class="ano">' + esc(a.no) + '</span>' +
+          '<h2>' + esc(a.name) + '</h2>' +
+          (a.ep ? '<span class="aep">' + esc(a.ep) + '</span>' : "") +
+          '<span class="avol">' + esc(a.vols) + (a.era ? " ・ " + esc(a.era) : "") + '</span></div>' +
+        '<p class="alead">' + esc(a.lead) + '</p>' +
+        (meta ? '<dl class="ameta">' + meta + '</dl>' : "") +
+        (a.quote ? '<blockquote class="aquote">「' + esc(a.quote.t) + '」<b>— ' + esc(a.quote.by) + '</b></blockquote>' : "") +
+        (a.beats||[]).map(b => '<div class="beat"><div class="bh">' + esc(b.h) +
+            (b.ep && b.ep !== "—" ? '<span class="bep">' + esc(b.ep) + '</span>' : "") +
+          '</div><p class="bb">' + esc(b.body) + '</p></div>').join("") +
+        ((a.points||[]).length ? '<div class="apoints"><div class="fl">この章の要点</div><ul>' +
+          a.points.map(p => '<li>' + esc(p) + '</li>').join("") + '</ul></div>' : "") +
+        ((a.checks||[]).length ? '<div class="achecks"><div class="fl">復習チェック（クリックで答え）</div>' +
+          '<div class="qtool"><button class="qbtn" data-qa="open">全部開く</button>' +
+          '<button class="qbtn" data-qa="close">全部閉じる</button></div>' +
+          a.checks.map(c => '<details class="qa"><summary>' + esc(c.q) + '</summary>' +
+            '<p class="ans">' + esc(c.a) + '</p></details>').join("") + '</div>' : "") +
+        (bats.length ? '<div class="arcfoot"><div class="fl">この章の試合</div><div class="rels">' +
+          bats.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+        (keys.length ? '<div class="arcfoot"><div class="fl">主要人物</div><div class="rels">' +
+          keys.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+        (nc.length ? '<div class="arcfoot"><div class="fl">この章の主な新顔</div><div class="rels">' +
+          nc.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+        (dd.length ? '<div class="arcfoot"><div class="fl">この章で脱落</div><div class="rels">' +
+          dd.map(k => '<button class="rel" data-id="' + k + '">' + esc(byId[k].name) + '</button>').join("") + '</div></div>' : "") +
+      '</section>';
+    }).join("");
+    storyEl.querySelectorAll(".rel").forEach(b => b.onclick = () => open(b.dataset.id));
+    storyEl.querySelectorAll(".ixrow").forEach(b => b.onclick = () => {
+      const t = document.getElementById("arc-" + b.dataset.arc);
+      if (t) t.scrollIntoView({behavior:"smooth", block:"start"});
+    });
+    storyEl.querySelectorAll(".qbtn").forEach(b => b.onclick = () => {
+      const box = b.closest(".achecks");
+      box.querySelectorAll("details.qa").forEach(d => d.open = b.dataset.qa === "open");
+    });
+    document.getElementById("sempty").style.display = rows.length ? "none" : "";
+    return rows.length;
+  }
+
+
+  /* ============ 詳細ドロワー ============ */
+  const drawer = document.getElementById("drawer");
+  function open(id){
+    const n = byId[id]; if (!n) return;
+    S.sel = id;
+    document.getElementById("d-av").innerHTML = n.kind === "person" ? avatarHTML(n,"l") : "";
+    document.getElementById("d-name").textContent = n.name;
+    document.getElementById("d-yomi").textContent = n.yomi || "";
+    document.getElementById("d-bdgs").innerHTML =
+      '<span class="bdg k">' + KIND_LABEL[n.kind] + '</span>' +
+      '<span class="bdg s-' + stateKey(n.state) + '">' + esc(n.state) + '</span>' +
+      '<span class="bdg k">' + esc(n.klass) + '</span>' +
+      '<span class="bdg' + (["脱落","敗者復活"].includes(n.status) ? " st-" + n.status : " k") + '">' + esc(n.status) + '</span>' +
+      (n.tags||[]).map(t => '<span class="bdg k">#' + esc(t) + '</span>').join("");
+
+    const pf = prof(n.id);
+    let h = '<p class="dsum">' + esc(n.summary) + '</p>';
+    h += '<dl class="dgrid">' +
+      row("初登場の章", n.epi) +
+      row("一次選考チーム", n.kind === "person" ? n.state : "") +
+      row("到達段階", n.crew) + row("ポジション", n.group) + row("立場 / 結果", n.role) +
+      (pf ? row("異名", pf.epithet) + row("肩書・所属", pf.rank) : "") +
+      row("所属・出身", n.origin) +
+      row("武器", n.fruit) + row("武器の系統", n.ftype) +
+      row("ランク", n.rank ? rankTxt(n) : "") +
+      (pf ? row("年齢", pf.age) +
+            row("身長", typeof pf.hcm === "number" ? pf.hcm + "cm" : pf.hcm) +
+            row("誕生日", pf.birth) + row("声優", pf.cv) : "") +
+      row("初登場", n.first) + '</dl>';
+    (n.detail||[]).forEach(d => {
+      h += '<div class="dsec"><h3>' + esc(d.h) + '</h3><p>' + esc(d.body) + '</p></div>';
+    });
+
+    // 登場する戦い / 参加者
+    const bat = (n.battles||[]).filter(b => byId[b]);
+    if (bat.length) h += relBlock("出場した試合", bat.map(b => ({id:b, label:""})));
+    if (n.kind === "battle" && n._in.length) h += relBlock("出場選手", n._in.map(i => ({id:i, label:""})));
+
+    const rel = (n.rel||[]).filter(r => byId[r.to]);
+    const back = N.filter(o => (o.rel||[]).some(r => r.to === n.id) && !rel.some(r => r.to === o.id))
+                  .map(o => ({id:o.id, label:(o.rel.find(r => r.to === n.id)||{}).label}));
+    const all = rel.map(r => ({id:r.to, label:r.label})).concat(back);
+    if (all.length) h += relBlock("関連", all);
+
+    document.getElementById("d-body").innerHTML = h;
+    document.getElementById("d-body").scrollTop = 0;
+    document.getElementById("d-body").querySelectorAll(".rel").forEach(b => b.onclick = () => open(b.dataset.id));
+    drawer.classList.add("on"); drawer.setAttribute("aria-hidden","false");
+    document.body.classList.add("dopen"); reflowAfterDrawer();
+    if (history.replaceState) history.replaceState(null, "", "#" + id);
+    if (S.view === "graph") paintGraphState();
+  }
+  const row = (k,v) => v && v !== "—" ? "<dt>" + esc(k) + "</dt><dd>" + esc(v) + "</dd>" : "";
+  function relBlock(title, items){
+    return '<div class="dsec"><h3>' + title + '</h3><div class="rels">' +
+      items.map(i => '<button class="rel" data-id="' + i.id + '">' + esc(byId[i.id].name) +
+        (i.label ? '<span class="rl">' + esc(i.label) + '</span>' : "") + '</button>').join("") +
+      '</div></div>';
+  }
+  function reflowAfterDrawer(){
+    // 本文の幅が変わるので、遷移後にグラフを測り直して中心を合わせる
+    [60, 260].forEach(t => setTimeout(() => {
+      if (S.view !== "graph") return;
+      measure(); applyTransform();
+    }, t));
+  }
+  function close(){
+    drawer.classList.remove("on"); drawer.setAttribute("aria-hidden","true");
+    document.body.classList.remove("dopen"); reflowAfterDrawer();
+    S.sel = null;
+    if (history.replaceState) history.replaceState(null, "", location.pathname + location.search);
+    if (S.view === "graph") paintGraphState();
+  }
+  document.getElementById("dclose").onclick = close;
+  document.addEventListener("keydown", e => { if (e.key === "Escape") close(); });
+
+  /* ============ 描画 ============ */
+  function render(){
+    updateFilterBar();
+    const rows = N.filter(n => passFilter(n) && (S.view === "table" ? passSearch(n) : true));
+    const vis  = N.filter(passFilter);
+    document.getElementById("count").textContent =
+      (S.view === "table" ? rows.length + " 件" : vis.length + " ノード / " + sim.links.length + " 関係");
+    if (S.view === "deep"){ document.getElementById("count").textContent = ""; return; }
+    if (S.view === "story"){
+      document.getElementById("count").textContent = renderStory() + " / " + ARCS.length + " 章";
+      return;
+    }
+    if (S.view === "table"){
+      renderTable(rows);
+    } else {
+      const sig = vis.map(n => n.id).join(",");
+      if (sig !== render._sig){ render._sig = sig; buildGraph(vis); sim.alpha = .8; }
+      document.getElementById("count").textContent = vis.length + " ノード / " + sim.links.length + " 関係";
+      paintGraphState(); draw(); tick();
+    }
+  }
+
+  measure();
+  render();
+  setTimeout(() => {
+    for (let i=0;i<600;i++) step();
+    for (let i=0;i<120;i++) collide(sim.nodes);   // 最後にラベルの重なりだけを解く
+    draw(); fit();
+  }, 30);
+  window.addEventListener("resize", () => { measure(); applyTransform(); });
+  if (location.hash && byId[location.hash.slice(1)]) setTimeout(() => open(location.hash.slice(1)), 80);
+})();
+</script>
+</body>
+</html>
