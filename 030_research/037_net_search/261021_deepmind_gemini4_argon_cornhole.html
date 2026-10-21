@@ -1,0 +1,750 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gemini 4 Argon × ヒューマノイドのコーンホール（Google DeepMind）｜robotics市場・狙い・難しさ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --ink:#111;--sub:#555;--line:#ddd;--bg:#fff;--soft:#f6f6f6;--soft2:#efefef;
+         --f1:#111;--f2:#7a7a7a;--f3:#cfcfcf; }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{ margin:0;background:var(--bg);color:var(--ink);
+    font-family:"Noto Sans JP",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    line-height:1.9;font-size:16px;letter-spacing:.01em;-webkit-font-smoothing:antialiased; }
+  .wrap{max-width:820px;margin:0 auto;padding:56px 22px 96px}
+  .mono{font-family:'Poppins',"SFMono-Regular",Menlo,Consolas,monospace}
+
+  header{border-bottom:2px solid var(--ink);padding-bottom:26px;margin-bottom:40px}
+  .kicker{font-size:12px;letter-spacing:.18em;color:var(--sub);text-transform:uppercase;margin-bottom:14px}
+  h1{font-size:26px;line-height:1.5;margin:0 0 18px;font-weight:700}
+  .meta{font-size:13px;color:var(--sub);line-height:1.85}
+  .meta a{color:var(--sub)}
+  .people{margin-top:14px;font-size:13.5px;color:var(--ink)}
+  .people b{font-weight:700}
+  .people span{color:var(--sub)}
+
+  section{margin:48px 0}
+  h2{ font-size:13px;letter-spacing:.14em;color:var(--ink);text-transform:uppercase;
+    border-bottom:1px solid var(--line);padding-bottom:8px;margin:0 0 22px;font-weight:700; }
+  h3{font-size:17px;margin:34px 0 12px;font-weight:700}
+
+  .tldr{background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:24px 26px}
+  .tldr p{margin:0 0 12px;font-size:16.5px}
+  .tldr p:last-child{margin-bottom:0}
+  .tldr .n{display:inline-block;width:22px;color:var(--sub);font-weight:700}
+
+  ul.key{list-style:none;margin:0;padding:0}
+  ul.key li{position:relative;padding:0 0 14px 26px;font-size:15.5px}
+  ul.key li:before{content:"—";position:absolute;left:0;color:var(--sub)}
+
+  .detail p{margin:0 0 16px}
+  .lead{color:var(--sub);font-size:14px;margin:-6px 0 18px}
+  blockquote{ margin:22px 0;padding:14px 20px;border-left:3px solid var(--ink);
+    background:var(--soft);font-size:15.5px;color:var(--ink) }
+  blockquote .who{display:block;font-size:12px;color:var(--sub);margin-top:8px}
+
+  details.script{border:1px solid var(--line);border-radius:6px;margin-top:16px}
+  details.script summary{ cursor:pointer;padding:16px 20px;font-weight:700;font-size:14px;list-style:none;
+    display:flex;justify-content:space-between;align-items:center }
+  details.script summary::-webkit-details-marker{display:none}
+  details.script summary .hint{font-size:12px;color:var(--sub);font-weight:400}
+  details.script[open] summary{border-bottom:1px solid var(--line)}
+  .script-body{padding:8px 22px 26px}
+
+  .note{font-size:12.5px;color:var(--sub);background:var(--soft);border:1px solid var(--line);
+    border-radius:6px;padding:14px 18px;line-height:1.8}
+  .note code{font-family:inherit;background:var(--soft2);padding:1px 5px;border-radius:3px}
+
+  footer{margin-top:60px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--sub)}
+  hr.d{border:0;border-top:1px dashed var(--line);margin:30px 0}
+
+  /* charts / figs */
+  .fig{border:1px solid var(--line);border-radius:6px;padding:22px 22px 18px;margin:0 0 22px;background:#fff}
+  .fig .cap{font-size:13.5px;font-weight:700;margin-bottom:3px}
+  .fig .sub{font-size:11.5px;color:var(--sub);margin-bottom:16px;line-height:1.6}
+  .fig .src{font-size:10.5px;color:var(--sub);margin-top:14px;letter-spacing:.02em}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+  .scard{border:1px solid var(--line);border-radius:6px;padding:16px 16px 14px;background:var(--soft)}
+  .scard .big{font-size:26px;font-weight:700;font-family:'Poppins',monospace;line-height:1.1}
+  .scard .lb{font-size:11.5px;color:var(--sub);margin-top:6px;line-height:1.5}
+
+  .flow{display:flex;flex-direction:column;gap:0}
+  .flow .box{border:1px solid var(--ink);border-radius:6px;padding:11px 16px;background:#fff;text-align:center}
+  .flow .box b{font-size:14px} .flow .box small{display:block;color:var(--sub);font-size:11px;margin-top:2px}
+  .flow .box.b1{background:var(--soft)}
+  .flow .box.b3{background:var(--f1);color:#fff} .flow .box.b3 small{color:rgba(255,255,255,.7)}
+  .flow .arrow{align-self:center;color:var(--sub);font-size:13px;padding:6px 0;font-weight:700}
+  .figrow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:640px){.figrow{grid-template-columns:1fr}}
+
+  /* generic table */
+  table.data{width:100%;border-collapse:collapse;margin:6px 0 4px;font-size:13px}
+  table.data th,table.data td{border:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top;line-height:1.6}
+  table.data th{background:var(--soft);font-weight:700;white-space:nowrap}
+  table.data td.n{font-family:'Poppins',monospace;white-space:nowrap}
+
+  /* Q&A */
+  .qna{margin-top:8px}
+  .qna .item{border:1px solid var(--line);border-radius:6px;margin-bottom:14px;overflow:hidden}
+  .qna .item summary{ cursor:pointer;list-style:none;padding:16px 20px;font-weight:700;font-size:15.5px;line-height:1.6;
+    display:flex;gap:12px;align-items:flex-start;background:var(--soft) }
+  .qna .item summary::-webkit-details-marker{display:none}
+  .qna .item summary .qmark{font-family:'Poppins',monospace;color:var(--sub);font-size:14px;flex-shrink:0;margin-top:1px}
+  .qna .item summary .plus{margin-left:auto;color:var(--sub);font-weight:400;font-size:18px;flex-shrink:0;transition:transform .15s}
+  .qna .item[open] summary{border-bottom:1px solid var(--line)}
+  .qna .item[open] summary .plus{transform:rotate(45deg)}
+  .qna .ans{padding:18px 22px 6px}
+  .qna .ans p{margin:0 0 14px}
+  .qna .ans ul{margin:0 0 16px;padding-left:20px}
+  .qna .ans li{margin-bottom:8px}
+  .qna .ans b{font-weight:700}
+  .qna .tbl{width:100%;border-collapse:collapse;margin:6px 0 18px;font-size:13.5px}
+  .qna .tbl th,.qna .tbl td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top;line-height:1.6}
+  .qna .tbl th{background:var(--soft);font-weight:700;white-space:nowrap}
+
+  /* bars */
+  .bars{display:flex;flex-direction:column;gap:8px}
+  .bar{display:grid;grid-template-columns:118px 1fr 56px;gap:10px;align-items:center;font-size:13px}
+  .bar .bt{background:var(--soft2);height:14px;border-radius:2px;overflow:hidden}
+  .bar .bt i{display:block;height:100%;background:var(--f2)}
+  .bar.hl .bt i{background:var(--f1)}
+  .bar .bv{text-align:right;font-size:12.5px}
+  @media(max-width:480px){.bar{grid-template-columns:92px 1fr 48px;font-size:12px}}
+  /* side toc */
+  .toc{display:none}
+  @media(min-width:1280px){
+    .toc{display:block;position:fixed;top:96px;left:max(16px,calc(50% - 410px - 230px));width:190px;font-size:12.5px;line-height:1.5}
+    .toc-lab{font-size:10px;letter-spacing:.16em;color:var(--sub);text-transform:uppercase;margin-bottom:10px}
+    .toc a{display:block;color:var(--sub);text-decoration:none;padding:5px 0 5px 12px;border-left:2px solid var(--line)}
+    .toc a:hover{color:var(--ink)}
+    .toc a.cur{color:var(--ink);font-weight:700;border-left-color:var(--ink)}
+  }
+  section{scroll-margin-top:80px}
+  .wrap{padding-top:96px}
+  table.data{display:block;overflow-x:auto}
+
+  /* people */
+  .person{border:1px solid var(--line);border-radius:6px;padding:18px 20px 6px;margin:0 0 16px}
+  .person .ph{margin-bottom:12px;line-height:1.5}
+  .person .ph b{font-family:'Poppins',sans-serif;font-size:17px;display:block}
+  .person .ph span{font-size:12.5px;color:var(--sub)}
+  .person ul.key li{font-size:14.5px}
+  /* tabs */
+  .tabs{display:flex;gap:0;border-bottom:1px solid var(--ink);margin:-14px 0 34px}
+  .tabs button{background:none;border:1px solid transparent;border-bottom:0;padding:10px 18px;font:700 13px 'Poppins','Noto Sans JP',sans-serif;color:var(--sub);cursor:pointer;border-radius:6px 6px 0 0;margin-bottom:-1px}
+  .tabs button.on{color:var(--ink);border-color:var(--ink);background:#fff}
+  .pane[hidden]{display:none}
+  body.tab-script .toc{display:none!important}
+  /* script */
+  .script-intro{font-size:13px;color:var(--sub);background:var(--soft);border:1px solid var(--line);border-radius:6px;padding:14px 18px;margin-bottom:26px;line-height:1.8}
+  .chap{font-size:15px;font-weight:700;margin:44px 0 16px;padding:10px 0 8px;border-top:2px solid var(--ink)}
+  .chap .ts{font-size:12px;color:var(--sub);margin-right:10px}
+  .pair{margin:0 0 18px;padding:14px 0 0;border-top:1px solid var(--line)}
+  .pair .meta-line{font-size:11.5px;color:var(--sub);margin-bottom:6px;display:flex;gap:10px;align-items:baseline}
+  .pair .spk{font-weight:700;color:var(--ink)}
+  .pair p{margin:0 0 8px}
+  .pair .en{font-size:14.5px;line-height:1.85;font-family:'Poppins',-apple-system,sans-serif;font-weight:400}
+  .pair .ja{font-size:14px;line-height:1.9;color:#333;padding-left:12px;border-left:2px solid var(--f3)}
+  mark.w{background:none;border-bottom:1.5px solid var(--ink);padding:0 1px;font-weight:600;color:inherit}
+  .vocab{margin:0 0 20px 0;display:flex;flex-direction:column;gap:6px}
+  details.v{border:1px solid var(--line);border-radius:6px;background:var(--soft)}
+  details.v summary{cursor:pointer;list-style:none;padding:8px 12px;font-size:13px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline}
+  details.v summary::-webkit-details-marker{display:none}
+  details.v summary b{font-family:'Poppins',sans-serif}
+  details.v .pos{font-size:11px;color:var(--sub);font-style:italic}
+  details.v .gl{font-size:12.5px;color:#333}
+  details.v dl{margin:0;padding:4px 14px 12px;display:grid;grid-template-columns:72px 1fr;gap:6px 10px;font-size:12.5px;line-height:1.7;background:#fff;border-top:1px solid var(--line)}
+  details.v dt{font-weight:700;color:var(--sub);padding-top:6px}
+  details.v dd{margin:0;padding-top:6px}
+  @media(max-width:520px){details.v dl{grid-template-columns:1fr;gap:0}details.v dt{padding-top:8px}}
+
+  /* jp summary */
+  .jsum{margin:0 0 8px}
+  .jsum h3{font-size:16.5px;margin:38px 0 14px;padding-top:14px;border-top:2px solid var(--ink);line-height:1.6}
+  .jsum h3 .ts{font-size:12px;color:var(--sub);margin-right:10px;font-weight:600}
+  .jsum p{font-size:15.5px;line-height:2;margin:0 0 16px}
+  .jsum-toc{font-size:13px;line-height:2;margin:0 0 10px}
+  .jsum-toc a{color:var(--ink)}
+</style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">research</a><span class="s">/</span><a href="index.html">net_search</a><span class="s">/</span><span class="c">Gemini 4 Argon × ヒューマノイドのコーンホール（Google DeepMind）｜robotics市場・狙い・難しさ</span></nav><!-- crumbs:end -->
+<!-- ns:shared-nav -->
+<style>
+.ns-bar{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;gap:16px;padding:0 26px;z-index:99999;font-family:'Poppins','Poppins','Noto Sans JP',monospace;border-bottom:1px solid rgba(255,255,255,.09)}
+.ns-logo{color:#fff;text-decoration:none;font-size:15px;font-weight:700;letter-spacing:.1em;transition:opacity .15s;flex-shrink:0;font-family:'Poppins',monospace}
+.ns-logo:hover{opacity:.55}
+.ns-sep{width:1px;height:15px;background:rgba(255,255,255,.16);flex-shrink:0}
+.ns-back{color:rgba(255,255,255,.5);text-decoration:none;font-size:12px;font-weight:600;letter-spacing:.06em;display:inline-flex;align-items:center;gap:7px;transition:color .15s;white-space:nowrap;font-family:'Poppins','Noto Sans JP',sans-serif}
+.ns-back .chev{display:inline-block;transition:transform .18s ease;font-size:14px;line-height:1}
+.ns-back:hover{color:#fff}
+.ns-back:hover .chev{transform:translateX(-3px)}
+.ns-sp{flex:1}
+.ns-btn{background:none;border:none;cursor:pointer;padding:8px;display:flex;flex-direction:column;gap:5px;flex-shrink:0;border-radius:6px;transition:background .15s}
+.ns-btn:hover{background:rgba(255,255,255,.08)}
+.ns-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.ns-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.ns-btn.open span:nth-child(2){opacity:0}
+.ns-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.ns-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:99998;cursor:pointer}
+.ns-ov.open{display:block}
+.ns-panel{position:fixed;top:0;right:0;bottom:0;width:260px;max-width:82vw;background:#111;z-index:99999;transform:translateX(100%);transition:transform .25s ease;padding:64px 30px 40px;font-family:'Poppins','Noto Sans JP',sans-serif;overflow-y:auto}
+.ns-panel.open{transform:translateX(0)}
+.ns-sec{margin-bottom:26px}
+.ns-lab{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.ns-a{display:block;color:rgba(255,255,255,.82);text-decoration:none;font-size:13px;font-weight:600;padding:6px 0;letter-spacing:-.01em;transition:color .12s}
+.ns-a:hover{color:#fff}
+.ns-a.cur{color:#fff;opacity:.45}
+@media(max-width:600px){.ns-bar{gap:12px;padding:0 16px}}
+</style>
+<div class="ns-bar">
+  <a class="ns-logo" href="/index.html">24111</a>
+  <span class="ns-sep"></span>
+  <a class="ns-back" href="index.html"><span class="chev">&lsaquo;</span>net search</a>
+  <span class="ns-sp"></span>
+  <button class="ns-btn" id="nsBtn" onclick="nsToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="ns-ov" id="nsOv" onclick="nsToggle()"></div>
+<nav class="ns-panel" id="nsPanel">
+  <a class="ns-a" href="/index.html" style="opacity:.5;margin-bottom:18px;padding-bottom:18px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="ns-sec">
+    <div class="ns-lab">Research</div>
+    <a class="ns-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="ns-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="ns-a" href="/030_research/035_company/index.html">company</a>
+    <a class="ns-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="ns-a cur" href="/030_research/037_net_search/index.html">net search</a>
+  </div>
+</nav>
+<script>function nsToggle(){document.getElementById('nsBtn').classList.toggle('open');document.getElementById('nsPanel').classList.toggle('open');document.getElementById('nsOv').classList.toggle('open')}</script>
+<!-- /ns:shared-nav -->
+
+<nav class="toc" id="toc">
+  <div class="toc-lab mono">Contents</div>
+  <a href="#s-tldr">3行まとめ</a>
+  <a href="#s-people">登場人物</a>
+  <a href="#s-primer">予備知識</a>
+  <a href="#s-market">robotics市場の今</a>
+  <a href="#s-aim">この動画は何を目指すか</a>
+  <a href="#s-hard">何が難しいのか</a>
+  <a href="#s-video">動画での発言</a>
+  <a href="#s-points">論点</a>
+  <a href="#s-qna">Q&amp;A（7件）</a>
+  <a href="#s-note">出典</a>
+</nav>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker mono">YouTube Digest &middot; Google DeepMind</div>
+  <h1>Gemini 4 Argon、動画を見てヒューマノイドに豆袋投げを覚えさせる<br>― robotics市場の今・何を目指しているか・何が難しいか</h1>
+  <div class="meta">
+    元動画：Google DeepMind「Teaching a humanoid robot to play cornhole with Gemini 4 Argon」（2026-10-13公開・1分43秒）<br>
+    出演：Google DeepMindのロボティクス研究者（名前は出ない）／Gemini 4 Argon（一人称のナレーション）／Apptronik Apollo 2（ロボット）<br>
+    URL：<a href="https://www.youtube.com/watch?v=9PICEmtfpWU" target="_blank" rel="noopener">youtube.com/watch?v=9PICEmtfpWU</a><br>
+    <span class="mono">Last updated: <span id="lastUpdated">202610212300</span></span>
+  </div>
+  <div class="people">
+    <span>※動画そのものは1分43秒の短いデモ。このページは<b>「今のrobotics marketはどうなっているか」「このデモは何を目指しているか」「何が難しいのか」</b>の3点を周辺リサーチで深掘りしたもの。市場の詳しい数字は industry 側にまとめた → <a href="../036_industry/0373_robotics/261021_robotics.html">industry / Robotics</a></span>
+  </div>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="on" data-tab="digest">Digest</button>
+  <button data-tab="jsum">日本語要約</button>
+  <button data-tab="script">Script（全文・英日対訳）</button>
+</div>
+
+<div class="pane" id="pane-digest">
+
+<section id="s-tldr">
+  <h2>3行まとめ</h2>
+  <div class="tldr">
+    <p><span class="n mono">1</span><b>何をしたか：</b>Googleの新しい汎用AI「Gemini 4 Argon」に、人がコーンホール（豆袋を板の穴に投げ入れる遊び）をする動画を見せた。Argonは自分で物理シミュレーション（MuJoCo）を組んで練習し、Apptronik社のヒューマノイド「Apollo 2」で<b>7投連続で穴に入れた</b>。</p>
+    <p><span class="n mono">2</span><b>何を目指しているか：</b>ロボットの最大の壁は「学習データが足りない」こと。普通の動画からシミュレーションを自動で作れれば、<b>世の中の動画がそのままロボットの練習場になる</b>。Googleは従来なら数週間かかったシミュレーション作りが数時間になると言う。</p>
+    <p><span class="n mono">3</span><b>何が難しいか：</b>単一の投げる動作・社内テスト・総試行数は非公開。手先の器用さ、シミュレーションと現実のずれ、壊れずに何千時間も動く信頼性、1台あたりの採算は、このデモではまだ何も証明されていない。市場はお金が先に集まり、<b>出荷台数の95%以上は中国メーカー</b>という状態。</p>
+  </div>
+</section>
+
+<section id="s-people">
+  <h2>登場人物</h2>
+  <p class="lead">動画内では名前が一度も出ない。研究者の顔と声、Geminiのナレーション、ロボットの3者で進む。</p>
+
+  <div class="person">
+    <div class="ph"><b>Google DeepMind ロボティクス研究者（動画の語り手）</b><span>名前は動画・概要欄に出ない。特定できず</span></div>
+    <ul class="key">
+      <li><b>動画での役回り：</b>冒頭で実験の狙い（「Gemini 4にヒューマノイドを操作させてコーンホールを解けるか」）を説明し、最後に「自分の経験から学んでいく様子にゾクゾクした」と締める。</li>
+      <li><b>誰の可能性があるか（推定）：</b>同日にX（旧Twitter）でこのデモを語ったDeepMindの研究者は <b>Norman Di Palo</b>（「cornholeをzero-shotした」と投稿）と <b>Russell Mendonca</b>（元Tesla Optimus AIチーム。「推論は汎化の強力な仕組みになりうる」とコメント）。動画の話者がこの2人かどうかは確認できていない。</li>
+    </ul>
+  </div>
+
+  <div class="person">
+    <div class="ph"><b>Gemini 4 Argon（ナレーション）</b><span>Google DeepMindの最新フロンティアモデル。2026-10-13一般提供</span></div>
+    <ul class="key">
+      <li><b>動画での役回り：</b>0:48から一人称（"I"）で「4つのステップでやった」と自分の手順を説明する。実際にはモデルが出したテキストを音声にした演出と見られる。</li>
+      <li><b>どんなモデルか：</b>ロボット専用ではない<b>汎用のフロンティアLLM</b>（コーディング・金融・法務・科学などの長い仕事向け）。入力はテキスト・画像・音声・動画、出力はテキスト。sparse MoE（専門家を切り替える構造）のTransformer。知識カットオフは2026年3月。</li>
+      <li><b>ロボット関係の数字：</b>身体性の推論ベンチ ERQA で87%（Googleによれば全フロンティアモデルで最高）。ただしERQAは400問の選択式テストで、ロボットの作業成功率ではない。</li>
+      <li><b>価格：</b>2026-11-30までは入力$2/M・出力$10/Mトークン、以降は$4/$20。コンテキストは1M。</li>
+    </ul>
+  </div>
+
+  <div class="person">
+    <div class="ph"><b>Apollo 2（Apptronik）</b><span>テキサス州オースティンのヒューマノイド企業の第2世代機（2026年6月発表）</span></div>
+    <ul class="key">
+      <li><b>動画での役回り：</b>実際に投げるロボット。目のカメラ2つでボードの3D位置を測り、全身（脚・腰・腕・手）を使って下手投げする。</li>
+      <li><b>会社：</b>Apptronikは2016年、テキサス大学オースティン校のHuman Centered Robotics Lab（Luis Sentis研究室）から生まれた。CEOは Jeff Cardenas、CTOは Nick Paine。ルーツはNASAのヒューマノイド「Valkyrie」とDARPAロボティクス・チャレンジ。</li>
+      <li><b>お金と提携：</b>2024年12月にGoogle DeepMindと戦略提携。2025年2月にシリーズA $350M（Google参加）、2026年2月に$520Mを追加して累計約$935M、評価額は約$5〜5.5B（媒体で差がある）。顧客・パートナーはMercedes-Benz、GXO（物流）、Jabil（製造受託）。</li>
+      <li><b>Apollo 2：</b>二足型と車輪ベース型がある。手はSharpaWave（関節22自由度）。身長・重さ・価格は非公表。DeepMindの「Gemini Robotics 2」（2026-07-30）でも全身制御のデモ機になった。</li>
+    </ul>
+  </div>
+
+  <h3>名前だけ出てくる・背景にいる人</h3>
+  <table class="data">
+    <tr><th>人物</th><th>所属</th><th>このデモとの関係</th></tr>
+    <tr><td>Koray Kavukcuoglu</td><td>Google DeepMind SVP / Chief AI Architect</td><td>Gemini 4 Argon発表ブログの著者</td></tr>
+    <tr><td>Kanishka Rao</td><td>Google DeepMind Principal Software Engineer</td><td>開発者ブログ「Gemini 4 Argon for Robotics」の著者。RT-1/RT-2以来の中心メンバー</td></tr>
+    <tr><td>Carolina Parada</td><td>Google DeepMind Head of Robotics</td><td>Gemini Robotics（2025〜）の責任者</td></tr>
+    <tr><td>Norman Di Palo</td><td>Google DeepMind 研究者</td><td>Xで「動画だけ渡した→simを自作→sysID→実機で数回投げて改善→airmail連発」と説明</td></tr>
+    <tr><td>Russell Mendonca</td><td>Google DeepMind 研究者（元Tesla Optimus）</td><td>報道でコメント</td></tr>
+    <tr><td>Emo Todorov</td><td>ワシントン大学</td><td>シミュレータMuJoCoの開発者（2021年にDeepMindが買収）</td></tr>
+  </table>
+</section>
+
+<section id="s-primer">
+  <h2>動画を見る前の予備知識</h2>
+
+  <h3>1. Google DeepMindのロボット研究の流れ</h3>
+  <p>DeepMindは「ロボット専用モデル」と「汎用モデルの推論力」の2本立てで進めてきた。今回は後者。</p>
+  <table class="data">
+    <tr><th>時期</th><th>モデル</th><th>ポイント</th></tr>
+    <tr><td class="n">2022-12</td><td>RT-1</td><td>大量の実機デモでロボットの動作を学習</td></tr>
+    <tr><td class="n">2023-07</td><td>RT-2</td><td>言語モデルに「行動」も出力させる<b>VLA</b>（Vision-Language-Action）の先駆け</td></tr>
+    <tr><td class="n">2023-10</td><td>Open X-Embodiment / RT-X</td><td>各大学・企業のロボットデータを統合</td></tr>
+    <tr><td class="n">2025-03</td><td>Gemini Robotics / ER</td><td>Gemini 2.0ベースのVLAと、空間推論特化のER（Embodied Reasoning）</td></tr>
+    <tr><td class="n">2025-09</td><td>Gemini Robotics 1.5</td><td>考えるER＋動くVLAの2層。別機体で覚えた技能をApolloへ転用</td></tr>
+    <tr><td class="n">2026-07-30</td><td>Gemini Robotics 2</td><td>Apollo 2を足先から指先まで全身制御する初のVLA</td></tr>
+    <tr><td class="n">2026-10-13</td><td><b>Gemini 4 Argon</b></td><td>ロボット専用ではない汎用LLMが、<b>コードを書いてシミュレーションを自作</b>しロボットを動かす</td></tr>
+  </table>
+
+  <h3>2. MuJoCo（ムジョコ）とは</h3>
+  <p>Multi-Joint dynamics with Contact の略。関節と接触の物理を高速に計算するシミュレータで、ロボット研究の定番。ワシントン大学のEmo Todorovが開発し、2015年から有料で売られていたものを、<b>2021年にDeepMindが買収して無料化</b>、2022年にオープンソース化した。GPU向けの「MuJoCo Warp」はNVIDIAと共同で保守している。</p>
+
+  <h3>3. 用語</h3>
+  <table class="data">
+    <tr><th>用語</th><th>意味</th></tr>
+    <tr><td>Sim-to-Real</td><td>シミュレーション（sim）で練習した動きを実機（real）に移すこと。simと現実の物理のずれを<b>sim-to-realギャップ</b>と呼ぶ</td></tr>
+    <tr><td>Video-to-Sim-to-Real</td><td>今回の触れ込み。<b>動画 → sim を自動生成 → simで練習 → 実機</b>。従来は人が数週間かけてsimを作っていた部分をAIが肩代わりする</td></tr>
+    <tr><td>sysID（システム同定）</td><td>実機の動きを測って、simの物理パラメータ（摩擦・質量・遅れなど）を現実に合わせ込む作業</td></tr>
+    <tr><td>Domain randomization</td><td>simの条件をわざとばらつかせて、現実のずれに強い動きを覚えさせる手法</td></tr>
+    <tr><td>Whole-body control</td><td>脚・腰・腕・手をまとめて制御すること。投げる動作は全身の連動が要る</td></tr>
+    <tr><td>VLA</td><td>Vision-Language-Action。画像と言葉を入れるとロボットの動作が出てくるモデル</td></tr>
+    <tr><td>Zero-shot</td><td>そのタスク専用の訓練なしでいきなりできること</td></tr>
+  </table>
+
+  <h3>4. コーンホールとは（たとえ話の元ネタ）</h3>
+  <p>アメリカの裏庭やテールゲートパーティーの定番の遊び。<b>60×120cmの傾いた板</b>に直径15cmの穴があり、<b>約8.2m（27フィート）</b>離れた位置から豆袋を下手投げする。穴に入れば3点、板に乗れば1点、21点先取。<b>「air mail」</b>は板に一度も触れずに直接穴に入る一番きれいなショット。動画で研究者が「Air mail, straight in the hole」と叫んでいるのはこれ。</p>
+
+  <h3>5. 視聴ガイド</h3>
+  <table class="data">
+    <tr><th>時刻</th><th>中身</th></tr>
+    <tr><td class="n">0:00〜0:15</td><td>研究者が実験の狙いを説明</td></tr>
+    <tr><td class="n">0:15〜0:39</td><td>動画を見せて、MuJoCoで練習させ、失敗動画から学ばせたという流れ</td></tr>
+    <tr><td class="n">0:39〜0:48</td><td>実機の成功シーン（air mail）と歓声</td></tr>
+    <tr><td class="n">0:48〜1:29</td><td>Gemini 4自身が4ステップを一人称で説明</td></tr>
+    <tr><td class="n">1:29〜1:43</td><td>研究者の締め</td></tr>
+  </table>
+</section>
+
+<section id="s-market">
+  <h2>robotics市場の今（2026年10月）</h2>
+  <p class="lead">詳しくは <a href="../036_industry/0373_robotics/261021_robotics.html">industry / Robotics</a>。ここでは動画を理解するのに要る骨格だけ。</p>
+
+  <div class="stats">
+    <div class="scard"><div class="big">603K</div><div class="lb">2025年の産業用ロボット世界設置台数（過去最高、+11%）</div></div>
+    <div class="scard"><div class="big">59%</div><div class="lb">そのうち中国の比率（35.4万台）</div></div>
+    <div class="scard"><div class="big">~25K</div><div class="lb">2026年上半期のヒューマノイド世界出荷（IDC、前年比+432%）</div></div>
+    <div class="scard"><div class="big">95%+</div><div class="lb">ヒューマノイド出荷のうち中国メーカー製の比率</div></div>
+  </div>
+
+  <h3>市場は2つの層に分かれている</h3>
+  <ul class="key">
+    <li><b>① 産業用ロボット（すでに大きい・成熟）：</b>柵の中で決まった動きを繰り返す腕型ロボット。2025年の設置は60万台、稼働中は世界で500万台を超えた。FANUC・安川・ABB・KUKAが老舗で、中国勢（Estun・Inovance）が国内シェアの55%を取った。日本は設置台数で米国に抜かれ3位に。</li>
+    <li><b>② ヒューマノイド／Physical AI（まだ小さい・お金が先行）：</b>人型で、言葉で指示すれば色々な作業をこなすことを目指す層。台数は年数万台レベルで、売上は2026年上半期で$740M程度。それでも評価額は Figure $39B、Skild AI $14B超、Physical Intelligence $11B超（協議）、Unitree は上場で一時$60B規模と、<b>期待が台数よりはるかに先に走っている</b>。</li>
+  </ul>
+
+  <h3>プレイヤーは「体」と「脳」に分かれる</h3>
+  <table class="data">
+    <tr><th>層</th><th>主なプレイヤー</th><th>今回の動画での位置</th></tr>
+    <tr><td>体（ハードウェア）</td><td>Tesla Optimus、Figure、Agility、<b>Apptronik</b>、Boston Dynamics、1X、Unitree、AgiBot、UBTech</td><td>Apollo 2 が体</td></tr>
+    <tr><td>脳（基盤モデル）</td><td><b>Google DeepMind（Gemini Robotics / Argon）</b>、NVIDIA（GR00T・Cosmos）、Physical Intelligence（π0.7）、Skild AI、OpenAI（ヒューマノイド参入を表明）、Meta</td><td>Gemini 4 Argon が脳</td></tr>
+    <tr><td>部品</td><td>減速機（ナブテスコ・ハーモニック・ドライブ）、アクチュエータ、手（Sharpa）、計算チップ（NVIDIA Jetson Thor）</td><td>—</td></tr>
+  </table>
+  <p>Googleは自前でロボットを作らず、<b>Apptronik（出資先）やBoston Dynamicsの体に自分の脳を載せる</b>戦略。スマホでいうAndroidの立ち位置を狙っている。</p>
+</section>
+
+<section id="s-aim">
+  <h2>この動画は何を目指しているのか</h2>
+
+  <h3>表向きのゴール：「動画を無限の練習場にする」</h3>
+  <p>ロボットAIの最大のボトルネックは<b>データ</b>。LLMはネット上の膨大な文章で学べたが、ロボットの「動き」のデータはネットにない。人が遠隔操作（テレオペ）でお手本を見せると、8時間働いて8時間分のデータしか取れない。</p>
+  <div class="flow">
+    <div class="box b1"><b>① 人の動画を見る</b><small>腕の振り・離すタイミングを追い、ロボットの関節に置き換える</small></div>
+    <div class="arrow">↓</div>
+    <div class="box"><b>② 目のカメラで環境を測る</b><small>ボードの3D位置 → 自分の体とボードの物理simを組む（MuJoCo）</small></div>
+    <div class="arrow">↓</div>
+    <div class="box"><b>③ simで練習</b><small>スタンスを広げ、手が腰に当たらない振りに調整</small></div>
+    <div class="arrow">↓</div>
+    <div class="box b3"><b>④ 実機で投げて微修正</b><small>着地を見て離す位置を数cmずつ直す → 7投連続で穴に</small></div>
+  </div>
+  <p>この流れが回れば、<b>YouTubeにある膨大な人の動画が、そのままロボットの教材になる</b>。Googleは「数週間かかっていたsim作りが数時間に縮む」と書いている。</p>
+
+  <h3>裏のゴール：「汎用LLMがロボットの脳になれる」ことを見せる</h3>
+  <ul class="key">
+    <li>これまでDeepMindは<b>ロボット専用モデル</b>（Gemini Robotics）を作ってきた。今回は<b>汎用モデルのArgon</b>が、推論とコード生成だけでsimを組み、ロボットを動かした点がポイント。開発者ブログでは「general-purpose physical reasoning model」「physical AGIへのマイルストーン」と呼んでいる。</li>
+    <li>同じブログには他のデモもある：Boston DynamicsのSpotがsimで練習してから空き缶をゴミ箱へ／手描きスケッチからsimを作る／写真1枚からsimを作ってVLA用の練習データを4,500本以上生成し、実機の成功率を56%→75%に改善。</li>
+    <li>つまり狙いは「Argonが直接ロボットを細かく動かす」ことより、<b>Argonが練習環境とデータを作り、それで下位のロボット用モデルを鍛える</b>という<b>データ工場</b>の役割に近い。</li>
+  </ul>
+
+  <h3>ビジネス上の意味</h3>
+  <ul class="key">
+    <li>Googleの汎用モデル1本で、文章・コード・科学・ロボットまで取れることを示す＝<b>OpenAI・NVIDIAとの「Physical AIの脳」争いでの宣伝</b>。NVIDIAはCosmos（世界モデル）とGR00T、Tesla・Figureは人の一人称動画から学ぶ方向、Skild AIも人の動画学習を推している。<b>「人の動画から学ぶ」は2026年の業界共通テーマ</b>で、Googleは「LLMがsimを自作する」という独自ルートを見せた形。</li>
+    <li>出資先Apptronikの機体を使うことで、ハード側の陣営づくりも兼ねている。</li>
+  </ul>
+</section>
+
+<section id="s-hard">
+  <h2>何が難しいのか</h2>
+  <p class="lead">このデモが解いたこと・解いていないことを分けて見る。</p>
+
+  <table class="data">
+    <tr><th>難しさ</th><th>中身</th><th>今回のデモは？</th></tr>
+    <tr><td><b>1. データがない</b></td><td>LLMの学習テキストは人が10万年かけて読む量（Ken Goldberg）。ロボットにはそれに当たるデータがない。Teslaでも約50万時間</td><td><b>ここを攻めた</b>。動画→sim→練習でデータを増やす道を示した</td></tr>
+    <tr><td><b>2. simと現実のずれ</b></td><td>歩く・宙返りはsimでうまくいくが、物を掴む・触る動作は接触・変形・摩擦の計算が難しくずれやすい</td><td>一部だけ。投げる動作は接触が少ない部類。実機で数回投げて直している（sysID）</td></tr>
+    <tr><td><b>3. 手の器用さ・触覚</b></td><td>人の手には約1.7万の触覚受容器。Rodney Brooks（iRobot創業者）は「今のヒューマノイドは器用さを学べない」「動画からの学習は幻想」と批判</td><td><b>解いていない</b>。豆袋を握って離すだけ</td></tr>
+    <tr><td><b>4. 汎化と長い作業</b></td><td>違う物・違う部屋・何十工程もの作業になると崩れる。TeslaのOptimusも「基本作業を覚えるのに数日」と報道</td><td>単一タスク。汎化は未検証</td></tr>
+    <tr><td><b>5. 信頼性と安全</b></td><td>デモで7回成功と、工場で毎日数千回失敗しないのは別物。人型は電源が落ちると倒れる</td><td>総試行数・失敗率は非公開</td></tr>
+    <tr><td><b>6. 速さと計算</b></td><td>LLMは遅い。関節は1秒に数百〜千回制御する必要があり、「考える脳」と「動かす小脳」を分ける構成が主流</td><td>Argonが高速制御器を置き換えたわけではない（事前の座標キャリブレーションと決まったモーション命令に依存との指摘）</td></tr>
+    <tr><td><b>7. 電池</b></td><td>現実的な稼働は3〜5時間。8時間シフトを1充電で回せるヒューマノイドはまだない</td><td>関係なし</td></tr>
+    <tr><td><b>8. コストと採算</b></td><td>1台の部品代は中国製で約$35〜46K、欧米製だと約$130K。部品代の半分強がアクチュエータ（関節を動かすモーター＋減速機）。人の時給に勝てるかは稼働率と「何種類の仕事ができるか」次第で、公開された証拠はまだない</td><td>関係なし</td></tr>
+  </table>
+
+  <div class="note">
+    <b>まとめると：</b>このデモは「データ不足」という一番根っこの壁に対して、<b>普通の動画とLLMの推論でsimを自動生成する</b>という新しい打ち手を見せた。一方で、手の器用さ・信頼性・採算というヒューマノイド量産の本当の壁にはまだ触れていない。<b>「研究の方向として面白い」と「すぐ工場で使える」の間にはまだ距離がある</b>、というのが妥当な読み方。
+  </div>
+</section>
+
+<section id="s-video">
+  <h2>動画での発言</h2>
+  <blockquote>We just showed it a video of a human doing the task, and we prompted Gemini 4 to run the MuJoCo simulator and, like, practice.<br>（人がその作業をしている動画を見せて、MuJoCoシミュレータを動かして練習するようGemini 4に指示しただけです。）<span class="who">0:15 · DeepMind研究者</span></blockquote>
+  <blockquote>Second, I looked through my two eye cameras to measure the exact 3D position of the board, and built a physics simulation of my body and the board.<br>（2つ目に、両目のカメラでボードの正確な3D位置を測り、自分の体とボードの物理シミュレーションを組みました。）<span class="who">0:48 · Gemini 4（ナレーション）</span></blockquote>
+  <blockquote>On the real robot, I watched each bag land and adjusted my release by a few centimeters until we sank seven shots straight in the hole.<br>（実機では袋が落ちる場所を毎回見て、離す位置を数センチずつ調整し、7投連続で穴に入れました。）<span class="who">1:17 · Gemini 4（ナレーション）</span></blockquote>
+  <blockquote>Gemini 4 is able to reason through its video understanding and narrow down to, like, what went wrong, and it was learning from its own experience, which was extremely thrilling to see.<br>（Gemini 4は動画理解を通じて推論し、何がまずかったかを絞り込めます。自分の経験から学んでいて、見ていて本当にゾクゾクしました。）<span class="who">1:29 · DeepMind研究者</span></blockquote>
+</section>
+
+<section id="s-points">
+  <h2>論点</h2>
+  <ul class="key">
+    <li><b>「動画だけで」はどこまで本当か：</b>Di Paloは「zero-shot」と書きつつ「実機で数回投げて改善してから成功が続いた」とも書いている。動画1本で一発7連続ではない。人がどこまで足場（プロンプト、座標の仕組み、検証役のエージェント）を用意したかも非公開。</li>
+    <li><b>「数週間→数時間」：</b>Googleの自己申告で第三者の検証はない。ただ方向としては、sim作りという地味で高コストな作業をLLMが肩代わりするのは筋がいい。</li>
+    <li><b>脳と体の分業：</b>Googleは体を作らずに脳を配る。中国勢は安い体を大量に出荷している。体と脳のどちらに利益が残るのか、がヒューマノイド市場の大きな問い。</li>
+  </ul>
+</section>
+
+<section id="s-qna">
+  <h2>Q&amp;A（7件）</h2>
+  <div class="qna">
+    <details class="item"><summary><span class="qmark">Q1</span>Gemini 4 Argonは「ロボット用のAI」なの？<span class="plus">+</span></summary><div class="ans"><p>違う。コーディング・金融・法務・科学などに使う<b>汎用のフロンティアモデル</b>。ロボット専用は「Gemini Robotics 2」系で別にある。今回は汎用モデルでもロボットのsimを作って動かせる、と見せたデモ。</p></div></details>
+    <details class="item"><summary><span class="qmark">Q2</span>Argonがロボットの関節を直接動かしているの？<span class="plus">+</span></summary><div class="ans"><p>そう読める演出だが、報道（humanoidsdaily）は「汎用LLMが高速の制御器を置き換えたとは示されていない」と指摘。事前に調整された座標系や決まった動作命令を使い、Argonは<b>sim作り・投げ方の設計・結果を見ての修正</b>を担った、と理解するのが安全。</p></div></details>
+    <details class="item"><summary><span class="qmark">Q3</span>なぜコーンホールを選んだ？<span class="plus">+</span></summary><div class="ans"><p>全身を使う動作で、結果（入ったか・どこに落ちたか）が目で見て分かりやすく、物理（放物線）で計算しやすい。一方で掴む・触る動作が少ないので、simと現実のずれが出にくい部類でもある。見栄えと成功確率の両方で「デモ向き」の題材。</p></div></details>
+    <details class="item"><summary><span class="qmark">Q4</span>ERQA 87%ってすごいの？<span class="plus">+</span></summary><div class="ans"><p>ERQAは画像を見て空間・物体について答える<b>400問の選択式テスト</b>。ロボットの「考える力」の目安にはなるが、実機の作業成功率ではない。</p></div></details>
+    <details class="item"><summary><span class="qmark">Q5</span>Apptronikはどれくらいの会社？<span class="plus">+</span></summary><div class="ans"><p>評価額約$5〜5.5B、累計調達約$935M以上。Googleが出資し、Mercedes-Benz・GXO・Jabilと組む。米国ヒューマノイドの中ではFigure（$39B）・Tesla・Agilityに次ぐグループ。Agilityは11月にSPAC上場予定。</p></div></details>
+    <details class="item"><summary><span class="qmark">Q6</span>中国勢はなぜ台数で圧倒している？<span class="plus">+</span></summary><div class="ans"><p>部品の供給網が国内で揃い、部品代が欧米の約1/3。国が15次5か年計画で「身体性AI」を戦略産業に指定し、訓練センターも整備。Unitreeの小型機R1は約$5,900。米国は2026年7月にFCCで中国製ヒューマノイドの新規認証を止めた。</p></div></details>
+    <details class="item"><summary><span class="qmark">Q7</span>日本はどこで勝負している？<span class="plus">+</span></summary><div class="ans"><p>完成品の産業用ロボット（FANUC・安川）と、関節の要の<b>減速機</b>（ナブテスコのRV減速機は約6割、ハーモニック・ドライブの波動歯車は約8割と推定）。ただ中国の減速機メーカーが急速にシェアを取っている。政府は2026年6月に官民10.5兆円のPhysical AI計画を出した。詳細は industry 側。</p></div></details>
+  </div>
+</section>
+
+<section id="s-note">
+  <h2>編集メモ（出典と留意点）</h2>
+  <div class="note">
+    <b>動画の話者</b>は名前が出ないため特定できていない。Di Palo・Mendoncaは同日の発信者であって、動画の話者と確認したわけではない。<br>
+    <b>機体名</b>は「Apollo」と「Apollo 2」で資料により揺れる。動画概要欄の Apollo 2 に合わせた。<br>
+    <b>発表日</b>はArgon本体が9-30発表・10-13一般提供とする資料と、10-13発表とする資料がある。<br>
+    市場の数字（IFR・IDC・評価額など）の出典は <a href="../036_industry/0373_robotics/261021_robotics.html">industry / Robotics</a> の出典欄にまとめた。<br><br>
+    主な出典：<br>
+    ・<a href="https://blog.google/innovation-and-ai/models-and-research/gemini-models/introducing-gemini-4-argon/" target="_blank" rel="noopener">Google: Introducing Gemini 4 Argon</a><br>
+    ・<a href="https://developers.googleblog.com/gemini-4-argon-for-robotics/" target="_blank" rel="noopener">Google Developers: Gemini 4 Argon for Robotics</a><br>
+    ・<a href="https://deepmind.google/models/model-cards/gemini-4-argon/" target="_blank" rel="noopener">Model card: Gemini 4 Argon</a><br>
+    ・<a href="https://www.humanoidsdaily.com/news/gemini-4-argon-apollo-cornhole-robotics" target="_blank" rel="noopener">Humanoids Daily: Gemini 4 Argon × Apollo cornhole</a><br>
+    ・<a href="https://www.therobotreport.com/google-deepmind-says-gemini-robotics-2-enables-full-body-control/" target="_blank" rel="noopener">The Robot Report: Gemini Robotics 2</a><br>
+    ・<a href="https://www.cnbc.com/2026/02/11/apptronik-raises-520-million-at-5-billion-valuation-for-apollo-robot.html" target="_blank" rel="noopener">CNBC: Apptronik raises $520M</a><br>
+    ・<a href="https://en.wikipedia.org/wiki/MuJoCo" target="_blank" rel="noopener">Wikipedia: MuJoCo</a> ／ <a href="https://en.wikipedia.org/wiki/Cornhole" target="_blank" rel="noopener">Cornhole</a><br>
+    ・<a href="https://roboticsandautomationnews.com/2025/10/01/pioneering-roboticist-rodney-brooks-says-humanoid-robots-matching-human-skills-is-pure-fantasy/95069/" target="_blank" rel="noopener">Rodney Brooks on humanoid dexterity</a> ／ <a href="https://techxplore.com/news/2025-08-year-gap-robots-lag-ai.html" target="_blank" rel="noopener">Ken Goldberg: the 100,000-year data gap</a>
+  </div>
+</section>
+
+</div><!-- /pane-digest -->
+
+<div class="pane" id="pane-jsum" hidden>
+<div class="jsum">
+  <h3><span class="ts mono">0:00</span>実験の狙い</h3>
+  <p>DeepMindの研究者が説明する。この実験でやろうとしているのは、Gemini 4にヒューマノイドロボットを操作させて、コーンホール（豆袋投げ）という課題を解けるかどうかを見ることだ。</p>
+  <h3><span class="ts mono">0:15</span>やったこと：動画を見せ、simで練習させ、失敗から学ばせた</h3>
+  <p>人がこの作業をしている動画を見せ、MuJoCoシミュレータを動かして練習するようGemini 4に指示した。そのうえで経験から学ばせた。何度もやり直し、失敗し、うまくいかなかった試行の映像を1本ずつ見返させた。試行を重ねるごとに、何を改善すればいいかが分かり、できることが増えていった。</p>
+  <h3><span class="ts mono">0:39</span>成功の瞬間</h3>
+  <p>袋がボードに触れずに直接穴に入る「エアメール」が決まり、研究者たちが歓声を上げる。</p>
+  <h3><span class="ts mono">0:48</span>Gemini 4自身による4ステップの説明</h3>
+  <p>Gemini 4が一人称で手順を語る。1つ目に、人が豆袋を投げる動画を見て、腕の振りと手を離す瞬間を追い、その人の動きを自分（ロボット）の関節と手に対応づけた。2つ目に、両目のカメラでボードの正確な3D位置を測り、自分の体とボードの物理シミュレーションを組んだ。3つ目に、シミュレーションの中で投げる練習をし、足のスタンスを広げ、手が腰に当たらずきれいに抜けて滑らかな放物線を描くよう振りを調整した。4つ目に、実機で袋が落ちる場所を毎回見て、離す位置を数センチずつ調整し、最終的に7投連続で穴に入れた。</p>
+  <h3><span class="ts mono">1:29</span>研究者の締め</h3>
+  <p>Gemini 4は動画理解を通じて推論し、何がまずかったのかを絞り込める。自分自身の経験から学んでいく様子を見るのは、本当にゾクゾクする体験だった。</p>
+</div>
+</div><!-- /pane-jsum -->
+
+<div class="pane" id="pane-script" hidden>
+<div class="script-intro">
+  動画の<b>全文</b>（約1分43秒）を、英語→和訳の順に段落ごとに並べた。英語は自動字幕を元に、固有名詞（Mujoco→MuJoCo）を直し、[music] 表記を削って整えている。<b>話者は字幕に出ないため推定</b>（研究者が複数人の可能性あり）。<br>
+  下線の語句は<b>単語解説</b>あり（全14語。短い動画なので標準の60〜100語より少ない）。
+</div>
+
+<div class="chap" id="c-0000"><span class="ts mono">00:00</span>The experiment</div>
+<div class="pair">
+  <div class="meta-line"><span class="ts mono">00:04</span><span class="spk">DeepMind researcher</span></div>
+  <p class="en">All right. In this experiment, we are <mark class="w">basically</mark> trying to see if we can teach Gemini 4 to control a humanoid robot to <mark class="w">solve</mark> cornhole.</p>
+  <p class="ja">よし。この実験では、要するに、Gemini 4にヒューマノイドロボットを操作させてコーンホールを「解かせる」ことを教えられるかを見ようとしています。</p>
+</div>
+<div class="vocab">
+  <details class="v" data-word="basically">
+    <summary><b>basically</b><span class="pos">adv.</span><span class="gl">要するに、ざっくり言うと</span></summary>
+    <dl>
+      <dt>語源</dt><dd>basic（基礎の）＋-ally。「基礎の部分だけ言えば」。</dd>
+      <dt>チャンク</dt><dd>we're basically trying to... ／ it's basically the same ／ basically, yes</dd>
+      <dt>ニュアンス</dt><dd>話し言葉で非常に多い前置き。厳密さより「ざっくり伝える」合図。研究者の口癖になりやすい。</dd>
+      <dt>類義語</dt><dd>essentially, in short, pretty much</dd>
+      <dt>対義語</dt><dd>precisely, specifically</dd>
+      <dt>動画では</dt><dd>実験の狙いを一言でまとめる前置き。</dd>
+    </dl>
+  </details>
+  <details class="v" data-word="solve">
+    <summary><b>solve (a task)</b><span class="pos">v.</span><span class="gl">（課題を）解く、こなせるようになる</span></summary>
+    <dl>
+      <dt>語源</dt><dd>ラテン語 solvere（ほどく、ゆるめる）。結び目をほどくイメージ。</dd>
+      <dt>チャンク</dt><dd>solve a task ／ solve the problem ／ "Go is solved"</dd>
+      <dt>ニュアンス</dt><dd>AI・ロボット業界では「そのタスクを安定してこなせる状態にする」の意味で使う。遊びを "solve cornhole" と言うのは研究者らしい言い回し。</dd>
+      <dt>類義語</dt><dd>crack, master, figure out</dd>
+      <dt>対義語</dt><dd>fail at, get stuck on</dd>
+      <dt>動画では</dt><dd>コーンホールを「解く課題」として扱う研究者目線の表現。</dd>
+    </dl>
+  </details>
+</div>
+
+<div class="pair">
+  <div class="meta-line"><span class="ts mono">00:15</span><span class="spk">DeepMind researcher</span></div>
+  <p class="en">We just showed it a video of a human doing the task, and we <mark class="w">prompted</mark> Gemini 4 to run the MuJoCo simulator and, like, practice. And then we let it learn from experience, <mark class="w">iterate</mark>, make mistakes, and look at each video of what went wrong. And with experience of each <mark class="w">trial</mark>, it's able to improve what it can do better. All right.</p>
+  <p class="ja">人がその作業をしている動画を見せて、MuJoCoシミュレータを動かして、まあ練習するようGemini 4に指示しただけです。そのあと経験から学ばせました。繰り返し試し、失敗し、うまくいかなかった試行の映像を1本ずつ見る。試行を重ねるごとに、もっとうまくできる部分を改善していけるんです。よし。</p>
+</div>
+<div class="vocab">
+  <details class="v" data-word="prompt">
+    <summary><b>prompt (someone) to do</b><span class="pos">v.</span><span class="gl">〜するよう促す／（AIに）指示を与える</span></summary>
+    <dl>
+      <dt>語源</dt><dd>ラテン語 promptus（取り出された、準備のできた）。舞台で役者にセリフを促す「プロンプター」も同源。</dd>
+      <dt>チャンク</dt><dd>prompt X to do ／ prompt engineering ／ system prompt</dd>
+      <dt>ニュアンス</dt><dd>元は「きっかけを与えて促す」。LLM時代は「指示文を与える」の意味で動詞としても名詞としても日常語。</dd>
+      <dt>類義語</dt><dd>instruct, ask, cue</dd>
+      <dt>対義語</dt><dd>discourage, hold back</dd>
+      <dt>動画では</dt><dd>Gemini 4にsimを動かして練習するよう指示した、の意味。</dd>
+    </dl>
+  </details>
+  <details class="v" data-word="iterate">
+    <summary><b>iterate</b><span class="pos">v.</span><span class="gl">繰り返して改善する</span></summary>
+    <dl>
+      <dt>語源</dt><dd>ラテン語 iterum（再び）。</dd>
+      <dt>チャンク</dt><dd>iterate on a design ／ iterate quickly ／ the next iteration</dd>
+      <dt>ニュアンス</dt><dd>単なる「繰り返す（repeat）」ではなく「試す→直す」を回して良くしていく含み。シリコンバレーの頻出語。</dd>
+      <dt>類義語</dt><dd>refine, tweak, loop</dd>
+      <dt>対義語</dt><dd>get it right the first time, one-shot</dd>
+      <dt>動画では</dt><dd>失敗→映像で原因確認→修正のループを回すこと。</dd>
+    </dl>
+  </details>
+  <details class="v" data-word="trial">
+    <summary><b>trial</b><span class="pos">n.</span><span class="gl">試行、1回の試し</span></summary>
+    <dl>
+      <dt>語源</dt><dd>try の名詞形。古フランス語 trier（選り分ける）。</dd>
+      <dt>チャンク</dt><dd>each trial ／ trial and error ／ a free trial ／ clinical trial</dd>
+      <dt>ニュアンス</dt><dd>実験・ロボット研究では「1回やってみること」を数える単位。成功率は「成功した trial ÷ 全 trial」。</dd>
+      <dt>類義語</dt><dd>attempt, run, episode（強化学習の用語）</dd>
+      <dt>対義語</dt><dd>—</dd>
+      <dt>動画では</dt><dd>投げるたびの1回1回。</dd>
+    </dl>
+  </details>
+</div>
+
+<div class="chap" id="c-0039"><span class="ts mono">00:39</span>The shot</div>
+<div class="pair">
+  <div class="meta-line"><span class="ts mono">00:39</span><span class="spk">Researchers（歓声）</span></div>
+  <p class="en">Woohoo! <mark class="w">Air mail</mark>, <mark class="w">straight in the hole</mark>. Let's go.</p>
+  <p class="ja">やった！エアメール、穴に直接だ。よっしゃ。</p>
+</div>
+<div class="vocab">
+  <details class="v" data-word="air mail">
+    <summary><b>air mail</b><span class="pos">n.（コーンホール用語）</span><span class="gl">板に触れずに直接穴に入るショット</span></summary>
+    <dl>
+      <dt>語源</dt><dd>本来は「航空郵便」。空を飛んでそのまま届く、から。</dd>
+      <dt>チャンク</dt><dd>throw an airmail ／ airmail it in ／ an airmail shot</dd>
+      <dt>ニュアンス</dt><dd>板の上を滑らせて入れる普通のショットより難しく、狙って決めると格好いい。</dd>
+      <dt>類義語</dt><dd>swish（バスケで網だけに触れるシュート）</dd>
+      <dt>対義語</dt><dd>slider（板を滑らせて入れる）</dd>
+      <dt>動画では</dt><dd>Apolloの投げた袋が直接穴に入った瞬間の叫び。</dd>
+    </dl>
+  </details>
+  <details class="v" data-word="straight in">
+    <summary><b>straight in (the hole)</b><span class="pos">phr.</span><span class="gl">まっすぐ（そのまま）〜に入る</span></summary>
+    <dl>
+      <dt>語源</dt><dd>straight（まっすぐな）。副詞で「寄り道せずに」。</dd>
+      <dt>チャンク</dt><dd>straight in ／ go straight to ／ straight out of college</dd>
+      <dt>ニュアンス</dt><dd>途中で何にも当たらず・寄らずに、というきれいさを強調。</dd>
+      <dt>類義語</dt><dd>directly, clean</dd>
+      <dt>対義語</dt><dd>off the board, bounce in</dd>
+      <dt>動画では</dt><dd>air mail を言い換えて強調。後半の "seven shots straight in the hole" も同じ。</dd>
+    </dl>
+  </details>
+</div>
+
+<div class="chap" id="c-0048"><span class="ts mono">00:48</span>Gemini 4 explains its four steps</div>
+<div class="pair">
+  <div class="meta-line"><span class="ts mono">00:48</span><span class="spk">Gemini 4（ナレーション）</span></div>
+  <p class="en">To <mark class="w">sink</mark> those cornhole shots, I used four steps. First, I watched a video of a person throwing a beanbag, tracking their arm swing and release to <mark class="w">map</mark> that human motion onto my own robot joints and hands. Second, I looked through my two eye cameras to measure the exact 3D position of the board, and built a physics simulation of my body and the board.</p>
+  <p class="ja">あのショットを決めるために、4つのステップを踏みました。1つ目に、人が豆袋を投げる動画を見て、腕の振りと手を離す瞬間を追い、その人の動きを自分のロボットの関節と手に対応づけました。2つ目に、両目のカメラでボードの正確な3D位置を測り、自分の体とボードの物理シミュレーションを組みました。</p>
+</div>
+<div class="vocab">
+  <details class="v" data-word="sink">
+    <summary><b>sink (a shot)</b><span class="pos">v.</span><span class="gl">（シュート・パットを）決める、沈める</span></summary>
+    <dl>
+      <dt>語源</dt><dd>sink（沈む・沈める）。ボールを穴やリングに「落とし込む」イメージ。</dd>
+      <dt>チャンク</dt><dd>sink a putt（ゴルフ）／ sink a three（バスケ）／ sink a shot</dd>
+      <dt>ニュアンス</dt><dd>穴・ネットに入れる系のスポーツで「決める」の定番動詞。make a shot より口語的で気持ちよさが出る。</dd>
+      <dt>類義語</dt><dd>make, nail, drain</dd>
+      <dt>対義語</dt><dd>miss, brick（バスケでの大外し）</dd>
+      <dt>動画では</dt><dd>冒頭 "To sink those cornhole shots" と、最後 "we sank seven shots" で2回。</dd>
+    </dl>
+  </details>
+  <details class="v" data-word="map onto">
+    <summary><b>map A onto B</b><span class="pos">phr.</span><span class="gl">AをBに対応づける、写し取る</span></summary>
+    <dl>
+      <dt>語源</dt><dd>map（地図）→「地図に写す」→ 数学の「写像」。</dd>
+      <dt>チャンク</dt><dd>map X onto Y ／ map out a plan ／ one-to-one mapping</dd>
+      <dt>ニュアンス</dt><dd>ロボット分野では「人の関節の動きをロボットの関節に置き換える（retargeting）」の意味で頻出。体のつくりが違うので単純コピーではない。</dd>
+      <dt>類義語</dt><dd>translate, retarget, correspond to</dd>
+      <dt>対義語</dt><dd>—</dd>
+      <dt>動画では</dt><dd>人の腕の振りをApolloの関節と手へ写すこと。</dd>
+    </dl>
+  </details>
+</div>
+
+<div class="pair">
+  <div class="meta-line"><span class="ts mono">01:05</span><span class="spk">Gemini 4（ナレーション）</span></div>
+  <p class="en">Third, I practiced the throw in simulation, <mark class="w">widening my stance</mark> and <mark class="w">tuning</mark> my swing so my hand cleanly <mark class="w">cleared</mark> my hip and launched a smooth arc. And fourth, on the real robot, I watched each bag land and adjusted my release by a few centimeters until we sank seven shots straight in the hole.</p>
+  <p class="ja">3つ目に、シミュレーションの中で投げる練習をしました。足のスタンスを広げ、手が腰に当たらずきれいに抜けて滑らかな放物線を描くよう、振りを調整しました。そして4つ目に、実機で袋が落ちる場所を毎回見て、離す位置を数センチずつ調整し、7投連続で穴に入れました。</p>
+</div>
+<div class="vocab">
+  <details class="v" data-word="widen my stance">
+    <summary><b>widen one's stance</b><span class="pos">phr.</span><span class="gl">足幅を広げる、構えを広く取る</span></summary>
+    <dl>
+      <dt>語源</dt><dd>stance はラテン語 stare（立つ）から。「立ち方」。</dd>
+      <dt>チャンク</dt><dd>widen your stance ／ take a stance on（〜に対して立場をとる）／ a firm stance</dd>
+      <dt>ニュアンス</dt><dd>スポーツでは物理的な足幅。ビジネスでは "take a stance" で「立場を示す」。両方覚えておくと便利。</dd>
+      <dt>類義語</dt><dd>spread one's feet, set up</dd>
+      <dt>対義語</dt><dd>narrow one's stance</dd>
+      <dt>動画では</dt><dd>二足ロボットが投げた反動で倒れないよう足を広げた。</dd>
+    </dl>
+  </details>
+  <details class="v" data-word="tune">
+    <summary><b>tune</b><span class="pos">v.</span><span class="gl">（パラメータを）調整する、合わせ込む</span></summary>
+    <dl>
+      <dt>語源</dt><dd>tone（音）の変形。楽器の音を合わせる「調律」から。</dd>
+      <dt>チャンク</dt><dd>fine-tune ／ tune the parameters ／ stay tuned</dd>
+      <dt>ニュアンス</dt><dd>少しずつ動かして最適な所に合わせる。AIでは fine-tune（追加学習）が定番。</dd>
+      <dt>類義語</dt><dd>adjust, calibrate, tweak</dd>
+      <dt>対義語</dt><dd>detune, leave as is</dd>
+      <dt>動画では</dt><dd>sim内で腕の振りを調整したこと。</dd>
+    </dl>
+  </details>
+  <details class="v" data-word="clear">
+    <summary><b>clear (an obstacle)</b><span class="pos">v.</span><span class="gl">〜に触れずに通り抜ける、かわす</span></summary>
+    <dl>
+      <dt>語源</dt><dd>clear（澄んだ・何もない）→「障害物のない状態にする」。</dd>
+      <dt>チャンク</dt><dd>clear the bar（高跳び）／ clear customs ／ clear the hurdle</dd>
+      <dt>ニュアンス</dt><dd>「ギリギリぶつからずに越える」感覚。cleanly と組むと「きれいに」。ビジネスでは clear a hurdle（関門を突破する）。</dd>
+      <dt>類義語</dt><dd>get past, avoid, pass over</dd>
+      <dt>対義語</dt><dd>hit, clip, catch</dd>
+      <dt>動画では</dt><dd>下手投げの手が自分の腰に当たらないよう振りを直した。人型ロボット特有の問題。</dd>
+    </dl>
+  </details>
+</div>
+
+<div class="chap" id="c-0129"><span class="ts mono">01:29</span>Wrap-up</div>
+<div class="pair">
+  <div class="meta-line"><span class="ts mono">01:29</span><span class="spk">DeepMind researcher</span></div>
+  <p class="en">Gemini 4 is able to <mark class="w">reason through</mark> its video understanding and <mark class="w">narrow down</mark> to, like, what went wrong, and it was learning from its own experience, which was extremely <mark class="w">thrilling</mark> to see.</p>
+  <p class="ja">Gemini 4は動画理解を通じて推論し、何がまずかったのかを絞り込めます。自分自身の経験から学んでいて、見ていて本当にゾクゾクしました。</p>
+</div>
+<div class="vocab">
+  <details class="v" data-word="reason through">
+    <summary><b>reason through</b><span class="pos">phr.</span><span class="gl">筋道立てて考え抜く</span></summary>
+    <dl>
+      <dt>語源</dt><dd>reason（理由・理性）の動詞用法＋through（最後まで通して）。</dd>
+      <dt>チャンク</dt><dd>reason through a problem ／ reasoning model ／ reason about X</dd>
+      <dt>ニュアンス</dt><dd>2025年以降のAIでは「reasoning（推論）」が中心キーワード。考える過程を一歩ずつ踏むニュアンス。</dd>
+      <dt>類義語</dt><dd>think through, work out</dd>
+      <dt>対義語</dt><dd>guess, jump to conclusions</dd>
+      <dt>動画では</dt><dd>失敗映像から原因を推論すること。</dd>
+    </dl>
+  </details>
+  <details class="v" data-word="narrow down">
+    <summary><b>narrow down (to)</b><span class="pos">phr.v.</span><span class="gl">（候補を）絞り込む</span></summary>
+    <dl>
+      <dt>語源</dt><dd>narrow（狭い）を動詞にして down（減らす方向）。</dd>
+      <dt>チャンク</dt><dd>narrow down the options ／ narrow it down to three ／ narrow down the cause</dd>
+      <dt>ニュアンス</dt><dd>会議・採用・デバッグなど、あらゆる「絞り込み」で使える万能句。</dd>
+      <dt>類義語</dt><dd>pin down, zero in on, isolate</dd>
+      <dt>対義語</dt><dd>broaden, expand</dd>
+      <dt>動画では</dt><dd>何がまずかったかを特定すること。</dd>
+    </dl>
+  </details>
+  <details class="v" data-word="thrilling">
+    <summary><b>thrilling</b><span class="pos">adj.</span><span class="gl">ワクワク・ゾクゾクする</span></summary>
+    <dl>
+      <dt>語源</dt><dd>古英語 thyrlian（穴を開ける）→ 体を突き抜けるような興奮。</dd>
+      <dt>チャンク</dt><dd>thrilling to see ／ a thrilling moment ／ I'm thrilled to announce</dd>
+      <dt>ニュアンス</dt><dd>exciting より強い興奮。"I'm thrilled to..." は発表・挨拶の定番。</dd>
+      <dt>類義語</dt><dd>exciting, exhilarating, electrifying</dd>
+      <dt>対義語</dt><dd>boring, dull</dd>
+      <dt>動画では</dt><dd>AIが自分の失敗から学ぶ様子を見た研究者の感想。</dd>
+    </dl>
+  </details>
+</div>
+</div><!-- /pane-script -->
+
+<footer>
+  YouTube＋周辺リサーチ &middot; Google DeepMind「Teaching a humanoid robot to play cornhole with Gemini 4 Argon」(2026-10-13) &middot; 作成 2026-10-21 &middot; 市場の詳細 → <a href="../036_industry/0373_robotics/261021_robotics.html">industry / Robotics</a>
+</footer>
+
+</div>
+
+<script>
+(function(){var links=[].slice.call(document.querySelectorAll('#toc a'));var secs=links.map(function(a){return document.querySelector(a.getAttribute('href'))});
+function on(){var y=window.scrollY+120,cur=0;secs.forEach(function(s,i){if(s&&s.offsetTop<=y)cur=i});links.forEach(function(a,i){a.classList.toggle('cur',i===cur)})}
+window.addEventListener('scroll',on,{passive:true});on();})();
+</script>
+<script>
+(function(){var bs=[].slice.call(document.querySelectorAll('.tabs button'));var tabs=bs.map(function(b){return b.dataset.tab});
+function show(t){if(tabs.indexOf(t)<0)t='digest';bs.forEach(function(b){b.classList.toggle('on',b.dataset.tab===t)});
+tabs.forEach(function(x){document.getElementById('pane-'+x).hidden=(x!==t)});
+document.body.classList.toggle('tab-script',t!=='digest');try{localStorage.setItem('argonCornholeTab',t)}catch(e){}}
+bs.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.tab);window.scrollTo(0,0)})});
+var h=location.hash.slice(1),t='digest';if(tabs.indexOf(h)>=0)t=h;else{try{t=localStorage.getItem('argonCornholeTab')||'digest'}catch(e){}}show(t);})();
+</script>
+</body>
+</html>
