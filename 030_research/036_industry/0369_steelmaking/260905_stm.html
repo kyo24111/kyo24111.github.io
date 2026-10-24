@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>製鋼 — industry 260905</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../_shared/research_tabs.css">
+  <style>
+    :root {
+      --bg:#ffffff; --surface:#f5f5f5; --card:#f0f0f0;
+      --border:#d8d8d8; --accent:#111111; --text:#1a1a1a;
+      --muted:#666666; --subtle:#999999;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Noto Sans JP', sans-serif; background:var(--bg); color:var(--text); line-height:1.75; }
+    .wrap { max-width:860px; margin:0 auto; padding:60px 24px 100px; }
+
+    .crumb { display:flex; flex-wrap:wrap; align-items:center; gap:7px; font-family:'Poppins',sans-serif; font-size:11px; font-weight:500; letter-spacing:.06em; margin-bottom:26px; }
+    .crumb a { color:var(--subtle); text-decoration:none; transition:color .15s; }
+    .crumb a:hover { color:var(--accent); }
+    .crumb .sep { color:var(--border); }
+    .crumb .cur { color:var(--accent); font-weight:700; }
+
+    .hero { background:var(--accent); color:#fff; border-radius:16px; padding:48px 44px; margin-bottom:34px; }
+    @media(max-width:560px){ .hero { padding:34px 24px; } }
+    .hero-eyebrow { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:14px; }
+    .hero h1 { font-family:'Poppins',sans-serif; font-size:40px; font-weight:700; line-height:1.1; margin-bottom:6px; letter-spacing:-.02em; }
+    @media(max-width:560px){ .hero h1 { font-size:30px; } }
+    .hero-sub { font-size:13px; color:rgba(255,255,255,0.55); margin-bottom:30px; line-height:1.7; }
+    .kv { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+    @media(max-width:640px){ .kv { grid-template-columns:repeat(2,1fr); } }
+    .kv-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:6px; }
+    .kv-val { font-family:'Poppins',sans-serif; font-size:19px; font-weight:700; color:#fff; line-height:1.15; }
+    .kv-note { font-size:11px; color:rgba(255,255,255,0.35); margin-top:4px; line-height:1.5; }
+
+    /* セクター内ページ切替 */
+    .pager { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:40px; }
+    .pager a { font-family:'Poppins',sans-serif; font-size:11.5px; font-weight:600; letter-spacing:.02em; text-decoration:none; color:var(--muted); border:1px solid var(--border); border-radius:999px; padding:6px 14px; transition:all .13s; }
+    .pager a:hover { border-color:#888; color:var(--accent); }
+    .pager a.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+    .toc { background:var(--surface); border-radius:12px; padding:24px 28px; margin-bottom:56px; }
+    .toc-title { font-family:'Poppins',sans-serif; font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--subtle); margin-bottom:14px; }
+    .toc ol { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns:1fr; } }
+    .toc li { font-size:13px; color:var(--muted); }
+    .toc li a { color:inherit; text-decoration:none; }
+    .toc li a:hover { color:var(--accent); }
+    .toc-num { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; color:var(--subtle); margin-right:8px; }
+
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav { position:fixed; left:20px; top:84px; width:216px; max-height:calc(100vh - 162px); overflow-y:auto; padding:12px 0 32px; z-index:10; scrollbar-width:thin; }
+    .side-nav::-webkit-scrollbar { width:4px; }
+    .side-nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+    @media (max-width:1320px) { .side-nav { display:none; } }
+    .side-nav-title { font-family:'Poppins',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--subtle); padding-left:14px; margin-bottom:8px; }
+    .side-nav-list { list-style:none; padding:0; margin:0; }
+    .side-nav-link { display:block; color:#b4b4b4; text-decoration:none; padding:6px 8px 6px 14px; border-left:2px solid transparent; font-size:12px; line-height:1.45; transition:color .15s, border-color .15s, background .15s; }
+    .side-nav-link:hover { color:var(--text); border-left-color:var(--border); }
+    .side-nav-link.active { color:var(--accent); font-weight:700; border-left-color:var(--accent); background:var(--surface); }
+    .side-nav-num { font-family:'Poppins',sans-serif; font-size:10.5px; color:var(--subtle); margin-right:6px; }
+    .sec { scroll-margin-top:76px; }
+    html { scroll-behavior:smooth; }
+
+    .sec { margin-bottom:60px; }
+    .sec-label { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .num { font-family:'Poppins',sans-serif; font-size:11px; font-weight:700; background:var(--accent); color:#fff; padding:3px 9px; border-radius:4px; }
+    .sec-title { font-family:'Poppins',sans-serif; font-size:18px; font-weight:700; color:var(--accent); }
+    @media(max-width:520px){ .sec-title { font-size:15.5px; } }
+
+    .sub-h { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:var(--accent); margin:28px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+
+    p { margin-bottom:14px; font-size:14px; }
+    a.il { color:inherit; }
+
+    .t-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:20px; }
+    .t { width:100%; border-collapse:collapse; font-size:13.5px; }
+    /* 狭い画面では潰さずに横スクロールさせる */
+    .t-scroll .t { min-width:560px; }
+    @media(max-width:620px){
+      .t-scroll { border:1px solid var(--border); border-radius:10px; }
+      .t-scroll .t th:first-child, .t-scroll .t td:first-child { position:sticky; left:0; background:var(--bg); }
+      .t-scroll .t th:first-child { background:var(--surface); }
+    }
+    .t th { background:var(--surface); color:var(--muted); font-weight:600; text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); font-size:12px; white-space:nowrap; }
+    .t td { padding:10px 14px; border-bottom:1px solid var(--card); color:var(--text); vertical-align:top; }
+    .t tr:last-child td { border-bottom:none; }
+    .t strong { color:var(--accent); }
+    .t .nw { white-space:nowrap; }
+
+    .callout { background:var(--surface); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:18px 22px; margin-bottom:20px; font-size:13.5px; line-height:1.85; }
+
+    /* バリューチェーン */
+    .vchain { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin-bottom:22px; }
+    .vstep { border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .vstep-h { background:var(--accent); color:#fff; padding:8px 12px; }
+    .vstep-n { font-family:'Poppins',sans-serif; font-size:8px; font-weight:700; letter-spacing:.12em; color:rgba(255,255,255,.45); }
+    .vstep-t { font-family:'Poppins',sans-serif; font-size:12px; font-weight:700; letter-spacing:.02em; }
+    .vstep-b { padding:11px 12px; font-size:11.5px; color:var(--muted); line-height:1.7; }
+
+    /* カード群 */
+    .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:20px; }
+    @media(max-width:560px){ .cards { grid-template-columns:1fr; } }
+    .card { border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
+    .card-n { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:var(--accent); margin-bottom:3px; }
+    .card-m { font-size:11px; color:var(--subtle); margin-bottom:9px; }
+    .card-d { font-size:12.5px; color:var(--muted); line-height:1.75; }
+    .tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:10px; }
+    .tag { font-family:'Poppins',sans-serif; font-size:9.5px; font-weight:600; padding:2px 8px; border-radius:4px; background:var(--surface); border:1px solid var(--border); color:var(--muted); }
+    .tag.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+    /* クロスリンク */
+    .xlink { border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:20px; }
+    .xlink-t { font-family:'Poppins',sans-serif; font-size:10px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; color:var(--subtle); margin-bottom:12px; }
+    .xlink ul { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:7px 20px; }
+    @media(max-width:560px){ .xlink ul { grid-template-columns:1fr; } }
+    .xlink li { font-size:12.5px; line-height:1.6; }
+    .xlink li a { color:var(--accent); text-decoration:none; border-bottom:1px solid var(--border); }
+    .xlink li a:hover { border-bottom-color:var(--accent); }
+    .xlink li span { color:var(--subtle); font-size:11.5px; }
+
+    .info-box { background:var(--surface); border-radius:10px; padding:20px 22px; font-size:13.5px; line-height:1.9; }
+    .info-box ul { list-style:none; }
+    .info-box ul li::before { content:'—'; color:var(--subtle); margin-right:8px; }
+    .info-box a { color:inherit; }
+
+    .sources { margin-top:72px; padding-top:28px; border-top:1px solid var(--border); }
+    .sources-title { font-family:'Poppins',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--subtle); margin-bottom:14px; }
+    .sources ul { list-style:none; font-size:12px; color:var(--subtle); line-height:2; }
+</style>
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+
+  <style>
+    /* ---- TL;DR / Main tabs (2026-10-25) ---- */
+    .hero-updated{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.6);margin:6px 0 18px;letter-spacing:.04em}
+    .sec{scroll-margin-top:112px}
+    .sec-jp{font-size:16px;font-weight:700;color:var(--accent);line-height:1.5;margin:-10px 0 4px}
+    .sec-updated{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--subtle);letter-spacing:.04em;margin-bottom:18px}
+    .pane[data-pane="tldr"] .sec{margin-bottom:44px}
+    .pane[data-pane="tldr"] .sec-label{margin-bottom:14px}
+    .verdict a.more{color:#fff;border-bottom-color:#fff}
+    .upd{font-size:11px;color:var(--subtle);margin-top:14px}
+    .ov-note{font-size:12px;color:var(--subtle)}
+    .card-l{font-size:11.5px;color:var(--subtle);line-height:1.7;margin-top:8px}
+    @media(max-width:640px){.hero h1{font-size:28px}.cards{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../../index.html">24111</a><span class="s">/</span><a href="../../index.html">research</a><span class="s">/</span><a href="../index.html">industry</a><span class="s">/</span><a href="index.html">steelmaking</a><span class="s">/</span><span class="c">製鋼</span></nav><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap" data-terms-root>
+
+
+  <div class="hero">
+    <div class="hero-eyebrow">Industry Sector — 260905</div>
+    <h1>Steelmaking / 製鋼</h1>
+    <div class="hero-updated">Created: 2026-09-05 ／ Last updated: 2026-10-25</div>
+    <div class="hero-sub">鉄から鋼をつくる工程。脱炭素・電炉転換・スクラップ争奪という鉄鋼業の地殻変動は、ほぼすべてこの製鋼側で起きている。</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">日本の粗鋼</div>
+        <div class="kv-val">約8,400万t</div>
+        <div class="kv-note">2024暦年</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">日本の電炉比率</div>
+        <div class="kv-val">約25%</div>
+        <div class="kv-note">米国60% / EU40%</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">電炉のCO2</div>
+        <div class="kv-val">約1/5</div>
+        <div class="kv-note">高炉比・トン当たり</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">八幡の投資額</div>
+        <div class="kv-val">6,302億円</div>
+        <div class="kv-note">うち政府支援1,799億円</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ptabs" data-tabbar role="tablist">
+  <button type="button" class="on" data-tab="tldr">TL;DR</button>
+  <button type="button" data-tab="main">Main</button>
+</div>
+
+<div class="pane" data-pane="tldr">
+
+<div class="sec" id="t1">
+<div class="sec-label"><span class="num">01</span><span class="sec-title">In One Line</span></div>
+<div class="oneliner">高炉から出た炭素の多い鉄（銑鉄）から<b>炭素を抜き、成分を整えて「鋼」にする</b>工程の産業。脱炭素・電炉転換・スクラップ争奪という鉄鋼業の大変化は、ほぼすべてこの製鋼側で起きている。電炉は高炉ルートより<b>CO2が約1/5</b>だが、原料のスクラップの不純物で<b>高級鋼が作りにくい</b>。日本製鉄は八幡で<b>6,302億円</b>をかけ、この壁に「世界初」の挑戦をする。</div>
+<div class="t-scroll"><table class="t">
+      <tr><td class="nw"><strong>技術の核心</strong></td><td>電炉は高炉に比べて<strong>トン当たりCO2が約5分の1</strong>。ただし原料が鉄スクラップなので<strong>不純物（銅・錫）が抜けず、高級鋼が作りにくい</strong>。この一点が電炉転換の全ボトルネック。</td></tr>
+      <tr><td class="nw"><strong>日本の位置</strong></td><td>粗鋼 約8,400万トン（2024年）に対し電炉比率は<strong>約25%</strong>。<strong>米国60%・EU40%</strong>と比べて低い。理由は「日本の高炉が高品質かつ効率的すぎた」から——優秀な既存設備が転換を遅らせている。</td></tr>
+      <tr><td class="nw"><strong>いま起きていること</strong></td><td>日本製鉄が<strong>八幡地区で6,302億円</strong>を投じ、2030年9月に高炉を止めて<strong>年産約200万トンの大型電炉</strong>へ置き換える工事に着工（2026年4月）。<strong>「大型電炉で高級鋼を一貫量産する世界初の試み」</strong>とされる。</td></tr>
+    </table></div>
+<p><a class="more" href="#overview">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t2">
+<div class="sec-label"><span class="num">02</span><span class="sec-title">How It Works</span></div>
+<div class="flow">
+<div class="fs"><div class="fs-n">1</div><div class="fs-t">原料</div><div class="fs-d">高炉からの溶けた銑鉄（炭素4%前後）、または<b>鉄スクラップ</b>と直接還元鉄（DRI）</div></div>
+<div class="fa" aria-hidden="true">→</div>
+<div class="fs"><div class="fs-n">2</div><div class="fs-t">一次精錬</div><div class="fs-d"><b>転炉</b>（酸素を吹いて炭素を燃やす）か<b>電炉</b>（電気アークで溶かす）で炭素と不純物を大きく落とす</div></div>
+<div class="fa" aria-hidden="true">→</div>
+<div class="fs"><div class="fs-n">3</div><div class="fs-t">二次精錬</div><div class="fs-d">成分をppm単位で合わせ込む。高級鋼の品質はここで決まる</div></div>
+<div class="fa" aria-hidden="true">→</div>
+<div class="fs"><div class="fs-n">4</div><div class="fs-t">連続鋳造・圧延</div><div class="fs-d">溶けた鋼をそのまま固めて板・棒の素材に。自動車・建材・機械の需要家へ</div></div>
+</div>
+<p>転炉は高炉と一体で<b>止められない</b>が、不純物が少なく自動車用鋼板などの<b>高級鋼</b>に向く。電炉は<b>止められ</b>、スクラップの集まる消費地の近くに建てられるが、従来は鉄筋など<b>建材中心</b>。利ざやは高級鋼・特殊鋼に厚く、普通鋼の電炉は建設需要と電力価格で業績が決まる。電炉の競争力は<b>原料（スクラップの品位とDRI）の調達</b>で決まる。 <a class="more" href="#s03">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t3">
+<div class="sec-label"><span class="num">03</span><span class="sec-title">Key Numbers</span></div>
+<div class="tl-kpis"><div class="k"><div class="v">約8,400万t</div><div class="l">日本の粗鋼生産（2024暦年）</div></div><div class="k"><div class="v">約25%</div><div class="l">日本の電炉比率。米国約60%・EU約40%・中国10%台</div></div><div class="k"><div class="v">約1/5</div><div class="l">電炉のトン当たりCO2（高炉ルート比。電源の炭素強度しだい）</div></div><div class="k"><div class="v">6,302億円</div><div class="l">八幡の電炉転換投資（うち政府支援1,799億円）。年約200万t、2029年度下期に生産開始</div></div><div class="k"><div class="v">年約4,000万t</div><div class="l">国内の鉄スクラップ発生量。リサイクル率98.1%</div></div><div class="k"><div class="v">1億2,476万t</div><div class="l">China Baowu の粗鋼（2025年）。1社で日本全体を上回る</div></div></div>
+<p style="margin-top:12px"><a class="more" href="#s10">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t4">
+<div class="sec-label"><span class="num">04</span><span class="sec-title">Who Wins</span></div>
+<div class="cards"><div class="cd"><div class="cd-t">Nucor（米国）</div><div class="cd-d">高炉を1基も持たずに米国最大の鉄鋼会社になった電炉専業。建材から始めて自動車用鋼板まで登ってきた</div></div><div class="cd"><div class="cd-t">Steel Dynamics（米国）</div><div class="cd-d">Nucor出身者が創業。スクラップ回収を自社に取り込み、「電炉は原料調達で決まる」を実装</div></div><div class="cd"><div class="cd-t">Stegra（スウェーデン）</div><div class="cd-d">グリーン水素→水素DRI→電炉を一気通貫で新設。第1期 年250万t、2026年後半の生産開始を目指す。安い水力・風力のボーデンに立地</div></div><div class="cd"><div class="cd-t">China Baowu（中国）</div><div class="cd-d">世界1位。この1社の増産・減産が世界の鋼材価格を動かす</div></div><div class="cd"><div class="cd-t">東京製鐵</div><div class="cd-d">国内最大の電炉専業。田原工場に世界最大級の420トン炉（年産能力250万t）。脱炭素で「最初から答えを持っていた会社」に</div></div><div class="cd"><div class="cd-t">大同特殊鋼</div><div class="cd-d">世界最大級の特殊鋼専業。電気炉を240基超社外に販売。半導体製造装置向けステンレス鋼棒線で世界シェア約30%</div></div></div>
+<p><a class="more" href="#s12">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t5">
+<div class="sec-label"><span class="num">05</span><span class="sec-title">Japan's Position</span></div>
+<p>日本の電炉比率が約25%と低いのは、技術の遅れではなく<b>高炉が優秀すぎたから</b>。高効率・高品質の高炉で高級鋼を安く大量に作れたので、捨てる理由がなかった。米国が電炉に振り切れたのは、逆に1970〜80年代に高炉が壊滅したから。</p>
+<ul class="tl-list">
+<li><b>強み：</b>連続鋳造の比率をいち早く100%近くに上げた歴史、特殊鋼（大同特殊鋼・山陽特殊製鋼の軸受鋼・室蘭の500種）、国内最大の電炉（東京製鐵 田原）</li>
+<li><b>転換：</b>日本製鉄が総額8,700億円・年290万tの電炉化を計画。八幡（2026年4月着工、2030年9月に高炉停止）、広畑（2022年10月に商業運転開始・拡張中）、周南</li>
+<li><b>資源：</b>国内で年約4,000万tのスクラップが出て、一部を韓国・ベトナム・台湾に輸出する<b>純輸出国</b>。電炉が増えると国内に引き戻す争奪になる</li>
+<li><b>数字の注意：</b>「粗鋼の約33%はスクラップ由来」は転炉にもスクラップを入れるため。設備としての電炉比率（約25%）とは別の数字</li>
+</ul>
+<p><a class="more" href="#s06">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t6">
+<div class="sec-label"><span class="num">06</span><span class="sec-title">Trends</span></div>
+<div class="cards"><div class="cd"><div class="cd-t">① 八幡・広畑・周南の3拠点転換</div><div class="cd-d">日本製鉄の電炉化は総額8,700億円・年290万t。大同特殊鋼が広畑向けの電炉エンジニアリングを受注し、特殊鋼メーカーの技術が高炉メーカーの転換を支える</div></div><div class="cd"><div class="cd-t">② スクラップは「量」より「品位」の争奪</div><div class="cd-d">銅の少ない高品位スクラップは絶対量が限られる。解体・選別業が突然、戦略産業になる</div></div><div class="cd"><div class="cd-t">③ CBAMが売り先の条件を変える</div><div class="cd-d">EUの炭素国境調整で鋼材の輸出に炭素コストが乗る。脱炭素はコストではなく市場アクセスの条件に</div></div><div class="cd"><div class="cd-t">④ 立地の論理が「港」から「電気」へ</div><div class="cd-d">高炉は鉄鉱石と石炭の船が着く港に建てた。水素DRI＋電炉は安い電気の場所に建てる。データセンターと同じ変化</div></div></div>
+<p><a class="more" href="#s15">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t7">
+<div class="sec-label"><span class="num">07</span><span class="sec-title">Bottlenecks &amp; Risks</span></div>
+<div class="cards risk"><div class="cd"><div class="cd-t">トランプエレメント</div><div class="cd-d">スクラップに混じる銅・錫は酸化しないので精錬で抜けず、リサイクルのたびに濃くなる。熱間圧延で表面が割れ、薄い自動車用鋼板ほど致命的</div></div><div class="cd"><div class="cd-t">中国の過剰輸出</div><div class="cd-d">中国の内需低迷で余剰が輸出に回り、世界の鋼材価格が下がる。価格が低いままだと巨額の電炉投資を回収できない</div></div><div class="cd"><div class="cd-t">スクラップ価格と為替</div><div class="cd-d">東京H2が1トン4万円台。円安が輸出価格を押し上げ、国内相場に波及する</div></div><div class="cd"><div class="cd-t">電力と系統</div><div class="cd-d">大型電炉は数百MW級の需要で、AIデータセンターと電力を奪い合う。電力価格がそのままコストになる</div></div><div class="cd"><div class="cd-t">政策だけでは動かない</div><div class="cd-d">欧州勢（ArcelorMittal・thyssenkrupp）は電炉転換を公約しながら、電力・水素コストと中国の安い輸入で計画が後ろ倒しになっている</div></div></div>
+<p><a class="more" href="#s04">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t8">
+<div class="sec-label"><span class="num">08</span><span class="sec-title">Bottom Line</span></div>
+<div class="verdict"><p><b>筆者の読み：分岐点は2029年度下期の八幡。</b>大型電炉で自動車用鋼板グレードが量産できれば、世界の鉄鋼業の前提が変わる。できなければ、脱炭素製鉄の現実的な選択肢がひとつ消える。Nucorが40年かけて登った坂を、日本製鉄は数年で登ろうとしている。</p><p>見るべきは3つ。①<b>八幡電炉の歩留まりと品位</b>、②<b>高品位スクラップの価格プレミアム</b>（開けば転換が本格化した証拠）、③<b>HBIの国際取引量</b>（「還元は海外・製鋼は国内」の分業）。機会は<b>解体・選別</b>と、電炉の「止められる」柔軟性を系統に売るところにある。</p><p><a class="more" href="#s16">Mainで詳しく →</a></p></div>
+</div>
+
+</div>
+
+<div class="pane" data-pane="main" hidden>
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#overview">Overview — このセクターの読み方</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">Fundamentals: Ironmaking vs Steelmaking — 製鉄と製鋼の境界線 — 炭素を「抜く」のが製鋼</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">BOF vs EAF — 転炉と電炉 — 2つの製鋼ルート</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">Tramp Elements — 電炉の最大の敵 — トランプエレメント</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">DRI / HBI — DRI / HBI — 電炉の品質問題を解く鍵</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">Japan: Why the EAF Share Is Low — 日本の電炉比率が低い理由は「高炉が優秀すぎた」から</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">Japan: Steel Cities — 強い都市 — 製鋼の地図</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">Japan: Companies — 強い会社 — 電炉と特殊鋼</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">Japan: Steel Scrap — 鉄スクラップ — 日本が持っている「もう一つの資源」</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">World: Crude Steel Ranking — 世界の粗鋼 — 中国が42.9%の会社数を占める</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">World: EAF Share by Country — 電炉比率の国際比較 — なぜこれほど差がつくのか</a></li>
+      <li><span class="toc-num">12</span><a href="#s12">World: Key Companies — 強い会社 — 電炉で巨大化した企業たち</a></li>
+      <li><span class="toc-num">13</span><a href="#s13">World: Steel Cities — 強い都市 — 製鋼の世界地図</a></li>
+      <li><span class="toc-num">14</span><a href="#s14">2026: Key Question — 2026年の論点 — 「電炉で高級鋼」が成立するかどうか</a></li>
+      <li><span class="toc-num">15</span><a href="#s15">Trends — 6つのトレンド</a></li>
+      <li><span class="toc-num">16</span><a href="#s16">What to Watch — この産業を追いかけるための3つの観測点</a></li>
+      <li><span class="toc-num">17</span><a href="#sources">Sources</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="overview">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">Overview</span></div>
+    <div class="sec-jp">このセクターの読み方</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+    <div class="callout">
+      <strong>「製鉄」と「製鋼」は違う。</strong><br>
+      製鉄（ironmaking）は<strong>鉄鉱石から鉄を取り出す</strong>工程で、高炉がその主役。
+      製鋼（steelmaking）は<strong>取り出した鉄の炭素を抜き、成分を調整して「鋼」にする</strong>工程で、転炉と電炉がその主役。<br>
+      いま鉄鋼業で起きている地殻変動——脱炭素・電炉転換・スクラップ争奪・グリーンスチール——は、
+      ほぼ全部が<strong>製鋼側の話</strong>である。だから製鉄（<a class="il" href="../steel.html">Steel ページ</a>）とは別に、製鋼を独立して読む価値がある。
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-n"><a class="il" href="#s02">01 — 基礎と工程</a></div><div class="card-m">Fundamentals &amp; Process</div>
+        <div class="card-d">転炉と電炉、二次精錬、連続鋳造。そして電炉の宿命である「トランプエレメント」という不純物問題。</div><div class="card-l">一言：炭素を抜いて鋼にする工程。転炉と電炉の違いは熱源だけではなく、原料・立地・止められるかどうかの違いである。</div></div>
+<div class="card"><div class="card-n"><a class="il" href="#s06">02 — 日本の都市と企業</a></div><div class="card-m">Japan / Cities &amp; Companies</div>
+        <div class="card-d">田原・姫路・東海・八幡・室蘭。東京製鐵と大同特殊鋼、そして日本製鉄が6,302億円で八幡の高炉を電炉に置き換える工事。</div><div class="card-l">一言：田原・姫路・八幡・室蘭。優秀すぎた高炉ゆえに電炉比率25%にとどまった国が、6,302億円をかけて転換に踏み出した。</div></div>
+<div class="card"><div class="card-n"><a class="il" href="#s10">03 — 世界の国と企業</a></div><div class="card-m">World / Countries &amp; Companies</div>
+        <div class="card-d">米国60%・EU40%・日本25%という電炉比率の差。Nucorという「電炉だけで巨大化した会社」とStegra。</div><div class="card-l">一言：米国60%・EU40%・日本25%・中国10%台。電炉比率の差は技術の差ではなく、高炉がいつ壊れたかとスクラップがいつ貯まるかの差である。</div></div>
+<div class="card"><div class="card-n"><a class="il" href="#s14">04 — トレンド 2026</a></div><div class="card-m">Trends 2026</div>
+        <div class="card-d">八幡の着工、スクラップの争奪、CBAM、そして「高級鋼を電炉で作れるか」という世界初の挑戦。</div><div class="card-l">一言：八幡の着工、スクラップの争奪、CBAM。製鉄所の立地論理が「港」から「安い電気」へ移り始めた。</div></div>
+    </div>
+    <p class="ov-note">※ 2026-10-25 に旧4ページ（基礎と工程／日本の都市と企業／世界の国と企業／トレンド 2026）を、この1ページの Main に統合した。3行サマリーは TL;DR タブへ移した。</p>
+    <div class="xlink">
+      <div class="xlink-t">Related</div>
+      <ul><li><a href="../steel.html">Steel（製鉄）</a><br><span>製鉄・高炉・鉄鉱石</span></li><li><a href="261013_coke.html">Coke（コークス）</a><br><span>高炉の還元材と炭素</span></li><li><a href="/030_research/032_geo-history/260904_muroran.html">geo：室蘭市</a><br><span>特殊鋼500種</span></li></ul>
+    </div>
+  </div>
+
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">Fundamentals: Ironmaking vs Steelmaking</span></div>
+    <div class="sec-jp">製鉄と製鋼の境界線 — 炭素を「抜く」のが製鋼</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <p>高炉から出てきた銑鉄（せんてつ）は<strong>炭素を4%前後含んでいて、硬いが脆く、叩くと割れる</strong>。これは鋼ではない。炭素を<strong>0.02〜2%程度まで抜いて、初めて「鋼（steel）」</strong>になる。この炭素を抜く工程が製鋼である。</p>
+    <div class="vchain">
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 01</div><div class="vstep-t">Primary</div></div><div class="vstep-b">転炉または電炉で溶鋼をつくる。炭素と不純物をここで大きく落とす</div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 02</div><div class="vstep-t">Secondary</div></div><div class="vstep-b">二次精錬（取鍋精錬・RH真空脱ガス）。<strong>成分をppm単位で合わせ込む</strong>。高級鋼の品質はここで決まる</div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 03</div><div class="vstep-t">Casting</div></div><div class="vstep-b">連続鋳造。溶鋼を凝固させてスラブ・ブルーム・ビレットにする。<strong>20世紀最大の省エネ革新</strong></div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 04</div><div class="vstep-t">Rolling</div></div><div class="vstep-b">圧延。ここから先は製鋼ではなく加工の領域</div></div>
+    </div>
+    <div class="callout">
+      <strong>連続鋳造（連鋳）の意味を過小評価しないほうがいい。</strong>
+      かつては溶鋼をいったん<strong>鋼塊（インゴット）</strong>に固め、それを再加熱して分塊圧延していた。
+      連鋳はこの「固める→また熱する」を飛ばして<strong>直接スラブにする</strong>。
+      歩留まりが10ポイント以上改善し、エネルギーも工程も激減した。
+      日本の鉄鋼業が1970〜80年代に世界を取った理由の相当部分は、<strong>連鋳比率をいち早く100%近くまで上げた</strong>ことにある。
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">BOF vs EAF</span></div>
+    <div class="sec-jp">転炉と電炉 — 2つの製鋼ルート</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th></th><th>転炉（BOF）</th><th>電炉（EAF）</th></tr>
+      <tr><td class="nw"><strong>主原料</strong></td><td>高炉からの溶銑（＋スクラップ 1〜2割）</td><td><strong>鉄スクラップ</strong>（＋DRI/HBI・銑鉄）</td></tr>
+      <tr><td class="nw"><strong>熱源</strong></td><td>酸素を吹き込んで炭素を燃やす。<strong>燃料が要らない（自熱）</strong></td><td><strong>電気アーク</strong>。電力を大量に消費する</td></tr>
+      <tr><td class="nw"><strong>CO2</strong></td><td>高炉と一体で見ると大きい</td><td><strong>トン当たり約1/5</strong>（電源の炭素強度に依存）</td></tr>
+      <tr><td class="nw"><strong>品質</strong></td><td>鉄鉱石由来で不純物が少なく、<strong>高級鋼・自動車用鋼板に向く</strong></td><td>スクラップ由来の不純物が残る。<strong>従来は棒鋼・形鋼など建材向けが中心</strong></td></tr>
+      <tr><td class="nw"><strong>投資と柔軟性</strong></td><td>高炉と一体で巨額。<strong>止められない（連続操業）</strong></td><td>相対的に小さく、<strong>電力価格に応じて止められる</strong></td></tr>
+      <tr><td class="nw"><strong>立地</strong></td><td>原料船が着く臨海の大規模一貫製鉄所</td><td><strong>スクラップが集まる消費地の近く</strong>でよい。ミニミル型</td></tr>
+    </table></div>
+    <div class="callout">
+      電炉の本質的な優位は<strong>「炉を止められる」</strong>ことにある。高炉は一度火を落とすと再稼働に莫大な費用と時間がかかるため、需要が落ちても回し続けるしかない。
+      電炉は<strong>電力が高い時間帯に止めて、安い時間帯に回す</strong>という運転ができる。
+      これは<a class="il" href="../0363_power_utility/260714_power_utility.html">電力系統</a>から見ると<strong>巨大なデマンドレスポンス資源</strong>であり、
+      再エネ比率が上がるほど電炉の相対的な価値が上がるという関係にある。
+    </div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">Tramp Elements</span></div>
+    <div class="sec-jp">電炉の最大の敵 — トランプエレメント</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <p>電炉転換を語るときに必ず出てくるのが<strong>トランプエレメント（tramp elements）</strong>という言葉。スクラップに混ざってくる<strong>銅（Cu）・錫（Sn）・ニッケル・クロム</strong>などの元素で、これらが厄介なのは——</p>
+    <div class="t-scroll"><table class="t">
+      <tr><th>性質</th><th>なぜ問題か</th></tr>
+      <tr><td class="nw"><strong>酸化しない</strong></td><td>炭素や硫黄は酸素を吹けばスラグに移って抜けるが、<strong>銅と錫は鉄より酸化しにくいので抜けない</strong>。精錬工程でどうにもならない</td></tr>
+      <tr><td class="nw"><strong>累積する</strong></td><td>リサイクルを繰り返すほど濃度が上がっていく。<strong>世界の鉄が使い回されるほど、スクラップの品位は下がる</strong></td></tr>
+      <tr><td class="nw"><strong>熱間脆性を起こす</strong></td><td>銅が多いと熱間圧延中に表面が割れる。<strong>薄く伸ばす自動車用鋼板ほど致命的</strong></td></tr>
+      <tr><td class="nw"><strong>混入源</strong></td><td>銅は電線・モーター、錫はブリキ缶。<strong>解体現場での選別精度がそのまま鋼の品質になる</strong></td></tr>
+    </table></div>
+    <div class="callout">
+      だから電炉で高級鋼を作る解決策は3つしかない。<br>
+      ① <strong>スクラップの選別・前処理を高度化する</strong>（＝解体・破砕・選別が上流産業になる）<br>
+      ② <strong>DRI/HBI（直接還元鉄）で希釈する</strong>——鉄鉱石から直接還元した純度の高い鉄を混ぜて、不純物濃度を下げる<br>
+      ③ <strong>精錬技術で押し切る</strong>——日本製鉄が八幡で挑もうとしているのがこれで、だから<strong>「世界初」</strong>と言われている<br>
+      グリーンスチールの議論が結局<strong>DRIとスクラップの取り合い</strong>に収束していくのは、この構造のためである。
+    </div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">DRI / HBI</span></div>
+    <div class="sec-jp">DRI / HBI — 電炉の品質問題を解く鍵</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <p><strong>DRI（Direct Reduced Iron／直接還元鉄）</strong>は、鉄鉱石を溶かさずに固体のまま還元して作る鉄。還元剤に天然ガス（またはコークス）を使うのが従来型で、これを<strong>水素に置き換えたのが「グリーンDRI」</strong>である。</p>
+    <div class="t-scroll"><table class="t">
+      <tr><th>項目</th><th>中身</th></tr>
+      <tr><td class="nw"><strong>役割</strong></td><td>スクラップに混ぜて<strong>トランプエレメントを希釈する</strong>。電炉で高級鋼を作るための必須材料</td></tr>
+      <tr><td class="nw"><strong>HBI</strong></td><td>DRIは酸化しやすいので、熱間ブリケット化して輸送・保管しやすくしたもの。<strong>国際商品として売買される</strong></td></tr>
+      <tr><td class="nw"><strong>立地条件</strong></td><td>天然ガスが安い場所（中東・北米）か、<strong>再エネ電力が安い場所（北欧）</strong>。<strong>製鉄所の立地条件が「鉄鉱石＋石炭の港」から「安いエネルギーの場所」へ移る</strong>ことを意味する</td></tr>
+      <tr><td class="nw"><strong>含意</strong></td><td>還元だけをエネルギーが安い国でやり、<strong>HBIを輸入して自国の電炉で鋼にする</strong>という国際分業が成立しうる。日本にとってはこれが現実的な脱炭素ルートになる</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">Japan: Why the EAF Share Is Low</span></div>
+    <div class="sec-jp">日本の電炉比率が低い理由は「高炉が優秀すぎた」から</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="callout">
+      日本の粗鋼生産 約8,400万トン（2024暦年）のうち、電炉が占めるのは<strong>約25%</strong>。
+      <strong>米国の約60%、EUの約40%</strong>と比べて明らかに低い。<br>
+      これは技術的な遅れではなく、<strong>歴史的な成功の裏面</strong>である。日本の高炉は世界最高水準の効率と品質を実現しており、
+      自動車用鋼板のような高級鋼を安く大量に作れる。<strong>優秀な既存資産があるほど、それを捨てる意思決定は遅れる</strong>。
+      米国が電炉に振り切れたのは、逆に<strong>1970〜80年代に既存の高炉が壊滅した</strong>からでもある。<br>
+      なお「日本の粗鋼の約33%はスクラップ由来」という数字も流通するが、これは<strong>高炉法でも転炉にスクラップを1〜2割入れる</strong>ため。
+      <strong>設備としての電炉比率（約25%）と、原料としてのスクラップ比率（約33%）は別の数字</strong>である。
+    </div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">Japan: Steel Cities</span></div>
+    <div class="sec-jp">強い都市 — 製鋼の地図</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>都市</th><th>何があるか</th><th>読み方</th></tr>
+      <tr><td class="nw"><strong>田原市</strong><br><span style="font-size:11px;color:#999">愛知</span></td><td>東京製鐵 田原工場。<strong>世界最大級の420トン電炉・年産能力250万トン</strong>で国内最大の電炉</td><td>渥美半島の先端という「何もない場所」に、日本最大の電炉が立っている。<strong>スクラップは船で集められ、製品は中部圏の大需要地へ</strong>。高炉一貫でなくても大規模が成立することを証明した工場</td></tr>
+      <tr><td class="nw"><strong>姫路市</strong><br><span style="font-size:11px;color:#999">兵庫</span></td><td>日本製鉄 瀬戸内製鉄所 広畑地区（2022年10月 電炉商業運転開始・拡張中）／山陽特殊製鋼</td><td><strong>日本の電炉転換のパイロット拠点</strong>。大同特殊鋼が広畑向けの電気炉プラントエンジニアリングを受注（2026年1月）しており、<strong>特殊鋼メーカーが高炉メーカーに電炉を納める</strong>という構図になっている。関西電力・大阪ガスの<a class="il" href="../0368_lng/260905_lng.html">姫路LNG基地</a>も同じ播磨臨海にある</td></tr>
+      <tr><td class="nw"><strong>名古屋・東海・知多</strong><br><span style="font-size:11px;color:#999">愛知</span></td><td>大同特殊鋼／愛知製鋼</td><td><strong>自動車産業に直結した特殊鋼の集積</strong>。エンジン・駆動系の部品鋼はここで作られてきた。EV化で需要構造が最も揺れる地域でもある</td></tr>
+      <tr><td class="nw"><strong>北九州市（八幡）</strong><br><span style="font-size:11px;color:#999">福岡</span></td><td>日本製鉄 九州製鉄所 八幡地区</td><td>1901年官営八幡製鐵所以来の日本近代製鉄の原点が、<strong>2026年4月から6,302億円をかけて電炉に置き換わる工事</strong>に入った。<strong>日本の製鉄史の象徴が、そのまま脱炭素の象徴になる</strong></td></tr>
+      <tr><td class="nw"><strong>室蘭市</strong><br><span style="font-size:11px;color:#999">北海道</span></td><td>日本製鉄 北日本製鉄所 室蘭地区（<strong>500種の特殊鋼</strong>）／日本製鋼所</td><td>北海道・東北で唯一の高炉を持ちながら、実態は<strong>少量多品種の特殊鋼工場</strong>。「規模を捨てて代替不能な機能だけ残した街」の典型で、詳細は <a class="il" href="/030_research/032_geo-history/260904_muroran.html">室蘭市ページ</a></td></tr>
+      <tr><td class="nw"><strong>倉敷市（水島）</strong><br><span style="font-size:11px;color:#999">岡山</span></td><td>JFEスチール 西日本製鉄所 倉敷地区</td><td>製鉄・石油精製・石油化学が同じ臨海部に並ぶ<strong>複合コンビナート</strong>。<a class="il" href="../0367_oil/260905_oil.html">石油</a>と隣接して読むべき都市</td></tr>
+    </table></div>
+    <div class="xlink">
+      <div class="xlink-t">Cross-reference — geo-history</div>
+      <ul>
+        <li><a href="/030_research/032_geo-history/260904_muroran.html">室蘭市</a><br><span>特殊鋼500種・道内唯一の高炉</span></li>
+        <li><a href="/030_research/032_geo-history/260831_kisarazu.html">木更津市</a><br><span>JFE君津＝高炉側の代表</span></li>
+        <li><a href="/030_research/032_geo-history/260831_ichihara.html">市原市</a><br><span>隣接する石化コンビナート</span></li>
+        <li><a href="/030_research/032_geo-history/260831_japan.html">Japan</a><br><span>産業構造の全体像</span></li>
+      </ul>
+      <p style="font-size:12px;color:#999;margin:12px 0 0">※ 田原市・姫路市・北九州市は geo-history 未作成。<strong>電炉の観点では田原市と姫路市の優先度が高い</strong>。</p>
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">Japan: Companies</span></div>
+    <div class="sec-jp">強い会社 — 電炉と特殊鋼</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="cards">
+      <div class="card"><div class="card-n">東京製鐵</div><div class="card-m">国内最大の電炉専業</div>
+        <div class="card-d">高炉を持たず、<strong>スクラップだけで大型の熱延コイルまで作る</strong>という日本では例外的なポジション。田原工場の420トン炉・年産250万トンが主力。「業界の暴れん坊」と呼ばれてきたのは、<strong>高炉メーカーの価格体系の外側から値決めをする</strong>からで、脱炭素の文脈では一転して<strong>最初から答えを持っていた会社</strong>になった。</div>
+        <div class="tags"><span class="tag on">電炉専業</span><span class="tag">田原</span></div></div>
+      <div class="card"><div class="card-n">大同特殊鋼</div><div class="card-m">世界最大級の特殊鋼専業</div>
+        <div class="card-d">1916年に自社設計の電気炉で創業し、<strong>電気炉を240基超</strong>社外に販売してきた「電炉を作る電炉メーカー」。<strong>半導体製造装置向けステンレス鋼棒線で世界シェア約30%、中大型船用バルブで約80%</strong>という、ニッチ独占の集合体。日本製鉄 広畑向けの電炉エンジニアリングも受注している。</div>
+        <div class="tags"><span class="tag on">特殊鋼1位</span><span class="tag">半導体向け</span></div></div>
+      <div class="card"><div class="card-n">日本製鉄</div><div class="card-m">高炉から電炉へ</div>
+        <div class="card-d">電炉転換に<strong>総額8,700億円・年産290万トン</strong>を計画。八幡（年約200万トン・6,302億円）、広畑、山口（周南）の3拠点が対象。<strong>「大型電炉で高級鋼を一貫量産する世界初の試み」</strong>という位置づけで、成功すれば世界の鉄鋼業の前提が変わる。</div>
+        <div class="tags"><span class="tag on">八幡</span><span class="tag">広畑</span><span class="tag">周南</span></div></div>
+      <div class="card"><div class="card-n">山陽特殊製鋼</div><div class="card-m">軸受鋼の姫路</div>
+        <div class="card-d">特殊鋼国内2位。<strong>ベアリング用鋼で世界的な地位</strong>を持つ。日本製鉄の連結子会社化を経て、グループの特殊鋼戦略の一角を担う。</div>
+        <div class="tags"><span class="tag">姫路</span><span class="tag">軸受</span></div></div>
+      <div class="card"><div class="card-n">愛知製鋼 / プロテリアル / 三菱製鋼</div><div class="card-m">特殊鋼の後続</div>
+        <div class="card-d">愛知製鋼はトヨタグループの鍛造用鋼、プロテリアル（旧・日立金属）は<strong>特殊鋼と磁性材料</strong>、三菱製鋼はばね鋼。いずれも<strong>「量ではなく成分と組織で稼ぐ」</strong>タイプで、電炉転換の技術的な蓄積はむしろこちら側にある。</div>
+        <div class="tags"><span class="tag">自動車</span><span class="tag">機能材</span></div></div>
+      <div class="card"><div class="card-n">共英製鋼 / 合同製鐵 / JFE条鋼</div><div class="card-m">普通鋼電炉</div>
+        <div class="card-d">鉄筋・棒鋼など<strong>建材向けの電炉</strong>。国内建設需要と電力価格に業績が直結する。共英製鋼はベトナム・米国にも展開しており、<strong>「スクラップのある場所に電炉を置く」</strong>という電炉の本質を体現している。</div>
+        <div class="tags"><span class="tag">建材</span><span class="tag">電力価格</span></div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">Japan: Steel Scrap</span></div>
+    <div class="sec-jp">鉄スクラップ — 日本が持っている「もう一つの資源」</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>指標</th><th>数字</th><th>意味</th></tr>
+      <tr><td class="nw">国内発生量</td><td>年 <strong>約4,000万トン</strong></td><td>高度成長期に建てた建物・インフラ・自動車が<strong>いま解体期に入っている</strong>。日本は「鉄鉱山を持たないが鉄の鉱脈の上に建っている」状態</td></tr>
+      <tr><td class="nw">リサイクル率</td><td><strong>98.1%</strong></td><td>世界トップクラス。<strong>回収の仕組みはすでに完成している</strong></td></tr>
+      <tr><td class="nw">価格（H2・東京地区）</td><td>1トン <strong>4万円台</strong></td><td>2025年秋には13か月ぶり高値をつけた。<strong>円安が輸出価格を押し上げ、国内相場に波及する</strong>という構造で、為替が原料費を直撃する</td></tr>
+      <tr><td class="nw">輸出</td><td>相当量が韓国・ベトナム・台湾へ</td><td>ここが論点。<strong>日本はスクラップを輸出している純輸出国</strong>である</td></tr>
+    </table></div>
+    <div class="callout">
+      <strong>日本の電炉転換は、スクラップの輸出構造と正面からぶつかる。</strong><br>
+      いま日本は余ったスクラップを海外に売っている。しかし日本製鉄が八幡・広畑・周南で<strong>年290万トン</strong>の電炉を回し始めれば、
+      国内需要が一気に増える。輸出に回っていた分が国内に引き戻されるか、あるいは<strong>国内で価格競争が起きて既存の電炉メーカーが割を食うか</strong>——
+      これが2029年以降の最大の論点になる。<strong>「資源のない国」だったはずの日本が、鉄に関しては資源国側の問題を抱え始めている</strong>。
+    </div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">World: Crude Steel Ranking</span></div>
+    <div class="sec-jp">世界の粗鋼 — 中国が42.9%の会社数を占める</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>順位</th><th>企業</th><th>2025年 粗鋼生産</th><th>コメント</th></tr>
+      <tr><td class="nw">1</td><td><strong>China Baowu Group</strong><span style="font-size:11px;color:#999"> / 中国</span></td><td><strong>1億2,476万トン</strong></td><td>2位の約2倍。<strong>1社で日本の全粗鋼（8,400万トン）を大きく上回る</strong></td></tr>
+      <tr><td class="nw">2</td><td><strong>ArcelorMittal</strong><span style="font-size:11px;color:#999"> / ルクセンブルク</span></td><td>6,343万トン</td><td>欧州・北米・インドに分散した唯一のグローバル一貫メーカー</td></tr>
+      <tr><td class="nw">3</td><td><strong>日本製鉄</strong><span style="font-size:11px;color:#999"> / 日本</span></td><td>5,778万トン</td><td><strong>4位から3位に上昇</strong>。US Steel の取り込みが効いている</td></tr>
+      <tr><td class="nw">16</td><td><strong>Nucor</strong><span style="font-size:11px;color:#999"> / 米国</span></td><td>—</td><td><strong>米国勢の最上位</strong>。しかも<strong>高炉を1基も持たない電炉専業</strong>でこの位置にいる</td></tr>
+    </table></div>
+    <div class="callout">
+      2025年に年産300万トンを超えた企業は<strong>77社</strong>あり、そのうち<strong>33社（42.9%）が中国企業</strong>。
+      世界の鉄鋼業を語るとき、<strong>「中国の内需と輸出がどう動くか」以外の変数はほぼ二次的</strong>である。
+      中国の内需が落ちると余剰が輸出に回り、世界中の鋼材価格が下がる——これが2024年以降ずっと続いている構図で、
+      日本や欧州の電炉転換の採算を最も脅かしているのもこれ。
+    </div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">World: EAF Share by Country</span></div>
+    <div class="sec-jp">電炉比率の国際比較 — なぜこれほど差がつくのか</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>国・地域</th><th>電炉比率</th><th>理由</th></tr>
+      <tr><td class="nw"><strong>米国</strong></td><td><strong>約60%</strong></td><td>1970〜80年代に既存の高炉が競争力を失って壊滅し、<strong>更地からミニミルが立ち上がった</strong>。加えて①天然ガスが安くDRIが作れる②スクラップが豊富③電力が安い。Nucor / Steel Dynamics という「電炉ネイティブ」の巨大企業が生まれた</td></tr>
+      <tr><td class="nw"><strong>EU</strong></td><td><strong>約40%</strong></td><td>イタリア・スペインを中心に電炉が多い。EU-ETS の炭素価格が高炉に直接コストを課しているため、<strong>転換の経済的インセンティブが最も強い地域</strong></td></tr>
+      <tr><td class="nw"><strong>日本</strong></td><td><strong>約25%</strong></td><td>高炉が高効率・高品質すぎて、置き換える理由が長くなかった。<strong>いま政策支援を付けて人為的に動かしている</strong></td></tr>
+      <tr><td class="nw"><strong>中国</strong></td><td>10%台</td><td>粗鋼の伸びが急すぎてスクラップの蓄積が追いつかなかった。<strong>ただし建設ブームの建物が解体期に入る2030年代に、世界最大のスクラップ供給国になる</strong>。これが世界の鉄鋼業の最大の長期変数</td></tr>
+      <tr><td class="nw"><strong>インド</strong></td><td>—</td><td>電炉・誘導炉が多いが、需要の伸びに対して<strong>高炉の新設も並行して進む</strong>。世界で唯一「鉄の需要が本格的に伸びている国」</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s12">
+    <div class="sec-label"><span class="num">12</span><span class="sec-title">World: Key Companies</span></div>
+    <div class="sec-jp">強い会社 — 電炉で巨大化した企業たち</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="cards">
+      <div class="card"><div class="card-n">Nucor</div><div class="card-m">米国 / ノースカロライナ州シャーロット</div>
+        <div class="card-d"><strong>高炉を1基も持たずに米国最大の鉄鋼会社になった</strong>という、鉄鋼業で最も重要なケーススタディ。<strong>ミニミル＋薄スラブ連鋳</strong>で建材から始め、いまや自動車用鋼板の領域まで上がってきた。日本製鉄が八幡で挑む「電炉で高級鋼」は、Nucorが40年かけて登ってきた坂と同じ坂である。</div>
+        <div class="tags"><span class="tag on">電炉専業</span><span class="tag">ミニミル</span></div></div>
+      <div class="card"><div class="card-n">Steel Dynamics</div><div class="card-m">米国 / インディアナ州</div>
+        <div class="card-d">Nucor出身者が創業した後発の電炉メーカー。<strong>スクラップ回収事業を垂直統合</strong>しているのが特徴で、「電炉の競争力は原料調達で決まる」という命題を最も明確に実装した会社。</div>
+        <div class="tags"><span class="tag">垂直統合</span><span class="tag">スクラップ</span></div></div>
+      <div class="card"><div class="card-n">Stegra（旧 H2 Green Steel）</div><div class="card-m">スウェーデン / ボーデン</div>
+        <div class="card-d"><strong>グリーン水素 → 水素DRI → 電炉</strong>を一気通貫で新設する、世界初の大規模グリーンスチール工場。第1期で<strong>年250万トン</strong>、将来500万トンを計画。2026年4月にWallenberg主導で<strong>€14億の資金調達</strong>をまとめ、<strong>2026年後半の生産開始</strong>を目指している。<br>ボーデンが選ばれた理由は単純で、<strong>北スウェーデンの安い水力・風力電力</strong>があるから。「製鉄所は鉄鉱石の港に建てる」という常識が、<strong>「電気の安い場所に建てる」</strong>に書き換わりつつある。</div>
+        <div class="tags"><span class="tag on">水素DRI</span><span class="tag">Boden</span></div></div>
+      <div class="card"><div class="card-n">Hyundai Steel / POSCO</div><div class="card-m">韓国</div>
+        <div class="card-d">日本と似た高炉中心の構造から電炉・水素還元へ動いている。<strong>日本のスクラップ輸出の主要な引き取り手</strong>でもあり、日本が国内で電炉を増やせば直接影響を受ける関係にある。</div>
+        <div class="tags"><span class="tag">スクラップ輸入</span></div></div>
+      <div class="card"><div class="card-n">ArcelorMittal / thyssenkrupp</div><div class="card-m">欧州</div>
+        <div class="card-d">EU-ETS と CBAM の当事者。<strong>DRI-EAF への転換を公約しながら、電力・水素コストと中国の安価輸入の板挟み</strong>で計画が繰り返し後ろ倒しになっている。<strong>「政策で決めても経済性がなければ動かない」</strong>ことを示す実例。</div>
+        <div class="tags"><span class="tag">CBAM</span><span class="tag">計画遅延</span></div></div>
+      <div class="card"><div class="card-n">China Baowu</div><div class="card-m">中国 / 上海</div>
+        <div class="card-d">1億2,476万トン。<strong>規模そのものが世界市場の変数</strong>。中国国内の統合政策で今後も大型化が続く見込みで、<strong>この1社の減産・増産が世界の鋼材価格を動かす</strong>。</div>
+        <div class="tags"><span class="tag on">世界1位</span></div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s13">
+    <div class="sec-label"><span class="num">13</span><span class="sec-title">World: Steel Cities</span></div>
+    <div class="sec-jp">強い都市 — 製鋼の世界地図</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>都市</th><th>国</th><th>何があるか</th></tr>
+      <tr><td class="nw"><strong>シャーロット</strong></td><td>米国</td><td>Nucor本社。<strong>製鉄所のない街に鉄鋼会社の本社がある</strong>のは、ミニミルが全米に分散立地しているから。「製鉄の都市」の概念を壊した会社</td></tr>
+      <tr><td class="nw"><strong>ボーデン</strong></td><td>スウェーデン</td><td>Stegra。北極圏近くの人口3万人の町。<strong>安い再エネ電力だけを理由に選ばれた立地</strong></td></tr>
+      <tr><td class="nw"><strong>デュイスブルク</strong></td><td>ドイツ</td><td>thyssenkrupp。ルール工業地帯の中心で、<strong>欧州最大の内陸港</strong>を持つ。石炭と鉄鉱石の時代の勝者が、いま転換に苦しんでいる</td></tr>
+      <tr><td class="nw"><strong>唐山・上海宝山</strong></td><td>中国</td><td>世界の粗鋼の集積地。唐山市1市の粗鋼生産が<strong>日本一国を上回る</strong>年もある</td></tr>
+      <tr><td class="nw"><strong>ジャムシェドプル</strong></td><td>インド</td><td>Tata Steel の企業城下町。1907年創業で、<strong>アジアで最初に近代製鉄を成功させた都市</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s14">
+    <div class="sec-label"><span class="num">14</span><span class="sec-title">2026: Key Question</span></div>
+    <div class="sec-jp">2026年の論点 — 「電炉で高級鋼」が成立するかどうか</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="callout">
+      2026年の製鋼を貫く問いはひとつ。<strong>「大型電炉で、高炉並みの高級鋼を、量産できるのか」</strong>。<br>
+      日本製鉄は2026年4月に八幡地区で電炉転換工事に着工した。<strong>投資6,302億円（うち政府支援1,799億円）、年産約200万トン、2029年度下期に生産開始、2030年9月に高炉停止</strong>。
+      同社はこれを<strong>「世界初となる大型電炉での高級鋼一貫製造・量産システム」</strong>と表現している。
+      成功すれば、<strong>自動車用鋼板を電炉で作れる</strong>ことになり、世界の鉄鋼業の前提が変わる。失敗すれば、脱炭素製鉄の現実的な選択肢がひとつ消える。
+    </div>
+  </div>
+
+  <div class="sec" id="s15">
+    <div class="sec-label"><span class="num">15</span><span class="sec-title">Trends</span></div>
+    <div class="sec-jp">6つのトレンド</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="cards">
+      <div class="card"><div class="card-n">01 — 八幡・広畑・周南の3拠点転換</div><div class="card-m">Japan / EAF conversion</div>
+        <div class="card-d">日本製鉄の電炉転換は<strong>総額8,700億円・年産290万トン</strong>。八幡が最大で、広畑（2022年10月に商業運転開始済み・拡張中）が先行実証、周南が続く。<strong>大同特殊鋼が広畑向けの電炉エンジニアリングを受注</strong>しており、特殊鋼メーカーの技術が高炉メーカーの転換を支える構図。</div></div>
+      <div class="card"><div class="card-n">02 — スクラップ争奪の始まり</div><div class="card-m">Scrap competition</div>
+        <div class="card-d">日本は年約4,000万トンのスクラップを発生させ、<strong>一部を韓国・ベトナム・台湾に輸出している</strong>。国内で年290万トンの電炉が立ち上がれば需給は締まる。さらに<strong>高品位スクラップ（低銅）</strong>は絶対量が限られており、<strong>「量」ではなく「品位」の争奪</strong>になる。解体・選別業が突然、戦略産業になる。</div></div>
+      <div class="card"><div class="card-n">03 — CBAM が売り先の条件を変える</div><div class="card-m">Carbon border</div>
+        <div class="card-d">EUの炭素国境調整措置により、<strong>鋼材の輸出に炭素コストが乗る</strong>。日本の高炉材が欧州で不利になり、電炉材・グリーンスチールが有利になる。<strong>脱炭素はコストではなく市場アクセスの条件</strong>——この転換が2026年以降、実務上のものになる。<a class="il" href="../0366_ccs/260905_ccs.html">CCS</a>とセットで読む論点。</div></div>
+      <div class="card"><div class="card-n">04 — 中国の輸出が採算を壊す</div><div class="card-m">Chinese exports</div>
+        <div class="card-d">中国の内需低迷で余剰が輸出に回り、<strong>世界の鋼材価格が下がり続けている</strong>。電炉転換は巨額投資なので、鋼材価格が低いままだと投資回収ができない。<strong>脱炭素投資の最大の敵は炭素ではなく、中国の過剰供給</strong>という皮肉な構図。</div></div>
+      <div class="card"><div class="card-n">05 — 電炉と電力系統の結合</div><div class="card-m">Grid coupling</div>
+        <div class="card-d">大型電炉は<strong>数百MW級の需要</strong>を持ち、しかも<strong>止められる</strong>。これは系統から見れば貴重な柔軟性資源で、同時に<strong>AIデータセンターと電力を奪い合う相手</strong>でもある。八幡・広畑クラスの電炉が動き出すと、地域の系統計画が書き換わる。<a class="il" href="../0363_power_utility/260714_power_utility.html">Power / Grid</a> と <a class="il" href="../data_center.html">Data Center</a> に接続。</div></div>
+      <div class="card"><div class="card-n">06 — 立地の論理が「港」から「電気」へ</div><div class="card-m">Location logic</div>
+        <div class="card-d">高炉は<strong>鉄鉱石と石炭の船が着く港</strong>に建てるものだった。水素DRI＋電炉は<strong>安い電気がある場所</strong>に建てる。Stegra がスウェーデン北部のボーデンを選んだのはこの理由だけである。<strong>製鉄所の地図が、電力コストの地図に置き換わる</strong>——これは<a class="il" href="../data_center.html">データセンター</a>の立地論理とまったく同じ変化である。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s16">
+    <div class="sec-label"><span class="num">16</span><span class="sec-title">What to Watch</span></div>
+    <div class="sec-jp">この産業を追いかけるための3つの観測点</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>観測点</th><th>なぜ見るか</th></tr>
+      <tr><td class="nw"><strong>八幡電炉の歩留まりと品位</strong></td><td>2029年度下期の立ち上がりで、<strong>実際に自動車用鋼板グレードが出るか</strong>。ここが世界の分岐点</td></tr>
+      <tr><td class="nw"><strong>高品位スクラップの価格プレミアム</strong></td><td>H2（普通品位）と高品位の価格差が開き始めたら、<strong>電炉転換が本格化した証拠</strong></td></tr>
+      <tr><td class="nw"><strong>HBI の国際取引量</strong></td><td>DRI/HBIが商品として流通し始めると、<strong>「還元は海外・製鋼は国内」という分業</strong>が現実になる</td></tr>
+    </table></div>
+    <div class="xlink">
+      <div class="xlink-t">Related</div>
+      <ul>
+        <li><a href="../steel.html">Steel（製鉄）</a><br><span>高炉・鉄鉱石・原料側</span></li>
+        <li><a href="../0366_ccs/260905_ccs.html">CCS</a><br><span>CBAMと排出源としての製鉄所</span></li>
+        <li><a href="../0363_power_utility/260714_power_utility.html">Power / Grid</a><br><span>電炉は数百MW級の需要家</span></li>
+        <li><a href="/030_research/032_geo-history/260904_muroran.html">geo：室蘭市</a><br><span>特殊鋼500種の街</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sources" id="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>日本鉄鋼連盟「鉄鋼生産概況」／普通鋼電炉工業会 資料（経済産業省 産業構造審議会 ベンチマークWG 2025年9月1日）</li>
+      <li>日本製鉄「九州製鉄所八幡地区 電炉プロセス転換工事に着工」（2026年4月15日／投資額6,302億円・政府支援1,799億円・年産約200万トン・2029年度下期生産開始）</li>
+      <li>日刊工業新聞 ニュースイッチ「投資額は6302億円…日本製鉄、次世代に向け電炉転換」／日経xTECH「日本製鉄が電炉転換へ8700億円を投資、年産290万トンを計画」</li>
+      <li>大同特殊鋼「日本製鉄株式会社から瀬戸内製鉄所広畑地区向け電気炉プラントエンジニアリングを受注」（2026年1月26日）</li>
+      <li>東京製鐵「田原工場」／同社採用サイト「データで見る東京製鐵」（420トン電炉・年産250万トン）</li>
+      <li>worldsteel「Top Producers 2025」／SteelOrbis「China dominates worldsteel's 2025 list of top steel-producing companies」（Baowu 1億2,476万トン／ArcelorMittal 6,343万トン／日本製鉄 5,778万トン）</li>
+      <li>日本経済新聞「鉄スクラップ価格、13カ月ぶり高値」ほか鉄スクラップ市況記事／日刊産業新聞</li>
+      <li>Stegra「H2 Green Steel is now Stegra」／SMM・TNW（2026年4月 €14億調達／2026年後半 生産開始予定／第1期 年250万トン）</li>
+      <li>大同特殊鋼 IR資料（半導体製造装置向けステンレス鋼棒線 世界シェア約30%／中大型船用バルブ 世界シェア約80%）</li>
+    </ul>
+    <p class="upd">Last updated: 2026-10-25</p>
+  </div>
+
+
+</div><!-- /pane main -->
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script src="../../_shared/research_tabs.js" defer></script>
+<script src="../../../040_personal/0460_english/terms/terms.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CCS — industry 260905</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../_shared/research_tabs.css">
+  <style>
+    :root {
+      --bg:#ffffff; --surface:#f5f5f5; --card:#f0f0f0;
+      --border:#d8d8d8; --accent:#111111; --text:#1a1a1a;
+      --muted:#666666; --subtle:#999999;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Noto Sans JP', sans-serif; background:var(--bg); color:var(--text); line-height:1.75; }
+    .wrap { max-width:860px; margin:0 auto; padding:60px 24px 100px; }
+
+    .crumb { display:flex; flex-wrap:wrap; align-items:center; gap:7px; font-family:'Poppins',sans-serif; font-size:11px; font-weight:500; letter-spacing:.06em; margin-bottom:26px; }
+    .crumb a { color:var(--subtle); text-decoration:none; transition:color .15s; }
+    .crumb a:hover { color:var(--accent); }
+    .crumb .sep { color:var(--border); }
+    .crumb .cur { color:var(--accent); font-weight:700; }
+
+    .hero { background:var(--accent); color:#fff; border-radius:16px; padding:48px 44px; margin-bottom:34px; }
+    @media(max-width:560px){ .hero { padding:34px 24px; } }
+    .hero-eyebrow { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:14px; }
+    .hero h1 { font-family:'Poppins',sans-serif; font-size:40px; font-weight:700; line-height:1.1; margin-bottom:6px; letter-spacing:-.02em; }
+    @media(max-width:560px){ .hero h1 { font-size:30px; } }
+    .hero-sub { font-size:13px; color:rgba(255,255,255,0.55); margin-bottom:30px; line-height:1.7; }
+    .kv { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+    @media(max-width:640px){ .kv { grid-template-columns:repeat(2,1fr); } }
+    .kv-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:6px; }
+    .kv-val { font-family:'Poppins',sans-serif; font-size:19px; font-weight:700; color:#fff; line-height:1.15; }
+    .kv-note { font-size:11px; color:rgba(255,255,255,0.35); margin-top:4px; line-height:1.5; }
+
+    /* セクター内ページ切替 */
+    .pager { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:40px; }
+    .pager a { font-family:'Poppins',sans-serif; font-size:11.5px; font-weight:600; letter-spacing:.02em; text-decoration:none; color:var(--muted); border:1px solid var(--border); border-radius:999px; padding:6px 14px; transition:all .13s; }
+    .pager a:hover { border-color:#888; color:var(--accent); }
+    .pager a.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+    .toc { background:var(--surface); border-radius:12px; padding:24px 28px; margin-bottom:56px; }
+    .toc-title { font-family:'Poppins',sans-serif; font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--subtle); margin-bottom:14px; }
+    .toc ol { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns:1fr; } }
+    .toc li { font-size:13px; color:var(--muted); }
+    .toc li a { color:inherit; text-decoration:none; }
+    .toc li a:hover { color:var(--accent); }
+    .toc-num { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; color:var(--subtle); margin-right:8px; }
+
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav { position:fixed; left:20px; top:84px; width:216px; max-height:calc(100vh - 162px); overflow-y:auto; padding:12px 0 32px; z-index:10; scrollbar-width:thin; }
+    .side-nav::-webkit-scrollbar { width:4px; }
+    .side-nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+    @media (max-width:1320px) { .side-nav { display:none; } }
+    .side-nav-title { font-family:'Poppins',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--subtle); padding-left:14px; margin-bottom:8px; }
+    .side-nav-list { list-style:none; padding:0; margin:0; }
+    .side-nav-link { display:block; color:#b4b4b4; text-decoration:none; padding:6px 8px 6px 14px; border-left:2px solid transparent; font-size:12px; line-height:1.45; transition:color .15s, border-color .15s, background .15s; }
+    .side-nav-link:hover { color:var(--text); border-left-color:var(--border); }
+    .side-nav-link.active { color:var(--accent); font-weight:700; border-left-color:var(--accent); background:var(--surface); }
+    .side-nav-num { font-family:'Poppins',sans-serif; font-size:10.5px; color:var(--subtle); margin-right:6px; }
+    .sec { scroll-margin-top:76px; }
+    html { scroll-behavior:smooth; }
+
+    .sec { margin-bottom:60px; }
+    .sec-label { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .num { font-family:'Poppins',sans-serif; font-size:11px; font-weight:700; background:var(--accent); color:#fff; padding:3px 9px; border-radius:4px; }
+    .sec-title { font-family:'Poppins',sans-serif; font-size:18px; font-weight:700; color:var(--accent); }
+    @media(max-width:520px){ .sec-title { font-size:15.5px; } }
+
+    .sub-h { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:var(--accent); margin:28px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+
+    p { margin-bottom:14px; font-size:14px; }
+    a.il { color:inherit; }
+
+    .t-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:20px; }
+    .t { width:100%; border-collapse:collapse; font-size:13.5px; }
+    /* 狭い画面では潰さずに横スクロールさせる */
+    .t-scroll .t { min-width:560px; }
+    @media(max-width:620px){
+      .t-scroll { border:1px solid var(--border); border-radius:10px; }
+      .t-scroll .t th:first-child, .t-scroll .t td:first-child { position:sticky; left:0; background:var(--bg); }
+      .t-scroll .t th:first-child { background:var(--surface); }
+    }
+    .t th { background:var(--surface); color:var(--muted); font-weight:600; text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); font-size:12px; white-space:nowrap; }
+    .t td { padding:10px 14px; border-bottom:1px solid var(--card); color:var(--text); vertical-align:top; }
+    .t tr:last-child td { border-bottom:none; }
+    .t strong { color:var(--accent); }
+    .t .nw { white-space:nowrap; }
+
+    .callout { background:var(--surface); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:18px 22px; margin-bottom:20px; font-size:13.5px; line-height:1.85; }
+
+    /* バリューチェーン */
+    .vchain { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin-bottom:22px; }
+    .vstep { border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .vstep-h { background:var(--accent); color:#fff; padding:8px 12px; }
+    .vstep-n { font-family:'Poppins',sans-serif; font-size:8px; font-weight:700; letter-spacing:.12em; color:rgba(255,255,255,.45); }
+    .vstep-t { font-family:'Poppins',sans-serif; font-size:12px; font-weight:700; letter-spacing:.02em; }
+    .vstep-b { padding:11px 12px; font-size:11.5px; color:var(--muted); line-height:1.7; }
+
+    /* カード群 */
+    .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:20px; }
+    @media(max-width:560px){ .cards { grid-template-columns:1fr; } }
+    .card { border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
+    .card-n { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:var(--accent); margin-bottom:3px; }
+    .card-m { font-size:11px; color:var(--subtle); margin-bottom:9px; }
+    .card-d { font-size:12.5px; color:var(--muted); line-height:1.75; }
+    .tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:10px; }
+    .tag { font-family:'Poppins',sans-serif; font-size:9.5px; font-weight:600; padding:2px 8px; border-radius:4px; background:var(--surface); border:1px solid var(--border); color:var(--muted); }
+    .tag.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+    /* クロスリンク */
+    .xlink { border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:20px; }
+    .xlink-t { font-family:'Poppins',sans-serif; font-size:10px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; color:var(--subtle); margin-bottom:12px; }
+    .xlink ul { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:7px 20px; }
+    @media(max-width:560px){ .xlink ul { grid-template-columns:1fr; } }
+    .xlink li { font-size:12.5px; line-height:1.6; }
+    .xlink li a { color:var(--accent); text-decoration:none; border-bottom:1px solid var(--border); }
+    .xlink li a:hover { border-bottom-color:var(--accent); }
+    .xlink li span { color:var(--subtle); font-size:11.5px; }
+
+    .info-box { background:var(--surface); border-radius:10px; padding:20px 22px; font-size:13.5px; line-height:1.9; }
+    .info-box ul { list-style:none; }
+    .info-box ul li::before { content:'—'; color:var(--subtle); margin-right:8px; }
+    .info-box a { color:inherit; }
+
+    .sources { margin-top:72px; padding-top:28px; border-top:1px solid var(--border); }
+    .sources-title { font-family:'Poppins',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--subtle); margin-bottom:14px; }
+    .sources ul { list-style:none; font-size:12px; color:var(--subtle); line-height:2; }
+</style>
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+
+  <style>
+    /* ---- TL;DR / Main tabs (2026-10-25) ---- */
+    .hero-updated{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.6);margin:6px 0 18px;letter-spacing:.04em}
+    .sec{scroll-margin-top:112px}
+    .sec-jp{font-size:16px;font-weight:700;color:var(--accent);line-height:1.5;margin:-10px 0 4px}
+    .sec-updated{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--subtle);letter-spacing:.04em;margin-bottom:18px}
+    .pane[data-pane="tldr"] .sec{margin-bottom:44px}
+    .pane[data-pane="tldr"] .sec-label{margin-bottom:14px}
+    .verdict a.more{color:#fff;border-bottom-color:#fff}
+    .upd{font-size:11px;color:var(--subtle);margin-top:14px}
+    .ov-note{font-size:12px;color:var(--subtle)}
+    .card-l{font-size:11.5px;color:var(--subtle);line-height:1.7;margin-top:8px}
+    @media(max-width:640px){.hero h1{font-size:28px}.cards{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../../index.html">24111</a><span class="s">/</span><a href="../../index.html">research</a><span class="s">/</span><a href="../index.html">industry</a><span class="s">/</span><a href="index.html">ccs</a><span class="s">/</span><span class="c">CCS</span></nav><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap" data-terms-root>
+
+
+  <div class="hero">
+    <div class="hero-eyebrow">Industry Sector — 260905</div>
+    <h1>CCS / 二酸化炭素回収・貯留</h1>
+    <div class="hero-updated">Created: 2026-09-05 ／ Last updated: 2026-10-25</div>
+    <div class="hero-sub">排ガスからCO2を分離し、地下1,000m以深に押し込んで、漏れないか見張り続ける産業。技術ではなく「誰が費用を払うか」の制度設計で決まる。</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">世界の稼働件数</div>
+        <div class="kv-val">77件</div>
+        <div class="kv-note">50件から +54%（2025年）</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">稼働中の貯留能力</div>
+        <div class="kv-val">64 Mtpa</div>
+        <div class="kv-note">世界排出の0.2%未満</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">日本の実証実績</div>
+        <div class="kv-val">30万t</div>
+        <div class="kv-note">苫小牧 / 2016-2019年</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">日本のFID</div>
+        <div class="kv-val">2026年度</div>
+        <div class="kv-note">先進的CCS 9案件</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ptabs" data-tabbar role="tablist">
+  <button type="button" class="on" data-tab="tldr">TL;DR</button>
+  <button type="button" data-tab="main">Main</button>
+</div>
+
+<div class="pane" data-pane="tldr">
+
+<div class="sec" id="t1">
+<div class="sec-label"><span class="num">01</span><span class="sec-title">In One Line</span></div>
+<div class="oneliner">工場や発電所の排ガスからCO2を取り出し、<b>地下800m以深の地層に押し込んで、漏れないか見張り続ける</b>産業。CO2を埋めても何も生まないので、勝負を決めるのは技術より<b>「誰がお金を払うか」という制度</b>。世界の稼働件数は77件まで増えたが、量は世界の排出の<b>0.2%未満</b>。日本は2026年度に9案件の投資判断を迎える。</div>
+<div class="t-scroll"><table class="t">
+      <tr><td class="nw"><strong>世界の現在地</strong></td><td>稼働プロジェクトは<strong>50→77件（+54%）</strong>に増え、稼働＋開発中の総回収能力は<strong>513 Mtpa</strong>。ただし<strong>実際に稼働している貯留能力は 64 Mtpa</strong>で、世界の年間CO2排出（約370億トン）に対しては<strong>0.2%未満</strong>。桁が2つ足りない。</td></tr>
+      <tr><td class="nw"><strong>日本の現在地</strong></td><td>苫小牧で<strong>累計30万トン</strong>の圧入実証を完了（2019年）。CCS事業法が<strong>2024年5月成立・2026年5月全面施行</strong>で、ようやく地下を使う法的権利が定義された。先進的CCS 9案件が<strong>2030年度までの貯留開始</strong>を目指し、FIDは<strong>2026年度めど</strong>。</td></tr>
+      <tr><td class="nw"><strong>本質的な論点</strong></td><td>CCSは<strong>「安い排出源」から順に埋まる</strong>。化学プラント・水素製造・LNG随伴ガスのように<strong>もともとCO2が高濃度で出てくる場所</strong>は安く、火力発電の排ガスのように希薄な場所は高い。政策議論は「発電所のCCS」を想定しがちだが、<strong>実際に立つのは産業側</strong>。</td></tr>
+    </table></div>
+<p><a class="more" href="#overview">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t2">
+<div class="sec-label"><span class="num">02</span><span class="sec-title">How It Works</span></div>
+<div class="flow">
+<div class="fs"><div class="fs-n">1</div><div class="fs-t">回収</div><div class="fs-d">排ガスや工程ガスからCO2を分けて濃くする。<b>全体のコストの6〜8割がここ</b></div></div>
+<div class="fa" aria-hidden="true">→</div>
+<div class="fs"><div class="fs-n">2</div><div class="fs-t">輸送</div><div class="fs-d">パイプライン、または液化して専用船で運ぶ。距離と量で方式が決まる</div></div>
+<div class="fa" aria-hidden="true">→</div>
+<div class="fs"><div class="fs-n">3</div><div class="fs-t">圧入</div><div class="fs-d">800m以深の地層へ押し込む。この深さでCO2は<b>超臨界</b>（気体のように広がり、液体並みに詰まる状態）になる。上にふた役の不透水層が要る</div></div>
+<div class="fa" aria-hidden="true">→</div>
+<div class="fs"><div class="fs-n">4</div><div class="fs-t">監視</div><div class="fs-d">地震計や海洋調査で漏れを見張る。<b>事業が終わっても続く義務</b>で、会計上は重い長期債務になる</div></div>
+</div>
+<p>CO2そのものには値段がつかないので、お金は<b>制度から</b>来る：ノルウェーの炭素税（埋めたほうが安い）、米国の税額控除45Q（最大 $85/トン級）、油田に入れて原油を増やすEOR、日本では国の支援。コストは<b>排出源のCO2の濃さでほぼ決まる</b>ため、事業の採算は技術より<b>「どの煙突につなぐか」</b>。天然ガス精製・水素・アンモニアのようにもともと濃いCO2が出る場所から順に埋まり、CO2濃度4〜14%の火力発電は高くつく。 <a class="more" href="#s05">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t3">
+<div class="sec-label"><span class="num">03</span><span class="sec-title">Key Numbers</span></div>
+<div class="tl-kpis"><div class="k"><div class="v">50 → 77件</div><div class="l">世界の稼働プロジェクト（2025年、+54%）</div></div><div class="k"><div class="v">64 Mtpa</div><div class="l">稼働中の貯留能力。世界の年間排出 約370億トンの0.2%未満</div></div><div class="k"><div class="v">513 Mtpa</div><div class="l">開発中を含む総回収能力（計画の合計。全部は実現しない）</div></div><div class="k"><div class="v">30万t</div><div class="l">苫小牧の実証で埋めた累計量（2016〜2019年）。日本の全実績</div></div><div class="k"><div class="v">年約2,000万t</div><div class="l">先進的CCS 9案件の合計目標（日本の排出の約2%）。2030年度までに開始</div></div><div class="k"><div class="v">1.5 → 5 Mtpa</div><div class="l">Northern Lights の能力 フェーズ1 → フェーズ2（2028年）</div></div></div>
+<p style="margin-top:12px"><a class="more" href="#s11">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t4">
+<div class="sec-label"><span class="num">04</span><span class="sec-title">Who Wins</span></div>
+<div class="cards"><div class="cd"><div class="cd-t">ノルウェー（Equinor ほか）</div><div class="cd-d">Sleipner で1996年から30年。1991年の炭素税が「埋めたほうが安い」状態を作った。Northern Lights は他社のCO2を船で預かる「貯留サービス業」</div></div><div class="cd"><div class="cd-t">米国メキシコ湾岸</div><div class="cd-d">税額控除45QとIRAで採算に乗った。排出源・パイプライン・地下の塩水層がそろう世界最大の潜在ハブ（ヒューストン周辺）</div></div><div class="cd"><div class="cd-t">オランダ Porthos</div><div class="cd-d">ロッテルダム港の排出源から北海の枯渇ガス田へ。約2.5 Mtpa。港湾管理者が主役という型で、日本のカーボンニュートラルポートの手本</div></div><div class="cd"><div class="cd-t">マレーシア（Petronas）</div><div class="cd-d">他国のCO2を受け入れる側を狙う。日本の海外貯留案件の主な相手先</div></div><div class="cd"><div class="cd-t">JAPEX / INPEX</div><div class="cd-d">「地下を知っている」日本勢。JAPEXは国内の地下データ、INPEXは海外ガス田と随伴CO2の分離設備を持つ</div></div><div class="cd"><div class="cd-t">三菱重工 / 東芝</div><div class="cd-d">アミン吸収法の商用プラント実績（三菱重工）、バイオマス発電からの回収（東芝）。日本が世界で勝負できるのは回収装置側</div></div></div>
+<p><a class="more" href="#s13">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t5">
+<div class="sec-label"><span class="num">05</span><span class="sec-title">Japan's Position</span></div>
+<p>日本のCCSは<b>苫小牧の実証1本</b>から始まった。海底下約1,000mと2,400mに累計30万トンを埋め（2019年完了）、「日本の地下にCO2を貯められる」ことを実データで示した唯一の例。</p>
+<ul class="tl-list">
+<li><b>法律：</b>CCS事業法（2024年5月成立・2026年5月全面施行）で、地下の<b>試掘権・貯留権</b>が初めて定義された。銀行が貸せる・保険が引き受けられる状態を作る「ファイナンスのための法律」</li>
+<li><b>案件：</b>先進的CCS 9案件（国内5・海外4）。FID（最終投資判断）は2026年度めど、貯留開始は2030年度まで。苫小牧エリアは JAPEX・出光興産・北海道電力</li>
+<li><b>弱み：</b>CO2が出る場所（太平洋ベルトのコンビナート）と埋められる場所（北海道・日本海側・海外）が離れている。だから日本は<b>「船で運ぶCCS」</b>になり、パイプラインで済む欧州よりコストが重い</li>
+<li><b>強み：</b>回収装置の技術と、LNGで培った液化・船・受入基地の経験</li>
+</ul>
+<p><a class="more" href="#s06">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t6">
+<div class="sec-label"><span class="num">06</span><span class="sec-title">Trends</span></div>
+<div class="cards"><div class="cd"><div class="cd-t">① 日本のFIDが2026年度に来る</div><div class="cd-d">事業法の全面施行と投資判断が同じ年にそろう。9案件のうち何件が実際に進むかが、日本のCCSの実力値になる</div></div><div class="cd"><div class="cd-t">② 「貯留サービス業」の確立</div><div class="cd-d">Northern Lights 型。輸送と貯留だけを切り出して売り、排出者はCO2を引き渡せば終わり。CCSが各社の設備投資から「インフラ利用料」に変わる</div></div><div class="cd"><div class="cd-t">③ 液化CO2船という新産業</div><div class="cd-d">排出源と貯留層が離れたアジアでは船が主役。LNG船の技術の延長で、日本の造船・海運・ガス会社が強みを持ちうる</div></div><div class="cd"><div class="cd-t">④ CBAMとBECCS</div><div class="cd-d">EUの炭素国境調整で、鉄・セメントなどは「CCSを付けたほうが売れる」状況に。植物由来のCO2を埋めるBECCSは「除去クレジット」として別の単価で売れる</div></div></div>
+<p><a class="more" href="#s16">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t7">
+<div class="sec-label"><span class="num">07</span><span class="sec-title">Bottlenecks &amp; Risks</span></div>
+<div class="cards risk"><div class="cd"><div class="cd-t">コストが下がらない</div><div class="cd-d">太陽光や電池と違い、量産で安くならない。CO2の濃さ・貯留層までの距離・地下の不確実性で現場ごとにコストが決まる</div></div><div class="cd"><div class="cd-t">計画どおり入らない</div><div class="cd-d">豪州 Gorgon は計画どおりの量を圧入できていない。地下は開けてみるまでわからない</div></div><div class="cd"><div class="cd-t">量が桁違いに足りない</div><div class="cd-d">ネットゼロのシナリオが期待するのはギガトン級。いまの64 Mtpaとは15倍以上の開きがある</div></div><div class="cd"><div class="cd-t">国境を越えるCO2</div><div class="cd-d">他国の海底に埋めるにはロンドン議定書にもとづく二国間合意が必要。技術ではなく外交が速度を決める</div></div><div class="cd"><div class="cd-t">終わらない監視責任</div><div class="cd-d">圧入をやめた後も監視は続く。最終責任を国が引き取る枠組みがないと、企業は投資できない</div></div></div>
+<p><a class="more" href="#s15">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t8">
+<div class="sec-label"><span class="num">08</span><span class="sec-title">Bottom Line</span></div>
+<div class="verdict"><p><b>筆者の読み：CCSは「順調だが、桁が2つ足りない」。</b>件数の伸びは本物だが、コストは学習効果で下がらない。だから<b>条件のいい場所（濃いCO2・近い貯留層・既存インフラ）を押さえた事業者が勝ち続ける</b>構造になる。</p><p>見るべきは3つ。①<b>FIDに到達した件数</b>（発表件数ではなく）、②<b>実績の圧入量 vs 計画</b>、③<b>炭素価格と税額控除の水準</b>。日本の機会は貯留そのものより、<b>回収装置と液化CO2船</b>の側にある。</p><p><a class="more" href="#s17">Mainで詳しく →</a></p></div>
+</div>
+
+</div>
+
+<div class="pane" data-pane="main" hidden>
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#overview">Overview — このセクターの読み方</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">Process: Four Steps — 4つの工程 — 回収・輸送・圧入・監視</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">Capture Methods — 回収方式 — 「濃いCO2」から順に安くなる</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">Storage Types — 貯留層の3タイプ</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">Cost Structure — コスト構造 — なぜ補助金なしでは立たないのか</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">Japan: Tomakomai Demonstration — 日本のCCSは「苫小牧の1本」から始まった</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">Japan: CCS Business Act — CCS事業法 — 「地下を使う権利」がようやく定義された</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">Japan: Advanced CCS Projects — 先進的CCS事業 — 2030年度貯留開始をめざす9案件</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">Japan: Players — 日本のプレイヤー — 「地下を知っている会社」が中心にいる</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">Japan: Candidate Sites — 日本の候補地 — 排出源と貯留適地は重ならない</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">World: Status 2025 — 世界の現在地 — 件数は伸びた、量は足りない</a></li>
+      <li><span class="toc-num">12</span><a href="#s12">World: Norway — ノルウェー — 炭素税で30年やってきた国</a></li>
+      <li><span class="toc-num">13</span><a href="#s13">World: Other Key Countries — 他の主要国 — 3つの異なる駆動力</a></li>
+      <li><span class="toc-num">14</span><a href="#s14">World: CCS Hubs — 強い都市 — CCSハブの地図</a></li>
+      <li><span class="toc-num">15</span><a href="#s15">2026: Key Question — 2026年の論点</a></li>
+      <li><span class="toc-num">16</span><a href="#s16">Trends — 6つのトレンド</a></li>
+      <li><span class="toc-num">17</span><a href="#s17">What to Watch — この産業を追いかけるための3つの観測点</a></li>
+      <li><span class="toc-num">18</span><a href="#sources">Sources</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="overview">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">Overview</span></div>
+    <div class="sec-jp">このセクターの読み方</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+    <div class="callout">
+      CCS（Carbon Capture and Storage）は<strong>「排ガスからCO2を分離して、地下1,000m以深の地層に押し込んで、漏れないか見張り続ける」</strong>という産業。<br>
+      技術としては1990年代から動いているのに商業化が遅れてきた理由は、ほぼ<strong>ひとつだけ</strong>——
+      <strong>CO2を埋めても、それ自体は何も生まないから</strong>である。だから CCS は技術の話ではなく、
+      <strong>「誰がコストを負担するか」という制度設計の話</strong>として読むのが正しい。
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-n"><a class="il" href="#s02">01 — 基礎と工程</a></div><div class="card-m">Fundamentals &amp; Process</div>
+        <div class="card-d">分離回収・輸送・圧入・モニタリングの4工程。回収方式ごとのコスト差と、なぜ「濃いCO2」から順に埋まっていくのか。</div><div class="card-l">一言：回収・輸送・圧入・監視の4工程。コストの6〜8割は回収にあり、その回収コストは「どの煙突につなぐか」でほぼ決まる。</div></div>
+<div class="card"><div class="card-n"><a class="il" href="#s06">02 — 日本の都市と企業</a></div><div class="card-m">Japan / Cities &amp; Companies</div>
+        <div class="card-d">苫小牧の30万トン実証、CCS事業法、先進的CCS 9案件。JAPEX・INPEX・出光・北海道電力・三菱商事という顔ぶれ。</div><div class="card-l">一言：苫小牧の30万トンが日本のCCSの全実績。事業法が施行され、9案件が2026年度のFIDに向かっている。</div></div>
+<div class="card"><div class="card-n"><a class="il" href="#s11">03 — 世界の国と企業</a></div><div class="card-m">World / Countries &amp; Companies</div>
+        <div class="card-d">ノルウェーが30年やってきた理由（炭素税）、米国の45Q、Northern Lights と Porthos という2つの事業モデル。</div><div class="card-l">一言：ノルウェーは炭素税で30年、米国は税額控除で、オランダは港湾クラスターで動かした。CCSを立ち上げたのは技術ではなく制度である。</div></div>
+<div class="card"><div class="card-n"><a class="il" href="#s15">04 — トレンド 2026</a></div><div class="card-m">Trends 2026</div>
+        <div class="card-d">稼働件数は+54%で伸びたのに、コストは下がっていない。日本のFIDが2026年度に来るという意味。</div><div class="card-l">一言：件数は+54%で伸びた。しかしコストは下がっていない。CCSは学習効果でなく、立地条件で勝負が決まる産業である。</div></div>
+    </div>
+    <p class="ov-note">※ 2026-10-25 に旧4ページ（基礎と工程／日本の都市と企業／世界の国と企業／トレンド 2026）を、この1ページの Main に統合した。3行サマリーは TL;DR タブへ移した。</p>
+    <div class="xlink">
+      <div class="xlink-t">Related</div>
+      <ul><li><a href="/030_research/032_geo-history/260903_tomakomai.html">geo：苫小牧市</a><br><span>日本唯一のCCS実証地</span></li></ul>
+    </div>
+  </div>
+
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">Process: Four Steps</span></div>
+    <div class="sec-jp">4つの工程 — 回収・輸送・圧入・監視</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="vchain">
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 01</div><div class="vstep-t">Capture</div></div><div class="vstep-b">排ガスや工程ガスからCO2を分離・濃縮する。<strong>チェーン全体のコストの6〜8割がここ</strong></div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 02</div><div class="vstep-t">Transport</div></div><div class="vstep-b">パイプライン、または液化してLNG船に似た専用船。距離とスケールで方式が決まる</div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 03</div><div class="vstep-t">Injection</div></div><div class="vstep-b">深度<strong>800m以深</strong>（超臨界状態になる深さ）の貯留層へ圧入。上に不透水層（キャップロック）が要る</div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 04</div><div class="vstep-t">Monitoring</div></div><div class="vstep-b">弾性波探査・微小振動・海洋環境。<strong>事業終了後も続く義務</strong>で、これが会計上やっかいな長期債務になる</div></div>
+    </div>
+    <div class="callout">
+      なぜ<strong>800m以深</strong>なのか。その深さの圧力・温度でCO2は<strong>超臨界状態</strong>になり、
+      気体のように広がりながら<strong>液体に近い密度</strong>を持つ。同じ体積の空間に桁違いの量を詰め込めるので、
+      浅く埋めるのと比べて経済性が根本的に変わる。苫小牧の実証が<strong>海底下1,000mと2,400m</strong>の2層を選んだのもこの条件を満たすため。
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">Capture Methods</span></div>
+    <div class="sec-jp">回収方式 — 「濃いCO2」から順に安くなる</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>方式</th><th>原理</th><th>向く排出源</th><th>コスト感</th></tr>
+      <tr><td class="nw"><strong>化学吸収（アミン）</strong></td><td>アミン溶液にCO2を吸収させ、加熱して放出させる</td><td>火力発電の排ガス、セメント、製鉄</td><td>再生に大量の蒸気が要る。<strong>希薄なガスほど高い</strong></td></tr>
+      <tr><td class="nw"><strong>物理吸収</strong></td><td>高圧下で溶媒に物理的に溶かす</td><td>天然ガス処理、アンモニア・水素製造</td><td><strong>もともと高濃度・高圧なので安い</strong>。世界の既存CCSの多くがここ</td></tr>
+      <tr><td class="nw"><strong>膜分離</strong></td><td>選択透過膜で分ける</td><td>中〜高濃度</td><td>装置がコンパクト。日本勢が技術を持つ領域</td></tr>
+      <tr><td class="nw"><strong>酸素燃焼</strong></td><td>空気ではなく酸素で燃やし、排ガスをほぼCO2＋水にする</td><td>セメント・発電</td><td>分離工程が要らない代わりに酸素製造が要る</td></tr>
+      <tr><td class="nw"><strong>DAC（大気直接回収）</strong></td><td>大気中の0.04%のCO2を直接捕まえる</td><td>排出源に紐づかない</td><td><strong>桁違いに高い</strong>。現状はクレジット市場と技術実証の文脈</td></tr>
+    </table></div>
+    <div class="callout">
+      ここが CCS を理解する最大のポイント。<strong>CO2は「濃いところから埋まる」</strong>。<br>
+      天然ガス精製や水素・アンモニア製造では、工程上どうしても<strong>ほぼ純粋なCO2</strong>が出てくる。分離コストがほぼゼロなので、
+      ノルウェーの Sleipner（1996年〜）はこれを30年やってきた。一方で発電所の排ガスは<strong>CO2濃度が4〜14%程度</strong>しかなく、
+      薄いガスから濃縮するのに莫大なエネルギーが要る。<strong>「CCS付き火力」が世界でほとんど立たない理由はここにある</strong>。
+    </div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">Storage Types</span></div>
+    <div class="sec-jp">貯留層の3タイプ</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>タイプ</th><th>特徴</th><th>論点</th></tr>
+      <tr><td class="nw"><strong>深部塩水層（帯水層）</strong></td><td>塩水で満たされた砂岩層。<strong>容量が圧倒的に大きい</strong></td><td>日本の候補の主流。ただし<strong>地下データが乏しく、探査に金と時間がかかる</strong>。Sleipner もこのタイプ</td></tr>
+      <tr><td class="nw"><strong>枯渇油ガス田</strong></td><td>もともと炭化水素を数千万年閉じ込めていた実績がある</td><td><strong>密閉性が証明済み・地下データが揃っている</strong>のが決定的な利点。既存の坑井とパイプラインも使える。Porthos がこのタイプ</td></tr>
+      <tr><td class="nw"><strong>EOR（石油増進回収）</strong></td><td>CO2を油田に圧入して原油の回収率を上げる</td><td><strong>CO2に値段がつく唯一の用途</strong>だったため、米国のCCSの大半はこれで成立してきた。ただし「石油を増産する脱炭素」という矛盾を常に指摘される</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">Cost Structure</span></div>
+    <div class="sec-jp">コスト構造 — なぜ補助金なしでは立たないのか</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <p>CCS のコストは<strong>回収 ＞ 輸送 ＞ 圧入</strong>の順で、しかも<strong>回収コストは排出源のCO2濃度でほぼ決まる</strong>。ということは、CCS事業の採算は「どの技術を使うか」より<strong>「どの煙突につなぐか」</strong>でほぼ決まってしまう。</p>
+    <div class="t-scroll"><table class="t">
+      <tr><th>成立条件</th><th>中身</th></tr>
+      <tr><td class="nw"><strong>炭素価格</strong></td><td>ノルウェーは1991年から炭素税を導入し、<strong>埋めたほうが安い</strong>状態を人為的に作った。これがなければ Sleipner は存在しない</td></tr>
+      <tr><td class="nw"><strong>税額控除</strong></td><td>米国の <strong>45Q</strong>。IRAでの拡充により地中貯留で最大 $85/トン級の控除が付き、EOR に頼らないCCSが初めて採算に乗る水準になった</td></tr>
+      <tr><td class="nw"><strong>クラスター化</strong></td><td>1社では輸送・貯留インフラの固定費を負担できない。<strong>複数の排出源で1本のパイプ・1つの貯留層を共有する</strong>ハブ型が世界標準になった</td></tr>
+      <tr><td class="nw"><strong>長期責任の引受先</strong></td><td>圧入をやめた後もモニタリングは続く。<strong>最終的な責任を国が引き取る枠組み</strong>がないと、企業は投資判断ができない。日本のCCS事業法はここを定義した法律である</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">Japan: Tomakomai Demonstration</span></div>
+    <div class="sec-jp">日本のCCSは「苫小牧の1本」から始まった</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="callout">
+      日本のCCSの歴史は、事実上<strong>苫小牧の実証試験ひとつ</strong>に集約される。<br>
+      2016年4月から苫小牧港の港湾区域内で、<strong>海底下 約1,000m（萌別層）と約2,400m（滝ノ上層）</strong>の2層に年10万トン規模で圧入。
+      約3年8か月後の<strong>2019年11月22日に累計30万トンの目標を達成して圧入を停止</strong>し、以降は微小振動観測・海洋環境調査・CO2挙動のモニタリングを継続している。
+      実施したのは<strong>日本CCS調査株式会社</strong>で、委託者は2012〜2017年度が経済産業省、2018年度以降がNEDO。<br>
+      重要なのは<strong>「日本の地下でCO2を貯められることを、実データで示した唯一の事例」</strong>であるという点。この30万トンがなければ、後述する9案件の議論そのものが成立していない。
+    </div>
+    <div class="xlink">
+      <div class="xlink-t">Cross-reference — geo-history</div>
+      <ul>
+        <li><a href="/030_research/032_geo-history/260903_tomakomai.html">苫小牧市</a><br><span>掘込港・工業集積・CCS実証の3点セット</span></li>
+        <li><a href="/030_research/032_geo-history/260903_hokkaido.html">北海道</a><br><span>貯留適地と再エネ・DC立地の重なり</span></li>
+        <li><a href="/030_research/032_geo-history/260831_ichihara.html">市原市</a><br><span>京葉コンビナート＝大規模排出源</span></li>
+        <li><a href="/030_research/032_geo-history/260904_muroran.html">室蘭市</a><br><span>北海道・東北で唯一の高炉＝製鉄の排出源</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">Japan: CCS Business Act</span></div>
+    <div class="sec-jp">CCS事業法 — 「地下を使う権利」がようやく定義された</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <p>技術が動いても事業が立たなかった最大の理由は、<strong>日本の法体系に「CO2を地下に貯める」という行為の受け皿がなかった</strong>ことにある。鉱業法は資源を掘り出す法律であって、何かを入れる法律ではない。</p>
+    <div class="t-scroll"><table class="t">
+      <tr><th>項目</th><th>内容</th></tr>
+      <tr><td class="nw"><strong>成立・施行</strong></td><td><strong>2024年5月成立、2026年5月に全面施行</strong></td></tr>
+      <tr><td class="nw"><strong>創設された権利</strong></td><td>地下の<strong>試掘権と貯留権</strong>を許可制で創設。誰がどの地層を使えるかが初めて法的に決まった</td></tr>
+      <tr><td class="nw"><strong>義務</strong></td><td>圧入中から<strong>事業終了後まで続く長期モニタリング</strong>を義務化。最終的な管理責任の移転についても枠組みを規定</td></tr>
+      <tr><td class="nw"><strong>意味</strong></td><td>これがないと<strong>銀行が金を貸せない・保険が引き受けられない</strong>。CCS事業法は環境法ではなく<strong>ファイナンスを可能にする法律</strong>として読むのが正しい</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">Japan: Advanced CCS Projects</span></div>
+    <div class="sec-jp">先進的CCS事業 — 2030年度貯留開始をめざす9案件</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <p>JOGMEC／経済産業省は2023年度に7案件を選定し、<strong>2024年6月に9案件（国内貯留5・海外貯留4）</strong>を「先進的CCS事業に係る設計作業等」の候補として選定した。合計で<strong>年約2,000万トンのCO2貯留</strong>を、<strong>2030年度までに開始する</strong>という目標が置かれている。</p>
+    <div class="t-scroll"><table class="t">
+      <tr><th>論点</th><th>中身</th></tr>
+      <tr><td class="nw"><strong>規模</strong></td><td>9案件合計で<strong>年約2,000万トン</strong>。日本の年間CO2排出（約10億トン規模）に対して<strong>約2%</strong>。これが2030年時点の到達点として設計されている</td></tr>
+      <tr><td class="nw"><strong>国内と海外の分担</strong></td><td><strong>5案件が国内貯留、4案件がアジア・オセアニアでの海外貯留</strong>。日本の地下だけでは容量も適地も足りないという前提が、最初から制度に組み込まれている</td></tr>
+      <tr><td class="nw"><strong>苫小牧エリア</strong></td><td><strong>石油資源開発（JAPEX）・出光興産・北海道電力</strong>が、苫小牧エリアでのCCS事業開始を目指す設計作業等を受託。実証の土地・データ・港がそのまま商業案件に引き継がれる</td></tr>
+      <tr><td class="nw"><strong>タイムライン</strong></td><td>設計作業 → <strong>FID（最終投資判断）は2026年度めど</strong> → 2030年度までに貯留開始。<strong>いまはFID直前の局面</strong></td></tr>
+    </table></div>
+    <div class="callout">
+      <strong>海外貯留が4案件ある</strong>という事実は、日本のCCS政策のいちばん現実的な部分である。
+      マレーシアやオセアニアの枯渇ガス田は、日本より<strong>地下データが揃い、容量が大きく、既存インフラがある</strong>。
+      ただしCO2を国境を越えて運ぶには<strong>ロンドン議定書</strong>の枠組み（二国間合意）が要る——技術ではなく外交が律速になる領域。
+    </div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">Japan: Players</span></div>
+    <div class="sec-jp">日本のプレイヤー — 「地下を知っている会社」が中心にいる</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="cards">
+      <div class="card"><div class="card-n">石油資源開発（JAPEX）</div><div class="card-m">上流 / 地下</div>
+        <div class="card-d">国内で油ガス田を掘ってきた会社。<strong>日本の地下構造データを最も持っている</strong>。苫小牧案件の中核であり、CCSは同社にとって「掘る技術を逆方向に使う」事業。</div>
+        <div class="tags"><span class="tag on">苫小牧</span><span class="tag">貯留</span></div></div>
+      <div class="card"><div class="card-n">INPEX</div><div class="card-m">上流 / 海外</div>
+        <div class="card-d">豪州イクシスなど海外ガス田のオペレーター。<strong>随伴CO2の分離設備をすでに持っている</strong>ため、CCSへの距離が最も近い。海外貯留案件の主役。</div>
+        <div class="tags"><span class="tag">海外貯留</span><span class="tag">LNG</span></div></div>
+      <div class="card"><div class="card-n">出光興産</div><div class="card-m">排出源 / 拠点</div>
+        <div class="card-d">苫小牧に<strong>北海道製油所</strong>を持ち、CCSの排出源であると同時に事業者でもある。製油所を「次世代エネルギー拠点」に転換する戦略と一体。<a class="il" href="../0367_oil/260905_oil.html">石油セクター</a>と接続する。</div>
+        <div class="tags"><span class="tag on">苫小牧</span><span class="tag">製油所</span></div></div>
+      <div class="card"><div class="card-n">北海道電力</div><div class="card-m">排出源 / 系統</div>
+        <div class="card-d">苫小牧案件の受託者のひとつ。火力の排ガスという<strong>典型的に「薄くて高い」排出源</strong>をどう扱うかが試金石。<a class="il" href="../0363_power_utility/260714_power_utility.html">電力・系統</a>と接続。</div>
+        <div class="tags"><span class="tag on">苫小牧</span><span class="tag">火力</span></div></div>
+      <div class="card"><div class="card-n">三菱商事・三井物産</div><div class="card-m">商社 / チェーン組成</div>
+        <div class="card-d">排出源・輸送・貯留を<strong>1本のバリューチェーンとして束ねる</strong>のが商社の役割。海外貯留案件では現地政府との交渉が実務の中心になる。</div>
+        <div class="tags"><span class="tag">海外</span><span class="tag">組成</span></div></div>
+      <div class="card"><div class="card-n">三菱重工業 / 東芝</div><div class="card-m">回収技術</div>
+        <div class="card-d">アミン吸収法の商用プラントで世界的な実績を持つのが三菱重工。東芝は<strong>バイオマス発電の排ガスからの回収（BECCS）</strong>で実証を進めてきた。日本が世界と勝負できるのは<strong>貯留ではなく回収装置</strong>の側。</div>
+        <div class="tags"><span class="tag">回収</span><span class="tag">BECCS</span></div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">Japan: Candidate Sites</span></div>
+    <div class="sec-jp">日本の候補地 — 排出源と貯留適地は重ならない</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>エリア</th><th>役割</th><th>読み方</th></tr>
+      <tr><td class="nw"><strong>苫小牧・道央</strong></td><td>貯留の本命</td><td>実証データ・港・製油所・火力がそろう。<a class="il" href="/030_research/032_geo-history/260903_tomakomai.html">苫小牧</a>は<strong>「需要地から遠い」ことが不利にならない産業</strong>——CCSとデータセンター——で評価軸が反転した街である</td></tr>
+      <tr><td class="nw"><strong>京葉（市原・袖ケ浦・木更津）</strong></td><td>排出源の最大級</td><td>石油精製・石油化学・製鉄が密集。<a class="il" href="/030_research/032_geo-history/260831_ichihara.html">市原</a>と<a class="il" href="/030_research/032_geo-history/260831_kisarazu.html">木更津</a>は日本で最も「回収したいCO2」が濃く集まる場所だが、<strong>首都圏直下に貯留適地は乏しい</strong></td></tr>
+      <tr><td class="nw"><strong>室蘭</strong></td><td>製鉄の排出源</td><td><a class="il" href="/030_research/032_geo-history/260904_muroran.html">室蘭</a>は北海道・東北で唯一の高炉を持つ。<strong>貯留適地（苫小牧）に近い製鉄所</strong>という、日本では稀な組み合わせ</td></tr>
+      <tr><td class="nw"><strong>九州西部・日本海側</strong></td><td>貯留候補</td><td>堆積盆が期待される領域。<strong>探査データの不足が最大のボトルネック</strong></td></tr>
+    </table></div>
+    <div class="callout">
+      日本のCCSの構造的な難しさは<strong>「CO2が出る場所（太平洋ベルトのコンビナート）と、埋められる場所（北海道・日本海側・海外）が離れている」</strong>こと。
+      だから日本のCCSは必然的に<strong>「船で運ぶCCS」</strong>になる。パイプラインで完結する欧州とはコスト構造が根本的に違い、
+      <strong>液化CO2船という、LNG船に似た新しい輸送産業</strong>が並行して必要になる。ここは<a class="il" href="../0368_lng/260905_lng.html">LNG</a>で培った技術がそのまま効く領域である。
+    </div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">World: Status 2025</span></div>
+    <div class="sec-jp">世界の現在地 — 件数は伸びた、量は足りない</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>指標</th><th>2025年時点</th><th>読み方</th></tr>
+      <tr><td class="nw">稼働プロジェクト数</td><td><strong>77件</strong>（前年50件、+54%）</td><td>件数の伸びは大きい。政策支援が効き始めた証拠</td></tr>
+      <tr><td class="nw">稼働中の貯留能力</td><td><strong>64 Mtpa</strong></td><td>世界の年間CO2排出 約370億トンに対し<strong>0.2%未満</strong></td></tr>
+      <tr><td class="nw">建設中</td><td>47件 / <strong>44 Mtpa</strong></td><td>完成すれば稼働能力が約7割増える</td></tr>
+      <tr><td class="nw">開発中を含む総回収能力</td><td><strong>513 Mtpa</strong>（+23%）</td><td>あくまで「計画の合計」。歴史的に計画の相当部分は実現しない</td></tr>
+      <tr><td class="nw">開発段階のプロジェクト総数</td><td>610件</td><td>2030年には稼働回収能力が2025年の<strong>約5倍</strong>になるとの見通し</td></tr>
+    </table></div>
+    <div class="callout">
+      この数字の読み方は<strong>「順調だが、桁が2つ足りない」</strong>に尽きる。<br>
+      IEA などのネットゼロシナリオがCCSに期待する量はギガトン級（1,000 Mtpa超）で、いまの64 Mtpaとは<strong>15倍以上の開き</strong>がある。
+      一方で+54%という伸び率は本物なので、<strong>「立ち上がりつつある産業」ではあるが「間に合う産業」ではない</strong>という両論が同時に正しい。
+    </div>
+  </div>
+
+  <div class="sec" id="s12">
+    <div class="sec-label"><span class="num">12</span><span class="sec-title">World: Norway</span></div>
+    <div class="sec-jp">ノルウェー — 炭素税で30年やってきた国</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>プロジェクト</th><th>開始</th><th>中身</th></tr>
+      <tr><td class="nw"><strong>Sleipner</strong></td><td>1996年</td><td>北海のガス田で、天然ガスに含まれるCO2を分離して<strong>そのまま海底下の砂岩層に戻す</strong>。世界初の商業CCS。<strong>1991年導入の炭素税により「大気に出すより埋めるほうが安い」状態が作られた</strong>のが唯一にして決定的な成立理由</td></tr>
+      <tr><td class="nw"><strong>Snøhvit</strong></td><td>2008年</td><td>バレンツ海。LNG生産に伴うCO2を貯留。<strong>LNGとCCSが同じ設備で一体化している</strong>典型</td></tr>
+      <tr><td class="nw"><strong>Northern Lights（Longship）</strong></td><td>2024〜2025年</td><td>ここからが新しい。<strong>自社の排出ではなく、他社のCO2を預かって貯める「貯留サービス業」</strong>。Equinor・Shell・TotalEnergies の合弁。Øygarden の陸上ターミナルに<strong>船でCO2を運び込み</strong>、パイプラインで海底下へ。<strong>フェーズ1は年1.5 Mtpa</strong>で、2025年に実際のCO2圧入・貯留を開始。<strong>フェーズ2で最低5 Mtpaへ（2028年）</strong>。2026年からはデンマーク・オランダのCO2も受け入れる</td></tr>
+    </table></div>
+    <div class="callout">
+      <strong>Northern Lights が本当に新しいのは「ビジネスモデル」のほう</strong>。
+      それまでのCCSは<strong>「自分が出したCO2を自分で埋める」</strong>垂直統合だった。
+      Northern Lights は<strong>輸送と貯留だけを切り出して、複数国の複数企業に売る</strong>。
+      これは日本の「船で運ぶCCS」構想がそのまま参照している型であり、
+      <a class="il" href="../0368_lng/260905_lng.html">LNG</a>のチェーン（液化→船→受入基地）を逆流させたものと理解すると早い。
+    </div>
+  </div>
+
+  <div class="sec" id="s13">
+    <div class="sec-label"><span class="num">13</span><span class="sec-title">World: Other Key Countries</span></div>
+    <div class="sec-jp">他の主要国 — 3つの異なる駆動力</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="cards">
+      <div class="card"><div class="card-n">アメリカ — 税額控除で動く</div><div class="card-m">45Q / IRA</div>
+        <div class="card-d">歴史的にはCO2-EOR（油田に圧入して増産）でCCSが成立してきた国。<strong>IRAによる45Qの拡充で、地中貯留に最大 $85/トン級の税額控除</strong>が付き、EORに頼らないCCSが初めて採算に乗った。メキシコ湾岸（ヒューストン周辺）が<strong>排出源・パイプライン・塩水層の三拍子</strong>で世界最大のCCSハブ候補。</div>
+        <div class="tags"><span class="tag on">45Q</span><span class="tag">Gulf Coast</span></div></div>
+      <div class="card"><div class="card-n">オランダ — 港湾クラスター型</div><div class="card-m">Porthos</div>
+        <div class="card-d">ロッテルダム港の産業排出源から集めたCO2を、<strong>北海の枯渇ガス田</strong>へパイプラインで送る。EBN／Gasunie／ロッテルダム港の共同。<strong>約2.5 Mtpa</strong>規模で2023年FID、2026年稼働目標。<strong>港湾管理者が主体になる</strong>という点が、日本のカーボンニュートラルポート構想の直接のモデル。</div>
+        <div class="tags"><span class="tag on">Rotterdam</span><span class="tag">枯渇ガス田</span></div></div>
+      <div class="card"><div class="card-n">オーストラリア — LNGと一体</div><div class="card-m">Gorgon</div>
+        <div class="card-d">バロー島の Gorgon LNG に併設された世界最大級の貯留設備。<strong>ガス田の随伴CO2を分離して埋める</strong>という Sleipner 型。ただし<strong>計画通りの量を圧入できていない</strong>という実績上の問題が繰り返し指摘されており、「大規模帯水層貯留の難しさ」の教訓例でもある。</div>
+        <div class="tags"><span class="tag">LNG随伴</span><span class="tag">課題事例</span></div></div>
+      <div class="card"><div class="card-n">マレーシア — 貯留の受け皿</div><div class="card-m">Kasawari / Petronas</div>
+        <div class="card-d">高CO2含有ガス田の随伴CO2を分離・圧入。同時に<strong>「他国のCO2を受け入れる国」</strong>としてのポジションを取りに来ており、日本の海外貯留案件の主要な相手先。<strong>CCSは輸出入産業になる</strong>ことを最も明確に示している国。</div>
+        <div class="tags"><span class="tag">海外貯留</span><span class="tag">日本と接続</span></div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s14">
+    <div class="sec-label"><span class="num">14</span><span class="sec-title">World: CCS Hubs</span></div>
+    <div class="sec-jp">強い都市 — CCSハブの地図</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>都市・地域</th><th>国</th><th>なぜそこか</th></tr>
+      <tr><td class="nw"><strong>Øygarden（ベルゲン近郊）</strong></td><td>ノルウェー</td><td>Northern Lights の陸上ターミナル。<strong>北海の貯留層と、船が入れる岸壁</strong>が同じ場所にある</td></tr>
+      <tr><td class="nw"><strong>ロッテルダム</strong></td><td>オランダ</td><td>製油所・水素・化学が密集し、沖合に枯渇ガス田。<strong>排出源と貯留層が近い</strong>という欧州でも稀な条件</td></tr>
+      <tr><td class="nw"><strong>ヒューストン／メキシコ湾岸</strong></td><td>米国</td><td>石化・製油所の集積＋数十年分のCO2パイプライン＋巨大な塩水層。<strong>世界最大の潜在ハブ</strong></td></tr>
+      <tr><td class="nw"><strong>エドモントン（アルバータ）</strong></td><td>カナダ</td><td>Quest など。オイルサンド由来の水素製造という<strong>高濃度CO2の排出源</strong>が並ぶ</td></tr>
+      <tr><td class="nw"><strong>苫小牧</strong></td><td>日本</td><td>実証データ・港・製油所・火力。<strong>アジアで最も早く商業CCSが立つ可能性のある港</strong></td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s15">
+    <div class="sec-label"><span class="num">15</span><span class="sec-title">2026: Key Question</span></div>
+    <div class="sec-jp">2026年の論点</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="callout">
+      2026年のCCSは<strong>「件数は伸びたが、コストは下がっていない」</strong>という一点に尽きる。<br>
+      太陽光や電池のように<strong>量産による学習効果でコストが落ちる</strong>タイプの技術ではないからで、
+      CCSのコストは<strong>排出源のCO2濃度・貯留層までの距離・地下の不確実性</strong>という現場ごとの条件で決まる。
+      つまり<strong>「100件やれば101件目が安くなる」構造になっていない</strong>。これがCCSの最大の弱点であり、
+      裏を返せば<strong>条件のいい場所（＝濃いCO2・近い貯留層・既存インフラ）を押さえた事業者が構造的に勝ち続ける</strong>ということでもある。
+    </div>
+  </div>
+
+  <div class="sec" id="s16">
+    <div class="sec-label"><span class="num">16</span><span class="sec-title">Trends</span></div>
+    <div class="sec-jp">6つのトレンド</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="cards">
+      <div class="card"><div class="card-n">01 — 日本のFIDが2026年度に来る</div><div class="card-m">Japan / Final Investment Decision</div>
+        <div class="card-d">先進的CCS 9案件は設計作業を終え、<strong>2026年度めどのFID</strong>という判断点に入る。CCS事業法の全面施行（2026年5月）と時期がそろっており、<strong>制度と投資判断が同じ年に着地する</strong>設計になっている。ここで何案件が実際に進むかが、日本のCCSの実力値になる。</div></div>
+      <div class="card"><div class="card-n">02 — 「貯留サービス業」という業態の確立</div><div class="card-m">Storage as a Service</div>
+        <div class="card-d">Northern Lights が示したのは、<strong>輸送と貯留だけを切り出して売る</strong>という業態。排出者はCO2を「引き渡して」終わりにできる。これが成立すると、CCSは<strong>各社の設備投資</strong>から<strong>インフラ利用料</strong>に変わる。日本の海外貯留案件も本質的にこの型。</div></div>
+      <div class="card"><div class="card-n">03 — 液化CO2船という新産業</div><div class="card-m">LCO2 shipping</div>
+        <div class="card-d">排出源と貯留層が離れている日本・アジアでは、<strong>パイプラインではなく船</strong>が主役になる。低温高圧の液化CO2を運ぶ船は<strong>LNG船の技術系譜の延長</strong>にあり、日本の造船・海運・ガス会社が競争優位を持ちうる数少ない領域。<a class="il" href="../0368_lng/260905_lng.html">LNG</a>と併読。</div></div>
+      <div class="card"><div class="card-n">04 — 国境を越えるCO2と、ロンドン議定書</div><div class="card-m">Cross-border</div>
+        <div class="card-d">CO2を他国の海底に埋めるには、<strong>ロンドン議定書に基づく二国間合意</strong>が必要。技術ではなく<strong>外交と条約が律速</strong>になる。日本が海外貯留4案件を抱えている以上、この交渉の進み方が事業の前提条件になる。</div></div>
+      <div class="card"><div class="card-n">05 — BECCS とネガティブエミッション</div><div class="card-m">Bio-CCS</div>
+        <div class="card-d">バイオマス由来のCO2を埋めると、計算上は<strong>大気中のCO2が減る</strong>。<a class="il" href="../0365_pulp/260905_pulp.html">製紙工場の回収ボイラ</a>、バイオマス発電、バイオエタノール工場が候補になる。<strong>「排出削減」ではなく「除去クレジット」として売れる</strong>ため、単価が別建てになる点が事業性を変える。</div></div>
+      <div class="card"><div class="card-n">06 — CBAM が排出源側の判断を変える</div><div class="card-m">Carbon border adjustment</div>
+        <div class="card-d">EUの炭素国境調整措置は、<strong>鉄・セメント・アルミなどの輸入品に炭素コストを課す</strong>。輸出企業にとっては「CCSを付けたほうが売れる」状況が生まれる。<a class="il" href="../0369_steelmaking/260905_stm.html">製鋼</a>・<a class="il" href="../steel.html">製鉄</a>にとって、CCSは環境対策ではなく<strong>市場アクセスの条件</strong>になりつつある。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s17">
+    <div class="sec-label"><span class="num">17</span><span class="sec-title">What to Watch</span></div>
+    <div class="sec-jp">この産業を追いかけるための3つの観測点</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>観測点</th><th>なぜ見るか</th></tr>
+      <tr><td class="nw"><strong>FIDに到達した件数</strong></td><td>CCSは「計画」が異常に多く、実際に建つのは一部。<strong>発表件数ではなくFID件数</strong>だけが実力を表す</td></tr>
+      <tr><td class="nw"><strong>実績圧入量 vs 計画圧入量</strong></td><td>Gorgon のように<strong>計画どおり入らない</strong>事例がある。地下は開けてみるまでわからない</td></tr>
+      <tr><td class="nw"><strong>炭素価格と税額控除の水準</strong></td><td>CCSの採算はほぼこの一点で決まる。制度が動けば案件も動く</td></tr>
+    </table></div>
+    <div class="xlink">
+      <div class="xlink-t">Related</div>
+      <ul>
+        <li><a href="../0367_oil/260905_oil.html">Oil</a><br><span>製油所＝主要排出源かつ事業者</span></li>
+        <li><a href="../0368_lng/260905_lng.html">LNG</a><br><span>随伴CO2と液化・輸送技術</span></li>
+        <li><a href="../0369_steelmaking/260905_stm.html">Steelmaking</a><br><span>CBAMで市場アクセスの条件に</span></li>
+        <li><a href="/030_research/032_geo-history/260903_tomakomai.html">geo：苫小牧市</a><br><span>日本の商業CCSの起点</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sources" id="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>NEDO「CCS大規模実証試験においてCO2の累計圧入量30万トンを達成」／経済産業省「苫小牧におけるCCS大規模実証試験 30万トン圧入時点報告書（総括報告書）」2020年5月</li>
+      <li>日本CCS調査株式会社 実証試験報告書 ／ 苫小牧市 企業立地ガイド「苫小牧におけるCCS大規模実証試験」</li>
+      <li>JOGMEC「CCS事業化に向けた先進的取り組み — 2030年度までのCO2貯留開始に向け、設計作業等について9案件を候補として選定」（2024年6月28日）／経済産業省 同名リリース</li>
+      <li>JOGMEC「先進的CCS支援事業の概要」／「令和6年度 先進的CCS事業成果報告会」開催報告</li>
+      <li>北海道電力「JOGMEC『先進的CCS事業』公募において苫小牧エリアでのCCS事業開始を目指す設計作業等を受託」</li>
+      <li>Global CCS Institute「Staying the Course — Global Status of CCS 2025」Executive Summary（稼働77件・513Mtpa・建設中44Mtpa）</li>
+      <li>Equinor「The Northern Lights project」／TotalEnergies「Northern Lights CCS 2nd phase」（フェーズ1 1.5Mtpa・フェーズ2 最低5Mtpa／2028年）</li>
+      <li>Clean Air Task Force「Carbon capture and storage in Europe: Slow but significant progress in 2025」（Porthos ほか欧州案件）</li>
+    </ul>
+    <p class="upd">Last updated: 2026-10-25</p>
+  </div>
+
+
+</div><!-- /pane main -->
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script src="../../_shared/research_tabs.js" defer></script>
+<script src="../../../040_personal/0460_english/terms/terms.js" defer></script>
+
+</body>
+</html>

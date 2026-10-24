@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>石油 — industry 260905</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../_shared/research_tabs.css">
+  <style>
+    :root {
+      --bg:#ffffff; --surface:#f5f5f5; --card:#f0f0f0;
+      --border:#d8d8d8; --accent:#111111; --text:#1a1a1a;
+      --muted:#666666; --subtle:#999999;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Noto Sans JP', sans-serif; background:var(--bg); color:var(--text); line-height:1.75; }
+    .wrap { max-width:860px; margin:0 auto; padding:60px 24px 100px; }
+
+    .crumb { display:flex; flex-wrap:wrap; align-items:center; gap:7px; font-family:'Poppins',sans-serif; font-size:11px; font-weight:500; letter-spacing:.06em; margin-bottom:26px; }
+    .crumb a { color:var(--subtle); text-decoration:none; transition:color .15s; }
+    .crumb a:hover { color:var(--accent); }
+    .crumb .sep { color:var(--border); }
+    .crumb .cur { color:var(--accent); font-weight:700; }
+
+    .hero { background:var(--accent); color:#fff; border-radius:16px; padding:48px 44px; margin-bottom:34px; }
+    @media(max-width:560px){ .hero { padding:34px 24px; } }
+    .hero-eyebrow { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase; color:rgba(255,255,255,0.45); margin-bottom:14px; }
+    .hero h1 { font-family:'Poppins',sans-serif; font-size:40px; font-weight:700; line-height:1.1; margin-bottom:6px; letter-spacing:-.02em; }
+    @media(max-width:560px){ .hero h1 { font-size:30px; } }
+    .hero-sub { font-size:13px; color:rgba(255,255,255,0.55); margin-bottom:30px; line-height:1.7; }
+    .kv { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+    @media(max-width:640px){ .kv { grid-template-columns:repeat(2,1fr); } }
+    .kv-label { font-size:10px; font-weight:600; letter-spacing:1.5px; text-transform:uppercase; color:rgba(255,255,255,0.4); margin-bottom:6px; }
+    .kv-val { font-family:'Poppins',sans-serif; font-size:19px; font-weight:700; color:#fff; line-height:1.15; }
+    .kv-note { font-size:11px; color:rgba(255,255,255,0.35); margin-top:4px; line-height:1.5; }
+
+    /* セクター内ページ切替 */
+    .pager { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:40px; }
+    .pager a { font-family:'Poppins',sans-serif; font-size:11.5px; font-weight:600; letter-spacing:.02em; text-decoration:none; color:var(--muted); border:1px solid var(--border); border-radius:999px; padding:6px 14px; transition:all .13s; }
+    .pager a:hover { border-color:#888; color:var(--accent); }
+    .pager a.on { background:var(--accent); border-color:var(--accent); color:#fff; }
+
+    .toc { background:var(--surface); border-radius:12px; padding:24px 28px; margin-bottom:56px; }
+    .toc-title { font-family:'Poppins',sans-serif; font-size:10px; font-weight:600; letter-spacing:2px; text-transform:uppercase; color:var(--subtle); margin-bottom:14px; }
+    .toc ol { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:6px 32px; }
+    @media(max-width:520px){ .toc ol { grid-template-columns:1fr; } }
+    .toc li { font-size:13px; color:var(--muted); }
+    .toc li a { color:inherit; text-decoration:none; }
+    .toc li a:hover { color:var(--accent); }
+    .toc-num { font-family:'Poppins',sans-serif; font-size:11px; font-weight:600; color:var(--subtle); margin-right:8px; }
+
+
+    /* ===== SIDE NAV (Wikipedia風・scroll-spy) ===== */
+    .side-nav { position:fixed; left:20px; top:84px; width:216px; max-height:calc(100vh - 162px); overflow-y:auto; padding:12px 0 32px; z-index:10; scrollbar-width:thin; }
+    .side-nav::-webkit-scrollbar { width:4px; }
+    .side-nav::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+    @media (max-width:1320px) { .side-nav { display:none; } }
+    .side-nav-title { font-family:'Poppins',sans-serif; font-size:10.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase; color:var(--subtle); padding-left:14px; margin-bottom:8px; }
+    .side-nav-list { list-style:none; padding:0; margin:0; }
+    .side-nav-link { display:block; color:#b4b4b4; text-decoration:none; padding:6px 8px 6px 14px; border-left:2px solid transparent; font-size:12px; line-height:1.45; transition:color .15s, border-color .15s, background .15s; }
+    .side-nav-link:hover { color:var(--text); border-left-color:var(--border); }
+    .side-nav-link.active { color:var(--accent); font-weight:700; border-left-color:var(--accent); background:var(--surface); }
+    .side-nav-num { font-family:'Poppins',sans-serif; font-size:10.5px; color:var(--subtle); margin-right:6px; }
+    .sec { scroll-margin-top:76px; }
+    html { scroll-behavior:smooth; }
+
+    .sec { margin-bottom:60px; }
+    .sec-label { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+    .num { font-family:'Poppins',sans-serif; font-size:11px; font-weight:700; background:var(--accent); color:#fff; padding:3px 9px; border-radius:4px; }
+    .sec-title { font-family:'Poppins',sans-serif; font-size:18px; font-weight:700; color:var(--accent); }
+    @media(max-width:520px){ .sec-title { font-size:15.5px; } }
+
+    .sub-h { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:var(--accent); margin:28px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--border); }
+
+    p { margin-bottom:14px; font-size:14px; }
+    a.il { color:inherit; }
+
+    .t-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin-bottom:20px; }
+    .t { width:100%; border-collapse:collapse; font-size:13.5px; }
+    /* 狭い画面では潰さずに横スクロールさせる */
+    .t-scroll .t { min-width:560px; }
+    @media(max-width:620px){
+      .t-scroll { border:1px solid var(--border); border-radius:10px; }
+      .t-scroll .t th:first-child, .t-scroll .t td:first-child { position:sticky; left:0; background:var(--bg); }
+      .t-scroll .t th:first-child { background:var(--surface); }
+    }
+    .t th { background:var(--surface); color:var(--muted); font-weight:600; text-align:left; padding:10px 14px; border-bottom:1px solid var(--border); font-size:12px; white-space:nowrap; }
+    .t td { padding:10px 14px; border-bottom:1px solid var(--card); color:var(--text); vertical-align:top; }
+    .t tr:last-child td { border-bottom:none; }
+    .t strong { color:var(--accent); }
+    .t .nw { white-space:nowrap; }
+
+    .callout { background:var(--surface); border-left:3px solid var(--accent); border-radius:0 10px 10px 0; padding:18px 22px; margin-bottom:20px; font-size:13.5px; line-height:1.85; }
+
+    /* バリューチェーン */
+    .vchain { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:8px; margin-bottom:22px; }
+    .vstep { border:1px solid var(--border); border-radius:10px; overflow:hidden; }
+    .vstep-h { background:var(--accent); color:#fff; padding:8px 12px; }
+    .vstep-n { font-family:'Poppins',sans-serif; font-size:8px; font-weight:700; letter-spacing:.12em; color:rgba(255,255,255,.45); }
+    .vstep-t { font-family:'Poppins',sans-serif; font-size:12px; font-weight:700; letter-spacing:.02em; }
+    .vstep-b { padding:11px 12px; font-size:11.5px; color:var(--muted); line-height:1.7; }
+
+    /* カード群 */
+    .cards { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin-bottom:20px; }
+    @media(max-width:560px){ .cards { grid-template-columns:1fr; } }
+    .card { border:1px solid var(--border); border-radius:12px; padding:18px 20px; }
+    .card-n { font-family:'Poppins',sans-serif; font-size:14px; font-weight:700; color:var(--accent); margin-bottom:3px; }
+    .card-m { font-size:11px; color:var(--subtle); margin-bottom:9px; }
+    .card-d { font-size:12.5px; color:var(--muted); line-height:1.75; }
+    .tags { display:flex; gap:5px; flex-wrap:wrap; margin-top:10px; }
+    .tag { font-family:'Poppins',sans-serif; font-size:9.5px; font-weight:600; padding:2px 8px; border-radius:4px; background:var(--surface); border:1px solid var(--border); color:var(--muted); }
+    .tag.on { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+    /* クロスリンク */
+    .xlink { border:1px solid var(--border); border-radius:12px; padding:18px 20px; margin-bottom:20px; }
+    .xlink-t { font-family:'Poppins',sans-serif; font-size:10px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase; color:var(--subtle); margin-bottom:12px; }
+    .xlink ul { list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:7px 20px; }
+    @media(max-width:560px){ .xlink ul { grid-template-columns:1fr; } }
+    .xlink li { font-size:12.5px; line-height:1.6; }
+    .xlink li a { color:var(--accent); text-decoration:none; border-bottom:1px solid var(--border); }
+    .xlink li a:hover { border-bottom-color:var(--accent); }
+    .xlink li span { color:var(--subtle); font-size:11.5px; }
+
+    .info-box { background:var(--surface); border-radius:10px; padding:20px 22px; font-size:13.5px; line-height:1.9; }
+    .info-box ul { list-style:none; }
+    .info-box ul li::before { content:'—'; color:var(--subtle); margin-right:8px; }
+    .info-box a { color:inherit; }
+
+    .sources { margin-top:72px; padding-top:28px; border-top:1px solid var(--border); }
+    .sources-title { font-family:'Poppins',sans-serif; font-size:10px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--subtle); margin-bottom:14px; }
+    .sources ul { list-style:none; font-size:12px; color:var(--subtle); line-height:2; }
+</style>
+  <style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+
+  <style>
+    /* ---- TL;DR / Main tabs (2026-10-25) ---- */
+    .hero-updated{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.6);margin:6px 0 18px;letter-spacing:.04em}
+    .sec{scroll-margin-top:112px}
+    .sec-jp{font-size:16px;font-weight:700;color:var(--accent);line-height:1.5;margin:-10px 0 4px}
+    .sec-updated{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--subtle);letter-spacing:.04em;margin-bottom:18px}
+    .pane[data-pane="tldr"] .sec{margin-bottom:44px}
+    .pane[data-pane="tldr"] .sec-label{margin-bottom:14px}
+    .verdict a.more{color:#fff;border-bottom-color:#fff}
+    .upd{font-size:11px;color:var(--subtle);margin-top:14px}
+    .ov-note{font-size:12px;color:var(--subtle)}
+    .card-l{font-size:11.5px;color:var(--subtle);line-height:1.7;margin-top:8px}
+    @media(max-width:640px){.hero h1{font-size:28px}.cards{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../../index.html">24111</a><span class="s">/</span><a href="../../index.html">research</a><span class="s">/</span><a href="../index.html">industry</a><span class="s">/</span><a href="index.html">oil</a><span class="s">/</span><span class="c">石油</span></nav><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="wrap" data-terms-root>
+
+
+  <div class="hero">
+    <div class="hero-eyebrow">Industry Sector — 260905</div>
+    <h1>Oil / 石油</h1>
+    <div class="hero-updated">Created: 2026-09-05 ／ Last updated: 2026-10-25</div>
+    <div class="hero-sub">原油を輸入し、割って、売る産業。国内需要が年1.6%ずつ減るなかで、製油所という巨大な装置をどう畳み、跡地に何を置くかが問われている。</div>
+    <div class="kv">
+      <div class="kv-item">
+        <div class="kv-label">2026年の供給過剰</div>
+        <div class="kv-val">230万b/d</div>
+        <div class="kv-note">2025年は220万b/d</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">日本の製油所</div>
+        <div class="kv-val">19カ所</div>
+        <div class="kv-note">和歌山・山口は精製停止</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">国内需要見通し</div>
+        <div class="kv-val">▲7.6%</div>
+        <div class="kv-note">2023→2028年度 累計</div>
+      </div>
+      <div class="kv-item">
+        <div class="kv-label">世界最大の製油所</div>
+        <div class="kv-val">124万b/d</div>
+        <div class="kv-note">Jamnagar / インド</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ptabs" data-tabbar role="tablist">
+  <button type="button" class="on" data-tab="tldr">TL;DR</button>
+  <button type="button" data-tab="main">Main</button>
+</div>
+
+<div class="pane" data-pane="tldr">
+
+<div class="sec" id="t1">
+<div class="sec-label"><span class="num">01</span><span class="sec-title">In One Line</span></div>
+<div class="oneliner">原油を「掘る（上流）」「運ぶ（中流）」「割る（下流）」の3層でできた産業。日本の石油会社がやっているのはほぼ<b>下流</b>——原油を輸入し、製油所で蒸留・分解してガソリン・軽油・ナフサにして売る。国内需要は<b>年1.6%ずつ減り</b>、製油所は19カ所まで減った。2026年の世界は<b>日量約230万バレルの供給過剰</b>なのに価格予想は$55〜$85と割れており、読むべきは値段より<b>製油所の畳み方と跡地の行き先</b>。</div>
+<div class="t-scroll"><table class="t">
+      <tr><td class="nw"><strong>市場の形</strong></td><td>2026年の原油市場は<strong>日量約230万バレルの供給過剰</strong>（2025年は220万バレル）。OPEC+が自主減産を解除する一方、非OPECの生産も堅調で、<strong>構造的な余り</strong>が続く。価格見通しは機関によって<strong>$55〜$85と大きく割れている</strong>。</td></tr>
+      <tr><td class="nw"><strong>日本の位置</strong></td><td>国内の石油製品需要は<strong>2023〜2028年度で年平均▲1.6%、累計▲7.6%</strong>の見通し。<strong>製油所は19カ所</strong>まで減り、和歌山・山口が精製を止め、根岸も能力を大幅に削った。<strong>閉じ方の設計が経営そのもの</strong>になっている。</td></tr>
+      <tr><td class="nw"><strong>次に効く論点</strong></td><td>製油所は<strong>大容量の受電設備・港湾・広大な平坦地・水素製造設備</strong>を持つ。SAF・水素・<a class="il" href="../0366_ccs/260905_ccs.html">CCS</a>、そして<a class="il" href="../data_center.html">データセンター</a>——<strong>次に何を置くかの争奪戦</strong>が始まっている。</td></tr>
+    </table></div>
+<p><a class="more" href="#overview">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t2">
+<div class="sec-label"><span class="num">02</span><span class="sec-title">How It Works</span></div>
+<div class="flow">
+<div class="fs"><div class="fs-n">1</div><div class="fs-t">原油を買う</div><div class="fs-d">産地ごとに性質が違う。軽くて硫黄が少ない（スウィート）ほど高い。重くて硫黄が多い（サワー）原油は安いが扱いにくい</div></div>
+<div class="fa" aria-hidden="true">→</div>
+<div class="fs"><div class="fs-n">2</div><div class="fs-t">蒸留</div><div class="fs-d">常圧蒸留装置で沸点ごとにLPG・ナフサ・灯油・軽油・残油に分ける。<b>製油所の規模はこの装置の処理量（B/D＝1日あたりバレル）</b>で表す</div></div>
+<div class="fa" aria-hidden="true">→</div>
+<div class="fs"><div class="fs-n">3</div><div class="fs-t">分解・脱硫</div><div class="fs-d">FCC・水素化分解で重い残油を軽いガソリン・軽油に「割る」。硫黄を規制値まで落とす。ここが収益装置</div></div>
+<div class="fa" aria-hidden="true">→</div>
+<div class="fs"><div class="fs-n">4</div><div class="fs-t">製品・石化</div><div class="fs-d">ガソリン・軽油・ジェット燃料を販売。ナフサはクラッカーでエチレンに（石油化学）。製油所と石化は配管でつながっている</div></div>
+</div>
+<p>製油所の儲けは<b>クラックスプレッド＝製品価格 − 原油価格</b>で決まり、原油価格の高い安いとはほとんど関係ない。分解・脱硫装置を多く持つ製油所ほど<b>安い重質・サワー原油を高い製品に変えられる</b>ので利ざやが厚い。固定費が重く、稼働率が数ポイント落ちるだけで赤字になるため、需要が減る国では「能力を減らして稼働率を保つ」以外に道がない。日本の元売りの決算は<b>在庫評価損益を除いた利益</b>で見る。 <a class="more" href="#s04">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t3">
+<div class="sec-label"><span class="num">03</span><span class="sec-title">Key Numbers</span></div>
+<div class="tl-kpis"><div class="k"><div class="v">230万b/d</div><div class="l">2026年の世界の供給過剰（2025年は220万b/d）</div></div><div class="k"><div class="v">$55〜$85</div><div class="l">Brent の見通し。機関によって倍近く割れている</div></div><div class="k"><div class="v">19カ所</div><div class="l">日本の製油所。和歌山・山口は精製を停止</div></div><div class="k"><div class="v">▲1.6% / 年</div><div class="l">国内の石油製品需要（2023→2028年度、累計▲7.6%）</div></div><div class="k"><div class="v">約210万t / 年</div><div class="l">京葉地区のエチレン能力（国内の32%）。2026〜27年にまとめて縮む</div></div><div class="k"><div class="v">124万b/d</div><div class="l">世界最大の製油所 Jamnagar（インド・Reliance）</div></div></div>
+<p style="margin-top:12px"><a class="more" href="#s13">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t4">
+<div class="sec-label"><span class="num">04</span><span class="sec-title">Who Wins</span></div>
+<div class="cards"><div class="cd"><div class="cd-t">メジャー</div><div class="cd-d">ExxonMobil・Shell・Chevron・TotalEnergies・BP。上流から下流まで持ち、難しい油田を技術と資本で開発する。脱炭素で欧州系と米系の戦略が分かれた</div></div><div class="cd"><div class="cd-t">国営石油会社（NOC）</div><div class="cd-d">Saudi Aramco・ADNOC・Petrobras など。世界の埋蔵量の大半を持つ。Aramcoは世界最大かつ最も低コストの生産者</div></div><div class="cd"><div class="cd-t">トレーダー</div><div class="cd-d">Vitol・Trafigura・Glencore・Gunvor。油田も製油所もほぼ持たず、物流と裁定で巨額を動かす。地政学の混乱で最も速く儲ける</div></div><div class="cd"><div class="cd-t">Reliance（インド）</div><div class="cd-d">Jamnagar で安い原油を買って製品を輸出するモデルを確立。ロシア原油の大口の引き取り手</div></div><div class="cd"><div class="cd-t">ENEOS</div><div class="cd-d">国内シェア約5割。数十年かけて業界の半分を吸収した。和歌山製油所をSAF（航空燃料）拠点へ</div></div><div class="cd"><div class="cd-t">出光興産</div><div class="cd-d">国内2位。石油以外の事業が最も広い元売り。苫小牧で製油所とCCS事業の両方の当事者</div></div></div>
+<p><a class="more" href="#s10">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t5">
+<div class="sec-label"><span class="num">05</span><span class="sec-title">Japan's Position</span></div>
+<p>日本は<b>上流をほとんど持たない下流特化</b>で、原油の99%以上を輸入する。経営とは実質的に<b>「どの順番で、どの装置を止めるか」</b>の設計になっている。</p>
+<ul class="tl-list">
+<li><b>元売り3社：</b>ENEOS・出光興産・コスモエネルギー。1996年の特石法廃止で輸入が自由化され、需要減で設備余りが明白になり、<b>「1社では減らせない設備を、統合してから減らす」</b>ために再編した。統合の目的は成長ではなく減築</li>
+<li><b>止まった製油所：</b>2020年以降、ENEOS和歌山と出光（西部石油）山口が精製停止、ENEOS根岸も能力を大幅削減。止まったのは装置構成が単純な製油所</li>
+<li><b>主な拠点：</b>市原（京葉コンビナート）、水島（ENEOS 35万b/d）、苫小牧（出光 15万b/d、北海道唯一）、川崎・横浜、四日市</li>
+<li><b>石化も同時に縮む：</b>丸善石油化学（2026年度めど）と出光（2027年7月）が千葉のエチレン装置を停止・集約。ナフサの引き取り手が減り、製油所の採算にも跳ね返る</li>
+</ul>
+<p><a class="more" href="#s06">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t6">
+<div class="sec-label"><span class="num">06</span><span class="sec-title">Trends</span></div>
+<div class="cards"><div class="cd"><div class="cd-t">① 製油所の閉鎖は世界同時進行</div><div class="cd-d">欧州・北米でも古く単純な製油所が閉じ、中東・インド・中国では巨大な新設が動く。精製能力が「消費地」から「原油と資本のある場所」へ移っている</div></div><div class="cd"><div class="cd-t">② SAFが製油所の延命策に</div><div class="cd-d">航空機は電化できないのでジェット燃料は減らない。ENEOS和歌山は2026年度に国内初のSAF製造を計画。既存の水素・脱硫設備を使えるのが強み</div></div><div class="cd"><div class="cd-t">③ 跡地の争奪</div><div class="cd-d">閉じた製油所には数百MW級の受電設備・港・広い平地・工業用水がある。AIデータセンターの条件とほぼ同じで、価値は土地より「系統接続の権利」</div></div><div class="cd"><div class="cd-t">④ 製油所はCCSの排出源</div><div class="cd-d">製油所の水素製造装置からは濃いCO2が出るので、回収が安い。出光が苫小牧で製油所とCCSの両方を担うのは偶然ではない</div></div></div>
+<p><a class="more" href="#s14">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t7">
+<div class="sec-label"><span class="num">07</span><span class="sec-title">Bottlenecks &amp; Risks</span></div>
+<div class="cards risk"><div class="cd"><div class="cd-t">作りたくない製品が必ず出る</div><div class="cd-d">原油を蒸留すると、需要と無関係に決まった比率で全部の留分が出る。ガソリンだけ減らすことはできず、輸出・変換・精製停止の選択になる</div></div><div class="cd"><div class="cd-t">値段が読めない</div><div class="cd-d">需給は弱いのに、地政学リスクの織り込み方で予想が倍近く変わる。OPEC+は「シェアか価格か」を毎四半期迫られている</div></div><div class="cd"><div class="cd-t">石化との連鎖</div><div class="cd-d">製油所と石化は配管でつながっていて、片方を止めるともう片方の採算が崩れる。中国の巨大クラッカー新設でアジアの石化は構造不況</div></div><div class="cd"><div class="cd-t">稼働率と固定費</div><div class="cd-d">装置産業なので稼働率が数ポイント落ちるだけで赤字。需要が減るほど、能力削減を急ぐしかない</div></div><div class="cd"><div class="cd-t">地域への打撃</div><div class="cd-d">京葉の再編は市原の税収と雇用に直接効く。製油所の閉鎖は街の20年後を決める</div></div></div>
+<p><a class="more" href="#s05">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t8">
+<div class="sec-label"><span class="num">08</span><span class="sec-title">Bottom Line</span></div>
+<div class="verdict"><p><b>筆者の読み：日本の石油は「静かな解体」の最中で、それが次の産業の入口になる。</b>価格を当てにいくより、<b>どの装置が止まり、跡地に何が置かれるか</b>（SAF・水素・データセンター・CCS）を追うほうが確実に先が読める。</p><p>見るべきは3つ。①<b>クラックスプレッド</b>（元売りの実力。在庫影響を除いて見る）、②<b>製油所の閉鎖と跡地の用途</b>、③<b>ロシア原油の流れ先</b>（生産量より物流の付け替えが地政学の実態）。</p><p><a class="more" href="#s15">Mainで詳しく →</a></p></div>
+</div>
+
+</div>
+
+<div class="pane" data-pane="main" hidden>
+  <div class="toc">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><span class="toc-num">01</span><a href="#overview">Overview — このセクターの読み方</a></li>
+      <li><span class="toc-num">02</span><a href="#s02">Fundamentals: Crude Grades — 原油は「単一の商品」ではない</a></li>
+      <li><span class="toc-num">03</span><a href="#s03">Process: Distillation to Cracking — 工程 — 蒸留から分解まで</a></li>
+      <li><span class="toc-num">04</span><a href="#s04">Crack Spread — クラックスプレッド — 製油所の損益はこれで決まる</a></li>
+      <li><span class="toc-num">05</span><a href="#s05">Product Yields — 製品の歩留まり — 需要と歩留まりが合わない問題</a></li>
+      <li><span class="toc-num">06</span><a href="#s06">Japan: Downstream Overview — 日本の石油下流 — 「畳み方」が経営そのもの</a></li>
+      <li><span class="toc-num">07</span><a href="#s07">Japan: Refinery Cities — 強い都市 — 製油所とコンビナートの地図</a></li>
+      <li><span class="toc-num">08</span><a href="#s08">Japan: Oil Companies — 強い会社 — 元売り3社体制はこうしてできた</a></li>
+      <li><span class="toc-num">09</span><a href="#s09">Japan: Keiyo Ethylene Consolidation — 京葉のエチレン集約 — 石化と製油所が同時に畳まれる</a></li>
+      <li><span class="toc-num">10</span><a href="#s10">World: Player Types — 3つのプレイヤー類型 — メジャー・NOC・トレーダー</a></li>
+      <li><span class="toc-num">11</span><a href="#s11">World: Key Countries — 強い国 — 生産と精製は別の地図</a></li>
+      <li><span class="toc-num">12</span><a href="#s12">World: Refining Hubs — 強い都市 — 4つの精製ハブ</a></li>
+      <li><span class="toc-num">13</span><a href="#s13">2026: Key Question — 2026年の論点 — 余っている、ただし値段は読めない</a></li>
+      <li><span class="toc-num">14</span><a href="#s14">Trends — 6つのトレンド</a></li>
+      <li><span class="toc-num">15</span><a href="#s15">What to Watch — この産業を追いかけるための3つの観測点</a></li>
+      <li><span class="toc-num">16</span><a href="#sources">Sources</a></li>
+    </ol>
+  </div>
+
+  <div class="sec" id="overview">
+    <div class="sec-label"><span class="num">01</span><span class="sec-title">Overview</span></div>
+    <div class="sec-jp">このセクターの読み方</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+    <div class="callout">
+      石油産業は<strong>「掘る（上流）」「運ぶ（中流）」「割る（下流）」</strong>の3層でできている。
+      日本の石油会社が実際にやっているのはほぼ<strong>下流</strong>——原油を輸入して、蒸留・分解して、ガソリン・軽油・ナフサに変えて売る事業である。<br>
+      そしていま日本の下流で起きているのは、ひとことで言えば<strong>「静かな解体」</strong>。
+      国内需要が年平均1.6%ずつ減り、製油所とエチレン装置が1基ずつ止まっている。
+      重要なのは、<strong>この解体が跡地・電力容量・港湾という形で次の産業の入口になる</strong>ことである。
+    </div>
+    <div class="cards">
+      <div class="card"><div class="card-n"><a class="il" href="#s02">01 — 基礎と工程</a></div><div class="card-m">Fundamentals &amp; Process</div>
+        <div class="card-d">原油の種類、常圧蒸留から分解装置まで。なぜ製油所の利益は「クラックスプレッド」で決まるのか。</div><div class="card-l">一言：原油は単一の商品ではない。安い原油とは扱いにくい原油のことで、それを製品に変えられるかは装置構成で決まる。</div></div>
+<div class="card"><div class="card-n"><a class="il" href="#s06">02 — 日本の都市と企業</a></div><div class="card-m">Japan / Cities &amp; Companies</div>
+        <div class="card-d">市原・川崎・四日市・水島・苫小牧。19の製油所と元売り3社体制、そして京葉のエチレン集約。</div><div class="card-l">一言：市原・水島・苫小牧・和歌山。19の製油所と元売り3社体制は、成長のためではなく「減築を実行するため」に作られた。</div></div>
+<div class="card"><div class="card-n"><a class="il" href="#s10">03 — 世界の国と企業</a></div><div class="card-m">World / Countries &amp; Companies</div>
+        <div class="card-d">メジャーとNOC、そしてトレーダー。Jamnagar・ヒューストン・シンガポールという3つの精製ハブ。</div><div class="card-l">一言：掘る国、割る国、運ぶ会社。石油の実態を掴むには生産量よりも「物流がどこへ付け替わったか」を見る。</div></div>
+<div class="card"><div class="card-n"><a class="il" href="#s13">04 — トレンド 2026</a></div><div class="card-m">Trends 2026</div>
+        <div class="card-d">日量230万バレルの供給過剰、OPEC+の減産解除、SAFへの転換、そして製油所跡地の使い道。</div><div class="card-l">一言：日量230万バレルの供給過剰。それでも価格予想は$55〜$85に割れている。読むべきは価格ではなく、装置と跡地の行き先である。</div></div>
+    </div>
+    <p class="ov-note">※ 2026-10-25 に旧4ページ（基礎と工程／日本の都市と企業／世界の国と企業／トレンド 2026）を、この1ページの Main に統合した。3行サマリーは TL;DR タブへ移した。</p>
+    <div class="xlink">
+      <div class="xlink-t">Related</div>
+      <ul><li><a href="/030_research/032_geo-history/260831_ichihara.html">geo：市原市</a><br><span>京葉コンビナート</span></li><li><a href="/030_research/032_geo-history/260903_tomakomai.html">geo：苫小牧市</a><br><span>出光 北海道製油所</span></li></ul>
+    </div>
+  </div>
+
+
+  <div class="sec" id="s02">
+    <div class="sec-label"><span class="num">02</span><span class="sec-title">Fundamentals: Crude Grades</span></div>
+    <div class="sec-jp">原油は「単一の商品」ではない</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <p>原油は産地ごとに性質がまったく違う。取引で使われる軸は2つだけ覚えればいい。</p>
+    <div class="t-scroll"><table class="t">
+      <tr><th>軸</th><th>意味</th><th>効き方</th></tr>
+      <tr><td class="nw"><strong>API比重（軽い/重い）</strong></td><td>軽質（light）ほど比重が小さく、蒸留するだけでガソリン・灯油の留分が多く取れる</td><td>軽いほど高く売れる。重質油は<strong>分解装置がないと価値にならない</strong></td></tr>
+      <tr><td class="nw"><strong>硫黄分（スウィート/サワー）</strong></td><td>硫黄が少ないのがスウィート、多いのがサワー</td><td>サワーは脱硫設備が要る。<strong>設備を持っている製油所だけが安いサワー原油を買える</strong></td></tr>
+    </table></div>
+    <div class="callout">
+      ここが石油下流の本質。<strong>製油所の利益は「安い原油を買って高い製品を売る」ことで出る</strong>が、
+      安い原油とは<strong>重くて硫黄が多い、扱いにくい原油</strong>のこと。それを製品に変えられるかどうかは
+      <strong>分解装置（FCC・水素化分解）と脱硫装置をどれだけ持っているか</strong>で決まる。
+      装置が単純な製油所は「軽い原油しか買えない＝原料が高い」ので、真っ先に競争力を失う。
+      <strong>日本で止まった製油所が、どれも装置構成の単純な製油所だった</strong>のはこの理屈である。
+    </div>
+  </div>
+
+  <div class="sec" id="s03">
+    <div class="sec-label"><span class="num">03</span><span class="sec-title">Process: Distillation to Cracking</span></div>
+    <div class="sec-jp">工程 — 蒸留から分解まで</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="vchain">
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 01</div><div class="vstep-t">Distillation</div></div><div class="vstep-b">常圧蒸留（トッパー）。沸点差でLPG・ナフサ・灯油・軽油・残油に分ける。<strong>製油所の能力はこの装置のB/Dで表す</strong></div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 02</div><div class="vstep-t">Reforming</div></div><div class="vstep-b">接触改質。ナフサを高オクタン価のガソリン基材に。<strong>副生する水素が製油所内の脱硫を支える</strong></div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 03</div><div class="vstep-t">Cracking</div></div><div class="vstep-b">FCC・水素化分解。<strong>重い残油を軽いガソリン・軽油に「割る」</strong>。ここが製油所の収益装置</div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 04</div><div class="vstep-t">Treating</div></div><div class="vstep-b">脱硫。硫黄分を規制値まで落とす。大量の水素を消費する</div></div>
+      <div class="vstep"><div class="vstep-h"><div class="vstep-n">STEP 05</div><div class="vstep-t">Petchem</div></div><div class="vstep-b">ナフサ分解（クラッカー）でエチレン・プロピレンへ。<strong>ここから石油化学</strong>。日本では製油所と隣接していることが多い</div></div>
+    </div>
+    <div class="callout">
+      <strong>製油所と石油化学は「隣にある」のではなく「配管でつながっている」</strong>。
+      製油所が出すナフサがクラッカーの原料になり、クラッカーが出す副生ガスが製油所の燃料になる。
+      だから<strong>片方を止めるともう片方の採算が崩れる</strong>。京葉コンビナートでエチレン装置の集約が
+      製油所の再編と同時に議論されているのは、この物理的な結合のためである。
+    </div>
+  </div>
+
+  <div class="sec" id="s04">
+    <div class="sec-label"><span class="num">04</span><span class="sec-title">Crack Spread</span></div>
+    <div class="sec-jp">クラックスプレッド — 製油所の損益はこれで決まる</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <p>製油所の粗利は<strong>「製品価格 − 原油価格」＝クラックスプレッド（マージン）</strong>で表される。原油価格そのものが高いか安いかは、実は製油所の利益とほとんど関係がない。</p>
+    <div class="t-scroll"><table class="t">
+      <tr><th>要素</th><th>意味</th></tr>
+      <tr><td class="nw"><strong>スプレッドが開く時</strong></td><td>製品需要が強く、精製能力が足りないとき。<strong>世界のどこかで製油所が止まると、日本の製油所が儲かる</strong></td></tr>
+      <tr><td class="nw"><strong>在庫評価損益</strong></td><td>原油を買ってから製品を売るまでの数か月で油価が動くと、<strong>実力とは無関係の損益</strong>が計上される。日本の元売り決算を読むときは必ずこれを除いた「在庫影響を除く営業利益」を見る</td></tr>
+      <tr><td class="nw"><strong>装置構成</strong></td><td>分解装置が多いほど<strong>安い重質原油を高い軽質製品に変換</strong>できる＝構造的にスプレッドが厚い</td></tr>
+      <tr><td class="nw"><strong>稼働率</strong></td><td>装置産業なので固定費が重い。<strong>稼働率が数ポイント落ちるだけで赤字になる</strong>。需要が減る国では「能力を減らして稼働率を保つ」以外に解がない</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s05">
+    <div class="sec-label"><span class="num">05</span><span class="sec-title">Product Yields</span></div>
+    <div class="sec-jp">製品の歩留まり — 需要と歩留まりが合わない問題</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>製品</th><th>用途</th><th>日本での需要トレンド</th></tr>
+      <tr><td class="nw"><strong>ガソリン</strong></td><td>乗用車</td><td>▼ 燃費改善＋HV/EV＋人口減。<strong>最も速く減る</strong></td></tr>
+      <tr><td class="nw"><strong>軽油</strong></td><td>トラック・建機</td><td>→ 物流に紐づき、相対的に底堅い</td></tr>
+      <tr><td class="nw"><strong>灯油</strong></td><td>暖房</td><td>▼ 暖房の電化と温暖化で減少</td></tr>
+      <tr><td class="nw"><strong>ジェット燃料</strong></td><td>航空</td><td>▲ インバウンドと航空需要で<strong>唯一伸びている</strong>。SAFの議論もここ</td></tr>
+      <tr><td class="nw"><strong>ナフサ</strong></td><td>石油化学原料</td><td>→▼ 石化の構造不況で弱い</td></tr>
+      <tr><td class="nw"><strong>重油</strong></td><td>船舶・産業用</td><td>▼ 環境規制で長期減少</td></tr>
+    </table></div>
+    <div class="callout">
+      <strong>原油を蒸留すると、需要とは無関係に決まった比率で全部の留分が出てくる。</strong>
+      ガソリンだけ減らして軽油だけ作る、ということはできない。
+      だから需要構造が変わると<strong>「作りたくないものが必ず出てくる」</strong>状態になり、
+      余った製品を輸出するか、装置で無理やり別の製品に変換するか、<strong>そもそも精製をやめるか</strong>の選択になる。
+      日本の製油所閉鎖は、この歩留まりと需要のミスマッチが積み上がった結果である。
+    </div>
+  </div>
+
+  <div class="sec" id="s06">
+    <div class="sec-label"><span class="num">06</span><span class="sec-title">Japan: Downstream Overview</span></div>
+    <div class="sec-jp">日本の石油下流 — 「畳み方」が経営そのもの</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="callout">
+      日本の石油産業は<strong>上流をほとんど持たない下流特化型</strong>で、原油の99%以上を輸入している。
+      その下流でいま起きているのは、<strong>需要の構造的縮小に合わせて装置を減らす</strong>という一点。<br>
+      国内の石油製品需要は<strong>2023〜2028年度で年平均▲1.6%、累計▲7.6%</strong>の見通し。
+      製油所は<strong>19カ所</strong>まで減り、2020年以降だけでも<strong>ENEOS和歌山製油所・出光（西部石油）山口製油所が精製を停止</strong>し、
+      <strong>ENEOS根岸製油所も処理能力を大幅に削った</strong>。
+      日本の石油会社の経営とは、実質的に<strong>「どの順番で、どの装置を止めるか」</strong>の設計である。
+    </div>
+  </div>
+
+  <div class="sec" id="s07">
+    <div class="sec-label"><span class="num">07</span><span class="sec-title">Japan: Refinery Cities</span></div>
+    <div class="sec-jp">強い都市 — 製油所とコンビナートの地図</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>都市</th><th>拠点</th><th>読み方</th></tr>
+      <tr><td class="nw"><strong>市原市</strong><br><span style="font-size:11px;color:#999">千葉</span></td><td>出光興産 千葉事業所／丸善石油化学／京葉エチレン</td><td>日本最大級の<strong>石油精製＋石油化学の一体コンビナート</strong>。京葉地区にはエチレン装置が4系統・<strong>合計約210万トン/年（国内能力の32%）</strong>集積している。埋立でつくられた人工の産業都市で、詳細は <a class="il" href="/030_research/032_geo-history/260831_ichihara.html">市原市ページ</a></td></tr>
+      <tr><td class="nw"><strong>木更津・袖ケ浦</strong><br><span style="font-size:11px;color:#999">千葉</span></td><td>富士石油 袖ケ浦製油所／JFE君津（隣接）</td><td>製油所・製鉄所・LNG基地が数kmの範囲に並ぶ。<a class="il" href="/030_research/032_geo-history/260831_kisarazu.html">木更津市ページ</a>とあわせて読むと、<strong>アクアラインで街の重心が変わった</strong>過程が見える</td></tr>
+      <tr><td class="nw"><strong>川崎市・横浜市</strong><br><span style="font-size:11px;color:#999">神奈川</span></td><td>ENEOS川崎／東亜石油／ENEOS根岸製油所</td><td>首都圏最大の消費地に直結する製油所群。<strong>根岸は能力を大幅に削減</strong>しており、京浜臨海部は「精製から次世代エネへ」の転換が最も政治的に注目される場所</td></tr>
+      <tr><td class="nw"><strong>四日市市</strong><br><span style="font-size:11px;color:#999">三重</span></td><td>コスモ石油 四日市製油所</td><td>日本の石油化学コンビナート発祥地のひとつ。<strong>公害の記憶と産業転換が重なる都市</strong></td></tr>
+      <tr><td class="nw"><strong>倉敷市（水島）</strong><br><span style="font-size:11px;color:#999">岡山</span></td><td>ENEOS水島製油所（<strong>350,200 B/D</strong>）／JFE水島</td><td><strong>国内最大級の精製能力</strong>。製油所と製鉄所が同じ臨海部にあり、<a class="il" href="../0369_steelmaking/260905_stm.html">製鋼</a>と並べて読むべき都市</td></tr>
+      <tr><td class="nw"><strong>苫小牧市</strong><br><span style="font-size:11px;color:#999">北海道</span></td><td>出光興産 北海道製油所（<strong>150,000 B/D</strong>）</td><td>北海道唯一の製油所。<strong>同じ市内にCCS実証地と製紙工場がある</strong>という、日本で最も「産業転換の実験場」に近い都市。<a class="il" href="/030_research/032_geo-history/260903_tomakomai.html">苫小牧市ページ</a>／<a class="il" href="../0366_ccs/260905_ccs.html">CCS</a>／<a class="il" href="../0365_pulp/260905_pulp.html">パルプ</a></td></tr>
+      <tr><td class="nw"><strong>和歌山市（有田）</strong><br><span style="font-size:11px;color:#999">和歌山</span></td><td>ENEOS和歌山（精製停止 → <strong>SAF拠点へ</strong>）</td><td><strong>「製油所を畳んで次を置く」の最初の実例</strong>。2026年度に国内初のSAF製造を開始する計画で、跡地活用のモデルケースとして注目される</td></tr>
+    </table></div>
+    <div class="xlink">
+      <div class="xlink-t">Cross-reference — geo-history</div>
+      <ul>
+        <li><a href="/030_research/032_geo-history/260831_ichihara.html">市原市</a><br><span>京葉コンビナートの中核</span></li>
+        <li><a href="/030_research/032_geo-history/260831_kisarazu.html">木更津市</a><br><span>製油所・製鉄所・LNGが並ぶ</span></li>
+        <li><a href="/030_research/032_geo-history/260903_tomakomai.html">苫小牧市</a><br><span>製油所＋CCS＋製紙</span></li>
+        <li><a href="/030_research/032_geo-history/260831_chiba.html">千葉県</a><br><span>日本最大の素材産業県</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec" id="s08">
+    <div class="sec-label"><span class="num">08</span><span class="sec-title">Japan: Oil Companies</span></div>
+    <div class="sec-jp">強い会社 — 元売り3社体制はこうしてできた</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="cards">
+      <div class="card"><div class="card-n">ENEOSホールディングス</div><div class="card-m">国内シェア約5割</div>
+        <div class="card-d">日本石油・三菱石油・興亜石油・九州石油・東燃ゼネラル…と<strong>数十年かけて業界の半分を吸収した</strong>結果の会社。いま掲げているのは<strong>「製油所を次世代エネルギー拠点に変える」</strong>という戦略で、和歌山のSAF（2026年度に国内初の製造開始計画）がその第一号になる。金属（JX金属）を切り出して、石油以外の柱を作る動きも並行。</div>
+        <div class="tags"><span class="tag on">最大手</span><span class="tag">SAF</span></div></div>
+      <div class="card"><div class="card-n">出光興産</div><div class="card-m">2位 / 昭和シェルと統合</div>
+        <div class="card-d">創業者・出光佐三の「日章丸事件」で知られる会社。2019年に昭和シェル石油と統合。<strong>石油以外の事業ポートフォリオが最も広い</strong>元売りで、全固体電池材料、アンモニア、そして<a class="il" href="../0366_ccs/260905_ccs.html">苫小牧のCCS事業</a>まで手を伸ばしている。千葉事業所ではエチレン装置を三井化学に集約する最終合意（2025年12月）。</div>
+        <div class="tags"><span class="tag on">苫小牧</span><span class="tag">CCS</span><span class="tag">千葉</span></div></div>
+      <div class="card"><div class="card-n">コスモエネルギーHD</div><div class="card-m">3位 / 風力に賭けた</div>
+        <div class="card-d">3社のなかで最も明確に<strong>洋上風力へ舵を切った</strong>会社。石油の減衰を再エネで置き換えるという戦略で、<a class="il" href="../0364_power_generation/260714_power_generation.html">電源セクター</a>のプレイヤーでもある。四日市・堺・千葉に製油所。</div>
+        <div class="tags"><span class="tag">風力</span></div></div>
+      <div class="card"><div class="card-n">富士石油 / 太陽石油</div><div class="card-m">独立系</div>
+        <div class="card-d">元売り系列に属さない独立精製会社。<strong>元売りに製品を供給する立場</strong>で、規模は小さいが立地（袖ケ浦・四国）が良い。再編観測が常に付きまとうポジション。</div>
+        <div class="tags"><span class="tag">独立系</span></div></div>
+    </div>
+    <div class="callout">
+      日本の元売りが3社に集約されたのは<strong>1990年代以降の一貫した政策と市場圧力の結果</strong>である。
+      特石法廃止（1996年）で輸入が自由化され、ガソリンの安売り競争が起きた。
+      その後の需要減で過剰設備が明白になり、<strong>「1社では減らせない設備を、統合してから減らす」</strong>という形で再編が進んだ。
+      <strong>統合の目的は成長ではなく、減築の実行</strong>だった——ここを取り違えると日本の石油業界のニュースは読めない。
+    </div>
+  </div>
+
+  <div class="sec" id="s09">
+    <div class="sec-label"><span class="num">09</span><span class="sec-title">Japan: Keiyo Ethylene Consolidation</span></div>
+    <div class="sec-jp">京葉のエチレン集約 — 石化と製油所が同時に畳まれる</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>時期</th><th>動き</th></tr>
+      <tr><td class="nw">2025年12月</td><td><strong>出光興産・三井化学</strong>が「千葉地区エチレン装置集約による生産最適化」で最終合意</td></tr>
+      <tr><td class="nw">2026年度めど</td><td><strong>丸善石油化学</strong>が千葉のエチレン設備を停止し、住友化学との合弁「京葉エチレン」に集約</td></tr>
+      <tr><td class="nw">2027年7月</td><td>出光千葉事業所の定期修理終了後、<strong>出光のエチレン装置を停止し三井化学の装置へ集約</strong></td></tr>
+    </table></div>
+    <div class="callout">
+      京葉地区には<strong>4系統・約210万トン/年（国内エチレン能力の32%）</strong>が集積している。
+      その集積が2026〜2027年にかけて<strong>まとめて縮む</strong>。理由は3つ——
+      ①国内のプラスチック需要が減った ②中国が巨大なクラッカーを新設して<strong>アジアの需給が構造的に緩んだ</strong>
+      ③日本のナフサクラッカーは<strong>規模で中東・中国に勝てない</strong>。<br>
+      ここで重要なのは、<strong>エチレン装置の停止が製油所の採算に跳ね返る</strong>こと。ナフサの引き取り手が減れば、
+      製油所は作りたくない留分を抱えることになる。<strong>京葉の再編は、石化の話であると同時に石油精製の話である</strong>。
+      そしてこの解体は、<a class="il" href="/030_research/032_geo-history/260831_ichihara.html">市原</a>という街の税収と雇用に直接効く。
+    </div>
+  </div>
+
+  <div class="sec" id="s10">
+    <div class="sec-label"><span class="num">10</span><span class="sec-title">World: Player Types</span></div>
+    <div class="sec-jp">3つのプレイヤー類型 — メジャー・NOC・トレーダー</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>類型</th><th>代表</th><th>本質</th></tr>
+      <tr><td class="nw"><strong>国際石油資本（メジャー）</strong></td><td>ExxonMobil / Shell / Chevron / TotalEnergies / BP</td><td>上流から下流まで持つ垂直統合。<strong>技術と資本で難しい油田を開発する</strong>のが存在意義。近年は<strong>脱炭素への姿勢が各社でバラバラ</strong>になり、欧州系（Shell・BP・Total）と米系（Exxon・Chevron）で戦略が分岐した</td></tr>
+      <tr><td class="nw"><strong>国営石油会社（NOC）</strong></td><td>Saudi Aramco / ADNOC / Petrobras / Sinopec / PetroChina</td><td><strong>世界の石油埋蔵量の大半を保有している</strong>のはこちら。企業というより国家財政の一部で、生産量は経済合理性だけでは決まらない。Aramcoは世界最大の生産者かつ<strong>最も低コスト</strong></td></tr>
+      <tr><td class="nw"><strong>トレーダー</strong></td><td>Vitol / Trafigura / Glencore / Gunvor</td><td>油田も製油所もほとんど持たずに<strong>「物流と裁定」だけで巨額を動かす</strong>。地政学的な混乱が起きたとき、最も速く反応し最も儲けるのがこの層。石油の実態を理解するには、生産量より<strong>物流の付け替え</strong>を見るべき</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s11">
+    <div class="sec-label"><span class="num">11</span><span class="sec-title">World: Key Countries</span></div>
+    <div class="sec-jp">強い国 — 生産と精製は別の地図</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="callout">
+      石油を国別に見るときは<strong>「掘る国」と「割る国」を分けて考える</strong>必要がある。
+      サウジアラビアは掘る国、シンガポールは割る国、アメリカは<strong>両方を大量にやる唯一の国</strong>。
+      そしてインドと中国は<strong>「割って輸出する国」</strong>として急速に存在感を増した。
+    </div>
+    <div class="t-scroll"><table class="t">
+      <tr><th>国</th><th>役割</th><th>読み方</th></tr>
+      <tr><td class="nw"><strong>アメリカ</strong></td><td>生産1位 / 精製大国</td><td>シェール革命で世界最大の産油国になり、<strong>輸入国から輸出国へ反転</strong>した。メキシコ湾岸に世界最大級の精製・石化クラスターを持つ</td></tr>
+      <tr><td class="nw"><strong>サウジアラビア</strong></td><td>OPECの中心</td><td>低コスト・大埋蔵量・余剰生産能力。<strong>「蛇口を開け閉めできる唯一の国」</strong>としてOPEC+の実質的な意思決定者</td></tr>
+      <tr><td class="nw"><strong>ロシア</strong></td><td>OPEC+の相方</td><td>制裁により<strong>販売先が欧州からインド・中国へ付け替わった</strong>。生産量より「どこへ流れているか」が重要な国</td></tr>
+      <tr><td class="nw"><strong>インド</strong></td><td>精製の新拠点</td><td>Jamnagar を筆頭に<strong>安い原油を買って製品を輸出する</strong>ビジネスモデルを確立。ロシア原油の最大の引き取り手のひとつでもある</td></tr>
+      <tr><td class="nw"><strong>シンガポール</strong></td><td>アジアの価格形成地</td><td>自国に原油はないが、<strong>精製・貯蔵・トレーディング・船舶燃料</strong>のハブ。アジアの石油製品価格はここで決まる</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s12">
+    <div class="sec-label"><span class="num">12</span><span class="sec-title">World: Refining Hubs</span></div>
+    <div class="sec-jp">強い都市 — 4つの精製ハブ</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>都市・地域</th><th>国</th><th>中身</th></tr>
+      <tr><td class="nw"><strong>ジャームナガル</strong></td><td>インド</td><td><strong>世界最大の製油所（Reliance／124万B/D、複合で140万B/D）</strong>。7,500エーカーの単一複合施設で、<strong>1つの製油所がアルゼンチンやノルウェー1国の精製能力を上回る</strong>。1999年に66.8万B/Dで稼働し、拡張を重ねた</td></tr>
+      <tr><td class="nw"><strong>ヒューストン／ポートアーサー</strong></td><td>米国</td><td>メキシコ湾岸の精製・石化クラスター。<strong>製油所・パイプライン・輸出ターミナル・CCS適地が全部そろう</strong>。<a class="il" href="../0366_ccs/260905_ccs.html">CCS</a>の世界最大の潜在ハブでもある</td></tr>
+      <tr><td class="nw"><strong>ロッテルダム／アントワープ</strong></td><td>オランダ・ベルギー</td><td>欧州の精製・貯蔵・化学のハブ。<strong>ARA地区の在庫水準</strong>は欧州の需給指標として毎週見られている</td></tr>
+      <tr><td class="nw"><strong>ジュロン島</strong></td><td>シンガポール</td><td>埋立でつくった人工の石化島。<strong>市原の埋立と同じ発想を国家規模でやった</strong>もの。アジアの製品価格の基準点</td></tr>
+      <tr><td class="nw"><strong>蔚山（ウルサン）</strong></td><td>韓国</td><td>SK Energy の製油所（約85万B/D）と造船・自動車が同居する<strong>韓国の産業首都</strong></td></tr>
+      <tr><td class="nw"><strong>ラスタヌラ</strong></td><td>サウジアラビア</td><td>Aramco の輸出ターミナル。<strong>ここが止まると世界のエネルギー市場が止まる</strong>という単一障害点</td></tr>
+    </table></div>
+  </div>
+
+  <div class="sec" id="s13">
+    <div class="sec-label"><span class="num">13</span><span class="sec-title">2026: Key Question</span></div>
+    <div class="sec-jp">2026年の論点 — 余っている、ただし値段は読めない</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="callout">
+      2026年の原油市場は<strong>構造的な供給過剰</strong>にある。過剰幅は<strong>日量約230万バレル</strong>（2025年は約220万バレル）で、
+      OPEC+が自主減産を段階的に解除する一方、非OPECの増産も続いているためである。
+      世界の製油所処理量は<strong>2026年平均 84.6 mb/d</strong>、前年比 +770 kb/d と見込まれている。<br>
+      ただし<strong>価格見通しは機関によって大きく割れている</strong>。年後半のBrentについて $55 前後を見る予想から、
+      2026年通年平均で $85 近辺を見る予想まで存在する。<strong>需給ファンダメンタルズは弱いのに、地政学リスクの織り込み方で数字が倍近く変わる</strong>——
+      これが2026年の石油市場の性格である。断定的な価格予測を持たないほうが正しい。
+    </div>
+  </div>
+
+  <div class="sec" id="s14">
+    <div class="sec-label"><span class="num">14</span><span class="sec-title">Trends</span></div>
+    <div class="sec-jp">6つのトレンド</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="cards">
+      <div class="card"><div class="card-n">01 — OPEC+ の減産解除と自縄自縛</div><div class="card-m">Supply</div>
+        <div class="card-d">OPEC+は自主減産を戻す方向に動いているが、価格が$60近辺まで落ちれば再び減産に戻る可能性がある。<strong>「シェアを取るか、価格を守るか」の二択</strong>を毎四半期迫られている状態で、この揺れ自体がボラティリティの源。</div></div>
+      <div class="card"><div class="card-n">02 — 製油所の閉鎖は世界同時進行</div><div class="card-m">Refinery closures</div>
+        <div class="card-d">日本だけの現象ではなく、<strong>欧州・北米でも老朽・単純構成の製油所が閉じている</strong>。一方で中東・インド・中国では巨大な新設が動いており、<strong>精製能力が「消費地」から「原油と資本のある場所」へ移動している</strong>。日本の製油所閉鎖は、この世界的な再配置の一部。</div></div>
+      <div class="card"><div class="card-n">03 — SAF が製油所の延命策になる</div><div class="card-m">Sustainable Aviation Fuel</div>
+        <div class="card-d">航空需要は伸び、しかも<strong>航空機は電化できない</strong>。だからジェット燃料だけは減らない。ENEOSは和歌山で<strong>2026年度に国内初のSAF製造を開始する計画</strong>で、廃食油等を原料とするHEFAプロセスを採用。<strong>製油所の水素・脱硫設備をそのまま使える</strong>のが最大の利点で、既存装置の転用先として最も現実的。</div></div>
+      <div class="card"><div class="card-n">04 — 石化シフトという世界の潮流と、日本の逆行</div><div class="card-m">Crude-to-chemicals</div>
+        <div class="card-d">世界の新設製油所は<strong>燃料ではなく化学品を作る方向</strong>（crude-to-chemicals）に設計されている。燃料需要は頭打ちでも、プラスチック需要は伸びるからである。<strong>ところが日本は逆に石化を縮小している</strong>——中国の巨大クラッカー新設でアジアの需給が壊れたため。<strong>同じ論理が、規模の差で正反対の結論を出している</strong>。</div></div>
+      <div class="card"><div class="card-n">05 — 製油所跡地の争奪</div><div class="card-m">Site conversion</div>
+        <div class="card-d">閉じた製油所が持っているのは<strong>数百MW級の受電設備・港湾・広大な平坦地・工業用水・水素製造装置</strong>。これは<a class="il" href="../data_center.html">AIデータセンター</a>が求める条件とほぼ一致する。<strong>石油の跡地に計算インフラを置く</strong>という転用が、京浜・和歌山・欧米で同時に検討され始めている。跡地の価値は「土地」ではなく<strong>「系統接続の権利」</strong>にある。</div></div>
+      <div class="card"><div class="card-n">06 — 製油所は CCS の主要排出源になる</div><div class="card-m">Refinery CCS</div>
+        <div class="card-d">製油所は水素製造装置を持ち、そこから<strong>高濃度のCO2</strong>が出る。回収コストが低い排出源として<a class="il" href="../0366_ccs/260905_ccs.html">CCS</a>の最有力候補であり、出光が<strong>苫小牧で製油所とCCS事業の両方の当事者になっている</strong>のは偶然ではない。</div></div>
+    </div>
+  </div>
+
+  <div class="sec" id="s15">
+    <div class="sec-label"><span class="num">15</span><span class="sec-title">What to Watch</span></div>
+    <div class="sec-jp">この産業を追いかけるための3つの観測点</div>
+    <div class="sec-updated">Last updated: 2026-10-25</div>
+
+    <div class="t-scroll"><table class="t">
+      <tr><th>観測点</th><th>なぜ見るか</th></tr>
+      <tr><td class="nw"><strong>クラックスプレッド</strong></td><td>原油価格ではなく<strong>マージン</strong>が元売りの実力。在庫評価を除いた営業利益で見る</td></tr>
+      <tr><td class="nw"><strong>製油所の閉鎖と跡地の用途</strong></td><td><strong>次に何が置かれるか</strong>が、その地域の20年後を決める。SAF／水素／データセンター／CCS のどれか</td></tr>
+      <tr><td class="nw"><strong>ロシア原油の流れ先</strong></td><td>生産量ではなく<strong>物流の付け替え</strong>が地政学の実態を示す</td></tr>
+    </table></div>
+    <div class="xlink">
+      <div class="xlink-t">Related</div>
+      <ul>
+        <li><a href="../0368_lng/260905_lng.html">LNG</a><br><span>同じ会社・同じ港・別の商品</span></li>
+        <li><a href="../0366_ccs/260905_ccs.html">CCS</a><br><span>製油所は低コストな排出源</span></li>
+        <li><a href="../data_center.html">Data Center</a><br><span>跡地の受電容量という資産</span></li>
+        <li><a href="/030_research/032_geo-history/260831_ichihara.html">geo：市原市</a><br><span>京葉コンビナートの当事者</span></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sources" id="sources">
+    <div class="sources-title">Sources</div>
+    <ul>
+      <li>資源エネルギー庁「ジェット燃料供給について」資料（主要製油所の精製能力・B/D）／経済産業省 石油製品需要見通し（2023〜2028年度 年平均▲1.6%・全体▲7.6%）</li>
+      <li>日本経済新聞「製油所とは 原油からガソリンやナフサを精製、需要減少で相次ぎ閉鎖」（国内19製油所）</li>
+      <li>ENEOSホールディングス 中期経営計画・ニュースリリース／日本経済新聞「製油所を『次世代エネ拠点』に ENEOS、SAFや水素製造」（和歌山 SAF・2026年度 国内初のSAF製造開始）</li>
+      <li>出光興産・三井化学「千葉地区エチレン装置集約による生産最適化の最終合意について」（2025年12月19日／2027年7月に出光装置停止・三井装置へ集約）</li>
+      <li>日本経済新聞「丸善石油化学、千葉のエチレン設備停止へ 26年度めど」／京葉地区エチレン能力 約210万トン（国内の32%）</li>
+      <li>IEA「Oil Market Report」2026年1月・7月・8月号／EIA Short-Term Energy Outlook（2026年 供給過剰 2.3百万b/d・製油所処理量 84.6 mb/d）</li>
+      <li>Wikipedia "Jamnagar refinery" / Bechtel「Jamnagar Oil Refinery」（124万B/D・複合で140万B/D）</li>
+      <li>J.P. Morgan Global Research / Goldman Sachs / Gabelli 2026 Energy Outlook（Brent見通しはレンジで大きく割れている）</li>
+    </ul>
+    <p class="upd">Last updated: 2026-10-25</p>
+  </div>
+
+
+</div><!-- /pane main -->
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script src="../../_shared/research_tabs.js" defer></script>
+<script src="../../../040_personal/0460_english/terms/terms.js" defer></script>
+
+</body>
+</html>
