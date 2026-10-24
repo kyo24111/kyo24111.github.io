@@ -96,8 +96,8 @@
     var keys = [];
     T.forEach(function (t) {
       byId[t.id] = t;
-      /* 1文字の語は他の語の中に誤爆するので拾わない（alt が文字列で渡って1文字ずつに割れた事故 2026-10-25） */
-      [t.ja].concat(typeof t.alt === 'string' ? [t.alt] : (t.alt || [])).forEach(function (j) { if (j && j.length > 1 && !byJa[j]) { byJa[j] = t; keys.push(j); } });
+      /* 英数字1文字は他の語の中に誤爆するので拾わない（alt が文字列で渡って1文字ずつに割れた事故 2026-10-25）。銅・錫などの漢字1文字は対象 */
+      [t.ja].concat(typeof t.alt === 'string' ? [t.alt] : (t.alt || [])).forEach(function (j) { if (j && !/^[\x00-\x7f]$/.test(j) && !byJa[j]) { byJa[j] = t; keys.push(j); } });
     });
     keys.sort(function (a, b) { return b.length - a.length; });
     if (keys.length) RE = new RegExp(keys.map(function (k) { return k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|'), 'g');
