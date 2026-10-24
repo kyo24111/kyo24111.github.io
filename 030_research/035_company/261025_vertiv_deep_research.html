@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vertiv Deep Research — AIデータセンターの電源と冷却（NYSE: VRT）</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .person{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:14px}
+  .person .p-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:3px}
+  .person .p-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:800;color:var(--text)}
+  .person .p-role{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--accent);padding:2px 9px;border-radius:4px}
+  .person .p-line{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7}
+  .person ul{list-style:none;padding:0;margin:0}
+  .person li{font-size:13.5px;color:var(--mid);line-height:1.8;padding:6px 0 6px 16px;position:relative;border-bottom:1px solid var(--border)}
+  .person li:last-child{border-bottom:none}
+  .person li::before{content:'';position:absolute;left:0;top:15px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .person li b,.person li strong{color:var(--text);font-weight:700}
+  .person .p-quote{margin-top:12px;padding:11px 15px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13px;line-height:1.8;color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa details[open]{background:var(--bg);border-color:var(--accent)}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:flex-start;gap:10px;line-height:1.65}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{background:var(--card2)}
+  .qa details[open] summary:hover{background:var(--surface)}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .qa summary::after{content:'+';margin-left:auto;padding-left:10px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem;line-height:1;flex-shrink:0}
+  .qa details[open] summary::after{content:'\2212'}
+  /* 回答本文。qa-a を付け忘れた <p> でも崩れないよう summary 以外の直下要素すべてに効かせる */
+  .qa details>*:not(summary){margin:0 0 10px;padding:0 18px 0 48px;font-size:13.5px;color:var(--mid);line-height:1.85;overflow-wrap:anywhere}
+  .qa details>*:not(summary):last-child{margin-bottom:16px}
+  .qa details>*:not(summary) b,.qa details>*:not(summary) strong{color:var(--text);font-weight:700}
+  .qa details>*:not(summary) a{color:var(--text)}
+  .qa details>ul,.qa details>ol{padding-left:66px}
+  .col-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin:22px 0}
+  .col-box .col-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--accent);display:inline-block;padding:3px 10px;border-radius:4px;margin-bottom:14px}
+  .col-box h3{margin-top:0;margin-bottom:12px;font-size:1.05rem}
+  .col-box p{font-size:13.5px;line-height:1.9}
+  .col-box .col-sub{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:20px 0 8px;padding-top:16px;border-top:1px solid var(--border)}
+  .col-box blockquote{margin:14px 0;padding:12px 18px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.85;color:var(--text)}
+  .col-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+  .col-num .n{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+  .col-num .n .v{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;line-height:1.1;margin-bottom:3px}
+  .col-num .n .l{font-size:11px;color:var(--muted);line-height:1.5}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.qa details>*:not(summary){padding-left:18px}.qa details>ul,.qa details>ol{padding-left:36px}.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+/* 左サイド目次（scroll-spy）。本文900px中央寄せなので、左余白が目次幅を超える1400px以上でだけ出す */
+.side-nav{position:fixed;left:20px;top:84px;width:200px;max-height:calc(100vh - 162px);overflow-y:auto;padding:12px 0 32px;z-index:10;scrollbar-width:thin;display:none}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@media (min-width:1400px){.side-nav{display:block}}
+.side-nav-title{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-left:14px;margin-bottom:8px}
+.side-nav-list{list-style:none;padding:0;margin:0}
+.side-nav-link{display:block;color:#a8a8a8;text-decoration:none;padding:6px 8px 6px 14px;border-left:2px solid transparent;font-size:12px;line-height:1.45;transition:color .15s,border-color .15s,background .15s}
+.side-nav-link:hover{color:var(--text);border-left-color:var(--border)}
+.side-nav-link.active{color:var(--accent);font-weight:700;border-left-color:var(--accent);background:var(--surface)}
+.side-nav-num{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--muted);margin-right:6px}
+.sec{scroll-margin-top:76px}
+html{scroll-behavior:smooth}
+.raw{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--card)}
+.raw>summary{cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700}
+.raw>div{padding:0 14px 14px}
+.note{font-size:12px;color:var(--muted)}
+</style>
+<style>
+.chart{margin:14px 0 6px}
+.chart svg{max-width:100%}
+.hero-updated{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.6);margin:-14px 0 22px;letter-spacing:.04em}
+.unv{display:inline-block;font-family:'Poppins','Noto Sans JP',sans-serif;font-size:10px;font-weight:700;padding:0 6px;border:1px solid var(--mid);border-radius:3px;color:var(--mid);margin-left:4px;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+.t td.num,.t th.num{text-align:right;white-space:nowrap}
+.upd{font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted);margin-top:16px;letter-spacing:.03em}
+.sec .note{margin-top:4px}
+
+</style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">research</a><span class="s">/</span><a href="index.html">company</a><span class="s">/</span><span class="c">Vertiv Deep Research</span></nav><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="page">
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-solid">Company Deep Research</span>
+    <span class="badge badge-white">NYSE: VRT</span>
+    <span class="badge badge-white">Data Center Power &amp; Thermal</span>
+    <span class="badge badge-white">2026-10-25</span>
+  </div>
+  <h1>Vertiv — AIデータセンターの「電気と熱」を一手に引き受ける、Liebertの末裔</h1>
+  <div class="hero-updated">Last updated: 2026-10-25</div>
+  <div class="hero-sub">Vertiv（バーティブ）は、データセンターの<strong>電源（UPS・配電・スイッチギア）</strong>と<strong>冷却（空調・チラー・液冷CDU）</strong>を、設計・製造・保守まで一社で揃える米オハイオ州の会社。源流は1946年にRalph Liebertがガレージで作った精密空調で、Emerson Electric傘下（Emerson Network Power）を経て、2016年にPlatinum Equityが<strong>$4B超</strong>で買収、2020年にDavid Cote（元Honeywell CEO）のSPACで上場した。FY2025はNet sales <strong>$10.2B</strong>（+28%）、Backlog <strong>$15.0B</strong>（前年の2.1倍）。2026年は<strong>$14.0B</strong>（+37%）を見込む。株価は2026年の高値約$380から約49%下げ、10月23日終値は<strong>$194</strong>。10月28日にQ3決算を控える。</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$10.2B</div><div class="lbl">Net sales FY2025（+27.7%）</div></div>
+    <div class="kpi"><div class="val">$14.0B</div><div class="lbl">FY2026 guidance（midpoint）</div></div>
+    <div class="kpi"><div class="val">$15.0B</div><div class="lbl">Backlog 2025-12-31</div></div>
+    <div class="kpi"><div class="val">22.6%</div><div class="lbl">Adj. operating margin Q2 2026</div></div>
+    <div class="kpi"><div class="val">$74.8B</div><div class="lbl">Market cap 2026-10-23</div></div>
+  </div>
+</div>
+
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#s1">Summary</a></li>
+    <li><a href="#s2">Business &amp; Products</a></li>
+    <li><a href="#s3">Segments &amp; Regions</a></li>
+    <li><a href="#s4">Financials (PL / BS / CF)</a></li>
+    <li><a href="#s5">Orders, Backlog &amp; Guidance</a></li>
+    <li><a href="#s6">AI Data Center Thesis</a></li>
+    <li><a href="#s7">Key Customers &amp; Partners</a></li>
+    <li><a href="#s8">Peer Comparison</a></li>
+    <li><a href="#s9">Founding Story &amp; History</a></li>
+    <li><a href="#s10">M&amp;A Track Record</a></li>
+    <li><a href="#s11">Leadership</a></li>
+    <li><a href="#s12">Japan Connections</a></li>
+    <li><a href="#s13">Risks</a></li>
+    <li><a href="#s14">Stock Analysis (NFA)</a></li>
+    <li><a href="#s15">Q&amp;A</a></li>
+    <li><a href="#s-vocab">Vocabulary</a></li>
+  </ol>
+</div>
+
+<p class="note">表記：金額はM/B/T、単位は米ドル。会社の決算期は暦年（12月期）。株価・時価総額は2026-10-23終値（stockanalysis.com、10-24更新）。Q3 2026決算は<b>2026-10-28（市場開始前）</b>の発表予定で、このページには<b>まだ入っていない</b>。<span class="unv">未確認</span>は一次資料で裏取りできていない数字・報道。</p>
+
+<div class="sec" id="s1">
+  <div class="sec-label"><span class="num">01</span>Summary</div>
+  <h2>GPUの隣で「電気を流し、熱を捨てる」装置を、まとめて売る会社</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Company</div><div class="v">Vertiv Holdings Co（Delaware法人）</div></div>
+    <div class="kv-item"><div class="k">HQ</div><div class="v">Westerville, Ohio（コロンバス郊外）</div></div>
+    <div class="kv-item"><div class="k">Roots</div><div class="v">1946年 Capitol Refrigeration → 1965年 Liebert Corporation</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">Giordano（Gio）Albertazzi（2023-01〜）</div></div>
+    <div class="kv-item"><div class="k">Executive Chairman</div><div class="v">David M. Cote（元Honeywell会長兼CEO）</div></div>
+    <div class="kv-item"><div class="k">CFO</div><div class="v">Craig Chamberlin（2025-11〜、元Wabtec・GE）</div></div>
+    <div class="kv-item"><div class="k">Employees</div><div class="v">約34,000（2025年末、うち約41%が製造）</div></div>
+    <div class="kv-item"><div class="k">Listing</div><div class="v">NYSE: VRT（2020-02 SPAC上場）。2026年3月にS&amp;P 500採用（Wikipedia）</div></div>
+  </div>
+  <p>データセンターでGPUやCPUが使う電気は、送電網から受けた後に<strong>スイッチギア（受変電・開閉装置）→UPS（無停電電源）→PDU・バスウェイ（配電）</strong>を通ってラックに届く。届いた電気はほぼすべて熱になり、それを<strong>CRAH・ファンウォール（空冷）／CDU・コールドプレート（液冷）→チラー・ドライクーラー（屋外の熱交換）</strong>で外へ捨てる。Vertivはこの「電気の道」と「熱の道」の両方を一社で揃え、さらに<strong>工場で組み上げたモジュール型の電源棟・冷却棟（プレハブ）</strong>と、据付後の<strong>保守サービス</strong>まで売る。</p>
+  <p>AI以前は、通信局舎や企業のサーバールーム向けの地味な設備屋だった。2023年以降、生成AIのGPUクラスタが1ラックあたりの電力を数倍に押し上げ、空冷では冷やしきれなくなったことで、<b>液冷と大容量電源の「一括供給者」</b>として評価が一変した。FY2025の売上は$10.2B、2026年ガイダンスは$14.0B。2025年末の受注残（Backlog）は$15.0Bで、ほぼ1年分の売上に相当する。</p>
+  <div class="callout"><strong>このページの結論（筆者の読み）：</strong>①Vertivの強みは個々の製品の性能よりも、<b>電源と冷却を「同じ設計思想で・同じ納期で・同じ保守網で」出せる</b>こと。ハイパースケーラーが欲しいのは部品ではなく「早く立ち上がるMW単位のブロック」で、そこに一番近い。②P&amp;Lは<b>ほぼ純粋なデータセンター銘柄</b>として読める。Schneider・Eaton・ABBはデータセンターが売上の一部でしかなく、景気循環の緩衝材がある分、上振れも薄まる。Vertivは逆。③2026年の株価下落は、Q2の売上未達（大型案件の段階納入とサプライチェーン渋滞）と、四半期の受注・受注残開示をやめたことで<b>「見えない不安」</b>が増した影響が大きい。④Q3（10/28）は、ガイダンス（Adjusted operating profit $898–938M）を出せるかどうかで、「一時的な遅れ」か「工場の生産性の壁」かが試される。</div>
+  <p>関連ページ：company <a href="261013_duke_energy_deep_research.html">Duke Energy</a>（電力側）／<a href="260707_micron_deep_research.html">Micron</a>／<a href="261020_cxmt_deep_research.html">CXMT</a>（メモリ側）／<a href="261004_ngk_insulators_deep_research.html">NGK Insulators</a></p>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sec-label"><span class="num">02</span>Business &amp; Products</div>
+  <h2>電源・冷却・ラック・プレハブ・サービスの5本柱</h2>
+  <p>会計上の区分は<b>Products</b>と<b>Services &amp; spares</b>の2つだけ。FY2025はProducts $8,207M（80%）、Services &amp; spares $2,023M（20%）。製品の中身は10-Kの列挙をもとに、機能別に整理すると次のようになる。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Category</th><th>主な製品（ブランド）</th><th>役割</th></tr></thead>
+    <tbody>
+      <tr><td>Thermal — air</td><td>Liebert CRAH/CRAC、ファンウォール、Liebert AFC（フリークーリング・チラー）、centrifugal chiller（BiXin由来）</td><td>サーバー室の空気を冷やす。屋外で熱を捨てるチラーまで含む</td></tr>
+      <tr><td>Thermal — liquid</td><td>Liebert XDU（CDU）、XDM、DCD（リアドア熱交換器）、CoolTera系の液冷インフラ、CoolChip系</td><td>GPUのコールドプレートに冷却液を回す。CDUは冷却液を分配・温度管理する「液冷の心臓」</td></tr>
+      <tr><td>Power — AC/DC</td><td>Liebert UPS（三相・単相）、DC電源（通信局舎向け）、エネルギー貯蔵、rack PDU（Geist）</td><td>停電・瞬低からITを守り、ラックまで電気を分ける</td></tr>
+      <tr><td>Power — distribution</td><td>低圧・中圧スイッチギア、バスウェイ／busbar（E+I Engineering由来）、マイクログリッド制御（UIG、買収手続中）</td><td>受電から建屋内配電まで。2021年のE+I買収で弱点だった領域を補った</td></tr>
+      <tr><td>Racks &amp; IT mgmt</td><td>ラック・エンクロージャー（Knürr、Great Lakes）、KVM・管理ソフト（Avocent系）</td><td>AIラックは重く高密度で、ラック自体が設計品になった</td></tr>
+      <tr><td>Integrated modular</td><td>Vertiv OneCore、SmartRun、MegaMod、Power/Cooling skids（BMarko）</td><td>工場で電源・冷却を組み込んだ「箱」を出荷し、現地工事を減らす</td></tr>
+      <tr><td>Services &amp; spares</td><td>予防保全、試運転、遠隔監視、液冷配管のフラッシング・パージ（PurgeRite）、流体管理（King Environmental）</td><td>据付ベースから毎年入る収益。粗利は製品より高い</td></tr>
+    </tbody>
+  </table></div>
+  <p>エンドマーケットは①データセンター（hyperscale/cloud、colocation、neocloud、enterprise）、②通信ネットワーク、③商業・産業の3つ（10-K）。比率は開示されていないが、成長のほぼすべてがデータセンターから来ている。会社は「グリッドからチップまで（grid to chip）」と表現し、UIG買収ではこれを「grid interconnect to chip」に広げた。</p>
+  <div class="callout"><strong>なぜ「まとめ売り」が効くのか：</strong>AI用の建屋では、電源容量・冷却能力・配管・ラック重量・制御ソフトが互いに依存する。電源はA社、冷却はB社と分けると、インターフェースの調整に時間がかかる。Vertivはこれを<b>工場で一体に組み、試験してから出荷</b>する（プレハブ）。顧客にとっての価値は「装置の値段」より<b>「稼働開始が何か月早まるか（time to power / time to token）」</b>にある。</div>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sec-label"><span class="num">03</span>Segments &amp; Regions</div>
+  <h2>稼ぎ頭は米州。EMEAは失速、APACは低マージン</h2>
+  <p>報告セグメントは地域別の3つ。FY2025はAmericasが売上の62%、営業利益の大半を占めた。</p>
+  <div class="chart"><svg viewBox="0 0 480 112" width="100%" role="img" aria-label="Segment operating margin FY2025（GAAP）" style="display:block;width:100%;height:auto;font-family:Poppins,'Noto Sans JP',sans-serif"><text x="0" y="14" font-size="12" fill="#444">Segment operating margin FY2025（GAAP）</text><text x="472" y="14" font-size="11" fill="#888" text-anchor="end">%</text><text x="142" y="44" font-size="11" fill="#444" text-anchor="end">Americas</text><rect x="150" y="33" width="259.1" height="15" fill="#111"/><text x="414.1" y="44" font-size="11" fill="#111">26.8%</text><text x="142" y="68" font-size="11" fill="#444" text-anchor="end">EMEA</text><rect x="150" y="57" width="200.1" height="15" fill="#999"/><text x="355.1" y="68" font-size="11" fill="#111">20.7%</text><text x="142" y="92" font-size="11" fill="#444" text-anchor="end">Asia Pacific</text><rect x="150" y="81" width="106.3" height="15" fill="#999"/><text x="261.3" y="92" font-size="11" fill="#111">11.0%</text></svg></div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Segment</th><th class="num">Net sales FY2025</th><th class="num">YoY</th><th class="num">Op. margin</th><th class="num">Net sales Q2 2026</th><th class="num">Organic YoY</th><th class="num">Adj. margin Q2 2026</th></tr></thead>
+    <tbody>
+      <tr><td>Americas</td><td class="num">$6,386M</td><td class="num">+41.9%</td><td class="num">26.8%</td><td class="num">$2,071M</td><td class="num">+21.1%</td><td class="num">27.6%</td></tr>
+      <tr><td>Asia Pacific</td><td class="num">$2,019M</td><td class="num">+17.5%</td><td class="num">11.0%</td><td class="num">$720M</td><td class="num">+25.7%</td><td class="num">13.3%</td></tr>
+      <tr><td>EMEA</td><td class="num">$1,824M</td><td class="num">+1.7%</td><td class="num">20.7%</td><td class="num">$484M</td><td class="num">−2.4%</td><td class="num">25.7%</td></tr>
+      <tr><td>Total</td><td class="num">$10,230M</td><td class="num">+27.7%</td><td class="num">17.9%（GAAP）</td><td class="num">$3,274M</td><td class="num">+17.8%</td><td class="num">22.6%</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">FY2025はGAAPのセグメント営業利益率（10-K）、Q2 2026は会社定義のAdjusted operating margin（8-K）。定義が異なるので横比較は目安。</p>
+  <p><b>Americas</b>は米国のハイパースケーラーとネオクラウドのAI建設ラッシュをそのまま受け、Q1 2026はOrganicで+44%。<b>EMEA</b>はFY2025の営業利益が−14%で、会社は「製品とサービスのミックス、工場の非効率、将来需要に向けた能力増強」を理由に挙げる。Q1 2026はOrganic −29%まで落ち込んだが、Q2は−2.4%まで戻した。欧州は電力接続の遅れと規制でAI建設が米国より1〜2年遅れているとされ、会社は「2026年後半から回復」と説明してきた。<b>APAC</b>は中国・インドを含み、売上は伸びるがマージンは11〜13%と低い。中国の地場メーカー（Huawei、Envicool等）との価格競争が厳しい地域である。</p>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sec-label"><span class="num">04</span>Financials (PL / BS / CF)</div>
+  <h2>3年で売上2倍、利益率は7.7%から20%台へ</h2>
+  <div class="chart"><svg viewBox="0 0 480 240" width="100%" role="img" aria-label="Net sales（FY、2026はガイダンス中央値）" style="display:block;width:100%;height:auto;font-family:Poppins,'Noto Sans JP',sans-serif"><text x="0" y="14" font-size="12" fill="#444">Net sales（FY、2026はガイダンス中央値）</text><text x="472" y="14" font-size="11" fill="#888" text-anchor="end">$B</text><line x1="48" y1="206.0" x2="472" y2="206.0" stroke="#bbb"/><text x="44" y="210.0" font-size="11" fill="#999" text-anchor="end">0</text><line x1="48" y1="163.0" x2="472" y2="163.0" stroke="#e6e6e6"/><text x="44" y="167.0" font-size="11" fill="#999" text-anchor="end">4</text><line x1="48" y1="120.0" x2="472" y2="120.0" stroke="#e6e6e6"/><text x="44" y="124.0" font-size="11" fill="#999" text-anchor="end">8</text><line x1="48" y1="77.0" x2="472" y2="77.0" stroke="#e6e6e6"/><text x="44" y="81.0" font-size="11" fill="#999" text-anchor="end">12</text><line x1="48" y1="34.0" x2="472" y2="34.0" stroke="#e6e6e6"/><text x="44" y="38.0" font-size="11" fill="#999" text-anchor="end">16</text><rect x="62.1" y="152.2" width="42.4" height="53.8" fill="#111"/><text x="83.3" y="147.2" font-size="11" fill="#111" text-anchor="middle">5.0</text><text x="83.3" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2021</text><rect x="132.8" y="144.7" width="42.4" height="61.3" fill="#111"/><text x="154.0" y="139.7" font-size="11" fill="#111" text-anchor="middle">5.7</text><text x="154.0" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2022</text><rect x="203.5" y="131.8" width="42.4" height="74.2" fill="#111"/><text x="224.7" y="126.8" font-size="11" fill="#111" text-anchor="middle">6.9</text><text x="224.7" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2023</text><rect x="274.1" y="120.0" width="42.4" height="86.0" fill="#111"/><text x="295.3" y="115.0" font-size="11" fill="#111" text-anchor="middle">8.0</text><text x="295.3" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2024</text><rect x="344.8" y="96.4" width="42.4" height="109.6" fill="#111"/><text x="366.0" y="91.4" font-size="11" fill="#111" text-anchor="middle">10.2</text><text x="366.0" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2025</text><rect x="415.5" y="55.5" width="42.4" height="150.5" fill="#bbb"/><text x="436.7" y="50.5" font-size="11" fill="#111" text-anchor="middle">14.0</text><text x="436.7" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2026G</text></svg></div>
+  <div class="chart"><svg viewBox="0 0 480 240" width="100%" role="img" aria-label="Adjusted operating margin（FY）" style="display:block;width:100%;height:auto;font-family:Poppins,'Noto Sans JP',sans-serif"><text x="0" y="14" font-size="12" fill="#444">Adjusted operating margin（FY）</text><text x="472" y="14" font-size="11" fill="#888" text-anchor="end">%</text><line x1="48" y1="206.0" x2="472" y2="206.0" stroke="#bbb"/><text x="44" y="210.0" font-size="11" fill="#999" text-anchor="end">0</text><line x1="48" y1="148.7" x2="472" y2="148.7" stroke="#e6e6e6"/><text x="44" y="152.7" font-size="11" fill="#999" text-anchor="end">10</text><line x1="48" y1="91.3" x2="472" y2="91.3" stroke="#e6e6e6"/><text x="44" y="95.3" font-size="11" fill="#999" text-anchor="end">20</text><line x1="48" y1="34.0" x2="472" y2="34.0" stroke="#e6e6e6"/><text x="44" y="38.0" font-size="11" fill="#999" text-anchor="end">30</text><rect x="62.1" y="161.9" width="42.4" height="44.1" fill="#111"/><text x="83.3" y="156.9" font-size="11" fill="#111" text-anchor="middle">7.7</text><text x="83.3" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2022</text><rect x="132.8" y="118.3" width="42.4" height="87.7" fill="#111"/><text x="154.0" y="113.3" font-size="11" fill="#111" text-anchor="middle">15.3</text><text x="154.0" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2023</text><rect x="203.5" y="94.8" width="42.4" height="111.2" fill="#111"/><text x="224.7" y="89.8" font-size="11" fill="#111" text-anchor="middle">19.4</text><text x="224.7" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2024</text><rect x="274.1" y="89.0" width="42.4" height="117.0" fill="#111"/><text x="295.3" y="84.0" font-size="11" fill="#111" text-anchor="middle">20.4</text><text x="295.3" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2025</text><rect x="344.8" y="69.5" width="42.4" height="136.5" fill="#bbb"/><text x="366.0" y="64.5" font-size="11" fill="#111" text-anchor="middle">23.8</text><text x="366.0" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2026G</text><rect x="415.5" y="51.2" width="42.4" height="154.8" fill="#bbb"/><text x="436.7" y="46.2" font-size="11" fill="#111" text-anchor="middle">27.0</text><text x="436.7" y="224" font-size="10.5" fill="#666" text-anchor="middle">2030目標</text></svg></div>
+  <p>2022年は、インフレと部品不足のなかで固定価格の受注をこなした結果、Adjusted operating marginが<b>7%台</b>に沈んだ（2023年に760bp改善して15.3%、から逆算）。株価は$10前後まで落ち、CEO交代につながった。2023年以降は値上げの浸透、生産性改善（Vertiv Operating System）、AI需要の数量効果が重なり、FY2025は20.4%。2026年ガイダンスは23.3〜24.3%、2030年の目標は<b>27%超</b>（2026年5月のInvestor Day）。</p>
+  <h3>Annual P&amp;L</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Item</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025</th><th class="num">FY2026 guidance</th></tr></thead>
+    <tbody>
+      <tr><td>Net sales</td><td class="num">$6,863M</td><td class="num">$8,012M</td><td class="num">$10,230M</td><td class="num">$13,800–14,200M</td></tr>
+      <tr><td>Organic growth</td><td class="num">—</td><td class="num">—</td><td class="num">+26.3%</td><td class="num">+30–32%</td></tr>
+      <tr><td>Gross margin</td><td class="num">—</td><td class="num">36.6%</td><td class="num">36.3%</td><td class="num">—</td></tr>
+      <tr><td>Operating profit（GAAP）</td><td class="num">—</td><td class="num">$1,367M</td><td class="num">$1,830M</td><td class="num">—</td></tr>
+      <tr><td>Adjusted operating profit</td><td class="num">約$1,050M</td><td class="num">$1,552M</td><td class="num">$2,090M</td><td class="num">$3,285–3,365M</td></tr>
+      <tr><td>Adjusted operating margin</td><td class="num">15.3%</td><td class="num">19.4%</td><td class="num">20.4%</td><td class="num">23.3–24.3%</td></tr>
+      <tr><td>Net income</td><td class="num">—</td><td class="num">$496M</td><td class="num">$1,333M</td><td class="num">—</td></tr>
+      <tr><td>Diluted EPS</td><td class="num">—</td><td class="num">$1.28</td><td class="num">$3.41</td><td class="num">$5.82–5.92</td></tr>
+      <tr><td>Adjusted diluted EPS</td><td class="num">—</td><td class="num">$2.85</td><td class="num">$4.20</td><td class="num">$6.65–6.75</td></tr>
+      <tr><td>Adjusted free cash flow</td><td class="num">—</td><td class="num">$1,135M</td><td class="num">$1,887M</td><td class="num">$2,400–2,600M</td></tr>
+      <tr><td>Engineering, R&amp;D expense</td><td class="num">$304M</td><td class="num">$368M</td><td class="num">$442M</td><td class="num">—</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">FY2023のAdjusted operating profitは売上×15.3%による概算。FY2024のNet incomeが小さいのは、SPAC由来のワラント評価損（$449M）のため。FY2025は製品+31.4%、サービス+14.5%。</p>
+  <h3>Quarterly</h3>
+  <div class="chart"><svg viewBox="0 0 480 240" width="100%" role="img" aria-label="Quarterly net sales（Q3 2026はガイダンス中央値）" style="display:block;width:100%;height:auto;font-family:Poppins,'Noto Sans JP',sans-serif"><text x="0" y="14" font-size="12" fill="#444">Quarterly net sales（Q3 2026はガイダンス中央値）</text><text x="472" y="14" font-size="11" fill="#888" text-anchor="end">$B</text><line x1="48" y1="206.0" x2="472" y2="206.0" stroke="#bbb"/><text x="44" y="210.0" font-size="11" fill="#999" text-anchor="end">0</text><line x1="48" y1="163.0" x2="472" y2="163.0" stroke="#e6e6e6"/><text x="44" y="167.0" font-size="11" fill="#999" text-anchor="end">1</text><line x1="48" y1="120.0" x2="472" y2="120.0" stroke="#e6e6e6"/><text x="44" y="124.0" font-size="11" fill="#999" text-anchor="end">2</text><line x1="48" y1="77.0" x2="472" y2="77.0" stroke="#e6e6e6"/><text x="44" y="81.0" font-size="11" fill="#999" text-anchor="end">3</text><line x1="48" y1="34.0" x2="472" y2="34.0" stroke="#e6e6e6"/><text x="44" y="38.0" font-size="11" fill="#999" text-anchor="end">4</text><rect x="60.1" y="118.3" width="36.3" height="87.7" fill="#111"/><text x="78.3" y="113.3" font-size="11" fill="#111" text-anchor="middle">2.04</text><text x="78.3" y="224" font-size="10.5" fill="#666" text-anchor="middle">Q1'25</text><rect x="120.7" y="92.5" width="36.3" height="113.5" fill="#111"/><text x="138.9" y="87.5" font-size="11" fill="#111" text-anchor="middle">2.64</text><text x="138.9" y="224" font-size="10.5" fill="#666" text-anchor="middle">Q2'25</text><rect x="181.3" y="90.8" width="36.3" height="115.2" fill="#111"/><text x="199.4" y="85.8" font-size="11" fill="#111" text-anchor="middle">2.68</text><text x="199.4" y="224" font-size="10.5" fill="#666" text-anchor="middle">Q3'25</text><rect x="241.8" y="82.2" width="36.3" height="123.8" fill="#111"/><text x="260.0" y="77.2" font-size="11" fill="#111" text-anchor="middle">2.88</text><text x="260.0" y="224" font-size="10.5" fill="#666" text-anchor="middle">Q4'25</text><rect x="302.4" y="92.0" width="36.3" height="114.0" fill="#111"/><text x="320.6" y="87.0" font-size="11" fill="#111" text-anchor="middle">2.65</text><text x="320.6" y="224" font-size="10.5" fill="#666" text-anchor="middle">Q1'26</text><rect x="363.0" y="65.4" width="36.3" height="140.6" fill="#111"/><text x="381.1" y="60.4" font-size="11" fill="#111" text-anchor="middle">3.27</text><text x="381.1" y="224" font-size="10.5" fill="#666" text-anchor="middle">Q2'26</text><rect x="423.5" y="44.8" width="36.3" height="161.2" fill="#bbb"/><text x="441.7" y="39.8" font-size="11" fill="#111" text-anchor="middle">3.75</text><text x="441.7" y="224" font-size="10.5" fill="#666" text-anchor="middle">Q3'26G</text></svg></div>
+  <details class="raw"><summary>Raw data — Quarterly（$M）</summary><div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Quarter</th><th class="num">Net sales</th><th class="num">Organic YoY</th><th class="num">Adj. op. profit</th><th class="num">Adj. op. margin</th><th class="num">Adj. EPS</th></tr></thead>
+    <tbody>
+      <tr><td>Q1 2025</td><td class="num">2,036</td><td class="num">—</td><td class="num">337</td><td class="num">16.5%</td><td class="num">0.64</td></tr>
+      <tr><td>Q2 2025</td><td class="num">2,638</td><td class="num">—</td><td class="num">489</td><td class="num">18.5%</td><td class="num">0.95</td></tr>
+      <tr><td>Q3 2025</td><td class="num">2,676</td><td class="num">—</td><td class="num">—</td><td class="num">22.3%</td><td class="num">1.24</td></tr>
+      <tr><td>Q4 2025</td><td class="num">2,880</td><td class="num">+19%</td><td class="num">668</td><td class="num">23.2%</td><td class="num">1.36</td></tr>
+      <tr><td>Q1 2026</td><td class="num">2,650</td><td class="num">+22.6%</td><td class="num">551</td><td class="num">20.8%</td><td class="num">1.17</td></tr>
+      <tr><td>Q2 2026</td><td class="num">3,274</td><td class="num">+17.8%</td><td class="num">738</td><td class="num">22.6%</td><td class="num">1.52</td></tr>
+      <tr><td>Q3 2026 guidance</td><td class="num">3,650–3,850</td><td class="num">+34–36%</td><td class="num">898–938</td><td class="num">24.0–25.0%</td><td class="num">1.77–1.83</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">Q1・Q2 2025の調整後営業利益は2026年の成長率からの逆算、Q3 2025は年間合計からの逆算。Q2 2025・Q3 2025のAdj. EPSは2026年の成長率から逆算した概算<span class="unv">未確認</span>。</p>
+  </div></details>
+  <h3>Balance sheet &amp; cash flow（2026-06-30）</h3>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Cash + short-term inv.</div><div class="v">$3.11B</div></div>
+    <div class="kv-item"><div class="k">Long-term debt</div><div class="v">$2.94B（2026年Q1に$2.1Bの社債を発行し、Term loanを返済）</div></div>
+    <div class="kv-item"><div class="k">Net leverage</div><div class="v">ほぼゼロ（Q1末 約0.2x、Q2末は実質ネットキャッシュ）</div></div>
+    <div class="kv-item"><div class="k">Liquidity</div><div class="v">$5.6B（$2.5Bのリボルバー含む）</div></div>
+    <div class="kv-item"><div class="k">Deferred revenue</div><div class="v">$3.63B（2025年末 $1.81Bから倍増＝前受金）</div></div>
+    <div class="kv-item"><div class="k">Adj. FCF H1 2026</div><div class="v">$1.58B（Q2単独 $925M、+234%）</div></div>
+  </div>
+  <p>前受金（Deferred revenue）が半年で$1.8B増えたのは、顧客が<b>前払いしてでも枠を確保したい</b>状態であることを示す。運転資本が軽くなり、FCFが利益を上回るペースで増えている。一方、配当は四半期$0.0625と象徴的な水準で、資金はM&amp;A（2030年までに約$24Bの投資余力と説明）と設備増強に回す方針。</p>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sec-label"><span class="num">05</span>Orders, Backlog &amp; Guidance</div>
+  <h2>Q4 2025の受注は前年の3.5倍。その後、四半期の受注開示をやめた</h2>
+  <div class="chart"><svg viewBox="0 0 480 240" width="100%" role="img" aria-label="Year-end backlog" style="display:block;width:100%;height:auto;font-family:Poppins,'Noto Sans JP',sans-serif"><text x="0" y="14" font-size="12" fill="#444">Year-end backlog</text><text x="472" y="14" font-size="11" fill="#888" text-anchor="end">$B</text><line x1="48" y1="206.0" x2="472" y2="206.0" stroke="#bbb"/><text x="44" y="210.0" font-size="11" fill="#999" text-anchor="end">0</text><line x1="48" y1="163.0" x2="472" y2="163.0" stroke="#e6e6e6"/><text x="44" y="167.0" font-size="11" fill="#999" text-anchor="end">4</text><line x1="48" y1="120.0" x2="472" y2="120.0" stroke="#e6e6e6"/><text x="44" y="124.0" font-size="11" fill="#999" text-anchor="end">8</text><line x1="48" y1="77.0" x2="472" y2="77.0" stroke="#e6e6e6"/><text x="44" y="81.0" font-size="11" fill="#999" text-anchor="end">12</text><line x1="48" y1="34.0" x2="472" y2="34.0" stroke="#e6e6e6"/><text x="44" y="38.0" font-size="11" fill="#999" text-anchor="end">16</text><rect x="76.3" y="138.3" width="84.8" height="67.7" fill="#111"/><text x="118.7" y="133.3" font-size="11" fill="#111" text-anchor="middle">6.3</text><text x="118.7" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2023</text><rect x="217.6" y="128.6" width="84.8" height="77.4" fill="#111"/><text x="260.0" y="123.6" font-size="11" fill="#111" text-anchor="middle">7.2</text><text x="260.0" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2024</text><rect x="358.9" y="44.8" width="84.8" height="161.2" fill="#111"/><text x="401.3" y="39.8" font-size="11" fill="#111" text-anchor="middle">15.0</text><text x="401.3" y="224" font-size="10.5" fill="#666" text-anchor="middle">FY2025</text></svg></div>
+  <p>2025年Q4、VertivのOrganic ordersは<b>前年同期比+252%、前四半期比+117%</b>、Book-to-billは<b>約2.9倍</b>だった。Q4の売上$2.88Bから逆算すると、1四半期で<b>約$8B強</b>の受注が入った計算になる（筆者計算）。年末Backlogは<b>$15.0B</b>（前年$7.2B）、その大半は12〜18か月以内に出荷予定（10-K）。FY2026の売上ガイダンス（中央値$14.0B）のほぼ全額を、期初の受注残で賄える構図だった。</p>
+  <p>ところが2026年2月11日の決算説明会で、会社は<b>四半期ごとの受注と受注残の開示を終了</b>し、年次報告（10-K）でのみ受注残を出すと表明した。理由は「大型案件の受注が特定四半期に集中し、四半期ごとの数字がノイズになる」という趣旨。投資家側からは、①AI需要の「温度」を測る最良の指標が見えなくなった、②Q4の巨大受注が先食いではないか、という疑念が出やすくなった。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Date</th><th>FY2026 net sales guidance</th><th>Organic</th><th>Adj. EPS</th><th>Adj. FCF</th></tr></thead>
+    <tbody>
+      <tr><td>2026-02-11（初回）</td><td>$13,250–13,750M</td><td>+27–29%</td><td>$5.97–6.07</td><td>$2.1–2.3B</td></tr>
+      <tr><td>2026-04-22（Q1）</td><td>$13,500–14,000M</td><td>+29–31%</td><td>$6.30–6.40</td><td>$2.1–2.3B</td></tr>
+      <tr><td>2026-07-29（Q2）</td><td>$13,800–14,200M</td><td>+30–32%</td><td>$6.65–6.75</td><td>$2.4–2.6B</td></tr>
+    </tbody>
+  </table></div>
+  <p>ガイダンスは2回とも上方修正されている。それでもQ2決算日（7/29）に株価が<b>−17%</b>下げたのは、Q2売上$3.27Bがコンセンサス$3.38Bを約3%下回ったため。会社は「複数フェーズに分けて納入する大型案件の時期ずれ」と「一時的なサプライチェーンの渋滞」を理由に挙げ、その分を下期に寄せた（Q3はOrganic +34〜36%、という急加速のガイダンス）。<b>下期偏重</b>のガイダンスは、達成できれば強いが、外せば信頼を大きく損なう。</p>
+  <div class="callout"><strong>10/28のQ3決算で見る点：</strong>①Net salesが$3.65–3.85Bのレンジに入るか（とくに下限割れがないか）、②Adjusted operating profitが$898–938Mに届くか（コンセンサス約$918–924M）、③通期ガイダンスの維持・上げ、④前受金の推移、⑤製造担当EVPの交代（10/5、元StellantisのMichael Reshaが就任）後の工場生産性への言及。</div>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s6">
+  <div class="sec-label"><span class="num">06</span>AI Data Center Thesis</div>
+  <h2>ラックあたり電力が10倍になると、電源と冷却の「設計」が変わる</h2>
+  <p>AIが設備屋を成長株に変えた理由は、ラックの電力密度にある。従来の企業向けラックは5〜15kW程度で、部屋全体を空調で冷やせば足りた。NVIDIAのGB200 NVL72は1ラックで約120〜130kW、次のVera Rubin NVL72は計算トレイが<b>100%液冷</b>、2027年のRubin Ultra（Kyber）は<b>1ラック数百kW</b>級とされる<span class="unv">数値は報道ベース</span>。ここまで来ると、空気では熱を運びきれず、水（または冷媒）で直接チップから熱を抜くしかない。</p>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">Liquid cooling（液冷）：CDUが主戦場</div><div class="ind-desc">コールドプレートに冷却液を流し、CDU（Coolant Distribution Unit）で温度・圧力・流量を管理、建屋の冷水系やドライクーラーへ熱を渡す。NVIDIAはRubin世代で入口<b>45°C</b>の温水冷却を想定し、チラーなしで冷やせる範囲が広がる。これはVertivのチラー事業には逆風、CDU・熱交換器（ThermoKey買収）には追い風になる。液冷は配管の洗浄・充填・水質管理が必要で、PurgeRite・King Environmentalの買収はこの「液冷の保守」を取りにいく動き。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">800 VDC：電源の作り直し</div><div class="ind-desc">ラック電力が数百kW〜1MWになると、従来の415/480V交流→ラック内54V直流では電流が大きすぎ、銅のバスバーが太く重くなる。NVIDIAは<b>800V直流</b>で建屋からラックへ送る構成を提唱し、Vertivは2025年5月に整合を表明、<b>2026年後半に800 VDC製品群</b>（集中型整流器、DCバスウェイ、ラック内DC-DC、DC対応バックアップ）を出すとした。2025年10月のOCPではNVIDIAと<b>800 VDC MGXリファレンスアーキテクチャ</b>を発表。出荷状況は<span class="unv">未確認</span>。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">GPUロードマップの「1世代先」に合わせる</div><div class="ind-desc">VertivはNVIDIAのリファレンス設計（GB200 NVL72向けの電源・冷却設計など）に参加し、「1 GPU世代先を行く」と言う。データセンターの設計はGPU発表の1〜2年前に固まるため、NVIDIAの設計図に名前が載ることが受注の入り口になる。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">Gigawatt campuses と time to power</div><div class="ind-desc">会社はInvestor Dayで、世界のデータセンターの電力容量追加が年<b>約20GW→5年後に約35GW</b>へ増えると説明。1GW級キャンパスでは電力網の接続待ちがボトルネックになり、敷地内発電・マイクログリッドが必要になる。UIG買収（$1.45B＋最大$1.15Bのearnout）は、この「系統の手前」まで守備範囲を広げる一手。Caterpillar（発電機）・Oklo（小型原子炉）との協業も10-Kに記載。</div></div></div>
+    <div class="ind-item"><div class="ind-num">5</div><div><div class="ind-title">Prefabrication（プレハブ化）</div><div class="ind-desc">建設現場の電気工・配管工が足りない。工場で電源棟・冷却棟を組み、トラックで運んで繋ぐ方が早い。BMarko（モジュール構造物）、Great Lakes（ラック）の買収、オハイオ州Irontonなど4工場の増強はこの流れ。</div></div></div>
+  </div>
+  <p>Investor Day（2026年5月、サウスカロライナ州グリーンビル）では、サービス可能市場（served market）を<b>$62B→$75B</b>に拡大、うちデータセンターは約<b>$50B</b>で年18〜20%成長と説明した。2030年に向けた目標はOrganic売上の年率<b>20〜22%</b>成長、Adjusted operating margin<b>27%超</b>、FCF変換率95〜100%、レバレッジ1〜2倍（TIKR等の二次情報。原資料は未読<span class="unv">未確認</span>）。</p>
+  <div class="col-box">
+    <span class="col-lbl">Column</span>
+    <h3>「熱を捨てる」ことが、なぜボトルネックなのか</h3>
+    <p>1MWのGPUクラスタは、ほぼ1MWの熱を出す。家庭用エアコン（冷房2.8kW）でいえば約360台分。しかも数十平方メートルのラック列に集中する。空気は比熱が小さく、同じ熱を運ぶのに水の約3,500倍の体積が必要になる。だからラックあたり50kWを超えたあたりから、空冷は「ファンの電力が増えすぎる」「騒音と風量で通路に人が立てない」という物理の壁にぶつかる。</p>
+    <div class="col-sub">液冷の副作用</div>
+    <p>液冷にすると、今度は<b>漏れ・腐食・水質・配管の洗浄</b>という別の問題が出る。データセンターの運用者はこれまで「水をサーバーに近づけない」ことを鉄則にしてきた。Vertivがサービス会社（PurgeRite＝配管のフラッシング・パージ・ろ過）を約$1Bで買ったのは、液冷の普及で<b>据付後の保守が装置と同じくらい重要</b>になると見たからだ。</p>
+    <blockquote>"Demand for AI and general compute continues to intensify, with deployments becoming increasingly complex and infrastructure-intensive." — Gio Albertazzi（Q2 2026決算リリース）</blockquote>
+    <div class="col-num">
+      <div class="n"><div class="v">~130kW</div><div class="l">GB200 NVL72 1ラックの電力（概算）</div></div>
+      <div class="n"><div class="v">45°C</div><div class="l">Rubin世代の想定冷却水入口温度</div></div>
+      <div class="n"><div class="v">800V DC</div><div class="l">NVIDIAが提唱する次世代配電電圧</div></div>
+      <div class="n"><div class="v">20→35GW</div><div class="l">年間DC電力追加（会社見通し）</div></div>
+    </div>
+  </div>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s7">
+  <div class="sec-label"><span class="num">07</span>Key Customers &amp; Partners</div>
+  <h2>顧客名はほぼ非開示。だが売上の大半は一握りの建設主から来る</h2>
+  <p>Vertivは10-Kで、特定顧客の売上比率を開示していない（売上の10%を超える顧客の記載も見当たらない）。顧客層は会社自身の分類で<b>hyperscale/cloud、colocation、neocloud、enterprise</b>、加えて通信キャリアと産業。二次情報では、FY2024時点でハイパースケーラーと大手コロケーションが売上の<b>45%超</b>とされる<span class="unv">未確認</span>。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Customer type</th><th>代表的な会社（一般論）</th><th>Vertivとの関係（確認できる範囲）</th></tr></thead>
+    <tbody>
+      <tr><td>Hyperscalers</td><td>Microsoft、Alphabet、Amazon、Meta、Oracle</td><td>個別の契約は非開示。4社の2026年設備投資は合計約$700B超（各社Q1決算ベースの集計）。Vertivの成長の源泉</td></tr>
+      <tr><td>Colocation</td><td>Equinix、Digital Realty、Compass Datacenters、QTS、Vantage</td><td>Compassとは保守サービス（Site-Based Services、Next Predict）の事例を公開。Equinix・Digital Realtyとの個別契約は<span class="unv">未確認</span></td></tr>
+      <tr><td>Neoclouds</td><td>CoreWeave、Crusoe、Lambda、Nebius</td><td>10-Kの顧客分類に「neocloud」が新設された。個別名は非開示</td></tr>
+      <tr><td>Telecom</td><td>米欧アジアの通信キャリア</td><td>DC電源（−48V）の老舗。AI以前の主力</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Partners</h3>
+  <div class="vc-grid">
+    <div class="vc-card lead"><span class="lead-tag">Key</span><div class="vc-name">NVIDIA</div><div class="vc-role">Reference designs / NPN</div><div class="vc-desc">NVIDIA Partner Networkに参加。GB200 NVL72向けの電源・冷却リファレンス設計、800 VDC MGXリファレンスアーキテクチャ（2025-10 OCP）。GPU世代に合わせた製品投入の起点。</div></div>
+    <div class="vc-card"><div class="vc-name">Caterpillar</div><div class="vc-role">On-site power</div><div class="vc-desc">分散型発電・バックアップ電源での協業（10-K）。系統接続待ちの解消策。</div></div>
+    <div class="vc-card"><div class="vc-name">Oklo</div><div class="vc-role">Alternative energy</div><div class="vc-desc">小型炉とデータセンター電源・冷却の統合を探る協業（10-K）。実装はまだ先。</div></div>
+    <div class="vc-card"><div class="vc-name">Compass Datacenters</div><div class="vc-role">Colocation customer</div><div class="vc-desc">Vertivの保守・予知保全の公開事例。</div></div>
+  </div>
+  <div class="warn-box"><div class="w-title">Concentration risk</div><ul>
+    <li><b>建設主が少数：</b>GW級キャンパスを発注できる会社は世界で十数社。1社の設備投資の見直しが、四半期の受注を大きく動かす。</li>
+    <li><b>大型案件の段階納入：</b>Q2 2026の売上未達の理由そのもの。顧客の工期（電力接続・建屋完成）にVertivの出荷が引きずられる。</li>
+    <li><b>内製化・直接調達：</b>ハイパースケーラーは仕様を自社で決め、CDUやラックをODM（Foxconn、Quanta等）やサーバーメーカーから直接買う動きもある。</li>
+    <li><b>ネオクラウドの資金繰り：</b>2026年10月にはCoreWeaveの債務懸念でAIインフラ株が一斉に売られた。売上債権・前受金の動きに注意。</li>
+  </ul></div>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sec-label"><span class="num">08</span>Peer Comparison</div>
+  <h2>同じ「データセンター銘柄」でも、事業の純度で損益計算書の読み方が変わる</h2>
+  <div class="chart"><svg viewBox="0 0 480 208" width="100%" role="img" aria-label="Operating margin FY2025（各社の定義そのまま）" style="display:block;width:100%;height:auto;font-family:Poppins,'Noto Sans JP',sans-serif"><text x="0" y="14" font-size="12" fill="#444">Operating margin FY2025（各社の定義そのまま）</text><text x="472" y="14" font-size="11" fill="#888" text-anchor="end">%</text><text x="142" y="44" font-size="11" fill="#444" text-anchor="end">Vertiv（adj.）</text><rect x="150" y="33" width="197.2" height="15" fill="#111"/><text x="352.2" y="44" font-size="11" fill="#111">20.4%</text><text x="142" y="68" font-size="11" fill="#444" text-anchor="end">Eaton（segment）</text><rect x="150" y="57" width="236.8" height="15" fill="#999"/><text x="391.8" y="68" font-size="11" fill="#111">24.5%</text><text x="142" y="92" font-size="11" fill="#444" text-anchor="end">nVent（adj.）</text><rect x="150" y="81" width="195.3" height="15" fill="#999"/><text x="350.3" y="92" font-size="11" fill="#111">20.2%</text><text x="142" y="116" font-size="11" fill="#444" text-anchor="end">ABB（op. EBITA）</text><rect x="150" y="105" width="183.7" height="15" fill="#999"/><text x="338.7" y="116" font-size="11" fill="#111">19.0%</text><text x="142" y="140" font-size="11" fill="#444" text-anchor="end">Schneider（adj. EBITA）</text><rect x="150" y="129" width="180.8" height="15" fill="#999"/><text x="335.8" y="140" font-size="11" fill="#111">18.7%</text><text x="142" y="164" font-size="11" fill="#444" text-anchor="end">Trane（adj.）</text><rect x="150" y="153" width="178.8" height="15" fill="#999"/><text x="333.8" y="164" font-size="11" fill="#111">18.5%</text><text x="142" y="188" font-size="11" fill="#444" text-anchor="end">Daikin（営業利益率）</text><rect x="150" y="177" width="80.2" height="15" fill="#999"/><text x="235.2" y="188" font-size="11" fill="#111">8.3%</text></svg></div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th class="num">Revenue FY2025</th><th class="num">Margin（定義）</th><th>Data center exposure</th><th>DC領域での主な製品</th></tr></thead>
+    <tbody>
+      <tr><td>Vertiv（US）</td><td class="num">$10.2B</td><td class="num">20.4%（adj. op.）</td><td>大半（比率非開示。筆者推定で7〜8割<span class="unv">未確認</span>）</td><td>電源・冷却・ラック・プレハブ・サービス全部</td></tr>
+      <tr><td>Schneider Electric（FR）</td><td class="num">€40.2B</td><td class="num">18.7%（adj. EBITA）</td><td>Energy Managementの一部。DCは成長を主導</td><td>UPS（APC/Galaxy）、スイッチギア、Motivair（液冷、2024年に出資）</td></tr>
+      <tr><td>Eaton（US/IE）</td><td class="num">$27.4B</td><td class="num">24.5%（segment）</td><td>Electrical Americasの受注を主導。航空も持つ</td><td>UPS、スイッチギア、配電。Boyd Thermal買収で液冷参入<span class="unv">未確認</span></td></tr>
+      <tr><td>ABB（CH）</td><td class="num">$33.2B</td><td class="num">19.0%（op. EBITA）</td><td>Electrificationの一顧客層（DCは二桁成長）</td><td>中圧機器、UPS、配電。冷却はほぼ無し</td></tr>
+      <tr><td>Johnson Controls（IE/US）</td><td class="num">$23.6B（FY9月）</td><td class="num">約18〜20%（segment EBITA）<span class="unv">概算</span></td><td>DCが成長領域。ビル空調・セキュリティが本体</td><td>YORKチラー、Silent-Aire（モジュール空調）</td></tr>
+      <tr><td>Trane Technologies（IE/US）</td><td class="num">$21.3B</td><td class="num">18.5%（adj. op.）</td><td>商業HVACの一部（DC比率非開示）</td><td>チラー、CDU（2025年にLiquidStackへ出資<span class="unv">未確認</span>）</td></tr>
+      <tr><td>nVent（UK/US）</td><td class="num">約$3.9B</td><td class="num">20.2%（adj. op.）</td><td>DC売上が$1B超（約4分の1）</td><td>液冷CDU・ラック・配電（Avail EPG買収）</td></tr>
+      <tr><td>Modine（US）</td><td class="num">$3.2B（FY3月）</td><td class="num">粗利率23.0%</td><td>DC売上をFY2028に$2B超へ。ハイパースケーラーと$4Bのチラー長期契約</td><td>チラー、CRAH、ファンウォール（Airedale）</td></tr>
+      <tr><td>Daikin（JP）</td><td class="num">¥5.02T（FY3月、約$33B）</td><td class="num">8.3%（営業利益率）</td><td>米国のDC向け大型空調が好調。全体では一部</td><td>Daikin Appliedのチラー・空調機、Chilldyne（負圧式液冷CDU、2025買収）</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">各社の決算資料・報道（2026年2月前後）。マージンの定義は会社ごとに違う（adjusted operating margin、adjusted EBITA、segment marginなど）ので、横比較は目安。円換算は筆者の概算。</p>
+  <h3>事業の「純度」で何が変わるか</h3>
+  <p><b>①成長率：</b>Vertivは売上のほぼすべてがデータセンター向けの設備・保守なので、AI設備投資の増加がそのまま売上に乗る（FY2026見通し+37%）。Schneider（Organic +8.9%）・Eaton（+8%）・ABB（+7%）は、住宅・産業・電力網・航空などの事業が混ざり、DCの伸びが平均化される。</p>
+  <p><b>②利益率の意味：</b>Eatonのsegment margin 24.5%は、本社費を引く前の数字で、Vertivのadjusted operating margin（本社費込み、償却費除き）より高く見えやすい。Vertivはまだ<b>工場の立ち上げコスト（新工場・人員増）</b>が重く、量が増えるほど利益率が上がる段階。会社が2030年に27%超を掲げる根拠はここにある。</p>
+  <p><b>③景気循環の効き方：</b>純度が高いほど、AI投資の停滞がそのまま受注に出る。2022年にVertivの利益率が7%台まで落ちたのは、価格転嫁できない固定価格契約が多かったため。いまは前受金・価格条項で守りを固めているが、<b>需要の天井ではVertivが一番大きく揺れる</b>構造は変わらない。</p>
+  <p><b>④バリュエーション：</b>2026年10月時点の予想PERは、Vertiv約25倍、Eaton約26倍、GE Vernova約44倍、6社の中央値約24倍（TIKR）。6月末の49倍から半分になり、成長率の差（Vertiv +30%台 vs Eaton +8%）を考えると、<b>市場は「Vertivの成長は長続きしない」側に賭けている</b>とも読める。</p>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sec-label"><span class="num">09</span>Founding Story &amp; History</div>
+  <h2>ガレージの精密空調から、80年かけてAIインフラの中核へ</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1946</span><span class="tl-title">Ralph Liebert、コロンバスで創業</span></div><div class="tl-body">Ralph Liebert（1918–1984）がオハイオ州コロンバスで<b>Capitol Refrigeration Industries</b>を設立。レストラン・商業用の冷凍・空調工事の会社だった。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1964–65</span><span class="tl-title">ガレージの試作機をIBMが見出す</span></div><div class="tl-body">メインフレームの熱と湿度に悩む顧客のため、自宅ガレージで<b>コンピュータ室専用の精密空調</b>を試作。シカゴでIBMに見せたところ、IBMがフィラデルフィアの世界コンピュータ会議でのお披露目を手配した。1965年に仲間5人と<b>Liebert Corporation</b>を設立、業界初のCRAC（Computer Room Air Conditioning）メーカーとなる。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1981–83</span><span class="tl-title">NASDAQ上場、UPSへ進出</span></div><div class="tl-body">1981年NASDAQ上場。1983年Programmed Powerを買収して<b>UPS</b>を手に入れ、「冷却＋電源」の原型ができる。同年アイルランド・コークに初の海外工場。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1987</span><span class="tl-title">Emerson Electricが買収</span></div><div class="tl-body">Emerson傘下の完全子会社に。以後30年近くEmersonの一事業部となる。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2000–2010</span><span class="tl-title">Emerson Network Power</span></div><div class="tl-body">Emersonが重要インフラ事業を<b>Network Power</b>に統合。Ericsson Energy Systems（2000）、Knürr（2006、ラック）、Avocent（2009、KVM・管理ソフト）、Chloride（2010、産業用UPS）などを次々に買収。ただし通信機器向けの組込み電源など雑多な事業も抱え、2010年代前半は成長が鈍化。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2016-12</span><span class="tl-title">Platinum Equityが$4B超で買収、Vertivへ</span></div><div class="tl-body">EmersonはNetwork Powerを<b>Platinum Equity</b>（Tom Gores）へ$4B超で売却し、劣後持分を残した。社名を<b>Vertiv</b>に変更、CEOはRob Johnson。2017年にASCO（自動切替スイッチ）をSchneider Electricへ$1.25Bで売却し、買収資金の一部を回収。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2019-12 / 2020-02</span><span class="tl-title">SPACで上場：GS Acquisition Holdings × David Cote</span></div><div class="tl-body">Goldman Sachs系とDavid Cote（元Honeywell CEO）が共同スポンサーの<b>GS Acquisition Holdings Corp（GSAH、1号）</b>と合併。発表時の想定EVは約<b>$5.3B</b>（2020年予想Adjusted EBITDA約$595Mの8.9倍）、PIPEは約$1.2B（報道）。2020-02-07にNYSE: VRTで取引開始。Coteが<b>Executive Chairman</b>に。<br><span class="note">※依頼文にある「GS Acquisition Holdings II」はMirion Technologies（2021年）と合併した別のSPAC。Vertivの相手は1号。</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2022</span><span class="tl-title">インフレで利益率崩壊、CEO交代</span></div><div class="tl-body">部品・物流費の高騰を固定価格の受注残で吸収できず、利益率は7%台に。株価は$10を割る水準まで下落。Johnsonが退任し、2023年1月にCOOだった<b>Gio Albertazzi</b>がCEOに。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2023–2024</span><span class="tl-title">AIで再評価、株価は2023年に+252%</span></div><div class="tl-body">値上げと生産性改善でマージンが回復したところに生成AIの設備投資が重なる。2023年の株価上昇率+252%（S&amp;P 500で最上位級）。CoolTera（英、液冷インフラ）を2023年12月に買収。2024年11月のInvestor Dayで2029年にAdjusted operating margin 25%を目標化。</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025</span><span class="tl-title">関税、受注爆発、$1BのPurgeRite買収</span></div><div class="tl-body">Q2に関税コストで利益率が一時悪化（18.5%）。Q4の受注は前年比+252%、Backlog $15.0B。Great Lakes（ラック、$200M）、Waylay（ベルギー、AIソフト）、PurgeRite（約$1.0B＋最大$250M）を買収。日本法人（バーティブジャパン合同会社）を設立。</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2026</span><span class="tl-title">S&amp;P 500入り、Investor Day、株価半減</span></div><div class="tl-body">3月にS&amp;P 500採用（Wikipedia）。BMarko、Strategic Thermal Labs、ThermoKey、King Environmentalを買収し、9月にUtilityInnovation Group（UIG）の買収で合意。5月のInvestor Dayで2030年目標を引き上げ。株価は年央に約$380の高値をつけた後、Q2売上未達・金利懸念で10月23日には$194まで下落。</div></div></div>
+  </div>
+  <div class="col-box">
+    <span class="col-lbl">Column</span>
+    <h3>Platinum Equityは何倍にしたのか</h3>
+    <p>2016年の買収額は$4B超（負債込み）。Platinum Equityは2020年のSPAC上場後も筆頭株主として残り、その後の売り出しで持分を手放した（時期・価格の詳細は<span class="unv">未確認</span>）。上場時の想定EVは約$5.3Bで、売却を終えたころの時価総額は$10〜20B台。現在の時価総額$75Bから見れば「売るのが早すぎた」ことになるが、2022年の株価$10割れを経験したPEとしては合理的な出口だった。</p>
+    <div class="col-sub">Cote流の経営</div>
+    <p>David CoteはHoneywellで2002〜2017年にCEOを務め、株主総利回りでS&amp;P 500を大きく上回ったことで知られる。著書『Winning Now, Winning Later』（2020）の主題は「短期の数字と長期の投資を両立させる」こと。Vertivでは<b>Vertiv Operating System</b>と呼ぶ業務改善の仕組みが使われており、Honeywell Operating Systemとの類似がよく指摘される。</p>
+    <div class="col-num">
+      <div class="n"><div class="v">1946</div><div class="l">Liebertの創業年</div></div>
+      <div class="n"><div class="v">$4B+</div><div class="l">2016年 Platinum Equityの買収額</div></div>
+      <div class="n"><div class="v">~$5.3B</div><div class="l">2020年 SPAC上場時の想定EV</div></div>
+      <div class="n"><div class="v">$74.8B</div><div class="l">2026-10-23 時価総額</div></div>
+    </div>
+  </div>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s10">
+  <div class="sec-label"><span class="num">10</span>M&amp;A Track Record</div>
+  <h2>「足りない部品」を小〜中型買収で埋める。2025年以降は加速</h2>
+  <div class="f-stack">
+    <div class="f-card corp"><span class="r-badge">Power</span><div class="f-amount">$1.8B</div><div class="f-detail"><div class="f-date">2021-11 · E+I Engineering（アイルランド）</div><div class="f-desc">スイッチギア・バスウェイ・配電盤。Vertiv最大の弱点だった「受変電〜配電」を補う。対価は現金＋株式（earnout含む）。</div></div></div>
+    <div class="f-card"><span class="r-badge">Thermal</span><div class="f-amount">n/d</div><div class="f-detail"><div class="f-date">2023-12 · CoolTera（英国）</div><div class="f-desc">液冷インフラ（CDU・二次配管）の設計製造。液冷ブームの初期に技術と人材を確保。</div></div></div>
+    <div class="f-card"><span class="r-badge">Thermal</span><div class="f-amount">n/d</div><div class="f-detail"><div class="f-date">2024-12 · BiXin Energy Technology（中国・蘇州）</div><div class="f-desc">遠心チラーの技術と資産。大型チラーを自前のラインナップに加える。</div></div></div>
+    <div class="f-card"><span class="r-badge">Racks</span><div class="f-amount">$200M</div><div class="f-detail"><div class="f-date">2025-08 · Great Lakes Data Racks &amp; Cabinets（米国）</div><div class="f-desc">カスタムラック。AIラックの重量・液冷配管対応。</div></div></div>
+    <div class="f-card"><span class="r-badge">Software</span><div class="f-amount">n/d</div><div class="f-detail"><div class="f-date">2025-08 · Waylay NV（ベルギー）</div><div class="f-desc">電源・冷却設備の監視・制御向け生成AIソフト。</div></div></div>
+    <div class="f-card corp"><span class="r-badge">Services</span><div class="f-amount">~$1.0B</div><div class="f-detail"><div class="f-date">2025-11発表 / 12月完了 · PurgeRite（米国）</div><div class="f-desc">液冷配管のフラッシング・パージ・ろ過。2026年業績次第で最大$250Mの追加支払い。2026年予想EBITDAの約10倍（シナジー込み）。</div></div></div>
+    <div class="f-card"><span class="r-badge">Modular</span><div class="f-amount">n/d</div><div class="f-detail"><div class="f-date">2026-04 · BMarko Structures（米国）</div><div class="f-desc">プレハブのモジュール構造物（電源棟・冷却棟の外箱）。</div></div></div>
+    <div class="f-card"><span class="r-badge">Thermal</span><div class="f-amount">n/d</div><div class="f-detail"><div class="f-date">2026-04 · Strategic Thermal Labs（米国）</div><div class="f-desc">液冷のエンジニアリング会社。</div></div></div>
+    <div class="f-card"><span class="r-badge">Thermal</span><div class="f-amount">n/d</div><div class="f-detail"><div class="f-date">2026-03発表 / 06完了 · ThermoKey（イタリア）</div><div class="f-desc">熱交換器・ドライクーラー。温水液冷で「チラーなし」の放熱が増えると、ここが主役になる。</div></div></div>
+    <div class="f-card"><span class="r-badge">Services</span><div class="f-amount">n/d</div><div class="f-detail"><div class="f-date">2026-09 · King Environmental Services（アイルランド）</div><div class="f-desc">流体管理サービス。PurgeRiteの欧州版の位置づけ。</div></div></div>
+    <div class="f-card corp"><span class="r-badge">Power</span><div class="f-amount">$1.45B</div><div class="f-detail"><div class="f-date">2026-09-02発表 · UtilityInnovation Group（米国・ローリー）</div><div class="f-desc">マイクログリッド制御、敷地内発電の統合、マイクログリッド用スイッチギア。最大$1.15Bのearnout（12・24か月のEBITDA目標）。2027年予想EBITDAの約13倍。Q4 2026完了予定。</div></div></div>
+  </div>
+  <p>過去には2018年にGeist（ラックPDU）、Energy Labs（空調機）、MEMS Power Generation（仮設電源）も買っている。<b>パターン：</b>①1件あたり$1B前後までの中型、②技術・製品の穴埋め（液冷、熱交換、配電、マイクログリッド）、③サービス（保守・流体管理）で据付ベースから継続収益を取る。いずれも単独では小さいが、「grid to chip」の一括供給を厚くする方向で一貫している。</p>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s11">
+  <div class="sec-label"><span class="num">11</span>Leadership</div>
+  <h2>イタリア人CEOと、Honeywellを立て直した会長</h2>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Giordano（Gio）Albertazzi</span><span class="p-role">CEO</span></div>
+    <div class="p-line">イタリア出身／ミラノ工科大学（機械工学）、Stanford（マネジメント修士）／Emerson・Vertiv一筋で約28年</div>
+    <ul>
+      <li><b>初期：</b>エレベーター大手Kone Elevatorsで生産・製品開発を担当した後、1998年にEmerson（Network Power）へ入社。1999〜2001年は工場長。</li>
+      <li><b>Emerson Network Power：</b>2002〜04年にEMEAのマーケティング・製品管理、2004〜06年にイタリア事業責任者。その後Liebert Europe・EMEAのサービス・営業を率い、2014年に営業担当VP。</li>
+      <li><b>Vertiv：</b>2016年の独立時からEMEA President。欧州事業の収益性を大きく改善したと評価される。2022年3月にAmericas President、同年10月にCOO。</li>
+      <li><b>CEO（2023-01〜）：</b>利益率崩壊の後を受け、価格規律・工場生産性・AI対応の製品投入を同時に進めた。就任時の株価は$14前後、最高値は約$380。</li>
+      <li><b>スタイル：</b>「AIは設計の問題であり、物理の問題」と繰り返し、NVIDIAのロードマップの1世代先に製品を置く戦略を打ち出した。</li>
+    </ul>
+    <div class="p-quote">"Demand for AI and general compute continues to intensify, with deployments becoming increasingly complex and infrastructure-intensive."（Q2 2026決算リリース）</div>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">David M. Cote</span><span class="p-role">Executive Chairman</span></div>
+    <div class="p-line">1952年生まれ／ニューハンプシャー大学／GE→TRW→Honeywell CEO（2002–2017）</div>
+    <ul>
+      <li><b>経歴：</b>GEで約25年（家電事業トップなど）、TRWのCEOを経て2002年にHoneywell CEO。在任中に時価総額を約$20Bから約$120Bへ押し上げたとされる。</li>
+      <li><b>Vertivとの関わり：</b>Goldman Sachsと共同でSPAC（GSAH）を立ち上げ、上場前から買収対象としてVertivを選んだ。上場後はExecutive Chairmanとして経営に深く関与。</li>
+      <li><b>経営哲学：</b>著書『Winning Now, Winning Later』。短期の業績と長期の投資を両立させる規律、徹底した業務改善（Operating System）、経営陣の入れ替えをためらわない。</li>
+    </ul>
+    <div class="p-quote">2022年の失速後、CEO交代と価格戦略の見直しが行われた。Executive Chairmanとしての関与の度合いは公開情報からは断定できない（筆者注）。</div>
+  </div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Name</th><th>Role</th><th>Background</th></tr></thead>
+    <tbody>
+      <tr><td>Craig Chamberlin</td><td>EVP &amp; CFO（2025-11〜）</td><td>Wabtec（Transit事業 約$3BのCFO）、GEで14年。オハイオ大学（電気工学、MBA）。前任David Fallonは8年間CFOを務め、2026年末まで顧問</td></tr>
+      <tr><td>Michael Resha</td><td>EVP Manufacturing, Logistics &amp; Operational Excellence（2026-10〜）</td><td>元Stellantis。前任Anders Karlborgは特別プロジェクトへ</td></tr>
+      <tr><td>Ken Kurahashi（倉橋健）</td><td>Country Head, Japan（2025-05〜）</td><td>日本法人の立ち上げを担当</td></tr>
+      <tr><td>Rob Johnson</td><td>元CEO（2016–2022）</td><td>Emerson時代から30年のベテラン。SPAC上場を率いた</td></tr>
+    </tbody>
+  </table></div>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s12">
+  <div class="sec-label"><span class="num">12</span>Japan Connections</div>
+  <h2>日本は「これから直販を始める市場」。日本勢はむしろ米国で競合に</h2>
+  <p>VertivとNTT・KDDI・ソフトバンク、富士電機・三菱電機・ダイキンとの<b>資本提携や公表された供給契約は確認できなかった</b>（2026年10月時点の検索範囲）。日本との関係は「日本法人の新設」と「日本企業が米国DC市場で競合として迫ってくる」の2本で整理するのが正確だ。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th>Relationship</th><th>中身（確認できた事実）</th></tr></thead>
+    <tbody>
+      <tr><td>バーティブジャパン合同会社</td><td>自社</td><td>2025年2月設立。以前は代理店販売のみ。2025年5月に倉橋健氏がCountry Head。主力はモジュール型DC（OneCore、SmartRun）、保守は自社＋協力会社。耐震要件に合わせて柱を補強するなど日本仕様に対応。社内エンジニア15〜20名を数倍に増やす計画（Impress Cloud Watch）</td></tr>
+      <tr><td>三菱電機</td><td>競合（UPS・冷却）</td><td>米国ではMitsubishi Electric Power Products（MEPPI）がUPSと伊MEHITS製の冷却機を組み合わせてDC向けに販売。2026年7月、米オハイオ州メイソンに冷却機の新会社<b>MEHITS US</b>（資本金$15M、2027年4月生産開始、2030年に年6,000台、CDU含む）を設立と発表。Vertivの地元オハイオでの正面対決</td></tr>
+      <tr><td>ダイキン工業</td><td>競合（チラー・液冷）</td><td>Daikin Applied（米）が2025年8月にDDC Solutions（高密度冷却キャビネット）、11月にChilldyne（負圧式液冷CDU、最大300kW）を買収。FY2025（3月期）は売上¥5.02T、営業利益¥415B。米国DC向け大型空調が好調</td></tr>
+      <tr><td>富士電機</td><td>競合（国内UPS）</td><td>国内DC向けUPS・受変電の大手。Vertivとの直接の関係は確認できず。日本市場でVertivが直販を広げる際の相手</td></tr>
+      <tr><td>NTTデータ／NTTコミュニケーションズ</td><td>潜在顧客</td><td>国内で液冷の実証（二相式直接液冷など）を実施。パートナーは日比谷総合設備、桑名金属工業などで、Vertivの名前は出ていない</td></tr>
+      <tr><td>ソフトバンク</td><td>間接</td><td>OpenAI・OracleとのStargateの出資者。Stargateの建屋にVertiv製品が入るかは<span class="unv">未確認</span></td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout"><strong>読み：</strong>日本のDC市場では、電源は富士電機・東芝・三菱電機、空調はダイキン・三菱電機・日立系といった国内勢の地盤が固く、Vertiv（旧Emerson Network Power時代を含む）は外資系顧客向けの代理店販売が中心だった。日本法人の新設は、<b>ハイパースケーラーの日本リージョン拡大に「グローバル共通仕様」で付いていく</b>ための動きと読める。逆方向では、三菱電機・ダイキンが<b>米国で液冷・チラーの供給力を積み増している</b>ことの方が、Vertivのマージンにとっては現実的な脅威だ。</div>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s13">
+  <div class="sec-label"><span class="num">13</span>Risks</div>
+  <h2>需要の天井、工場の生産性、そして「見えない受注」</h2>
+  <div class="warn-box"><div class="w-title">Key risks</div><ul>
+    <li><b>AI設備投資のサイクル：</b>ハイパースケーラー4社の2026年設備投資は約$700B超、2027年は$1T超の予想も出ている。資金調達（社債・プライベートクレジット）やAIの収益化に疑問が出れば、建設計画の後ろ倒しが真っ先にVertivの受注に響く。</li>
+    <li><b>受注開示の停止：</b>四半期の受注・受注残が見えないため、需要減速を株価が遅れて織り込む（あるいは過剰に恐れる）リスク。</li>
+    <li><b>工場の生産性と利益率：</b>CFO自身が2026年9月に「工場は本来の効率に達していない」と認めた。新工場・人員増の立ち上げコストが続くと、27%目標が遠のく。製品の伸びがサービスより速いとミックスでも利益率が下がる。</li>
+    <li><b>技術の転換：</b>45°C温水冷却でチラーの必要量が減る、800V DCでUPSの構成が変わる、など、既存の稼ぎ頭が設計変更で縮む可能性。逆に乗り遅れれば新しい製品群でシェアを失う。</li>
+    <li><b>競争：</b>Schneider（Motivair）、Eaton、nVent、Trane、Modine、ダイキン、三菱電機、Delta、Huawei、Envicool、さらにサーバーODMの液冷内製化。CDUは参入障壁が比較的低い。</li>
+    <li><b>関税・サプライチェーン：</b>2025年Q2に関税で利益率が一時低下。銅・アルミ・電子部品の価格、中国・メキシコの工場からの輸入。</li>
+    <li><b>M&amp;Aの統合：</b>2025〜26年に10件近い買収。UIGはearnout込みで最大$2.6B。のれん・無形資産の減損と統合の手間。</li>
+    <li><b>株主訴訟：</b>Q2の売上未達・株価急落後、複数の法律事務所が「調査開始」を告知（現時点では申し立てにすぎない）。</li>
+    <li><b>高いβ：</b>5年βは約2.05。金利・AI関連のセンチメントで大きく振れる。</li>
+  </ul></div>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s14">
+  <div class="sec-label"><span class="num">14</span>Stock Analysis (NFA)</div>
+  <h2>高値から約49%下落。予想PERは6月末の約半分</h2>
+  <div class="callout"><strong>NFA（Not Financial Advice）：</strong>このセクションは個人の学習用メモで、投資助言ではない。シナリオの数字はすべて筆者の仮定にもとづく試算。</div>
+  <div class="chart"><svg viewBox="0 0 480 246" width="100%" role="img" aria-label="VRT share price（終値・概算）" style="display:block;width:100%;height:auto;font-family:Poppins,'Noto Sans JP',sans-serif"><text x="0" y="14" font-size="12" fill="#444">VRT share price（終値・概算）</text><text x="472" y="14" font-size="11" fill="#888" text-anchor="end">$</text><line x1="48" y1="206.0" x2="466" y2="206.0" stroke="#bbb"/><text x="44" y="210.0" font-size="11" fill="#999" text-anchor="end">0</text><line x1="48" y1="163.0" x2="466" y2="163.0" stroke="#e6e6e6"/><text x="44" y="167.0" font-size="11" fill="#999" text-anchor="end">100</text><line x1="48" y1="120.0" x2="466" y2="120.0" stroke="#e6e6e6"/><text x="44" y="124.0" font-size="11" fill="#999" text-anchor="end">200</text><line x1="48" y1="77.0" x2="466" y2="77.0" stroke="#e6e6e6"/><text x="44" y="81.0" font-size="11" fill="#999" text-anchor="end">300</text><line x1="48" y1="34.0" x2="466" y2="34.0" stroke="#e6e6e6"/><text x="44" y="38.0" font-size="11" fill="#999" text-anchor="end">400</text><polyline fill="none" stroke="#111" stroke-width="2" points="58.0,201.7 114.9,202.1 171.7,185.4 228.6,157.0 285.4,70.1 342.3,42.6 399.1,101.5 456.0,122.6"/><circle cx="58.0" cy="201.7" r="3" fill="#111"/><text x="58.0" y="193.7" font-size="10.5" fill="#111" text-anchor="middle">10</text><text x="58.0" y="222" font-size="9.5" fill="#666" text-anchor="middle">2020-02</text><circle cx="114.9" cy="202.1" r="3" fill="#111"/><text x="114.9" y="194.1" font-size="10.5" fill="#111" text-anchor="middle">9</text><text x="114.9" y="234" font-size="9.5" fill="#666" text-anchor="middle">2022-07</text><circle cx="171.7" cy="185.4" r="3" fill="#111"/><text x="171.7" y="177.4" font-size="10.5" fill="#111" text-anchor="middle">48</text><text x="171.7" y="222" font-size="9.5" fill="#666" text-anchor="middle">2023-12</text><circle cx="228.6" cy="157.0" r="3" fill="#111"/><text x="228.6" y="149.0" font-size="10.5" fill="#111" text-anchor="middle">114</text><text x="228.6" y="234" font-size="9.5" fill="#666" text-anchor="middle">2024-12</text><circle cx="285.4" cy="70.1" r="3" fill="#111"/><text x="285.4" y="62.1" font-size="10.5" fill="#111" text-anchor="middle">316</text><text x="285.4" y="222" font-size="9.5" fill="#666" text-anchor="middle">2026-05</text><circle cx="342.3" cy="42.6" r="3" fill="#111"/><text x="342.3" y="34.6" font-size="10.5" fill="#111" text-anchor="middle">380</text><text x="342.3" y="234" font-size="9.5" fill="#666" text-anchor="middle">2026高値</text><circle cx="399.1" cy="101.5" r="3" fill="#111"/><text x="399.1" y="93.5" font-size="10.5" fill="#111" text-anchor="middle">243</text><text x="399.1" y="222" font-size="9.5" fill="#666" text-anchor="middle">2026-10-09</text><circle cx="456.0" cy="122.6" r="3" fill="#111"/><text x="456.0" y="114.6" font-size="10.5" fill="#111" text-anchor="middle">194</text><text x="456.0" y="234" font-size="9.5" fill="#666" text-anchor="middle">2026-10-23</text></svg></div>
+  <p class="note">2020-02はSPACの基準価格$10、2022-07・2023-12・2024-12・2026高値はおおよその水準<span class="unv">概算</span>。2026-05-29（$316）・10-09（$242.78）・10-23（$194.32）は報道・データサイト記載の終値。</p>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Price（2026-10-23）</div><div class="v">$194.32</div></div>
+    <div class="kv-item"><div class="k">Market cap / EV</div><div class="v">$74.8B / $75.0B</div></div>
+    <div class="kv-item"><div class="k">P/E TTM / Forward</div><div class="v">44.0x / 24.5x</div></div>
+    <div class="kv-item"><div class="k">P/S / EV/EBITDA</div><div class="v">6.5x / 28.0x</div></div>
+    <div class="kv-item"><div class="k">FCF TTM / P/FCF</div><div class="v">$2.93B / 約25.5x</div></div>
+    <div class="kv-item"><div class="k">Consensus target</div><div class="v">$333.71（30社、Strong Buy）</div></div>
+  </div>
+  <p>2026年の値動きは3段階で説明できる。①1〜7月：受注$15Bと上方修正で高値約$380へ。②7/29：Q2売上未達で1日−17%、以後9月にかけて売りが続く。③10月：インフレ指標を受けた利上げ懸念、CoreWeaveの債務懸念、アナリストの目標株価引き下げ（RBC $337→$323、Mizuho $300→$280、Morgan Stanley $350→$330。いずれも買い推奨は維持）で、10/23に$194。GLJ Researchは10/6に売り推奨（目標$188）で新規カバー。注目すべきは、この間にNTM EPS予想は約$6.80→約$7.90と<b>上がっている</b>こと。下げの主因は利益予想ではなく<b>倍率の縮小</b>（NTM PER 約49倍→約26倍）だ。</p>
+  <h3>Bull / Base / Bear（2027年のAdjusted EPS × 倍率）</h3>
+  <div class="chart"><svg viewBox="0 0 480 240" width="100%" role="img" aria-label="Scenario value per share vs. current（筆者試算・NFA）" style="display:block;width:100%;height:auto;font-family:Poppins,'Noto Sans JP',sans-serif"><text x="0" y="14" font-size="12" fill="#444">Scenario value per share vs. current（筆者試算・NFA）</text><text x="472" y="14" font-size="11" fill="#888" text-anchor="end">$/share</text><line x1="48" y1="206.0" x2="472" y2="206.0" stroke="#bbb"/><text x="44" y="210.0" font-size="11" fill="#999" text-anchor="end">0</text><line x1="48" y1="163.0" x2="472" y2="163.0" stroke="#e6e6e6"/><text x="44" y="167.0" font-size="11" fill="#999" text-anchor="end">100</text><line x1="48" y1="120.0" x2="472" y2="120.0" stroke="#e6e6e6"/><text x="44" y="124.0" font-size="11" fill="#999" text-anchor="end">200</text><line x1="48" y1="77.0" x2="472" y2="77.0" stroke="#e6e6e6"/><text x="44" y="81.0" font-size="11" fill="#999" text-anchor="end">300</text><line x1="48" y1="34.0" x2="472" y2="34.0" stroke="#e6e6e6"/><text x="44" y="38.0" font-size="11" fill="#999" text-anchor="end">400</text><rect x="65.0" y="151.8" width="50.9" height="54.2" fill="#111"/><text x="90.4" y="146.8" font-size="11" fill="#111" text-anchor="middle">126</text><text x="90.4" y="224" font-size="10.5" fill="#666" text-anchor="middle">Bear</text><rect x="149.8" y="109.7" width="50.9" height="96.3" fill="#111"/><text x="175.2" y="104.7" font-size="11" fill="#111" text-anchor="middle">224</text><text x="175.2" y="224" font-size="10.5" fill="#666" text-anchor="middle">Base</text><rect x="234.6" y="122.6" width="50.9" height="83.4" fill="#bbb"/><text x="260.0" y="117.6" font-size="11" fill="#111" text-anchor="middle">194</text><text x="260.0" y="224" font-size="10.5" fill="#666" text-anchor="middle">Current</text><rect x="319.4" y="59.8" width="50.9" height="146.2" fill="#111"/><text x="344.8" y="54.8" font-size="11" fill="#111" text-anchor="middle">340</text><text x="344.8" y="224" font-size="10.5" fill="#666" text-anchor="middle">Bull</text><rect x="404.2" y="62.4" width="50.9" height="143.6" fill="#bbb"/><text x="429.6" y="57.4" font-size="11" fill="#111" text-anchor="middle">334</text><text x="429.6" y="224" font-size="10.5" fill="#666" text-anchor="middle">Consensus</text></svg></div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Scenario</th><th>前提</th><th class="num">Adj. EPS 2027</th><th class="num">P/E</th><th class="num">Market cap</th><th class="num">Per share</th></tr></thead>
+    <tbody>
+      <tr><td>Bear</td><td>2027年にAI建設が一服、受注が減少。価格競争と工場コストで利益率は23%台で頭打ち。成長率は一桁台に</td><td class="num">$7.0</td><td class="num">18x</td><td class="num">約$49B</td><td class="num">$126</td></tr>
+      <tr><td>Base</td><td>売上+25%前後、利益率+1pt。800V DC・液冷の新製品は計画通り。倍率は電機大手並み</td><td class="num">$8.6</td><td class="num">26x</td><td class="num">約$86B</td><td class="num">$224</td></tr>
+      <tr><td>Bull</td><td>Q3・Q4で下期偏重ガイダンスを達成し、UIGが上乗せ。2027年も+30%成長、利益率25%。成長株としての倍率が戻る</td><td class="num">$10.0</td><td class="num">34x</td><td class="num">約$131B</td><td class="num">$340</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">発行済株式約385Mで計算。参考：会社の2026年ガイダンスのAdjusted EPSは$6.65–6.75。sec-api.ioの分析は2029年のAdjusted EPSに20/28/36倍を掛けて$126/$308/$532を示している。</p>
+  <div class="callout"><strong>読み：</strong>現在値$194はBase（$224）とBear（$126）の間で、市場は「2027年に成長が鈍る」可能性をかなり織り込んでいる。上振れの鍵は<b>Q3・Q4の実行（売上と工場の生産性）</b>、下振れの鍵は<b>ハイパースケーラーとネオクラウドの資金繰り</b>。β2超の銘柄なので、方向が合っていても途中の振れ幅は大きい。</div>
+  <h3>Leading indicators（先行指標）</h3>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">Q3決算（2026-10-28）：売上・調整後営業利益・通期ガイダンス</div><div class="ind-desc">ガイダンス下限（$3.65B／$898M）を割るかどうか。前受金残高と「段階納入」の進捗コメント。</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">ハイパースケーラー4社の設備投資ガイダンス（10月下旬〜）</div><div class="ind-desc">Microsoft・Alphabet・Amazon・MetaのQ3決算での2026年・2027年の設備投資見通し。2027年に$1Tを超えるか。</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">NVIDIAの出荷ロードマップ（Vera Rubin、Rubin Ultra/Kyber）</div><div class="ind-desc">Rubinの量産出荷が2026年後半に計画どおり進むか。800V DC・液冷の採用時期がVertivの新製品の売上時期を決める。</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">同業の受注（Eaton Electrical Americas、Schneider、nVent、Modine）</div><div class="ind-desc">Vertivが受注を出さなくなった分、同業の受注・受注残がDC需要の代理指標になる。</div></div></div>
+    <div class="ind-item"><div class="ind-num">5</div><div><div class="ind-title">ネオクラウドの資金調達（CoreWeave等の社債スプレッド）</div><div class="ind-desc">高金利・債務懸念が強まると、建設計画の延期が出やすい。</div></div></div>
+    <div class="ind-item"><div class="ind-num">6</div><div><div class="ind-title">2026年10-K（2027年2月）のBacklog</div><div class="ind-desc">年1回の受注残開示。$15Bから増えたか減ったか、が最大の確認点。</div></div></div>
+    <div class="ind-item"><div class="ind-num">7</div><div><div class="ind-title">UIG買収の完了とearnout条件</div><div class="ind-desc">Q4完了予定。マイクログリッド需要の大きさと、Vertivのサービス網との相乗効果。</div></div></div>
+  </div>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec qa" id="s15">
+  <div class="sec-label"><span class="num">15</span>Q&amp;A</div>
+  <h2>事業理解のための問答</h2>
+  <details><summary>Vertivは一言でいうと何の会社？</summary><div class="qa-a">データセンターの<b>「電気を届ける装置」と「熱を捨てる装置」を両方作り、据え付け後の保守もする会社</b>。サーバーやGPUそのものは作らない。売上の8割が製品（UPS、スイッチギア、空調、液冷CDU、ラック、プレハブ棟）、2割が保守サービス。</div></details>
+  <details><summary>UPSとスイッチギアとバスウェイは何が違う？</summary><div class="qa-a"><b>スイッチギア</b>は電力網から受けた高圧・中圧の電気を開閉・保護する「建物の元栓」。<b>UPS</b>は停電や瞬間的な電圧低下が起きても、発電機が立ち上がるまでの数秒〜数分、電池などで電気を途切れさせない装置。<b>バスウェイ</b>は太いケーブルの代わりに金属の導体（バスバー）を天井に通し、ラック列へ電気を配る「電気の幹線」。Vertivはこの3つをすべて持つ。</div></details>
+  <details><summary>空冷と液冷、CDUはどこに入る？</summary><div class="qa-a">空冷は部屋の空気を冷やし、サーバーのファンで熱を運ぶ。液冷（direct-to-chip）はGPUの上に金属板（コールドプレート）を載せて冷却液を流す。<b>CDU</b>はラック側の冷却液ループと建屋の冷水ループの間に入る熱交換器＋ポンプで、温度・圧力・流量を管理する。液冷の「心臓」なので、ここを押さえると周辺の配管・保守までついてくる。</div></details>
+  <details><summary>なぜEatonやSchneiderより成長率が高いのに、利益率は低いの？</summary><div class="qa-a">理由は3つ。①<b>定義の違い</b>：Eatonの24.5%は本社費を引く前のsegment margin。②<b>立ち上げコスト</b>：Vertivは売上が1年で3〜4割増えており、新工場・新人員の効率がまだ上がりきっていない（CFO自身が認めている）。③<b>地域ミックス</b>：APACのマージンが11〜13%と低い。会社は2030年に27%超を目標とし、量の増加と工場の生産性改善で埋めると説明する。</div></details>
+  <details><summary>受注残$15Bがあるのに、なぜQ2の売上は予想を下回った？</summary><div class="qa-a">受注残は「いつか出荷する」約束の合計で、<b>いつ売上になるかは顧客の工期次第</b>。大型案件は建屋や電力接続の完成に合わせて複数フェーズに分けて納入されるため、顧客側が遅れると出荷も遅れる。加えて部品・物流の一時的な渋滞があった。会社はその分を下期に寄せたので、Q3（Organic +34〜36%）とQ4で取り戻せるかが焦点。</div></details>
+  <details><summary>四半期の受注を開示しなくなったのは悪いサイン？</summary><div class="qa-a">一概には言えない。GW級の案件は1件で数億〜数十億ドルあり、四半期ごとのBook-to-billが2.9倍になったり1倍を割ったりと大きくぶれる。会社は「ノイズが多い」と説明する。ただ、2025年Q4に受注が爆発した直後の変更だったため、市場は<b>「悪い数字を隠す準備では」</b>と疑いやすい。年1回の10-Kで受注残が$15Bを維持・拡大していれば、この疑念は消える。</div></details>
+  <details><summary>800V DCになると、VertivのUPS事業はどうなる？</summary><div class="qa-a">現在の交流UPS→ラック内54V直流の構成が、<b>建屋内の大型整流器→800V直流で配電→ラック内でDC-DC変換</b>に置き換わる。交流UPSの台数は減りうるが、整流器・DCバスウェイ・DC用バックアップ（電池・スーパーキャパシタ）という新製品の市場ができる。Vertivは2026年後半に800V DC製品群を投入すると表明済み。新旧の入れ替わりで、既存の強みを守れるか・新規参入（Delta、Eaton、Schneider、半導体メーカー）に食われるかの勝負になる。</div></details>
+  <details><summary>Platinum Equity・SPAC・Coteは、Vertivに何を残した？</summary><div class="qa-a">Platinum Equityは、Emersonの中で「非中核の雑多な事業部」だったNetwork Powerを独立企業として切り出し、不要事業（ASCO等）を売り、<b>データセンター専業</b>の形に整えた。SPACは、IPOより早く上場資金を得る手段。Coteは会長として<b>Honeywell流の業務改善と規律</b>を経営に持ち込んだとされ、2022年の失速後にはCEOが交代した。AIの追い風が来たとき、受け皿の形ができていたことが大きい。</div></details>
+  <details><summary>日本企業にとってVertivは何？</summary><div class="qa-a">国内では、ハイパースケーラーの日本リージョン向けに<b>グローバル仕様で入ってくる新しい競合</b>（2025年に日本法人設立）。富士電機・三菱電機・ダイキンなどの地盤に、プレハブ型DCで切り込む。米国では逆に、三菱電機（オハイオ州に冷却機の新工場）、ダイキン（Chilldyne等の液冷買収）が<b>Vertivの本拠地で競合として拡大</b>している。現時点で大手日本企業との公表された資本・供給提携は見つからなかった。</div></details>
+  <details><summary>時価総額$75Bは高い？安い？</summary><div class="qa-a">2026年の会社ガイダンスでAdjusted EPS $6.70、予想PER約25倍は、成長率（+30%台）を考えればEaton（+8%成長で約26倍）より割安にも見える。一方で、①AI設備投資のピークがいつ来るか、②受注が見えない、③利益率の改善が工場の生産性次第、の3点で割り引かれている。<b>2027年に成長が続くと確信できるかどうか</b>で評価が真っ二つに割れる銘柄だ（→<a href="#s14">Stock Analysis</a>）。</div></details>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sec" id="s-vocab">
+  <div class="sec-label"><span class="num">16</span>Vocabulary</div>
+  <h2>本件の英単語 — 語源・類義語・よく出る使い方</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Word</th><th>意味</th><th>語源</th><th>類義語・対比</th><th>よく出る使い方</th></tr></thead>
+    <tbody>
+      <tr><td>backlog</td><td>受注残</td><td>back（後ろ）＋log（丸太）。暖炉の奥に置く大きな薪→「後に控えているもの」</td><td>order book／RPO（remaining performance obligations）</td><td>"<b>Backlog</b> increased to $15.0 billion, up 109%"</td></tr>
+      <tr><td>book-to-bill</td><td>受注÷売上の比率</td><td>book（受注を帳簿に載せる）＋bill（請求する）</td><td>orders-to-sales</td><td>"Fourth quarter <b>book-to-bill</b> ratio was ~2.9x"</td></tr>
+      <tr><td>liquid cooling</td><td>液冷</td><td>liquidus（流れる）</td><td>air cooling（空冷）／immersion cooling（液浸）</td><td>"<b>Liquid cooling</b> is now table stakes for AI racks"</td></tr>
+      <tr><td>coolant distribution unit</td><td>冷却液分配装置（CDU）</td><td>coolant＝cool＋-ant（〜するもの）</td><td>heat exchanger／manifold</td><td>"a high-capacity <b>CDU</b> for liquid-cooled AI racks"</td></tr>
+      <tr><td>busway</td><td>バスウェイ（幹線配電）</td><td>bus＝omnibus（すべての人のための）→共通の導体</td><td>busbar／cable tray</td><td>"high-efficiency DC <b>busways</b>"</td></tr>
+      <tr><td>switchgear</td><td>開閉装置・スイッチギア</td><td>switch＋gear（装置一式）</td><td>circuit breaker／switchboard</td><td>"low/medium voltage <b>switchgear</b>"</td></tr>
+      <tr><td>uninterruptible power supply</td><td>無停電電源装置（UPS）</td><td>un-＋interrupt（間を断つ）＋-ible</td><td>backup generator／BBU</td><td>"three-phase <b>UPS</b> systems"</td></tr>
+      <tr><td>earnout</td><td>業績連動の追加支払い</td><td>earn（稼ぐ）＋out（最後まで）</td><td>contingent consideration</td><td>"plus up to $1.15 billion <b>earnout</b>"</td></tr>
+      <tr><td>prefabricated</td><td>工場で事前に組み立てた</td><td>pre-（前に）＋fabricate（作る）</td><td>modular／stick-built（現場施工）</td><td>"<b>prefabricated</b> power and cooling skids"</td></tr>
+      <tr><td>hyperscaler</td><td>超大規模クラウド事業者</td><td>hyper-（超）＋scale</td><td>neocloud／colocation provider</td><td>"<b>hyperscaler</b> capex is set to top $700 billion"</td></tr>
+    </tbody>
+  </table></div>
+  <p class="upd">Last updated: 2026-10-25</p>
+</div>
+
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/1674101/000167410126000008/vrt-20251231.htm" target="_blank" rel="noopener">Vertiv — Form 10-K FY2025（2026-02）</a></li>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/1674101/000167410126000006/exhibit991vrt02112026.htm" target="_blank" rel="noopener">Vertiv — Q4 / FY2025 results（2026-02-11）</a></li>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/0001674101/000162828026026379/q12026exhibit991vrt04222026.htm" target="_blank" rel="noopener">Vertiv — Q1 2026 results（2026-04-22）</a></li>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/0001674101/000162828026050323/q22026exhibit991vrt07292026.htm" target="_blank" rel="noopener">Vertiv — Q2 2026 results（2026-07-29）</a></li>
+    <li><a href="https://investors.vertiv.com/news/news-details/2026/Vertiv-Announces-Date-of-Third-Quarter-2026-Earnings-Release-and-Conference-Call/" target="_blank" rel="noopener">Vertiv — Q3 2026 earnings date（10-28）</a></li>
+    <li><a href="https://investors.vertiv.com/news/news-details/2025/Vertiv-Reports-Strong-Third-Quarter-Results-including-Organic-Orders-60-Diluted-EPS-122-Adjusted-EPS-63-Raises-2025-Guidance/default.aspx" target="_blank" rel="noopener">Vertiv — Q3 2025 results</a></li>
+    <li><a href="https://investors.vertiv.com/news/news-details/2025/Vertiv-Names-Craig-Chamberlin-as-Chief-Financial-Officer/default.aspx" target="_blank" rel="noopener">Vertiv — Craig Chamberlin named CFO（2025-10-13）</a></li>
+    <li><a href="https://www.vertiv.com/en-ca/about/about-vertiv/executives/giordano-albertazzi/" target="_blank" rel="noopener">Vertiv — Giordano Albertazzi bio</a></li>
+    <li><a href="https://www.vertiv.com/en-in/about/news-and-events/news-releases/vertiv-accelerates-ai-infrastructure-evolution-in-alignment-with-nvidia-800-vdc-power-architecture-announcement/" target="_blank" rel="noopener">Vertiv — 800 VDC alignment with NVIDIA（2025-05）</a></li>
+    <li><a href="https://blogs.nvidia.com/blog/gigawatt-ai-factories-ocp-vera-rubin" target="_blank" rel="noopener">NVIDIA — Gigawatt AI factories at OCP（2025-10）</a></li>
+    <li><a href="https://www.vertiv.com/en-cn/about/news-and-events/news-releases/2026/vertiv-announces-agreement-to-acquire-utilityinnovation-group-to-accelerate-time-to-power-for-ai-data-centers" target="_blank" rel="noopener">Vertiv — UtilityInnovation Group agreement（2026-09-02）</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/vertiv-plans-1bn-purgerite-acquisition-to-support-data-center-mechanical-flushing-purging-and-filtration/" target="_blank" rel="noopener">DCD — PurgeRite $1B acquisition</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/vertiv-acquires-rack-maker-great-lakes-for-200-million/" target="_blank" rel="noopener">DCD — Great Lakes $200M</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/vertiv-acquires-data-center-cooling-firm-thermokey/" target="_blank" rel="noopener">DCD — ThermoKey acquisition</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/vertiv-acquires-prefab-enclosure-maker-bmarko/" target="_blank" rel="noopener">DCD — BMarko acquisition</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/Vertiv" target="_blank" rel="noopener">Wikipedia — Vertiv（history, M&amp;A table）</a></li>
+    <li><a href="https://spacinsider.com/2019/12/10/gs-acquisition-holdings-announces-combination-vertiv/" target="_blank" rel="noopener">SPACInsider — GSAH × Vertiv（2019-12-10）</a></li>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/1674101/000119312519309745/d768308dex991.htm" target="_blank" rel="noopener">SEC — GSAH merger announcement 8-K（2019）</a></li>
+    <li><a href="https://stockanalysis.com/stocks/vrt/statistics/" target="_blank" rel="noopener">stockanalysis — VRT statistics（2026-10-23 close）</a></li>
+    <li><a href="https://sec-api.io/insights/vertiv-vrt-q2-2026-results-and-outlook-backlog-data-center-demand-acquisitions-valuation-against-peers-and-scenarios-to-fy2029" target="_blank" rel="noopener">sec-api.io — VRT Q2 2026 analysis（2026-10-12）</a></li>
+    <li><a href="https://www.tikr.com/blog/vertiv-stock-fell-15-last-week-heres-what-its-october-28-report-needs-to-show" target="_blank" rel="noopener">TIKR — What the Oct 28 report needs to show</a></li>
+    <li><a href="https://www.tikr.com/blog/vertiv-stock-has-risen-191-in-one-year-and-the-investor-day-just-raised-the-ceiling-higher" target="_blank" rel="noopener">TIKR — Investor Day 2026 targets</a></li>
+    <li><a href="https://www.trefis.com/stock/vrt/articles/619653/what-changed-for-vertiv-stock-and-what-did-not/2026-10-21" target="_blank" rel="noopener">Trefis — What changed for Vertiv stock（2026-10-21）</a></li>
+    <li><a href="https://finance.yahoo.com/markets/stocks/articles/td-cowen-raises-price-target-202213825.html" target="_blank" rel="noopener">Yahoo Finance — TD Cowen on 2030 targets</a></li>
+    <li><a href="https://www.aa.com.tr/en/energy/finance/schneider-electric-posts-record-2025-revenue-of-402b/54970" target="_blank" rel="noopener">AA — Schneider Electric FY2025</a></li>
+    <li><a href="https://www.businesswire.com/news/home/20260202111800/en/Eaton-Reports-Record-Fourth-Quarter-2025-Results-with-Accelerating-Orders-and-Continued-Backlog-Growth-and-Issues-Guidance-on-2026-Outlook" target="_blank" rel="noopener">Eaton — Q4 / FY2025 results</a></li>
+    <li><a href="https://www.abb.com/global/en/news/132985" target="_blank" rel="noopener">ABB — Q4 2025 results</a></li>
+    <li><a href="https://investors.johnsoncontrols.com/news/news-details/2025/Johnson-Controls-Reports-Q4-and-FY25-Results-Initiates-FY26-Guidance-11-05-2025/default.aspx" target="_blank" rel="noopener">Johnson Controls — Q4 / FY25 results</a></li>
+    <li><a href="https://investors.tranetechnologies.com/news-and-events/news-releases/news-release-details/2026/Trane-Technologies-Reports-Strong-Fourth-Quarter-and-Full-Year-2025-Results-Robust-Bookings-and-Backlog-Provide-Strong-Visibility-Entering-2026" target="_blank" rel="noopener">Trane — Q4 / FY2025 results</a></li>
+    <li><a href="https://electricaltrends.com/2026/02/16/nvent-has-a-record-quarter-powered-by-ai-data-center-demand/" target="_blank" rel="noopener">Electrical Trends — nVent record quarter</a></li>
+    <li><a href="https://www.barchart.com/story/news/2137605/modine-reports-fourth-quarter-fiscal-2026-results" target="_blank" rel="noopener">Modine — Q4 FY2026 results</a></li>
+    <li><a href="https://finance.matsui.co.jp/stock/6367/settlement/index" target="_blank" rel="noopener">松井証券 — ダイキン工業 決算</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/daikin-acquires-liquid-cooling-firm-chilldyne/" target="_blank" rel="noopener">DCD — Daikin acquires Chilldyne</a></li>
+    <li><a href="https://www.mitsubishielectric.co.jp/ja/pr/2026/0730_ld/" target="_blank" rel="noopener">三菱電機 — MEHITS US設立（2026-07-30）</a></li>
+    <li><a href="https://cloud.watch.impress.co.jp/docs/news/2142192.html" target="_blank" rel="noopener">Impress Cloud Watch — バーティブジャパンの事業戦略</a></li>
+    <li><a href="https://www.vertiv.com/en-asia/about/news-and-events/news-releases/vertiv-appoints-ken-kurahashi-as-head-of-japan-business/" target="_blank" rel="noopener">Vertiv — Ken Kurahashi head of Japan（2025-06-18）</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/ntt-launches-two-liquid-cooling-tests-in-japan/" target="_blank" rel="noopener">DCD — NTT liquid cooling tests in Japan</a></li>
+    <li><a href="https://finance.yahoo.com/sectors/technology/articles/hyperscalers-hit-700-billion-2026-111243744.html" target="_blank" rel="noopener">Yahoo Finance — Hyperscalers $700B 2026 capex</a></li>
+    <li><a href="261013_duke_energy_deep_research.html">Internal — Duke Energy Deep Research</a></li>
+    <li><a href="261020_cxmt_deep_research.html">Internal — CXMT Deep Research</a></li>
+  </ul>
+  <p style="font-size:11px;color:var(--muted);margin-top:14px">Last updated: 2026-10-25</p>
+</div>
+
+</div>
+
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>
+/* 左サイド目次を .sec から生成し、スクロール位置でハイライトする */
+(function(){
+  function build(){
+    var host=document.getElementById('sideNav'); if(!host) return;
+    var secs=document.querySelectorAll('.page .sec[id]'); var ids=[];
+    var html='<div class="side-nav-title">Contents</div><ul class="side-nav-list">';
+    secs.forEach(function(sec,i){
+      var lb=sec.querySelector('.sec-label'); if(!lb) return;
+      var c=lb.cloneNode(true); var n=c.querySelector('.num'); var num=n?n.textContent.trim():('0'+(i+1)).slice(-2); if(n) n.remove();
+      ids.push(sec.id);
+      html+='<li><a class="side-nav-link" href="#'+sec.id+'" data-target="'+sec.id+'"><span class="side-nav-num">'+num+'</span>'+c.textContent.trim()+'</a></li>';
+    });
+    host.innerHTML=html+'</ul>'; spy(ids);
+  }
+  function spy(ids){
+    if(!('IntersectionObserver' in window)||!ids.length) return;
+    var visible={},current=null;
+    var obs=new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting) visible[e.target.id]=1; else delete visible[e.target.id]; });
+      var first=null; for(var i=0;i<ids.length;i++){ if(visible[ids[i]]){ first=ids[i]; break; } }
+      if(first&&first!==current){ current=first; document.querySelectorAll('.side-nav-link').forEach(function(a){ a.classList.toggle('active',a.dataset.target===first); }); }
+    },{rootMargin:'-12% 0px -70% 0px',threshold:0});
+    ids.forEach(function(id){ var el=document.getElementById(id); if(el) obs.observe(el); });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',build); else build();
+})();
+</script>
+<script src="../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>
+

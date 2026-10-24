@@ -10,6 +10,35 @@
 
 旧フォルダ名は `035_startup`（2026-06 に `035_company` へ改称）。
 
+## 最新フォーマット（2026-10-25〜）— TL;DR / Main / Terms の3タブ
+
+方針：**時間がない時は TL;DR だけ読めば会社が分かる**。深掘りは Main。手本 = [261017_powerx_deep_research.html](261017_powerx_deep_research.html)。
+部品（タブ・左サイド目次・株価チャート）は共通ファイル `../_shared/research_tabs.css` / `research_tabs.js` を読み込むだけ。使い方は JS 冒頭のコメント。
+
+**ページの骨格**
+1. hero（h1・バッジ・`Created / Last updated`・3行以内の説明・KPI 4〜5個）
+2. タブバー `<div class="ptabs" data-tabbar>` に TL;DR / Main。Terms タブは terms.js が自動で足す
+3. `<div class="pane" data-pane="tldr">` … 下記の TL;DR 構成
+4. `<div class="pane" data-pane="main" hidden>` … 目次＋従来の本文＋Sources（内容は削らない）
+
+**TL;DR の構成**（sec-label は英語、本文は中学生でも分かる日本語。専門用語は一言で言い換える。各節の末尾に `Mainで詳しく →`）
+| # | Label | 中身 |
+|---|---|---|
+| 01 | In One Line | 何の会社か・何がポイントか を2〜3文（`.oneliner`） |
+| 02 | (業界の前提) | 必要なら「◯◯ブームとは」等、会社を理解する前提を1節（例：系統用蓄電所ブーム） |
+| 03 | How It Makes Money | 稼ぎ方を3〜4ステップの `.flow` ＋ 儲けの源泉を1段落 |
+| 04 | Key Numbers | `.tl-kpis` 4〜6個（推移は「3 → 62 → 193」の形で） |
+| 05 | Why It Matters | 何がすごいか `.cards` 3〜4枚 |
+| 06 | Risks | リスク `.cards.risk` 3〜5枚 |
+| 07 | Stock（上場）/ Funding（未上場） | 上場：縮約版の株価チャート＋上がった理由／下がった理由／いま の3行。未上場：調達・評価額・主要株主 |
+| 08 | Bottom Line (NFA) | `.verdict` に筆者の読み＋次に見るイベント表 |
+
+**Main の決まりごと**
+- 節の並び・ラベルは英語（Overview → 業界 → Business → Customers/Backlog → Financials → Founding Story → Funding → … → Competitors → Japan Connections → Stock → Valuation/Bull/Bear → Q&A → Vocabulary → Sources）
+- 上場企業は **Stock: Price History & Major Moves** を必ず入れる：日足/週足チャート（`.pchart` に番号マーカー）＋番号付きの急騰・暴落タイムライン（`#mv1`…、各項目に 公式/報道/推定 タグ、理由が見つからなければ「個別材料が見当たらない」と書く）＋局面のパターン表＋Upcoming catalysts。株価データは Yahoo Finance chart API（`query1.finance.yahoo.com/v8/finance/chart/<ticker>`）で取れる
+- 表はすべて `.t-wrap` で横スクロール。数字の生データは `<details class="raw">`
+- 用語は `040_personal/0460_english/terms/terms_data.js` に追加（src=このページ）すると Terms タブに出る
+
 ## 共通コンポーネントの書き方
 
 新規ページは直近のリサーチHTMLをコピーして作る。以下は崩れやすい箇所の決まりごと。
@@ -70,3 +99,5 @@
 | [261013_nucor_deep_research.html](261013_nucor_deep_research.html) | Nucor | 鉄鋼（電炉ミニミル） | 2026-10-13 |
 | [261013_duke_energy_deep_research.html](261013_duke_energy_deep_research.html) | Duke Energy | 規制電力・ガス公益事業（原子力） | 2026-10-13 |
 | [261017_powerx_deep_research.html](261017_powerx_deep_research.html) | PowerX | 系統用蓄電システム（BESS・国産組立／中国製セル） | 2026-10-17 |
+| [261025_vertiv_deep_research.html](261025_vertiv_deep_research.html) | Vertiv | データセンター電源・冷却（液冷・UPS・スイッチギア） | 2026-10-25 |
+| [261025_schneider_electric_deep_research.html](261025_schneider_electric_deep_research.html) | Schneider Electric | 電化・配電／データセンター電源・冷却／産業オートメーション | 2026-10-25 |
