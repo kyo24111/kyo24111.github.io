@@ -259,7 +259,31 @@
 
   /* ---------- tabs ---------- */
   var redraws = [], tabCount = null;
+  /* ページ側に自前のタブバー（[data-tabbar] + [data-pane]）がある場合は、そこに Terms タブを足すだけ。
+     TL;DR / Main など自前タブの切替はページ側の JS が行い、Terms を押した時だけここで pane を隠す */
+  function ownTabs(bar, root, list) {
+    var b = document.createElement('button');
+    b.type = 'button'; b.dataset.tab = 't'; b.innerHTML = 'Terms<span class="c"></span>';
+    bar.appendChild(b);
+    var panel = document.createElement('div');
+    panel.className = 'tx-panel'; panel.hidden = true; panel.dataset.termsPanel = '';
+    var panes = root.querySelectorAll('[data-pane]'), last = panes[panes.length - 1];
+    if (last) last.parentNode.insertBefore(panel, last.nextSibling); else root.appendChild(panel);
+    tabCount = b.querySelector('.c');
+    redraws.push(table(panel, { list: list, hubLink: true, fields: true }));
+    bar.addEventListener('click', function (e) {
+      var x = e.target.closest('[data-tab]'); if (!x) return;
+      var t = x.dataset.tab === 't';
+      panel.hidden = !t;
+      if (!t) return;
+      bar.querySelectorAll('[data-tab]').forEach(function (y) { y.classList.toggle('on', y === x); });
+      Array.prototype.forEach.call(panes, function (p) { p.hidden = true; });
+      var side = document.getElementById('sideNav'); if (side) side.style.visibility = 'hidden';
+    });
+  }
   function tabs(root, list) {
+    var own = root.querySelector('[data-tabbar]');
+    if (own) return ownTabs(own, root, list);
     var bar = document.createElement('div');
     bar.className = 'tx-bar';
     bar.innerHTML = '<button class="on" data-tab="c">Content</button><button data-tab="t">Terms<span class="c"></span></button>';
