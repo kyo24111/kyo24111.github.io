@@ -174,6 +174,5 @@ Patrickの読書観は「**完読義務からの解放**」と「**好奇心ド�
 
 - **作成日**: 2026-06-02
 - **保存先**: [030_research/037_other/](../037_other/)
-- **関連メモリ**: [[project_wanderlust_exit]] / [[user_profile]]
 - **元動画**: 短い切り抜きクリップ（Patrick Collisonの読書論部分のみ）
 - **元Podcast**: [The Knowledge Project #32 (2018-05)](https://fs.blog/knowledge-project-podcast/patrick-collison/)
