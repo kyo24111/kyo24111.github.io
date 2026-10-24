@@ -17,7 +17,7 @@
      <script src="<相対>/030_research/_shared/research_tabs.js" defer></script>
      <script src="<相対>/040_personal/0460_english/terms/terms.js" defer></script>
 
-   ■ 左サイド目次：Main の中の `.sec[id]`（.sec-label をラベルに使う）。無ければ `h2[id]`。
+   ■ 左サイド目次：Main の中の `.sec[id]` / `section[id]`（.sec-label / .section-label をラベルに使う）。無ければ `h2[id]`。
    ■ TL;DR から `<a href="#節id">` で Main の節に飛ぶと、自動でタブを切り替える。
    ■ 最後に開いたタブはブラウザに記憶（localStorage、失敗しても既定の TL;DR で動く）。
 
@@ -72,10 +72,10 @@
   function sideNav() {
     var host = document.getElementById('sideNav'); if (!host || host.dataset.static != null) return;
     var scope = document.querySelector('[data-pane="main"]') || document.querySelector('.page') || document.body;
-    var secs = scope.querySelectorAll('.sec[id]'), items = [];
+    var secs = scope.querySelectorAll('.sec[id], section[id]'), items = [];
     if (secs.length) {
       secs.forEach(function (sec, i) {
-        var lb = sec.querySelector('.sec-label'); if (!lb) return;
+        var lb = sec.querySelector('.sec-label, .section-label'); if (!lb) return;
         var c = lb.cloneNode(true), n = c.querySelector('.num');
         var num = n ? n.textContent.trim() : ('0' + (i + 1)).slice(-2); if (n) n.remove();
         items.push({ id: sec.id, num: num, t: c.textContent.trim() });
