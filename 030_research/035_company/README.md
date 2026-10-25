@@ -101,3 +101,4 @@
 | [261017_powerx_deep_research.html](261017_powerx_deep_research.html) | PowerX | 系統用蓄電システム（BESS・国産組立／中国製セル） | 2026-10-17 |
 | [261025_vertiv_deep_research.html](261025_vertiv_deep_research.html) | Vertiv | データセンター電源・冷却（液冷・UPS・スイッチギア） | 2026-10-25 |
 | [261025_schneider_electric_deep_research.html](261025_schneider_electric_deep_research.html) | Schneider Electric | 電化・配電／データセンター電源・冷却／産業オートメーション | 2026-10-25 |
+| [261025_novelis_deep_research.html](261025_novelis_deep_research.html) | Novelis | アルミ圧延・リサイクル（Hindalco傘下・非上場） | 2026-10-25 |
