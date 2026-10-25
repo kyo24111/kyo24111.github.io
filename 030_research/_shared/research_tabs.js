@@ -78,6 +78,7 @@
         var lb = sec.querySelector('.sec-label, .section-label'); if (!lb) return;
         var c = lb.cloneNode(true), n = c.querySelector('.num');
         var num = n ? n.textContent.trim() : ('0' + (i + 1)).slice(-2); if (n) n.remove();
+        c.querySelectorAll('.sec-updated,.updated').forEach(function (x) { x.remove(); });  /* geo の「Added / Last updated」を目次に出さない */
         items.push({ id: sec.id, num: num, t: c.textContent.trim() });
       });
     } else {
