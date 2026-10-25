@@ -12,6 +12,15 @@
   - `added` は追加日（YYYY-MM-DD）。
 - フィルタはグループ内OR・グループ間AND。状態はURLハッシュに保存される。
 
+## 人物ページの形式（2026-10-25〜）— TL;DR / Main / Terms の3タブ
+
+時間がない時は TL;DR だけで「何者か・何を盗めるか」が分かるようにする。部品は `../_shared/research_tabs.css/js`、Terms タブは terms.js が自動で足す。手本 = `andrew_carnegie.html`。
+
+- **TL;DR**（`<div class="sec">` ＋ `.sec-label`。`<section>` / `.section-label` は使わない＝chapters に混ざるため）：In One Line / Life in Steps / What They Achieved / Why Legend / Character / Dark Side / Quotes / Lessons for Kyo
+- **Main**（`<section id>` ＋ `.section-label`）：既存本文を削らず、ラベルは `gen_chapters.py` の `CHAPTERS` に揃える。全員必須 = Why Legend / Origins / Achievements / Leadership / Philosophy / Dark Side / Legacy / Quotes / References。用語集は `Glossary`、出典は `References`（どちらも章ページには出さない）
+- 既存の section id は変えない（chapters からの深いリンク先）
+- 公開repoなので Lessons for Kyo に会社売却など非公開の話を書かない
+
 ## chapters/（章ごとの横断ページ）
 
 - 各人物ページの `<section>` を `section-label`（英語ラベル）で章に振り分け、`chapters/<slug>.html` に全人物ぶん並べる（例: リーダー論 = `chapters/leadership.html`）。

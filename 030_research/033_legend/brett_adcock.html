@@ -286,64 +286,6 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     section[id] { scroll-margin-top: 76px; }
     .tblhint { display: none; }
 
-    /* ===== サイド目次（横幅の広いビューのみ） ===== */
-    .ptoc { display: none; }
-    @media (min-width: 1280px) {
-      .ptoc {
-        display: block;
-        position: fixed;
-        top: 88px;
-        left: calc(50% - 626px);
-        width: 186px;
-        max-height: calc(100vh - 170px);
-        overflow-y: auto;
-        overscroll-behavior: contain;
-        z-index: 60;
-        scrollbar-width: thin;
-        opacity: 0; visibility: hidden;
-        transition: opacity .18s ease, visibility .18s;
-      }
-      .ptoc.show { opacity: 1; visibility: visible; }
-      .ptoc-lbl {
-        font-family: 'Poppins', sans-serif;
-        font-size: 9px; font-weight: 700;
-        letter-spacing: .18em; text-transform: uppercase;
-        color: var(--muted, #888);
-        padding-bottom: 8px; margin-bottom: 6px;
-        border-bottom: 1px solid var(--border, #e0e0e0);
-      }
-      .ptoc ul { list-style: none; margin: 0; padding: 0; }
-      .ptoc li { margin: 0; }
-      .ptoc a {
-        display: block;
-        padding: 6px 0 6px 12px;
-        border-left: 2px solid var(--border, #e0e0e0);
-        color: #999; text-decoration: none;
-        transition: color .15s, border-color .15s;
-      }
-      .ptoc a .en {
-        display: block;
-        font-family: 'Poppins', sans-serif;
-        font-size: 8.5px; font-weight: 700;
-        letter-spacing: .14em; text-transform: uppercase;
-        color: #c2c2c2; line-height: 1.4;
-      }
-      .ptoc a .jp {
-        display: block;
-        font-size: 12px; font-weight: 600;
-        line-height: 1.45; letter-spacing: -.01em;
-      }
-      .ptoc a:hover { color: #111; border-left-color: #999; }
-      .ptoc a:hover .en { color: #888; }
-      .ptoc a.on { color: #111; border-left-color: #111; }
-      .ptoc a.on .en { color: #888; }
-      .ptoc-top { margin-bottom: 4px; }
-    }
-    @media (min-width: 1560px) {
-      .ptoc { width: 216px; left: calc(50% - 660px); }
-      .ptoc a .jp { font-size: 12.5px; }
-    }
-
     /* ===== モバイル最適化 ===== */
     @media (max-width: 640px) {
       body { font-size: 14.5px; line-height: 1.85; }
@@ -417,7 +359,45 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     }
   </style>
   <!-- legend-ui:css:end -->
+  <link rel="stylesheet" href="../_shared/research_tabs.css">
+  <style>
+    /* tabs-format: light hero, TL;DR blocks, side nav */
+    .hero { background: var(--bg); border-bottom: 1px solid var(--border); padding: 48px 40px 36px; }
+    .hero-label { color: var(--muted); }
+    .hero h1 { color: var(--text); }
+    .hero-meta { border-top: 1px solid var(--border); }
+    .hero-meta-item .label { color: var(--muted); }
+    .hero-meta-item .value { color: var(--text); }
+    .hero-sub { color: var(--accent2); font-size: 14px; max-width: 680px; margin-top: 8px; line-height: 1.85; }
+    .hero-sub strong { color: var(--text); }
+    .hero-updated { font-family: 'Poppins', sans-serif; font-size: 11px; color: var(--muted); letter-spacing: .04em; margin: -4px 0 10px; }
+    .ptabs { margin-top: 28px; }
+    [data-pane="tldr"] .sec { margin-top: 40px; }
+    [data-pane="tldr"] .sec:first-child { margin-top: 8px; }
+    .sec-label { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .sec-label .num { background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; width: 22px; height: 22px; border-radius: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .sec-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .sec p { font-size: 14px; line-height: 1.85; }
+    .sec .more-row { margin-top: 10px; }
+    .sec .quote { margin: 12px 0; }
+    .sec .quote .ja { display: block; font-style: normal; font-size: 13.5px; margin-top: 6px; color: var(--accent2); }
+    .verdict .vlbl { font-family: 'Poppins', sans-serif; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.6); margin-bottom: 8px; }
+    .verdict p + p { margin-top: 10px; }
+    .tblwrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .side-nav { position: fixed; left: 20px; top: 84px; width: 200px; max-height: calc(100vh - 162px); overflow-y: auto; padding: 12px 0 32px; z-index: 10; scrollbar-width: thin; display: none; }
+    @media (min-width: 1400px) { .side-nav { display: block; } }
+    .side-nav-title { font-family: 'Poppins', sans-serif; font-size: 10.5px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; color: var(--muted); padding-left: 14px; margin-bottom: 8px; }
+    .side-nav-list { list-style: none; padding: 0; margin: 0; }
+    .side-nav-link { display: block; color: #a8a8a8; text-decoration: none; padding: 6px 8px 6px 14px; border-left: 2px solid transparent; font-size: 12px; line-height: 1.45; }
+    .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+    .side-nav-link.active { color: var(--accent); font-weight: 700; border-left-color: var(--accent); background: var(--surface); }
+    .side-nav-num { font-family: 'Poppins', sans-serif; font-size: 10.5px; color: var(--muted); margin-right: 6px; }
+    section[id] { scroll-margin-top: 112px; }
+    .legend-box { background: var(--surface) !important; color: var(--text) !important; border: 1px solid var(--border); border-left: 4px solid var(--accent); }
+    @media (max-width: 640px) { .hero { padding: 40px 18px 26px !important; } .sec-label { font-size: 9.5px; } }
+  </style>
 </head>
+
 <body>
 <!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">research</a><span class="s">/</span><a href="index.html">legend</a><span class="s">/</span><span class="c">Brett Adcock</span></nav><!-- crumbs:end -->
 <div class="snav">
@@ -449,15 +429,18 @@ body{padding-top:56px!important;padding-bottom:68px!important}
   </div>
 </nav>
 <script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="page" data-terms-root>
 
 <div class="hero">
   <div class="hero-inner">
     <div class="hero-label">人物リサーチ</div>
     <h1>Brett <span>Adcock</span></h1>
-    <p style="color:var(--muted); font-size:14px; max-width:560px;">
+    <div class="hero-updated">Created: 2026-05-14 ／ Last updated: 2026-10-25</div>
+    <p class="hero-sub">
       イリノイ州の三世代続く農家育ち。HR採用プラットフォームVetteryを$100Mで売却、
       Archer Aviationで上場、そしてFigure AIで$39Bバリュエーションのヒューマノイドロボット帝国を築く——
-      <strong style="color:#fff;">10年で3社を連発する"連続資本集約型ファウンダー"</strong>。
+      <strong>10年で3社を連発する"連続資本集約型ファウンダー"</strong>。
     </p>
     <div class="hero-meta">
       <div class="hero-meta-item">
@@ -482,6 +465,100 @@ body{padding-top:56px!important;padding-bottom:68px!important}
 
 <div class="container">
 
+<div class="ptabs" data-tabbar role="tablist">
+  <button type="button" class="on" data-tab="tldr">TL;DR</button>
+  <button type="button" data-tab="main">Main</button>
+</div>
+
+<div class="pane" data-pane="tldr">
+<div class="sec" id="t1">
+  <div class="sec-label"><span class="num">01</span>In One Line</div>
+  <div class="oneliner">イリノイの三世代続く農家の長男が、16歳から起業を続け、<b>Vettery（採用・売却）→ Archer Aviation（eVTOL・上場）→ Figure AI（ヒューマノイド・$39B）</b>と10年で3社を連発した。年々ハード度合いを上げる<b>「連続資本集約型ファウンダー」</b>で、39歳で純資産$19B。「ヒューマノイドは自動車産業より大きくなる」と本気で賭けている。</div>
+  <div class="more-row"><a class="more" href="#why">Mainで詳しく →</a></div>
+</div>
+
+<div class="sec" id="t2">
+  <div class="sec-label"><span class="num">02</span>Life in Steps</div>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-year">1986</div><p>イリノイ州モウィークアのコーン・大豆農家に生まれる。朝4時から農場で働いて育つ。</p></div>
+    <div class="tl-item"><div class="tl-year">2002頃（16歳）</div><p>ウェブ事業を始め、ECや金融サイトを並行運営。高校は首席で卒業。</p></div>
+    <div class="tl-item"><div class="tl-year">2012–18</div><p>NYCでVetteryを創業。何度もピボットし、Adecco Groupに約$100M〜$110Mで売却。</p></div>
+    <div class="tl-item"><div class="tl-year">2018–22</div><p>Archer Aviationを創業し、2021年にSPACでNYSE上場。2022年に取締役会と対立して退任。</p></div>
+    <div class="tl-item"><div class="tl-year">2022</div><p>Figure AIを創業。Boston Dynamics・Tesla・DeepMind・Apple出身者を集める。</p></div>
+    <div class="tl-item"><div class="tl-year">2024–25</div><p>BMW工場にFigure 02を投入。2025年9月、$39Bの評価額でSeries Cを調達。</p></div>
+    <div class="tl-item"><div class="tl-year">2026</div><p>Forbes推定の純資産$19B。ホワイトハウスでのイベント、IPO観測。</p></div>
+  </div>
+  <div class="more-row"><a class="more" href="#achievements">Mainで詳しく →</a></div>
+</div>
+
+<div class="sec" id="t3">
+  <div class="sec-label"><span class="num">03</span>What They Achieved</div>
+  <div class="tl-kpis">
+    <div class="k"><div class="v">3社</div><div class="l">10年で売却・上場・$39Bユニコーンを連発</div></div>
+    <div class="k"><div class="v">$39B</div><div class="l">Figure AIの評価額（2025年9月、ヒューマノイドで世界最高）</div></div>
+    <div class="k"><div class="v">約60倍</div><div class="l">Figure AIの3年間の評価額の伸び（Series B $2.6B → $39B）</div></div>
+    <div class="k"><div class="v">$19B</div><div class="l">推定純資産（Forbes 2026年2月）</div></div>
+    <div class="k"><div class="v">$1B</div><div class="l">ArcherがUnited Airlinesから得た予約注文</div></div>
+    <div class="k"><div class="v">10→50台超</div><div class="l">BMW工場で稼働するFigureロボット（15〜20%の効率改善を報告）</div></div>
+  </div>
+  <div class="more-row"><a class="more" href="#figure">Mainで詳しく →</a></div>
+</div>
+
+<div class="sec" id="t4">
+  <div class="sec-label"><span class="num">04</span>Why Legend</div>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">連続起業の最高峰</div><div class="cd-d">1社目を売り、2社目を上場させ、3社目で$39Bを作った。</div></div>
+    <div class="cd"><div class="cd-t">ハードテックへの確信</div><div class="cd-d">SaaSではなく資本集約型の産業に張り続けている。</div></div>
+    <div class="cd"><div class="cd-t">ビジョンのために椅子を捨てる</div><div class="cd-d">上場企業のCEOの座を、長期ビジョンを守るために手放した。</div></div>
+    <div class="cd"><div class="cd-t">現代型ファウンダー</div><div class="cd-d">発信・採用・プロダクト・投資家対応をすべて自分でやる。</div></div>
+  </div>
+  <div class="more-row"><a class="more" href="#why">Mainで詳しく →</a></div>
+</div>
+
+<div class="sec" id="t5">
+  <div class="sec-label"><span class="num">05</span>Character</div>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">農家の労働倫理</div><div class="cd-d">「Hard tech は Hard work」。平日14時間超勤務を公言する。</div></div>
+    <div class="cd"><div class="cd-t">採用は自分で</div><div class="cd-d">世界最高の人材をCEO自ら口説き、ビッグテックから引き抜いた。</div></div>
+    <div class="cd"><div class="cd-t">垂直統合</div><div class="cd-d">ハード・AI・工場をすべて内製する「ロボットのApple」を目指す。</div></div>
+    <div class="cd"><div class="cd-t">私生活は完全非公開</div><div class="cd-d">家族の名前や生活は出さず、日曜はfamily dayと決めている。</div></div>
+  </div>
+  <div class="more-row"><a class="more" href="#leadership">Mainで詳しく →</a></div>
+</div>
+
+<div class="sec" id="t6">
+  <div class="sec-label"><span class="num">06</span>Dark Side</div>
+  <div class="cards risk">
+    <div class="cd"><div class="cd-t">実績の誇張</div><div class="cd-d">BMWでの稼働規模などの発表が実態より大きいと疑問視された（詳細未確認）。</div></div>
+    <div class="cd"><div class="cd-t">安全をめぐる訴訟</div><div class="cd-d">元製品安全責任者が解雇をめぐり提訴したと報じられた（係争中）。</div></div>
+    <div class="cd"><div class="cd-t">取締役会との決裂</div><div class="cd-d">上場後のArcherで方向性が合わず退任した。</div></div>
+    <div class="cd"><div class="cd-t">期待先行の評価額</div><div class="cd-d">$39Bは売上に比べて先行しすぎという見方がある。</div></div>
+  </div>
+  <div class="more-row"><a class="more" href="#dark">Mainで詳しく →</a></div>
+</div>
+
+<div class="sec" id="t7">
+  <div class="sec-label"><span class="num">07</span>Quotes</div>
+  <div class="quote"><strong>I genuinely believe humanoids will be larger than the auto industry.</strong><span class="ja">「ヒューマノイドは自動車産業より大きくなると、本気で信じている。」</span><cite>— Brett Adcock</cite></div>
+  <div class="quote"><strong>I want to spend my life building hard, important things.</strong><span class="ja">「人生を、難しくて重要なものを作ることに使いたい。」</span><cite>— インタビューの趣旨</cite></div>
+  <div class="quote"><strong>Best people in the world or nothing.</strong><span class="ja">「世界最高の人材か、さもなくば誰もいらない。」</span><cite>— 採用方針</cite></div>
+  <div class="more-row"><a class="more" href="#quotes">Mainで詳しく →</a></div>
+</div>
+
+<div class="sec" id="t8">
+  <div class="sec-label"><span class="num">08</span>Lessons for Kyo</div>
+  <div class="verdict">
+    <div class="vlbl">筆者の読み — 創業者が盗めること</div>
+    <p><b>1. 1社目の売却を、次のハードテックの元手と信用に変える。</b> Vettery売却の資金と実績でArcherを、Archerの上場実績でFigureの人材と資金を集めた。ソフト寄りの事業を売った後に、より重い産業へ段階的に上がる道筋の手本。</p>
+    <p><b>2. 支配権の設計は、創業前に決める。</b> 取締役会との不一致でArcherを去り、Figureでは最初から自分のコントロールを保つ株主構造にした。大型調達が前提のハードインフラほど、議決権と取締役会の設計が生命線になる。</p>
+    <p><b>3. 採用こそCEOの最重要業務。</b> 最強の人材をCEO自ら口説き、X発信で採用候補と投資家を同時に引き寄せた。ただし実績の誇張は信用を削るので、発信は事実の範囲で。</p>
+  </div>
+</div>
+</div>
+
+<div class="pane" data-pane="main" hidden>
+
+
   <div class="summary">
     <strong>一言で言うと？</strong><br>
     イリノイの三世代続くコーン＆大豆農家の長男として育ち、16歳から起業を続ける筋金入りの連続起業家。
@@ -491,8 +568,66 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     農家由来の労働倫理と「数百年スケールで人類の労働を変える」野心を併せ持つ。
   </div>
 
-  <section>
-    <div class="section-label">Chronology</div>
+  <section id="why">
+    <div class="section-label">Why Legend</div>
+    <h2>なぜ注目するか（Kyo観点）</h2>
+    <ul class="fact-list">
+      <li>
+        <span class="key">連続起業家のロールモデル</span>
+        <span class="val">10年で3社（売却・上場・$39Bプライベートユニコーン）を連発したパターンは、Wanderlust売却後に新事業を立てるKyoの直接的な参考例。<strong>"1社目で売り抜けて2社目をやる"の最高峰</strong>。</span>
+      </li>
+      <li>
+        <span class="key">資本集約型ハードテックへの確信</span>
+        <span class="val">SaaSではなくCapEx重たいハードテックに張る、というBrettの一貫した方針は、Kyoが目指す「ハードインフラ系$10B+」と完全に重なる。Crusoeと並ぶ"参照すべき北極星"。</span>
+      </li>
+      <li>
+        <span class="key">取締役会との不一致でも辞める覚悟</span>
+        <span class="val">Archer退任の決断は、自分の長期ビジョンを守るためなら上場企業のCEO椅子も捨てる覚悟。<strong>"次にやることが明確なら今の地位は手段でしかない"</strong>という哲学は、Wanderlust売却後のKyoの心境とも重なる。</span>
+      </li>
+      <li>
+        <span class="key">パートナーシップの強さ</span>
+        <span class="val">Adam Goldsteinとの10年タッグ。Vettery・Archerで2回組み続けた共同創業者関係。<strong>ハードテック挑戦における共同創業者選定の重要性</strong>を示す手本。</span>
+      </li>
+      <li>
+        <span class="key">"Founder Mode"の現代代表</span>
+        <span class="val">Twitter発信 × プロダクト × 採用 × 投資家対応すべてをCEOが直接やる現代型ファウンダー像。Kyoのワンラスでの発信スタンスとも親和性が高い。</span>
+      </li>
+    </ul>
+    <div class="quote">
+      "I want to spend my life building hard, important things. Not optimizing software margins."
+      <cite>— Brett Adcock（趣旨を要約した発言、各種インタビューより）</cite>
+    </div>
+  </section>
+
+  <section id="origins">
+    <div class="section-label">Origins</div>
+    <h2>幼少期 / 学生時代</h2>
+    <ul class="fact-list">
+      <li>
+        <span class="key">原風景</span>
+        <span class="val">朝4時に起きて農場で働き、登校、放課後にまた農場。「地平線まで続く農地」が彼の世界の原点。後にハードテック起業で「物理的なものを作る」志向に直結。</span>
+      </li>
+      <li>
+        <span class="key">起業の原点</span>
+        <span class="val">16歳でウェブ事業を始める。アウトドアエレクトロニクスEC、金融コンテンツサイト「Street of Walls」などを並行運営。<strong>大学進学前に既に複数の事業を回していた</strong>。</span>
+      </li>
+      <li>
+        <span class="key">学業</span>
+        <span class="val">Central A&M高校を首席（valedictorian）で卒業。フロリダ大学Warrington College of BusinessでBusiness Admin学士（2008）。</span>
+      </li>
+      <li>
+        <span class="key">大学時代の哲学</span>
+        <span class="val">在学中から「ambitious, capital-intensive industries（野心的かつ資本集約的な産業）に取り組む」ことを決意。<strong>"小さなウェブ事業を量産するのではなく、世界を変える資本集約型のテック企業を作る"</strong>方向に明確に舵を切る。</span>
+      </li>
+      <li>
+        <span class="key">原体験</span>
+        <span class="val">農場で「機械化された労働の価値」を肌で理解。後年のFigure AI（ヒューマノイドで肉体労働を代替する）構想の原点と位置付けられる。</span>
+      </li>
+    </ul>
+  </section>
+
+  <section id="achievements">
+    <div class="section-label">Achievements</div>
     <h2>人生史</h2>
     <div class="timeline">
       <div class="tl-item">
@@ -563,65 +698,8 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     </div>
   </section>
 
-  <section>
-    <div class="section-label">Family</div>
-    <h2>家族 / ルーツ</h2>
-    <div class="card-grid">
-      <div class="card">
-        <h3>家系 — Moweaqua農家</h3>
-        <ul>
-          <li>イリノイ州モウィークア郊外の三世代続くコーン・大豆農家</li>
-          <li>地平線まで広がる農地、肉体労働中心の生活</li>
-          <li>「世代を超えて染み付いた労働倫理」を本人もコアアイデンティティと公言</li>
-          <li>テック業界でも"非シリコンバレー"の根っこを保持</li>
-        </ul>
-      </div>
-      <div class="card">
-        <h3>配偶者 — Catherine</h3>
-        <ul>
-          <li>Brettとの結婚生活はメディア露出を極小に抑えるプライベート方針</li>
-          <li>VetteryのピボットなどBrettの苦境を支えた"rock"と複数インタビューで言及</li>
-          <li>パロアルト在住、子ども2〜3人（メディアでは2人とする情報が多い）</li>
-        </ul>
-      </div>
-    </div>
-    <div style="margin-top:16px;">
-      <div class="episode">
-        <h3>農家の労働倫理 × シリコンバレー</h3>
-        <p>「子供の頃の朝、起きて農場で働き、それからまた起きて働く。それを毎日やる。シリコンバレーには真似できない労働倫理がここにある」（複数インタビューでの趣旨発言）。<strong>"Hard tech は Hard work"</strong>という思想は、Figure AIで毎日14時間以上働く社風として現れている。</p>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <div class="section-label">Childhood</div>
-    <h2>幼少期 / 学生時代</h2>
-    <ul class="fact-list">
-      <li>
-        <span class="key">原風景</span>
-        <span class="val">朝4時に起きて農場で働き、登校、放課後にまた農場。「地平線まで続く農地」が彼の世界の原点。後にハードテック起業で「物理的なものを作る」志向に直結。</span>
-      </li>
-      <li>
-        <span class="key">起業の原点</span>
-        <span class="val">16歳でウェブ事業を始める。アウトドアエレクトロニクスEC、金融コンテンツサイト「Street of Walls」などを並行運営。<strong>大学進学前に既に複数の事業を回していた</strong>。</span>
-      </li>
-      <li>
-        <span class="key">学業</span>
-        <span class="val">Central A&M高校を首席（valedictorian）で卒業。フロリダ大学Warrington College of BusinessでBusiness Admin学士（2008）。</span>
-      </li>
-      <li>
-        <span class="key">大学時代の哲学</span>
-        <span class="val">在学中から「ambitious, capital-intensive industries（野心的かつ資本集約的な産業）に取り組む」ことを決意。<strong>"小さなウェブ事業を量産するのではなく、世界を変える資本集約型のテック企業を作る"</strong>方向に明確に舵を切る。</span>
-      </li>
-      <li>
-        <span class="key">原体験</span>
-        <span class="val">農場で「機械化された労働の価値」を肌で理解。後年のFigure AI（ヒューマノイドで肉体労働を代替する）構想の原点と位置付けられる。</span>
-      </li>
-    </ul>
-  </section>
-
-  <section>
-    <div class="section-label">Career</div>
+  <section id="career">
+    <div class="section-label">Achievements</div>
     <h2>経歴 — 3社の連続ファウンダー</h2>
     <div class="card-grid">
       <div class="card">
@@ -676,8 +754,8 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     </div>
   </section>
 
-  <section>
-    <div class="section-label">Figure AI Deep Dive</div>
+  <section id="figure">
+    <div class="section-label">Achievements</div>
     <h2>Figure AI — $39Bヒューマノイド帝国</h2>
     <ul class="fact-list">
       <li>
@@ -711,60 +789,20 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     </div>
   </section>
 
-  <section>
-    <div class="section-label">Personal Life</div>
-    <h2>私生活 / エピソード</h2>
-    <div class="episode">
-      <h3>プライバシー最優先</h3>
-      <p>家族について公にすることを徹底的に避ける。妻Catherineと子ども（2〜3人とされる）の名前・年齢などはほぼ非公開。「家族が普通の生活を送れるように」とインタビューで述べる。Palmer LuckeyやElon Muskと比べて圧倒的にプライベートな起業家像。</p>
-    </div>
-    <div class="episode">
-      <h3>労働時間と"Founder Mode"</h3>
-      <p>Figure AI社員の労働時間は<strong>"week 1からweekendなし"</strong>がカルチャー。Brett本人は平日14時間超勤務を公言。Twitter/Xでは経営哲学・ファウンダーの覚悟を頻繁にポスト。"Founder Mode"（Paul Grahamが提唱）の象徴的実践者の一人。</p>
-    </div>
-    <div class="episode">
-      <h3>X（Twitter）での発信</h3>
-      <p>@adcock_brett で頻繁に発信。Figure製品デモ動画・採用ポスト・ファウンダー哲学が主なテーマ。「コーヒーを淹れるFigure-01」動画は数千万再生。プロダクトマーケティング × パーソナルブランディングを一体化させる現代型起業家の代表例。</p>
-    </div>
-    <div class="episode">
-      <h3>政治とのつながり</h3>
-      <p>2026年初頭、Figure 03がホワイトハウスでメラニア・トランプ夫人と共演するイベント。トランプ政権下で米国製ヒューマノイド製造業の象徴企業として政府と接近。Andurilと並ぶ"アメリカン・リインダストリアリゼーション"の旗手として位置付けられつつある。</p>
-    </div>
+  <section id="leadership">
+    <div class="section-label">Leadership</div>
+    <h2>リーダー論 — 最強の人材を自分で口説き、全部内製する</h2>
+    <ul class="fact-list">
+      <li><span class="key">採用第一主義</span><span class="val">「Best people in the world or nothing」。Boston Dynamics・Tesla・Google DeepMind・Apple出身者を、CEO自らリクルーターとして口説いた（<a href="#philosophy">哲学</a>）。</span></li>
+      <li><span class="key">Founder Mode</span><span class="val">本人は平日14時間超の勤務を公言し、Figure AIには「week 1からweekendなし」の社風がある。発信・プロダクト・採用・投資家対応をすべてCEOが直接やる（<a href="#private">私生活</a>）。</span></li>
+      <li><span class="key">同じ相棒と2度組む</span><span class="val">VetteryとArcher Aviationを同じ共同創業者Adam Goldsteinと作り、売却と上場を一緒に経験した（<a href="#network">交友関係</a>）。</span></li>
+      <li><span class="key">支配権を手放さない</span><span class="val">Archerでは取締役会と方向性が合わず2022年に退任。その反省から、Figure AIは自分のコントロールを保つ株主構造を意識して設計したとされる（<a href="#career">経歴</a>）。</span></li>
+      <li><span class="key">垂直統合</span><span class="val">ハードウェア・AIモデル（Helix）・工場・サプライチェーンをすべて内製する。OpenAIとの提携もAIモデルの内製化とともに見直した。</span></li>
+      <li><span class="key">Xで会社を売る</span><span class="val">製品デモ動画をX（Twitter）で自ら発信し、投資家・採用候補・顧客をまとめて引き寄せる。「コーヒーを淹れるFigure-01」動画は数千万再生。</span></li>
+    </ul>
   </section>
 
-  <section>
-    <div class="section-label">Network</div>
-    <h2>交友関係</h2>
-    <table>
-      <tr><th>人物</th><th>関係</th></tr>
-      <tr>
-        <td>Adam Goldstein</td>
-        <td>Vettery・Archer両方の共同創業者。Brettのキャリアの最も近い右腕。約10年で2社上場・1社買収を一緒に経験した稀有なコンビ。</td>
-      </tr>
-      <tr>
-        <td>Jeff Bezos</td>
-        <td>Figure AIの初期個人投資家。ヒューマノイド × ロジスティクスの実用化に強い関心。Amazon AI Labとの連携可能性も囁かれる。</td>
-      </tr>
-      <tr>
-        <td>Satya Nadella / Microsoft</td>
-        <td>Figure AI主要投資家。OpenAI経由でAzureクラウド・GPU供給で密接。</td>
-      </tr>
-      <tr>
-        <td>Jensen Huang / NVIDIA</td>
-        <td>Figure AI戦略投資家・GPUサプライヤー。"Physical AI"の中核プレイヤーとして対談多数。</td>
-      </tr>
-      <tr>
-        <td>Sam Altman / OpenAI</td>
-        <td>2024年提携発表（後に解消・再構築の動きあり）。Figure HelixモデルをFigure内製化した時期と一致。OpenAI Stargate構想とも近接。</td>
-      </tr>
-      <tr>
-        <td>Elon Musk</td>
-        <td>"Next Musk"と称される一方、Tesla Optimusと直接競合関係。本人はMuskを「リスペクトしつつ独自路線」と表現する。</td>
-      </tr>
-    </table>
-  </section>
-
-  <section>
+  <section id="philosophy">
     <div class="section-label">Philosophy</div>
     <h2>哲学・思考</h2>
     <ul class="fact-list">
@@ -791,8 +829,91 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     </ul>
   </section>
 
-  <section>
-    <div class="section-label">Hobbies</div>
+  <section id="family">
+    <div class="section-label">Family</div>
+    <h2>家族 / ルーツ</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>家系 — Moweaqua農家</h3>
+        <ul>
+          <li>イリノイ州モウィークア郊外の三世代続くコーン・大豆農家</li>
+          <li>地平線まで広がる農地、肉体労働中心の生活</li>
+          <li>「世代を超えて染み付いた労働倫理」を本人もコアアイデンティティと公言</li>
+          <li>テック業界でも"非シリコンバレー"の根っこを保持</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>配偶者 — Catherine</h3>
+        <ul>
+          <li>Brettとの結婚生活はメディア露出を極小に抑えるプライベート方針</li>
+          <li>VetteryのピボットなどBrettの苦境を支えた"rock"と複数インタビューで言及</li>
+          <li>パロアルト在住、子ども2〜3人（メディアでは2人とする情報が多い）</li>
+        </ul>
+      </div>
+    </div>
+    <div style="margin-top:16px;">
+      <div class="episode">
+        <h3>農家の労働倫理 × シリコンバレー</h3>
+        <p>「子供の頃の朝、起きて農場で働き、それからまた起きて働く。それを毎日やる。シリコンバレーには真似できない労働倫理がここにある」（複数インタビューでの趣旨発言）。<strong>"Hard tech は Hard work"</strong>という思想は、Figure AIで毎日14時間以上働く社風として現れている。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="network">
+    <div class="section-label">Friends</div>
+    <h2>交友関係</h2>
+    <table class="tbl-stack">
+      <tr class="thead-row"><th>人物</th><th>関係</th></tr>
+      <tr>
+        <td class="tstack-key">Adam Goldstein</td>
+        <td>Vettery・Archer両方の共同創業者。Brettのキャリアの最も近い右腕。約10年で2社上場・1社買収を一緒に経験した稀有なコンビ。</td>
+      </tr>
+      <tr>
+        <td class="tstack-key">Jeff Bezos</td>
+        <td>Figure AIの初期個人投資家。ヒューマノイド × ロジスティクスの実用化に強い関心。Amazon AI Labとの連携可能性も囁かれる。</td>
+      </tr>
+      <tr>
+        <td class="tstack-key">Satya Nadella / Microsoft</td>
+        <td>Figure AI主要投資家。OpenAI経由でAzureクラウド・GPU供給で密接。</td>
+      </tr>
+      <tr>
+        <td class="tstack-key">Jensen Huang / NVIDIA</td>
+        <td>Figure AI戦略投資家・GPUサプライヤー。"Physical AI"の中核プレイヤーとして対談多数。</td>
+      </tr>
+      <tr>
+        <td class="tstack-key">Sam Altman / OpenAI</td>
+        <td>2024年提携発表（後に解消・再構築の動きあり）。Figure HelixモデルをFigure内製化した時期と一致。OpenAI Stargate構想とも近接。</td>
+      </tr>
+      <tr>
+        <td class="tstack-key">Elon Musk</td>
+        <td>"Next Musk"と称される一方、Tesla Optimusと直接競合関係。本人はMuskを「リスペクトしつつ独自路線」と表現する。</td>
+      </tr>
+    </table>
+  </section>
+
+  <section id="private">
+    <div class="section-label">Private Life</div>
+    <h2>私生活 / エピソード</h2>
+    <div class="episode">
+      <h3>プライバシー最優先</h3>
+      <p>家族について公にすることを徹底的に避ける。妻Catherineと子ども（2〜3人とされる）の名前・年齢などはほぼ非公開。「家族が普通の生活を送れるように」とインタビューで述べる。Palmer LuckeyやElon Muskと比べて圧倒的にプライベートな起業家像。</p>
+    </div>
+    <div class="episode">
+      <h3>労働時間と"Founder Mode"</h3>
+      <p>Figure AI社員の労働時間は<strong>"week 1からweekendなし"</strong>がカルチャー。Brett本人は平日14時間超勤務を公言。Twitter/Xでは経営哲学・ファウンダーの覚悟を頻繁にポスト。"Founder Mode"（Paul Grahamが提唱）の象徴的実践者の一人。</p>
+    </div>
+    <div class="episode">
+      <h3>X（Twitter）での発信</h3>
+      <p>@adcock_brett で頻繁に発信。Figure製品デモ動画・採用ポスト・ファウンダー哲学が主なテーマ。「コーヒーを淹れるFigure-01」動画は数千万再生。プロダクトマーケティング × パーソナルブランディングを一体化させる現代型起業家の代表例。</p>
+    </div>
+    <div class="episode">
+      <h3>政治とのつながり</h3>
+      <p>2026年初頭、Figure 03がホワイトハウスでメラニア・トランプ夫人と共演するイベント。トランプ政権下で米国製ヒューマノイド製造業の象徴企業として政府と接近。Andurilと並ぶ"アメリカン・リインダストリアリゼーション"の旗手として位置付けられつつある。</p>
+    </div>
+  </section>
+
+  <section id="hobbies">
+    <div class="section-label">Private Life</div>
     <h2>趣味</h2>
     <div class="tags">
       <span class="tag">起業</span>
@@ -822,7 +943,21 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     </ul>
   </section>
 
-  <section>
+  <section id="vices">
+    <div class="section-label">Vices</div>
+    <h2>嗜好 — 酒・タバコ・ギャンブル・大麻・性</h2>
+    <ul class="fact-list">
+      <li><span class="key">お酒</span><span class="val"><strong>【不明】</strong>飲酒の量や好みについて本人が語った信頼できる記録なし。インタビューで語られるのはほぼ仕事（Vettery・Archer・Figure）の話に限られる。</span></li>
+      <li><span class="key">タバコ</span><span class="val"><strong>【不明】</strong>信頼できる記録なし。</span></li>
+      <li><span class="key">ギャンブル</span><span class="val"><strong>【不明】</strong>カジノ・ポーカー等の記録なし。自己資金を大きく投じて会社を立ち上げるスタイルは知られるが、賭博とは別の話。</span></li>
+      <li><span class="key">大麻・薬物</span><span class="val"><strong>【不明】</strong>信頼できる記録なし。</span></li>
+      <li><span class="key">性・恋愛遍歴</span><span class="val"><strong>【控えめ】</strong><strong>妻Catherine</strong>と結婚し、<strong>3人の子の父</strong>（2026年3月のShawn Ryan Show出演時の紹介）。家族の名前や生活はほぼ非公開で、交際歴・スキャンダルの報道もない。</span></li>
+      <li><span class="key">総評</span><span class="val">公の場に出てくるのは「仕事をしているAdcock」だけで、嗜好の情報はほぼ空白。私生活を徹底して切り離し、話題をミッション（ヒューマノイド・eVTOL）に集中させる広報方針そのものが、この人の性格を表している。</span></li>
+    </ul>
+    <p style="font-size:11px;color:var(--muted);margin-top:12px;">Sources: <a href="https://singjupost.com/figure-ai-ceo-brett-adcocks-interview-shawn-ryan-show-transcript/" target="_blank" rel="noopener">Shawn Ryan Show transcript</a> / <a href="https://rosetta.to/person/brett-adcock/2024" target="_blank" rel="noopener">Rosetta — Brett Adcock</a></p>
+  </section>
+
+  <section id="japan">
     <div class="section-label">Japan Connection</div>
     <h2>日本との関係</h2>
     <div style="margin-bottom:20px;">
@@ -849,55 +984,54 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     </ul>
   </section>
 
-  <section>
-    <div class="section-label">Why It Matters</div>
-    <h2>なぜ注目するか（Kyo観点）</h2>
+  <section id="dark">
+    <div class="section-label">Dark Side</div>
+    <h2>闇・批判 — 誇張と、安全・知財をめぐる争い</h2>
     <ul class="fact-list">
-      <li>
-        <span class="key">連続起業家のロールモデル</span>
-        <span class="val">10年で3社（売却・上場・$39Bプライベートユニコーン）を連発したパターンは、Wanderlust売却後に新事業を立てるKyoの直接的な参考例。<strong>"1社目で売り抜けて2社目をやる"の最高峰</strong>。</span>
-      </li>
-      <li>
-        <span class="key">資本集約型ハードテックへの確信</span>
-        <span class="val">SaaSではなくCapEx重たいハードテックに張る、というBrettの一貫した方針は、Kyoが目指す「ハードインフラ系$10B+」と完全に重なる。Crusoeと並ぶ"参照すべき北極星"。</span>
-      </li>
-      <li>
-        <span class="key">取締役会との不一致でも辞める覚悟</span>
-        <span class="val">Archer退任の決断は、自分の長期ビジョンを守るためなら上場企業のCEO椅子も捨てる覚悟。<strong>"次にやることが明確なら今の地位は手段でしかない"</strong>という哲学は、Wanderlust売却後のKyoの心境とも重なる。</span>
-      </li>
-      <li>
-        <span class="key">パートナーシップの強さ</span>
-        <span class="val">Adam Goldsteinとの10年タッグ。Vettery・Archerで2回組み続けた共同創業者関係。<strong>ハードテック挑戦における共同創業者選定の重要性</strong>を示す手本。</span>
-      </li>
-      <li>
-        <span class="key">"Founder Mode"の現代代表</span>
-        <span class="val">Twitter発信 × プロダクト × 採用 × 投資家対応すべてをCEOが直接やる現代型ファウンダー像。Kyoのワンラスでの発信スタンスとも親和性が高い。</span>
-      </li>
+      <li><span class="key">実績の誇張という批判</span><span class="val">BMW工場での稼働規模など、Figureの商用実績の発表が実態より大きいのではないかとメディアに疑問視され、本人が強く反論したことが報じられた（2025年。詳細は未確認）。</span></li>
+      <li><span class="key">安全をめぐる訴訟</span><span class="val">2025年、元製品安全責任者が「ロボットの危険性を警告した後に解雇された」としてFigure AIを提訴したと報じられた（係争中・未確認）。</span></li>
+      <li><span class="key">Archerの知財訴訟</span><span class="val">Archer Aviationは2021年、ボーイング系のWiskから企業秘密の盗用で訴えられ、2023年に和解した（Adcock退任後の決着）。</span></li>
+      <li><span class="key">取締役会との決裂</span><span class="val">SPAC上場後のArcherで取締役会と方向性が合わず、2022年に退任した。上場企業の四半期プレッシャーと長期R&Dの衝突とされる（<a href="#career">経歴</a>）。</span></li>
+      <li><span class="key">過酷な労働文化</span><span class="val">「week 1からweekendなし」「14時間超勤務」を誇る社風は、燃え尽きや多様性の面で批判の対象にもなりうる。</span></li>
+      <li><span class="key">バリュエーション先行</span><span class="val">3年で評価額約60倍、$39Bは売上規模に比べて期待先行だという見方がある（<a href="#figure">Figure AI</a>）。</span></li>
     </ul>
-    <div class="quote">
-      "I want to spend my life building hard, important things. Not optimizing software margins."
-      <cite>— Brett Adcock（趣旨を要約した発言、各種インタビューより）</cite>
-    </div>
   </section>
 
-  <section>
-    <div class="section-label">Vices</div>
-    <h2>嗜好 — 酒・タバコ・ギャンブル・大麻・性</h2>
+  <section id="legacy">
+    <div class="section-label">Legacy</div>
+    <h2>後世への影響 — まだ途中経過</h2>
     <ul class="fact-list">
-      <li><span class="key">お酒</span><span class="val"><strong>【不明】</strong>飲酒の量や好みについて本人が語った信頼できる記録なし。インタビューで語られるのはほぼ仕事（Vettery・Archer・Figure）の話に限られる。</span></li>
-      <li><span class="key">タバコ</span><span class="val"><strong>【不明】</strong>信頼できる記録なし。</span></li>
-      <li><span class="key">ギャンブル</span><span class="val"><strong>【不明】</strong>カジノ・ポーカー等の記録なし。自己資金を大きく投じて会社を立ち上げるスタイルは知られるが、賭博とは別の話。</span></li>
-      <li><span class="key">大麻・薬物</span><span class="val"><strong>【不明】</strong>信頼できる記録なし。</span></li>
-      <li><span class="key">性・恋愛遍歴</span><span class="val"><strong>【控えめ】</strong><strong>妻Catherine</strong>と結婚し、<strong>3人の子の父</strong>（2026年3月のShawn Ryan Show出演時の紹介）。家族の名前や生活はほぼ非公開で、交際歴・スキャンダルの報道もない。</span></li>
-      <li><span class="key">総評</span><span class="val">公の場に出てくるのは「仕事をしているAdcock」だけで、嗜好の情報はほぼ空白。私生活を徹底して切り離し、話題をミッション（ヒューマノイド・eVTOL）に集中させる広報方針そのものが、この人の性格を表している。</span></li>
+      <li><span class="key">ヒューマノイドを「投資対象」にした</span><span class="val">$39Bの評価額で、ヒューマノイドロボットを一気にベンチャーキャピタルの主戦場に引き上げた。Tesla Optimus・1X・Apptronikなどとの競争を加速させた（途中経過）。</span></li>
+      <li><span class="key">商用稼働の先例</span><span class="val">BMWの工場でヒューマノイドを稼働させた事例は、製造業の現場導入の先例として参照されている。</span></li>
+      <li><span class="key">連続ハードテック起業の型</span><span class="val">HR（売却）→ eVTOL（上場）→ ヒューマノイドと、年々ハード度合いを上げていくキャリアは、資本集約型ファウンダーの一つの型になりつつある。</span></li>
     </ul>
-    <p style="font-size:11px;color:var(--muted);margin-top:12px;">Sources: <a href="https://singjupost.com/figure-ai-ceo-brett-adcocks-interview-shawn-ryan-show-transcript/" target="_blank" rel="noopener">Shawn Ryan Show transcript</a> / <a href="https://rosetta.to/person/brett-adcock/2024" target="_blank" rel="noopener">Rosetta — Brett Adcock</a></p>
   </section>
 
-  <div style="margin-top:64px; padding-top:24px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; text-align:center;">
-    Research conducted via Claude — 2026年5月14日
-  </div>
+  <section id="quotes">
+    <div class="section-label">Quotes</div>
+    <h2>名言</h2>
+    <div class="quote"><strong>I genuinely believe humanoids will be larger than the auto industry.</strong><span class="ja">「ヒューマノイドは自動車産業より大きくなると、私は本気で信じている。」</span><cite>— Brett Adcock</cite></div>
+    <div class="quote"><strong>I want to spend my life building hard, important things. Not optimizing software margins.</strong><span class="ja">「人生を、難しくて重要なものを作ることに使いたい。ソフトウェアの利益率を最適化することではなく。」</span><cite>— 各種インタビューの趣旨を要約した発言</cite></div>
+    <div class="quote"><strong>Best people in the world or nothing.</strong><span class="ja">「世界最高の人材か、さもなくば誰もいらない。」</span><cite>— 採用方針</cite></div>
+    <div class="quote">「<strong>子供の頃の朝、起きて農場で働き、それからまた起きて働く。それを毎日やる。シリコンバレーには真似できない労働倫理がここにある。</strong>」<cite>— 複数インタビューでの趣旨発言</cite></div>
+  </section>
 
+  <section id="sources">
+    <div class="section-label">References</div>
+    <h2>参考文献・出典</h2>
+    <ul style="font-size:13.5px;line-height:1.9;padding-left:1.2em;">
+      <li><a href="https://en.wikipedia.org/wiki/Brett_Adcock" target="_blank" rel="noopener">Wikipedia — Brett Adcock</a></li>
+      <li><a href="https://en.wikipedia.org/wiki/Figure_AI" target="_blank" rel="noopener">Wikipedia — Figure AI</a></li>
+      <li>Forbes（2026年2月）— 純資産推定</li>
+      <li>Figure AI 発表 — Series C（2025年9月、$39Bポストマネー）</li>
+      <li>Wisk Aero v. Archer Aviation（2021年提訴、2023年和解）</li>
+      <li>Shawn Ryan Show（2026年3月）／ Rosetta — Brett Adcock（嗜好章の出典）</li>
+    </ul>
+    <p style="font-size:12px;color:var(--muted);margin-top:14px;">Research conducted via Claude — 2026年5月14日 ／ 存命人物のため、報道ベースの記述は今後更新されうる</p>
+  </section>
+</div>
+
+</div>
 </div>
 <footer class="snav-footer">
   <div class="snav-footer-sns">
@@ -906,87 +1040,7 @@ body{padding-top:56px!important;padding-bottom:68px!important}
     <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
   </div>
 </footer>
-<!-- legend-ui:js:begin -->
-<nav class="ptoc" id="ptoc" aria-label="目次">
-  <div class="ptoc-lbl">Contents</div>
-  <ul id="ptocList"></ul>
-</nav>
-<script>
-(function () {
-  /* ---- テーブルのモバイル対応（2列=縦積み / 3列以上=横スクロール） ---- */
-  Array.prototype.forEach.call(document.querySelectorAll('table'), function (t) {
-    var rows = Array.prototype.slice.call(t.rows), max = 0;
-    rows.forEach(function (r) { if (r.cells.length > max) max = r.cells.length; });
-    rows.forEach(function (r) { if (r.querySelector('th')) r.classList.add('thead-row'); });
-    if (max >= 3) {
-      if (!t.parentNode.classList.contains('tblwrap')) {
-        var w = document.createElement('div');
-        w.className = 'tblwrap';
-        var hint = document.createElement('div');
-        hint.className = 'tblhint';
-        hint.textContent = '← 横スクロール →';
-        t.parentNode.insertBefore(hint, t);
-        t.parentNode.insertBefore(w, t);
-        w.appendChild(t);
-      }
-    } else {
-      t.classList.add('tbl-stack');
-      rows.forEach(function (r) { if (r.cells.length >= 2) r.cells[0].classList.add('tstack-key'); });
-    }
-  });
-
-  /* ---- サイド目次を h2 から自動生成 ---- */
-  var nav = document.getElementById('ptoc'), list = document.getElementById('ptocList');
-  if (!nav || !list) return;
-  var items = [];
-  Array.prototype.forEach.call(document.querySelectorAll('section'), function (s, i) {
-    var h2 = s.querySelector('h2');
-    if (!h2) return;
-    if (!s.id) s.id = 'sec-' + (i + 1);
-    var lb = s.querySelector('.section-label');
-    var a = document.createElement('a');
-    a.href = '#' + s.id;
-    if (lb) {
-      var en = document.createElement('span');
-      en.className = 'en';
-      en.textContent = lb.textContent.trim();
-      a.appendChild(en);
-    }
-    var jp = document.createElement('span');
-    jp.className = 'jp';
-    jp.textContent = h2.textContent.trim();
-    a.appendChild(jp);
-    var li = document.createElement('li');
-    li.appendChild(a);
-    list.appendChild(li);
-    items.push({ sec: s, a: a });
-  });
-  if (items.length < 2) { nav.style.display = 'none'; return; }
-
-  /* ---- 現在地ハイライト / ヒーローを抜けたら表示 ---- */
-  var hero = document.querySelector('.hero');
-  var ticking = false;
-  function spy() {
-    ticking = false;
-    var heroBottom = hero ? hero.offsetHeight : 240;
-    nav.classList.toggle('show', window.pageYOffset > heroBottom - 120);
-    var y = window.pageYOffset + 110, cur = items[0];
-    for (var i = 0; i < items.length; i++) {
-      if (items[i].sec.getBoundingClientRect().top + window.pageYOffset <= y) cur = items[i];
-    }
-    items.forEach(function (it) { it.a.classList.toggle('on', it === cur); });
-    var on = nav.querySelector('a.on');
-    if (on && nav.scrollHeight > nav.clientHeight) {
-      var top = on.offsetTop, h = nav.clientHeight;
-      if (top < nav.scrollTop + 20 || top > nav.scrollTop + h - 40) nav.scrollTop = top - h / 2;
-    }
-  }
-  function onScroll() { if (!ticking) { ticking = true; window.requestAnimationFrame(spy); } }
-  window.addEventListener('scroll', onScroll, { passive: true });
-  window.addEventListener('resize', onScroll);
-  spy();
-})();
-</script>
-<!-- legend-ui:js:end -->
+<script src="../_shared/research_tabs.js" defer></script>
+<script src="../../040_personal/0460_english/terms/terms.js" defer></script>
 </body>
 </html>
