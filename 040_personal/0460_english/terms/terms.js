@@ -100,7 +100,11 @@
       [t.ja].concat(typeof t.alt === 'string' ? [t.alt] : (t.alt || [])).forEach(function (j) { if (j && !/^[\x00-\x7f]$/.test(j) && !byJa[j]) { byJa[j] = t; keys.push(j); } });
     });
     keys.sort(function (a, b) { return b.length - a.length; });
-    if (keys.length) RE = new RegExp(keys.map(function (k) { return k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|'), 'g');
+    /* 英数字だけの語（HBM・EA など）は単語の途中にマッチさせない（"YEARS" の中の EA を拾った事故 2026-10-25） */
+    if (keys.length) RE = new RegExp(keys.map(function (k) {
+      var e = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      return /^[\x00-\x7f]+$/.test(k) ? '(?<![A-Za-z0-9])' + e + '(?![A-Za-z0-9])' : e;
+    }).join('|'), 'g');
   }
 
   var SKIP = 'script,style,noscript,textarea,input,select,option,svg,code,pre,title,.tm,.tx-bar,.tx-panel,[data-no-terms]';
