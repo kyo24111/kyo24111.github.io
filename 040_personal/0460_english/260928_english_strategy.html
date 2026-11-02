@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>English Strategy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:    #ffffff;
+      --line:  #e8e8e8;
+      --soft:  #f6f6f6;
+      --text:  #111111;
+      --body:  #444444;
+      --muted: #888888;
+      --light: #cccccc;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: 'Poppins', 'Noto Sans JP', sans-serif;
+      font-size: 14px; line-height: 1.75;
+    }
+    .page { max-width: 760px; margin: 0 auto; padding: 48px 24px 100px; }
+
+    .header {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 16px;
+      margin-bottom: 32px; padding-bottom: 20px; border-bottom: 2px solid var(--text);
+    }
+    .header h1 { font-size: 22px; font-weight: 800; letter-spacing: -.3px; }
+    .header p  { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .back-link { font-size: 12px; color: var(--muted); text-decoration: none; white-space: nowrap; }
+    .back-link:hover { color: var(--text); }
+
+    section { margin-bottom: 44px; }
+    .label {
+      font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 4px;
+    }
+    h2 { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+    p  { color: var(--body); }
+    p + p { margin-top: 8px; }
+    strong { color: var(--text); }
+    .note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+    /* 北極星 */
+    .north {
+      border: 1px solid var(--text); border-radius: 8px; padding: 20px 22px;
+    }
+    .north .big { font-size: 18px; font-weight: 700; line-height: 1.5; color: var(--text); }
+    .north .en  { font-size: 13px; color: var(--muted); margin-top: 6px; }
+    .timeline { display: flex; gap: 0; margin-top: 18px; border-top: 1px solid var(--line); }
+    .timeline div { flex: 1; padding: 10px 8px 0 0; font-size: 12px; color: var(--body); }
+    .timeline b { display: block; font-size: 11px; font-weight: 700; color: var(--text); letter-spacing: .5px; }
+
+    /* 現在地 */
+    .gap { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .gap > div { background: var(--bg); padding: 14px 16px; }
+    .gap h3 { font-size: 12px; font-weight: 700; letter-spacing: .5px; margin-bottom: 6px; }
+    .gap ul { list-style: none; }
+    .gap li { font-size: 13px; color: var(--body); padding-left: 12px; position: relative; }
+    .gap li::before { content: '–'; position: absolute; left: 0; color: var(--light); }
+
+    /* 柱 */
+    .pillar { padding: 18px 0; border-bottom: 1px solid var(--line); }
+    .pillar:first-of-type { border-top: 1px solid var(--text); }
+    .pillar-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; }
+    .pillar-no { font-size: 12px; font-weight: 700; color: var(--light); min-width: 22px; }
+    .pillar-title { font-size: 15px; font-weight: 700; }
+    .pillar-title .sub { font-size: 12px; font-weight: 500; color: var(--muted); margin-left: 6px; }
+    .pillar-body { padding-left: 34px; }
+    .pillar-body ul { list-style: none; margin-top: 8px; }
+    .pillar-body li { font-size: 13px; color: var(--body); padding: 3px 0 3px 12px; position: relative; }
+    .pillar-body li::before { content: '·'; position: absolute; left: 2px; color: var(--muted); }
+    .why { font-size: 12px; color: var(--muted); margin-top: 8px; }
+
+    /* 表 */
+    .table-wrap { overflow-x: auto; border-top: 1px solid var(--text); }
+    table { width: 100%; border-collapse: collapse; min-width: 560px; }
+    th {
+      font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase;
+      color: var(--muted); text-align: left; padding: 10px; border-bottom: 1px solid var(--line); white-space: nowrap;
+    }
+    td { padding: 10px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 13px; color: var(--body); }
+    td:first-child { font-weight: 600; color: var(--text); white-space: nowrap; }
+    td.min { white-space: nowrap; color: var(--muted); font-size: 12px; }
+
+    /* ロードマップ */
+    .phase { display: grid; grid-template-columns: 130px 1fr; gap: 16px; padding: 16px 0; border-bottom: 1px solid var(--line); }
+    .phase:first-of-type { border-top: 1px solid var(--text); }
+    .phase .when { font-size: 12px; font-weight: 700; }
+    .phase .when span { display: block; font-size: 11px; font-weight: 500; color: var(--muted); }
+    .phase .what b { display: block; font-size: 14px; margin-bottom: 4px; }
+    .phase .what p { font-size: 13px; }
+    .phase .done { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+    /* リンク */
+    a.item { display: flex; justify-content: space-between; gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--line); color: var(--text); text-decoration: none; }
+    a.item:first-of-type { border-top: 1px solid var(--text); }
+    a.item:hover .t { text-decoration: underline; }
+    .t { font-weight: 600; font-size: 13px; }
+    .d { font-size: 12px; color: var(--muted); text-align: right; }
+
+    @media (max-width: 600px) {
+      .page { padding: 32px 16px 80px; }
+      .header { flex-direction: column; gap: 4px; }
+      .gap { grid-template-columns: 1fr; }
+      .timeline { flex-wrap: wrap; }
+      .timeline div { flex: 1 1 45%; }
+      .pillar-body { padding-left: 0; }
+      .phase { grid-template-columns: 1fr; gap: 6px; }
+      a.item { flex-direction: column; gap: 2px; }
+      .d { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">personal</a><span class="s">/</span><a href="index.html">english</a><span class="s">/</span><span class="c">English Strategy</span></nav><!-- crumbs:end -->
+<div class="page">
+  <div class="header">
+    <div>
+      <h1>English Strategy</h1>
+      <p>米国移住までに「大量に読める英語」をつくる戦略 / Last updated: 2026-09-28</p>
+    </div>
+    <a class="back-link" href="index.html">← English</a>
+  </div>
+
+  <!-- 01 -->
+  <section>
+    <div class="label">01 · North Star</div>
+    <h2>ゴール</h2>
+    <div class="north">
+      <div class="big">2027年9月の米国移住までに、startup・tech・science・finance・politics の英語情報を<br>「日本語と同じ量・速さで」読める状態にする</div>
+      <div class="en">Read English as much and as fast as Japanese — across tech, science, finance, and politics.</div>
+      <div class="timeline">
+        <div><b>NOW</b>2026-09</div>
+        <div><b>2027-03</b>Wanderlust CEO退任</div>
+        <div><b>2027-09</b>完全退任・米国移住</div>
+        <div><b>AFTER</b>デラウェア登記・調達</div>
+      </div>
+    </div>
+    <p class="note">発音・日常会話はもう到達済み。次の1年で上げるのは<strong>読む量と専門語彙</strong>。</p>
+  </section>
+
+  <!-- 02 -->
+  <section>
+    <div class="label">02 · Where I am</div>
+    <h2>現在地とギャップ</h2>
+    <div class="gap">
+      <div>
+        <h3>強み</h3>
+        <ul>
+          <li>発音はかなり良い</li>
+          <li>日常会話は問題なく話せる</li>
+          <li>カジュアル表現は普通の日本人より強い</li>
+        </ul>
+      </div>
+      <div>
+        <h3>弱み・伸ばしたいところ</h3>
+        <ul>
+          <li>読み書きが弱い（書くはLLMで補える）</li>
+          <li>読める量が少ない → もっと大量の情報を読みたい</li>
+          <li>専門語彙：US startup・tech が最優先</li>
+          <li>その次に science / finance / politics</li>
+          <li>カジュアル表現をもう一段鍛えたい（Distinction 等）</li>
+        </ul>
+      </div>
+    </div>
+    <p class="note">結論：<strong>話す・発音は維持でOK</strong>。投資先は「読む量」と「語彙」に集中する。書くはLLM前提で深追いしない。</p>
+  </section>
+
+  <!-- 03 -->
+  <section>
+    <div class="label">03 · Pillars</div>
+    <h2>戦略の3本柱</h2>
+
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-no">01</span><span class="pillar-title">Domain Vocabulary<span class="sub">分野別に語彙を潰す</span></span></div>
+      <div class="pillar-body">
+        <p>分野に<strong>優先順位をつけて1つずつ潰す</strong>。並行して全部やらない。</p>
+        <ul>
+          <li><strong>① US startup / tech</strong>（最優先）：VC・調達・SaaS指標・プロダクト・採用まわり（例：runway, burn, ARR, term sheet, pro rata, GTM, dogfooding）</li>
+          <li><strong>② finance</strong>：会計・市場・マクロ（earnings, guidance, yield curve, dilution）</li>
+          <li><strong>③ science</strong>：物理・化学・エネルギー・半導体（次の事業=ハードインフラに直結）</li>
+          <li><strong>④ politics</strong>：米国政治・政策・規制（filibuster, subsidy, tariff, antitrust）</li>
+          <li>読んで出会った単語を分野別の単語集に即追加 → 暗記モードで回す</li>
+        </ul>
+        <div class="why">Why：読める量の上限は語彙で決まる。分野を絞ると同じ単語に何度も出会うので定着が速い。</div>
+      </div>
+    </div>
+
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-no">02</span><span class="pillar-title">Reading Volume<span class="sub">とにかく大量に読む</span></span></div>
+      <div class="pillar-body">
+        <p>精読より<strong>多読</strong>。わからない単語があっても止まらず読み切り、あとで拾う。素材は柱01の分野順に揃える。</p>
+        <ul>
+          <li>startup / tech：Paul Graham essays、YC blog、Stratechery、TechCrunch、Hacker News</li>
+          <li>finance：WSJ・Bloomberg・FT の見出し＋リード、Matt Levine（Money Stuff）</li>
+          <li>science：Quanta Magazine、Nature/Science のニュース欄</li>
+          <li>politics：Axios、Politico、The Economist</li>
+          <li>LLMは「翻訳」ではなく「わからない段落だけ英語で言い換えさせる」用途に限定</li>
+        </ul>
+        <div class="why">Why：「もっとたくさん情報を読めるようにしたい」がゴールそのもの。読む量を毎日の固定枠にする。</div>
+      </div>
+    </div>
+
+    <div class="pillar">
+      <div class="pillar-head"><span class="pillar-no">03</span><span class="pillar-title">Casual Expressions<span class="sub">口語表現をもう一段</span></span></div>
+      <div class="pillar-body">
+        <p>すでに強いところをさらに伸ばす。<strong>単語帳（Distinction 等）＋ネイティブ素材</strong>の二本立て。</p>
+        <ul>
+          <li>単語帳：Distinction 等を1冊決めて周回</li>
+          <li>素材：All-In / Acquired などのpodcast、X（Twitter）のfounder界隈のポスト</li>
+          <li>気になった言い回しは単語集に「casual」カテゴリで追加</li>
+        </ul>
+        <div class="why">Why：US startup界隈は口語・スラングが多い。フォーマル語彙だけだと会話の温度感を外す。</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04 -->
+  <section>
+    <div class="label">04 · Weekly Routine</div>
+    <h2>週次ルーティン</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>いつ</th><th>やること</th><th>時間</th></tr></thead>
+        <tbody>
+          <tr><td>毎日 朝</td><td>今の重点分野の記事・essayを2〜3本、止まらず読む</td><td class="min">20–30 min</td></tr>
+          <tr><td>毎日 移動中</td><td>podcast／単語帳（Distinction 等）の周回</td><td class="min">20 min</td></tr>
+          <tr><td>毎日 夜</td><td>読んで拾った単語・言い回しを単語集へ＋暗記モードで復習</td><td class="min">10 min</td></tr>
+          <tr><td>週末</td><td>長文1本（long-form essay・レポート）を読み切る</td><td class="min">45 min</td></tr>
+          <tr><td>月末</td><td>語数・読んだ本数を集計、次の重点分野に進むか判断</td><td class="min">15 min</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">1日あたり約1時間。読む枠を最優先にし、忙しい日は夜の単語復習だけは死守する。</p>
+  </section>
+
+  <!-- 05 -->
+  <section>
+    <div class="label">05 · Roadmap</div>
+    <h2>12ヶ月ロードマップ</h2>
+
+    <div class="phase">
+      <div class="when">Phase 1<span>2026-10 → 12</span></div>
+      <div class="what">
+        <b>US startup / tech を潰す</b>
+        <p>startup・tech系の単語集を立ち上げ、PG essays・YC blog・Stratechery を中心に多読。</p>
+        <div class="done">完了条件：startup/tech語彙 300語 / TechCrunch程度の記事を辞書なしで読める</div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="when">Phase 2<span>2027-01 → 03</span></div>
+      <div class="what">
+        <b>finance を潰す</b>
+        <p>WSJ・Bloomberg・Money Stuff を日課に。決算資料を英語で読む。</p>
+        <div class="done">完了条件：finance語彙 200語 / 10-Kの主要セクションを英語のまま読める</div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="when">Phase 3<span>2027-04 → 06</span></div>
+      <div class="what">
+        <b>science を潰す</b>
+        <p>エネルギー・半導体・素材を中心に。次の事業（ハードインフラ）の論文・業界レポートを英語で読む。</p>
+        <div class="done">完了条件：science語彙 200語 / 業界レポートを英語で読み切れる</div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="when">Phase 4<span>2027-07 → 09</span></div>
+      <div class="what">
+        <b>politics を潰す＋移住準備</b>
+        <p>米国政治・政策・規制。移住後に会話の前提となるニュースを追えるように。</p>
+        <div class="done">完了条件：politics語彙 150語 / 米国ニュースを英語のまま日常的に追えている</div>
+      </div>
+    </div>
+    <p class="note">casual表現（柱03）は全期間で並走。</p>
+  </section>
+
+  <!-- 06 -->
+  <section>
+    <div class="label">06 · Metrics</div>
+    <h2>測るもの</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>指標</th><th>測り方</th><th>目標（2027-09）</th></tr></thead>
+        <tbody>
+          <tr><td>分野語彙</td><td>単語集の語数（分野別）</td><td>計 850語</td></tr>
+          <tr><td>casual</td><td>単語帳の周回数＋casual語数</td><td>3周 / 150語</td></tr>
+          <tr><td>読む量</td><td>読み切った記事・essay数（累計）</td><td>500本</td></tr>
+          <tr><td>長文</td><td>読み切ったlong-form・レポート数</td><td>50本</td></tr>
+          <tr><td>速度</td><td>辞書なしで読めた割合（月末に体感で記録）</td><td>8割以上</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">検定スコア（TOEIC等）は追わない。目的は、米国の情報を英語のまま大量に取り込めること。</p>
+  </section>
+
+  <!-- 07 -->
+  <section>
+    <div class="label">07 · Linked Pages</div>
+    <h2>関連ページ</h2>
+    <a class="item" href="260926_corp_law_vocab.html"><span class="t">会社法 英単語集</span><span class="d">Pillar 01 · legal語彙</span></a>
+    <a class="item" data-lo style="display:none" href="../../01_business_ideas/260608_frontier_trading/260608_term_local.html"><span class="t">Frontier Trading term</span><span class="d">Pillar 01 · VCピッチ用語</span></a>
+    <a class="item" href="../../01_business_ideas/260608_frontier_trading/260608_pitch_deck.html"><span class="t">Frontier Trading Pitch Deck</span><span class="d">Pillar 02 · 英語で読む素材</span></a>
+  </section>
+</div>
+<script>if(location.protocol==="file:")document.querySelectorAll("[data-lo]").forEach(e=>e.style.display="")</script>
+</body>
+</html>
