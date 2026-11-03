@@ -227,6 +227,28 @@ footer{max-width:1340px;margin:0 auto;padding:22px 48px 60px;border-top:1px soli
   .ctl{flex:1 1 100%}
   tbody tr{grid-template-columns:1fr 1fr;gap:9px 10px}
 }
+/* ---------- report card（通知表） — 九星気学DBと同じ配色 ---------- */
+.rc-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line)}
+table.rc{border-collapse:collapse;width:100%;min-width:860px;font-size:12px}
+table.rc th,table.rc td{border:1px solid var(--line);padding:7px 6px;text-align:center;vertical-align:middle}
+table.rc thead th{background:#f7f7f5;font-size:10.5px;font-weight:700;color:var(--mid);letter-spacing:.04em;white-space:nowrap}
+table.rc thead th small{display:block;font-weight:400;color:var(--muted);font-size:9.5px;letter-spacing:0}
+table.rc td.rc-name{text-align:left;font-weight:700;min-width:150px;font-size:12.5px;line-height:1.35;cursor:pointer}
+table.rc td.rc-name span{display:block;font-weight:400;color:var(--muted);font-size:10.5px}
+table.rc td.rc-cmt{text-align:left;min-width:240px;font-size:11.5px;line-height:1.55;color:var(--mid)}
+.g{font-weight:700}
+.g b{display:block;font-size:17px;line-height:1.1}
+.g i{display:block;font-style:normal;font-weight:400;font-size:10px;margin-top:2px;white-space:nowrap}
+.g5{background:#e9f3e7;color:#2f6e2b}
+.g4{background:#f2f8f1;color:#3c7636}
+.g3{background:#faf6ea;color:#8a6a1f}
+.g2{background:#fbf1f0;color:#b0453f}
+.g1{background:#f8e7e5;color:#b0453f}
+.gna{background:#f7f7f5;color:#999}
+.rc-total b{font-size:19px}
+.rc-legend{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;font-size:11px;color:var(--mid)}
+.rc-legend span{padding:2px 8px;border:1px solid var(--line)}
+@media (max-width:640px){ table.rc{font-size:11px} .g b{font-size:15px} }
 </style>
 </head>
 <body>
@@ -310,6 +332,15 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
       </div>
     </div>
     <div class="top5" id="top5"></div>
+  </div>
+
+  <!-- 通知表 -->
+  <div class="sec">
+    <div class="sec-head"><span>Report Card / 通知表</span><span class="sub">項目ごとに5段階。緑＝良い／黄＝普通／赤＝弱い／灰＝未判定。総合は上の重みスライダーと連動。物件名クリックで候補一覧の詳細へ</span></div>
+    <div class="rc-wrap"><table class="rc"><thead><tr>
+      <th>物件</th><th>総合<small>スコア</small></th><th>立地<small>職場まで</small></th><th>賃料<small>下限</small></th><th>広さ<small>最大㎡</small></th><th>割安<small>円/㎡</small></th><th>築年</th><th>初期費用<small>家賃何ヶ月分</small></th><th>契約</th><th>気学<small>職場から</small></th><th>玄関<small>中心から</small></th><th>寝室の朝日</th><th>所見</th>
+    </tr></thead><tbody id="rcbody"></tbody></table></div>
+    <div class="rc-legend"><span class="g5">5 とても良い</span><span class="g4">4 良い</span><span class="g3">3 普通</span><span class="g2">2 やや弱い</span><span class="g1">1 弱い</span><span class="gna">— 未判定</span></div>
   </div>
 
   <!-- 地図 -->
@@ -814,7 +845,41 @@ function setHL(id, pan){
     if(d){ map.panTo([d.lat,d.lng]); if(MARKERS[d.id]) MARKERS[d.id].openPopup(); }
   }
 }
-function renderAll(){ renderTop(); renderTable(); renderMap(); }
+/* ---------- render: report card（通知表） ---------------------------------- */
+/* 所見は手書き。検討対象から外した物件は空欄のまま */
+var SHOKEN = {
+  lejade:  '築浅・徒歩4分・気学の吉方位（北東）でバランス型。弱いのは1LDK 45㎡の狭さ、玄関（南西＝凶）、寝室に朝日が入らないこと。「告知事項あり」は要確認。',
+  loigent: '2LDK 61㎡で広さは一番。<b>寝室に朝日が入るのはここだけ</b>。気学は北西で吉方位外、玄関は南（南西との境界）。賃料35.8〜37.2万と高め。',
+  arca:    '25万と最安・徒歩3分・玄関も可。ただし43㎡と最も狭く、寝室は北向きで朝日なし。2年未満の解約は違約金2ヶ月。',
+  latour:  '徒歩3分のタワー29F、フロント・ジム付き。<b>定期借家で敷金3ヶ月＋償却1ヶ月</b>と初期費用が突出、築23年。寝室の向きは図面（西）とSUUMO（東）で食い違う。',
+  residia: '2LDK 58㎡・普通借家・2026年8月リノベ済み。気学は北、玄関は北東で凶、寝室は北西。礼金0の条件（10月末まで）は期限切れ。'
+};
+function band(v, cuts){ for(var i=0;i<cuts.length;i++) if(v <= cuts[i]) return 5-i; return 1; }   // 小さいほど良い指標用
+function gcell(g, label){ return '<td class="g '+(g ? 'g'+g : 'gna')+'"><b>'+(g || '—')+'</b><i>'+label+'</i></td>'; }
+function renderCard(){
+  var list = visible().slice().sort(function(a,b){ return score(b) - score(a); });
+  document.getElementById('rcbody').innerHTML = list.map(function(d){
+    var sc = score(d), ic = initCost(d), months = ic === null ? null : ic / d.rentMin;
+    var areaG = d.areaMax >= 60 ? 5 : d.areaMax >= 55 ? 4 : d.areaMax >= 50 ? 3 : d.areaMax >= 45 ? 2 : 1;
+    var keiG  = d.teiki ? 1 : (/普通/.test(d.keiyaku) ? 5 : null);
+    return '<tr>'
+      + '<td class="rc-name" data-id="'+d.id+'">'+d.name+'<span>'+d.chome+' ／ '+d.layout+'</span></td>'
+      + '<td class="g rc-total g'+band(100 - sc, [20,35,50,65])+'"><b>'+sc+'</b><i>/100</i></td>'
+      + gcell(band(d.walk, [3,4,5,7]), '徒歩'+d.walk+'分')
+      + gcell(band(d.rentMin, [27,30,33,36]), fmtRent(d)+'万')
+      + gcell(areaG, d.areaMax.toFixed(0)+'㎡')
+      + gcell(band(d.unit, [5800,6100,6400,6800]), d.unit.toLocaleString()+'円')
+      + gcell(band(d.age, [3,7,12,20]), d.age === 0 ? '新築' : '築'+d.age+'年')
+      + gcell(months === null ? null : band(months, [3,4,5,6]), months === null ? '未取得' : months.toFixed(1)+'ヶ月')
+      + gcell(keiG, d.teiki ? '定期借家' : (keiG ? '普通借家' : '要確認'))
+      + gcell(d.kichi ? 5 : 3, d.houi + (d.kichi ? '・吉' : ''))
+      + gcell(d.genkan === null ? null : (d.genkanNG ? 1 : 5), d.genkan === null ? '不明' : d.genkan + (d.genkanNG ? '・凶' : '・可'))
+      + gcell(d.asahi === '○' ? 5 : d.asahi === '△' ? 3 : d.asahi === '×' ? 1 : null, d.asahi ? d.asahiDir : '未判定')
+      + '<td class="rc-cmt">'+(SHOKEN[d.id] || (d.out ? '<span style="color:#bbb">除外中：'+(d.outWhy || '')+'</span>' : ''))+'</td>'
+      + '</tr>';
+  }).join('');
+}
+function renderAll(){ renderTop(); renderCard(); renderTable(); renderMap(); }
 
 for(var i=0;i<NW;i++){(function(i){
   var el = document.getElementById('w'+i);
@@ -851,6 +916,9 @@ for(var i=0;i<NW;i++){(function(i){
   });
 })();
 
+document.getElementById('rcbody').addEventListener('click', function(e){
+  var c = e.target.closest('.rc-name'); if(c) setHL(c.dataset.id, true);
+});
 document.getElementById('top5').addEventListener('click', function(e){
   var c = e.target.closest('.card'); if(c) setHL(c.dataset.id, true);
 });
