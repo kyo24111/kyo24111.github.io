@@ -20,10 +20,14 @@ ROOT = os.path.dirname(os.path.abspath(__file__))
 ROOT_LABEL = '24111'
 GEN_META = '<meta name="generator" content="gen_breadcrumbs">'
 START, END = '<!-- crumbs:start -->', '<!-- crumbs:end -->'
+# パンくずは file:// で開いた時だけ出す（公開ページ github.io では消す）
+LOCAL_ONLY_JS = '<script>if(location.protocol!=="file:"){var c=document.currentScript.previousElementSibling;if(c)c.remove()}</script>'
 
 # クライアント向け成果物・生成物・第三者テンプレートは触らない
 EXCLUDE_DIRS = {'.git', 'node_modules', 'decks', 'deploy', 'zips', 'slide-kit-main', '.claude'}
-EXCLUDE_FILES = {'_private_index.html', 'index_local.html'}
+EXCLUDE_FILES = {'_private_index.html', 'index_local.html', '261018_apto_kobayashi_prep.html'}  # 社外送付用
+
+KEEP_POS_JS = '<script>/* keep-pos: リロードしても見ていた位置（スクロール・タブ・開いた<details>・内側スクロール）を保つ */\n(function(){var ss;try{ss=window.sessionStorage;ss.getItem(\'x\')}catch(e){return}\ntry{history.scrollRestoration=\'manual\'}catch(e){}\nvar K=\'wl-pos:\'+location.pathname,TAB=\'[data-view],[data-tab],[role="tab"],.tab,.tab-btn\',st={y:0,s:{},t:[]},busy=true,tm;\nfunction P(el){var p=[];while(el&&el.nodeType===1&&el!==document.body){if(el.id){p.unshift(\'#\'+CSS.escape(el.id));return p.join(\'>\')}\nvar i=1,x=el;while((x=x.previousElementSibling))i++;p.unshift(el.tagName.toLowerCase()+\':nth-child(\'+i+\')\');el=el.parentElement}p.unshift(\'body\');return p.join(\'>\')}\nfunction Q(q){try{return document.querySelector(q)}catch(e){return null}}\nfunction save(){if(busy)return;st.y=window.scrollY;st.d=[].map.call(document.querySelectorAll(\'details\'),function(d){return d.open?1:0}).join(\'\');\ntry{ss.setItem(K,JSON.stringify(st))}catch(e){}}\nfunction later(){if(busy)return;clearTimeout(tm);tm=setTimeout(save,150)}\ndocument.addEventListener(\'scroll\',function(e){var t=e.target;if(t&&t.nodeType===1&&!busy)st.s[P(t)]=t.scrollTop;later()},true);\ndocument.addEventListener(\'click\',function(e){var b=e.target.closest&&e.target.closest(TAB);if(!b||!e.isTrusted)return;\nvar g=P(b.parentElement);st.t=st.t.filter(function(x){return x.g!==g});st.t.push({g:g,p:P(b)});st.t=st.t.slice(-6);later()},true);\ndocument.addEventListener(\'toggle\',later,true);addEventListener(\'pagehide\',save);\ndocument.addEventListener(\'visibilitychange\',function(){if(document.visibilityState===\'hidden\')save()});\nfunction stop(){if(busy){busy=false;save()}}\n[\'wheel\',\'touchstart\',\'keydown\',\'mousedown\'].forEach(function(n){addEventListener(n,stop,{capture:true,passive:true})});\naddEventListener(\'load\',function(){var d;try{d=JSON.parse(ss.getItem(K)||\'null\')}catch(e){}\nif(!d){busy=false;return}st=d;st.s=st.s||{};st.t=st.t||[];\nst.t.forEach(function(x){var b=Q(x.p);if(b&&!b.classList.contains(\'on\')&&!b.classList.contains(\'active\')&&b.getAttribute(\'aria-selected\')!==\'true\')b.click()});\nif(d.d)[].forEach.call(document.querySelectorAll(\'details\'),function(el,i){if(d.d[i]===\'1\')el.open=true});\nfunction go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var el=Q(q);if(el)el.scrollTop=st.s[q]}}\n[0,60,160,320,640,1100,1700].forEach(function(t){setTimeout(go,t)});setTimeout(stop,1800)})})();</script>'
 
 CSS = ('<style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;'
        'padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;'
@@ -113,7 +117,7 @@ def crumbs_html(rel):
         t = title_of(os.path.join(ROOT, rel)) or fname[:-5]
         items.append(f'<span class="c">{html.escape(t)}</span>')
     return (f'{START}{CSS}<nav class="wl-crumbs" aria-label="breadcrumb">'
-            + '<span class="s">/</span>'.join(items) + f'</nav>{END}')
+            + '<span class="s">/</span>'.join(items) + f'</nav>{LOCAL_ONLY_JS}{KEEP_POS_JS}{END}')
 
 
 def inject(rel, dry):
