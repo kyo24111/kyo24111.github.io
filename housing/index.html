@@ -249,6 +249,24 @@ table.rc td.rc-cmt{text-align:left;min-width:240px;font-size:11.5px;line-height:
 .rc-legend{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 0;font-size:11px;color:var(--mid)}
 .rc-legend span{padding:2px 8px;border:1px solid var(--line)}
 @media (max-width:640px){ table.rc{font-size:11px} .g b{font-size:15px} }
+/* ---------- index（左サイドの目次・scroll-spy） ---------- */
+.side-nav{position:fixed;left:24px;top:340px;width:210px;max-height:calc(100vh - 120px);overflow-y:auto;padding:12px 0 40px;font-size:12px;z-index:500;scrollbar-width:thin}
+.side-nav .sn-t{font-family:Poppins,sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--light);padding-left:12px;margin:0 0 6px}
+.side-nav ul{list-style:none;margin:0 0 18px;padding:0}
+.side-nav a{display:block;color:#aaa;text-decoration:none;padding:5px 8px 5px 12px;border-left:2px solid transparent;line-height:1.45;cursor:pointer}
+.side-nav a:hover{color:var(--text);border-left-color:var(--line)}
+.side-nav a.active{color:var(--text);font-weight:700;border-left-color:var(--text);background:var(--soft)}
+.side-nav .sn-p a{display:flex;gap:6px;align-items:baseline;font-size:11.5px}
+.side-nav .sn-p a b{font-family:Poppins,sans-serif;font-size:10px;color:var(--muted);min-width:16px}
+.side-nav .sn-p a i{font-style:normal;margin-left:auto;font-family:Poppins,sans-serif;font-size:10.5px;color:var(--muted)}
+.side-nav .sn-p a.hl{color:var(--text);font-weight:700}
+.chip{white-space:nowrap}
+.inline-toc{display:none;flex-wrap:wrap;gap:6px;margin:0 0 26px}
+.inline-toc a{font-size:11px;color:var(--mid);text-decoration:none;border:1px solid var(--line);padding:4px 10px;border-radius:999px}
+.sec{scroll-margin-top:20px}
+html{scroll-behavior:smooth}
+@media(min-width:1240px){ .main,footer{padding-left:260px} }
+@media(max-width:1239px){ .side-nav{display:none} .inline-toc{display:flex} }
 </style>
 </head>
 <body>
@@ -283,10 +301,12 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
   <div class="stamp" id="stamp"></div>
 </div>
 
+<aside class="side-nav" id="sideNav"></aside>
 <div class="main">
+  <nav class="inline-toc" id="inlineToc"></nav>
 
   <!-- 条件 -->
-  <div class="sec">
+  <div class="sec" id="s-cond">
     <div class="sec-head"><span>Conditions / 検索条件</span></div>
     <div class="cond">
       <div><div class="k">Area</div><div class="v">神保町・西神田・九段北・飯田橋<small>神田神保町2/3・西神田2/3・九段北1・飯田橋2</small></div></div>
@@ -297,7 +317,7 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
   </div>
 
   <!-- TOP5 -->
-  <div class="sec">
+  <div class="sec" id="s-top">
     <div class="sec-head"><span>Top 5 / 有力候補</span><span class="sub" id="hitcount"></span></div>
     <div class="controls">
       <div class="ctl"><label>立地（職場に近い） <span class="wq" id="q0"></span></label><input type="range" id="w0" min="0" max="5" step="1" value="5"></div>
@@ -337,7 +357,7 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
   </div>
 
   <!-- 通知表 -->
-  <div class="sec">
+  <div class="sec" id="s-report">
     <div class="sec-head"><span>Report Card / 通知表</span><span class="sub">項目ごとに5段階。緑＝良い／黄＝普通／赤＝弱い／灰＝未判定。総合は上の重みスライダーと連動。広さ・築年・賃料は重要度が低いので2〜4の3段階。物件名クリックで候補一覧の詳細へ</span></div>
     <div class="rc-wrap"><table class="rc"><thead><tr>
       <th>物件</th><th>総合<small>スコア</small></th><th>立地<small>職場まで</small></th><th>賃料<small>下限</small></th><th>広さ<small>最大㎡</small></th><th>築年</th><th>初期費用<small>家賃何ヶ月分</small></th><th>早期退去<small>1年以内に出たら戻らない額</small></th><th>気学<small>職場から</small></th><th>玄関<small>中心から</small></th><th>寝室の朝日</th><th>所見</th>
@@ -346,7 +366,7 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
   </div>
 
   <!-- 地図 -->
-  <div class="sec">
+  <div class="sec" id="s-map">
     <div class="sec-head"><span>Map / 位置</span><span class="sub">ピンをクリックで詳細。表の行と連動。カーソルを乗せてホイールで拡大縮小</span></div>
     <div class="mapchips">
       <button class="chip on" data-base="pale">淡色</button>
@@ -366,7 +386,7 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
   </div>
 
   <!-- 一覧 -->
-  <div class="sec">
+  <div class="sec" id="s-list">
     <div class="sec-head"><span>All Candidates / 候補一覧</span><span class="sub">行クリックで間取り図と詳細スペック／見出しクリックで並べ替え／○△×は端末に保存</span></div>
     <div class="tblwrap">
       <table>
@@ -397,7 +417,7 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
   </div>
 
   <!-- 常時最新を取りに行く -->
-  <div class="sec">
+  <div class="sec" id="s-live">
     <div class="sec-head"><span>Live Search / 最新在庫を見る</span><span class="sub">条件を入れた状態で開く</span></div>
     <div class="links">
       <a href="https://suumo.jp/jj/chintai/ichiran/FR301FC001/?ar=030&bs=040&ta=13&sc=13101&oz=13101019&oz=13101047&oz=13101037&oz=13101001&cb=20.0&ct=40.0&md=04&md=07&et=9999999&mb=0&mt=9999999&cn=9999999&pc=50" target="_blank" rel="noopener">
@@ -412,7 +432,7 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
   </div>
 
   <!-- 所感 -->
-  <div class="sec">
+  <div class="sec" id="s-notes">
     <div class="sec-head"><span>Notes / 読み解き</span></div>
     <div class="note">
       <ul>
@@ -917,7 +937,41 @@ function renderCard(){
       + '</tr>';
   }).join('');
 }
-function renderAll(){ renderTop(); renderCard(); renderTable(); renderMap(); }
+/* ---------- index（目次）：節＋候補物件をスコア順に。renderAll のたびに作り直す ---------- */
+var TOC = [['s-cond','検索条件'],['s-top','有力候補 Top 5'],['s-report','通知表'],['s-map','地図'],['s-list','候補一覧'],['s-live','最新在庫を見る'],['s-notes','読み解き']];
+function renderIndex(){
+  var list = visible().slice().sort(function(a,b){ return score(b) - score(a); });
+  document.getElementById('sideNav').innerHTML =
+      '<div class="sn-t">Index</div><ul>' + TOC.map(function(t){ return '<li><a data-sec="'+t[0]+'">'+t[1]+'</a></li>'; }).join('') + '</ul>'
+    + '<div class="sn-t">候補物件（'+list.length+'）</div><ul class="sn-p">' + list.map(function(d,i){
+        return '<li><a data-pid="'+d.id+'" class="'+(HL===d.id?'hl':'')+'"><b>'+(i+1)+'</b>'+d.name+'<i>'+score(d)+'</i></a></li>'; }).join('') + '</ul>';
+  document.getElementById('inlineToc').innerHTML = TOC.map(function(t){ return '<a href="#'+t[0]+'">'+t[1]+'</a>'; }).join('');
+  spy();
+}
+document.getElementById('sideNav').addEventListener('click', function(e){
+  var a = e.target.closest('a'); if(!a) return;
+  if(a.dataset.sec){ document.getElementById(a.dataset.sec).scrollIntoView(); return; }
+  if(a.dataset.pid){
+    if(HL !== a.dataset.pid) setHL(a.dataset.pid, true);
+    var row = document.querySelector('#tbody tr[data-id="'+a.dataset.pid+'"]');
+    (row || document.getElementById('s-list')).scrollIntoView({block:'start'});
+  }
+});
+/* scroll-spy：画面上部の1/3より上にある最後の節をアクティブに */
+function spy(){
+  var cur = TOC[0][0];
+  TOC.forEach(function(t){ var el = document.getElementById(t[0]); if(el && el.getBoundingClientRect().top < window.innerHeight/3) cur = t[0]; });
+  [].forEach.call(document.querySelectorAll('#sideNav a[data-sec]'), function(a){ a.classList.toggle('active', a.dataset.sec === cur); });
+}
+/* 目次はヘッダー（黒帯）の下から始め、スクロールしたら上に張り付く */
+function placeNav(){
+  var h = document.querySelector('.header'), nav = document.getElementById('sideNav');
+  if(h && nav) nav.style.top = Math.max(20, h.getBoundingClientRect().bottom + 24) + 'px';
+}
+addEventListener('scroll', function(){ spy(); placeNav(); }, {passive:true});
+addEventListener('resize', placeNav);
+placeNav();
+function renderAll(){ renderTop(); renderCard(); renderTable(); renderMap(); renderIndex(); }
 
 for(var i=0;i<NW;i++){(function(i){
   var el = document.getElementById('w'+i);
