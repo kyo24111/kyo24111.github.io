@@ -567,7 +567,7 @@ function parts(d){
   return [
     clamp(1 - (d.walk-1)/11),                       // 立地：徒歩1分=1、12分=0
     clamp((d.areaMax-38)/(75-38)),                  // 広さ：38㎡=0、75㎡=1
-    clamp(1 - d.age/30),                            // 築浅：新築=1、築30年=0
+    .25 + .5 * clamp(1 - d.age/30),                 // 築浅：新築=0.75、築30年=0.25（通知表の2〜4に合わせて振れ幅を半分に）
     (d.asahi === '○' ? 1 : d.asahi === '△' ? .5 : d.asahi === '×' ? 0 : .5),  // 寝室の朝日：未判定は真ん中
     (MUKI[d.muki] === undefined ? .5 : MUKI[d.muki]),// 日当たり：向き
     (d.kichi ? .5 : 0) + (d.genkan === null ? .25 : (d.genkanNG ? 0 : .5)), // 気学：職場からの吉方位＋玄関の方位
@@ -905,7 +905,7 @@ function renderCard(){
       + gcell(band(d.walk, [3,4,5,7]), '徒歩'+d.walk+'分')
       + gcell(d.rentMax <= 40 ? 5 : 1, fmtRent(d)+'万')
       + gcell(areaG, d.areaMax.toFixed(0)+'㎡')
-      + gcell(band(d.age, [3,7,12,20]), d.age === 0 ? '新築' : '築'+d.age+'年')
+      + gcell(d.age <= 7 ? 4 : (d.age <= 15 ? 3 : 2), d.age === 0 ? '新築' : '築'+d.age+'年')   // 築年は重要でないので2〜4の3段階に圧縮（Kyo 2026-11-03）
       + gcell(months === null ? null : band(months, [3,4,5,6]), months === null ? '未取得' : months.toFixed(1)+'ヶ月')
       + gcell(ex === null ? null : band(ex, [70,85,100,115]), ex === null ? '未取得' : ex.toFixed(0)+'万・違約'+pen.m+'ヶ月'+(pen.y > 1 ? '（'+pen.y+'年未満）' : '')+(pen.guess ? '?' : ''))
       + gcell(d.kichi ? 5 : 3, d.houi + (d.kichi ? '・吉' : ''))
