@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>窒素（N）：空気の78%なのに使えない元素</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --border: #d4d4d4;
+    --border-light: #e8e8e8;
+    --text: #111111;
+    --text-muted: #444444;
+    --text-dim: #999999;
+    --accent: #000000;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body { font-family: 'Noto Sans JP', sans-serif; background: var(--bg); color: var(--text); line-height: 1.85; font-size: 16px; }
+  a { color: var(--text); }
+
+  .layout { max-width: 1240px; margin: 0 auto; padding: 0 20px 100px; display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 40px; }
+
+  /* ===== SIDE NAV ===== */
+  .side-nav { position: sticky; top: 64px; align-self: start; max-height: calc(100vh - 140px); overflow-y: auto; padding: 28px 0 20px; font-size: 12px; }
+  .side-nav-head { font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .side-nav-progress { font-family: 'Poppins', sans-serif; font-size: 11px; color: var(--text-muted); margin-bottom: 8px; }
+  .side-nav-bar { height: 3px; background: var(--border-light); border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+  .side-nav-bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+  .side-nav ul { list-style: none; }
+  .side-nav-chapter { margin-bottom: 10px; }
+  .side-nav-chapter-row { display: flex; align-items: flex-start; gap: 6px; }
+  .side-nav-chapter-title { flex: 1; font-weight: 700; color: var(--text); text-decoration: none; line-height: 1.45; font-size: 12.5px; }
+  .side-nav-chapter-title:hover { text-decoration: underline; }
+  .side-nav-item { display: flex; align-items: flex-start; gap: 4px; padding-left: 12px; }
+  .side-nav-link { flex: 1; display: block; color: #a8a8a8; text-decoration: none; padding: 4px 8px 4px 6px; border-left: 2px solid transparent; line-height: 1.45; transition: all .15s; }
+  .side-nav-link:hover { color: var(--text); border-left-color: var(--border); }
+  .side-nav-link.active { color: var(--text); font-weight: 700; border-left-color: var(--accent); background: var(--surface); }
+  .side-nav-link .stars { font-size: 10px; letter-spacing: -.05em; margin-left: 4px; color: var(--text-dim); white-space: nowrap; }
+  .side-nav-item.done .side-nav-link { color: #cfcfcf; text-decoration: line-through; text-decoration-thickness: 1px; }
+  .snav-check { flex: none; width: 13px; height: 13px; border: 1.5px solid #cccccc; border-radius: 3px; background: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; line-height: 1; color: #fff; transition: all .12s; }
+  .side-nav-chapter-row .snav-check { margin-top: 3px; }
+  .side-nav-item .snav-check { margin-top: 7px; }
+  .snav-check:hover { border-color: var(--text); }
+  .snav-check.checked { background: var(--accent); border-color: var(--accent); }
+  .snav-check.checked::after { content: '✓'; }
+
+  /* ===== MAIN ===== */
+  main { min-width: 0; }
+  header.hero { padding: 44px 0 24px; border-bottom: 1px solid var(--border); margin-bottom: 22px; }
+  .hero-label { display: inline-block; border: 1px solid var(--text); font-family: 'Poppins', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; padding: 4px 12px; border-radius: 2px; margin-bottom: 16px; }
+  .hero-top { display: flex; gap: 22px; align-items: center; }
+  .hero-sym { flex: none; width: 92px; height: 92px; background: var(--accent); color: #fff; border-radius: 6px; display: flex; flex-direction: column; justify-content: space-between; padding: 8px 10px; font-family: 'Poppins', sans-serif; }
+  .hero-sym .n { font-size: 12px; opacity: .7; }
+  .hero-sym .s { font-size: 44px; font-weight: 900; line-height: .9; }
+  .hero h1 { font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 2rem; font-weight: 900; letter-spacing: -0.02em; line-height: 1.3; }
+  .hero h1 span { display: block; font-family: 'Noto Sans JP', sans-serif; font-size: 1rem; font-weight: 700; color: var(--text-muted); margin-top: 4px; }
+  .hero-updated { font-family: 'Poppins', sans-serif; font-size: 11px; color: var(--text-dim); letter-spacing: .04em; margin: 14px 0 8px; }
+  .hero p { color: var(--text-muted); font-size: 14px; max-width: 760px; }
+
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 10px 14px; margin-bottom: 30px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; }
+  .controls .done-summary { font-family: 'Poppins', sans-serif; font-weight: 700; }
+  .controls .legend { color: var(--text-muted); }
+  .controls .spacer { flex: 1; }
+  .controls button { font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 11px; font-weight: 600; padding: 4px 12px; border: 1px solid var(--border); background: #fff; border-radius: 4px; cursor: pointer; }
+  .controls button:hover { border-color: var(--text); }
+
+  .chapter { margin-bottom: 56px; scroll-margin-top: 64px; }
+  .chapter-title { font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 1.45rem; font-weight: 800; padding-bottom: 10px; border-bottom: 2px solid var(--text); margin-bottom: 22px; letter-spacing: -.01em; }
+  .chapter-title .no { font-size: .8em; color: var(--text-dim); margin-right: 10px; }
+
+  .section { background: var(--surface); border: 1px solid var(--border-light); border-radius: 8px; padding: 22px 26px 24px; margin-bottom: 18px; scroll-margin-top: 64px; }
+  .section h2 { font-size: 1.12rem; font-weight: 700; line-height: 1.5; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+  .section h2 .sid { font-family: 'Poppins', sans-serif; font-size: .85em; color: var(--text-dim); }
+  .section h2 .chev { margin-left: auto; font-size: .8em; color: var(--text-dim); display: none; user-select: none; }
+  .diff { font-family: 'Poppins', sans-serif; font-size: 11px; font-weight: 600; border: 1px solid var(--border); border-radius: 3px; padding: 1px 8px; color: var(--text-muted); white-space: nowrap; }
+  .diff b { color: var(--text); letter-spacing: .02em; }
+  /* 学習指導要領の科目ラベル（意味を持つ分類なので色分け） */
+  .scope { font-size: 10.5px; font-weight: 700; border-radius: 3px; padding: 1px 8px; white-space: nowrap; border: 1px solid transparent; }
+  .scope-chem-basic { background: #e6eefa; color: #1d4f91; border-color: #b9cdee; }
+  .scope-chem { background: #1d4f91; color: #fff; }
+  .scope-bio-basic { background: #e5f3e8; color: #1f6b33; border-color: #b7dcc0; }
+  .scope-bio { background: #1f6b33; color: #fff; }
+  .scope-dot { display: inline-block; width: 7px; height: 7px; border-radius: 2px; margin-left: 3px; vertical-align: 1px; }
+  .scope-dot.scope-chem-basic, .scope-dot.scope-bio-basic { border-width: 1px; border-style: solid; }
+  .scope-legend { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+  .sec-meta { font-family: 'Poppins', sans-serif; font-size: 10.5px; color: var(--text-dim); letter-spacing: .03em; margin: 4px 0 14px; }
+  .section.done h2 { cursor: pointer; color: var(--text-dim); }
+  .section.done h2 .chev { display: inline-block; }
+  .section.collapsed > *:not(h2) { display: none; }
+  .section.collapsed { padding-bottom: 18px; }
+  .section.collapsed .chev { transform: rotate(-90deg); }
+
+  .section p { margin: 0 0 12px; font-size: 15px; }
+  .section ul, .section ol { margin: 0 0 12px 22px; font-size: 15px; }
+  .section li { margin-bottom: 4px; }
+  .section h3 { font-size: 14px; font-weight: 700; margin: 18px 0 8px; }
+  .lead { font-size: 15.5px; font-weight: 500; border-left: 3px solid var(--text); padding: 4px 0 4px 14px; margin-bottom: 14px; }
+  .formula { font-family: 'Poppins', 'Noto Sans JP', sans-serif; background: var(--bg); border: 1px solid var(--border-light); border-radius: 4px; padding: 8px 14px; margin: 8px 0 14px; font-size: 14px; overflow-x: auto; white-space: nowrap; }
+  .note { font-size: 12.5px; color: var(--text-muted); }
+  .table-wrap { overflow-x: auto; margin: 6px 0 14px; }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 460px; }
+  th, td { border-bottom: 1px solid var(--border-light); padding: 7px 10px; text-align: left; vertical-align: top; }
+  th { font-family: 'Poppins', 'Noto Sans JP', sans-serif; font-size: 11.5px; color: var(--text-muted); border-bottom: 1px solid var(--text); background: var(--bg); white-space: nowrap; }
+  td.num, th.num { text-align: right; font-family: 'Poppins', sans-serif; white-space: nowrap; }
+  tr.hl td { font-weight: 700; }
+  .sources { font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+  .sources a { color: var(--text-muted); }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; gap: 0; }
+    .side-nav { position: static; max-height: none; border-bottom: 1px solid var(--border); padding: 16px 0 12px; order: 0; }
+    .side-nav-head { cursor: pointer; font-size: 11px; color: var(--text); }
+    .side-nav-head::after { content: ' ▸ 開く'; color: var(--text-dim); }
+    .side-nav.open .side-nav-head::after { content: ' ▾ 閉じる'; }
+    .side-nav:not(.open) > ul { display: none; }
+    main { order: 1; }
+  }
+  @media (max-width: 640px) {
+    .layout { padding: 0 16px 90px; }
+    .hero-top { gap: 14px; }
+    .hero-sym { width: 70px; height: 70px; }
+    .hero-sym .s { font-size: 34px; }
+    .hero h1 { font-size: 1.45rem; }
+    .section { padding: 18px 16px 20px; }
+    .chapter-title { font-size: 1.2rem; }
+  }
+</style>
+  <!-- snav -->
+  <style>
+body{padding-top:48px!important;padding-bottom:60px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:48px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em;transition:opacity .15s}
+.snav-logo:hover{opacity:.6}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:260px;background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:72px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0;letter-spacing:-.01em;transition:color .12s}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:52px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px;font-weight:500;letter-spacing:.06em;transition:color .15s}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+  </style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">research</a><span class="s">/</span><a href="index.html">science</a><span class="s">/</span><span class="c">窒素（N）：空気の78%なのに使えない元素</span></nav><script>if(location.protocol!=="file:"){var c=document.currentScript.previousElementSibling;if(c)c.remove()}</script><script>/* keep-pos: リロードしても見ていた位置（スクロール・タブ・開いた<details>・内側スクロール）を保つ */
+(function(){var ss;try{ss=window.sessionStorage;ss.getItem('x')}catch(e){return}
+try{history.scrollRestoration='manual'}catch(e){}
+var K='wl-pos:'+location.pathname,TAB='[data-view],[data-tab],[role="tab"],.tab,.tab-btn',st={y:0,s:{},t:[]},busy=true,tm;
+function P(el){var p=[];while(el&&el.nodeType===1&&el!==document.body){if(el.id){p.unshift('#'+CSS.escape(el.id));return p.join('>')}
+var i=1,x=el;while((x=x.previousElementSibling))i++;p.unshift(el.tagName.toLowerCase()+':nth-child('+i+')');el=el.parentElement}p.unshift('body');return p.join('>')}
+function Q(q){try{return document.querySelector(q)}catch(e){return null}}
+function save(){if(busy)return;st.y=window.scrollY;st.d=[].map.call(document.querySelectorAll('details'),function(d){return d.open?1:0}).join('');
+try{ss.setItem(K,JSON.stringify(st))}catch(e){}}
+function later(){if(busy)return;clearTimeout(tm);tm=setTimeout(save,150)}
+document.addEventListener('scroll',function(e){var t=e.target;if(t&&t.nodeType===1&&!busy)st.s[P(t)]=t.scrollTop;later()},true);
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest(TAB);if(!b||!e.isTrusted)return;
+var g=P(b.parentElement);st.t=st.t.filter(function(x){return x.g!==g});st.t.push({g:g,p:P(b)});st.t=st.t.slice(-6);later()},true);
+document.addEventListener('toggle',later,true);addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save()});
+function stop(){if(busy){busy=false;save()}}
+['wheel','touchstart','keydown','mousedown'].forEach(function(n){addEventListener(n,stop,{capture:true,passive:true})});
+addEventListener('load',function(){var d;try{d=JSON.parse(ss.getItem(K)||'null')}catch(e){}
+if(!d){busy=false;return}st=d;st.s=st.s||{};st.t=st.t||[];
+st.t.forEach(function(x){var b=Q(x.p);if(b&&!b.classList.contains('on')&&!b.classList.contains('active')&&b.getAttribute('aria-selected')!=='true')b.click()});
+if(d.d)[].forEach.call(document.querySelectorAll('details'),function(el,i){if(d.d[i]==='1')el.open=true});
+function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var el=Q(q);if(el)el.scrollTop=st.s[q]}}
+[0,60,160,320,640,1100,1700].forEach(function(t){setTimeout(go,t)});setTimeout(stop,1800)})})();</script><!-- crumbs:end -->
+<!-- snav:bar -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <div class="snav-sec">
+    <div class="snav-sec-label">030 Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/034_science/260402_universe.html">science</a>
+    <a class="snav-a" href="/030_research/035_startup/index.html">startup</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">040 Personal</div>
+    <a class="snav-a" href="/040_personal/profile/index.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+
+<div class="layout">
+  <aside class="side-nav" id="sideNav" data-no-terms aria-label="目次"></aside>
+
+  <main data-terms-root>
+    <header class="hero">
+      <span class="hero-label">Element Deep Dive</span>
+      <div class="hero-top">
+        <div class="hero-sym"><span class="n">7</span><span class="s">N</span></div>
+        <h1 data-no-terms>窒素 Nitrogen<span>空気の78%なのに、生き物はほとんど使えない元素</span></h1>
+      </div>
+      <div class="hero-updated">Created: 2026-11-03 ／ Last updated: 2026-11-03</div>
+      <p>Claudeとの議論ログをもとに章立てしたページ。各節の★は<b>やさしさ</b>（★★★★★＝いちばん簡単、★☆☆☆☆＝いちばん難しい）。左の目次のチェックで既習にでき、既習の節は見出しクリックで畳める。周期表から引くときは<a href="260707_elements.html#N">元素DB</a>へ。</p>
+    </header>
+
+    <div class="controls">
+      <span class="done-summary" id="doneSummary">0 / 0 節 既習</span>
+      <span class="legend">★の数＝やさしさ（5が最も簡単）</span>
+      <span class="scope-legend"><span class="scope scope-chem-basic">化学基礎</span><span class="scope scope-chem">化学</span><span class="scope scope-bio-basic">生物基礎</span><span class="scope scope-bio">生物</span></span>
+      <span class="spacer"></span>
+      <button type="button" id="foldDone">既習を畳む</button>
+      <button type="button" id="unfoldAll">すべて開く</button>
+    </div>
+
+    <!-- ================= 1 ================= -->
+    <section class="chapter" id="ch1" data-title="基本">
+      <h2 class="chapter-title"><span class="no">01</span>基本</h2>
+
+      <div class="section" id="s1-1" data-title="一言でいうと" data-diff="5" data-added="2026-11-03">
+        <h2>一言でいうと</h2>
+        <p class="lead">空気の78%を占めるのに、生き物はほとんど使えない元素。</p>
+        <p>人類はこの「使えない窒素」を工業的に使える形に変える方法（ハーバー・ボッシュ法）を手に入れ、そのおかげで人口が数十億人規模で増えた。窒素の話の大半は、この<b>「大量にあるのに使えない」というギャップ</b>につながる。</p>
+      </div>
+
+      <div class="section" id="s1-2" data-title="基本スペック" data-diff="4" data-scope="chem-basic" data-added="2026-11-03">
+        <h2>基本スペック</h2>
+        <div class="table-wrap"><table>
+          <tr><th>項目</th><th>値</th></tr>
+          <tr><td>原子番号 / 記号</td><td>7 / N</td></tr>
+          <tr><td>位置</td><td>第2周期・15族（下にリン、ヒ素が続く）</td></tr>
+          <tr><td>電子配置</td><td>1s² 2s² 2p³（不対電子が3つあるので結合の手が3本）</td></tr>
+          <tr><td>存在量</td><td>大気の約78%（体積比）。人体では重量の約3%</td></tr>
+          <tr><td>沸点</td><td>−196℃（77 K）。これが液体窒素の温度</td></tr>
+          <tr><td>酸化数</td><td>−3（アンモニア）から+5（硝酸）まで幅広い</td></tr>
+        </table></div>
+      </div>
+
+      <div class="section" id="s1-3" data-title="三重結合がすべての出発点" data-diff="4" data-scope="chem-basic" data-added="2026-11-03">
+        <h2>三重結合がすべての出発点</h2>
+        <p>N₂は N≡N の三重結合でつながっていて、結合エネルギーは約945 kJ/mol。二原子分子の中でもかなり強い部類で、ほぼ何とも反応しない。窒素について押さえておくことは、ほぼこの1点に集約される。</p>
+        <ul>
+          <li>不活性なので、大気中に大量に残っている</li>
+          <li>不活性なので、生物は直接取り込めない</li>
+          <li>不活性なので、工業的には「酸素を追い出すための安いガス」として重宝される</li>
+          <li>逆に窒素化合物（爆薬など）は、壊れて安定なN₂に戻るときに大量のエネルギーを出す（→ <a href="#s3-1">3.1</a>）</li>
+        </ul>
+        <p class="note">三重結合そのものの深掘りは <a href="#s3-3">3.3</a>。</p>
+      </div>
+    </section>
+
+    <!-- ================= 2 ================= -->
+    <section class="chapter" id="ch2" data-title="歴史">
+      <h2 class="chapter-title"><span class="no">02</span>歴史</h2>
+
+      <div class="section" id="s2-1" data-title="発見と名前の由来" data-diff="5" data-added="2026-11-03">
+        <h2>発見と名前の由来</h2>
+        <ul>
+          <li><b>1772年</b>、スコットランドのダニエル・ラザフォードが、ネズミを入れて燃焼させたあとに残る「生き物が生きられない空気」として分離した。同時期にシェーレ、キャヴェンディッシュ、プリーストリーも気づいており、発見者には諸説ある。</li>
+          <li>ラヴォアジエは<b>azote（生命がない）</b>と命名。フランス語では今もこの名前で、「アゾ」「アジド」の語源になっている。</li>
+          <li>英語のnitrogenは「硝石（niter）を作るもの」という意味（シャプタル、1790年）。</li>
+          <li><b>日本語の「窒素」は「窒息させる素」。</b>オランダ語の stikstof（stikken＝窒息する）を、江戸後期の宇田川榕菴が訳した。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="s2-2" data-title="硝石とは" data-diff="5" data-added="2026-11-03">
+        <h2>硝石とは</h2>
+        <p>硝酸塩の鉱物のこと。</p>
+        <ul>
+          <li><b>硝石（niter）＝硝酸カリウムKNO₃。</b>黒色火薬の主成分で、配合はおおよそ硝石75%・木炭15%・硫黄10%。硝石が酸素を供給する役。</li>
+          <li><b>チリ硝石＝硝酸ナトリウムNaNO₃。</b>アタカマ砂漠は極端に雨が降らないため、水に溶けやすい硝酸塩が流されずに地表に残った。</li>
+          <li>天然の硝石がない地域では、家畜小屋や床下の土から作った。尿やふんの窒素が微生物の働きで硝酸塩になるのを利用する。<b>日本では加賀藩の五箇山（白川郷の近く）が、合掌造りの床下で硝石を作る一大産地</b>で、火薬の原料として藩の秘密産業だった。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="s2-3" data-title="19世紀の窒素は今の石油" data-diff="4" data-added="2026-11-03">
+        <h2>19世紀の窒素は今の石油</h2>
+        <p>農業の収量は窒素で頭打ちになる。肥料の供給源はペルーのグアノ（海鳥の糞が積もったもの）とチリ硝石で、18世紀は火薬の原料としての戦略物資、<b>19世紀はまさに今の石油</b>のような扱いだった。</p>
+        <div class="table-wrap"><table>
+          <tr><th>石油っぽい点</th><th>窒素（グアノ・硝石）での実例</th></tr>
+          <tr><td>国家財政を支える</td><td>1850〜60年代、ペルーの国家歳入の大半がグアノ。チリも硝石の輸出税が歳入の約半分</td></tr>
+          <tr><td>資源をめぐる戦争</td><td>スペイン対ペルーのチンチャ諸島戦争（1864–66年）、<b>太平洋戦争（1879–84年、チリ対ペルー・ボリビア）</b>。負けたボリビアは海岸線を失い内陸国に</td></tr>
+          <tr><td>外国資本が支配</td><td>英国資本が硝石産業を握り、ジョン・トーマス・ノースは「硝石王」と呼ばれた</td></tr>
+          <tr><td>領土を取りに行く</td><td>米国のグアノ島法（1856年）。無人のグアノ島を米国民が占有できるとした法律で、今も米国領として残る島がある</td></tr>
+          <tr><td>代替技術で崩壊する</td><td>ハーバー・ボッシュ法の登場でチリの硝石産業は1920〜30年代に壊滅。鉱山町は廃墟になり、ハンバーストーンは世界遺産に（→ <a href="#ch7">7章</a>）</td></tr>
+        </table></div>
+        <h3>クルックス（1832–1919年）</h3>
+        <p>英国の化学者・物理学者。タリウムを発見し、<b>クルックス管</b>（真空放電管。X線や電子の発見につながった、ブラウン管のご先祖）を作った。一方で心霊現象の研究にものめり込んだ。1898年の英国科学振興協会の会長講演「小麦問題」で「天然の窒素源はいずれ尽きる。空気中の窒素を固定するのは化学者の使命だ」と訴えた。</p>
+      </div>
+
+      <div class="section" id="s2-4" data-title="ハーバー・ボッシュ法" data-diff="3" data-scope="chem" data-added="2026-11-03">
+        <h2>ハーバー・ボッシュ法（1909年／1913年）</h2>
+        <div class="formula">N₂ + 3H₂ → 2NH₃　（鉄系触媒・約400–500℃・150–300気圧）</div>
+        <ul>
+          <li>フリッツ・ハーバーが実験室で成功させ、BASFのカール・ボッシュが工業化した（高圧装置を作れたことが大きい）。2人ともノーベル化学賞を受けている（1918年／1931年）。</li>
+          <li>現在は世界のエネルギー消費の約1–2%を使う（→ <a href="#s5-3">5.3</a>）。</li>
+          <li><b>いま人体にある窒素の約半分は、この方法で作られたもの</b>という推計がある（バーツラフ・スミル）。</li>
+        </ul>
+        <h3>影の面</h3>
+        <p>第一次大戦中、ドイツはチリ硝石を海上封鎖で断たれたが、アンモニアから硝酸を作る（<a href="#s3-4">オストワルト法</a>）ことで火薬を作り続けた。ハーバー本人は毒ガス（塩素）開発も指揮し、化学者だった妻クララは抗議の意味もこめて自殺したとされる。<b>「空気からパンを作った男」と「化学兵器の父」が同一人物</b>。</p>
+        <h3>なぜ高温・高圧なのか</h3>
+        <ul>
+          <li>気体の分子が4個から2個に減る反応なので、<b>圧力をかけるほどアンモニア側に進む</b>（ルシャトリエの原理）。</li>
+          <li>発熱反応なので平衡だけ見れば低温が有利。しかし低温だと反応が遅すぎるので、約450℃と触媒で妥協している。</li>
+          <li>1回通しただけでは15%前後しかアンモニアにならず、反応しなかったガスを何度もぐるぐる回す。</li>
+          <li><b>酵素（ニトロゲナーゼ）は常温・常圧で同じことをやっている</b>（ただしATPを大量に使う）。ここが「自然のほうがまだ上手い」と言われる点（→ <a href="#s4-1">4.1</a>）。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="s2-5" data-title="BASFと窒素" data-diff="4" data-added="2026-11-03">
+        <h2>BASFと窒素</h2>
+        <p>いまは売上で世界最大の化学メーカー。窒素の工業化そのものを担った会社。</p>
+        <ul>
+          <li>正式名はBadische Anilin- und Soda-Fabrik（バーデン・アニリン・ソーダ工場）。1865年創業で、もともとは合成染料の会社。</li>
+          <li><b>1913年、オッパウで世界初のアンモニア工場</b>を動かした。第一次大戦中はロイナ工場も建て、ドイツの火薬と肥料を支えた。</li>
+          <li>1925年にIGファルベンに統合。ナチスへの協力が問題となり、戦後に解体されBASFとして再出発。</li>
+          <li>1921年にオッパウ工場で肥料（硝酸塩の混合物）が大爆発し、500人以上が亡くなった。</li>
+          <li>2022年以降は欧州のガス価格高騰で、本拠地ルートヴィヒスハーフェンのアンモニア設備を縮小。</li>
+          <li>余談：<b>カール・ボッシュは、自動車部品のボッシュを創業したロベルト・ボッシュの甥</b>。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= 3 ================= -->
+    <section class="chapter" id="ch3" data-title="化学">
+      <h2 class="chapter-title"><span class="no">03</span>化学</h2>
+
+      <div class="section" id="s3-1" data-title="N₂に戻るとエネルギーが出る理由（爆薬）" data-diff="3" data-added="2026-11-03">
+        <h2>N₂に戻るとエネルギーが出る理由（爆薬）</h2>
+        <p>化学反応で出入りするエネルギーは「壊す結合のエネルギー − できる結合のエネルギー」で決まる。N≡Nはかなり強い結合なので、<b>弱い結合でできた窒素化合物が壊れてN₂になると、その差額が熱として出る</b>。坂の上にあるボールが、谷底（N₂）へ一気に転がり落ちるイメージ。</p>
+        <div class="table-wrap"><table>
+          <tr><th>結合</th><th class="num">結合エネルギー（kJ/mol）</th></tr>
+          <tr><td>N–N（単結合）</td><td class="num">約160</td></tr>
+          <tr><td>N=N（二重結合）</td><td class="num">約420</td></tr>
+          <tr class="hl"><td>N≡N（三重結合）</td><td class="num">約945</td></tr>
+        </table></div>
+        <h3>ダイナマイトに使える理由は3つ</h3>
+        <ol>
+          <li><b>燃料と酸素が1つの分子に入っている。</b>ニトログリセリンやTNTは、燃える部分（C、H）と酸素を持つ部分（–NO₂基）を同じ分子に抱えている。外から酸素を取り込む必要がないので、反応が一瞬で終わる。</li>
+          <li><b>できるものがすべて超安定な気体。</b>N₂、CO₂、H₂Oといった谷底の物質ばかりなので、エネルギーの差額が大きい。</li>
+          <li><b>固体が一瞬で大量の気体になる。</b>体積が何千倍にも膨らみ、これが破壊力になる。</li>
+        </ol>
+        <div class="formula">4 C₃H₅(NO₃)₃ → 12 CO₂ + 10 H₂O + 6 N₂ + O₂</div>
+        <p>ニトログリセリンはそのままだと少しの衝撃で爆発する。ノーベルはこれを珪藻土に染み込ませて安全に扱えるようにし、ダイナマイト（1867年）として売り出した。ニトログリセリンは狭心症の薬でもあり（体内で一酸化窒素NOになり血管を広げる）、ノーベル本人も晩年に処方されている。</p>
+        <p class="note">ほかにTNT、硝酸アンモニウム（2020年のベイルート港爆発は硝安約2,750トン）など、主な爆薬はほぼ窒素化合物。</p>
+      </div>
+
+      <div class="section" id="s3-2" data-title="養分になるのは燃料ではなく材料だから" data-diff="4" data-scope="bio" data-added="2026-11-03">
+        <h2>養分になるのは燃料ではなく材料だから</h2>
+        <p>「エネルギーが高いから養分になる」わけではない。植物にとって窒素は<b>燃料ではなく材料</b>で、アミノ酸やDNAを組み立てる部品として窒素原子そのものが必要。</p>
+        <ul>
+          <li>N₂は金庫に入った現金で、そのままでは使えない。アンモニア（NH₄⁺）や硝酸（NO₃⁻）は「金庫から出してある現金」。</li>
+          <li>植物は硝酸を吸ったあと、<b>自分のエネルギーを使って</b>アンモニアの形に変えてからアミノ酸に組み込む。</li>
+          <li><b>例外は微生物。</b>硝化細菌は、アンモニアを硝酸に酸化するときに出るエネルギーで生きている。窒素化合物を本当に燃料にする生き物もいる。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="s3-3" data-title="三重結合を多角的に" data-diff="1" data-scope="chem-basic" data-added="2026-11-03">
+        <h2>三重結合を多角的に</h2>
+        <h3>① 構造</h3>
+        <p>σ結合1本とπ結合2本。結合距離は110 pmで、単結合（145 pm）よりかなり短い。</p>
+        <h3>② 三重結合は単結合3本分より強い（窒素の特殊性）</h3>
+        <div class="table-wrap"><table>
+          <tr><th></th><th class="num">単結合 ×3</th><th class="num">三重結合</th></tr>
+          <tr><td>炭素 C</td><td class="num">348×3 = 1,044</td><td class="num">C≡C 839（弱い）</td></tr>
+          <tr class="hl"><td>窒素 N</td><td class="num">160×3 = 480</td><td class="num">N≡N 945（ずっと強い）</td></tr>
+        </table></div>
+        <ul>
+          <li>N–N単結合が異常に弱いのは、隣り合うN原子の<b>孤立電子対どうしが反発する</b>から。</li>
+          <li>結果として、<b>炭素は単結合で長い鎖を作る（だから有機物や生命ができる）のに対し、窒素は2個で三重結合を作って完結したがる</b>。窒素の鎖（ポリ窒素）を超高圧で作る研究はあるが、できたものは「戻るときに大爆発する」高エネルギー物質。</li>
+          <li>同じ15族でも、下のリンは原子が大きくπ結合を作るのが苦手なので単結合のP₄（白リン）になる。<b>強い多重結合は第2周期（C、N、O）の特権</b>。</li>
+        </ul>
+        <h3>③ 安定（熱力学）と反応しにくい（速度論）は別の話</h3>
+        <ul>
+          <li>CO（一酸化炭素）はN₂と電子の数が同じ（等電子）で、同じ三重結合を持つ。しかも結合エネルギーは1,072 kJ/molで<b>N₂より強い</b>。</li>
+          <li>それでもCOはヘモグロビンに強く結合する猛毒。COは電荷に偏りがあり、炭素側に電子が張り出していて「手を出しやすい」から。</li>
+          <li>N₂は左右対称で偏りがなく、電子の張り出しもない。<b>取っかかりがない</b>ことが、反応しにくさの大きな理由。</li>
+        </ul>
+        <h3>④ 割り方は3種類</h3>
+        <ul>
+          <li><b>工業</b>：鉄触媒の表面にN₂を吸着させ、原子に引き裂く。これが反応全体の律速段階。</li>
+          <li><b>生物</b>：ニトロゲナーゼの鉄・モリブデンを含む中心部で、電子と水素を1個ずつ足して少しずつほどく。</li>
+          <li><b>自然</b>：雷の数万℃の熱で無理やり割る。</li>
+        </ul>
+        <h3>⑤ 地球環境との関係</h3>
+        <p>N₂は分子の対称性が高く、振動しても電荷の偏りが生まれないので<b>赤外線を吸収せず、温室効果ガスにならない</b>（O₂も同じ）。一方、偏りのあるN₂Oは強力な温室効果ガス。同じ窒素でも、くっつき方しだいで性格がまったく変わる。</p>
+      </div>
+
+      <div class="section" id="s3-4" data-title="オストワルト法（硝酸の工業的製法）" data-diff="3" data-scope="chem" data-added="2026-11-03">
+        <h2>オストワルト法（硝酸の工業的製法）</h2>
+        <p class="lead">アンモニアを酸化して硝酸を作る方法。ハーバー・ボッシュ法とセットで「空気から火薬と肥料」が完成する。</p>
+        <h3>3段階の反応</h3>
+        <div class="formula">① 4NH₃ + 5O₂ → 4NO + 6H₂O　（白金・ロジウム網の触媒、約800〜900℃）</div>
+        <div class="formula">② 2NO + O₂ → 2NO₂</div>
+        <div class="formula">③ 3NO₂ + H₂O → 2HNO₃ + NO　（出てきたNOは②に戻して再利用）</div>
+        <div class="formula">全体：NH₃ + 2O₂ → HNO₃ + H₂O　（NH₃ 1 molから HNO₃ 1 mol）</div>
+        <h3>窒素の酸化数で見ると</h3>
+        <div class="table-wrap"><table>
+          <tr><th>物質</th><th>NH₃</th><th>NO</th><th>NO₂</th><th>HNO₃</th></tr>
+          <tr><td>Nの酸化数</td><td class="num">−3</td><td class="num">+2</td><td class="num">+4</td><td class="num">+5</td></tr>
+        </table></div>
+        <p>ハーバー・ボッシュ法でN₂（0）を−3まで<b>還元</b>し、オストワルト法で+5まで<b>酸化</b>する。窒素の酸化数の幅（−3〜+5）を、工業的に端から端まで使い切っている。</p>
+        <h3>ポイント</h3>
+        <ul>
+          <li><b>①は触媒が命。</b>白金網に一瞬（数千分の1秒）だけ触れさせる。長く触れさせると、NOではなくN₂まで戻ってしまう。</li>
+          <li><b>③の不均化</b>：NO₂（+4）の一部が+5（HNO₃）に上がり、一部が+2（NO）に下がる。同じ物質が酸化と還元を同時に受ける反応。</li>
+          <li><b>計算問題の定番は「NH₃ 1 mol → HNO₃ 1 mol」。</b>全体の式にまとめれば、途中のNOの再利用を考えなくて済む。</li>
+          <li>できた硝酸をアンモニアと中和すると硝酸アンモニウム（NH₄NO₃）になる。肥料にも爆薬にもなる物質（<a href="#s3-1">3.1</a>）。</li>
+        </ul>
+        <h3>歴史</h3>
+        <p>ドイツのヴィルヘルム・オストワルトが1902年に特許を取得し、触媒の研究で1909年にノーベル化学賞を受けた。第一次大戦でチリ硝石を断たれたドイツは、<b>ハーバー・ボッシュ法（アンモニア）＋オストワルト法（硝酸）</b>で火薬を作り続けた（<a href="#s2-4">2.4</a>）。</p>
+      </div>
+    </section>
+
+    <!-- ================= 4 ================= -->
+    <section class="chapter" id="ch4" data-title="生き物と窒素">
+      <h2 class="chapter-title"><span class="no">04</span>生き物と窒素</h2>
+
+      <div class="section" id="s4-1" data-title="窒素固定" data-diff="3" data-scope="bio" data-added="2026-11-03">
+        <h2>窒素固定</h2>
+        <p class="lead">N₂（使えない窒素）をNH₃（使える窒素）に変えること。</p>
+        <p>アミノ酸、DNA/RNAの塩基、クロロフィル、ATPのすべてに窒素が入っている。ただしN₂はそのままでは使えず、変換ルートは3つしかない。</p>
+        <div class="table-wrap"><table>
+          <tr><th>ルート</th><th>量（窒素換算、年間）</th><th>仕組み</th></tr>
+          <tr><td>生物による固定</td><td>1〜2億トン程度</td><td>根粒菌、シアノバクテリアなどが持つ酵素ニトロゲナーゼ</td></tr>
+          <tr><td>雷</td><td>数百万トン</td><td>放電の高温でN₂とO₂が反応してNOになり、雨に溶けて地上に落ちる</td></tr>
+          <tr class="hl"><td>工業（ハーバー・ボッシュ法）</td><td>約1.6億トン</td><td>鉄触媒、約450℃、200気圧前後</td></tr>
+        </table></div>
+        <p>今では<b>人工的な窒素固定が自然の固定量と同規模</b>になっている。</p>
+        <h3>マメ科植物と根粒菌の「共生の取引」</h3>
+        <ul>
+          <li>植物は根に<b>根粒</b>というこぶを作り、根粒菌を住まわせて糖（エネルギー）を渡す。</li>
+          <li>根粒菌はそのお返しにアンモニアを渡す。</li>
+          <li>ニトロゲナーゼは<b>酸素に触れると壊れる</b>。そこで植物はヘモグロビンの親戚にあたるレグヘモグロビンで酸素を吸い取る。だから<b>元気な根粒の断面はピンク色</b>。</li>
+          <li>N₂を1分子割るのにATPを16個使う、かなり高コストな反応。</li>
+          <li>昔からの輪作や田んぼのレンゲ、緑肥は、すべてこの仕組みで土に窒素を足す知恵。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="s4-2" data-title="窒素循環" data-diff="3" data-scope="bio" data-added="2026-11-03">
+        <h2>窒素循環</h2>
+        <div class="formula">空気中のN₂ →（固定）→ アンモニア →（硝化）→ 硝酸 → 植物・動物 →（分解）→ アンモニア …</div>
+        <ul>
+          <li><b>固定</b>：N₂ → NH₃（<a href="#s4-1">4.1</a>）</li>
+          <li><b>硝化</b>：アンモニア → 硝酸。硝化細菌がこの反応でエネルギーを稼ぐ（<a href="#s3-2">3.2</a>）</li>
+          <li><b>同化</b>：植物が吸ってアミノ酸などに組み込み、動物が食べる</li>
+          <li><b>分解</b>：死骸や排せつ物が分解されてアンモニアに戻る</li>
+          <li><b>脱窒</b>：土の中の細菌が硝酸をN₂（一部はN₂O）に戻して空気へ返す</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= 5 ================= -->
+    <section class="chapter" id="ch-amino" data-title="アミノ酸・タンパク質との関係">
+      <h2 class="chapter-title"><span class="no"></span>アミノ酸・タンパク質との関係</h2>
+
+      <div class="section" id="sa-1" data-title="アミノ酸の構造：窒素はどこにいるか" data-diff="4" data-scope="chem,bio-basic" data-added="2026-11-03">
+        <h2>アミノ酸の構造：窒素はどこにいるか</h2>
+        <div class="formula">R–CH(NH₂)–COOH　（アミノ基 –NH₂ ＋ カルボキシ基 –COOH ＋ 側鎖 R）</div>
+        <ul>
+          <li><b>アミノ基（–NH₂）はアンモニア（NH₃）からHを1個取った形。</b>「アミノ」の語源もアンモニア。窒素が入っていないアミノ酸は存在しない。</li>
+          <li>タンパク質を作るアミノ酸は20種類。側鎖Rの違いで性質が変わる。リシン、アルギニン、ヒスチジンなどは側鎖にも窒素を持つ。</li>
+          <li>アミノ基は塩基性（H⁺を受け取る）、カルボキシ基は酸性（H⁺を出す）。<b>1つの分子に酸と塩基が同居</b>している。</li>
+        </ul>
+        <h3>双性イオンと等電点（化学）</h3>
+        <ul>
+          <li>水中では –NH₃⁺ と –COO⁻ を同時に持つ<b>双性イオン</b>になる。窒素の孤立電子対がH⁺を受け取るのがポイント（NH₃ → NH₄⁺ と同じ仕組み）。</li>
+          <li>酸性にすると陽イオン、塩基性にすると陰イオンが増える。全体の電荷がちょうど0になるpHが<b>等電点</b>。電気泳動でアミノ酸を分ける問題の定番。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="sa-2" data-title="ペプチド結合とタンパク質の形" data-diff="3" data-scope="chem,bio-basic" data-added="2026-11-03">
+        <h2>ペプチド結合とタンパク質の形</h2>
+        <div class="formula">…–COOH ＋ H₂N–… → …–CO–NH–… ＋ H₂O　（脱水縮合）</div>
+        <ul>
+          <li>アミノ酸どうしは、一方の –COOH ともう一方の –NH₂ から水が取れてつながる。この <b>–CO–NH–</b> がペプチド結合（化学的にはアミド結合）。</li>
+          <li>アミノ酸が多数つながったものがポリペプチド、それが折りたたまれたものがタンパク質。</li>
+          <li><b>形を決めるのも窒素。</b>ペプチド結合の N–H と、別の場所の C=O が水素結合し、αヘリックスやβシートといった立体構造（二次構造）を作る。</li>
+          <li>ナイロンも同じアミド結合でできている。「人工のタンパク質」として絹（生糸）の代わりになったのは偶然ではない（<a href="#s7-1">7.1</a>）。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="sa-3" data-title="タンパク質と窒素の検出反応" data-diff="3" data-scope="chem" data-added="2026-11-03">
+        <h2>タンパク質と窒素の検出反応</h2>
+        <div class="table-wrap"><table>
+          <tr><th>反応</th><th>操作</th><th>見ているもの</th><th>色</th></tr>
+          <tr><td>ニンヒドリン反応</td><td>ニンヒドリン溶液を加えて温める</td><td>アミノ基（窒素）</td><td>赤紫〜青紫</td></tr>
+          <tr><td>ビウレット反応</td><td>NaOH水溶液＋少量のCuSO₄</td><td>ペプチド結合が2つ以上（トリペプチド以上）</td><td>赤紫</td></tr>
+          <tr><td>キサントプロテイン反応</td><td>濃硝酸で加熱 → アンモニア水で塩基性に</td><td>ベンゼン環（ニトロ化される）</td><td>黄 → 橙黄</td></tr>
+          <tr><td>窒素の検出</td><td>固体のNaOH（またはソーダ石灰）と加熱</td><td>窒素がNH₃になって出てくる</td><td>湿った赤リトマス紙が青</td></tr>
+        </table></div>
+        <ul>
+          <li>ニンヒドリンは<b>指紋の検出</b>にも使われる。汗に含まれるアミノ酸に反応して紫色の指紋が浮かぶ。</li>
+          <li>キサントプロテイン反応は、硝酸が皮膚につくと黄色くなる理由でもある。ベンゼン環に –NO₂ がつく（ニトロ化）ことで色が出る。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="sa-4" data-title="窒素同化：植物がアミノ酸を作るまで" data-diff="2" data-scope="bio" data-added="2026-11-03">
+        <h2>窒素同化：植物がアミノ酸を作るまで</h2>
+        <p>根から吸った無機の窒素を、アミノ酸などの有機物に組み込むこと。<b>窒素固定（<a href="#s4-1">4.1</a>）がN₂→NH₃なら、窒素同化はNH₃→アミノ酸</b>。</p>
+        <div class="formula">NO₃⁻（硝酸イオン）→ NO₂⁻（亜硝酸イオン）→ NH₄⁺（アンモニウムイオン）</div>
+        <div class="formula">NH₄⁺ ＋ グルタミン酸 → グルタミン　（グルタミン合成酵素、ATPを使う）</div>
+        <div class="formula">グルタミン ＋ α-ケトグルタル酸 → グルタミン酸 ×2</div>
+        <div class="formula">グルタミン酸のアミノ基 → 別の有機酸へ渡す（アミノ基転移）→ いろいろなアミノ酸</div>
+        <ul>
+          <li>硝酸イオンを還元してアンモニウムイオンにする段階で、植物は自分のエネルギーを使う（<a href="#s3-2">3.2</a>）。</li>
+          <li><b>グルタミン酸が窒素の「配送センター」</b>。いったんここに窒素を集め、アミノ基転移で他のアミノ酸に配る。うま味成分のグルタミン酸と同じ物質。</li>
+          <li>できたアミノ酸から、タンパク質のほか核酸、ATP、クロロフィルなどの窒素を含む有機物が作られる。</li>
+          <li>動物は窒素同化ができないので、窒素は食べ物のタンパク質から取るしかない。人が自分で作れないアミノ酸（9種類）が<b>必須アミノ酸</b>。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="sa-5" data-title="DNA・ATPの窒素（塩基）" data-diff="4" data-scope="bio-basic" data-added="2026-11-03">
+        <h2>DNA・ATPの窒素（塩基）</h2>
+        <ul>
+          <li>DNAの塩基A（アデニン）・T（チミン）・G（グアニン）・C（シトシン）、RNAのU（ウラシル）は、すべて窒素を含む環状の分子。英語では nitrogenous base（含窒素塩基）と呼ぶ。</li>
+          <li><b>塩基どうしをつなぐ水素結合も窒素がつくる。</b>A–Tは2本、G–Cは3本。N–H…N や N–H…O の水素結合で、二重らせんの「はしご段」ができる。</li>
+          <li>エネルギー通貨のATPも、アデニン（窒素を含む塩基）＋リボース＋リン酸3つでできている。</li>
+        </ul>
+        <p class="note">窒素は「体の材料」として、タンパク質（働き手）と核酸（設計図）の両方に入っている。</p>
+      </div>
+
+      <div class="section" id="sa-6" data-title="メセルソン・スタールの実験（¹⁵N）" data-diff="2" data-scope="bio" data-added="2026-11-03">
+        <h2>メセルソン・スタールの実験（¹⁵N）</h2>
+        <p>DNAが<b>半保存的複製</b>をすることを示した1958年の実験。窒素の同位体が主役。</p>
+        <ol>
+          <li>大腸菌を、重い窒素¹⁵N（ふつうは¹⁴N）だけを含む培地で何世代も育てる → DNAの塩基の窒素がすべて¹⁵Nに置き換わり、重いDNAになる。</li>
+          <li>¹⁴Nの培地に移して増やす。</li>
+          <li>DNAを取り出して遠心分離し、重さで分ける。</li>
+        </ol>
+        <div class="table-wrap"><table>
+          <tr><th>世代</th><th>重い（¹⁵N/¹⁵N）</th><th>中間（¹⁵N/¹⁴N）</th><th>軽い（¹⁴N/¹⁴N）</th></tr>
+          <tr><td>0（移す前）</td><td class="num">1</td><td class="num">0</td><td class="num">0</td></tr>
+          <tr><td>1回目の分裂後</td><td class="num">0</td><td class="num">1</td><td class="num">0</td></tr>
+          <tr><td>2回目の分裂後</td><td class="num">0</td><td class="num">1</td><td class="num">1</td></tr>
+          <tr><td>3回目の分裂後</td><td class="num">0</td><td class="num">1</td><td class="num">3</td></tr>
+        </table></div>
+        <p>1回目で「中間」だけになったことで、元の鎖を1本ずつ残して新しい鎖を作る（半保存的）ことが分かった。<b>DNAに窒素がたっぷり入っているから成立した実験</b>。n回目の比率（中間：軽い＝1：2ⁿ⁻¹−1）は計算問題の定番。</p>
+      </div>
+
+      <div class="section" id="sa-7" data-title="窒素の捨て方：アンモニア・尿素・尿酸" data-diff="3" data-scope="bio-basic,bio,chem" data-added="2026-11-03">
+        <h2>窒素の捨て方：アンモニア・尿素・尿酸</h2>
+        <p>アミノ酸をエネルギー源として分解すると、アミノ基が外れて<b>アンモニア</b>が出る。アンモニアは毒性が強いので、そのままでは体にためておけない。</p>
+        <ul>
+          <li><b>肝臓</b>がアンモニアを毒性の低い<b>尿素</b>（CO(NH₂)₂）に変え（オルニチン回路）、<b>腎臓</b>が尿として捨てる（生物基礎）。</li>
+          <li>動物によって捨て方が違う（生物）：</li>
+        </ul>
+        <div class="table-wrap"><table>
+          <tr><th>排出する形</th><th>動物</th><th>理由</th></tr>
+          <tr><td>アンモニア</td><td>多くの魚類</td><td>水が豊富なので、毒性が高くても大量の水で薄めてすぐ流せる</td></tr>
+          <tr><td>尿素</td><td>哺乳類、両生類（成体）</td><td>水に溶けて毒性が低い。作るのにエネルギーは要る</td></tr>
+          <tr><td>尿酸</td><td>鳥類、爬虫類、昆虫</td><td>水に溶けにくく、ほぼ固体で捨てられる。水を節約でき、殻の中の卵でも毒がたまらない</td></tr>
+        </table></div>
+        <ul>
+          <li><b>グアノ（<a href="#s2-3">2.3</a>）の正体はこれ。</b>海鳥が尿酸として捨てた窒素が、雨の少ない島に何千年も積もったもの。19世紀の「窒素の石油」は鳥の排せつ物だった。</li>
+          <li>尿素は化学史でも重要：1828年、ヴェーラーが無機物から尿素を合成し「有機物は生物にしか作れない」という考えを崩した（化学）。</li>
+          <li>現在の尿素は工業的に <b>2NH₃ ＋ CO₂ → CO(NH₂)₂ ＋ H₂O</b> で作られ、<b>世界で最も使われる窒素肥料</b>。体が窒素を捨てる形と、人間が畑に窒素をまく形が同じ物質になっている。</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="chapter" id="ch5" data-title="産業・経済">
+      <h2 class="chapter-title"><span class="no">05</span>産業・経済</h2>
+
+      <div class="section" id="s5-1" data-title="用途一覧" data-diff="5" data-added="2026-11-03">
+        <h2>用途一覧</h2>
+        <div class="table-wrap"><table>
+          <tr><th>用途</th><th>中身</th></tr>
+          <tr><td>肥料</td><td>アンモニアの用途の約7〜8割（米国では約88%）。尿素、硝安など</td></tr>
+          <tr><td>爆薬</td><td>ニトログリセリン、TNT、硝酸アンモニウム（<a href="#s3-1">3.1</a>）</td></tr>
+          <tr><td>半導体</td><td>工場の不活性ガス、窒化膜、GaN（<a href="#s5-6">5.6</a>）</td></tr>
+          <tr><td>冷却</td><td>液体窒素。食品の凍結、生体試料の保存、高温超伝導体（77Kで動くので液体窒素で冷やせる）</td></tr>
+          <tr><td>食品</td><td>充填ガス、急速凍結（<a href="#s5-2">5.2</a>）</td></tr>
+          <tr><td>その他</td><td>タイヤ、鋼の窒化処理（表面を硬くする）</td></tr>
+          <tr><td>エネルギー</td><td>アンモニアを燃料や水素キャリアとして使う動き。JERAの碧南火力では石炭に20%混ぜて燃やす実証をした。グリーンアンモニアも</td></tr>
+        </table></div>
+      </div>
+
+      <div class="section" id="s5-2" data-title="食品保存" data-diff="5" data-added="2026-11-03">
+        <h2>食品保存</h2>
+        <p class="lead">窒素そのものに殺菌力はない。酸素を追い出しているだけ。</p>
+        <h3>なぜ窒素なのか</h3>
+        <ul>
+          <li><b>反応しない</b>ので、味もにおいも変えない</li>
+          <li><b>水や油にほとんど溶けない</b>。CO₂は水に溶けると炭酸になり酸っぱくなるが、窒素はならない</li>
+          <li><b>空気から取り出すだけなので安い</b>。工場の敷地内に窒素発生装置を置くのが普通</li>
+          <li>名前のとおり、<b>虫やカビ（好気性の微生物）を「窒息」させる</b></li>
+        </ul>
+        <div class="table-wrap"><table>
+          <tr><th>方法</th><th>例</th><th>何をしているか</th></tr>
+          <tr><td>窒素の充填包装</td><td>ポテトチップス、ナッツ、コーヒー豆、粉ミルク</td><td>油の酸化（油焼け）を防ぐ。袋が膨らむので<b>クッションになり中身が割れにくい</b></td></tr>
+          <tr><td>液体窒素を1滴入れる</td><td>お茶やコーヒーの缶、ペットボトル</td><td>フタの直前に1滴落とし、気化させて空気を追い出す。<b>内側から圧をかけて缶がへこまないようにする</b></td></tr>
+          <tr><td>穀物倉庫の窒素置換</td><td>米、小麦、豆のサイロ</td><td>殺虫剤を使わずに害虫を窒息させる</td></tr>
+          <tr><td>急速凍結</td><td>魚介類、冷凍食品、細胞</td><td>−196℃で一気に凍らせると氷の結晶が小さく、細胞が壊れにくい</td></tr>
+          <tr><td>ガスを混ぜて包む（MAP）</td><td>カット野菜、チーズ、精肉</td><td>CO₂（静菌）やO₂（赤身肉の色を保つ）と目的に合わせて混ぜる</td></tr>
+          <tr><td>ビールとコーヒー</td><td>ギネス、ナイトロコールドブリュー</td><td>溶けにくいので<b>泡が細かくクリーミー</b>になる</td></tr>
+        </table></div>
+        <h3>意外なつながり</h3>
+        <ul>
+          <li><b>脱酸素剤（エージレスなど）</b>：鉄粉が酸素を吸い取るので、結果として<b>袋の中はほぼ窒素だけ</b>になる。窒素を「入れる」のではなく、酸素を「抜いて窒素を残す」発想。</li>
+          <li><b>ハムやベーコンがピンク色なのは窒素化合物</b>。発色剤の亜硝酸ナトリウムがボツリヌス菌を抑え、肉の色も保つ。もともとは<b>硝石（KNO₃）で肉を塩漬けしていた</b>名残（<a href="#s2-2">2.2</a>）。一方で体内で発がん性のニトロソアミンができる懸念もあり、加工肉はIARCで「グループ1」に分類されている。</li>
+        </ul>
+        <p class="note">注意：酸素を抜いても、酸素がなくても増える菌（代表がボツリヌス菌）は止まらない。窒素充填は殺菌ではなく、冷蔵・加熱・塩分などと組み合わせる前提。</p>
+      </div>
+
+      <div class="section" id="s5-3" data-title="「エネルギー消費の1〜2%」の意味" data-diff="3" data-added="2026-11-03">
+        <h2>「エネルギー消費の1〜2%」の意味</h2>
+        <p><b>人類が1年に使うエネルギー全体のうち、1〜2%をアンモニアづくりだけで使っている</b>という意味。天然ガスを、①<b>原料</b>（CH₄から水素を取り出す）と②<b>燃料</b>（高温・高圧を保つ熱）の2つの用途で使っている。</p>
+        <div class="formula">約1.9億t（NH₃）× 約30〜40 GJ/t ≒ 約7 EJ/年 ÷ 世界の一次エネルギー約600 EJ ≒ 1%強</div>
+        <ul>
+          <li>IEAは最終エネルギー消費比で約2%としている。</li>
+          <li>体感では、<b>日本全体の一次エネルギーの4割くらい</b>を、アンモニアのためだけに使っている規模。</li>
+          <li>CO₂排出は世界の約1%強（年4億トン台）。1つの化学品としては最大級の排出源なので、グリーンアンモニア（再エネ由来の水素で作る）が話題になっている。</li>
+        </ul>
+      </div>
+
+      <div class="section" id="s5-4" data-title="アンモニア価格の推移" data-diff="3" data-added="2026-11-03">
+        <h2>アンモニア価格の推移</h2>
+        <h3>米国メキシコ湾岸の年平均（USGS、ドル/ショートトン。1ショートトン≒0.907t）</h3>
+        <div class="table-wrap"><table>
+          <tr><th>2021</th><th>2022</th><th>2023</th><th>2024</th><th>2025（推定）</th></tr>
+          <tr><td class="num">578</td><td class="num"><b>1,070</b></td><td class="num">470</td><td class="num">440</td><td class="num">450</td></tr>
+        </table></div>
+        <h3>大きな流れ（指標のタンパ着値、ドル/t）</h3>
+        <ul>
+          <li>2008年：資源高で800ドル超</li>
+          <li>2016〜2020年：シェールガスで安いガスが手に入り、200〜300ドル台の安値圏</li>
+          <li><b>2022年春：ロシアのウクライナ侵攻と欧州ガス高騰で、約1,600ドルの過去最高水準</b></li>
+          <li>2023〜2025年：400〜600ドル前後に落ち着く</li>
+          <li><b>2026年</b>：3月615 → 4月775（+160の急騰。中東情勢の影響と報じられている）→ <b>5月825でピーク</b> → 9月555（4か月連続で下落）</li>
+        </ul>
+        <p class="note">※2026年の月次は業界紙の単独ソースで未検証。10月以降は未確認。</p>
+        <h3>価格を動かす要因</h3>
+        <ol>
+          <li>天然ガス価格（米国はHenry Hub、欧州はTTF）が最大要因</li>
+          <li>トウモロコシの作付けと穀物価格</li>
+          <li>地政学（ロシアの輸出、中東、中国の尿素輸出規制）</li>
+          <li>季節（春の作付け前に需要が増える）</li>
+        </ol>
+        <p>2022年の欧州ガス危機では肥料工場が次々止まり、その副産物だったCO₂が不足して、英国では食肉処理や炭酸飲料の生産に影響が出た。窒素とCO₂と食料が一本の鎖でつながっている例。</p>
+        <p class="sources">Sources: <a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-nitrogen.pdf" target="_blank" rel="noopener">USGS MCS 2026 Nitrogen</a> ／ <a href="https://www.fertilizerdaily.com/20260910-tampa-ammonia-price-555-september-2026-fourth-monthly-decline/" target="_blank" rel="noopener">Fertilizer Daily (2026-09)</a> ／ <a href="https://www.qcintel.com/ammonia/article/tampa-ammonia-contract-jumps-160-mt-for-april-61676.html" target="_blank" rel="noopener">QCintel (2026-04)</a></p>
+      </div>
+
+      <div class="section" id="s5-5" data-title="生産ランキングと産地" data-diff="4" data-added="2026-11-03">
+        <h2>生産ランキングと産地</h2>
+        <p class="note">2025年推定、窒素換算（USGS）。アンモニアの重量にするには×1.21。</p>
+        <div class="table-wrap"><table>
+          <tr><th>順位</th><th>国</th><th class="num">千トン（N）</th><th class="num">シェア</th><th>ひとこと</th></tr>
+          <tr class="hl"><td>1</td><td>中国</td><td class="num">49,000</td><td class="num">約31%</td><td style="font-weight:400"><b>石炭が原料</b>（石炭をガス化して水素を作る）という珍しい国。山西省などの内陸部</td></tr>
+          <tr><td>2</td><td>ロシア</td><td class="num">15,000</td><td class="num">約9%</td><td>安いガスを使う輸出大国。トリヤッチからオデッサへのアンモニアパイプラインは2022年に停止</td></tr>
+          <tr><td>2</td><td>インド</td><td class="num">15,000</td><td class="num">約9%</td><td>生産は大きいが需要がさらに大きく、尿素の大輸入国</td></tr>
+          <tr><td>4</td><td>米国</td><td class="num">14,000</td><td class="num">約9%</td><td>ルイジアナ・オクラホマ・テキサスに能力の57%。CF Industriesのドナルドソンビルは世界最大のアンモニア工場</td></tr>
+          <tr><td>5</td><td>インドネシア</td><td class="num">6,000</td><td></td><td>国営ププク・インドネシア</td></tr>
+          <tr><td>6</td><td>サウジアラビア</td><td class="num">5,200</td><td></td><td>マーデン、SABIC。ブルーアンモニアの輸出でも先行</td></tr>
+          <tr><td>7</td><td>イラン</td><td class="num">4,800</td><td></td><td></td></tr>
+          <tr><td>8</td><td>エジプト</td><td class="num">4,000</td><td></td><td></td></tr>
+          <tr><td>9</td><td>カナダ / パキスタン</td><td class="num">3,800</td><td></td><td>カナダはNutrienの地元</td></tr>
+          <tr><td>11</td><td>トリニダード・トバゴ</td><td class="num">3,300</td><td></td><td><b>人口140万人の島国なのに世界有数の輸出国</b>（ポイント・リサス工業団地）。2025年10月に大手の工場がガス不足などで停止</td></tr>
+          <tr><td>12</td><td>カタール</td><td class="num">3,000</td><td></td><td>QAFCOは世界最大級の尿素拠点</td></tr>
+          <tr class="hl"><td></td><td>世界合計</td><td class="num">160,000</td><td></td><td></td></tr>
+        </table></div>
+        <ul>
+          <li>日本は「その他」に入る小規模。燃料用アンモニアは輸入前提で計画されている。</li>
+          <li>生産の地図は「<b>安いガス（または石炭）がある場所</b>」とほぼ重なる。中東と米国メキシコ湾岸は今後の低炭素アンモニアの供給地としても有力。</li>
+          <li>主なプレイヤー：Yara（ノルウェー）、CF Industries（米国）、Nutrien（カナダ）など。ロシアとベラルーシも肥料大国。</li>
+        </ul>
+        <p class="sources">Source: <a href="https://pubs.usgs.gov/periodicals/mcs2026/mcs2026-nitrogen.pdf" target="_blank" rel="noopener">USGS Mineral Commodity Summaries 2026 – Nitrogen (Fixed)–Ammonia</a></p>
+      </div>
+
+      <div class="section" id="s5-6" data-title="半導体との関係" data-diff="2" data-added="2026-11-03">
+        <h2>半導体との関係</h2>
+        <h3>① ガスとして（量が圧倒的）</h3>
+        <p>工場で酸素や水分を追い出すために使う。ウェハ搬送容器（FOUP）への充填、装置のパージ、ロードロックなど。純度は99.9999%以上。<b>大型工場は敷地内や隣に専用の空気分離プラントを持つのが普通</b>で、産業ガス大手（Linde、Air Liquide、日本酸素HDなど）にとって半導体は大きな市場。</p>
+        <h3>② 膜の材料として</h3>
+        <div class="table-wrap"><table>
+          <tr><th>材料</th><th>用途</th></tr>
+          <tr><td>窒化ケイ素 Si₃N₄（SiN）</td><td>保護膜、エッチングを止める層、スペーサー。<b>3D NANDでは電荷をためる層そのもの</b></td></tr>
+          <tr><td>窒化チタン TiN / 窒化タンタル TaN</td><td>メタルゲート、銅配線の拡散を防ぐバリア層</td></tr>
+          <tr><td>酸窒化シリコン SiON</td><td>ゲート絶縁膜に窒素を入れ、ホウ素の突き抜けを防ぐ</td></tr>
+          <tr><td>NH₃（アンモニア）</td><td>窒化膜を作るときの原料ガス</td></tr>
+          <tr><td>NF₃（三フッ化窒素）</td><td>装置内部のクリーニング用。温室効果がCO₂の約1万7千倍という問題がある</td></tr>
+        </table></div>
+        <h3>③ 窒化物半導体（本丸）</h3>
+        <p><b>GaN（窒化ガリウム）</b>はバンドギャップ3.4 eVで、シリコン（約1.1 eV）より大幅に広い「ワイドバンドギャップ半導体」。</p>
+        <ul>
+          <li><b>青色LED</b>（赤﨑勇・天野浩・中村修二、2014年ノーベル物理学賞）。白色LED照明の出発点</li>
+          <li><b>パワー半導体</b>：小型急速充電器、EVの車載充電器、<b>データセンター電源の高効率化</b>。電力損失が減れば冷やすべき熱も減る</li>
+          <li><b>高周波</b>：5G基地局、レーダー</li>
+          <li>窒素は<b>SiC（炭化ケイ素）のn型不純物</b>でもある。もう1つのパワー半導体の主役にも窒素が関わる</li>
+        </ul>
+        <h3>④ 冷却</h3>
+        <p>液体窒素は低温での評価や、量子コンピュータ向け極低温CMOS研究に使う。データセンターの実際の冷却には使われない（コストが合わない）。</p>
+      </div>
+    </section>
+
+    <!-- ================= 6 ================= -->
+    <section class="chapter" id="ch6" data-title="環境">
+      <h2 class="chapter-title"><span class="no">06</span>環境</h2>
+
+      <div class="section" id="s6-1" data-title="窒素がもたらす環境問題" data-diff="4" data-scope="bio-basic" data-added="2026-11-03">
+        <h2>窒素がもたらす環境問題</h2>
+        <ul>
+          <li><b>N₂O（亜酸化窒素）</b>：温室効果はCO₂の約270〜300倍で、オゾン層も壊す。主な出どころは肥料をまいた畑。</li>
+          <li><b>富栄養化</b>：畑から流れ出た窒素で藻が大発生し、海に酸欠の「デッドゾーン」ができる（メキシコ湾など）。</li>
+          <li><b>NOx</b>：エンジンや燃焼で出て、大気汚染や酸性雨の原因になる。</li>
+          <li>プラネタリー・バウンダリーの議論では、窒素循環は<b>すでに限界を大きく超えている</b>項目の一つ。</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= 7 ================= -->
+    <section class="chapter" id="ch7" data-title="考察：チリ衰退のアナロジー">
+      <h2 class="chapter-title"><span class="no">07</span>考察：チリ衰退のアナロジー</h2>
+
+      <div class="section" id="s7-1" data-title="過去の「チリ現象」" data-diff="4" data-added="2026-11-03">
+        <h2>過去の「チリ現象」</h2>
+        <p>代替技術が出てきて資源国が没落する現象は、硝石以外にも何度も起きている。</p>
+        <div class="table-wrap"><table>
+          <tr><th>天然資源</th><th>代替</th><th>何が起きたか</th></tr>
+          <tr class="hl"><td>チリ硝石</td><td>ハーバー・ボッシュ法（1913年）</td><td style="font-weight:400">チリ経済が崩壊</td></tr>
+          <tr><td>インドの天然藍（インディゴ）</td><td>合成インディゴ（BASF、1897年）</td><td>インドの藍農園が壊滅。<b>またBASF</b></td></tr>
+          <tr><td>日本の生糸</td><td>ナイロン（デュポン、1938年）</td><td>最大の輸出品だった生糸が、ストッキング市場ごと失われた</td></tr>
+          <tr><td>鯨油</td><td>灯油（石油）</td><td>捕鯨産業が衰退</td></tr>
+          <tr><td>天然ゴム</td><td>合成ゴム（第二次大戦の米国）</td><td><b>半分しか置き換わらなかった</b>。タイヤ性能で天然が勝る</td></tr>
+          <tr><td>天然ダイヤモンド</td><td>ラボグロウン（人工）ダイヤ</td><td><b>現在進行中</b>。米国の婚約指輪で人工が過半に。デビアスは値下げを迫られ、親会社は売却を検討</td></tr>
+        </table></div>
+      </div>
+
+      <div class="section" id="s7-2" data-title="「チリ化」が起きる4条件" data-diff="3" data-added="2026-11-03">
+        <h2>「チリ化」が起きる4条件</h2>
+        <ol>
+          <li><b>元素そのものではなく「形」の問題だった。</b>窒素は空気中にいくらでもあり、足りなかったのは「使える形」だけ。エネルギーと触媒で解決できる問題だった。</li>
+          <li><b>代替品が化学的に同一か、それ以上。</b>合成アンモニア、合成インディゴ、人工ダイヤは同じ分子・同じ結晶。合成ゴムは同一でなかったので半分しか置き換わらなかった。</li>
+          <li><b>強い外圧があった。</b>ドイツは海上封鎖、米国は日本に東南アジアのゴム産地を押さえられた。<b>資源を武器にすると、相手に代替技術を作る動機を与えてしまう。</b></li>
+          <li><b>時間がかかる。</b>ハーバーの成功（1909年）からチリの崩壊（1930年代、大恐慌が追い打ち）まで約20年。</li>
+        </ol>
+      </div>
+
+      <div class="section" id="s7-3" data-title="現代の候補とレアアース" data-diff="2" data-added="2026-11-03">
+        <h2>現代の候補とレアアース</h2>
+        <div class="table-wrap"><table>
+          <tr><th>資源</th><th>依存先</th><th>チリ化の可能性</th><th>理由</th></tr>
+          <tr><td>コバルト</td><td>コンゴ民主共和国（約7割）</td><td><b>高い（進行中）</b></td><td>コバルト不要のLFP電池がEVで主流に。価格が暴落し、コンゴは2025年に<b>輸出を止めて価格を支えようとした</b>。代替が育ちきった後に資源国が抵抗する、かなりチリ的な構図</td></tr>
+          <tr><td>リチウム</td><td>チリ、アルゼンチン、豪州、精製は中国</td><td>中くらい</td><td>ナトリウムイオン電池が量産段階に。<b>チリのリチウム産地は、かつて硝石を掘っていたのと同じアタカマ砂漠</b></td></tr>
+          <tr><td>レアアース</td><td>中国（採掘6〜7割、精製約9割、磁石約9割）</td><td>部分的</td><td>元素は合成できない（下記）</td></tr>
+          <tr><td>カカオ</td><td>西アフリカ（約6割）</td><td>小〜中</td><td>2024年に1トン1万ドル超まで高騰し、カカオを使わないチョコのスタートアップが増えた。味の同一性が壁</td></tr>
+          <tr><td>石油</td><td>中東、ロシアなど</td><td>長期的には高い</td><td>EVと再エネに加え、<b>e-fuel（空気中のCO₂と水素から作る燃料）</b>。「空気から肥料」の次は「空気から燃料」</td></tr>
+          <tr><td>ヘリウム</td><td>米国、カタール、ロシア</td><td>低い</td><td>元素そのものなので合成できない。リサイクルと節約しか手がない</td></tr>
+        </table></div>
+        <h3>レアアースは「チリ型」ではなく「デザインアウト型」</h3>
+        <p>元素は合成できない。窒素のように「形を変えれば解決」とはいかないので、道は3つ。</p>
+        <ol>
+          <li><b>別の供給源</b>：豪州のLynas、米国のMP Materials、日本の南鳥島の海底レアアース泥</li>
+          <li><b>リサイクル</b>：使い終わったモーターや磁石から回収</li>
+          <li><b>使わない設計（デザインアウト）</b>：テスラは次世代モーターでレアアース不使用を発表。<b>Niron Magneticsの窒化鉄（Fe₁₆N₂）磁石</b>は、レアアースの代わりに<b>窒素</b>を使う</li>
+        </ol>
+        <h3>2010年の「ミニ・チリ現象」</h3>
+        <p>尖閣問題のあと、中国が日本向けのレアアース輸出を事実上止め、ジスプロシウムなどの価格が10倍以上に。日本は使用量削減（トヨタなど）、調達先の分散（JOGMECのLynas出資）、リサイクルを一気に進め、<b>中国依存を約9割から約6割へ</b>。価格は2012〜13年に暴落した。「武器化 → 高騰 → 代替が進む → 価格崩壊」が数年で一通り起きた。</p>
+        <h3>チリとの決定的な違い</h3>
+        <p>チリは資源しか持たず、技術はドイツが持っていた。いまの中国は<b>精製（資源側）とLFP・ナトリウム電池（代替側）の両方</b>を押さえ、2023年にはレアアース精製技術の輸出も禁止した。中国は自分がチリになるつもりはなく、ドイツ側にも立とうとしている、と読める。</p>
+      </div>
+
+      <div class="section" id="s7-4" data-title="資源の制約がエネルギーの制約に変わる" data-diff="2" data-added="2026-11-03">
+        <h2>資源の制約がエネルギーの制約に変わる</h2>
+        <p>ハーバー・ボッシュ法の本質は、<b>「硝石が足りない」という資源の問題を、「安いエネルギーがあるか」という問題に置き換えた</b>こと。今アンモニアの産地が安いガスのある国と重なっているのはその結果。</p>
+        <p>現代の代替技術もほぼ同じ形をしている。</p>
+        <ul>
+          <li>人工ダイヤ（CVD法で大量の電力を使う）</li>
+          <li>e-fuel、グリーンアンモニア、直接空気回収（DAC）</li>
+          <li>アルミのアップグレードリサイクル（溶融塩電解）</li>
+        </ul>
+        <p>どれも「<b>電気が安ければ、天然資源がいらなくなる</b>」タイプ。AIインフラの制約（Power / Cooling / Location）と根っこは同じ構図。</p>
+        <h3>勝つのは誰か（ハーバー・ボッシュの時代に当てはめると）</h3>
+        <ul>
+          <li>ハーバー（技術を発明した人）は名声を得た</li>
+          <li><b>BASF（工業化した会社）が富を得た</b></li>
+          <li>安いエネルギーを持つ場所が、次の産地になった</li>
+        </ul>
+        <p>狙い目は「代替技術そのもの」よりも「<b>それをスケールさせる工程</b>」か「<b>安い電力を持つ場所</b>」の側かもしれない。</p>
+      </div>
+    </section>
+
+    <!-- ================= 8 ================= -->
+    <section class="chapter" id="ch8" data-title="次に掘る論点">
+      <h2 class="chapter-title"><span class="no">08</span>次に掘る論点</h2>
+      <div class="section" id="s8-1" data-title="未着手リスト" data-diff="3" data-added="2026-11-03">
+        <h2>未着手リスト</h2>
+        <ul>
+          <li>ハーバー・ボッシュ法の代替：電気化学的なアンモニア合成、微生物による固定（Pivot Bioなど）</li>
+          <li>アンモニア×エネルギー：日本はなぜアンモニアを燃料にしようとしているのか（エネルギー安全保障と石炭火力の延命）</li>
+          <li>GaNパワー半導体とデータセンター電源</li>
+          <li>「どの資源が次のチリになるか」を4条件でスコアリング</li>
+          <li>窒化鉄磁石・ナトリウム電池など、デザインアウト型技術の詳細</li>
+          <li>ハーバーという人物をもう少し深く</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function () {
+  const DONE_KEY = 'nitrogen-done-v1';
+  let doneSet;
+  try { doneSet = new Set(JSON.parse(localStorage.getItem(DONE_KEY) || '[]')); } catch (e) { doneSet = new Set(); }
+  const save = () => { try { localStorage.setItem(DONE_KEY, JSON.stringify([...doneSet])); } catch (e) {} };
+
+  const chapters = [...document.querySelectorAll('.chapter')];
+  const sections = [...document.querySelectorAll('.section')];
+  const stars = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+  const SCOPE = { 'chem-basic': '化学基礎', 'chem': '化学', 'bio-basic': '生物基礎', 'bio': '生物' };
+  const scopesOf = s => (s.dataset.scope || '').split(',').filter(k => SCOPE[k]);
+
+  /* ---- section headers: number, difficulty, dates, chevron ---- */
+  chapters.forEach((ch, ci) => {
+    ch.querySelector('.chapter-title .no').textContent = String(ci + 1).padStart(2, '0');
+    ch.querySelectorAll('.section').forEach((s, si) => {
+      const no = (ci + 1) + '.' + (si + 1);
+      s.dataset.no = no;
+      const h = s.querySelector('h2');
+      const d = +s.dataset.diff;
+      h.insertAdjacentHTML('afterbegin', `<span class="sid">${no}</span>`);
+      scopesOf(s).forEach(k => h.insertAdjacentHTML('beforeend', `<span class="scope scope-${k}">${SCOPE[k]}</span>`));
+      h.insertAdjacentHTML('beforeend', `<span class="diff" title="やさしさ ${d}/5（5が最も簡単）"><b>${stars(d)}</b></span><span class="chev">▾</span>`);
+      const meta = `Added: ${s.dataset.added}` + (s.dataset.updated ? ` ／ Last updated: ${s.dataset.updated}` : '');
+      h.insertAdjacentHTML('afterend', `<div class="sec-meta">${meta}</div>`);
+      h.addEventListener('click', () => { if (s.classList.contains('done')) s.classList.toggle('collapsed'); });
+    });
+  });
+
+  /* ---- 本文中の「4.1」「7章」形式の参照を、実際の番号に張り替える（章を挿入してもずれない） ---- */
+  document.querySelectorAll('main a[href^="#"]').forEach(a => {
+    const t = document.getElementById(a.getAttribute('href').slice(1));
+    if (!t) return;
+    if (t.classList.contains('section') && /^\d+\.\d+$/.test(a.textContent)) a.textContent = t.dataset.no;
+    if (t.classList.contains('chapter') && /^\d+章$/.test(a.textContent)) a.textContent = (chapters.indexOf(t) + 1) + '章';
+  });
+
+  /* ---- side nav ---- */
+  const nav = document.getElementById('sideNav');
+  function renderNav() {
+    let html = '<div class="side-nav-head">Contents</div><div class="side-nav-progress" id="navProgress"></div><div class="side-nav-bar"><i id="navBar"></i></div><ul>';
+    chapters.forEach((ch, ci) => {
+      const secs = [...ch.querySelectorAll('.section')];
+      const chDone = secs.every(s => doneSet.has(s.id));
+      html += `<li class="side-nav-chapter"><div class="side-nav-chapter-row"><span class="snav-check${chDone ? ' checked' : ''}" data-ch="${ch.id}" title="章をまとめて既習にする"></span><a class="side-nav-chapter-title" href="#${ch.id}">${String(ci + 1).padStart(2, '0')} ${ch.dataset.title}</a></div><ul>`;
+      secs.forEach(s => {
+        const on = doneSet.has(s.id);
+        html += `<li class="side-nav-item${on ? ' done' : ''}"><span class="snav-check${on ? ' checked' : ''}" data-sec="${s.id}" title="既習にする"></span><a class="side-nav-link" data-target="${s.id}" href="#${s.id}">${s.dataset.no} ${s.dataset.title}${scopesOf(s).map(k => `<span class="scope-dot scope-${k}" title="${SCOPE[k]}"></span>`).join('')}<span class="stars">${stars(+s.dataset.diff)}</span></a></li>`;
+      });
+      html += '</ul></li>';
+    });
+    nav.innerHTML = html + '</ul>';
+    nav.querySelector('.side-nav-head').addEventListener('click', () => nav.classList.toggle('open'));
+    nav.querySelectorAll('[data-sec]').forEach(cb => cb.addEventListener('click', () => toggle([cb.dataset.sec])));
+    nav.querySelectorAll('[data-ch]').forEach(cb => cb.addEventListener('click', () => {
+      const ids = [...document.getElementById(cb.dataset.ch).querySelectorAll('.section')].map(s => s.id);
+      const allDone = ids.every(id => doneSet.has(id));
+      toggle(ids, !allDone);
+    }));
+    refresh();
+    spy();
+  }
+  function toggle(ids, force) {
+    ids.forEach(id => {
+      const on = force === undefined ? !doneSet.has(id) : force;
+      if (on) doneSet.add(id); else doneSet.delete(id);
+      const s = document.getElementById(id);
+      if (!on) s.classList.remove('collapsed');
+    });
+    save();
+    renderNav();
+  }
+  function refresh() {
+    sections.forEach(s => s.classList.toggle('done', doneSet.has(s.id)));
+    const n = sections.filter(s => doneSet.has(s.id)).length;
+    document.getElementById('doneSummary').textContent = `${n} / ${sections.length} 節 既習`;
+    document.getElementById('navProgress').textContent = `${n} / ${sections.length} 既習`;
+    document.getElementById('navBar').style.width = (n / sections.length * 100) + '%';
+  }
+  document.getElementById('foldDone').addEventListener('click', () => sections.forEach(s => { if (doneSet.has(s.id)) s.classList.add('collapsed'); }));
+  document.getElementById('unfoldAll').addEventListener('click', () => sections.forEach(s => s.classList.remove('collapsed')));
+
+  /* ---- scroll spy ---- */
+  function spy() {
+    let current = sections[0].id;
+    const y = window.scrollY + 120;
+    sections.forEach(s => { if (s.getBoundingClientRect().top + window.scrollY <= y) current = s.id; });
+    nav.querySelectorAll('.side-nav-link').forEach(a => {
+      const on = a.dataset.target === current;
+      a.classList.toggle('active', on);
+      if (on && window.innerWidth > 900) {
+        const r = a.getBoundingClientRect(), nr = nav.getBoundingClientRect();
+        if (r.top < nr.top || r.bottom > nr.bottom) a.scrollIntoView({ block: 'nearest' });
+      }
+    });
+  }
+  let ticking = false;
+  window.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { spy(); ticking = false; }); } }, { passive: true });
+
+  renderNav();
+  sections.forEach(s => { if (doneSet.has(s.id)) s.classList.add('collapsed'); });
+})();
+</script>
+<!-- snav:footer -->
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener">X</a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener">Facebook</a>
+  </div>
+</footer>
+<script src="../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>
