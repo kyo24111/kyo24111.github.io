@@ -235,6 +235,8 @@ table.rc thead th{background:#f7f7f5;font-size:10.5px;font-weight:700;color:var(
 table.rc thead th small{display:block;font-weight:400;color:var(--muted);font-size:9.5px;letter-spacing:0}
 table.rc td.rc-name{text-align:left;font-weight:700;min-width:150px;font-size:12.5px;line-height:1.35;cursor:pointer}
 table.rc td.rc-name span{display:block;font-weight:400;color:var(--muted);font-size:10.5px}
+table.rc td.rc-doc{font-size:13px;width:40px}
+table.rc td.rc-doc span{color:#bbb}
 table.rc td.rc-no{font-family:Poppins,sans-serif;font-weight:700;font-size:13px;width:34px;background:#111;color:#fff}
 table.rc td.rc-cmt{text-align:left;width:36%;min-width:340px;font-size:11.5px;line-height:1.5;color:var(--mid)}
 .g{font-weight:700}
@@ -371,7 +373,7 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
   <div class="sec" id="s-report">
     <div class="sec-head"><span>Report Card / 通知表</span><span class="sub">項目ごとに5段階。緑＝良い／黄＝普通／赤＝弱い／灰＝未判定。総合は上の重みスライダーと連動。広さ・築年・賃料は重要度が低いので2〜4の3段階。物件名クリックで候補一覧の詳細へ</span></div>
     <div class="rc-wrap"><table class="rc"><thead><tr>
-      <th>No.</th><th>物件</th><th>総合<small>スコア</small></th><th>立地<small>職場まで</small></th><th>賃料<small>下限</small></th><th>広さ<small>最大㎡</small></th><th>築年</th><th>初期費用<small>家賃の月数</small></th><th>早期退去<small>1年内に出た時の損</small></th><th>寝室の朝日</th><th>即入居</th><th>気学<small>職場から</small></th><th>玄関<small>中心から</small></th><th>所見</th>
+      <th>No.</th><th>物件</th><th>資料<small>11/04</small></th><th>総合<small>スコア</small></th><th>立地<small>職場まで</small></th><th>賃料<small>下限</small></th><th>広さ<small>最大㎡</small></th><th>築年</th><th>初期費用<small>家賃の月数</small></th><th>早期退去<small>1年内に出た時の損</small></th><th>寝室の朝日</th><th>即入居</th><th>気学<small>職場から</small></th><th>玄関<small>中心から</small></th><th>所見</th>
     </tr></thead><tbody id="rcbody"></tbody></table></div>
     <div class="rc-legend"><span class="g5">5 とても良い</span><span class="g4">4 良い</span><span class="g3">3 普通</span><span class="g2">2 やや弱い</span><span class="g1">1 弱い</span><span class="gna">— 未判定</span></div>
     <details class="rc-index" open>
@@ -387,6 +389,7 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
         <tr><td class="rc-name">気学</td><td class="rc-cmt">職場から見た建物の方位。吉＝北東・西（四正30°／四隅60°で区切る）</td><td class="g g5" style="font-weight:400">吉方位</td><td class="gna">—</td><td class="g g3" style="font-weight:400">それ以外</td><td class="gna">—</td><td class="gna">—</td><td>4（玄関と合算）</td></tr>
         <tr><td class="rc-name">玄関</td><td class="rc-cmt">部屋の中心から見た玄関の方位。凶＝北・北東・南西</td><td class="g g5" style="font-weight:400">可</td><td class="gna">—</td><td class="gna">—</td><td class="gna">—</td><td class="g g1" style="font-weight:400">凶</td><td>（気学に合算）</td></tr>
         <tr><td class="rc-name">寝室の朝日</td><td class="rc-cmt">寝室の窓の向き。間取り図の方位記号、無ければバルコニー側から逆算</td><td class="g g5" style="font-weight:400">東・北東・南東に窓</td><td class="gna">—</td><td class="g g3" style="font-weight:400">南のみ／一部の寝室だけ</td><td class="gna">—</td><td class="g g1" style="font-weight:400">窓が西・北系</td><td>3</td></tr>
+        <tr><td class="rc-name">資料</td><td class="rc-cmt">千草さんの最新の物件資料（11/04）に載っているか（ラベルのみ・スコア外）</td><td colspan="5" style="font-weight:400">○ 載っている ／ × 載っていない</td><td>—</td></tr>
         <tr><td class="rc-name">即入居</td><td class="rc-cmt">今すぐ入居できる部屋があるか（ラベルのみ・スコア外）。「相談」や日付指定は×</td><td class="g g5" style="font-weight:400">○ 即入居可</td><td class="gna">—</td><td class="gna">—</td><td class="g g2" style="font-weight:400">× それ以外</td><td class="gna">—</td><td>—</td></tr>
       </tbody></table></div>
       <p class="rc-note">日当たり（バルコニーの向き）は通知表に列はないがスコアに重み1で入っている。重みは上のスライダーで変えられる。</p>
@@ -960,6 +963,7 @@ function renderCard(){
     return '<tr>'
       + '<td class="rc-no">'+(idx+1)+'</td>'
       + '<td class="rc-name" data-id="'+d.id+'">'+d.name+'<span>'+d.chome+' ／ '+d.layout+'</span></td>'
+      + '<td class="rc-doc">'+(d.doc ? '<b>○</b>' : '<span>×</span>')+'</td>'   // 千草さんの最新資料に載っているか（ラベルのみ・スコア外）
       + '<td class="g rc-total g'+band(100 - sc, [20,35,50,65])+'"><b>'+sc+'</b><i>/100</i></td>'
       + gcell(band(d.walk, [3,4,5,7]), '徒歩'+d.walk+'分')
       + gcell(d.rentMin <= 25 ? 4 : (d.rentMin <= 32 ? 3 : 2), fmtRent(d)+'万')
