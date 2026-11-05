@@ -102,3 +102,4 @@
 | [261025_vertiv_deep_research.html](261025_vertiv_deep_research.html) | Vertiv | データセンター電源・冷却（液冷・UPS・スイッチギア） | 2026-10-25 |
 | [261025_schneider_electric_deep_research.html](261025_schneider_electric_deep_research.html) | Schneider Electric | 電化・配電／データセンター電源・冷却／産業オートメーション | 2026-10-25 |
 | [261025_novelis_deep_research.html](261025_novelis_deep_research.html) | Novelis | アルミ圧延・リサイクル（Hindalco傘下・非上場） | 2026-10-25 |
+| [261105_ihi_deep_research.html](261105_ihi_deep_research.html) | IHI | 航空エンジン（RSP・スペアパーツ）／防衛／原子力 | 2026-11-05 |

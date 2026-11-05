@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IHI Deep Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .person{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:14px}
+  .person .p-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:3px}
+  .person .p-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:800;color:var(--text)}
+  .person .p-role{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--accent);padding:2px 9px;border-radius:4px}
+  .person .p-line{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7}
+  .person ul{list-style:none;padding:0;margin:0}
+  .person li{font-size:13.5px;color:var(--mid);line-height:1.8;padding:6px 0 6px 16px;position:relative;border-bottom:1px solid var(--border)}
+  .person li:last-child{border-bottom:none}
+  .person li::before{content:'';position:absolute;left:0;top:15px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .person li b,.person li strong{color:var(--text);font-weight:700}
+  .person .p-quote{margin-top:12px;padding:11px 15px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13px;line-height:1.8;color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa details[open]{background:var(--bg);border-color:var(--accent)}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:flex-start;gap:10px;line-height:1.65}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{background:var(--card2)}
+  .qa details[open] summary:hover{background:var(--surface)}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .qa summary::after{content:'+';margin-left:auto;padding-left:10px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem;line-height:1;flex-shrink:0}
+  .qa details[open] summary::after{content:'\2212'}
+  /* 回答本文。qa-a を付け忘れた <p> でも崩れないよう summary 以外の直下要素すべてに効かせる */
+  .qa details>*:not(summary){margin:0 0 10px;padding:0 18px 0 48px;font-size:13.5px;color:var(--mid);line-height:1.85;overflow-wrap:anywhere}
+  .qa details>*:not(summary):last-child{margin-bottom:16px}
+  .qa details>*:not(summary) b,.qa details>*:not(summary) strong{color:var(--text);font-weight:700}
+  .qa details>*:not(summary) a{color:var(--text)}
+  .qa details>ul,.qa details>ol{padding-left:66px}
+  .col-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin:22px 0}
+  .col-box .col-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--accent);display:inline-block;padding:3px 10px;border-radius:4px;margin-bottom:14px}
+  .col-box h3{margin-top:0;margin-bottom:12px;font-size:1.05rem}
+  .col-box p{font-size:13.5px;line-height:1.9}
+  .col-box .col-sub{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:20px 0 8px;padding-top:16px;border-top:1px solid var(--border)}
+  .col-box blockquote{margin:14px 0;padding:12px 18px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.85;color:var(--text)}
+  .col-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+  .col-num .n{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+  .col-num .n .v{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;line-height:1.1;margin-bottom:3px}
+  .col-num .n .l{font-size:11px;color:var(--muted);line-height:1.5}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.qa details>*:not(summary){padding-left:18px}.qa details>ul,.qa details>ol{padding-left:36px}.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+/* 左サイド目次（scroll-spy）。本文900px中央寄せなので、左余白が目次幅を超える1400px以上でだけ出す */
+.side-nav{position:fixed;left:20px;top:84px;width:200px;max-height:calc(100vh - 162px);overflow-y:auto;padding:12px 0 32px;z-index:10;scrollbar-width:thin;display:none}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@media (min-width:1400px){.side-nav{display:block}}
+.side-nav-title{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-left:14px;margin-bottom:8px}
+.side-nav-list{list-style:none;padding:0;margin:0}
+.side-nav-link{display:block;color:#a8a8a8;text-decoration:none;padding:6px 8px 6px 14px;border-left:2px solid transparent;font-size:12px;line-height:1.45;transition:color .15s,border-color .15s,background .15s}
+.side-nav-link:hover{color:var(--text);border-left-color:var(--border)}
+.side-nav-link.active{color:var(--accent);font-weight:700;border-left-color:var(--accent);background:var(--surface)}
+.side-nav-num{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--muted);margin-right:6px}
+.sec{scroll-margin-top:76px}
+html{scroll-behavior:smooth}
+.raw{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--card)}
+.raw>summary{cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700}
+.raw>div{padding:0 14px 14px}
+.note{font-size:12px;color:var(--muted)}
+</style>
+<style>
+.chart{margin:14px 0 6px}
+.chart svg{max-width:100%}
+.hero-updated{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.6);margin:-14px 0 22px;letter-spacing:.04em}
+.unv{display:inline-block;font-family:'Poppins','Noto Sans JP',sans-serif;font-size:10px;font-weight:700;padding:0 6px;border:1px solid var(--mid);border-radius:3px;color:var(--mid);margin-left:4px;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+.t td.num,.t th.num{text-align:right;white-space:nowrap}
+</style>
+<link rel="stylesheet" href="../_shared/research_tabs.css">
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">research</a><span class="s">/</span><a href="index.html">company</a><span class="s">/</span><span class="c">IHI Deep Research</span></nav><script>if(location.protocol!=="file:"){var c=document.currentScript.previousElementSibling;if(c)c.remove()}</script><script>/* keep-pos: リロードしても見ていた位置（スクロール・タブ・開いた<details>・内側スクロール）を保つ */
+(function(){var ss;try{ss=window.sessionStorage;ss.getItem('x')}catch(e){return}
+try{history.scrollRestoration='manual'}catch(e){}
+var K='wl-pos:'+location.pathname,TAB='[data-view],[data-tab],[role="tab"],.tab,.tab-btn',st={y:0,s:{},t:[]},busy=true,tm;
+function P(el){var p=[];while(el&&el.nodeType===1&&el!==document.body){if(el.id){p.unshift('#'+CSS.escape(el.id));return p.join('>')}
+var i=1,x=el;while((x=x.previousElementSibling))i++;p.unshift(el.tagName.toLowerCase()+':nth-child('+i+')');el=el.parentElement}p.unshift('body');return p.join('>')}
+function Q(q){try{return document.querySelector(q)}catch(e){return null}}
+function save(){if(busy)return;st.y=window.scrollY;st.d=[].map.call(document.querySelectorAll('details'),function(d){return d.open?1:0}).join('');
+try{ss.setItem(K,JSON.stringify(st))}catch(e){}}
+function later(){if(busy)return;clearTimeout(tm);tm=setTimeout(save,150)}
+document.addEventListener('scroll',function(e){var t=e.target;if(t&&t.nodeType===1&&!busy)st.s[P(t)]=t.scrollTop;later()},true);
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest(TAB);if(!b||!e.isTrusted)return;
+var g=P(b.parentElement);st.t=st.t.filter(function(x){return x.g!==g});st.t.push({g:g,p:P(b)});st.t=st.t.slice(-6);later()},true);
+document.addEventListener('toggle',later,true);addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save()});
+function stop(){if(busy){busy=false;save()}}
+['wheel','touchstart','keydown','mousedown'].forEach(function(n){addEventListener(n,stop,{capture:true,passive:true})});
+addEventListener('load',function(){var d;try{d=JSON.parse(ss.getItem(K)||'null')}catch(e){}
+var nt;try{nt=performance.getEntriesByType('navigation')[0].type}catch(e){}
+/* リンクで来た時は復元しない（リロード・戻る/進むだけ） */
+if(!d||(nt&&nt!=='reload'&&nt!=='back_forward')){busy=false;return}st=d;st.s=st.s||{};st.t=st.t||[];
+st.t.forEach(function(x){var b=Q(x.p);if(b&&!b.classList.contains('on')&&!b.classList.contains('active')&&b.getAttribute('aria-selected')!=='true')b.click()});
+if(d.d)[].forEach.call(document.querySelectorAll('details'),function(el,i){if(d.d[i]==='1')el.open=true});
+function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var el=Q(q);if(el)el.scrollTop=st.s[q]}}
+[0,60,160,320,640,1100,1700].forEach(function(t){setTimeout(go,t)});setTimeout(stop,1800)})})();</script><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="page" data-terms-root>
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-solid">Company Deep Research</span>
+    <span class="badge badge-white">TSE Prime: 7013</span>
+    <span class="badge badge-white">Aero Engines / Defense / Nuclear</span>
+  </div>
+  <h1>IHI — 造船所から「ジェットエンジンの部品と交換部品」で稼ぐ会社へ</h1>
+  <div class="hero-updated">Created: 2026-11-05 ／ Last updated: 2026-11-05</div>
+  <div class="hero-sub">1853年、水戸藩が隅田川の石川島に作った造船所が源流。いまの稼ぎ頭は造船ではなく<strong>民間航空機エンジン</strong>（エアバスA320neoの<strong>PW1100G</strong>など）の部品と、その<strong>交換部品（スペアパーツ）</strong>。そこに<strong>防衛・原子力</strong>の需要が重なり、3期連続の最高益を見込む。株価は2023年の底から13倍になったあと、2026年2月の高値から約5割下げた。</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">1兆6,434億円</div><div class="lbl">Revenue FY3/2026</div></div>
+    <div class="kpi"><div class="val">2,700億円</div><div class="lbl">Operating profit FY3/2027e</div></div>
+    <div class="kpi"><div class="val">1,850億円</div><div class="lbl">Net income FY3/2027e</div></div>
+    <div class="kpi"><div class="val">¥2,428.5</div><div class="lbl">Price（2026-11-05）</div></div>
+    <div class="kpi"><div class="val">約2.6兆円</div><div class="lbl">Market cap</div></div>
+  </div>
+</div>
+
+<div class="ptabs" data-tabbar role="tablist">
+  <button type="button" class="on" data-tab="tldr">TL;DR</button>
+  <button type="button" data-tab="main">Main</button>
+</div>
+
+<div class="pane" data-pane="tldr">
+
+<div class="sec" id="t1">
+  <div class="sec-label"><span class="num">01</span>In One Line</div>
+  <div class="oneliner">日本の重工3社（三菱重工・川崎重工・IHI）の一角。<b>利益の約8割を「航空・宇宙・防衛」で稼ぐ</b>、実質的には<b>航空エンジンの会社</b>。エンジンは売った後の<b>交換部品と整備で30年稼げる</b>ので、世界の飛行機が増えるほど儲かる。そこに防衛費の倍増と原発の再稼働が乗っている。</div>
+</div>
+
+<div class="sec" id="t2">
+  <div class="sec-label"><span class="num">02</span>Engine Aftermarket</div>
+  <h2>そもそも「エンジンのアフターマーケット」とは</h2>
+  <p>ジェットエンジンは<b>本体を売るときはほぼ儲からない</b>（赤字のことも多い）。儲かるのは、その後の<b>交換部品（スペアパーツ）と整備</b>。エンジンは数千時間ごとに工場に戻して分解し、高温で傷んだ部品を交換する。1台のエンジンが退役するまで<b>20〜30年</b>、この収入が続く。プリンタ本体を安く売ってインクで稼ぐのと同じ形で、「カミソリと替え刃」モデルと呼ばれる。</p>
+  <div class="stat3">
+    <div class="st"><div class="v">約15%</div><div class="l">IHIのPW1100G（A320neo用）への参画シェア</div></div>
+    <div class="st"><div class="v">20〜30年</div><div class="l">1台のエンジンが部品・整備収入を生む期間</div></div>
+    <div class="st"><div class="v">約1,600億円</div><div class="l">2023年のPW1100G不具合でIHIが負担した損失（営業ベース換算）</div></div>
+  </div>
+  <p>IHIはGEやプラット・アンド・ホイットニー（P&amp;W）、ロールス・ロイスのエンジン開発に<b>「リスク・シェアリング・パートナー」</b>として参加している。開発費を一部出す代わりに、<b>売上と利益を参画シェアの分だけ</b>受け取る。いい面も悪い面もシェア分だけ受ける仕組みで、2023年に悪い面が出た（後述）。<a class="more" href="#s2">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t3">
+  <div class="sec-label"><span class="num">03</span>How It Makes Money</div>
+  <h2>どうやって稼いでいるのか</h2>
+  <div class="flow">
+    <div class="fs"><div class="fs-n">1</div><div class="fs-t">エンジン開発に出資</div><div class="fs-d">GE・P&amp;W・ロールス・ロイスの新型エンジンに<b>10〜15%程度</b>参画。ファン・圧縮機・低圧タービンなど担当部位を設計・製造</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">2</div><div class="fs-t">部品を納める</div><div class="fs-d">福島（相馬）・東京（瑞穂）で量産。新品エンジン向けは利益が薄い</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">3</div><div class="fs-t">交換部品と整備で回収</div><div class="fs-d">飛べば飛ぶほど部品が減る。<b>スペアパーツ販売が利益の柱</b>。埼玉（鶴ケ島）でPW1100Gの整備も</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">4</div><div class="fs-t">防衛・原子力が上乗せ</div><div class="fs-d">戦闘機エンジン（F-35用F135の組立など）、ロケット、原子力機器。いずれも予算増の追い風</div></div>
+  </div>
+  <p>それ以外の事業（ボイラー・発電プラント、橋梁、自動車用ターボチャージャー、圧縮機など）は「安定収益事業」と位置づけ、<b>売れるものは売る</b>方針。物流システム子会社は豊田自動織機へ、など<b>事業の切り売りと豊洲などの不動産売却</b>で、成長事業への投資資金を作っている。<a class="more" href="#s3">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t4">
+  <div class="sec-label"><span class="num">04</span>Key Numbers</div>
+  <h2>数字でつかむ</h2>
+  <div class="tl-kpis">
+    <div class="k"><div class="v">−701 → 1,435 → 1,655 → 2,700億円</div><div class="l">営業利益 FY3/24 → FY3/25 → FY3/26 → FY3/27予想</div></div>
+    <div class="k"><div class="v">1兆3,225 → 1兆6,434 → 1兆8,800億円</div><div class="l">売上 FY3/24 → FY3/26 → FY3/27予想</div></div>
+    <div class="k"><div class="v">約8割</div><div class="l">報告セグメント利益に占める「航空・宇宙・防衛」（2026年4〜6月）</div></div>
+    <div class="k"><div class="v">約400〜430億円</div><div class="l">今期の利益に入る不動産売却益（豊洲など）。一回限り</div></div>
+    <div class="k"><div class="v">PER 約14倍</div><div class="l">今期予想ベース（不動産益を除くと約16〜17倍、筆者計算）</div></div>
+    <div class="k"><div class="v">13倍 → −48%</div><div class="l">株価 2023年底→2026年2月高値、その高値→現在</div></div>
+  </div>
+</div>
+
+<div class="sec" id="t5">
+  <div class="sec-label"><span class="num">05</span>Why It Matters</div>
+  <h2>何がすごいのか</h2>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">① 世界のベストセラー機に乗っている</div><div class="cd-d">A320neo（PW1100G）、787（GEnx）、777X（GE9X）、旧A320（V2500）など、<b>小型〜超大型の売れ筋エンジンにほぼ全部参画</b>。飛行機の数が増えるほど、部品の売上が積み上がる</div></div>
+    <div class="cd"><div class="cd-t">② 日本の戦闘機エンジンの本家</div><div class="cd-d">1950年代の国産初のジェットエンジンJ3以来、防衛省向けエンジンの中心。F-35用F135の最終組立、次期戦闘機（日英伊GCAP）のエンジンもロールス・ロイスと組んで担う</div></div>
+    <div class="cd"><div class="cd-t">③ 「3つの国策」が同時に追い風</div><div class="cd-d"><b>防衛費の倍増、原発の再稼働・再処理、宇宙</b>。いずれも国が予算をつける分野で、IHIは国内で数少ない作り手</div></div>
+    <div class="cd"><div class="cd-t">④ 赤字からの立て直しが速い</div><div class="cd-d">2023年度はPW1100Gの不具合で15年ぶりの最終赤字（−682億円）。2年後には純利益1,610億円で過去最高。事業売却で身を軽くしながら利益率は10%台へ</div></div>
+  </div>
+  <p><a class="more" href="#s13">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t6">
+  <div class="sec-label"><span class="num">06</span>Risks</div>
+  <h2>リスクは何か</h2>
+  <div class="cards risk">
+    <div class="cd"><div class="cd-t">① 利益の「質」</div><div class="cd-d">今期の営業利益2,700億円のうち<b>約400億円超は不動産売却益</b>、前期も事業売却益が約540億円。上期の不動産益を除くと、本業の営業利益は前年比<b>ほぼ横ばい</b>（筆者計算）</div></div>
+    <div class="cd"><div class="cd-t">② エンジンの不具合リスク</div><div class="cd-d">参画シェア分は<b>損失もかぶる</b>。2023年の粉末金属の不良でIHIは巨額の補償費を計上し、2026年にも追加検査費用が出た。エンジン1機種に利益が集中している</div></div>
+    <div class="cd"><div class="cd-t">③ 不祥事が続く</div><div class="cd-d">2007年の不適切会計、2024年の子会社のエンジン燃費データ改ざん、2026年の<b>IHIエアロスペースのJAXA向け虚偽報告（5か月の入札停止）</b>。防衛・宇宙は国の信頼が前提の商売</div></div>
+    <div class="cd"><div class="cd-t">④ 受注が減っている</div><div class="cd-d">2026年4〜9月の受注は前年比<b>−1,146億円</b>（エネルギー分野の大型案件の反動）。売上の先行指標</div></div>
+    <div class="cd"><div class="cd-t">⑤ 中国との関係</div><div class="cd-d">2026年2月、中国が日本の防衛関連企業20社を輸出管理リストに追加。<b>IHIも対象と報じられた</b>（Caixin）。軍民両用品の調達に制約</div></div>
+  </div>
+  <p><a class="more" href="#s13">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t7">
+  <div class="sec-label"><span class="num">07</span>Stock</div>
+  <h2>株価 — 2023年の底から13倍、そこから約5割安</h2>
+  <div class="chart pchart" id="c-price-tldr" data-price="PRICE_IHI" data-marks="1,4,5,8,11,13,17,19"><div class="chart-title">IHI（7013）株価 ¥ — 2024-11以前は週足・以後は日足の終値（1→7分割調整後、対数目盛）</div><div class="chart-sub">丸数字は Main の「Major Moves」の番号</div></div>
+  <ul class="tl-list">
+    <li><b>上がった理由（2024〜2026年2月、13倍）：</b>PW1100Gの損失を出し切った後の<b>V字回復</b> → 米国のウクライナ支援停止で<b>世界的な防衛株ブーム</b> → <b>高市政権の誕生</b>と防衛費増額 → 2026年2月の衆院選。2026年2月10日に上場来高値<b>4,698円</b>（場中）</li>
+    <li><b>下がった理由（2026年2月〜、−48%）：</b>3Q決算での材料出尽くし、3月の全面安、米大株主（Capital Group）の大量売却、<b>利益に不動産益が混じる</b>ことへの警戒、JAXA処分、受注の減少。三菱重工・川崎重工も同じくらい下げており、<b>防衛株全体の調整</b>が大きい</li>
+    <li><b>いま：</b>11/4の上期決算で通期予想を再び上方修正（営業利益2,500→2,700億円）、配当も増額。翌日11/5の終値 <b>2,428.5円</b></li>
+  </ul>
+  <p><a class="more" href="#s12">19回の大きな値動きと理由を Main で見る →</a></p>
+</div>
+
+<div class="sec" id="t8">
+  <div class="sec-label"><span class="num">08</span>Bottom Line (NFA)</div>
+  <h2>結論（筆者の読み、投資助言ではない）</h2>
+  <div class="verdict">
+    <p><b>事業は強くなった、株価は「防衛テーマ株」としての熱が抜けた。</b>エンジンの交換部品・防衛・原子力という<b>何年も続く需要</b>は本物で、PER約14倍は2月の高値時（約27倍）よりずっと落ち着いた水準。一方で、利益の一部は不動産と事業の売却益で、それを除くと今期の本業の伸びは見かけほど大きくない。</p>
+    <p>見るべきは3つ。①<b>不動産益を除いた営業利益</b>が伸び続けるか（会社は2029年度以降の本格拡大を掲げる）、②<b>受注の減少</b>が一時的か、③<b>防衛3文書の改定</b>（2026年末）で防衛予算がどこまで積み増されるか。</p>
+  </div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Date</th><th>次のイベント</th></tr></thead>
+    <tbody>
+      <tr><td>2026-12</td><td>防衛3文書の改定・2027年度予算の政府案</td></tr>
+      <tr class="hl"><td>2027-02上旬</td><td>第3四半期決算（受注が戻るか）</td></tr>
+      <tr><td>2027-04</td><td>物流子会社（ILM）の80%を豊田自動織機へ譲渡</td></tr>
+      <tr><td>2027-05上旬</td><td>通期決算と2028年3月期の見通し（不動産益なしで増益にできるか）</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+</div>
+
+
+<div class="pane" data-pane="main" hidden>
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#s1">Overview</a></li>
+    <li><a href="#s2">Engine Aftermarket &amp; Risk-Sharing</a></li>
+    <li><a href="#s3">Business Segments</a></li>
+    <li><a href="#s4">Customers</a></li>
+    <li><a href="#s5">Financials (PL / BS / CF)</a></li>
+    <li><a href="#s6">PW1100G Crisis (2023)</a></li>
+    <li><a href="#s7">Founding Story &amp; Leadership</a></li>
+    <li><a href="#s8">Strategy to 2040 &amp; Portfolio Reshuffle</a></li>
+    <li><a href="#s9">Compliance Track Record</a></li>
+    <li><a href="#s10">Competitors — Earnings Side by Side</a></li>
+    <li><a href="#s11">Japan Connections</a></li>
+    <li><a href="#s12">Stock: Price History &amp; Major Moves (NFA)</a></li>
+    <li><a href="#s13">Valuation, Bull / Base / Bear (NFA)</a></li>
+    <li><a href="#s14">Q&amp;A</a></li>
+    <li><a href="#s-vocab">Vocabulary</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="s1">
+  <div class="sec-label"><span class="num">01</span>Overview</div>
+  <h2>重工3社の一角。中身は「航空エンジン＋防衛＋原子力」に寄せている最中</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Company</div><div class="v">株式会社IHI（IHI Corporation）。旧称 石川島播磨重工業（2007年に改称）</div></div>
+    <div class="kv-item"><div class="k">HQ</div><div class="v">東京都江東区豊洲</div></div>
+    <div class="kv-item"><div class="k">Founded</div><div class="v">1853年（石川島造船所）／1960年に播磨造船所と合併</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">井手博（代表取締役社長、1983年入社）</div></div>
+    <div class="kv-item"><div class="k">Listing</div><div class="v">東証プライム 7013。2025-10-01に1株→7株の株式分割</div></div>
+    <div class="kv-item"><div class="k">Revenue</div><div class="v">1兆6,434億円（FY3/2026）→ 1兆8,800億円（FY3/2027 会社予想）</div></div>
+    <div class="kv-item"><div class="k">Operating profit</div><div class="v">1,655億円（FY3/2026、利益率10.1%）→ 2,700億円（FY3/2027e）</div></div>
+    <div class="kv-item"><div class="k">Accounting</div><div class="v">IFRS（FY3/2024から）</div></div>
+  </div>
+  <p>造船から始まり、戦後は船・橋・プラント・ボイラー・ターボチャージャー・ロケットまで何でも作る「総合重機」だった。2010年代以降は造船を切り離し（2013年にJMUへ統合）、<b>民間航空エンジン・防衛・原子力</b>を「成長事業」、アンモニア・宇宙を「育成事業」、その他を「安定収益事業」に分けて、<b>稼げない事業を売って成長事業に投資する</b>形に作り替えている。</p>
+  <p class="note">日本企業のため金額は億円・兆円表記。株価・1株指標はすべて分割調整後。</p>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sec-label"><span class="num">02</span>Engine Aftermarket &amp; Risk-Sharing</div>
+  <h2>エンジンは「売った後」で稼ぐ。IHIは主要エンジンのほぼ全部に乗っている</h2>
+  <p>大型の民間航空エンジンは、開発に1兆円規模の費用と10年近い時間がかかる。GE・P&amp;W・ロールス・ロイスの3社だけでは背負いきれないため、<b>リスク・シェアリング・パートナー（RSP）</b>と呼ばれる部品メーカーが開発費を出し合う。IHIは日本航空機エンジン協会（JAEC）経由または単独でRSPとして参加し、担当部位を設計・量産する。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Engine</th><th>主な機体</th><th>元請け</th><th>IHIの関わり</th></tr></thead>
+    <tbody>
+      <tr><td>V2500</td><td>A320ceo（旧型）</td><td>IAE（P&amp;W・MTU・JAEC）</td><td>ファン・圧縮機。機数が多く、いまも部品・整備の稼ぎ頭の一つ</td></tr>
+      <tr class="hl"><td>PW1100G-JM</td><td>A320neo</td><td>P&amp;W（RTX）</td><td>JAEC（23%）の中で<b>IHIは約15%</b>。ファン・低圧圧縮機など。鶴ケ島で整備</td></tr>
+      <tr><td>GEnx</td><td>787・747-8</td><td>GE</td><td>低圧タービン・シャフトなど</td></tr>
+      <tr><td>GE9X</td><td>777X</td><td>GE</td><td>低圧タービン等。参画シェアは10〜12%と報道（2017年時点）</td></tr>
+      <tr><td>Passport / CF34 等</td><td>ビジネスジェット・リージョナル機</td><td>GE</td><td>部品供給</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">出典：ニュースイッチ（日刊工業新聞）、Aviation Wire。参画比率は報道ベース。</p>
+  <p><b>なぜアフターマーケットが儲かるのか。</b>新品エンジンは航空会社との値引き競争で原価割れのことも多い。代わりに、エンジンは数千サイクルごとに工場で分解整備（ショップビジット）され、高温部・回転部の部品が交換される。交換部品は元請けとパートナーの独占供給に近く、<b>利益率が高い</b>。IHIの決算では「民間エンジンのスペアパーツ販売の伸長」が増益要因の常連になっている。</p>
+  <p>V2500・GEnxなど<b>第1世代の稼ぎ</b>に、PW1100G・GE9Xなど<b>第2世代の稼ぎ</b>が積み重なる構造で、2030年代にかけて部品需要は増えていく。逆に、新機種の量産初期は<b>エンジンを納めるほど赤字</b>になりやすく、利益は数年遅れて出る。</p>
+  <div class="col-box">
+    <span class="col-lbl">Column</span>
+    <h3>「シェア分だけ損もかぶる」— RSPの裏面</h3>
+    <p>RSPは元請けの売上・利益をシェアで分け合う代わりに、<b>不具合の補償費も同じシェアで負担</b>する。PW1100Gの粉末金属問題（後述 06）では、元請けRTXの見積もり$3〜3.5Bの費用のうち、IHIは参画シェア約15%分を負担し、営業ベースで約1,600億円の影響と報じられた。ドイツのMTU Aero Enginesも同じ問題で約€1Bを計上している。</p>
+  </div>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sec-label"><span class="num">03</span>Business Segments</div>
+  <h2>4セグメント。売上の4割、利益の8割が「航空・宇宙・防衛」</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Segment</th><th>主な事業</th><th class="num">Orders 1Q FY3/27</th><th class="num">Revenue 1Q FY3/27</th><th class="num">OP 1Q FY3/27</th><th class="num">OP 1Q FY3/26</th></tr></thead>
+    <tbody>
+      <tr><td>資源・エネルギー・環境</td><td>ボイラー・発電プラント、舶用・陸用原動機、原子力機器、アンモニア</td><td class="num">799</td><td class="num">888</td><td class="num">28</td><td class="num">−33</td></tr>
+      <tr><td>社会基盤</td><td>橋梁・水門、シールド掘進機</td><td class="num">161</td><td class="num">204</td><td class="num">−18</td><td class="num">−17</td></tr>
+      <tr><td>産業システム・汎用機械</td><td>車両用ターボチャージャー、パーキング、圧縮機、熱処理、物流システム</td><td class="num">1,181</td><td class="num">1,023</td><td class="num">55</td><td class="num">3</td></tr>
+      <tr class="hl"><td>航空・宇宙・防衛</td><td>民間・防衛エンジン、ロケット（IHIエアロスペース）、防衛機器</td><td class="num">1,380</td><td class="num">1,547</td><td class="num">291</td><td class="num">279</td></tr>
+      <tr><td>その他</td><td>検査・計測、不動産（豊洲）</td><td class="num">212</td><td class="num">173</td><td class="num">421</td><td class="num">5</td></tr>
+      <tr><td><b>Total</b></td><td>（調整額含む）</td><td class="num">3,607</td><td class="num">3,745</td><td class="num">732</td><td class="num">208</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">単位：億円。出典：IHI 2027年3月期 第1四半期決算短信（2026-08-05）。「その他」の421億円の大半は不動産売却益400億円。</p>
+  <p><b>読み方：</b>4つの報告セグメントの利益合計358億円のうち<b>291億円（81%）が航空・宇宙・防衛</b>。売上利益率は約19%で、他の3つ（0〜5%）と桁が違う。IHIの企業価値は、ほぼこのセグメントで決まる。</p>
+  <h3>セグメント別の中身</h3>
+  <ul>
+    <li><b>航空・宇宙・防衛：</b>民間エンジン（上記）、防衛エンジン（F-2用F110、F-15用F100のライセンス生産、F-35用F135の最終組立・整備、次期戦闘機GCAPのエンジン開発）、子会社IHIエアロスペースのロケット（イプシロン、H3の固体ブースター部品）と誘導弾用のロケットモーター。宇宙は衛星コンステレーション（海外企業と提携）にも進出</li>
+    <li><b>資源・エネルギー・環境：</b>石炭・バイオマスボイラー、ガスタービン発電、<b>原子力機器</b>（原子炉圧力容器の製造実績、六ヶ所再処理工場の設備）、<b>アンモニア</b>（JERA碧南火力での20%混焼実証で燃焼技術を担当）。前期は大型案件で受注が膨らみ、今期はその反動で受注が減っている</li>
+    <li><b>産業システム・汎用機械：</b>自動車用ターボチャージャーは世界大手の一角だが、EV化で縮小が見込まれ「採算改善」の対象。物流システム子会社（ILM）は2027年4月に豊田自動織機へ80%譲渡</li>
+    <li><b>社会基盤：</b>長大橋・水門・シールド掘進機。小さく、赤字</li>
+  </ul>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sec-label"><span class="num">04</span>Customers</div>
+  <h2>顧客は「エンジン元請け3社」と「日本政府」</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Customer</th><th>Industry</th><th>何を買っているか</th><th>集中リスク</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>Pratt &amp; Whitney（RTX）</td><td>航空エンジン</td><td>PW1100G・V2500のモジュール、スペアパーツ</td><td>高い。2023年の損失はここから</td></tr>
+      <tr><td>GE Aerospace</td><td>航空エンジン</td><td>GEnx・GE9X等の部品</td><td>中</td></tr>
+      <tr><td>Rolls-Royce</td><td>航空エンジン</td><td>Trent系の部品、GCAPエンジンの共同開発相手</td><td>小〜中</td></tr>
+      <tr><td>防衛省・防衛装備庁</td><td>政府（防衛）</td><td>戦闘機エンジン、整備、誘導弾のロケットモーター</td><td>予算と政治に連動</td></tr>
+      <tr><td>JAXA・三菱重工</td><td>宇宙</td><td>ロケット部品・固体モーター（H3の元請けは三菱重工）</td><td>2026年6月から5か月の入札停止</td></tr>
+      <tr><td>電力会社・日本原燃</td><td>電力・原子力</td><td>ボイラー、原子力機器、再処理設備、アンモニア燃焼</td><td>中</td></tr>
+      <tr><td>自動車メーカー</td><td>自動車</td><td>ターボチャージャー</td><td>EV化で縮小</td></tr>
+    </tbody>
+  </table></div>
+  <p>エンドユーザーとして見ると、<b>世界の航空会社</b>（A320neoを使うインディゴ、エアアジアなど）がスペアパーツの最終的な払い手。航空旅客数とエンジンの稼働時間が、IHIの最大の利益ドライバーになる。</p>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sec-label"><span class="num">05</span>Financials (PL / BS / CF)</div>
+  <h2>赤字から2年で過去最高益。ただし「売却益」込みの数字に注意</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>FY (Mar)</th><th class="num">Revenue</th><th class="num">Operating profit</th><th class="num">Net income</th><th class="num">EPS (¥)</th><th class="num">ROE</th><th class="num">Operating CF</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>FY3/2019</td><td class="num">14,834</td><td class="num">825</td><td class="num">399</td><td class="num">36.9</td><td class="num">13.0%</td><td class="num">464</td><td>日本基準</td></tr>
+      <tr><td>FY3/2020</td><td class="num">12,631</td><td class="num">479</td><td class="num">82</td><td class="num">7.7</td><td class="num">2.9%</td><td class="num">425</td><td></td></tr>
+      <tr><td>FY3/2021</td><td class="num">11,129</td><td class="num">280</td><td class="num">131</td><td class="num">12.6</td><td class="num">4.4%</td><td class="num">364</td><td>コロナで航空需要消滅</td></tr>
+      <tr><td>FY3/2022</td><td class="num">11,729</td><td class="num">815</td><td class="num">661</td><td class="num">62.8</td><td class="num">17.3%</td><td class="num">1,142</td><td></td></tr>
+      <tr><td>FY3/2023</td><td class="num">13,529</td><td class="num">820</td><td class="num">445</td><td class="num">42.1</td><td class="num">10.3%</td><td class="num">541</td><td></td></tr>
+      <tr class="hl"><td>FY3/2024</td><td class="num">13,225</td><td class="num">−701</td><td class="num">−682</td><td class="num">−64.4</td><td class="num">—</td><td class="num">621</td><td>IFRS移行。PW1100G損失</td></tr>
+      <tr><td>FY3/2025</td><td class="num">16,268</td><td class="num">1,435</td><td class="num">1,127</td><td class="num">106.4</td><td class="num">23.4%</td><td class="num">1,776</td><td>V字回復</td></tr>
+      <tr><td>FY3/2026</td><td class="num">16,434</td><td class="num">1,655</td><td class="num">1,610</td><td class="num">151.9</td><td class="num">24.7%</td><td class="num">1,214</td><td>事業譲渡益 約543億円を含む</td></tr>
+      <tr class="hl"><td>FY3/2027e</td><td class="num">18,800</td><td class="num">2,700</td><td class="num">1,850</td><td class="num">約174</td><td class="num">—</td><td class="num">—</td><td>不動産売却益を含む（11/4修正後）</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">単位：億円（EPSは円、1→7分割調整後）。出典：IRBank（決算短信の集計）、IHI決算短信。FY3/2027eのEPSは純利益÷期中平均株式数10.6億株で筆者計算。</p>
+
+  <h3>今期（FY3/2027）の進み具合</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Item</th><th class="num">1Q（4〜6月）</th><th class="num">1H（4〜9月）</th><th class="num">YoY（1H）</th><th class="num">Full-year guidance</th></tr></thead>
+    <tbody>
+      <tr><td>Orders</td><td class="num">3,607</td><td class="num">7,787</td><td class="num">−1,146</td><td class="num">17,700（8月時点）</td></tr>
+      <tr><td>Revenue</td><td class="num">3,745</td><td class="num">7,793</td><td class="num">+9.2%</td><td class="num">18,800</td></tr>
+      <tr><td>Operating profit</td><td class="num">732</td><td class="num">1,150</td><td class="num">+65.6%</td><td class="num">2,700</td></tr>
+      <tr><td>うち不動産売却益</td><td class="num">400</td><td class="num">426</td><td class="num">—</td><td class="num">—</td></tr>
+      <tr><td>不動産益を除く営業利益（筆者計算）</td><td class="num">331</td><td class="num">約724</td><td class="num">約+4%</td><td class="num">—</td></tr>
+      <tr><td>Net income（親会社帰属）</td><td class="num">535</td><td class="num">849</td><td class="num">+52.0%</td><td class="num">1,850</td></tr>
+      <tr><td>Dividend（年間）</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td class="num">25円（23円から増額）</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">単位：億円。出典：1Q決算短信（2026-08-05）、上期決算報道（時事通信・株探 2026-11-04）。前年1Hの営業利益は1,150÷1.656≒694億円として逆算。</p>
+  <p><b>読み方：</b>会社予想は5月の2,400億円 → 8月2,500億円 → 11月2,700億円と<b>2回上方修正</b>。理由は民間エンジンのスペアパーツ、原子力、カーボンソリューションの採算改善。ただし上期の増益（+456億円）の<b>ほぼ全額は不動産売却益</b>で、本業部分は+4%程度。会社は2026〜28年度を「先行投資と財務基盤強化の期間」と位置づけ、本格的な利益拡大は2029年度以降としている。</p>
+
+  <h3>BS / CF のポイント</h3>
+  <ul>
+    <li><b>Equity ratio：</b>親会社所有者帰属持分比率 26.9%（2026-03）→ 28.3%（2026-06）。赤字で傷んだ自己資本を回復中</li>
+    <li><b>Interest-bearing debt：</b>リース含め4,871億円（2026-06）。現金1,170億円</li>
+    <li><b>Operating CF：</b>1Qは−432億円。航空エンジンの<b>在庫積み増し（+502億円）</b>と法人税の支払い。量産拡大期は運転資本を食う</li>
+    <li><b>返金負債 1,168億円：</b>PW1100Gの補償など、顧客に払う見込みの負債。不具合問題がまだBSに残っていることの目印</li>
+    <li><b>投資CF：</b>不動産売却でプラス。設備投資は民間エンジン・防衛・原子力の能力増強に集中</li>
+  </ul>
+  <details class="raw"><summary>Raw data: 1Q FY3/2027 BS 抜粋（百万円）</summary><div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Item</th><th class="num">2026-03-31</th><th class="num">2026-06-30</th></tr></thead>
+    <tbody>
+      <tr><td>Total assets</td><td class="num">2,428,559</td><td class="num">2,461,256</td></tr>
+      <tr><td>Cash</td><td class="num">155,084</td><td class="num">117,012</td></tr>
+      <tr><td>Inventories</td><td class="num">504,223</td><td class="num">554,468</td></tr>
+      <tr><td>Investment property</td><td class="num">144,817</td><td class="num">135,669</td></tr>
+      <tr><td>Contract liabilities</td><td class="num">311,447</td><td class="num">308,884</td></tr>
+      <tr><td>Refund liabilities</td><td class="num">110,613</td><td class="num">116,756</td></tr>
+      <tr><td>Equity attributable to owners</td><td class="num">652,243</td><td class="num">696,605</td></tr>
+    </tbody>
+  </table></div></div></details>
+</div>
+
+<div class="sec" id="s6">
+  <div class="sec-label"><span class="num">06</span>PW1100G Crisis (2023)</div>
+  <h2>「汚れた粉」で15年ぶりの最終赤字。それでも2年で最高益に戻った</h2>
+  <p>2023年7月、P&amp;Wの親会社RTXは、PW1100Gの<b>高圧タービン・高圧圧縮機のディスク</b>に使う粉末金属に<b>不純物が混じっていた</b>可能性を公表した。2015年半ば〜2021年半ばに作られた約3,000台が対象で、うち600〜700台を前倒しで工場に戻して検査することになり、世界で数百機のA320neoが地上に止まった。</p>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2023-07</span><span class="tl-title">RTXが粉末金属問題を公表</span></div><div class="tl-body">当初$500Mの費用。航空会社への補償と追加整備が必要に <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2023-09</span><span class="tl-title">RTXが$3〜3.5Bの費用を見積もり</span></div><div class="tl-body">IHI株は9月に565円→436円（分割調整後） <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2023-10</span><span class="tl-title">IHIが最終赤字予想に転落</span></div><div class="tl-body">補償・追加整備の費用を一括計上し、15年ぶりの最終赤字（当初予想−900億円）。参画シェア約15%分の負担は営業損益ベースで約1,600億円の影響 <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2024-05</span><span class="tl-title">FY3/2024 着地：最終−682億円</span></div><div class="tl-body">営業損失−701億円。予想よりは小さく着地 <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025〜26</span><span class="tl-title">一部エンジンの追加検査費用が再び発生</span></div><div class="tl-body">FY3/2026の3Q時点で「一部航空機エンジンの追加検査費用」が利益の重しに <span class="tag r">報道</span></div></div></div>
+  </div>
+  <p><b>なぜ回復が速かったのか。</b>①損失を一括で計上して「出し切った」、②地上に止まったエンジンの検査・修理そのものが<b>整備・部品需要</b>としてIHIに戻ってくる、③コロナ後の航空需要回復でV2500・GEnxの部品が売れた、④事業売却益が重なった。<b>不具合の費用と、その修理の売上の両方</b>を受け取る、RSPの特徴がよく出た例。</p>
+</div>
+
+<div class="sec" id="s7">
+  <div class="sec-label"><span class="num">07</span>Founding Story &amp; Leadership</div>
+  <h2>ペリー来航の年に、水戸藩が作った造船所</h2>
+  <p><b>1853年</b>、ペリーの黒船来航を受けて江戸幕府は大船建造の禁を解き、水戸藩主<b>徳川斉昭</b>が隅田川河口の<b>石川島</b>に洋式造船所を開いた。これがIHIの起源で、日本の近代造船の出発点の一つ。明治に入って民営化され（1876年に平野富二が石川島平野造船所を設立）、1889年に有限責任石川島造船所、1945年に<b>石川島重工業</b>となった。</p>
+  <p>戦後、IHIを立て直したのが<b>土光敏夫</b>（1950年社長）。1960年に兵庫・相生の<b>播磨造船所</b>と合併し「石川島播磨重工業」が誕生した。機械に強い石川島と造船に強い播磨の補完が狙いで、1960〜70年代には世界有数の造船会社になった。土光はのちに東芝の再建、経団連会長、行政改革（土光臨調）を率い、「メザシの土光さん」として知られる。IHIからはもう一人、<b>真藤恒</b>（社長）が電電公社総裁・NTT初代社長に転じている。</p>
+  <p>航空エンジンでは、1950年代に<b>国産初のジェットエンジンJ3</b>（T-1練習機用）を開発。以来、防衛省向けエンジンの中心になり、民間ではV2500（1980年代）から国際共同開発に入った。2007年に社名を<b>IHI</b>に変更。2013年に造船事業をユニバーサル造船と統合して<b>ジャパン マリンユナイテッド（JMU）</b>を作り、造船の本流から離れた。</p>
+  <div class="person">
+    <div class="p-head"><span class="p-name">井手博（いで・ひろし）</span><span class="p-role">代表取締役社長</span></div>
+    <div class="p-line">1961年生まれ／1983年 石川島播磨重工業入社／プラント・エンジニアリング出身</div>
+    <ul>
+      <li><b>キャリア：</b>入社後はプラント部門。2013〜2017年にシンガポールの子会社<b>Jurong Engineering</b>の社長として海外プラント事業を指揮</li>
+      <li><b>昇進：</b>2017年執行役員、2019年常務執行役員、2020年に社長（CEO就任は2021年とする資料もあり）</li>
+      <li><b>在任中の出来事：</b>コロナで航空需要が消えた直後に就任。PW1100G問題の処理、IFRS移行、事業ポートフォリオの大規模な入れ替え（物流・ボイラー・建材などの売却、不動産売却）、2026年5月の「中長期の方向性（2040年）」策定</li>
+    </ul>
+    <div class="p-quote">基盤は整ったが「スタートライン」に過ぎない。26年度から成長戦略を加速させる（2026年5月、ニュースイッチ報道）</div>
+  </div>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sec-label"><span class="num">08</span>Strategy to 2040 &amp; Portfolio Reshuffle</div>
+  <h2>「売って、集中する」。成長事業は年10%以上の伸びが目標</h2>
+  <ul>
+    <li><b>中長期の方向性（2026-05-08）：</b>2040年の「ありたい姿」を定義。2026〜28年度は<b>先行投資と財務基盤強化</b>の3年、2029年度以降に営業利益・営業CFの大幅拡大、2032年度以降にFCFの大幅拡大を見込む</li>
+    <li><b>数値目標：</b>FY3/2035までの売上の年平均成長率5%以上。成長事業（民間エンジン・防衛・原子力）は年10%以上（報道）</li>
+    <li><b>航空・宇宙・防衛で売上1兆円：</b>達成時期を2030年代初頭へ前倒し（2025年11月）</li>
+    <li><b>能力増強：</b>エンジン整備拠点（鶴ケ島）の整備棟拡張、防衛の生産能力強化、原子力の海外新設案件に向けた増強</li>
+  </ul>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Period</th><th>売却・整理したもの</th><th>相手先</th></tr></thead>
+    <tbody>
+      <tr><td>2013</td><td>造船（IHIマリンユナイテッド）</td><td>ユニバーサル造船と統合 → JMU</td></tr>
+      <tr><td>FY3/2026</td><td>材料搬送、芝草管理機械、パッケージボイラー、建材などの事業／JMU株式の一部</td><td>各社（譲渡益 約543億円）</td></tr>
+      <tr><td>FY3/2027〜</td><td>豊洲など東京都江東区の不動産</td><td>不動産売却益（1Hで426億円）</td></tr>
+      <tr><td>2027-04予定</td><td>物流・産業システム（ILM）80%、残り20%も5年程度で</td><td>豊田自動織機</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>育成事業：</b>アンモニア（製造・貯蔵・輸送・燃焼のバリューチェーン）と宇宙（安全保障・商業向けの衛星データ、衛星コンステレーション）。現時点で利益への寄与は小さい。</p>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sec-label"><span class="num">09</span>Compliance Track Record</div>
+  <h2>20年で3回。国の仕事が多い会社にとって一番のリスク</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Year</th><th>何があったか</th><th>結果</th></tr></thead>
+    <tbody>
+      <tr><td>2007</td><td>エネルギー・プラント事業の工事損失の計上遅れによる<b>不適切会計</b>、過年度決算の訂正</td><td>東証の特設注意市場銘柄に指定</td></tr>
+      <tr><td>2024</td><td>子会社IHI原動機で、舶用・陸用エンジンの<b>燃費データの改ざん</b>が判明</td><td>国交省への報告、出荷停止・再発防止策</td></tr>
+      <tr class="hl"><td>2026</td><td>子会社IHIエアロスペースが、JAXAとのH3ロケット部品製造装置の保全契約で、<b>未了の作業を「完了」と報告し費用を請求</b>。2016年以降の438件中14件で確認</td><td>2026-06-02からJAXAの<b>5か月間の競争参加資格停止</b>。部品の品質には影響なしとJAXA。イプシロンSの打ち上げ時期にも不透明感</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">出典：熊本日日新聞（共同）、ニュースイッチ、IHI 1Q決算短信。2007年・2024年の詳細は報道ベース。</p>
+</div>
+
+<div class="sec" id="s10">
+  <div class="sec-label"><span class="num">10</span>Competitors — Earnings Side by Side</div>
+  <h2>三菱重工は「何でも屋の巨人」、IHIは「エンジン比率の高い中堅」</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th class="num">Revenue</th><th class="num">Operating / Business profit</th><th class="num">Margin</th><th>航空・防衛の中身</th><th>決算の出方</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>IHI</td><td class="num">1兆6,434億円</td><td class="num">1,655億円</td><td class="num">10.1%</td><td>民間エンジン部品＋スペアパーツが主力。防衛エンジン・ロケット</td><td>エンジン1機種の不具合で全社が赤字になる。売却益の比重が大きい</td></tr>
+      <tr><td>三菱重工（7011）</td><td class="num">4兆9,742億円</td><td class="num">4,322億円</td><td class="num">8.7%</td><td>防衛・宇宙の売上1兆1,445億円（初の1兆円超）。艦船・ミサイル・H3ロケット</td><td>ガスタービン（電力・データセンター）と防衛の2本柱。受注7兆6,536億円</td></tr>
+      <tr><td>川崎重工（7012）</td><td class="num">（FY3/27計画 2兆5,600億円）</td><td class="num">（計画 1,700億円）</td><td class="num">—</td><td>PW1100G・Trentの部品、潜水艦、哨戒機</td><td>二輪・ロボット・鉄道も持つ。PW1100G問題で約580億円の損失（2023）</td></tr>
+      <tr><td>MTU Aero Engines（独）</td><td class="num">—</td><td class="num">—</td><td class="num">—</td><td>PW1100G・V2500のパートナー。整備（MRO）が売上の大半</td><td>IHIと最も似た「エンジンRSP＋整備」の純粋プレーヤー</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">FY3/2026実績。三菱重工はAviation Wire・ニュースイッチ、川崎重工は個人投資家向け記事の計画値（参考）。三菱重工は「事業利益」で厳密には同じ定義ではない。</p>
+  <p><b>読み比べのポイント：</b>①<b>純度</b>：三菱重工は防衛・エネルギー・物流など多角化しており、IHIほど航空エンジンの景気に振られない。IHIは利益の8割が航空・宇宙・防衛なので、<b>良い時は利益率が跳ね、悪い時は一発で赤字</b>になる。②<b>防衛の形</b>：三菱重工は艦船・ミサイルの「完成品」を国に納める元請け、IHIはエンジン・ロケットモーターという「心臓部品」。③<b>民間エンジン</b>：3社とも同じPW1100Gに乗っており、2023年は3社そろって損失を出した。</p>
+</div>
+
+<div class="sec" id="s11">
+  <div class="sec-label"><span class="num">11</span>Japan Connections</div>
+  <h2>重工3社は「競合」で「パートナー」</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th>関係</th></tr></thead>
+    <tbody>
+      <tr><td>三菱重工・川崎重工</td><td>JAEC（日本航空機エンジン協会）で同じPW1100Gに参画するパートナー。防衛では競合。相馬工場で三菱重工からの受託製造も</td></tr>
+      <tr><td>JAXA</td><td>ロケット（イプシロン、H3の部品）の顧客。2026年に入札停止処分</td></tr>
+      <tr><td>防衛省・防衛装備庁</td><td>戦闘機エンジン（XF9-1試作エンジンを納入）、GCAP</td></tr>
+      <tr><td>JERA</td><td>碧南火力のアンモニア20%混焼実証</td></tr>
+      <tr><td>日本原燃</td><td>六ヶ所再処理工場の設備</td></tr>
+      <tr><td>豊田自動織機</td><td>物流子会社ILMの譲渡先（2027-04）</td></tr>
+      <tr><td>JMU・今治造船</td><td>IHIの造船事業の行き先（JMU株式は一部譲渡済み）</td></tr>
+      <tr><td>東芝</td><td>土光敏夫がIHI社長から東芝社長に転じた歴史的つながり</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s12">
+  <div class="sec-label"><span class="num">12</span>Stock: Price History &amp; Major Moves (NFA)</div>
+  <h2>2023年の底354円から4,698円へ13倍、そこから48%安。19回の大きな値動きと、その理由</h2>
+  <p class="note">2025年10月1日に1株→7株の株式分割。株価はすべて分割調整後（分割前の値÷7）。NFA＝Not Financial Advice。</p>
+  <div class="chart pchart" id="c-price-main" data-price="PRICE_IHI" data-marks="all"><div class="chart-title">IHI（7013）株価 ¥ — 2021-11〜2024-10は週足、2024-11〜2026-11-05は日足の終値</div><div class="chart-sub">縦軸は対数（¥500→¥1,000 と ¥2,000→¥4,000 が同じ高さ）。丸数字は下の「Major Moves」の番号。グラフに触れると日付と終値</div></div>
+  <p class="src note">出典：Yahoo Finance 7013.T（分割調整済み）、PayPay証券「株価が動いた理由」、株探、各社報道。同日の日経平均・三菱重工・川崎重工の値動きと比べて「個別要因か全体要因か」を判定。</p>
+  <details class="raw"><summary>Raw data: Monthly Open / High / Low / Close（¥、分割調整後）</summary><div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Month</th><th class="num">Open</th><th class="num">High</th><th class="num">Low</th><th class="num">Close</th><th>月の主な材料</th></tr></thead>
+    <tbody>
+      <tr><td>2023-09</td><td class="num">543</td><td class="num">565</td><td class="num">437</td><td class="num">448</td><td>RTXがPW1100G費用$3B超を見積もり</td></tr>
+      <tr><td>2023-10</td><td class="num">418</td><td class="num">457</td><td class="num">381</td><td class="num">419</td><td>最終赤字予想へ</td></tr>
+      <tr><td>2023-12</td><td class="num">381</td><td class="num">406</td><td class="num">354</td><td class="num">394</td><td>大底</td></tr>
+      <tr><td>2024-03</td><td class="num">518</td><td class="num">591</td><td class="num">478</td><td class="num">583</td><td>V字回復期待</td></tr>
+      <tr><td>2024-06</td><td class="num">542</td><td class="num">687</td><td class="num">529</td><td class="num">686</td><td></td></tr>
+      <tr><td>2024-08</td><td class="num">709</td><td class="num">905</td><td class="num">604</td><td class="num">905</td><td>8/5 全面暴落 → 急回復</td></tr>
+      <tr><td>2024-09</td><td class="num">888</td><td class="num">1,173</td><td class="num">838</td><td class="num">1,091</td><td>1,000円台へ</td></tr>
+      <tr><td>2024-11</td><td class="num">1,310</td><td class="num">1,354</td><td class="num">1,095</td><td class="num">1,102</td><td>中間決算・米大統領選で+19%</td></tr>
+      <tr><td>2025-03</td><td class="num">1,344</td><td class="num">1,733</td><td class="num">1,260</td><td class="num">1,474</td><td>米国のウクライナ支援停止、35年ぶり高値</td></tr>
+      <tr><td>2025-04</td><td class="num">1,455</td><td class="num">1,630</td><td class="num">1,208</td><td class="num">1,593</td><td>トランプ関税ショック</td></tr>
+      <tr><td>2025-05</td><td class="num">1,597</td><td class="num">2,106</td><td class="num">1,576</td><td class="num">1,998</td><td>FY3/2025決算</td></tr>
+      <tr><td>2025-06</td><td class="num">2,058</td><td class="num">2,337</td><td class="num">1,971</td><td class="num">2,234</td><td>野村の格上げ</td></tr>
+      <tr><td>2025-09</td><td class="num">2,174</td><td class="num">2,822</td><td class="num">2,096</td><td class="num">2,760</td><td></td></tr>
+      <tr class="hl"><td>2025-10</td><td class="num">2,565</td><td class="num">3,268</td><td class="num">2,503</td><td class="num">3,215</td><td>1→7分割、高市総裁・首相、豪州衛星企業と提携</td></tr>
+      <tr><td>2025-11</td><td class="num">3,147</td><td class="num">3,249</td><td class="num">2,612</td><td class="num">2,786</td><td>中間決算、日中関係悪化</td></tr>
+      <tr><td>2026-01</td><td class="num">3,002</td><td class="num">3,765</td><td class="num">2,820</td><td class="num">3,568</td><td>大発会で防衛株高</td></tr>
+      <tr class="hl"><td>2026-02</td><td class="num">3,525</td><td class="num">4,698</td><td class="num">3,496</td><td class="num">4,303</td><td>衆院選、3Q決算、2/10上場来高値、中国の輸出管理</td></tr>
+      <tr class="hl"><td>2026-03</td><td class="num">4,431</td><td class="num">4,540</td><td class="num">3,125</td><td class="num">3,138</td><td>全面安で−27%</td></tr>
+      <tr><td>2026-04</td><td class="num">3,330</td><td class="num">3,539</td><td class="num">2,811</td><td class="num">2,853</td><td>Capital Groupが1,000万株超を売却</td></tr>
+      <tr><td>2026-05</td><td class="num">2,880</td><td class="num">3,323</td><td class="num">2,468</td><td class="num">2,766</td><td>FY決算、不動産益への警戒、物流子会社売却</td></tr>
+      <tr><td>2026-06</td><td class="num">2,694</td><td class="num">3,025</td><td class="num">2,245</td><td class="num">2,712</td><td>JAXA処分、固定資産譲渡、MS格上げ</td></tr>
+      <tr><td>2026-07</td><td class="num">2,674</td><td class="num">3,150</td><td class="num">2,626</td><td class="num">2,828</td><td></td></tr>
+      <tr><td>2026-08</td><td class="num">2,771</td><td class="num">3,098</td><td class="num">2,608</td><td class="num">2,682</td><td>1Q決算（受注−15%）</td></tr>
+      <tr><td>2026-09</td><td class="num">2,736</td><td class="num">2,950</td><td class="num">2,568</td><td class="num">2,692</td><td></td></tr>
+      <tr><td>2026-10</td><td class="num">2,712</td><td class="num">2,784</td><td class="num">2,316</td><td class="num">2,330</td><td>じり安</td></tr>
+      <tr><td>2026-11</td><td class="num">2,306</td><td class="num">2,476</td><td class="num">2,116</td><td class="num">2,429</td><td>上期決算で上方修正・増配（11/5まで）</td></tr>
+    </tbody>
+  </table></div></div></details>
+
+  <h3 id="moves">Major Moves &amp; Why</h3>
+  <div class="timeline">
+    <div class="tl-item" id="mv1"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">1</span><span class="tl-date">2023-09〜10</span><span class="tl-title">PW1100G問題で最終赤字へ</span><span class="tl-move">565 → 381（−33%）</span></div><div class="tl-body">RTXが粉末金属の不良で$3〜3.5Bの費用を見積もり、IHIも参画シェア分の補償費を一括計上して15年ぶりの最終赤字予想に。12月に大底354円 <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv2"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">2</span><span class="tl-date">2024-02〜03</span><span class="tl-title">「損失は出し切った」</span><span class="tl-move">394 → 583（+48%）</span></div><div class="tl-body">赤字の一括計上が済み、翌期のV字回復を織り込み始めた。日経平均の史上最高値更新（2月）も追い風。個別の大きな発表は確認できず <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv3"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">3</span><span class="tl-date">2024-08〜10</span><span class="tl-title">全面暴落から倍化</span><span class="tl-move">8/5安値604 → 10月高値1,226</span></div><div class="tl-body">8/5の「令和のブラックマンデー」で全面安の後、回復局面で一気に1,000円台へ。1Q決算で利益回復が数字で見えたことが背景と推定 <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv4"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">4</span><span class="tl-date">2024-11-06</span><span class="tl-title">中間決算＋トランプ勝利</span><span class="tl-move">1日 +19.3%</span></div><div class="tl-body">前日の中間決算と米大統領選の結果が重なった。同日、三菱重工+9.9%・川崎重工+7.3%と防衛・重工株が全面高（日経平均+2.6%）。IHIは決算分が上乗せされたとみられる <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv5"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">5</span><span class="tl-date">2025-03-03〜17</span><span class="tl-title">米国がウクライナ支援を停止 → 欧州再軍備</span><span class="tl-move">3/4 +11.7%、3/17 +9.7%</span></div><div class="tl-body">米国のウクライナ軍事支援一時停止で、欧州・日本が自前で防衛費を増やすとの見方から防衛株に資金集中。<b>1990年以来35年ぶりの高値</b>。日経平均は同日−1.2%で、完全に防衛テーマの動き <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv6"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">6</span><span class="tl-date">2025-04-07〜10</span><span class="tl-title">トランプ関税ショック</span><span class="tl-move">4/7 −9.4% → 4/8 +10.6%、4/10 +9.4%</span></div><div class="tl-body">相互関税の発表で全面安（日経平均−7.8%）、上乗せ分の90日停止で全面高。IHI固有の材料ではない <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv7"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">7</span><span class="tl-date">2025-05-08 / 06-03</span><span class="tl-title">決算と格上げ</span><span class="tl-move">5/8 +8.3%、6/3 +6.1%</span></div><div class="tl-body">5/8はFY3/2025決算の翌日（日経平均+0.4%で個別要因） <span class="tag e">推定</span>。6/3は野村證券が投資判断・目標株価を引き上げ、地政学リスクと日米関税交渉の思惑で防衛株が人気化し年初来高値 <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv8"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">8</span><span class="tl-date">2025-10-06〜22</span><span class="tl-title">高市政権の誕生</span><span class="tl-move">10/6 +11.5%、10/8 +7.0%、10/22 +6.4%</span></div><div class="tl-body">10/1に1→7の株式分割。10/4の自民党総裁選で高市早苗氏が勝利し防衛株が急伸（10/6）。10/8は豪州の衛星新興企業との共同研究（海域監視）で上場来高値。10/22は首相就任会見で「防衛3文書」見直しに言及、米運用大手の大量保有も判明 <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv9"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">9</span><span class="tl-date">2025-11-18</span><span class="tl-title">日中関係の悪化と全体安</span><span class="tl-move">1日 −6.9%</span></div><div class="tl-body">日経平均−3.2%、三菱重工−4.7%の全体安。台湾をめぐる首相答弁で日中関係が悪化していた時期。11/6の中間決算（受注予想を1兆8,500億円に上方修正）では株価は大きく動かず <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv10"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">10</span><span class="tl-date">2026-01-05</span><span class="tl-title">大発会で防衛株に資金</span><span class="tl-move">1日 +9.0%</span></div><div class="tl-body">防衛関連株全体に資金が流入し、IHIと三菱重工が8%超高（ロイター） <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv11"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">11</span><span class="tl-date">2026-02-06〜10</span><span class="tl-title">衆院選 → 上場来高値4,698円</span><span class="tl-move">2/9 +8.7%、2/10 場中高値4,698</span></div><div class="tl-body">2月上旬の衆院選での与党勝利で防衛費増額の継続が意識された（2/9は川崎重工+15.7%）。2/10に3Q決算（受注予想を1兆9,400億円へ900億円上方修正）。時価総額は一時約5兆円 <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv12"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">12</span><span class="tl-date">2026-02-12〜24</span><span class="tl-title">決算の出尽くしと中国の輸出管理</span><span class="tl-move">2/12 −7.8%</span></div><div class="tl-body">3Q決算後に利益確定（日経平均は横ばいで個別要因） <span class="tag e">推定</span>。2/24に中国商務部が日本の20社を輸出管理リストへ。Caixinは三菱重工とIHIを含むと報道（三菱重工の子会社のみを挙げる報道もある） <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv13"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">13</span><span class="tl-date">2026-03</span><span class="tl-title">全面安で月間−27%</span><span class="tl-move">4,431 → 3,138、3/4 −7.4%、3/23 −7.9%</span></div><div class="tl-body">3/4・3/23とも日経平均−3.5%前後、三菱重工・川崎重工も−6〜7%の全体安。IHI固有の悪材料は見当たらない。高値圏での信用買い残の多さが下げを大きくした <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv14"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">14</span><span class="tl-date">2026-04-15〜16</span><span class="tl-title">米大株主の大量売却</span><span class="tl-move">年初来安値2,811へ</span></div><div class="tl-body">Capital Research and Managementが保有比率を10.26%→8.86%へ引き下げ。4/15・16の2日だけで1,000万株超を売却（4/23の変更報告書） <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv15"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">15</span><span class="tl-date">2026-05-08〜11</span><span class="tl-title">最高益予想でも「利益の質」で売られる</span><span class="tl-move">5/8 場中3,323 → 終値3,059、5/11 −6.2%</span></div><div class="tl-body">今期営業利益2,400億円（+45%、3期連続最高益）の予想を出したが、<b>約393億円が不動産売却益</b>。大株主の売りと信用買い残2,242万株も重しに。同日、物流子会社の豊田自動織機への譲渡も発表 <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv16"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">16</span><span class="tl-date">2026-06-02〜16</span><span class="tl-title">JAXA処分 → 固定資産譲渡と格上げで反発</span><span class="tl-move">6/3 −3.9%、6/15 +11.3%</span></div><div class="tl-body">6/2にIHIエアロスペースがJAXAから5か月の入札停止処分 <span class="tag o">公式</span>。6/12の固定資産譲渡の発表と全面高（日経平均+5.0%）で6/15に急反発、6/16はモルガン・スタンレーが「オーバーウェイト」へ格上げ（目標3,300円） <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv17"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">17</span><span class="tl-date">2026-08-05</span><span class="tl-title">1Q決算：受注−15%</span><span class="tl-move">1日 −6.5%（日経平均は+3.7%）</span></div><div class="tl-body">営業利益は3.5倍の732億円、通期予想も2,500億円に上方修正。しかし400億円は不動産益で、<b>受注が前年比−15%</b>（エネルギーの大型案件の反動）。市場が上がる日に逆行安 <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv18"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">18</span><span class="tl-date">2026-10-15〜11-02</span><span class="tl-title">じり安で2,300円割れ</span><span class="tl-move">10/15 −5.2%、11/2 2,306</span></div><div class="tl-body">個別の悪材料は見当たらない。決算前の手控えと防衛株の調整が続いた <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv19"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">19</span><span class="tl-date">2026-11-04〜05</span><span class="tl-title">上期決算で再び上方修正・増配</span><span class="tl-move">11/4 +3.8%、11/5 2,428.5</span></div><div class="tl-body">上期営業利益1,150億円（+66%）、通期予想を営業利益2,700億円・純利益1,850億円へ、配当を23→25円へ。一方、上期の受注は前年比−1,146億円で「受注急減」と報じられた <span class="tag o">公式</span></div></div></div>
+  </div>
+
+  <h3>局面のパターン</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Pattern</th><th>例</th><th>読み</th></tr></thead>
+    <tbody>
+      <tr><td>防衛テーマで全面高</td><td>#5, #8, #10, #11</td><td>IHIは三菱重工・川崎重工と同じ方向に動く。地政学・政権のニュースが一番効く</td></tr>
+      <tr><td>好決算でも売られる</td><td>#12, #15, #17</td><td>「売却益込みの最高益」は市場に割り引かれる。受注の数字に敏感</td></tr>
+      <tr><td>市場全体のショック</td><td>#3, #6, #13</td><td>高値圏では日経平均の2倍程度の振れ幅</td></tr>
+      <tr><td>需給（大株主・信用）</td><td>#13, #14</td><td>海外の大株主の売りと信用買い残が、下げ局面を長引かせた</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Upcoming catalysts</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Date</th><th>Event</th><th>何を見るか</th></tr></thead>
+    <tbody>
+      <tr><td>2026-11上旬</td><td>JAXAの入札停止期間（5か月）の終了</td><td>宇宙事業の受注再開</td></tr>
+      <tr><td>2026-12</td><td>防衛3文書の改定、2027年度予算の政府案</td><td>防衛費の対GDP比目標の引き上げ幅</td></tr>
+      <tr class="hl"><td>2027-02上旬</td><td>第3四半期決算</td><td>受注の戻り、不動産益を除く利益の伸び</td></tr>
+      <tr><td>2027-04</td><td>ILMの豊田自動織機への譲渡</td><td>譲渡益の計上</td></tr>
+      <tr><td>随時</td><td>RTXのPW1100G関連の開示</td><td>追加の検査・補償費用の有無</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s13">
+  <div class="sec-label"><span class="num">13</span>Valuation, Bull / Base / Bear (NFA)</div>
+  <h2>PER約14倍。高値時の半分。ただし「本業だけ」で測ると少し高く見える</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Metric</th><th class="num">Value</th><th>計算</th></tr></thead>
+    <tbody>
+      <tr><td>Market cap</td><td class="num">約2.6兆円</td><td>¥2,428.5 × 発行済10.83億株（自己株除き約2.57兆円）</td></tr>
+      <tr><td>PER（FY3/27e）</td><td class="num">約14倍</td><td>EPS 約174円（純利益1,850億円÷10.6億株）</td></tr>
+      <tr><td>PER（不動産益を除く、筆者推定）</td><td class="num">約16〜17倍</td><td>不動産益を税後で約300億円と仮定し、純利益約1,550億円</td></tr>
+      <tr><td>PBR</td><td class="num">約3.7倍</td><td>親会社所有者帰属持分 6,966億円（2026-06）</td></tr>
+      <tr><td>Dividend yield</td><td class="num">約1.0%</td><td>年25円</td></tr>
+      <tr><td>P/S</td><td class="num">約1.4倍</td><td>FY3/27e売上1兆8,800億円</td></tr>
+      <tr><td>2026-02高値時のPER</td><td class="num">約27倍</td><td>¥4,698 ÷ 当時の予想EPS約170円（筆者概算）</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">すべて筆者計算（2026-11-05終値ベース）。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Scenario</th><th>前提（FY3/2029頃）</th><th class="num">Net income</th><th class="num">PER</th><th class="num">株価の目安</th></tr></thead>
+    <tbody>
+      <tr><td>Bull</td><td>スペアパーツ・防衛・原子力の三つが計画通り年10%超で伸び、2029年度からの「大幅拡大」が前倒し</td><td class="num">2,500億円</td><td class="num">20倍</td><td class="num">約4,700円</td></tr>
+      <tr class="hl"><td>Base</td><td>売却益が消えても本業で毎年1割程度の増益</td><td class="num">2,000億円</td><td class="num">15倍</td><td class="num">約2,800円</td></tr>
+      <tr><td>Bear</td><td>エンジンの追加不具合・防衛予算の頭打ち・不祥事の拡大で利益横ばい、テーマ株の評価が剥落</td><td class="num">1,400億円</td><td class="num">12倍</td><td class="num">約1,600円</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">筆者の単純な仮定（株数10.6億株）。投資助言ではない（NFA）。</p>
+  <p><b>先行指標：</b>①航空会社の運航時間とA320neoの稼働率（スペアパーツ需要）、②RTXの開示するPW1100Gの検査進捗、③防衛予算と防衛装備庁の契約額、④IHIの受注高（特に航空・宇宙・防衛と原子力）、⑤不動産益を除いた営業利益率。</p>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">Bull の論点</div><div class="cd-d">第1世代＋第2世代のエンジンが重なり、2030年代は部品需要のピーク。防衛は数十年単位の国策。原子力は再稼働・再処理・海外新設の三つが同時。PERは防衛株ブーム前の水準まで落ちている</div></div>
+    <div class="cd"><div class="cd-t">Bear の論点</div><div class="cd-d">利益の柱がPW1100Gに偏る。売却できる不動産・事業はいつか尽きる。受注は減少中。不祥事が続き、国の仕事で処分が重なれば防衛・宇宙の成長が止まる</div></div>
+  </div>
+</div>
+
+<div class="sec qa" id="s14">
+  <div class="sec-label"><span class="num">14</span>Q&amp;A</div>
+  <h2>基礎から深掘りまで</h2>
+  <details><summary>IHIは飛行機のエンジンを「作っている」の？</summary><div class="qa-a">エンジン丸ごとではなく、<b>エンジンの一部（モジュール）</b>を作っている。民間の大型エンジンを丸ごと作れるのは世界でGE・P&amp;W・ロールス・ロイス（とCFMなどの合弁）だけ。IHIはそこに開発費を出し、ファン・圧縮機・低圧タービンなどの担当部位を設計・量産する。防衛向けでは、ライセンス生産や試作エンジン（XF9-1）でエンジン全体を手がけている。</div></details>
+  <details><summary>なぜ「スペアパーツ」がそんなに儲かるの？</summary><div class="qa-a">エンジン部品は安全認証の関係で、<b>勝手に他社の互換品を使いにくい</b>。航空会社は元請けとパートナーが作る純正部品を買うしかなく、価格交渉力は売り手側にある。さらにエンジンは20〜30年使われるので、一度売れたエンジンが<b>長期の「部品の定期購入」</b>になる。新品エンジンを安く売ってでも機数を取りに行くのはこのため。</div></details>
+  <details><summary>PW1100Gの「粉末金属」問題って何？</summary><div class="qa-a">高温・高回転のディスクは、金属を粉にして固める<b>粉末冶金</b>で作る。その粉に<b>ごく小さな不純物</b>が混じっていると、長く使ううちに割れの起点になりうる。2015〜2021年製の一部に混入の可能性があり、検査のためにエンジンを前倒しで外して工場に戻すことになった。飛行機が飛べない期間の補償を航空会社に払うため、RTXとパートナーが巨額の費用を計上した。</div></details>
+  <details><summary>防衛でIHIは何を作っているの？</summary><div class="qa-a">①戦闘機エンジン（F-2のF110、F-15のF100のライセンス生産、F-35用F135の最終組立・整備）、②次期戦闘機GCAP（日英伊）のエンジンをロールス・ロイス・伊アヴィオと共同開発、③誘導弾（ミサイル）のロケットモーター（子会社IHIエアロスペース）、④艦艇用ガスタービンなど。防衛費の増額で「作る量」と「整備の量」の両方が増える。</div></details>
+  <details><summary>不動産売却益は悪いことなの？</summary><div class="qa-a">悪いことではない。使っていない土地（豊洲の旧工場跡地など）を売り、成長事業への投資資金や借金の返済に回すのは合理的。ただし<b>一回限り</b>なので、株価の評価では除いて考えるのが普通。今期は営業利益2,700億円のうち400億円以上がこれで、前期も事業売却益が約540億円あった。「最高益」の見出しだけを見ると、本業の伸びを過大評価しやすい。</div></details>
+  <details><summary>三菱重工とIHI、どちらが「防衛株」として純度が高い？</summary><div class="qa-a">売上の大きさでは三菱重工（防衛・宇宙で売上1兆円超）が圧倒的。一方、IHIは<b>利益の8割が航空・宇宙・防衛</b>だが、その大半は「民間」エンジン。つまりIHIは「防衛株」というより<b>航空エンジン株＋防衛</b>で、航空需要（旅客数）の影響をより強く受ける。株価は防衛テーマで同じように動くが、業績の中身は違う。</div></details>
+  <details><summary>なぜ「株式分割」をしたの？</summary><div class="qa-a">2025年9月に分割前の株価は約2万円で、最低購入額（100株）が200万円近くになっていた。1→7分割で約30万円に下げ、<b>個人投資家が買いやすく</b>した。会社の価値は変わらない。新NISAで個人の買いが入りやすくなる一方、信用取引の個人も増え、値動きが荒くなる面もある。</div></details>
+  <details><summary>中国の輸出管理リストに入ると何が困る？</summary><div class="qa-a">中国企業が<b>軍民両用品</b>（レアアース、特定の電子部品・素材など）を対象企業に売れなくなる。第三国の企業が中国原産の両用品を再輸出することも禁止される。IHIの名前を挙げる報道（Caixin）と、三菱重工の子会社だけを挙げる報道があり、IHI本体が対象かは一次資料での確認が必要。エンジンに使う希少金属の調達経路に影響しうる。</div></details>
+  <details><summary>アンモニアって本当に事業になるの？</summary><div class="qa-a">石炭火力に燃えてもCO2を出さないアンモニアを混ぜて燃やす技術で、IHIはJERA碧南火力の20%混焼実証で燃焼器を担当した。日本の脱炭素政策（火力を残しながらCO2を減らす）とセットの技術で、<b>国内と東南アジアの石炭火力</b>が市場。ただし燃料のアンモニアが高く、補助金頼み。会社も「育成事業」の位置づけで、利益への寄与はまだ先。</div></details>
+</div>
+
+<div class="sec" id="s-vocab">
+  <div class="sec-label"><span class="num">15</span>Vocabulary</div>
+  <h2>本件の英単語 — 語源・類義語・よく出る使い方</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Word</th><th>意味</th><th>語源</th><th>類義語・対比</th><th>よく出る使い方</th></tr></thead>
+    <tbody>
+      <tr><td>aftermarket</td><td>アフターマーケット（販売後の部品・整備市場）</td><td>after＋market</td><td>OE（original equipment、新品向け）</td><td>"spare parts sales in the civil engine <b>aftermarket</b>"</td></tr>
+      <tr><td>risk-sharing partner (RSP)</td><td>リスク・シェアリング・パートナー</td><td>share＝古英語 <i>scearu</i>（切り分け）</td><td>prime contractor（元請け）／supplier</td><td>"IHI is a <b>risk-sharing partner</b> on the GE9X"</td></tr>
+      <tr><td>shop visit</td><td>（エンジンの）工場入り・分解整備</td><td>shop＝作業場</td><td>MRO（maintenance, repair and overhaul）</td><td>"600-700 engines will need accelerated <b>shop visits</b>"</td></tr>
+      <tr><td>powder metal</td><td>粉末金属（粉末冶金）</td><td>powder＝ラテン語 <i>pulvis</i>（ちり）</td><td>forging（鍛造）／casting（鋳造）</td><td>"contaminated <b>powder metal</b> in turbine disks"</td></tr>
+      <tr><td>grounded</td><td>（機体が）地上に止められた</td><td>ground＝地面</td><td>AOG（aircraft on ground）</td><td>"hundreds of A320neos remain <b>grounded</b>"</td></tr>
+      <tr><td>defense buildup</td><td>防衛力の増強</td><td>build＋up（積み上げる）</td><td>rearmament（再軍備）</td><td>"Japan's <b>defense buildup</b> doubles spending to 2% of GDP"</td></tr>
+      <tr><td>license production</td><td>ライセンス生産</td><td>licentia＝ラテン語（許可）</td><td>indigenous development（国産開発）</td><td>"<b>license production</b> of the F110 engine"</td></tr>
+      <tr><td>final assembly and check-out (FACO)</td><td>最終組立・検査</td><td>assemble＝ラテン語 <i>ad+simul</i>（一緒に）</td><td>sub-assembly</td><td>"IHI handles <b>FACO</b> of F135 engines in Japan"</td></tr>
+      <tr><td>one-off gain</td><td>一過性の利益</td><td>one＋off（1回きり）</td><td>recurring profit（経常的な利益）／core earnings</td><td>"guidance includes a <b>one-off gain</b> from land sales"</td></tr>
+      <tr><td>divestiture</td><td>事業売却</td><td>dis（離す）＋vestire（着せる）</td><td>carve-out／spin-off</td><td>"a series of <b>divestitures</b> to fund growth"</td></tr>
+      <tr><td>order intake</td><td>受注高</td><td>intake＝取り込み</td><td>backlog（受注残）／bookings</td><td>"<b>order intake</b> fell 15% year on year"</td></tr>
+      <tr><td>reprocessing</td><td>（使用済み核燃料の）再処理</td><td>re（再び）＋process</td><td>recycling／once-through（直接処分）</td><td>"demand from restarts and <b>reprocessing</b>"</td></tr>
+      <tr><td>co-firing</td><td>混焼</td><td>co（共に）＋fire</td><td>mono-firing（専焼）</td><td>"20% ammonia <b>co-firing</b> at Hekinan"</td></tr>
+      <tr><td>entity list</td><td>（輸出管理の）規制対象リスト</td><td>entity＝ラテン語 <i>ens</i>（存在するもの）</td><td>watch list（監視リスト）</td><td>"China added 20 Japanese firms to its export-control <b>list</b>"</td></tr>
+      <tr><td>stock split</td><td>株式分割</td><td>split＝割る</td><td>reverse split（株式併合）</td><td>"a 7-for-1 <b>stock split</b> effective Oct 1"</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://www.ihi.co.jp/ir/library/statements/_cms_conf01/__icsFiles/afieldfile/2026/08/05/2027_3_1Q_KT_1.pdf" target="_blank" rel="noopener">IHI — 2027年3月期 第1四半期決算短信（2026-08-05）</a></li>
+    <li><a href="https://www.ihi.co.jp/all_news/2025/ir/__icsFiles/afieldfile/2026/02/10/2026-3Q-KT.pdf" target="_blank" rel="noopener">IHI — 2026年3月期 第3四半期決算概要（2026-02-10）</a></li>
+    <li><a href="https://www.ihi.co.jp/ir/library/statements/" target="_blank" rel="noopener">IHI — 決算短信・決算説明資料</a></li>
+    <li><a href="https://irbank.net/7013/results" target="_blank" rel="noopener">IRBank — IHI 業績推移</a></li>
+    <li><a href="https://kabutan.jp/news/?b=k202611040015" target="_blank" rel="noopener">株探 — 今期最終を8%上方修正・配当も2円増額（2026-11-04）</a></li>
+    <li><a href="https://news.yahoo.co.jp/articles/f881f1c8cda9eb8e9d800215f259dbfd8999d498" target="_blank" rel="noopener">時事通信 — IHI、最高予想の今期売上収益・利益を上方修正</a></li>
+    <li><a href="https://www.nikkan.co.jp/articles/view/00788795" target="_blank" rel="noopener">日刊工業新聞 — 通期見通し上方修正 営業益51%増</a></li>
+    <li><a href="https://jp.investing.com/news/earnings/article-1740408" target="_blank" rel="noopener">Investing.com — 受注急減で営業利益66%増の効果薄れ</a></li>
+    <li><a href="https://zaikei.co.jp/article/20260510/852751.html" target="_blank" rel="noopener">財経新聞 — IHI、好決算も失速 利益の質と大口売却を警戒（2026-05-10）</a></li>
+    <li><a href="https://newswitch.jp/p/39230" target="_blank" rel="noopener">ニュースイッチ — PW1100G問題とIHIの赤字</a></li>
+    <li><a href="https://newswitch.jp/p/49365" target="_blank" rel="noopener">ニュースイッチ — IHIの中長期方針・井手社長</a></li>
+    <li><a href="https://newswitch.jp/p/49380" target="_blank" rel="noopener">ニュースイッチ — IHIエアロスペースの入札停止</a></li>
+    <li><a href="https://kumanichi.com/articles/1998091" target="_blank" rel="noopener">熊本日日新聞（共同）— H3ロケット用装置保全で不正 IHI系企業、入札停止に</a></li>
+    <li><a href="https://www.caixinglobal.com/2026-02-24/china-imposes-export-controls-on-20-japanese-defense-firms-102416661.html" target="_blank" rel="noopener">Caixin — China imposes export controls on 20 Japanese defense firms</a></li>
+    <li><a href="https://aviationweek.com/mro/aircraft-propulsion/pratt-leans-mro-network-offset-pw1100g-problems" target="_blank" rel="noopener">Aviation Week — Pratt leans on MRO network to offset PW1100G problems</a></li>
+    <li><a href="https://www.aviationwire.jp/?p=343464" target="_blank" rel="noopener">Aviation Wire — 三菱重工 2026年3月期決算</a></li>
+    <li><a href="https://media.paypay-sec.co.jp/cat2/mj250304_1" target="_blank" rel="noopener">PayPay証券 — 株価が動いた理由（2025-03-04）</a></li>
+    <li><a href="https://media.paypay-sec.co.jp/cat2/mj250603_1" target="_blank" rel="noopener">PayPay証券 — 株価が動いた理由（2025-06-03）</a></li>
+    <li><a href="https://media.paypay-sec.co.jp/cat2/mj251008_1" target="_blank" rel="noopener">PayPay証券 — 株価が動いた理由（2025-10-08）</a></li>
+    <li><a href="https://media.paypay-sec.co.jp/cat2/mj251022_1" target="_blank" rel="noopener">PayPay証券 — 株価が動いた理由（2025-10-22）</a></li>
+    <li><a href="https://jp.investing.com/news/stock-market-news/article-93CH-1573515" target="_blank" rel="noopener">Investing.com — モルガン・スタンレーの格上げ（2026-06-16）</a></li>
+    <li><a href="https://kotobank.jp/word/IHI-3140128" target="_blank" rel="noopener">コトバンク — IHI（沿革）</a></li>
+    <li><a href="https://the-shashi.com/tse/7013/executives/ceo/ide-hiroshi/" target="_blank" rel="noopener">the-shashi — 井手博 経歴</a></li>
+    <li><a href="https://query1.finance.yahoo.com/v8/finance/chart/7013.T?range=5y&amp;interval=1wk" target="_blank" rel="noopener">Yahoo Finance — 7013.T 株価データ</a></li>
+    <li><a href="260617_nippon_steel_deep_research.html">Internal — Nippon Steel Deep Research</a></li>
+  </ul>
+  <p style="font-size:11px;color:var(--muted);margin-top:14px">Last updated: 2026-11-05</p>
+</div>
+
+</div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>window.PRICE_IHI={data:[["2021-11-01",387.4],["2021-11-08",381.6],["2021-11-15",366.1],["2021-11-22",331.7],["2021-11-29",324.1],["2021-12-06",325.1],["2021-12-13",320.7],["2021-12-20",329.0],["2021-12-27",330.9],["2022-01-03",345.3],["2022-01-10",348.4],["2022-01-17",330.3],["2022-01-24",322.4],["2022-01-31",333.6],["2022-02-07",385.3],["2022-02-14",380.6],["2022-02-21",368.0],["2022-02-28",396.1],["2022-03-07",376.6],["2022-03-14",400.4],["2022-03-21",428.0],["2022-03-28",419.1],["2022-04-04",404.4],["2022-04-11",421.6],["2022-04-18",433.6],["2022-04-25",423.4],["2022-05-02",437.9],["2022-05-09",475.7],["2022-05-16",516.4],["2022-05-23",518.6],["2022-05-30",556.4],["2022-06-06",592.9],["2022-06-13",547.1],["2022-06-20",510.7],["2022-06-27",521.4],["2022-07-04",505.0],["2022-07-11",504.3],["2022-07-18",505.7],["2022-07-25",498.6],["2022-08-01",483.6],["2022-08-08",493.6],["2022-08-15",495.0],["2022-08-22",517.1],["2022-08-29",517.9],["2022-09-05",545.0],["2022-09-12",495.7],["2022-09-19",498.6],["2022-09-26",442.9],["2022-10-03",449.3],["2022-10-10",446.4],["2022-10-17",459.3],["2022-10-24",465.0],["2022-10-31",490.0],["2022-11-07",508.6],["2022-11-14",477.1],["2022-11-21",497.9],["2022-11-28",521.4],["2022-12-05",542.1],["2022-12-12",567.9],["2022-12-19",546.4],["2022-12-26",549.3],["2023-01-02",520.7],["2023-01-09",536.4],["2023-01-16",531.4],["2023-01-23",562.9],["2023-01-30",547.1],["2023-02-06",521.4],["2023-02-13",527.9],["2023-02-20",513.6],["2023-02-27",505.7],["2023-03-06",497.1],["2023-03-13",447.1],["2023-03-20",455.7],["2023-03-27",474.3],["2023-04-03",470.0],["2023-04-10",475.7],["2023-04-17",476.4],["2023-04-24",486.4],["2023-05-01",498.6],["2023-05-08",473.6],["2023-05-15",480.7],["2023-05-22",483.6],["2023-05-29",471.4],["2023-06-05",532.7],["2023-06-12",558.4],["2023-06-19",546.0],["2023-06-26",555.4],["2023-07-03",555.9],["2023-07-10",520.1],["2023-07-17",526.3],["2023-07-24",485.0],["2023-07-31",506.6],["2023-08-07",496.3],["2023-08-14",485.1],["2023-08-21",498.0],["2023-08-28",518.9],["2023-09-04",543.3],["2023-09-11",449.1],["2023-09-18",451.1],["2023-09-25",447.9],["2023-10-02",418.4],["2023-10-09",431.6],["2023-10-16",403.0],["2023-10-23",410.9],["2023-10-30",418.9],["2023-11-06",404.0],["2023-11-13",412.3],["2023-11-20",428.6],["2023-11-27",404.7],["2023-12-04",381.4],["2023-12-11",373.6],["2023-12-18",373.0],["2023-12-25",394.4],["2024-01-01",403.9],["2024-01-08",400.9],["2024-01-15",393.7],["2024-01-22",400.1],["2024-01-29",394.3],["2024-02-05",400.7],["2024-02-12",445.7],["2024-02-19",445.7],["2024-02-26",482.3],["2024-03-04",517.9],["2024-03-11",499.4],["2024-03-18",524.4],["2024-03-25",582.9],["2024-04-01",553.7],["2024-04-08",550.7],["2024-04-15",538.9],["2024-04-22",509.1],["2024-04-29",541.9],["2024-05-06",566.6],["2024-05-13",570.1],["2024-05-20",553.4],["2024-05-27",578.3],["2024-06-03",541.9],["2024-06-10",552.4],["2024-06-17",574.3],["2024-06-24",686.4],["2024-07-01",802.3],["2024-07-08",797.7],["2024-07-15",813.6],["2024-07-22",737.4],["2024-07-29",703.9],["2024-08-05",708.6],["2024-08-12",830.1],["2024-08-19",871.3],["2024-08-26",905.4],["2024-09-02",888.3],["2024-09-09",975.7],["2024-09-16",1003],["2024-09-23",1114],["2024-09-30",1091],["2024-10-07",1157],["2024-10-14",1192],["2024-10-21",1110],["2024-10-28",1121],["2024-11-04",1310],["2024-11-05",1111],["2024-11-06",1326],["2024-11-07",1326],["2024-11-08",1310],["2024-11-11",1311],["2024-11-12",1327],["2024-11-13",1303],["2024-11-14",1290],["2024-11-15",1301],["2024-11-18",1254],["2024-11-19",1255],["2024-11-20",1297],["2024-11-21",1246],["2024-11-22",1218],["2024-11-25",1188],["2024-11-26",1130],["2024-11-27",1107],["2024-11-28",1110],["2024-11-29",1102],["2024-12-02",1137],["2024-12-03",1183],["2024-12-04",1213],["2024-12-05",1218],["2024-12-06",1200],["2024-12-09",1181],["2024-12-10",1175],["2024-12-11",1248],["2024-12-12",1247],["2024-12-13",1183],["2024-12-16",1176],["2024-12-17",1185],["2024-12-18",1171],["2024-12-19",1229],["2024-12-20",1192],["2024-12-23",1244],["2024-12-24",1233],["2024-12-25",1244],["2024-12-26",1278],["2024-12-27",1321],["2024-12-30",1330],["2025-01-06",1257],["2025-01-07",1230],["2025-01-08",1189],["2025-01-09",1155],["2025-01-10",1165],["2025-01-14",1182],["2025-01-15",1210],["2025-01-16",1215],["2025-01-17",1218],["2025-01-20",1239],["2025-01-21",1214],["2025-01-22",1195],["2025-01-23",1218],["2025-01-24",1231],["2025-01-27",1266],["2025-01-28",1274],["2025-01-29",1264],["2025-01-30",1284],["2025-01-31",1339],["2025-02-03",1357],["2025-02-04",1380],["2025-02-05",1367],["2025-02-06",1388],["2025-02-07",1274],["2025-02-10",1326],["2025-02-12",1301],["2025-02-13",1347],["2025-02-14",1284],["2025-02-17",1315],["2025-02-18",1397],["2025-02-19",1375],["2025-02-20",1358],["2025-02-21",1307],["2025-02-25",1273],["2025-02-26",1260],["2025-02-27",1291],["2025-02-28",1247],["2025-03-03",1344],["2025-03-04",1501],["2025-03-05",1592],["2025-03-06",1633],["2025-03-07",1548],["2025-03-10",1468],["2025-03-11",1450],["2025-03-12",1473],["2025-03-13",1515],["2025-03-14",1539],["2025-03-17",1689],["2025-03-18",1610],["2025-03-19",1679],["2025-03-21",1596],["2025-03-24",1578],["2025-03-25",1558],["2025-03-26",1552],["2025-03-27",1565],["2025-03-28",1528],["2025-03-31",1474],["2025-04-01",1455],["2025-04-02",1539],["2025-04-03",1466],["2025-04-04",1392],["2025-04-07",1261],["2025-04-08",1395],["2025-04-09",1347],["2025-04-10",1474],["2025-04-11",1447],["2025-04-14",1421],["2025-04-15",1457],["2025-04-16",1447],["2025-04-17",1528],["2025-04-18",1495],["2025-04-21",1449],["2025-04-22",1449],["2025-04-23",1514],["2025-04-24",1518],["2025-04-25",1551],["2025-04-28",1593],["2025-04-30",1593],["2025-05-01",1597],["2025-05-02",1604],["2025-05-07",1617],["2025-05-08",1751],["2025-05-09",1785],["2025-05-12",1773],["2025-05-13",1794],["2025-05-14",1850],["2025-05-15",1860],["2025-05-16",1847],["2025-05-19",1836],["2025-05-20",1824],["2025-05-21",1924],["2025-05-22",1965],["2025-05-23",1970],["2025-05-26",1978],["2025-05-27",2025],["2025-05-28",2000],["2025-05-29",2004],["2025-05-30",1998],["2025-06-02",2058],["2025-06-03",2183],["2025-06-04",2274],["2025-06-05",2171],["2025-06-06",2221],["2025-06-09",2234],["2025-06-10",2189],["2025-06-11",2079],["2025-06-12",2145],["2025-06-13",2188],["2025-06-16",2265],["2025-06-17",2293],["2025-06-18",2250],["2025-06-19",2269],["2025-06-20",2200],["2025-06-23",2207],["2025-06-24",2199],["2025-06-25",2170],["2025-06-26",2170],["2025-06-27",2276],["2025-06-30",2234],["2025-07-01",2247],["2025-07-02",2144],["2025-07-03",2130],["2025-07-04",2101],["2025-07-07",2137],["2025-07-08",2151],["2025-07-09",2114],["2025-07-10",2128],["2025-07-11",2073],["2025-07-14",2148],["2025-07-15",2185],["2025-07-16",2240],["2025-07-17",2239],["2025-07-18",2201],["2025-07-22",2305],["2025-07-23",2221],["2025-07-24",2266],["2025-07-25",2302],["2025-07-28",2254],["2025-07-29",2267],["2025-07-30",2371],["2025-07-31",2426],["2025-08-01",2453],["2025-08-04",2421],["2025-08-05",2479],["2025-08-06",2449],["2025-08-07",2391],["2025-08-08",2391],["2025-08-12",2459],["2025-08-13",2429],["2025-08-14",2384],["2025-08-15",2391],["2025-08-18",2446],["2025-08-19",2356],["2025-08-20",2257],["2025-08-21",2237],["2025-08-22",2246],["2025-08-25",2250],["2025-08-26",2238],["2025-08-27",2207],["2025-08-28",2210],["2025-08-29",2210],["2025-09-01",2174],["2025-09-02",2161],["2025-09-03",2102],["2025-09-04",2162],["2025-09-05",2157],["2025-09-08",2265],["2025-09-09",2289],["2025-09-10",2264],["2025-09-11",2298],["2025-09-12",2304],["2025-09-16",2343],["2025-09-17",2249],["2025-09-18",2207],["2025-09-19",2306],["2025-09-22",2306],["2025-09-24",2530],["2025-09-25",2521],["2025-09-26",2499],["2025-09-29",2623],["2025-09-30",2760],["2025-10-01",2565],["2025-10-02",2536],["2025-10-03",2544],["2025-10-06",2835],["2025-10-07",2891],["2025-10-08",3094],["2025-10-09",2957],["2025-10-10",2818],["2025-10-14",2744],["2025-10-15",2886],["2025-10-16",2826],["2025-10-17",2752],["2025-10-20",2886],["2025-10-21",2840],["2025-10-22",3023],["2025-10-23",3153],["2025-10-24",3105],["2025-10-27",3193],["2025-10-28",3089],["2025-10-29",3105],["2025-10-30",3182],["2025-10-31",3215],["2025-11-04",3147],["2025-11-05",3150],["2025-11-06",3185],["2025-11-07",3065],["2025-11-10",2999],["2025-11-11",2913],["2025-11-12",2906],["2025-11-13",2946],["2025-11-14",2910],["2025-11-17",2976],["2025-11-18",2770],["2025-11-19",2707],["2025-11-20",2811],["2025-11-21",2679],["2025-11-25",2657],["2025-11-26",2740],["2025-11-27",2770],["2025-11-28",2786],["2025-12-01",2730],["2025-12-02",2822],["2025-12-03",2902],["2025-12-04",2967],["2025-12-05",3019],["2025-12-08",3049],["2025-12-09",3046],["2025-12-10",3002],["2025-12-11",2904],["2025-12-12",2930],["2025-12-15",2947],["2025-12-16",2866],["2025-12-17",2812],["2025-12-18",2750],["2025-12-19",2765],["2025-12-22",2810],["2025-12-23",2831],["2025-12-24",2808],["2025-12-25",2790],["2025-12-26",2800],["2025-12-29",2783],["2025-12-30",2754],["2026-01-05",3002],["2026-01-06",3112],["2026-01-07",3120],["2026-01-08",3131],["2026-01-09",3235],["2026-01-13",3421],["2026-01-14",3458],["2026-01-15",3492],["2026-01-16",3419],["2026-01-19",3534],["2026-01-20",3619],["2026-01-21",3667],["2026-01-22",3541],["2026-01-23",3496],["2026-01-26",3600],["2026-01-27",3561],["2026-01-28",3492],["2026-01-29",3588],["2026-01-30",3568],["2026-02-02",3525],["2026-02-03",3688],["2026-02-04",3791],["2026-02-05",3705],["2026-02-06",3946],["2026-02-09",4288],["2026-02-10",4500],["2026-02-12",4150],["2026-02-13",4165],["2026-02-16",4064],["2026-02-17",3920],["2026-02-18",4040],["2026-02-19",4168],["2026-02-20",4384],["2026-02-24",4133],["2026-02-25",4010],["2026-02-26",4160],["2026-02-27",4303],["2026-03-02",4431],["2026-03-03",4215],["2026-03-04",3902],["2026-03-05",3921],["2026-03-06",3815],["2026-03-09",3751],["2026-03-10",3835],["2026-03-11",3781],["2026-03-12",3824],["2026-03-13",3734],["2026-03-16",3731],["2026-03-17",3781],["2026-03-18",3930],["2026-03-19",3769],["2026-03-23",3470],["2026-03-24",3419],["2026-03-25",3510],["2026-03-26",3487],["2026-03-27",3500],["2026-03-30",3308],["2026-03-31",3138],["2026-04-01",3330],["2026-04-02",3380],["2026-04-03",3400],["2026-04-06",3301],["2026-04-07",3341],["2026-04-08",3442],["2026-04-09",3391],["2026-04-10",3303],["2026-04-13",3281],["2026-04-14",3293],["2026-04-15",3153],["2026-04-16",3210],["2026-04-17",3120],["2026-04-20",3153],["2026-04-21",3087],["2026-04-22",3054],["2026-04-23",3027],["2026-04-24",2995],["2026-04-27",2901],["2026-04-28",2960],["2026-04-30",2853],["2026-05-01",2880],["2026-05-07",3045],["2026-05-08",3059],["2026-05-11",2870],["2026-05-12",2806],["2026-05-13",2832],["2026-05-14",2680],["2026-05-15",2685],["2026-05-18",2670],["2026-05-19",2561],["2026-05-20",2554],["2026-05-21",2675],["2026-05-22",2761],["2026-05-25",2840],["2026-05-26",2944],["2026-05-27",2818],["2026-05-28",2730],["2026-05-29",2766],["2026-06-01",2694],["2026-06-02",2588],["2026-06-03",2486],["2026-06-04",2538],["2026-06-05",2574],["2026-06-08",2505],["2026-06-09",2458],["2026-06-10",2440],["2026-06-11",2358],["2026-06-12",2430],["2026-06-15",2705],["2026-06-16",2774],["2026-06-17",2916],["2026-06-18",2866],["2026-06-19",2817],["2026-06-22",2816],["2026-06-23",2718],["2026-06-24",2782],["2026-06-25",2719],["2026-06-26",2672],["2026-06-29",2675],["2026-06-30",2712],["2026-07-01",2674],["2026-07-02",2802],["2026-07-03",2870],["2026-07-06",3071],["2026-07-07",2982],["2026-07-08",2892],["2026-07-09",2813],["2026-07-10",2810],["2026-07-13",2812],["2026-07-14",2815],["2026-07-15",2812],["2026-07-16",2809],["2026-07-17",2666],["2026-07-21",2780],["2026-07-22",2779],["2026-07-23",2889],["2026-07-24",2878],["2026-07-27",2836],["2026-07-28",2774],["2026-07-29",2755],["2026-07-30",2772],["2026-07-31",2828],["2026-08-03",2771],["2026-08-04",2880],["2026-08-05",2692],["2026-08-06",2638],["2026-08-07",2744],["2026-08-10",2759],["2026-08-12",2896],["2026-08-13",2975],["2026-08-14",3028],["2026-08-17",3011],["2026-08-18",2988],["2026-08-19",2773],["2026-08-20",2768],["2026-08-21",2673],["2026-08-24",2664],["2026-08-25",2696],["2026-08-26",2638],["2026-08-27",2720],["2026-08-28",2766],["2026-08-31",2682],["2026-09-01",2736],["2026-09-02",2600],["2026-09-03",2640],["2026-09-04",2624],["2026-09-07",2730],["2026-09-08",2642],["2026-09-09",2800],["2026-09-10",2664],["2026-09-11",2665],["2026-09-14",2723],["2026-09-15",2772],["2026-09-16",2780],["2026-09-17",2842],["2026-09-18",2852],["2026-09-24",2809],["2026-09-25",2797],["2026-09-28",2775],["2026-09-29",2674],["2026-09-30",2692],["2026-10-01",2712],["2026-10-02",2708],["2026-10-05",2720],["2026-10-06",2715],["2026-10-07",2691],["2026-10-08",2590],["2026-10-09",2626],["2026-10-13",2572],["2026-10-14",2537],["2026-10-15",2406],["2026-10-16",2526],["2026-10-19",2578],["2026-10-20",2472],["2026-10-21",2505],["2026-10-22",2452],["2026-10-23",2450],["2026-10-26",2392],["2026-10-27",2402],["2026-10-28",2384],["2026-10-29",2336],["2026-10-30",2330],["2026-11-02",2306],["2026-11-04",2394],["2026-11-05",2428]],marks:{"1": "2023-10-23", "2": "2024-03-25", "3": "2024-08-05", "4": "2024-11-06", "5": "2025-03-04", "6": "2025-04-07", "7": "2025-06-03", "8": "2025-10-06", "9": "2025-11-18", "10": "2026-01-05", "11": "2026-02-10", "12": "2026-02-12", "13": "2026-03-23", "14": "2026-04-16", "15": "2026-05-11", "16": "2026-06-15", "17": "2026-08-05", "18": "2026-10-15", "19": "2026-11-04"},cur:"¥"};</script>
+<script src="../_shared/research_tabs.js" defer></script>
+<script src="../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>
