@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Star Catcher — 宇宙に「電力網」を作る</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .person{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:14px}
+  .person .p-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:3px}
+  .person .p-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:800;color:var(--text)}
+  .person .p-role{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--accent);padding:2px 9px;border-radius:4px}
+  .person .p-line{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7}
+  .person ul{list-style:none;padding:0;margin:0}
+  .person li{font-size:13.5px;color:var(--mid);line-height:1.8;padding:6px 0 6px 16px;position:relative;border-bottom:1px solid var(--border)}
+  .person li:last-child{border-bottom:none}
+  .person li::before{content:'';position:absolute;left:0;top:15px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .person li b,.person li strong{color:var(--text);font-weight:700}
+  .person .p-quote{margin-top:12px;padding:11px 15px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13px;line-height:1.8;color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa details[open]{background:var(--bg);border-color:var(--accent)}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:flex-start;gap:10px;line-height:1.65}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{background:var(--card2)}
+  .qa details[open] summary:hover{background:var(--surface)}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .qa summary::after{content:'+';margin-left:auto;padding-left:10px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem;line-height:1;flex-shrink:0}
+  .qa details[open] summary::after{content:'\2212'}
+  /* 回答本文。qa-a を付け忘れた <p> でも崩れないよう summary 以外の直下要素すべてに効かせる */
+  .qa details>*:not(summary){margin:0 0 10px;padding:0 18px 0 48px;font-size:13.5px;color:var(--mid);line-height:1.85;overflow-wrap:anywhere}
+  .qa details>*:not(summary):last-child{margin-bottom:16px}
+  .qa details>*:not(summary) b,.qa details>*:not(summary) strong{color:var(--text);font-weight:700}
+  .qa details>*:not(summary) a{color:var(--text)}
+  .qa details>ul,.qa details>ol{padding-left:66px}
+  .col-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin:22px 0}
+  .col-box .col-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--accent);display:inline-block;padding:3px 10px;border-radius:4px;margin-bottom:14px}
+  .col-box h3{margin-top:0;margin-bottom:12px;font-size:1.05rem}
+  .col-box p{font-size:13.5px;line-height:1.9}
+  .col-box .col-sub{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:20px 0 8px;padding-top:16px;border-top:1px solid var(--border)}
+  .col-box blockquote{margin:14px 0;padding:12px 18px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.85;color:var(--text)}
+  .col-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+  .col-num .n{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+  .col-num .n .v{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;line-height:1.1;margin-bottom:3px}
+  .col-num .n .l{font-size:11px;color:var(--muted);line-height:1.5}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.qa details>*:not(summary){padding-left:18px}.qa details>ul,.qa details>ol{padding-left:36px}.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+<style>
+/* 左サイド目次（scroll-spy）。本文900px中央寄せなので、左余白が目次幅を超える1400px以上でだけ出す */
+.side-nav{position:fixed;left:20px;top:84px;width:200px;max-height:calc(100vh - 162px);overflow-y:auto;padding:12px 0 32px;z-index:10;scrollbar-width:thin;display:none}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@media (min-width:1400px){.side-nav{display:block}}
+.side-nav-title{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-left:14px;margin-bottom:8px}
+.side-nav-list{list-style:none;padding:0;margin:0}
+.side-nav-link{display:block;color:#a8a8a8;text-decoration:none;padding:6px 8px 6px 14px;border-left:2px solid transparent;font-size:12px;line-height:1.45;transition:color .15s,border-color .15s,background .15s}
+.side-nav-link:hover{color:var(--text);border-left-color:var(--border)}
+.side-nav-link.active{color:var(--accent);font-weight:700;border-left-color:var(--accent);background:var(--surface)}
+.side-nav-num{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--muted);margin-right:6px}
+html{scroll-behavior:smooth}
+.raw{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--card)}
+.raw>summary{cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700}
+.raw>div{padding:0 14px 14px}
+.note{font-size:12px;color:var(--muted)}
+</style>
+<style>
+.chart{margin:14px 0 6px}
+.chart svg{max-width:100%}
+.hero-updated{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.6);margin:-14px 0 22px;letter-spacing:.04em}
+.t td.num,.t th.num{text-align:right;white-space:nowrap}
+</style>
+<link rel="stylesheet" href="../_shared/research_tabs.css">
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">research</a><span class="s">/</span><a href="index.html">company</a><span class="s">/</span><span class="c">Star Catcher</span></nav><script>if(location.protocol!=="file:"){var c=document.currentScript.previousElementSibling;if(c)c.remove()}</script><script>/* keep-pos: リロードしても見ていた位置（スクロール・タブ・開いた<details>・内側スクロール）を保つ */
+(function(){var ss;try{ss=window.sessionStorage;ss.getItem('x')}catch(e){return}
+try{history.scrollRestoration='manual'}catch(e){}
+var K='wl-pos:'+location.pathname,TAB='[data-view],[data-tab],[role="tab"],.tab,.tab-btn',st={y:0,s:{},t:[]},busy=true,tm;
+function P(el){var p=[];while(el&&el.nodeType===1&&el!==document.body){if(el.id){p.unshift('#'+CSS.escape(el.id));return p.join('>')}
+var i=1,x=el;while((x=x.previousElementSibling))i++;p.unshift(el.tagName.toLowerCase()+':nth-child('+i+')');el=el.parentElement}p.unshift('body');return p.join('>')}
+function Q(q){try{return document.querySelector(q)}catch(e){return null}}
+function save(){if(busy)return;st.y=window.scrollY;st.d=[].map.call(document.querySelectorAll('details'),function(d){return d.open?1:0}).join('');
+try{ss.setItem(K,JSON.stringify(st))}catch(e){}}
+function later(){if(busy)return;clearTimeout(tm);tm=setTimeout(save,150)}
+document.addEventListener('scroll',function(e){var t=e.target;if(t&&t.nodeType===1&&!busy)st.s[P(t)]=t.scrollTop;later()},true);
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest(TAB);if(!b||!e.isTrusted)return;
+var g=P(b.parentElement);st.t=st.t.filter(function(x){return x.g!==g});st.t.push({g:g,p:P(b)});st.t=st.t.slice(-6);later()},true);
+document.addEventListener('toggle',later,true);addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save()});
+function stop(){if(busy){busy=false;save()}}
+['wheel','touchstart','keydown','mousedown'].forEach(function(n){addEventListener(n,stop,{capture:true,passive:true})});
+addEventListener('load',function(){var d;try{d=JSON.parse(ss.getItem(K)||'null')}catch(e){}
+var nt;try{nt=performance.getEntriesByType('navigation')[0].type}catch(e){}
+/* リンクで来た時は復元しない（リロード・戻る/進むだけ） */
+if(!d||(nt&&nt!=='reload'&&nt!=='back_forward')){busy=false;return}st=d;st.s=st.s||{};st.t=st.t||[];
+st.t.forEach(function(x){var b=Q(x.p);if(b&&!b.classList.contains('on')&&!b.classList.contains('active')&&b.getAttribute('aria-selected')!=='true')b.click()});
+if(d.d)[].forEach.call(document.querySelectorAll('details'),function(el,i){if(d.d[i]==='1')el.open=true});
+function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var el=Q(q);if(el)el.scrollTop=st.s[q]}}
+[0,60,160,320,640,1100,1700].forEach(function(t){setTimeout(go,t)});setTimeout(stop,1800)})})();</script><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="page" data-terms-root>
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-solid">Company Deep Research</span>
+    <span class="badge badge-white">Space Infrastructure</span>
+    <span class="badge badge-white">Optical Power Beaming</span>
+    <span class="badge badge-white">Series A</span>
+  </div>
+  <h1>Star Catcher、宇宙に「電力網」を作る</h1>
+  <div class="hero-updated">Created: 2026-11-06 ／ Last updated: 2026-11-06</div>
+  <div class="hero-sub">Star Catcher Industries（米フロリダ州ジャクソンビル、2024年創業）は、軌道上の「Power Node」衛星で太陽光を集めて<strong>光（レーザー）で他の衛星の既存の太陽電池パネルに浴びせ</strong>、発電量を<strong>最大10倍</strong>にする宇宙の電力会社。創業者は宇宙3Dプリンタの<strong>Made In Space</strong>を率いてRedwireに売ったAndrew Rush。地上で<strong>1.1kW</strong>のDARPA超え記録を出し、2026年5月に<strong>$65M Series A（累計$88M）</strong>、10月に<strong>史上初の衛星→衛星送電実証機「Protostar」</strong>を打ち上げた。</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$88M</div><div class="lbl">Total Raised</div></div>
+    <div class="kpi"><div class="val">1.1kW</div><div class="lbl">Ground Record (2025-11)</div></div>
+    <div class="kpi"><div class="val">10</div><div class="lbl">PPAs Announced</div></div>
+    <div class="kpi"><div class="val">$3B+</div><div class="lbl">Pipeline ARR (claimed)</div></div>
+    <div class="kpi"><div class="val">2026-10</div><div class="lbl">Protostar Launch</div></div>
+  </div>
+</div>
+
+<div class="ptabs" data-tabbar role="tablist">
+  <button type="button" class="on" data-tab="tldr">TL;DR</button>
+  <button type="button" data-tab="main">Main</button>
+</div>
+
+<div class="pane" data-pane="tldr">
+
+<div class="sec" id="t1">
+  <div class="sec-label"><span class="num">01</span>In One Line</div>
+  <div class="oneliner">衛星の太陽電池パネルに<b>「濃い太陽光」をレーザーで当てて発電量を増やす</b>、宇宙の電力会社。顧客の衛星は<b>改造なし</b>で使えるのが最大の売り。創業2年で<b>累計$88M・PPA 10件</b>、2026年10月に<b>衛星どうしの送電を世界で初めて試す実証機</b>を打ち上げた（結果待ち）。</div>
+</div>
+
+<div class="sec" id="t2">
+  <div class="sec-label"><span class="num">02</span>Power-Limited Space</div>
+  <h2>そもそも何が問題なのか</h2>
+  <p>今の低軌道（LEO）衛星は<b>1〜1.5kW</b>程度で動いている。ところが衛星から直接スマホにつなぐ通信、軌道上でのAI計算、高解像度の観測をやろうとすると<b>5〜20kW</b>が要る。パネルを大きくすれば重くなり、バスごと大型化すれば打上げ費が跳ね上がる。宇宙では<b>電気が一番足りない資源</b>になりつつある。</p>
+  <div class="stat3">
+    <div class="st"><div class="v">1〜1.5kW</div><div class="l">いまのLEO衛星の典型的な電力</div></div>
+    <div class="st"><div class="v">5〜20kW</div><div class="l">次世代用途（衛星直接通信・軌道上計算など）に要る電力</div></div>
+    <div class="st"><div class="v">最大10倍</div><div class="l">Star Catcherが主張する、既存パネルの発電量の増加幅</div></div>
+  </div>
+  <p>そこで「パネルを大きくする」代わりに「<b>パネルに当たる光を強くする</b>」。地上で言えば、各家の屋根に虫眼鏡で集めた光を当てるイメージ。<a class="more" href="#s2">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t3">
+  <div class="sec-label"><span class="num">03</span>How It Makes Money</div>
+  <h2>どうやって稼ぐのか</h2>
+  <div class="flow">
+    <div class="fs"><div class="fs-n">1</div><div class="fs-t">Power Nodeを打上げ</div><div class="fs-d">高度1,500〜2,000kmに約<b>200機</b>の発電・送電衛星を並べる構想</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">2</div><div class="fs-t">集光して送る</div><div class="fs-d">フレネルレンズで太陽光を集め、<b>パネルが一番発電しやすい波長</b>に変えてレーザーで照射</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">3</div><div class="fs-t">顧客は改造不要</div><div class="fs-d">専用受信機なし。<b>既存の太陽電池パネル</b>で受ける。1ノードで最大50機に供給</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">4</div><div class="fs-t">電気代で課金</div><div class="fs-d"><b>従量課金</b>の電力契約（PPA）。デポジットで一定期間の単価を固定</div></div>
+  </div>
+  <p>携帯基地局のような<b>共有インフラ</b>で、1機のNodeを多くの顧客で使い回すほど儲かる。価格は非公表。PPAは結んだが、<b>まだ1Wも宇宙で売っていない</b>（売上は事実上ゼロ）。<a class="more" href="#s3">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t4">
+  <div class="sec-label"><span class="num">04</span>Key Numbers</div>
+  <h2>数字でつかむ</h2>
+  <div class="tl-kpis">
+    <div class="k"><div class="v">$12.25M → $65M（累計$88M）</div><div class="l">Seed（2024-07）→ Series A（2026-05）</div></div>
+    <div class="k"><div class="v">100m超 → 1.1kW → 宇宙</div><div class="l">スタジアム実験（2025-03）→ ケネディ宇宙センター（2025-11）→ Protostar（2026-10打上げ）</div></div>
+    <div class="k"><div class="v">800W → 1.1kW</div><div class="l">DARPAの光送電記録（2025-06）を約37%上回った</div></div>
+    <div class="k"><div class="v">LOI 約6 → PPA 6 → 7 → 10</div><div class="l">2024-07 → 2025-11 → 2026-05 → 2026-10。LOIは40件超</div></div>
+    <div class="k"><div class="v">$3B+</div><div class="l">会社が言う「適格パイプライン」の想定ARR（未監査）</div></div>
+    <div class="k"><div class="v">約200機 / 〜2030</div><div class="l">完成時のPower Node数の構想 / 商用の軌道上電力網の目標時期</div></div>
+  </div>
+  <p><a class="more" href="#s5">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t5">
+  <div class="sec-label"><span class="num">05</span>Why It Matters</div>
+  <h2>何がすごいのか</h2>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">① 顧客が何も変えなくていい</div><div class="cd-d">専用の受電器が要らず、すでに軌道上にある衛星にも売れる。パネル劣化・展開失敗の「延命」需要まで取れる</div></div>
+    <div class="cd"><div class="cd-t">② 一度会社を売った創業チーム</div><div class="cd-d">CEO Rush・CTO SnyderはMade In Spaceを率いてRedwire（NYSE上場）に売却した実績。宇宙ハードを作って飛ばした経験がある</div></div>
+    <div class="cd"><div class="cd-t">③ 実証の積み上げが速い</div><div class="cd-d">創業から1年で地上100m、1年半でDARPA超え1.1kW、軌道上で追尾ソフト実証、2年で衛星間送電の実機打上げ</div></div>
+    <div class="cd"><div class="cd-t">④ 国防と組んだ</div><div class="cd-d">Series AはB Capital＋SHIELD＋Cerberus。初代米宇宙軍作戦部長のJay Raymond大将が取締役に。AFWERXのSBIR Phase IIも獲得</div></div>
+  </div>
+  <p><a class="more" href="#s-founders">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t6">
+  <div class="sec-label"><span class="num">06</span>Risks</div>
+  <h2>リスクは何か</h2>
+  <div class="cards risk">
+    <div class="cd"><div class="cd-t">① 宇宙で動くかはこれから</div><div class="cd-d">時速約2.7万kmで動く2機の間で、狙い続けて当て続ける。Protostarの結果はまだ出ていない</div></div>
+    <div class="cd"><div class="cd-t">② 1.1kWでは足りない</div><div class="cd-d">地上記録でも大型商用衛星の必要量には遠い。「運用レベル」の電力は次の実証機（パイロット発電所）待ち</div></div>
+    <div class="cd"><div class="cd-t">③ 経済性</div><div class="cd-d">顧客にとって「パネルや電池を大きくする」より安いかは未証明。200機のコンステレーションには$88Mの何倍もの資金が要る</div></div>
+    <div class="cd"><div class="cd-t">④ 安全・規制</div><div class="cd-d">誤照射・反射・光学センサーへの干渉、天文観測への影響。宇宙で強い光を撃つルールはまだ整っていない</div></div>
+  </div>
+  <p><a class="more" href="#s9">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t7">
+  <div class="sec-label"><span class="num">07</span>Funding</div>
+  <h2>資金調達 — 2回・累計$88M（未上場）</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Round</th><th>Date</th><th>Amount</th><th>Valuation</th><th>Lead</th></tr></thead>
+    <tbody>
+      <tr><td>Seed</td><td>2024-07-24</td><td>$12.25M</td><td>非公表</td><td>Initialized Capital, B Capital（＋Rogue VC）</td></tr>
+      <tr class="hl"><td>Series A</td><td>2026-05-12</td><td>$65M</td><td>非公表</td><td>B Capital（co-lead: SHIELD Capital, Cerberus Ventures）</td></tr>
+    </tbody>
+  </table></div>
+  <p>A ラウンドには GreatPoint Ventures、Helena、Oceans Ventures、MVP Ventures も参加（オーバーサブスクライブ）。<b>B Capitalはシードから連続でリード</b>。2回とも防衛系の資金色が強く、使い道は2号機（パイロット発電所）と<b>米国家安全保障顧客との関係強化</b>。<a class="more" href="#s5">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t8">
+  <div class="sec-label"><span class="num">08</span>Bottom Line (NFA)</div>
+  <h2>結論（筆者の読み、投資助言ではない）</h2>
+  <div class="verdict">
+    <p><b>衛星間の送電でいちばん先を走っている会社。</b>「顧客の衛星を改造しなくていい」という設計で、技術の筋より<b>売りやすさ</b>を優先したのが賢い。創業チームは宇宙ハードを作って売り抜けた経験があり、Zero Industriesのような後発とは実行力の段階が違う。</p>
+    <p>一方で、売上はまだゼロで、事業の前提はすべて<b>Protostarが宇宙で光を当てられるか</b>にかかっている。見るべきは、①Protostarの結果（受電量・追尾精度）、②2027年初の2号機で「運用レベル」の電力を出せるか、③Starcloudのような<b>宇宙データセンター</b>が本当に大口の買い手になるか。</p>
+  </div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Date</th><th>次のイベント</th></tr></thead>
+    <tbody>
+      <tr><td>2026-11〜</td><td>Protostar のコミッショニング → CubeSat放出・追尾・送電の結果発表</td></tr>
+      <tr><td>2027初</td><td>2号機（パイロット発電所、運用レベルの電力）打上げ予定</td></tr>
+      <tr><td>随時</td><td>PPAの追加、米国防・宇宙軍系の契約、Series B</td></tr>
+      <tr><td>〜2030</td><td>商用の軌道上電力網を稼働させる目標</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+</div>
+
+<div class="pane" data-pane="main" hidden>
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#s1">News Summary</a></li>
+    <li><a href="#s2">Industry: Power-Limited Orbit</a></li>
+    <li><a href="#s3">Technology &amp; Business Model</a></li>
+    <li><a href="#s4">Demonstrations &amp; Roadmap</a></li>
+    <li><a href="#s5">Funding History &amp; Board</a></li>
+    <li><a href="#s-founders">Founder Profiles</a></li>
+    <li><a href="#s-customers">Main Customers</a></li>
+    <li><a href="#s8">Competitive Map</a></li>
+    <li><a href="#s-japan">Japan Connections</a></li>
+    <li><a href="#s-story">Founding Story</a></li>
+    <li><a href="#s9">Bull / Base / Bear</a></li>
+    <li><a href="#s11">Q&amp;A</a></li>
+    <li><a href="#s-vocab">Vocabulary</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="s1">
+  <div class="sec-label"><span class="num">01</span>News Summary</div>
+  <h2>史上初の「衛星→衛星」送電を試す実証機が宇宙へ</h2>
+  <p>2026年10月初め、Star Catcherの試作Power Node<strong>「Protostar」</strong>がSpaceXのライドシェア<strong>Transporter-18</strong>でヴァンデンバーグ宇宙軍基地から打ち上げられた。軌道上で立ち上げた後、同じ便で運んだ<strong>CubeSatを放出・追尾し、その市販の太陽電池パネルに光を当てて受電量を測る</strong>。つながっていない2機の宇宙機の間で光による送電を行うのは世界初の試み。離れていくCubeSatが受け取る電力が距離とともにどう落ちるかを測り、モデルと突き合わせる。</p>
+  <p>その5か月前の5月12日には<strong>$65M Series A</strong>（リード B Capital、共同リード SHIELD Capital・Cerberus Ventures）を発表し、累計調達は<strong>$88M</strong>。同時に、初代米宇宙軍作戦部長の<strong>John "Jay" Raymond退役大将</strong>が取締役に加わった。</p>
+  <div class="callout"><strong>CEO Andrew Rush：</strong>「宇宙経済を動かす主要な用途——通信、計算、安全保障、センシング——はどれも今、電力に縛られている」。Protostarについては「軌道上で試すこと自体が成功だ」とも語り、結果への期待値を慎重に置いている。</div>
+  <p class="note">2026-11-06時点で、Protostarの送電結果は公表されていない。</p>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sec-label"><span class="num">02</span>Industry: Power-Limited Orbit</div>
+  <h2>宇宙の「電力不足」と3つの解き方</h2>
+  <p>LEO衛星の電力は典型で<strong>1,000〜1,500W</strong>。衛星→スマホ直接通信（D2C）、大容量通信、軌道上のAI推論・データセンター、軌道上製造は<strong>5,000〜20,000W</strong>を求める。解き方は3つある。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>解き方</th><th>中身</th><th>弱点</th></tr></thead>
+    <tbody>
+      <tr><td>自前で大きくする</td><td>大型パネル・大型電池・大型バス</td><td>重量・打上げ費・小型衛星の手軽さを失う。日陰では発電ゼロ</td></tr>
+      <tr><td>宇宙→地上へ送る（SBSP）</td><td>宇宙で発電し地上の電力網へ</td><td>巨大施設・大気損失・規制。商用化は遠い（Overview Energy、Cowboy Space、JAXA OHISAMAなど）</td></tr>
+      <tr class="hl"><td>宇宙→宇宙へ送る</td><td>発電衛星から顧客衛星へ光で送る</td><td>追尾・照射精度、経済性が未証明（<b>Star Catcher</b>、Zero Industries）</td></tr>
+    </tbody>
+  </table></div>
+  <p>Star Catcherが狙うのは3つ目。大気がないので光が減衰しにくく、<strong>すでに飛んでいる数千機の衛星のパネル</strong>がそのまま「受電器」になる点で、SBSPより早く売上にできると見ている。</p>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sec-label"><span class="num">03</span>Technology &amp; Business Model</div>
+  <h2>「虫眼鏡」型の光送電</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Power Node</div><div class="v">高度約1,500〜2,000kmの発電・送電衛星。完成形は約200機でLEOを覆う構想</div></div>
+    <div class="kv-item"><div class="k">集光</div><div class="v">軽量フレネルレンズで太陽光を集める</div></div>
+    <div class="kv-item"><div class="k">変換・照射</div><div class="v">顧客パネルの効率が最も高い波長を選んだ多波長の光（レーザー）で照射。精密追尾＋適応ミラー</div></div>
+    <div class="kv-item"><div class="k">受電</div><div class="v">顧客衛星の<b>既存の太陽電池パネル</b>。専用受信機・改修なし</div></div>
+    <div class="kv-item"><div class="k">効果（主張）</div><div class="v">発電量2〜10倍。1ノードで最大50機に供給</div></div>
+    <div class="kv-item"><div class="k">課金</div><div class="v">従量課金のPPA。デポジットで一定期間の単価を固定</div></div>
+  </div>
+  <h3>顧客にとっての価値</h3>
+  <ul style="padding-left:20px;font-size:14px;line-height:1.9">
+    <li><b>CapExを据え置き／削減</b>：小型バスのまま電力を食うミッションを載せられる</li>
+    <li><b>延命</b>：電池・パネルが劣化した既存コンステレーションの寿命延長</li>
+    <li><b>救済</b>：パネル展開に失敗した衛星の復旧</li>
+    <li><b>日陰対策</b>：地球の影にいる時間の発電</li>
+  </ul>
+  <div class="callout"><strong>設計の肝：</strong>Zero IndustriesのHeliosは顧客衛星に<strong>受電モジュール（Helios Cell）</strong>を付けてもらう前提。Star Catcherは<strong>何も付けなくていい</strong>前提。後者は営業上圧倒的に有利な代わりに、光の波長・強度を相手のパネルに合わせ、焼かないように制御する難しさを自分で背負う。</div>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sec-label"><span class="num">04</span>Demonstrations &amp; Roadmap</div>
+  <h2>2年で地上100m → 1.1kW → 宇宙</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2024</span><span class="tl-title">創業（ジャクソンビル）</span></div><div class="tl-body">7月にSeed $12.25M。当時社員約11人、LOI約6件</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025-03</span><span class="tl-title">EverBank Stadium で地上実証</span></div><div class="tl-body">アメフト場の長さ（100m超）を越えて市販パネルへ送電</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025-09 / 11</span><span class="tl-title">Astro Digital・Loft Orbital とPPA</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025-11</span><span class="tl-title">ケネディ宇宙センターで1.1kW</span></div><div class="tl-body">Space FloridaのLaunch and Landing Facility。<b>1.1kW超・総計10MJ超</b>を複数種のパネルへ。DARPA POWERの800W（2025-06）を更新。Intuitive Machinesの月面車（LTV）の試験体も充電</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025後半</span><span class="tl-title">Sextant Alpha（初の飛行実績）</span></div><div class="tl-body">Loft Orbitalの「バーチャルミッション」基盤に相乗りし、宇宙機の捕捉・追尾ソフトを軌道上で検証（2026-04発表）</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025-12</span><span class="tl-title">AFWERX SBIR Phase II（$1.25M）</span></div><div class="tl-body">宇宙→宇宙送電のサブシステム成熟化</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2026-05</span><span class="tl-title">Series A $65M、Jay Raymond 取締役就任</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2026-10</span><span class="tl-title">Protostar 打上げ（Transporter-18）</span></div><div class="tl-body">CubeSatを放出→追尾→市販パネルへ送電。結果待ち</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2027初</span><span class="tl-title">2号機「パイロット発電所」</span></div><div class="tl-body">運用レベルの電力を他の宇宙機へ</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">〜2030</span><span class="tl-title">商用の軌道上電力網</span></div></div></div>
+  </div>
+  <p class="note">2024年時点では「2025年12月に実証ミッション」と言っており、軌道上送電は約10か月遅れた。</p>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sec-label"><span class="num">05</span>Funding History &amp; Board</div>
+  <h2>防衛色の強い$88M</h2>
+  <div class="f-stack">
+    <div class="f-card corp"><span class="r-badge">Series A</span><div class="f-amount">$65M</div><div class="f-detail"><div class="f-date">2026-05-12</div><div class="f-desc">Lead: B Capital ／ Co-lead: SHIELD Capital, Cerberus Ventures ／ GreatPoint Ventures, Helena, Oceans Ventures, MVP Ventures。オーバーサブスクライブ</div></div></div>
+    <div class="f-card"><span class="r-badge">Seed</span><div class="f-amount">$12.25M</div><div class="f-detail"><div class="f-date">2024-07-24</div><div class="f-desc">Co-lead: Initialized Capital, B Capital ／ Rogue VC。一部報道に「$22.9M」との表記揺れあり</div></div></div>
+    <div class="f-card gov"><span class="r-badge">Gov</span><div class="f-amount">$1.25M</div><div class="f-detail"><div class="f-date">2025-12</div><div class="f-desc">AFWERX（米空軍）SBIR Phase II。他に非公表の政府契約が複数</div></div></div>
+  </div>
+  <p class="note">Seed＋Aの合計は$77.25Mで、会社の言う累計$88Mとの差（約$11M）は非公表の調達・政府資金等と推定。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Board / Leadership</th><th>役割</th><th>経歴</th></tr></thead>
+    <tbody>
+      <tr><td>Andrew Rush</td><td>Co-founder / CEO</td><td>元Made In Space CEO、元Redwire President &amp; COO</td></tr>
+      <tr><td>Michael Snyder</td><td>Co-founder / Chief Engineer</td><td>Made In Space共同創業者・Chief Engineer、元Redwire CTO</td></tr>
+      <tr><td>Bryan Lyandvert</td><td>Co-founder</td><td>VC・オペレーター（MetaProp、T-Bird Capital、Amazon）</td></tr>
+      <tr><td>Nathan O'Konek</td><td>COO</td><td>—</td></tr>
+      <tr><td>Camille Bergin</td><td>CMO（2026-04就任）</td><td>—</td></tr>
+      <tr><td>Cassie Lee</td><td>VP Business Development</td><td>—</td></tr>
+      <tr><td>Gen. John W. "Jay" Raymond（退役）</td><td>Board（2026-05）</td><td>初代米宇宙軍作戦部長（CSO）、現Cerberus シニアMD</td></tr>
+      <tr><td>Jeff Johnson</td><td>Board</td><td>B Capital</td></tr>
+      <tr><td>David Rothzeid</td><td>Board</td><td>SHIELD Capital</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s-founders">
+  <div class="sec-label"><span class="num">06</span>Founder Profiles</div>
+  <h2>Made In Space の2人がもう一度</h2>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Andrew Rush</span><span class="p-role">Co-founder / CEO</span></div>
+    <div class="p-line">ジャクソンビル出身／University of North Florida（物理 BS）→ Stetson University College of Law（JD、2009–2012）</div>
+    <ul>
+      <li><b>弁理士・弁護士：</b>PCT Law Group のパートナー（2012–2015）。<b>Made In Spaceの特許弁護士・ジェネラルカウンセル</b>として創業期に参画</li>
+      <li><b>Made In Space CEO（2015-03〜2020-06）：</b>2014年にISSへ<b>宇宙初の3Dプリンタ</b>を送った会社。CEOとして事業を伸ばし、2020年に<b>Redwire</b>へ売却</li>
+      <li><b>Redwire President &amp; COO（2021〜2022）：</b>Redwireは2021年にSPACでNYSE上場（RDW）。創業President・COOを務め、2022年に退任</li>
+      <li><b>Star Catcher（2024〜）：</b>Snyder・Lyandvertと共同創業。子どもの頃からのSF好きで「LEOでバカンスする未来」を信じると語る</li>
+    </ul>
+    <div class="p-quote">「人が電力会社に払うのと同じように、私たちに払ってもらう。従量課金のネットワークだ」</div>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Michael Snyder</span><span class="p-role">Co-founder / Chief Engineer</span></div>
+    <div class="p-line">Made In Space 共同創業者・Chief Engineer → Redwire CTO</div>
+    <ul>
+      <li><b>Made In Space：</b>ISSで動く3Dプリンタ、軌道上製造「Archinaut」等の技術を率いたエンジニア</li>
+      <li><b>Redwire CTO：</b>統合後のRedwireで技術責任者</li>
+      <li><b>Star Catcher：</b>Power Nodeの中核（送電系）は内製、一部サブシステムは外部調達という make-or-buy を主導</li>
+    </ul>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Bryan Lyandvert</span><span class="p-role">Co-founder</span></div>
+    <div class="p-line">宇宙投資家・オペレーター</div>
+    <ul>
+      <li><b>経歴：</b>MetaProp（不動産テックVC）、T-Bird Capital、Amazon</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec" id="s-customers">
+  <div class="sec-label"><span class="num">07</span>Main Customers</div>
+  <h2>PPA 10件・LOI 40件超</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>顧客</th><th>時期</th><th>中身</th></tr></thead>
+    <tbody>
+      <tr><td>Astro Digital</td><td>2025-09-16</td><td>ESPA級プラットフォーム（Corvus XL等）向けのPPA</td></tr>
+      <tr><td>Loft Orbital</td><td>2025-11-18</td><td>衛星プラットフォームの電力増強。Sextant Alphaの相乗り先でもある</td></tr>
+      <tr><td><a href="260331_starcloud_deep_research.html">Starcloud</a></td><td>—</td><td>宇宙データセンター。電力を最も食う「本命」顧客</td></tr>
+      <tr><td>Aethero</td><td>—</td><td>宇宙向けエッジコンピュータ</td></tr>
+      <tr><td>その他6件＋政府</td><td>—</td><td>社名非公表。米国家安全保障系の契約が複数</td></tr>
+    </tbody>
+  </table></div>
+  <p>ターゲットは<strong>ホステッドペイロード、リモートセンシング、衛星直接通信、軌道上計算、軌道上製造、月面、宇宙ステーション</strong>。会社は「適格パイプラインで想定ARR $3B超」と言うが、<strong>監査済みの売上ではない</strong>。一部写真キャプションには「初期顧客との契約$60M」の記述もある（本文では未確認）。</p>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sec-label"><span class="num">08</span>Competitive Map</div>
+  <h2>宇宙電力のプレイヤー</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>会社</th><th>HQ</th><th>方式・対象</th><th>調達</th><th>進捗</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>Star Catcher</td><td>Jacksonville, FL</td><td>光・宇宙→宇宙（受電器不要）</td><td>$88M</td><td>地上1.1kW、Protostar打上げ済み、PPA 10件</td></tr>
+      <tr><td>Cowboy Space（旧Aetherflux）</td><td>California</td><td>光・宇宙→地上、軌道上AIデータセンター＋自社ロケット</td><td>Series B $275M・評価$2B</td><td>Robinhood共同創業者Baiju Bhatt。国防総省の支援</td></tr>
+      <tr><td>Overview Energy</td><td>US</td><td>赤外光・宇宙→地上の既存太陽光発電所</td><td>—</td><td>Metaが最大1GWの早期アクセス契約</td></tr>
+      <tr><td><a href="261106_zero_industries_deep_research.html">Zero Industries</a></td><td>SF / 東京</td><td>光・宇宙→宇宙（受電モジュール型）</td><td>Pre-seed $3M</td><td>地上実験これから、軌道実証2030予定</td></tr>
+      <tr><td>DARPA POWER</td><td>US政府</td><td>光・中継型の無線電力網</td><td>政府</td><td>2025-06に800W（Star Catcherが更新）</td></tr>
+      <tr><td>Caltech SSPD / ESA SOLARIS / JAXA OHISAMA</td><td>学術・政府</td><td>主にマイクロ波・宇宙→地上</td><td>政府</td><td>SSPDは2023年に宇宙で小規模送電実証</td></tr>
+    </tbody>
+  </table></div>
+  <p>「宇宙→宇宙」で実機を飛ばしたのは現時点でStar Catcherだけ。資金量ではCowboy Spaceが上だが、同社は地上送電と宇宙データセンター・ロケットに軸足を移している。</p>
+</div>
+
+<div class="sec" id="s-japan">
+  <div class="sec-label"><span class="num">09</span>Japan Connections</div>
+  <h2>日本との繋がり</h2>
+  <p>現時点で日本企業との公表された提携・出資は<strong>見当たらない</strong>。関係しうるのは次の点。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>相手</th><th>関係</th></tr></thead>
+    <tbody>
+      <tr><td>Zero Industries（日米）</td><td>同じ衛星間レーザー送電を狙う日本発の後発。受電モジュール型でアプローチが違う</td></tr>
+      <tr><td>NTT × 三菱重工</td><td>大気中レーザー給電1km・効率約15%（2025-09）。地上レーザー給電の日本代表</td></tr>
+      <tr><td>JAXA / J-spacesystems</td><td>OHISAMA（マイクロ波・宇宙→地上）。方式は違うが同じ「宇宙電力」領域</td></tr>
+      <tr><td>日本の衛星事業者（アクセルスペース、Synspective、iQPS等）</td><td>SAR衛星は電力を大量に食うため、潜在顧客になりうる（筆者推定）</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s-story">
+  <div class="sec-label"><span class="num">10</span>Founding Story</div>
+  <h2>宇宙3Dプリンタの次は「電力会社」</h2>
+  <p>Andrew Rushはジャクソンビルで育ち、物理を学んだ後に弁護士になった。特許弁護士として関わったのが、シリコンバレーのNASAエイムズ発のスタートアップ<strong>Made In Space</strong>。ジェネラルカウンセルからCEOになり、ISSで動く3Dプリンタや軌道上製造の事業を率いて、2020年にRedwireへ売却した。Redwireは翌年SPACで上場し、RushはPresident兼COOに。</p>
+  <p>Redwireを離れた後、Made In Spaceの共同創業者Michael Snyderと再び組んで作ったのがStar Catcher。拠点は地元ジャクソンビル。2人が見ていたのは、Starlinkのような巨大コンステレーションで<strong>衛星が一か所の軌道帯に密集し始めた</strong>こと。Rushは「技術が揃い、顧客が地理的に集中した——このタイミングはこれまでなかった」と言う。顧客が集まっているなら、そこに<strong>基地局のように電力を配る</strong>インフラが成り立つ。</p>
+  <p>最初の地上実験の会場は、地元NFLチームのスタジアム（EverBank Stadium）だった。</p>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sec-label"><span class="num">11</span>Bull / Base / Bear</div>
+  <h2>シナリオ（筆者の読み・NFA）</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Case</th><th>何が起きるか</th><th>兆候</th></tr></thead>
+    <tbody>
+      <tr><td>Bull</td><td>Protostarが受電を実証 → 2027年の2号機で運用レベルの電力 → 宇宙データセンター・D2C通信・国防衛星が大口顧客に。数十機のNodeで課金開始し、Series Bで数億ドル規模</td><td>送電の実測値の公表、宇宙軍・SDAの大型契約、Starcloud等の量的コミット</td></tr>
+      <tr><td>Base</td><td>Protostarは部分成功（追尾は成功、電力は小さい）。2号機が遅れ、商用網は2030年代前半へ。当面は国防の研究開発契約が主な収入</td><td>ロードマップの後ろ倒し、SBIR/政府契約中心のニュース</td></tr>
+      <tr><td>Bear</td><td>軌道上で照射・追尾がうまくいかない、または顧客にとって「大きいパネル・電池」の方が安い。宇宙データセンター需要が自前発電（大型アレイ）で賄われ、電力網の需要が育たない</td><td>結果の公表が遅い・曖昧、PPAの失効、大型衛星バスの低価格化</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec qa" id="s11">
+  <div class="sec-label"><span class="num">12</span>Q&amp;A</div>
+  <h2>事業理解のための問答</h2>
+  <details>
+    <summary>なぜ顧客の衛星を改造しなくていいのか？</summary>
+    <div class="qa-a">送るのが「電気」ではなく<b>「光」</b>だから。太陽電池パネルはもともと光を電気に変える装置なので、より強い光を当てればより多く発電する。Star Catcherはパネルが最も効率よく変換できる<b>波長を選んで</b>当てるので、普通の太陽光より有利。代わりに、強すぎて焼かないよう強度を制御する必要がある。</div>
+  </details>
+  <details>
+    <summary>なぜ高度1,500〜2,000kmに置くのか？</summary>
+    <div class="qa-a">顧客の多くは高度500km前後のLEOにいる。その<b>上</b>に置けば、1機のNodeから見える顧客の数が増え、日陰に入る時間も短くなる。下を通る顧客を次々に狙って送る「基地局」の配置。</div>
+  </details>
+  <details>
+    <summary>PPAとは何で、なぜ売上ゼロでも意味があるのか？</summary>
+    <div class="qa-a">電力購入契約。<b>デポジットを払って将来の電力単価を固定</b>する。まだ電気は届いていないが、顧客が「この単価なら買う」と約束した証拠になり、投資家に需要を示せる。ただし金額・条件は非公表で、拘束力の強さも外からは分からない。</div>
+  </details>
+  <details>
+    <summary>Zero Industriesとの一番の違いは？</summary>
+    <div class="qa-a">①<b>受電側</b>：Star Catcherは既存パネルで受ける、ZeroはHelios Cellという専用モジュールを付ける。②<b>段階</b>：Star Catcherは実機を軌道に上げた、Zeroは地上実験前。③<b>チーム</b>：Star Catcherは宇宙ハードの売却経験者、Zeroは10代〜20歳。④<b>資金</b>：$88M対$3M。</div>
+  </details>
+  <details>
+    <summary>なぜ防衛系の投資家が集まるのか？</summary>
+    <div class="qa-a">軍の衛星も電力に縛られており、<b>軌道上で電力を融通できれば衛星の機動・寿命・センサー能力が上がる</b>。米宇宙開発庁（SDA）も汎用バスの電力強化技術を募集している。初代宇宙軍作戦部長が取締役に入ったのは、国防市場を本気で取りに行くサイン。</div>
+  </details>
+</div>
+
+<div class="sec" id="s-vocab">
+  <div class="sec-label"><span class="num">13</span>Vocabulary</div>
+  <h2>用語</h2>
+  <div class="t-wrap"><table class="t">
+    <tr><th>Term</th><th>意味</th></tr>
+    <tr><td>Optical power beaming</td><td>光（レーザー）で電力を送ること。マイクロ波よりビームが細い</td></tr>
+    <tr><td>Power Node</td><td>Star Catcherの発電・送電衛星。電力網の「発電所＋基地局」</td></tr>
+    <tr><td>Fresnel lens</td><td>同心円状の溝で光を集める薄く軽いレンズ（灯台・ルーペなど）</td></tr>
+    <tr><td>PPA（Power Purchase Agreement）</td><td>電力購入契約。将来の電力を決まった条件で買う約束</td></tr>
+    <tr><td>LEO（Low Earth Orbit）</td><td>低軌道。高度約2,000km以下</td></tr>
+    <tr><td>Rideshare（Transporter）</td><td>1本のロケットに多数の衛星を相乗りさせる打上げ。SpaceXのTransporterシリーズ</td></tr>
+    <tr><td>Commissioning</td><td>打上げ後に衛星の各機能を順に立ち上げ・確認する期間</td></tr>
+    <tr><td>ESPA-class</td><td>大型ロケットの余剰スペースに載る、約180kg級の小型衛星の規格</td></tr>
+    <tr><td>SBIR Phase II</td><td>米政府の中小企業向け研究開発資金。Phase IIは試作・実証段階</td></tr>
+    <tr><td>D2C（Direct-to-Cell）</td><td>衛星から普通のスマホに直接つなぐ通信</td></tr>
+  </table></div>
+</div>
+
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://www.star-catcher.com/news/protostar-announcement" target="_blank" rel="noopener">Star Catcher — Protostar announcement</a></li>
+    <li><a href="https://www.star-catcher.com/news/star-catcher-raises-65-million-to-build-the-first-power-grid-in-space" target="_blank" rel="noopener">Star Catcher — $65M Series A</a></li>
+    <li><a href="https://www.star-catcher.com/news/record-breaking-optical-power-beaming-proves-path-to-scalable-power-grid-for-space" target="_blank" rel="noopener">Star Catcher — Record-breaking optical power beaming</a></li>
+    <li><a href="https://www.star-catcher.com/news/star-catcher-closes-12-25m-seed-round" target="_blank" rel="noopener">Star Catcher — $12.25M seed</a></li>
+    <li><a href="https://singularityhub.com/2026/10/01/star-catcher-is-about-to-beam-power-between-two-satellites-for-the-first-time/" target="_blank" rel="noopener">Singularity Hub — About to beam power between two satellites</a></li>
+    <li><a href="https://payloadspace.com/star-catchers-orbital-power-beaming-demo-is-ready-for-launch/" target="_blank" rel="noopener">Payload — Orbital power-beaming demo ready for launch</a></li>
+    <li><a href="https://www.exterrajsc.com/p/orbital-power-beaming-demonstration" target="_blank" rel="noopener">Journal of Space Commerce — SpaceX launches Protostar</a></li>
+    <li><a href="https://www.satellitetoday.com/finance/2026/05/12/star-catcher-raises-65m-series-a-to-fuel-in-orbit-power-grid/" target="_blank" rel="noopener">Via Satellite — $65M Series A</a></li>
+    <li><a href="https://www.satellitetoday.com/space-economy/2024/07/26/andrew-rushs-new-venture-star-catcher-looks-to-boost-the-power-of-satellites-in-leo/" target="_blank" rel="noopener">Via Satellite — Andrew Rush's new venture（2024）</a></li>
+    <li><a href="https://newspaceeconomy.ca/2026/05/12/star-catcher-company-profile-space-power-infrastructure-for-the-next-orbital-economy/" target="_blank" rel="noopener">New Space Economy — Company profile</a></li>
+    <li><a href="https://spacedaily.com/sd-n-a-a-florida-startup-just-raised-65-million-to-beam-concentrated-sunlight-at-satellites-and-the-customer-list-shows-how-fast-orbital-power-is-becoming-a-real-market/" target="_blank" rel="noopener">SpaceDaily — Customer list</a></li>
+    <li><a href="https://newatlas.com/energy/star-catcher-power-beaming-record/" target="_blank" rel="noopener">New Atlas — Breaks DARPA's power beaming record</a></li>
+    <li><a href="https://spacenews.com/star-catcher-banks-12-25-million-for-orbital-energy-grid/" target="_blank" rel="noopener">SpaceNews — $12.25M for orbital energy grid</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/space-infrastructure-group-star-catcher-raises-65m-to-build-orbital-power-grid/" target="_blank" rel="noopener">DCD — $65M orbital power grid</a></li>
+    <li><a href="https://www.upstartsmedia.com/p/podcast-star-catcher-andrew-rush" target="_blank" rel="noopener">Upstarts Media — Andrew Rush podcast</a></li>
+    <li><a href="https://www.news4jax.com/tech/2022/10/18/space-rush-jacksonville-native-a-pioneer-in-commercial-space-technology/" target="_blank" rel="noopener">News4JAX — Jacksonville native Andrew Rush（2022）</a></li>
+    <li><a href="https://uk.marketscreener.com/insider/ANDREW-RUSH-A2SFVY/experience/" target="_blank" rel="noopener">MarketScreener — Andrew Rush career history</a></li>
+    <li><a href="https://www.businesswire.com/news/home/20260508036993/en/Cowboy-Space-Corporation-Raises-$275M-Series-B-For-Vertically-Integrated-Orbital-Data-Centers-and-Rockets" target="_blank" rel="noopener">Business Wire — Cowboy Space $275M Series B</a></li>
+  </ul>
+  <p style="font-size:11px;color:var(--muted);margin-top:14px">Last updated: 2026-11-06</p>
+</div>
+
+</div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script src="../_shared/research_tabs.js" defer></script>
+<script src="../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>

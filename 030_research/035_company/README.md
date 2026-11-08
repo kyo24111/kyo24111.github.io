@@ -103,3 +103,6 @@
 | [261025_schneider_electric_deep_research.html](261025_schneider_electric_deep_research.html) | Schneider Electric | 電化・配電／データセンター電源・冷却／産業オートメーション | 2026-10-25 |
 | [261025_novelis_deep_research.html](261025_novelis_deep_research.html) | Novelis | アルミ圧延・リサイクル（Hindalco傘下・非上場） | 2026-10-25 |
 | [261105_ihi_deep_research.html](261105_ihi_deep_research.html) | IHI | 航空エンジン（RSP・スペアパーツ）／防衛／原子力 | 2026-11-05 |
+| [261106_zero_industries_deep_research.html](261106_zero_industries_deep_research.html) | Zero Industries | 宇宙インフラ（衛星間レーザー送電・16歳CEO・Pre-seed） | 2026-11-06 |
+| [261106_star_catcher_deep_research.html](261106_star_catcher_deep_research.html) | Star Catcher | 宇宙インフラ（軌道上の光送電・電力網） | 2026-11-06 |
+| [261108_microagi_deep_research.html](261108_microagi_deep_research.html) | microagi | フィジカルAI（人の作業データ収集Shift＋工場ロボット導入Atlas） | 2026-11-08 |
