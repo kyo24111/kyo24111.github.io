@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ontology in AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong,b{font-weight:700} a{color:var(--accent);text-decoration:underline}
+  p{margin:0 0 12px}
+  h3{font-family:'Poppins','Noto Sans JP',sans-serif;font-size:1rem;font-weight:700;margin:24px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:8px}
+  .hero .pron{font-family:'Poppins',sans-serif;font-size:13px;color:rgba(255,255,255,.6);margin-bottom:14px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.78);max-width:660px;line-height:1.7;margin-bottom:24px}
+  .hero-date{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.5);margin-bottom:20px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.5rem;font-weight:800;color:#fff;line-height:1;margin-bottom:4px}
+  .kpi .lbl{font-size:10.5px;color:rgba(255,255,255,.6);letter-spacing:.04em}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  .upd{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--dim);margin:-8px 0 12px}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.8px;color:var(--mid);line-height:1.8}
+  .callout strong{color:var(--text)}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0;border:1px solid var(--border);border-radius:8px}
+  .t{border-collapse:collapse;font-size:13px;width:100%}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins','Noto Sans JP',sans-serif;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent);white-space:nowrap}
+  .t td{padding:9px 14px;border-bottom:1px solid var(--border);vertical-align:top;white-space:nowrap;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td.k{font-weight:700}
+  /* 例文 */
+  .ex{list-style:none;counter-reset:ex;border-top:1px solid var(--border)}
+  .ex li{counter-increment:ex;border-bottom:1px solid var(--border);padding:12px 0 12px 40px;position:relative}
+  .ex li::before{content:counter(ex);position:absolute;left:0;top:13px;font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:24px;height:24px;border-radius:4px;display:flex;align-items:center;justify-content:center}
+  .ex .en{font-family:'Poppins','Noto Sans JP',sans-serif;font-size:14px;font-weight:600;line-height:1.6}
+  .ex .ja{font-size:13px;color:var(--mid);line-height:1.6;margin-top:2px}
+  .ex .pt{font-size:11.5px;color:var(--muted);margin-top:3px}
+  /* ツイート */
+  .tw{border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;background:#fff}
+  .tw-h{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;margin-bottom:6px}
+  .tw-n{font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:var(--muted)}
+  .tw-a{font-weight:700;font-size:13.5px}
+  .tw-w{font-size:12px;color:var(--muted)}
+  .tw-d{font-family:'Poppins',sans-serif;font-size:11px;color:var(--muted);margin-left:auto}
+  .tw-t{font-size:13.5px;line-height:1.75;color:var(--text)}
+  .tw-g{font-size:12.5px;color:var(--mid);margin-top:4px}
+  .tw-f{display:flex;flex-wrap:wrap;gap:6px 12px;margin-top:8px;font-size:11.5px;color:var(--muted)}
+  .tw-f a{font-family:'Poppins',sans-serif;font-weight:600;color:var(--text)}
+  .lbl-q,.lbl-s{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;padding:0 6px;border-radius:3px;border:1px solid var(--dim);color:var(--muted);white-space:nowrap}
+  .lbl-q{border-color:var(--accent);color:var(--accent)}
+  .lbl-s{border-style:dashed}
+  /* 図 */
+  .stack{display:flex;flex-direction:column;gap:6px;margin:14px 0}
+  .stack .ly{border:1px solid var(--border);border-radius:8px;padding:10px 14px;background:var(--surface);display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+  .stack .ly.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .stack .ly .n{font-family:'Poppins',sans-serif;font-weight:700;font-size:13px;min-width:150px}
+  .stack .ly .d{font-size:12.5px;opacity:.85}
+  .kw{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:10px 0}
+  .kw .w{border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+  .kw .w b{font-family:'Poppins','Noto Sans JP',sans-serif;font-size:13px}
+  .kw .w span{display:block;font-size:12.3px;color:var(--mid);line-height:1.65;margin-top:2px}
+  .kw-h{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:18px 0 4px}
+  .src{font-size:12.5px;padding-left:18px;line-height:1.9}
+  .src li{word-break:break-all}
+  details.raw{border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin:12px 0;font-size:13px}
+  details.raw summary{cursor:pointer;font-weight:700;font-family:'Poppins','Noto Sans JP',sans-serif;font-size:12.5px}
+  /* side nav */
+  .side-nav{position:fixed;left:20px;top:84px;width:200px;max-height:calc(100vh - 162px);overflow-y:auto;padding:12px 0 32px;z-index:10;scrollbar-width:thin;display:none}
+  @media (min-width:1400px){.side-nav{display:block}}
+  .side-nav-title{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-left:14px;margin-bottom:8px}
+  .side-nav-list{list-style:none;padding:0;margin:0}
+  .side-nav-link{display:block;color:#a8a8a8;text-decoration:none;padding:6px 8px 6px 14px;border-left:2px solid transparent;font-size:12px;line-height:1.45}
+  .side-nav-link:hover{color:var(--text);border-left-color:var(--border)}
+  .side-nav-link.active{color:var(--accent);font-weight:700;border-left-color:var(--accent);background:var(--surface)}
+  .side-nav-num{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--muted);margin-right:6px}
+  @media (max-width:640px){
+    .page{padding:28px 16px 80px}
+    .hero{padding:28px 20px 24px}
+    .hero h1{font-size:1.8rem}
+    .kpi-row{gap:18px}
+    .kw{grid-template-columns:1fr}
+    .stack .ly .n{min-width:0}
+    .tw-d{margin-left:0}
+  }
+</style>
+<link rel="stylesheet" href="../_shared/research_tabs.css">
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">research</a><span class="s">/</span><a href="index.html">words</a><span class="s">/</span><span class="c">Ontology in AI</span></nav><script>if(location.protocol!=="file:"){var c=document.currentScript.previousElementSibling;if(c)c.remove()}</script><script>/* keep-pos: リロードしても見ていた位置（スクロール・タブ・開いた<details>・内側スクロール）を保つ */
+(function(){var ss;try{ss=window.sessionStorage;ss.getItem('x')}catch(e){return}
+try{history.scrollRestoration='manual'}catch(e){}
+var K='wl-pos:'+location.pathname,TAB='[data-view],[data-tab],[role="tab"],.tab,.tab-btn',st={y:0,s:{},t:[]},busy=true,tm;
+function P(el){var p=[];while(el&&el.nodeType===1&&el!==document.body){if(el.id){p.unshift('#'+CSS.escape(el.id));return p.join('>')}
+var i=1,x=el;while((x=x.previousElementSibling))i++;p.unshift(el.tagName.toLowerCase()+':nth-child('+i+')');el=el.parentElement}p.unshift('body');return p.join('>')}
+function Q(q){try{return document.querySelector(q)}catch(e){return null}}
+function save(){if(busy)return;st.y=window.scrollY;st.d=[].map.call(document.querySelectorAll('details'),function(d){return d.open?1:0}).join('');
+try{ss.setItem(K,JSON.stringify(st))}catch(e){}}
+function later(){if(busy)return;clearTimeout(tm);tm=setTimeout(save,150)}
+document.addEventListener('scroll',function(e){var t=e.target;if(t&&t.nodeType===1&&!busy)st.s[P(t)]=t.scrollTop;later()},true);
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest(TAB);if(!b||!e.isTrusted)return;
+var g=P(b.parentElement);st.t=st.t.filter(function(x){return x.g!==g});st.t.push({g:g,p:P(b)});st.t=st.t.slice(-6);later()},true);
+document.addEventListener('toggle',later,true);addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save()});
+function stop(){if(busy){busy=false;save()}}
+['wheel','touchstart','keydown','mousedown'].forEach(function(n){addEventListener(n,stop,{capture:true,passive:true})});
+addEventListener('load',function(){var d;try{d=JSON.parse(ss.getItem(K)||'null')}catch(e){}
+var nt;try{nt=performance.getEntriesByType('navigation')[0].type}catch(e){}
+/* リンクで来た時は復元しない（リロード・戻る/進むだけ） */
+if(!d||(nt&&nt!=='reload'&&nt!=='back_forward')){busy=false;return}st=d;st.s=st.s||{};st.t=st.t||[];
+st.t.forEach(function(x){var b=Q(x.p);if(b&&!b.classList.contains('on')&&!b.classList.contains('active')&&b.getAttribute('aria-selected')!=='true')b.click()});
+if(d.d)[].forEach.call(document.querySelectorAll('details'),function(el,i){if(d.d[i]==='1')el.open=true});
+function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var el=Q(q);if(el)el.scrollTop=st.s[q]}}
+[0,60,160,320,640,1100,1700].forEach(function(t){setTimeout(go,t)});setTimeout(stop,1800)})})();</script><!-- crumbs:end -->
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="page" data-terms-root>
+
+<div class="hero">
+  <div class="hero-badges"><span class="badge badge-solid">Words</span><span class="badge badge-white">AI</span><span class="badge badge-white">Data</span></div>
+  <h1>Ontology</h1>
+  <div class="pron">/ɒnˈtɒlədʒi/ on-TOL-uh-jee ・ 複数形 ontologies ・ 形容詞 ontological</div>
+  <p class="hero-sub">AI の文脈では「その会社（領域）に<b>何があって、どう繋がっていて、何ができるか</b>を、機械が読める形で決めた“意味の地図”」。LLM やエージェントに業務を任せるための土台として、2024年頃から一気にバズワード化した。</p>
+  <div class="hero-date">Created 2026-11-10 ・ Last updated 2026-11-10</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">1993</div><div class="lbl">Gruber の定義（AI用語としての原点）</div></div>
+    <div class="kpi"><div class="val">2024</div><div class="lbl">Karp「価値はチップとオントロジーに」</div></div>
+    <div class="kpi"><div class="val">2025–26</div><div class="lbl">エージェント時代で再ブーム</div></div>
+    <div class="kpi"><div class="val">22 + 18</div><div class="lbl">収集したX投稿（米/日）</div></div>
+  </div>
+</div>
+
+<div class="ptabs" data-tabbar role="tablist">
+  <button type="button" class="on" data-tab="tldr">TL;DR</button>
+  <button type="button" data-tab="main">Main</button>
+</div>
+
+<!-- ============================ TL;DR ============================ -->
+<div class="pane" data-pane="tldr">
+
+<div class="sec" id="t1">
+  <div class="sec-label"><span class="num">01</span>In One Line</div>
+  <div class="oneliner">オントロジー ＝ <b>「データの意味」と「やっていい操作」を決めた設計図</b>。<br>データベースが「どこに何が入っているか」なら、オントロジーは「それは何を意味して、何と繋がっていて、誰が何をしていいか」。LLM は言葉は分かっても<b>あなたの会社の意味は知らない</b>ので、その翻訳層として必要になった。</div>
+</div>
+
+<div class="sec" id="t2">
+  <div class="sec-label"><span class="num">02</span>What & Why It Matters</div>
+  <div class="flow">
+    <div class="fs"><div class="fs-n">1</div><div class="fs-t">モノを決める</div><div class="fs-d">顧客・注文・工場・設備など、業務に出てくる「モノ（Object）」と属性を定義</div></div>
+    <div class="fa">→</div>
+    <div class="fs"><div class="fs-n">2</div><div class="fs-t">繋がりを決める</div><div class="fs-d">「顧客が注文する」「設備は工場に属する」などの関係（Link）を定義</div></div>
+    <div class="fa">→</div>
+    <div class="fs"><div class="fs-n">3</div><div class="fs-t">操作を決める</div><div class="fs-d">「発注を承認する」など、やっていい操作（Action）と権限・監査を定義</div></div>
+    <div class="fa">→</div>
+    <div class="fs"><div class="fs-n">4</div><div class="fs-t">AIに渡す</div><div class="fs-d">LLM／エージェントはこの地図を見て読み書きする → 幻覚・誤操作が減る</div></div>
+  </div>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">意味のズレを消す</div><div class="cd-d">「売上」が部署ごとに違う列…を AI は区別できない。定義を1か所に固定する</div></div>
+    <div class="cd"><div class="cd-t">AIに“行動”させられる</div><div class="cd-d">読むだけのRAGから、承認・発注など業務を動かすエージェントへ。操作の型と権限が要る</div></div>
+    <div class="cd"><div class="cd-t">統制・監査</div><div class="cd-d">誰が・どのデータで・何をしたかを辿れる。エンタープライズ導入の必須条件</div></div>
+    <div class="cd"><div class="cd-t">moat（堀）になる</div><div class="cd-d">モデルはコモディティ化するが、会社固有の意味の地図は真似できない、という投資テーゼ</div></div>
+  </div>
+  <a class="more" href="#m1">Mainで詳しく →</a>
+</div>
+
+<div class="sec" id="t3">
+  <div class="sec-label"><span class="num">03</span>Contrast & Why Now</div>
+  <ul class="tl-list">
+    <li><b>vs スキーマ</b>：スキーマ＝保存の形、オントロジー＝意味と関係</li>
+    <li><b>vs タクソノミー</b>：分類の木（AはBの一種）だけ。オントロジーは関係・制約・操作まで</li>
+    <li><b>vs ベクトル検索（RAG）</b>：統計的で暗黙の意味 ⇔ 明示的で人が読める意味</li>
+    <li><b>vs DWH / セマンティックレイヤー</b>：事実と指標の置き場 ⇔ 意味＋行動の層</li>
+  </ul>
+  <p style="font-size:13.8px"><b>なぜ今？</b> ① 2023–24 の生成AI PoC が「社内データに繋ぐと嘘をつく・動かせない」で壁に当たった ② 2025〜 エージェント時代で「AIに業務を操作させる」には型と権限が必須に ③ Palantir の AIP が急成長し「オントロジーが鍵」という話法が株価とともに拡散 ④ GraphRAG・コンテキストグラフ・MCP など周辺技術が揃った。</p>
+  <a class="more" href="#m2">Mainで詳しく →</a>
+</div>
+
+<div class="sec" id="t4">
+  <div class="sec-label"><span class="num">04</span>Key Words</div>
+  <p style="font-size:13.8px">ナレッジグラフ ／ セマンティックレイヤー ／ タクソノミー ／ RDF・OWL ／ GraphRAG ／ グラウンディング ／ デジタルツイン ／ コンテキストエンジニアリング ／ コンテキストグラフ ／ ニューロシンボリック ／ FDE（Forward Deployed Engineer）／ Operational Ontology</p>
+  <a class="more" href="#m3">Mainで詳しく →</a>
+</div>
+
+<div class="sec" id="t5">
+  <div class="sec-label"><span class="num">05</span>How It's Used</div>
+  <ul class="tl-list">
+    <li><b>投資家トーク</b>：「Palantir の強みはオントロジー」「オントロジーこそ moat」</li>
+    <li><b>エンプラAI導入</b>：「エージェントの前にまずオントロジー（業務の意味）を整理しましょう」</li>
+    <li><b>データ基盤</b>：「DWH の上にオントロジー層を載せて、AI とBIで定義を共通化」</li>
+    <li><b>医療・製造の標準</b>：Gene Ontology、SNOMED CT、プラント設備の ISO 15926 など昔からある“辞書”</li>
+  </ul>
+  <a class="more" href="#m4">Mainで詳しく →</a>
+</div>
+
+<div class="sec" id="t6">
+  <div class="sec-label"><span class="num">06</span>Bottom Line</div>
+  <div class="verdict">
+    <p><b>言葉の正体は2つある。</b>①学術・セマンティックWebの「厳密な概念体系（OWL・推論つき）」と、②Palantir 発の「業務のデジタルツイン＋操作の層（Operational Ontology）」。いまビジネスで聞くのはほぼ②。</p>
+    <p>コンサルの現場で言い換えるなら <b>「AIが読める業務定義書＋権限表」</b>。RAG で行き詰まった案件の次の打ち手として使える一方、Palantir 流は推論機能を持たないので「学術的なオントロジーとは別物」という指摘も日本語圏で出ている（Main 07 の @gura105）。</p>
+  </div>
+  <a class="more" href="#m5">英語表現・例文20 →</a>　<a class="more" href="#m6">X投稿（米）→</a>　<a class="more" href="#m7">X投稿（日）→</a>
+</div>
+
+</div>
+
+<!-- ============================ MAIN ============================ -->
+<div class="pane" data-pane="main" hidden>
+
+<div class="sec" id="m1">
+  <div class="sec-label"><span class="num">01</span>What Is It / Why It Matters</div>
+  <div class="upd">Added 2026-11-10</div>
+  <h3>3つの意味の層</h3>
+  <div class="t-wrap"><table class="t">
+    <tr><th>Layer</th><th>意味</th><th>いつ・誰</th></tr>
+    <tr><td class="k">哲学（存在論）</td><td>「何が存在するのか」を問う形而上学の一分野</td><td>アリストテレス〜。語は17世紀ラテン語 ontologia</td></tr>
+    <tr><td class="k">情報科学・古典AI</td><td>「概念化の明示的な仕様」。概念・関係・制約を形式言語で書く</td><td>1993 Tom Gruber／Cyc／Semantic Web（OWL, 2004）</td></tr>
+    <tr><td class="k">いまのビジネスAI</td><td>業務のモノ・関係・操作をデータに紐づけた層（デジタルツイン）</td><td>Palantir Foundry/AIP → 2024〜一般化</td></tr>
+  </table></div>
+  <div class="callout"><strong>Gruber (1993) の定義</strong>：“An ontology is an explicit specification of a conceptualization.”（オントロジーとは、概念化の明示的な仕様である）。「頭の中の世界の捉え方」を、機械と人が共有できる形に書き出したもの、という意味。</div>
+
+  <h3>Palantir 型オントロジーの構成要素</h3>
+  <div class="t-wrap"><table class="t">
+    <tr><th>要素</th><th>何か</th><th>例（製造業）</th></tr>
+    <tr><td class="k">Object Type</td><td>業務に出てくるモノの型</td><td>工場 / 設備 / 部品 / 作業指示</td></tr>
+    <tr><td class="k">Property</td><td>モノの属性</td><td>設備の稼働率・最終点検日</td></tr>
+    <tr><td class="k">Link Type</td><td>モノ同士の関係</td><td>設備 → 工場に属する、部品 → 設備で使われる</td></tr>
+    <tr><td class="k">Action Type</td><td>やっていい操作（書き込み）</td><td>「点検を予約する」「発注を承認する」</td></tr>
+    <tr><td class="k">Function / Logic</td><td>判断ロジック・モデル</td><td>故障確率の予測、在庫補充ルール</td></tr>
+    <tr><td class="k">Permission / Lineage</td><td>権限と来歴</td><td>誰が見られるか、どのデータから来たか</td></tr>
+  </table></div>
+
+  <h3>レイヤーで見ると</h3>
+  <div class="stack">
+    <div class="ly"><span class="n">Apps / Agents</span><span class="d">チャット、業務アプリ、AIエージェント</span></div>
+    <div class="ly on"><span class="n">Ontology</span><span class="d">意味（モノ・関係）＋操作（Action）＋権限 ← ここ</span></div>
+    <div class="ly"><span class="n">Data Platform</span><span class="d">DWH / データレイク / ETL（Snowflake, Databricks …）</span></div>
+    <div class="ly"><span class="n">Source Systems</span><span class="d">ERP / CRM / MES / Excel / センサー</span></div>
+  </div>
+
+  <h3>なぜ重要か</h3>
+  <ul class="tl-list">
+    <li><b>グラウンディング</b>：LLM を「その会社の現実」に接地させる。Palantir はこれを OAG（Ontology-Augmented Generation）と呼ぶ</li>
+    <li><b>意味の一意化</b>：「売上」「顧客」「稼働」の定義を1か所に。AI・BI・人間が同じ定義を参照する</li>
+    <li><b>行動の安全装置</b>：エージェントが勝手にSQLを書くのでなく、決められた Action だけを、権限の範囲で実行する</li>
+    <li><b>再利用</b>：一度作った意味の地図を、次のユースケースでも使い回せる（PoCごとに作り直さない）</li>
+  </ul>
+</div>
+
+<div class="sec" id="m2">
+  <div class="sec-label"><span class="num">02</span>Contrast & Why Now</div>
+  <div class="upd">Added 2026-11-10</div>
+  <h3>対比概念</h3>
+  <div class="t-wrap"><table class="t">
+    <tr><th>対比</th><th>相手は何か</th><th>オントロジーとの違い</th></tr>
+    <tr><td class="k">Schema（スキーマ）</td><td>テーブルの列・型の定義</td><td>保存の都合 ⇔ 業務の意味</td></tr>
+    <tr><td class="k">Taxonomy（分類体系）</td><td>is-a の木構造（犬 ⊂ 哺乳類）</td><td>分類だけ ⇔ 多様な関係＋制約＋操作</td></tr>
+    <tr><td class="k">Data Warehouse / Lake</td><td>事実データの集積</td><td>事実を溜める ⇔ 意味を持ち続ける</td></tr>
+    <tr><td class="k">Semantic Layer</td><td>BI用の指標定義（dbt, LookML）</td><td>参照・集計向け ⇔ 文脈・推論・書き込み向け</td></tr>
+    <tr><td class="k">Embedding / Vector RAG</td><td>文章をベクトル化し近さで検索</td><td>暗黙・統計的 ⇔ 明示・記号的</td></tr>
+    <tr><td class="k">Epistemology（認識論）</td><td>哲学で「どう知るか」</td><td>「何が在るか」（存在論）との対</td></tr>
+    <tr><td class="k">Connectionism</td><td>ニューラルネット派のAI</td><td>Symbolism（記号派）側の代表技術。両者の融合＝Neuro-symbolic</td></tr>
+  </table></div>
+
+  <h3>なぜこのタイミングで重要視されたか</h3>
+  <div class="t-wrap"><table class="t">
+    <tr><th>時期</th><th>出来事</th><th>意味</th></tr>
+    <tr><td>1980s–90s</td><td>Cyc、エキスパートシステム、Gruber の定義</td><td>記号AIの中核概念。だが手作業が重く冬の時代へ</td></tr>
+    <tr><td>2001–2012</td><td>Semantic Web（RDF/OWL）、Google Knowledge Graph（2012）</td><td>Webと検索で実用化。一般には地味な専門用語</td></tr>
+    <tr><td>2016–</td><td>Palantir Foundry が「Ontology」を製品の中心に</td><td>業務のデジタルツインとして再定義</td></tr>
+    <tr><td>2023</td><td>Palantir AIP 発表、生成AI PoC ブーム</td><td>「LLMを社内データに繋ぐと嘘・統制不能」問題が顕在化</td></tr>
+    <tr><td>2024</td><td>Karp「価値はチップとオントロジーに」／Microsoft GraphRAG</td><td>投資家・エンジニア双方で語が拡散</td></tr>
+    <tr><td>2025</td><td>エージェント元年、MCP 普及、PLTR 株急騰</td><td>AIに“操作”させるための型と権限が必須に</td></tr>
+    <tr><td>2025-12〜</td><td>Jaya Gupta「Context graphs」論争</td><td>「次の兆ドル機会はオントロジー／文脈層」論</td></tr>
+    <tr><td>2026</td><td>日本で Operational Ontology 議論、各社がOSS・ツールを公開</td><td>日本でも実装フェーズへ（Main 07）</td></tr>
+  </table></div>
+  <div class="callout"><strong>一言でいうと</strong>：「モデルが賢くなるほど、ボトルネックは<b>モデルではなく文脈（自社の意味）</b>に移った」。その文脈を構造化したものの呼び名として、古い学術用語が掘り起こされた。</div>
+</div>
+
+<div class="sec" id="m3">
+  <div class="sec-label"><span class="num">03</span>Related Keywords</div>
+  <div class="upd">Added 2026-11-10</div>
+  <div class="kw-h">Core</div>
+  <div class="kw">
+    <div class="w"><b>Knowledge Graph（ナレッジグラフ）</b><span>実体と関係をノード・エッジで持つデータ。オントロジーは「型の設計図」、ナレッジグラフは「中身のデータ」という関係</span></div>
+    <div class="w"><b>Taxonomy（タクソノミー）</b><span>階層的な分類体系。オントロジーの簡易版</span></div>
+    <div class="w"><b>Semantic Layer（セマンティックレイヤー）</b><span>BIで指標・ディメンションの定義を一元化する層</span></div>
+    <div class="w"><b>Digital Twin（デジタルツイン）</b><span>現実の組織・設備をデータ上に再現したもの。Palantir 型オントロジーはこれに近い</span></div>
+  </div>
+  <div class="kw-h">Standards / Tech</div>
+  <div class="kw">
+    <div class="w"><b>RDF / OWL / SPARQL</b><span>W3C 標準。RDF＝主語-述語-目的語のトリプル、OWL＝オントロジー記述言語、SPARQL＝問い合わせ言語</span></div>
+    <div class="w"><b>Semantic Web</b><span>Web全体を機械が意味で読めるようにする構想（Berners-Lee）</span></div>
+    <div class="w"><b>Graph DB</b><span>Neo4j、Amazon Neptune など。関係を高速に辿れるDB</span></div>
+    <div class="w"><b>Entity Resolution</b><span>別システムの「同じ顧客」を同一と判定する処理。オントロジー構築の地味な本丸</span></div>
+  </div>
+  <div class="kw-h">LLM / Agent era</div>
+  <div class="kw">
+    <div class="w"><b>Grounding（グラウンディング）</b><span>LLMの出力を事実・データに接地させること</span></div>
+    <div class="w"><b>GraphRAG / OAG</b><span>グラフやオントロジーを辿って文脈を集めるRAG。OAG は Palantir の呼び名</span></div>
+    <div class="w"><b>Context Engineering</b><span>LLMに渡す文脈の設計。オントロジーはその構造化版</span></div>
+    <div class="w"><b>Context Graph</b><span>意思決定の文脈・履歴まで含めたグラフ（Foundation Capital の Jaya Gupta が提唱）</span></div>
+    <div class="w"><b>Neuro-symbolic AI</b><span>ニューラル（LLM）と記号（オントロジー・ルール）の融合</span></div>
+    <div class="w"><b>MCP / Tool use</b><span>エージェントが外部ツールを呼ぶ仕組み。オントロジーの Action を公開する口になる</span></div>
+  </div>
+  <div class="kw-h">Business</div>
+  <div class="kw">
+    <div class="w"><b>Operational Ontology</b><span>読むだけでなく業務を動かす（書き込む）オントロジー。日本では2026年に浸透</span></div>
+    <div class="w"><b>FDE（Forward Deployed Engineer）</b><span>顧客先に常駐してオントロジーを組み上げるエンジニア。Palantir 発の職種</span></div>
+    <div class="w"><b>MDM（Master Data Management）</b><span>マスタデータの一元管理。オントロジーの前身的な取り組み</span></div>
+    <div class="w"><b>Moat</b><span>競争上の堀。「オントロジーこそ moat」が定番フレーズ</span></div>
+  </div>
+</div>
+
+<div class="sec" id="m4">
+  <div class="sec-label"><span class="num">04</span>Usage in Context</div>
+  <div class="upd">Added 2026-11-10</div>
+  <div class="t-wrap"><table class="t">
+    <tr><th>文脈</th><th>典型的な言い方</th><th>言っていること</th></tr>
+    <tr><td class="k">投資・決算</td><td>「Palantir の本質はオントロジー」</td><td>単なるAIラッパーではなく、顧客の業務に深く入った層を持つ</td></tr>
+    <tr><td class="k">エンプラAI営業</td><td>「エージェントの前に、まず業務オントロジーを」</td><td>RAG PoC が精度で詰まった次の打ち手は、意味の整理から</td></tr>
+    <tr><td class="k">データ基盤</td><td>「DWH の上にオントロジー層を載せる」</td><td>Snowflake/Databricks の事実に意味と操作を足す</td></tr>
+    <tr><td class="k">ナレッジ・RAG</td><td>「ベクトル検索だけでなくナレッジグラフで」</td><td>関係を辿る質問（誰の、どの設備の、いつの）に強くする</td></tr>
+    <tr><td class="k">医療・バイオ</td><td>「SNOMED CT / Gene Ontology に準拠」</td><td>業界標準の概念体系に合わせて相互運用する</td></tr>
+    <tr><td class="k">製造・プラント</td><td>「設備オントロジー（ISO 15926 等）」</td><td>設備・配管・図面の関係を構造化し、ナレッジ検索や保全に使う</td></tr>
+    <tr><td class="k">学術・研究</td><td>「OWL で公理を定義し推論する」</td><td>厳密な論理・自動推論。ビジネス用法より狭く深い</td></tr>
+  </table></div>
+  <div class="callout"><strong>使う時の注意</strong>：相手が①学術（推論・公理あり）の意味で言っているのか、②Palantir 型（業務のデータモデル＋操作）の意味で言っているのかで話が噛み合わなくなる。商談では「ここで言うオントロジーは、AIが読める業務定義と操作のことです」と最初に揃えると安全。</div>
+</div>
+
+<div class="sec" id="m5">
+  <div class="sec-label"><span class="num">05</span>English Expressions & 20 Examples</div>
+  <div class="upd">Added 2026-11-10</div>
+  <h3>よく一緒に使われる表現（collocations）</h3>
+  <div class="t-wrap"><table class="t">
+    <tr><th>表現</th><th>意味</th></tr>
+    <tr><td class="k">build / design / model an ontology</td><td>オントロジーを構築・設計する</td></tr>
+    <tr><td class="k">the ontology layer</td><td>オントロジー層</td></tr>
+    <tr><td class="k">ground X in the ontology</td><td>Xをオントロジーに接地させる</td></tr>
+    <tr><td class="k">map data to / onto the ontology</td><td>データをオントロジーに対応づける</td></tr>
+    <tr><td class="k">ontology-driven / ontology-based</td><td>オントロジー駆動の／に基づく</td></tr>
+    <tr><td class="k">a shared ontology</td><td>共有された概念体系（部署・システム横断）</td></tr>
+    <tr><td class="k">object types, link types, action types</td><td>Palantir 用語の3点セット</td></tr>
+    <tr><td class="k">ontological (question / commitment)</td><td>存在論的な（問い／前提）。哲学寄りの響き</td></tr>
+    <tr><td class="k">the Ontology（大文字）</td><td>Palantir の製品機能を指す固有名詞的用法</td></tr>
+  </table></div>
+
+  <h3>例文 20</h3>
+  <ol class="ex">
+    <li><div class="en">An ontology is an explicit specification of a conceptualization.</div><div class="ja">オントロジーとは概念化の明示的な仕様である。</div><div class="pt">Gruber の定義そのもの。教科書的な一文</div></li>
+    <li><div class="en">LLMs know language, but they don't know your business — that's what the ontology is for.</div><div class="ja">LLMは言葉を知っているが、あなたの事業は知らない。そのためにオントロジーがある。</div></li>
+    <li><div class="en">We grounded the agent in the ontology, so it only acts on objects it has permission to touch.</div><div class="ja">エージェントをオントロジーに接地させたので、権限のあるオブジェクトにしか作用しない。</div><div class="pt">ground A in B＝AをBに根ざさせる</div></li>
+    <li><div class="en">Before we deploy any agents, we need to model the core ontology of your supply chain.</div><div class="ja">エージェントを入れる前に、御社サプライチェーンの中核オントロジーをモデル化する必要があります。</div><div class="pt">コンサルの提案でそのまま使える</div></li>
+    <li><div class="en">The ontology is the moat; the models are becoming commodities.</div><div class="ja">堀はオントロジーで、モデルはコモディティ化しつつある。</div></li>
+    <li><div class="en">Each object type in the ontology maps to one or more tables in the warehouse.</div><div class="ja">オントロジーの各オブジェクトタイプは、DWHの1つ以上のテーブルに対応する。</div></li>
+    <li><div class="en">"Revenue" means three different things across finance, sales and ops — a shared ontology fixes that.</div><div class="ja">「売上」は財務・営業・現場で3通りの意味がある。共有オントロジーがそれを解決する。</div></li>
+    <li><div class="en">A taxonomy tells you what something is; an ontology also tells you how it relates to everything else.</div><div class="ja">タクソノミーはそれが何かを教え、オントロジーはそれが他のすべてとどう関係するかまで教える。</div></li>
+    <li><div class="en">Our RAG pipeline plateaued, so we added a knowledge graph built on a lightweight ontology.</div><div class="ja">RAGの精度が頭打ちになったので、軽量なオントロジーに基づくナレッジグラフを足した。</div><div class="pt">plateau＝頭打ちになる</div></li>
+    <li><div class="en">Action types let the model write back to operational systems in a governed way.</div><div class="ja">アクションタイプにより、モデルは統制された形で業務システムに書き戻せる。</div><div class="pt">write back＝書き戻す、governed＝統制された</div></li>
+    <li><div class="en">Building the ontology took weeks of entity resolution across five ERPs.</div><div class="ja">オントロジー構築には、5つのERPをまたぐ名寄せに数週間かかった。</div></li>
+    <li><div class="en">Who owns the ontology — IT, the data team, or the business?</div><div class="ja">オントロジーの持ち主は誰か。IT か、データチームか、事業部か。</div><div class="pt">運用設計の議論で必ず出る問い</div></li>
+    <li><div class="en">Ontologies need to evolve as the business changes; otherwise they rot.</div><div class="ja">オントロジーは事業の変化に合わせて進化させないと腐る。</div><div class="pt">rot＝腐る（ドキュメントやコードにもよく使う）</div></li>
+    <li><div class="en">The semantic layer is for metrics; the ontology is for meaning and action.</div><div class="ja">セマンティックレイヤーは指標のため、オントロジーは意味と行動のためにある。</div></li>
+    <li><div class="en">We're taking an ontology-first approach to enterprise AI.</div><div class="ja">私たちはエンタープライズAIにオントロジー・ファーストで取り組んでいる。</div><div class="pt">X-first＝Xを最優先にする（mobile-first 等と同じ型）</div></li>
+    <li><div class="en">Palantir's forward deployed engineers sit with customers to build out the Ontology.</div><div class="ja">PalantirのFDEは顧客の隣に座ってオントロジーを組み上げる。</div><div class="pt">build out＝拡充して作り上げる</div></li>
+    <li><div class="en">In medicine, SNOMED CT serves as a shared ontology for clinical terms.</div><div class="ja">医療ではSNOMED CTが臨床用語の共有オントロジーとして機能している。</div></li>
+    <li><div class="en">The question isn't which model to use, but whether your data has an ontology at all.</div><div class="ja">問題はどのモデルを使うかではなく、そもそもデータにオントロジーがあるかどうかだ。</div></li>
+    <li><div class="en">That's an ontological question, not an engineering one.</div><div class="ja">それは技術の問題ではなく、存在論的（何をモノとみなすか）な問題だ。</div><div class="pt">形容詞 ontological は哲学寄りのニュアンス</div></li>
+    <li><div class="en">Think of the ontology as a digital twin of how your company actually operates.</div><div class="ja">オントロジーは、会社が実際にどう動いているかのデジタルツインだと考えてください。</div><div class="pt">非エンジニアへの説明に便利</div></li>
+  </ol>
+</div>
+
+<div class="sec" id="m6">
+  <div class="sec-label"><span class="num">06</span>X Posts — US / English (22)</div>
+  <div class="upd">Added 2026-11-10</div>
+  <div class="callout"><strong>注意</strong>：X のインプレッション数は取得できなかったため、全件 <b>n/a</b>。投稿者の影響力・他メディアでの引用・反応の連鎖を根拠に、リーチが大きそうな順に並べた。本文は検索結果に出た投稿タイトルの引用（途中で切れているものあり）。<span class="lbl-q">引用</span>は原文の一部、<span class="lbl-s">要約</span>は趣旨。日付は status ID から算出（UTC）。</div>
+  <div id="twUS"></div>
+</div>
+
+<div class="sec" id="m7">
+  <div class="sec-label"><span class="num">07</span>X Posts — Japan (18)</div>
+  <div class="upd">Added 2026-11-10</div>
+  <div class="callout">同じ条件で集めた日本語の投稿。20件に届かなかった分は数合わせせず、確認できたものだけ載せた。深津貴之・落合陽一・shi3z 氏などの著名アカウントによる「オントロジー」投稿は見つからなかった。<b>傾向</b>：日本では2026年夏から急増。@gura105 の Operational Ontology の整理、クラシルの堀江氏の発信、Claude Code×オントロジーの実験が中心。</div>
+  <div id="twJP"></div>
+</div>
+
+<div class="sec" id="m8">
+  <div class="sec-label"><span class="num">08</span>Sources</div>
+  <ul class="src">
+    <li>Gruber, T. R. (1993). “A Translation Approach to Portable Ontology Specifications.” <i>Knowledge Acquisition</i> 5(2).</li>
+    <li>Palantir Docs — Ontology overview: https://www.palantir.com/docs/foundry/ontology/overview/</li>
+    <li>W3C — OWL 2 Web Ontology Language: https://www.w3.org/TR/owl2-overview/</li>
+    <li>Microsoft Research — GraphRAG (2024): https://microsoft.github.io/graphrag/</li>
+    <li>X 投稿は各カードのリンク先（2026-11-10 に検索で確認。x.com 本体は未取得）</li>
+  </ul>
+</div>
+
+</div>
+</div>
+
+<script>
+(function(){
+var US=[
+ ["@PalantirTech","Palantir 公式","2024-06-06","q","All of the value in the market is going to go to chips and what we call the Ontology. The Ontology allows you to take an LLM, use it, refine it, and impose it on your enterprise.","Karp（CEO）の発言。市場の価値はチップとオントロジーに集まる、という代表的フレーズ","https://x.com/PalantirTech/status/1798828465208401942","公式・AIPCon での CEO 発言"],
+ ["@ssankar","Shyam Sankar（Palantir CTO）","2024-04-12","q","I'll spill the beans. Our Thielian secret… only @PalantirTech is doing anything in the enterprise with LLMs. Chat is the wrong paradigm…","チャットは誤ったパラダイムで、企業でLLMを使う鍵はオントロジーだという趣旨","https://x.com/ssankar/status/1778796179255345300","CTO 本人"],
+ ["@PalantirTech","Palantir 公式","2026-06-04","q","Pointing an LLM at hundreds of disconnected, ungoverned databases gets you a system that hallucinates, is insecure, and unauditable… The Ontology has been the key to…","バラバラで統制のないDBにLLMを繋ぐと、幻覚・危険・監査不能。鍵はオントロジー","https://x.com/PalantirTech/status/2062633365497340199","公式。FourWeekMBA の記事見出しにも"],
+ ["@PalantirTech","Palantir 公式","2023-12-05","q","Grounding #LLMs in the Ontology effectively anchors them in the reality of a given business…","LLMをオントロジーに接地させると、その事業の現実に根ざす（OAG）","https://x.com/PalantirTech/status/1732137648322466216","公式"],
+ ["@PalantirTech","Palantir 公式","2024-11-26","q","The Ontology enables the organization to look at the electrical grid, the assets…","電力網の資産・作業・リスクをオントロジーで一望できる","https://x.com/PalantirTech/status/1861432342591533114","公式"],
+ ["@JayaGup10","Jaya Gupta（Foundation Capital）","2025-12-23","q","AI's trillion-dollar opportunity: Context graphs","AIの1兆ドルの機会は「コンテキストグラフ」","https://x.com/JayaGup10/status/2003525933534179480","@TheYotg・@prukalpa・@KirkMarple らが反応・引用"],
+ ["@JayaGup10","Jaya Gupta（Foundation Capital）","2025-12-31","q","Before LLMs, Palantir was competing with Snowflake and Databricks. Post-LLMs, they do not believe they have any competitors…","LLM以前はSnowflake/Databricksと競合、以後は競合がいないと考えている","https://x.com/JayaGup10/status/2006384049485484145","同上"],
+ ["@IndraVahan","—","2026-01-01","q","\"why snowflake or databricks don't just build ontologies then?\" because ontologies mean owning meaning as it changes…","オントロジーとは、変わり続ける意味を持ち続けること。DWHは事実を溜めるだけ","https://x.com/IndraVahan/status/2006605006842237169","上の投稿への反応"],
+ ["@prukalpa","Prukalpa Sankar（Atlan 共同創業者）","2026-01-13","q","Context Graphs Are a Trillion-Dollar Opportunity. But Who Actually Captures It?","価値を取るのはアプリでなく統合する側だ、という反論","https://x.com/prukalpa/status/2011117250762207347","データカタログ企業の創業者"],
+ ["@prukalpa","Prukalpa Sankar（Atlan 共同創業者）","2026-01-23","s","セマンティックレイヤーは参照のため、オントロジーは文脈と推論のため、という区別","—","https://x.com/prukalpa/status/2014577133608480927","同上"],
+ ["@DataChaz","Charly Wargnier","2026-11-03","q","NVIDIA JUST OPEN-SOURCED A SEMANTIC LAYER FOR AI AGENTS. It's called Auto Ontology… \"revenue\" might mean something different…","NVIDIA がエージェント向けのオントロジー層をOSSで公開した（内容は未検証）","https://x.com/DataChaz/status/2117621667669389684","直近の話題"],
+ ["@Sumanth_077","—","2026-11-04","q","NVIDIA Open-Sourced Auto Ontology, a Semantic Layer for AI Agents!…","同上","https://x.com/Sumanth_077/status/2117968195793650056","同上"],
+ ["@Ldataengineer","—","2026-11-03","q","Your boss asks the AI agent: \"What was revenue last quarter?\"… it used the wrong \"revenue\" column…","エージェントが間違った「売上」列を使う問題。オントロジーの必要性の典型例","https://x.com/Ldataengineer/status/2117418155647684676","同上"],
+ ["@amitisinvesting","PLTR 投資家","2024-06-14","q","The Ontology is Palantir's secret… LLMs mean nothing without ontologies.","オントロジーのないLLMは無意味","https://x.com/amitisinvesting/status/1801636682413859229","投資家アカウント"],
+ ["@amitisinvesting","PLTR 投資家","2024-09-17","s","Karp と Chief Architect の Akshay Krishnaswamy が、オントロジー層がなぜ重要かを語る動画クリップを紹介","—","https://x.com/amitisinvesting/status/1835833981960397163","同上"],
+ ["@DrTomsLens","—","2026-09-10","q","$NVDA and $PLTR used Palantir's Ontology to post-train a specialist model… just 30B parameters","オントロジーを使って NVIDIA のサプライチェーン特化モデルを事後学習した、という主張（未検証）","https://x.com/DrTomsLens/status/2098145865823138150","—"],
+ ["@TradexWhisperer","—","2026-06-07","q","AI Agents are like new hires on day one… The Ontology is a living map of an organization's data…","エージェントは入社初日の新人。オントロジーは組織の生きた地図","https://x.com/TradexWhisperer/status/2063457184990798224","—"],
+ ["@dsmiley411","Dorian Smiley（CodeStrap）","2025-09-07","q","Databricks, Snowflake, and Microsoft are all rapidly trying to bridge the gap… Palantir's Foundry with Ontology remains the only true e2e platform.","各社が追いかけているが、真のE2EはFoundry＋オントロジーだけ","https://x.com/dsmiley411/status/1964720322470645852","—"],
+ ["@TheYotg","The Year of the Graph","2026-06-23","q","Layers of Meaning: Context Graphs, Graph Memory, and Ontologies for AI… Everyone is building context layers and ontologies for AI now.","いまや皆がAI向けの文脈層とオントロジーを作っている","https://x.com/TheYotg/status/2069437398518210579","グラフ業界のニュースレター"],
+ ["@PalantirOg","PLTR ファン","2026-06-04","q","$PLTR AIPCon 10 TRADECRAFT: LLMs X ONTOLOGY","AIPCon 10 のテーマは LLM×オントロジー","https://x.com/PalantirOg/status/2062493776925352216","—"],
+ ["@KirkMarple","Kirk Marple（Graphlit）","2026-01-05","s","Jaya Gupta の「The next $50B company will be built on learned ontologies」という発言を紹介（又聞き・原文未確認）","次の500億ドル企業は“学習されたオントロジー”の上に作られる","https://x.com/KirkMarple/status/2008082060817342869","—"],
+ ["@harshbhatt7585","—","2026-08-29","q","Ontology: Giving AI Agents a Model of the World","オントロジー：AIエージェントに世界のモデルを与える（X記事）","https://x.com/harshbhatt7585/article/2093794928690377114","X 記事"]
+];
+var JP=[
+ ["@yusuke_horie","堀江裕介（クラシル CEO）","2026-07-31","q","データエンジニアこそ、組織のオントロジーに取り組むべき Palantirなどの事例を用いつつ説明しております。","","https://x.com/yusuke_horie/status/2083161474416185516","著名起業家"],
+ ["@yusuke_horie","堀江裕介（クラシル CEO）","2026-06-09","q","Kurashiru AI OS事業でコアとなるオントロジレイヤー…エージェントレイヤーと同等にこのレイヤーへの開発投資の価値が高い","","https://x.com/yusuke_horie/status/2064296548838907905","同上"],
+ ["@LangChainJP","LangChain 日本語コミュニティ","2025-05-22","q","【ナレッジグラフとLLMベースのオントロジーが生成AIの本番環境導入の鍵に】…LLMはオントロジーと意味層の構築に適しており…","","https://x.com/LangChainJP/status/1925477160329880002","—"],
+ ["@classmethod","クラスメソッド公式","2026-11-04","q","プロンプトの工夫だけでは、ルール順守は担保できない オントロジーとナレッジグラフの基礎から…","11/18 のウェビナー告知","https://x.com/classmethod/status/2117889638572470553","企業公式"],
+ ["@gura105","gura","2026-07-21","q","Palantir Foundryのオントロジーは『よく使われる意味のオントロジー』からかなり遠い…トリプルで構成されていません。公理も推論機能もありません…オントロジーがmoatであるという投資テーゼ…","","https://x.com/gura105/status/2079517354871202003","日本語圏の論点整理で中心になっている投稿"],
+ ["@gura105","gura","2026-07-14","q","Ontologyについて、本家Palantir Foundryを実際に触った視点から解説してみました。","","https://x.com/gura105/status/2077154673849774468","同上"],
+ ["@gura105","gura","2026-08-15","q","Operational Ontologyというワードが少しづつ認知されている感じがします。","","https://x.com/gura105/status/2088516590321250597","同上"],
+ ["@PLTR_Dog","ぱらどっぐ（PLTR 投資家）","2024-07-01","q","$PLTR の『オントロジー』についてまとめてみました…大きな図書館をイメージ…","","https://x.com/PLTR_Dog/status/1807617974167392720","投資家アカウント"],
+ ["@PLTR_Dog","ぱらどっぐ（PLTR 投資家）","2025-07-23","q","ざっくり短くオントロジーについて書きました。","","https://x.com/PLTR_Dog/status/1947932288471466191","同上"],
+ ["@hucky777","—","2025-02-04","q","もし一社向けのソフトウェアを構築するのであれば、オントロジーは必要ありません…","決算説明会Q&AでのSankar発言の翻訳","https://x.com/hucky777/status/1886814846651654318","—"],
+ ["@legoboku","Yohei Onishi","2026-04-06","q","オントロジは2000年代にセマンティックウェブ、RDF…グラフDBともに再ブーム中。","","https://x.com/legoboku/status/2040962412506202176","—"],
+ ["@MichitakaTsuda","津田通隆","2026-04-06","q","2026年のAgentic AIの技術トレンドは、確実にオントロジーが来ます…『Ontology as a Product』","","https://x.com/MichitakaTsuda/status/2041294984780165348","—"],
+ ["@farstep_","—","2026-07-06","q","AI 時代におけるオントロジーの役割","X 記事","https://x.com/farstep_/article/2073938708240474145","X 記事"],
+ ["@takupesoo","TakumaAbe","2026-06-28","s","Claude Code にオントロジーを持たせると、タスクによってはコスト約半分・約3倍速になったという実験報告","","https://x.com/takupesoo/status/2071250266763247739","Zenn に追試記事あり"],
+ ["@highwide","うちやま（Ubie）","2026-07-21","q","自分のいるオントロジーチームのLeadが書いてくれた…高尚とも思われがちな『オントロジー』をグッと日常に持ってきた話","","https://x.com/highwide/status/2079370507259142608","—"],
+ ["@_kayato","—","2025-12-01","q","『企業のデータモデル×意思決定ロジックをソフトウェア上に構築』＝オントロジーが鍵。Palantirはコンサル起点、Snowflake/DatabricksはDWH起点…","","https://x.com/_kayato/status/1995341056783913320","—"],
+ ["@inada_riku","いなりく","2026-08-03","q","オントロジーで AI に業務知識を渡す — AWS の OSS『Context Ontology Accelerator』を試してみました！","","https://x.com/inada_riku/status/2084149400251818331","—"],
+ ["@yusaku_0426","—","2026-06-02","q","オントロジーは『オペレーショナルレイヤー』…その中間層を『組み上げる』のがFDE","","https://x.com/yusaku_0426/status/2061755695083770141","—"]
+];
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function render(id,arr){
+  document.getElementById(id).innerHTML=arr.map(function(r,i){
+    var lab=r[3]==='q'?'<span class="lbl-q">引用</span>':'<span class="lbl-s">要約</span>';
+    return '<div class="tw"><div class="tw-h"><span class="tw-n">'+(i+1)+'</span><span class="tw-a">'+esc(r[0])+'</span><span class="tw-w">'+esc(r[1])+'</span><span class="tw-d">'+r[2]+'</span></div>'+
+      '<div class="tw-t">'+lab+' '+esc(r[4])+'</div>'+(r[5]&&r[5]!=='—'?'<div class="tw-g">→ '+esc(r[5])+'</div>':'')+
+      '<div class="tw-f"><a href="'+r[6]+'" target="_blank" rel="noopener">Open on X</a><span>Impressions: n/a</span><span>Reach: '+esc(r[7])+'</span></div></div>';
+  }).join('');
+}
+render('twUS',US);render('twJP',JP);
+})();
+</script>
+<script src="../_shared/research_tabs.js" defer></script>
+<script src="../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>
