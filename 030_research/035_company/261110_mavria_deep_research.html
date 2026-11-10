@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mavria — データセンターを工場で作る会社</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .person{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:14px}
+  .person .p-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:3px}
+  .person .p-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:800;color:var(--text)}
+  .person .p-role{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--accent);padding:2px 9px;border-radius:4px}
+  .person .p-line{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7}
+  .person ul{list-style:none;padding:0;margin:0}
+  .person li{font-size:13.5px;color:var(--mid);line-height:1.8;padding:6px 0 6px 16px;position:relative;border-bottom:1px solid var(--border)}
+  .person li:last-child{border-bottom:none}
+  .person li::before{content:'';position:absolute;left:0;top:15px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .person li b,.person li strong{color:var(--text);font-weight:700}
+  .person .p-quote{margin-top:12px;padding:11px 15px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13px;line-height:1.8;color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa details[open]{background:var(--bg);border-color:var(--accent)}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:flex-start;gap:10px;line-height:1.65}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{background:var(--card2)}
+  .qa details[open] summary:hover{background:var(--surface)}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .qa summary::after{content:'+';margin-left:auto;padding-left:10px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem;line-height:1;flex-shrink:0}
+  .qa details[open] summary::after{content:'\2212'}
+  /* 回答本文。qa-a を付け忘れた <p> でも崩れないよう summary 以外の直下要素すべてに効かせる */
+  .qa details>*:not(summary){margin:0 0 10px;padding:0 18px 0 48px;font-size:13.5px;color:var(--mid);line-height:1.85;overflow-wrap:anywhere}
+  .qa details>*:not(summary):last-child{margin-bottom:16px}
+  .qa details>*:not(summary) b,.qa details>*:not(summary) strong{color:var(--text);font-weight:700}
+  .qa details>*:not(summary) a{color:var(--text)}
+  .qa details>ul,.qa details>ol{padding-left:66px}
+  .col-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin:22px 0}
+  .col-box .col-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--accent);display:inline-block;padding:3px 10px;border-radius:4px;margin-bottom:14px}
+  .col-box h3{margin-top:0;margin-bottom:12px;font-size:1.05rem}
+  .col-box p{font-size:13.5px;line-height:1.9}
+  .col-box .col-sub{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:20px 0 8px;padding-top:16px;border-top:1px solid var(--border)}
+  .col-box blockquote{margin:14px 0;padding:12px 18px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.85;color:var(--text)}
+  .col-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+  .col-num .n{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+  .col-num .n .v{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;line-height:1.1;margin-bottom:3px}
+  .col-num .n .l{font-size:11px;color:var(--muted);line-height:1.5}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.qa details>*:not(summary){padding-left:18px}.qa details>ul,.qa details>ol{padding-left:36px}.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+</style>
+<style>
+/* 左サイド目次（scroll-spy）。本文900px中央寄せなので、左余白が目次幅を超える1400px以上でだけ出す */
+.side-nav{position:fixed;left:20px;top:84px;width:200px;max-height:calc(100vh - 162px);overflow-y:auto;padding:12px 0 32px;z-index:10;scrollbar-width:thin;display:none}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@media (min-width:1400px){.side-nav{display:block}}
+.side-nav-title{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-left:14px;margin-bottom:8px}
+.side-nav-list{list-style:none;padding:0;margin:0}
+.side-nav-link{display:block;color:#a8a8a8;text-decoration:none;padding:6px 8px 6px 14px;border-left:2px solid transparent;font-size:12px;line-height:1.45;transition:color .15s,border-color .15s,background .15s}
+.side-nav-link:hover{color:var(--text);border-left-color:var(--border)}
+.side-nav-link.active{color:var(--accent);font-weight:700;border-left-color:var(--accent);background:var(--surface)}
+.side-nav-num{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--muted);margin-right:6px}
+html{scroll-behavior:smooth}
+.raw{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--card)}
+.raw>summary{cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700}
+.raw>div{padding:0 14px 14px}
+.note{font-size:12px;color:var(--muted)}
+</style>
+<style>
+.chart{margin:14px 0 6px}
+.chart svg{max-width:100%}
+.hero-updated{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.6);margin:-14px 0 22px;letter-spacing:.04em}
+.t td.num,.t th.num{text-align:right;white-space:nowrap}
+  .t-wrap .t{width:max-content;min-width:100%}
+  .t th,.t td{white-space:nowrap}
+  .t th:first-child,.t td:first-child{position:sticky;left:0;background:var(--bg);z-index:1}
+  .t th:first-child{background:var(--card2)}
+  .raw{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--card)}
+  .raw>summary{cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700}
+  .raw>div{padding:0 14px 14px}
+</style>
+<link rel="stylesheet" href="../_shared/research_tabs.css">
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">research</a><span class="s">/</span><a href="index.html">company</a><span class="s">/</span><span class="c">Mavria</span></nav><script>if(location.protocol!=="file:"){var c=document.currentScript.previousElementSibling;if(c)c.remove()}</script><script>/* keep-pos: リロードしても見ていた位置（スクロール・タブ・開いた<details>・内側スクロール）を保つ */
+(function(){var ss;try{ss=window.sessionStorage;ss.getItem('x')}catch(e){return}
+try{history.scrollRestoration='manual'}catch(e){}
+var K='wl-pos:'+location.pathname,TAB='[data-view],[data-tab],[role="tab"],.tab,.tab-btn',st={y:0,s:{},t:[]},busy=true,tm;
+function P(el){var p=[];while(el&&el.nodeType===1&&el!==document.body){if(el.id){p.unshift('#'+CSS.escape(el.id));return p.join('>')}
+var i=1,x=el;while((x=x.previousElementSibling))i++;p.unshift(el.tagName.toLowerCase()+':nth-child('+i+')');el=el.parentElement}p.unshift('body');return p.join('>')}
+function Q(q){try{return document.querySelector(q)}catch(e){return null}}
+function save(){if(busy)return;st.y=window.scrollY;st.d=[].map.call(document.querySelectorAll('details'),function(d){return d.open?1:0}).join('');
+try{ss.setItem(K,JSON.stringify(st))}catch(e){}}
+function later(){if(busy)return;clearTimeout(tm);tm=setTimeout(save,150)}
+document.addEventListener('scroll',function(e){var t=e.target;if(t&&t.nodeType===1&&!busy)st.s[P(t)]=t.scrollTop;later()},true);
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest(TAB);if(!b||!e.isTrusted)return;
+var g=P(b.parentElement);st.t=st.t.filter(function(x){return x.g!==g});st.t.push({g:g,p:P(b)});st.t=st.t.slice(-6);later()},true);
+document.addEventListener('toggle',later,true);addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save()});
+function stop(){if(busy){busy=false;save()}}
+['wheel','touchstart','keydown','mousedown'].forEach(function(n){addEventListener(n,stop,{capture:true,passive:true})});
+addEventListener('load',function(){var d;try{d=JSON.parse(ss.getItem(K)||'null')}catch(e){}
+var nt;try{nt=performance.getEntriesByType('navigation')[0].type}catch(e){}
+/* リンクで来た時は復元しない（リロード・戻る/進むだけ） */
+if(!d||(nt&&nt!=='reload'&&nt!=='back_forward')){busy=false;return}st=d;st.s=st.s||{};st.t=st.t||[];
+st.t.forEach(function(x){var b=Q(x.p);if(b&&!b.classList.contains('on')&&!b.classList.contains('active')&&b.getAttribute('aria-selected')!=='true')b.click()});
+if(d.d)[].forEach.call(document.querySelectorAll('details'),function(el,i){if(d.d[i]==='1')el.open=true});
+function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var el=Q(q);if(el)el.scrollTop=st.s[q]}}
+[0,60,160,320,640,1100,1700].forEach(function(t){setTimeout(go,t)});setTimeout(stop,1800)})})();</script><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="page" data-terms-root>
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-solid">Company Deep Research</span>
+    <span class="badge badge-white">AI Infrastructure</span>
+    <span class="badge badge-white">Modular Data Center</span>
+    <span class="badge badge-white">Seed</span>
+  </div>
+  <h1>Mavria、データセンターを工場で作る会社</h1>
+  <div class="hero-updated">Created: 2026-11-10 ／ Last updated: 2026-11-10</div>
+  <div class="hero-sub">Mavria（米テキサス州 The Woodlands、2026年6月創業）は、AIデータセンターを<strong>現場で一品ずつ建てるのではなく、工場で量産してトラックで運ぶ</strong>会社。最初の製品「<strong>Terrain</strong>」は電源・液冷・制御・サーバー区画を1つにまとめた<strong>5MWの箱</strong>で、1号機「Terrain 01」をヒューストンで製造中。創業者3人はトランプ政権の<strong>エネルギー省（DOE）でDOGEチーム</strong>として原子力規制改革を進めた元官僚。創業5か月・製品出荷前で<strong>累計$130M・評価額$1B</strong>（リード Paradigm）。</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">$130M</div><div class="lbl">Total Raised (Pre-seed + Seed)</div></div>
+    <div class="kpi"><div class="val">$1B</div><div class="lbl">Post-money Valuation</div></div>
+    <div class="kpi"><div class="val">5 MW</div><div class="lbl">Per Terrain Unit (reported)</div></div>
+    <div class="kpi"><div class="val">35</div><div class="lbl">Employees (2026-11)</div></div>
+    <div class="kpi"><div class="val">Early 2027</div><div class="lbl">Terrain 01 Testing</div></div>
+  </div>
+</div>
+
+<div class="ptabs" data-tabbar role="tablist">
+  <button type="button" class="on" data-tab="tldr">TL;DR</button>
+  <button type="button" data-tab="main">Main</button>
+</div>
+
+<div class="pane" data-pane="tldr">
+
+<div class="sec" id="t1">
+  <div class="sec-label"><span class="num">01</span>In One Line</div>
+  <div class="oneliner">AIデータセンターを「<b>建設工事</b>」から「<b>工業製品</b>」に変えようとしている会社。電源・冷却・サーバー置き場を工場で組んで試験まで済ませ、トラックで運んで<b>置くだけ</b>にする。中身の売りは技術より<b>人脈と調達力</b>——原子力規制を半年で動かした元DOE官僚が、変圧器やタービンの「待ち行列」を先回りで押さえにいく。</div>
+</div>
+
+<div class="sec" id="t2">
+  <div class="sec-label"><span class="num">02</span>Data Center Bottleneck 101</div>
+  <h2>そもそも何が詰まっているのか</h2>
+  <p>AIの計算に必要なGPUは買えるようになった。いま足りないのは、<b>GPUを置いて動かす「建物と電気」</b>の方。Mavria は自社の主張として、詰まりを次の順で説明する。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>#</th><th>詰まり</th><th>中身</th><th>Mavria の打ち手</th></tr></thead>
+    <tbody>
+      <tr><td>1</td><td><b>Power</b>（電力）</td><td>送電網への接続待ちが数年。大型DCは数百MW〜GWを要求</td><td>5MWの小分けで、地域の配電線の<b>余り容量</b>に差し込む</td></tr>
+      <tr><td>2</td><td><b>Electrical equipment</b>（電気設備）</td><td>変圧器・スイッチギア・ガスタービンの納期が数年</td><td>需要より先に<b>機器と生産枠を確保</b>（Ready ahead of demand）</td></tr>
+      <tr><td>3</td><td><b>Construction</b>（建設）</td><td>1件ごとの特注設計、職人不足、工期遅延</td><td>工場で<b>同じ物を繰り返し</b>作る（Engineered for volume）</td></tr>
+      <tr class="hl"><td>4</td><td><b>Siting</b>（立地・住民反対）</td><td>巨大DCへの地元反対が強まる</td><td>小さく分散して置けるので<b>目立たない</b></td></tr>
+    </tbody>
+  </table></div>
+  <p>共同創業者 Seth Cohen は「データセンターの立地は、核廃棄物に次ぐ<b>AI展開の第2のボトルネック</b>」と言う。<a class="more" href="#s2">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t3">
+  <div class="sec-label"><span class="num">03</span>How It Makes Money</div>
+  <h2>どうやって稼ぐのか</h2>
+  <div class="flow">
+    <div class="fs"><div class="fs-n">1</div><div class="fs-t">部材を押さえる</div><div class="fs-d">変圧器・冷却機器などの<b>長納期品と生産枠</b>を需要より先に確保</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">2</div><div class="fs-t">工場で組む</div><div class="fs-d">ヒューストンの工場で電源・<b>直接液冷</b>・制御・IT区画を統合し、<b>出荷前に試験</b></div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">3</div><div class="fs-t">運んで置く</div><div class="fs-d">5MW単位で<b>トラック輸送</b>。並べて増やせば大きなDCになる</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">4</div><div class="fs-t">売る or 運営する</div><div class="fs-d">顧客（AIラボ・neocloud・開発業者）に<b>設備を販売</b>。電源付きの用地開発・運営もやる</div></div>
+  </div>
+  <p>GPUやクラウドは売らない（<b>計算は顧客の持ち込み</b>）。儲けの源泉は、①量産で下げた<b>製造原価と販売価格の差</b>、②「すぐ電気が来る場所に、すぐ置ける」ことへの<b>スピードの上乗せ</b>。価格・顧客名・粗利は一切非公表。<a class="more" href="#s3">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t4">
+  <div class="sec-label"><span class="num">04</span>Key Numbers</div>
+  <h2>数字でつかむ</h2>
+  <div class="tl-kpis">
+    <div class="k"><div class="v">$130M</div><div class="l">累計調達（Pre-seed＋Seed）。うち直近ラウンド $100M（Paradigm リード）</div></div>
+    <div class="k"><div class="v">$1B</div><div class="l">直近ラウンドの post-money 評価額。<b>創業5か月・売上ゼロ</b></div></div>
+    <div class="k"><div class="v">$100M → $75M</div><div class="l">SEC Form D（2026-10-21）：募集枠 $100M に対し<b>販売済み $75M</b>。発表の「$130M」と時点がズレる</div></div>
+    <div class="k"><div class="v">5 MW</div><div class="l">Terrain 1台の容量（WSJ・DCD報道。公式サイトは数値非公表）。1GW なら約200台</div></div>
+    <div class="k"><div class="v">35人</div><div class="l">従業員数（2026-11）。NVIDIA・AWS のDC設計者、モジュール型LNG製造の経験者など</div></div>
+    <div class="k"><div class="v">2027年初 → 年央</div><div class="l">Terrain 01 の試験開始 → 量産立ち上げ</div></div>
+  </div>
+  <p><a class="more" href="#s5">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t5">
+  <div class="sec-label"><span class="num">05</span>Why It Matters</div>
+  <h2>何がすごいのか</h2>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">① 創業チームの「規制を動かした」実績</div><div class="cd-d">BlakeとCohenはDOEのDOGEチームを率い、原子力の大統領令を実装。<b>1年で先進炉4基が臨界</b>（米国で40年超ぶりの新設計）、Nuclear Lifecycle Campus には<b>27州知事</b>が応募。許認可と調達の動かし方を知っている</div></div>
+    <div class="cd"><div class="cd-t">② 「建設」を「製造」に置き換える発想</div><div class="cd-d">DCは今も1件ずつ特注。Mavria は設計・調達・製造を<b>並行</b>で進め、同じ箱を繰り返し作る。共同創業者 Poradek は Liberty Energy の<b>フラックポンプ製造</b>を内製化した側の人で、モジュール量産の現場を知る</div></div>
+    <div class="cd"><div class="cd-t">③ 送電網待ちを迂回できる</div><div class="cd-d">5MWなら配電線の余り容量で動く可能性がある。数百MWの大型DCが<b>系統接続に数年</b>待つ間に、小さく早く立ち上げられる</div></div>
+    <div class="cd"><div class="cd-t">④ Paradigm と AMP が付いた</div><div class="cd-d">暗号資産VCの Paradigm が$1.5Bのフロンティア技術ファンドで<b>物理インフラに賭けた</b>象徴的案件。AMP（Anjney Midha、元a16z）はステルス期から支援</div></div>
+  </div>
+  <p><a class="more" href="#s6">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t6">
+  <div class="sec-label"><span class="num">06</span>Risks</div>
+  <h2>リスクは何か</h2>
+  <div class="cards risk">
+    <div class="cd"><div class="cd-t">① 製品がまだ無い</div><div class="cd-d">Terrain 01 は製造中で、試験は2027年初。仕様・価格・納期・顧客名がすべて非公表。評価額は「<b>工場の将来の生産量</b>」に付いている</div></div>
+    <div class="cd"><div class="cd-t">② 差別化が見えにくい</div><div class="cd-d">プレハブDCは Vertiv・Schneider・EPG・Armada・Runware など<b>先行者が多い</b>。Runware は「48時間で稼働」「2028年に1日30MW」を掲げ、既に工場も稼働</div></div>
+    <div class="cd"><div class="cd-t">③ 電気は工場で作れない</div><div class="cd-d">5MWの箱を置いても、その場に<b>5MWの電力</b>が要る。系統接続・据付・通電試験の時間は工場では短縮できない</div></div>
+    <div class="cd"><div class="cd-t">④ 政治と利益相反の目</div><div class="cd-d">創業者はDOGE出身。Cohen は NRC で「言うことを聞かせる」発言や原子炉企業の帽子配布が<b>利益相反</b>と報じられ、Blake は「NRCは承認を<b>ゴム印</b>で押せばいい」発言が報じられた。政権交代・世論の逆風を受けやすい</div></div>
+    <div class="cd"><div class="cd-t">⑤ 数字のズレ</div><div class="cd-d">発表は$130M、Form D は$75M販売済み。ラウンド額・Paradigm の出資額も媒体ごとに表記が揺れる</div></div>
+  </div>
+  <p><a class="more" href="#s12">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t7">
+  <div class="sec-label"><span class="num">07</span>Funding</div>
+  <h2>資金調達（未上場）</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Round</th><th>Date</th><th>Amount</th><th>Valuation</th><th>Lead</th><th>Others</th></tr></thead>
+    <tbody>
+      <tr><td>Pre-seed</td><td>2026年夏（ステルス期）</td><td>約$30M（$130M−$100Mから逆算・推定）</td><td>非公表</td><td>非公表（AMP が初期から関与）</td><td>—</td></tr>
+      <tr class="hl"><td>Seed</td><td>2026-10〜11（発表 2026-11-09）</td><td>$100M</td><td>$1B post-money</td><td>Paradigm</td><td>AMP PBC, Liquid 2, Critical Frontier, Dream Ventures</td></tr>
+    </tbody>
+  </table></div>
+  <p>使い道は<b>サプライチェーンの確保・製造の拡大・採用</b>（エンジニア／製造／オペレーション）。<a class="more" href="#s8">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t8">
+  <div class="sec-label"><span class="num">08</span>Bottom Line (NFA)</div>
+  <h2>結論（筆者の読み、投資助言ではない）</h2>
+  <div class="verdict">
+    <p><b>これは「技術の会社」ではなく「調達と許認可の会社」への賭け。</b>プレハブDC自体は新しくない。$1Bが付いた理由は、①AIインフラの本当の詰まりが<b>電力・電気設備・立地</b>に移ったこと、②その詰まりを政府の内側から見てきた3人が、<b>長納期品を先に押さえる資本</b>を持ったこと、の2点。</p>
+    <p>勝ち筋は「Terrain が最初の数台で<b>コストと立ち上げ速度の数字</b>を出し、neocloud や大手ラボが繰り返し発注する」こと。負け筋は「量産前に既存の電機大手（Vertiv・Schneider）が同じ物を安く出す」こと。<b>AIインフラの3制約（Power / Cooling / Location）</b>をそのまま事業にした会社として、ハードインフラ系スタートアップの比較対象になる。</p>
+  </div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Date</th><th>次のイベント</th></tr></thead>
+    <tbody>
+      <tr><td>近日</td><td>Terrain の正式仕様（MW・冷却方式・ラック密度）の公開（公式「coming soon」）</td></tr>
+      <tr><td>2027年初</td><td>Terrain 01 の試験開始（ヒューストン）</td></tr>
+      <tr><td>2027年央</td><td>量産立ち上げ。最初の顧客名・設置場所の公表が焦点</td></tr>
+      <tr><td>2027〜</td><td>Series A。Terrain の上流（電気設備そのもの）の製造に広げるか</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+</div>
+
+<div class="pane" data-pane="main" hidden>
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#s1">Overview</a></li>
+    <li><a href="#s2">Industry: Why Data Centers Are Stuck</a></li>
+    <li><a href="#s3">Business: Terrain</a></li>
+    <li><a href="#s4">Customers &amp; Target Market</a></li>
+    <li><a href="#s5">Financials &amp; the Form D Gap</a></li>
+    <li><a href="#s6">Founding Story</a></li>
+    <li><a href="#s7">Founder Profiles</a></li>
+    <li><a href="#s8">Funding &amp; Investors</a></li>
+    <li><a href="#s9">Competitive Map</a></li>
+    <li><a href="#s10">Politics &amp; Controversies</a></li>
+    <li><a href="#s11">Japan Connections</a></li>
+    <li><a href="#s12">Bull / Base / Bear</a></li>
+    <li><a href="#s13">Q&amp;A</a></li>
+    <li><a href="#s-vocab">Vocabulary</a></li>
+    <li><a href="#s-src">Sources</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="s1">
+  <div class="sec-label"><span class="num">01</span>Overview</div>
+  <h2>会社の基本情報</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>項目</th><th>内容</th><th>メモ</th></tr></thead>
+    <tbody>
+      <tr><td>社名</td><td>Mavria, Inc.</td><td>タグライン「Industrializing intelligence」</td></tr>
+      <tr><td>本社</td><td>The Woodlands, Texas（ヒューストン北）</td><td>工場＝Houston。公式サイトに本社所在地の記載なし（DCD報道）</td></tr>
+      <tr><td>創業</td><td>2026年6月</td><td>Cohen 談。<b>表記揺れ：</b>「2026年夏」（WSJ系）</td></tr>
+      <tr><td>CEO</td><td>Adam Blake</td><td>共同創業者 Nick Poradek、Seth Cohen</td></tr>
+      <tr><td>製品</td><td>Terrain（工場製の5MW級AIデータセンター）</td><td>1号機 Terrain 01 をヒューストンで製造中</td></tr>
+      <tr><td>やらないこと</td><td>クラウド運営・計算の販売</td><td>GPUは顧客の持ち込み</td></tr>
+      <tr><td>従業員</td><td>35人（2026-11）</td><td>NVIDIA・AWS のDC設計、モジュール型LNG製造（1,000人超の会社を率いた人物）、プロジェクトファイナンス出身</td></tr>
+      <tr><td>調達</td><td>累計$130M・評価額$1B</td><td>リード Paradigm（2026-11-09 発表）</td></tr>
+      <tr><td>売上</td><td>なし（製品出荷前）</td><td>顧客名・価格も非公表</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sec-label"><span class="num">02</span>Industry: Why Data Centers Are Stuck</div>
+  <h2>AIデータセンターの「詰まり」の連鎖</h2>
+  <p>Mavria の Manifesto の核は「<b>1つの詰まりを解くと、次の詰まりが現れる</b>」という見立て。ソフトは週単位で進むのに、物理は年単位でしか進まない。この時間軸のズレが、AIの展開速度を決めている。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Layer</th><th>何が起きているか</th><th>時間軸</th></tr></thead>
+    <tbody>
+      <tr><td>Chips</td><td>GPUは供給が追いつき始めた</td><td>数か月</td></tr>
+      <tr><td>Power</td><td>系統接続の待ち行列（interconnection queue）。GW級は電源から作る必要</td><td>数年</td></tr>
+      <tr><td>Electrical equipment</td><td>大型変圧器・スイッチギア・ガスタービンの納期待ち。中古タービンを探す開発業者も</td><td>数年</td></tr>
+      <tr><td>Manufacturing</td><td>数十年の海外移転で米国内の製造能力が細った</td><td>年単位</td></tr>
+      <tr><td>Construction / Siting</td><td>特注設計・労働力不足・住民反対・許認可</td><td>年単位</td></tr>
+    </tbody>
+  </table></div>
+  <div class="col-box">
+    <span class="col-lbl">Column</span>
+    <h3>Manifesto の主人公は Oppenheimer ではなく Groves</h3>
+    <p>Mavria の Manifesto は、マンハッタン計画の英雄を物理学者 Oppenheimer ではなく、<b>現場の障害を取り除いた Leslie Groves 将軍</b>だとする。10万人超・30拠点（Oak Ridge のウラン濃縮、Hanford のプルトニウム炉、Los Alamos の兵器物理）を動かしたのは、電力・建設・資材・労働・物流・政府調整の詰まりを外す役回りだった。</p>
+    <blockquote>The machine only works if everything moves together.</blockquote>
+    <p>「中国はフロンティアモデルで勝つ必要はない。近くにいて、<b>展開で勝てばいい</b>」——だから米国は自由社会のまま、もっと速く作れることを示すべきだ、という論。Energy Secretary Chris Wright が2025年に「第2のマンハッタン計画」と呼んだ枠組みと同じ語彙。</p>
+  </div>
+  <p>関連：<a href="260401_power_dc_startups.html">Power × DC</a>、<a href="261025_vertiv_deep_research.html">Vertiv</a>、<a href="261025_schneider_electric_deep_research.html">Schneider Electric</a>。</p>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sec-label"><span class="num">03</span>Business: Terrain</div>
+  <h2>Terrain とは何か</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>項目</th><th>内容</th><th>出典の確度</th></tr></thead>
+    <tbody>
+      <tr><td>定義</td><td>高密度AI計算向けの<b>工場製データセンター・プラットフォーム</b></td><td>公式</td></tr>
+      <tr><td>構成</td><td>Power（配電）／Cooling（冷却バンク・配管）／Controls（制御）／IT pods（サーバー区画）</td><td>公式</td></tr>
+      <tr><td>容量</td><td>1台 <b>5MW</b>、並べて拡張</td><td>報道（WSJ・DCD）。公式は未公表</td></tr>
+      <tr><td>冷却</td><td><b>直接液冷</b>（direct liquid cooling）</td><td>報道（WSJ）</td></tr>
+      <tr><td>輸送</td><td>トラックで運べる単位に分割</td><td>報道</td></tr>
+      <tr><td>試験</td><td>出荷前に工場で統合・試験（design, integrate, test as a standardized system）</td><td>公式</td></tr>
+      <tr><td>据付</td><td>「数か月・数年ではなく<b>数週間</b>で展開」が目標</td><td>Cohen 談</td></tr>
+      <tr><td>未公表</td><td>ラック密度、対応GPU、PUE、寸法、価格、納期</td><td>公式「Full product details are coming soon」</td></tr>
+    </tbody>
+  </table></div>
+  <h3>3つの運営原則（公式）</h3>
+  <ul>
+    <li><b>Engineered for volume：</b>設計・調達・製造を標準化。1件ごとに設計し直さない</li>
+    <li><b>Built in parallel：</b>開発（用地・電力）・調達・製造を同時に進める。従来は「用地→設計→発注→建設」の直列</li>
+    <li><b>Ready ahead of demand：</b>重要機器と生産枠を<b>受注前に</b>押さえる。調達した$130Mの主な使い道</li>
+  </ul>
+  <h3>収益の取り方（報道ベース）</h3>
+  <ul>
+    <li><b>設備販売：</b>Terrain を顧客に売る。顧客は自分のGPUを中に入れて使う</li>
+    <li><b>開発・運営：</b>電力付きの用地を開発し、運営まで担う選択肢も（WSJ）</li>
+    <li><b>将来：</b>Terrain が証明できたら、その<b>上流の製品（電気設備など）の製造</b>に広げたい（Cohen）。公式も「データセンターから始めるが、AIが依存する物理インフラ全体が野心」（Blake）</li>
+  </ul>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sec-label"><span class="num">04</span>Customers &amp; Target Market</div>
+  <h2>誰に売るのか</h2>
+  <p>顧客名は<b>1社も公表されていない</b>。公式の想定顧客は次の4種類。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>顧客タイプ</th><th>例（筆者の想定）</th><th>Terrain を選ぶ理由（筆者の読み）</th></tr></thead>
+    <tbody>
+      <tr><td>Frontier labs</td><td>OpenAI, Anthropic, xAI, Meta</td><td>大型キャンパスが立ち上がるまでの<b>つなぎの容量</b>、推論用の分散配置</td></tr>
+      <tr><td>Neoclouds</td><td>CoreWeave, Lambda, Nebius, Crusoe</td><td>電力が余っている場所に<b>早く小さく</b>置いて売上を立てたい</td></tr>
+      <tr><td>Developers</td><td>DC開発業者</td><td>建設リスク（遅延・コスト超過）を製品価格に<b>固定</b>できる</td></tr>
+      <tr><td>Infrastructure owners</td><td>電力会社、発電所・変電所の所有者</td><td>自社の敷地・余剰電力を<b>計算資源に変える</b></td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sec-label"><span class="num">05</span>Financials &amp; the Form D Gap</div>
+  <h2>数字の整理と表記揺れ</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Item</th><th>Value</th><th>Source</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>Total raised</td><td>$130M</td><td>公式 /introducing</td><td>Pre-seed＋Seed の合計</td></tr>
+      <tr><td>Latest round size</td><td>$100M</td><td>Crypto Briefing, Securities.io</td><td>公式はラウンド額を書いていない</td></tr>
+      <tr><td>Paradigm check</td><td>$100M？</td><td>一部報道「$100M lead check」</td><td>ラウンド全額か Paradigm 単独かは<b>不明</b></td></tr>
+      <tr><td>Valuation</td><td>$1B post-money</td><td>公式・WSJ</td><td></td></tr>
+      <tr class="hl"><td>Form D offering</td><td>$100M（sold $75M）</td><td>SEC Form D（2026-10-21提出）</td><td>提出時点では$25M未着金。発表（11/9）までに埋まった可能性</td></tr>
+      <tr><td>Revenue</td><td>$0</td><td>—</td><td>製品出荷前</td></tr>
+    </tbody>
+  </table></div>
+  <details class="raw"><summary>Raw: 単純なユニットエコノミクスの試算（筆者・仮定多め）</summary>
+    <ul>
+      <li>1GW キャンパス ＝ Terrain 約200台（5MW × 200）</li>
+      <li>業界の目安：AI DC の建設費（GPUを除く）は 1MW あたり $10M〜$15M 程度 → 5MW 1台で <b>$50M〜$75M</b> の物理インフラ</li>
+      <li>仮に年100台（500MW）売れれば、売上は年 $5B〜$7.5B 規模。$1B 評価はこの「量産が回った姿」を先取りしている</li>
+      <li>逆に、1台の製造・試験に時間がかかると、在庫（先に買った変圧器・冷却機器）が資本を食う</li>
+    </ul>
+  </details>
+</div>
+
+<div class="sec" id="s6">
+  <div class="sec-label"><span class="num">06</span>Founding Story</div>
+  <h2>DOGE の原子力チームから生まれた会社</h2>
+  <ol>
+    <li><b>2025年春〜夏：</b>Blake と Cohen が DOGE（Department of Government Efficiency）として NRC（原子力規制委員会）・DOE に入る。Poradek は2025年3月に DOE 化石エネルギー局の Senior Advisor（Federal Partnerships）に</li>
+    <li><b>2025-05-23：</b>トランプ大統領が原子力関連の大統領令4本に署名。2人はその実装役（Reactor Pilot Program＝DOEの認可で先進炉を試験させ、NRCの審査を早める仕組み）</li>
+    <li><b>2025年11月：</b>Cohen が DOE の Chief Counsel for Nuclear Policy に</li>
+    <li><b>2025〜26年：</b>先進炉<b>4基が1年で臨界</b>。Blake と Cohen が設計した Nuclear Lifecycle Campus（使用済み燃料を「資産」として受け入れる州を募る）に<b>27州知事が応募</b></li>
+    <li><b>2026年6月：</b>3人が政府を離れ Mavria を創業。「DOEで、AI・エネルギー・インフラを珍しい角度から見た。古い仕組みでは来るものに耐えられない」（Blake の初投稿は200万views超）</li>
+    <li><b>2026-07-23：</b>Cohen が TBPN に出演。ステルスのまま「DC立地は第2のボトルネック」と語る。AMP の Anjney Midha の支援先として AMD Advancing AI にも参加</li>
+    <li><b>2026-11-09：</b>WSJ 独占でステルス解除。$130M・評価額$1B を発表</li>
+  </ol>
+</div>
+
+<div class="sec" id="s7">
+  <div class="sec-label"><span class="num">07</span>Founder Profiles</div>
+  <h2>創業者</h2>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Adam Blake</span><span class="p-role">Co-founder / CEO</span></div>
+    <div class="p-line">太陽光の起業家 → ソフトウェア売却 → 投資家 → DOE（DOGE）→ Mavria</div>
+    <ul>
+      <li><b>太陽光：</b>2006〜07年 Silicon Solar Housing Solutions を共同創業。2010年 <b>Brightergy</b>（カンザスシティの商業用太陽光）を創業し2016年までCEO。公式は「<b>1,000件超のエネルギー案件</b>を建てた」</li>
+      <li><b>ソフトウェア：</b>「ソフトウェア会社を <b>Vista Equity Partners</b> に売却」（公式）。<b>会社名は特定できず</b>（Vista のエネルギー系買収 Power Factors／Energy Exemplar との関係は未確認）</li>
+      <li><b>その後：</b>不動産・太陽光出身の投資家。AI医療スタートアップも創業したと報じられる（Grist、社名不明）</li>
+      <li><b>政府：</b>DOGE として NRC に出向 → DOE の Senior Advisor to the Secretary（Chris Wright 長官）。DOE の DOGE チームを1年強率いた</li>
+      <li><b>発言の波紋：</b>2025年5月の NRC 会議で「DOE・国防総省が承認したものを NRC は<b>ゴム印で押す</b>」趣旨の発言をしたと E&amp;E News が報道（本人は無回答）</li>
+    </ul>
+    <div class="p-quote">「データセンターから始めるが、我々の野心はAIが依存する物理インフラ全体に及ぶ」（公式発表）</div>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Seth Cohen</span><span class="p-role">Co-founder</span></div>
+    <div class="p-line">31歳（2026）／メリーランド州 Potomac 出身／元 Kirkland &amp; Ellis の最高裁・控訴審弁護士</div>
+    <ul>
+      <li><b>法律家：</b>Kirkland &amp; Ellis で最高裁・控訴審の訴訟。原子力の実務経験は<b>ほぼ無い</b>状態で政府入り（Grist）</li>
+      <li><b>政府：</b>NASA アドバイザー → DOGE として NRC の Senior Advisor → 2025年11月 DOE の <b>Chief Counsel for Nuclear Policy</b></li>
+      <li><b>実績：</b>Reactor Pilot Program の推進役、Nuclear Lifecycle Innovation Campuses（NLIC）を主導。ANS「Nuclear News 40 under 40（2026）」選出</li>
+      <li><b>現在の兼任：</b>Standard Nuclear の取締役</li>
+      <li><b>論争：</b>NRC で原子炉スタートアップ Valar Atomics の帽子を配り、倫理担当から利益相反の警告。「NRC は我々の言うことを何でもやる」発言、放射線被ばく上限の引き上げを主張したと報道。2026年2月には Valar の炉を運ぶ軍用機の写真を投稿</li>
+    </ul>
+    <div class="p-quote">「核廃棄物は負債ではなく資産。Yucca Mountain しかなかった状態から、知事たちが受け入れを奪い合う状態に変えた」（TBPN, 2026-07-23）</div>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">Nick (Nicholas) Poradek</span><span class="p-role">Co-founder</span></div>
+    <div class="p-line">エネルギー機器のエンジニア／製造・サプライチェーンの実務家</div>
+    <ul>
+      <li><b>前職：</b>複雑なエネルギー機器を作る製造会社を <b>Liberty Energy</b>（シェールのフラクチャリング大手、CEO は後のエネルギー長官 Chris Wright）に売却</li>
+      <li><b>Liberty：</b>2022年10月〜2023年10月 Senior Advisor。Liberty の<b>製造プラットフォーム</b>（電動フラックポンプ digiFrac などの内製化）を立ち上げた側。Liberty の <b>FRAC ポンプ特許のロイヤルティ</b>を受け取っている（ProPublica 開示）</li>
+      <li><b>政府：</b>2025年3月 DOE 化石エネルギー・炭素管理局（FECM）の Senior Advisor, Federal Partnerships</li>
+      <li><b>Mavria での役割：</b>工場・量産・調達の責任者格（筆者の読み）</li>
+    </ul>
+  </div>
+  <p><b>人脈の線：</b>Chris Wright（Liberty 創業者 → エネルギー長官）を軸に、Poradek（Liberty）と Blake・Cohen（DOE）がつながる。Mavria は「Wright 人脈が作った会社」とも読める（筆者の読み）。</p>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sec-label"><span class="num">08</span>Funding &amp; Investors</div>
+  <h2>誰がお金を出したか</h2>
+  <div class="vc-grid">
+    <div class="vc-card lead"><span class="lead-tag">Lead</span><div class="vc-name">Paradigm</div><div class="vc-role">Matt Huang（元Sequoia）・Fred Ehrsam（Coinbase共同創業者）が2018年創業</div><div class="vc-desc">暗号資産の大手VC。2026年に AI・ロボット・フロンティア技術向けの <b>$1.5B ファンド</b>を組成。Mavria はその物理インフラ枠の目玉</div></div>
+    <div class="vc-card"><div class="vc-name">AMP PBC</div><div class="vc-role">Anjney Midha（元a16z、Mistral・Black Forest Labs 等に投資）</div><div class="vc-desc">ステルス期から支援。「米国AI構築の電力・立地の制約を解く」賭けの1つと位置づけ</div></div>
+    <div class="vc-card"><div class="vc-name">Liquid 2 Ventures</div><div class="vc-role">シード VC（Joe Montana 共同創業）</div><div class="vc-desc">シード段階の米国スタートアップに幅広く投資</div></div>
+    <div class="vc-card"><div class="vc-name">Critical Frontier / Dream Ventures</div><div class="vc-role">詳細不明</div><div class="vc-desc">公開情報が乏しい。名前からは防衛・重要インフラ系の小規模ファンドと推定</div></div>
+  </div>
+  <ul>
+    <li><b>規模の異常さ：</b>創業5か月・製品出荷前で評価額$1B。「シードでユニコーン」は、Flapping Airplanes や Thinking Machines など AI 研究ラボでは増えたが、<b>ハードの製造会社</b>では珍しい</li>
+    <li><b>使い道：</b>サプライチェーン確保（長納期品の先買い）、製造の拡大、採用</li>
+  </ul>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sec-label"><span class="num">09</span>Competitive Map</div>
+  <h2>競合地図</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>会社</th><th>本拠</th><th>位置</th><th>Mavria との違い</th></tr></thead>
+    <tbody>
+      <tr><td><a href="261025_vertiv_deep_research.html">Vertiv</a></td><td>US（上場）</td><td>電源・冷却の大手。プレハブのモジュール型ソリューションも販売</td><td>部品から全体まで持つ巨人。量産・顧客基盤で圧倒</td></tr>
+      <tr><td><a href="261025_schneider_electric_deep_research.html">Schneider Electric</a></td><td>France（上場）</td><td>配電・冷却・プレハブ DC モジュール</td><td>同上。NVIDIA と共同で AI DC の参照設計</td></tr>
+      <tr><td><a href="260513_crusoe_energy_deep_research.html">Crusoe</a></td><td>US</td><td>電源×DC×クラウドの垂直統合。プレハブポッドも販売</td><td>自社でクラウドも運営（Mavria は運営しない）</td></tr>
+      <tr><td>Runware</td><td>Romania系</td><td>Sonic Inference Pod。閉ループ液冷・水不要。「48時間で稼働」、2028年に<b>1日30MW</b>目標</td><td>工場が既に稼働。推論特化・レンタルも提供。累計$60M超</td></tr>
+      <tr><td>EPG</td><td>Singapore</td><td>2004年創業のプレハブ DC。2025年に200MW超を納入。Series B+ $100M（Alibaba・Temasek・BlackRock）</td><td>実績で先行。アジア中心</td></tr>
+      <tr><td>Armada</td><td>US</td><td>エッジ向けモジュール DC「Leviathan」（MW級）。$131M（2025）</td><td>エッジ・防衛寄り</td></tr>
+      <tr><td>NVIDIA DSX / Vera Rubin AI factory</td><td>US</td><td>AI factory の参照設計</td><td>設計図を配る側。Mavria は「作る」側</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>Mavria の差別化（主張ベース）：</b>技術ではなく、①<b>米国内製造＋長納期品の先買い</b>、②<b>許認可・電力確保（開発）まで一体</b>で動かすこと、③政府との距離。Runware との比較では、Runware が「すでに作っている」のに対し、Mavria は「まだ作っていないが資本と政治力が大きい」。</p>
+</div>
+
+<div class="sec" id="s10">
+  <div class="sec-label"><span class="num">10</span>Politics &amp; Controversies</div>
+  <h2>DOGE 出身であることの光と影</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>論点</th><th>中身</th><th>出典</th></tr></thead>
+    <tbody>
+      <tr><td>NRC の独立性</td><td>Blake「DOE・DoD が承認し、NRC はゴム印を押すだけ」趣旨の発言（2025-05）。大統領令の範囲を超えるとの批判</td><td>E&amp;E News（POLITICO）</td></tr>
+      <tr><td>利益相反</td><td>Cohen が NRC で Valar Atomics の帽子を配布、倫理担当が警告</td><td>Grist / ProPublica</td></tr>
+      <tr><td>安全規制</td><td>Cohen が被ばく上限の引き上げ、事故基金の負担反対、「100年に1度」の事象は気にしすぎない等を主張と報道</td><td>Grist</td></tr>
+      <tr><td>指揮系統</td><td>Cohen が Stephen Miller 側近 Emily Underwood に報告していると同僚に話したと報道。ホワイトハウスは否定</td><td>ProPublica</td></tr>
+      <tr><td>NRC 人員</td><td>NRC は職員の約6分の1を失いつつ、審査は速くなったとの評価も</td><td>ZeroHedge 等</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>事業への影響（筆者の読み）：</b>現政権下では許認可・連邦用地・DOEサイトの活用で<b>追い風</b>。一方、政権交代や安全面の事故があれば、創業者の経歴そのものが<b>逆風の材料</b>になる。民主党系の州・自治体での立地交渉は難しくなる可能性。</p>
+</div>
+
+<div class="sec" id="s11">
+  <div class="sec-label"><span class="num">11</span>Japan Connections</div>
+  <h2>日本との接点</h2>
+  <p>2026-11時点で、日本企業との提携・出資・日本展開は<b>公表されていない</b>。以下は筆者の読み。</p>
+  <ul>
+    <li><b>サプライヤーとして：</b>大型変圧器（日立エナジー、三菱電機、東芝）、スイッチギア、冷却（ダイキン、ニデック）、ガスタービン（三菱重工）は、Mavria が「先に押さえたい」長納期品そのもの。日本の重電は<b>交渉相手</b>になりうる</li>
+    <li><b>同じ課題：</b>日本も系統接続待ち・用地・住民合意で大型 DC が詰まる。5MW 単位で分散配置する発想は、<b>地方の変電所の余り容量</b>を使う日本型の DC にも当てはまる</li>
+    <li><b>原子力：</b>創業者の本業は原子力規制改革。日米の SMR 協力（三菱重工・日立 GE と米先進炉企業）とは人脈が重なる可能性</li>
+  </ul>
+</div>
+
+<div class="sec" id="s12">
+  <div class="sec-label"><span class="num">12</span>Bull / Base / Bear</div>
+  <h2>3つのシナリオ（NFA）</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Scenario</th><th>Terrain</th><th>顧客</th><th>評価のされ方</th><th>先行指標</th></tr></thead>
+    <tbody>
+      <tr><td><b>Bull</b></td><td>2027年に量産、年数百MWを出荷</td><td>大手ラボ・neocloud が繰り返し発注</td><td>「AIインフラの製造業」として数倍に。上流（電気設備）製造にも展開</td><td>最初の顧客名・受注MW・1MWあたりコスト</td></tr>
+      <tr><td><b>Base</b></td><td>動くが量産は遅れる</td><td>数社のつなぎ需要</td><td>プレハブ DC の1社。評価は横ばい</td><td>Terrain 01 の試験結果</td></tr>
+      <tr><td><b>Bear</b></td><td>Vertiv・Schneider が同等品を安く出す</td><td>大手は自社設計・既存ベンダーへ</td><td>先買いした在庫が重荷。評価が急落</td><td>Series A の評価額と条件</td></tr>
+    </tbody>
+  </table></div>
+  <p>Bull の核心は、<b>長納期品の先買い</b>が「待たずに置ける」という本物の差になること。Bear の核心は、AI DC が<b>数百MW〜GWの集中型</b>に寄り、5MW 分散型の出番が「つなぎ」にとどまること（筆者の読み）。</p>
+</div>
+
+<div class="sec qa" id="s13">
+  <div class="sec-label"><span class="num">13</span>Q&amp;A</div>
+  <h2>事業理解のための問答</h2>
+  <details>
+    <summary>プレハブ DC は昔からあるのに、なぜ$1Bも付いたのか？</summary>
+    <div class="qa-a">技術ではなく<b>タイミングと人</b>に値段が付いている。AIの詰まりがGPUから<b>電力・電気設備・立地</b>に移り、そこを政府の中から動かした3人が、長納期品を先に買える$130Mを持った。Paradigm にとっては、$1.5B フロンティアファンドで「物理インフラ」の旗を立てる案件でもある（筆者の読み）。</div>
+  </details>
+  <details>
+    <summary>5MW は大きいのか小さいのか？</summary>
+    <div class="qa-a">AIの基準では<b>小さい</b>。NVIDIA の最新ラックは1台で100kW超、5MW なら<b>約40〜50ラック</b>（GPU数千個）程度。大手ラボのキャンパスは1GW（Terrain 200台分）級。だから Mavria の売りは「1台の大きさ」ではなく「<b>早く置けて、並べて増やせる</b>」こと。</div>
+  </details>
+  <details>
+    <summary>工場で作れば本当に早くなるのか？</summary>
+    <div class="qa-a">早くなるのは<b>建物と設備の組立</b>の部分。電力の確保、系統接続、据付、通電試験は工場では短縮できない。だから Mavria は「配電線の余り容量に5MWだけ差す」「用地と電力の開発も自分でやる」をセットにしている。それでも本当に速いかは、Terrain 01 の実績が出るまで<b>数字では証明されていない</b>。</div>
+  </details>
+  <details>
+    <summary>なぜ GPU やクラウドを売らないのか？</summary>
+    <div class="qa-a">GPU を持つと Crusoe や CoreWeave と同じ<b>巨額の資産を抱える商売</b>になり、顧客（neocloud）とも競合する。設備だけを売れば、全員が顧客になれる。「ツルハシとシャベルを売る」立ち位置。</div>
+  </details>
+  <details>
+    <summary>ハードインフラ系の起業から見て何が参考になるか？</summary>
+    <div class="qa-a">①<b>Power / Cooling / Location の3制約</b>をそのまま事業の売り文句にしている、②製品を出す前に<b>「詰まり」の物語（Manifesto）と人脈</b>で資本を集めた、③<b>長納期品の先買い</b>を参入障壁にしている、の3点。逆に、日本で同じことをやるなら、規制当局とのパイプと重電メーカーとの枠取りが同じ役割を果たす（筆者の読み）。</div>
+  </details>
+</div>
+
+<div class="sec" id="s-vocab">
+  <div class="sec-label"><span class="num">14</span>Vocabulary</div>
+  <h2>用語</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>English</th><th>日本語</th><th>意味</th></tr></thead>
+    <tbody>
+      <tr><td>modular data center</td><td>モジュール型データセンター</td><td>工場で作った箱型の区画を運んで組み合わせるDC</td></tr>
+      <tr><td>factory-built</td><td>工場製の</td><td>現場で建てずに、工場で組み立て・試験まで済ませること</td></tr>
+      <tr><td>direct liquid cooling</td><td>直接液冷</td><td>冷却液をチップのすぐ上まで流して熱を取る方式</td></tr>
+      <tr><td>interconnection queue</td><td>系統接続の待ち行列</td><td>発電所や大口需要が送電網につながる順番待ち</td></tr>
+      <tr><td>long-lead equipment</td><td>長納期品</td><td>変圧器・タービンなど、発注から納品まで年単位かかる機器</td></tr>
+      <tr><td>post-money valuation</td><td>投資後評価額</td><td>今回の出資を受けた後の会社全体の価値</td></tr>
+      <tr><td>Form D</td><td>Form D（私募の届出）</td><td>米国で私募により株を売った会社がSECに出す簡易届出</td></tr>
+      <tr><td>criticality</td><td>臨界</td><td>原子炉の中で核分裂の連鎖反応が一定に続く状態</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s-src">
+  <div class="sec-label"><span class="num">15</span>Sources</div>
+  <h2>出典</h2>
+  <ul>
+    <li><a href="https://mavria.com/" target="_blank" rel="noopener">Mavria — Industrializing Intelligence（公式）</a></li>
+    <li><a href="https://mavria.com/introducing" target="_blank" rel="noopener">Mavria — Introducing Mavria（調達発表、Adam Blake）</a></li>
+    <li><a href="https://mavria.com/terrain" target="_blank" rel="noopener">Mavria — Terrain（製品ページ）</a></li>
+    <li><a href="https://mavria.com/manifesto" target="_blank" rel="noopener">Mavria — Manifesto</a></li>
+    <li><a href="https://www.techmeme.com/261109/p37" target="_blank" rel="noopener">Techmeme — WSJ: Mavria raised $130M at a $1B valuation led by Paradigm（2026-11-09）</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/former-us-doe-staffers-launch-modular-data-center-firm-mavria/" target="_blank" rel="noopener">DCD — Former US DOE staffers launch modular data center firm Mavria</a></li>
+    <li><a href="https://www.businessreport.com/new-startup-targets-ais-biggest-bottleneck-with-modular-data-centers/" target="_blank" rel="noopener">Business Report — New startup targets AI's biggest bottleneck with modular data centers（WSJ要約・35人・2027年試験）</a></li>
+    <li><a href="https://fourweekmba.com/ai-mavria-hits-1b-valuation-sec-filing-shows-75m-sold/" target="_blank" rel="noopener">FourWeekMBA — Mavria Hits $1B Valuation; SEC Filing Shows $75M Sold</a></li>
+    <li><a href="https://cryptobriefing.com/mavria-raises-130-million-modular-data-centers/" target="_blank" rel="noopener">Crypto Briefing — Mavria raises $130 million to mass-produce modular AI data centers</a></li>
+    <li><a href="https://www.securities.io/factory-built-ai-data-center-startup-mavria-raises-100-million-seed-at-1-billion-valuation/" target="_blank" rel="noopener">Securities.io — Mavria Raises $100 Million Seed At $1 Billion Valuation</a></li>
+    <li><a href="https://mlq.ai/news/former-energy-department-officials-startup-mavria-raises-130-million-to-build-data-centers-in-a-factory/" target="_blank" rel="noopener">MLQ.ai — Former Energy Department officials' startup Mavria raises $130 million</a></li>
+    <li><a href="https://runtimewire.com/article/mavria-130m-factory-built-data-centers" target="_blank" rel="noopener">Runtime Wire — Mavria has raised $130M to manufacture modular data centers</a></li>
+    <li><a href="https://xenospectrum.com/mavria-factory-built-ai-data-centers/" target="_blank" rel="noopener">XenoSpectrum — データセンター建設の常識が変わる？ 米新興企業が工場で丸ごと製造する「Terrain」</a></li>
+    <li><a href="https://www.tbpndigest.com/story/2026-07-23/seth-cohen-of-mavria-nuclear-waste-is-an-asset-not-a-liability-and-governors-are-fighting-to-host-it" target="_blank" rel="noopener">TBPN Digest — Seth Cohen of Mavria: nuclear waste is an asset（2026-07-23）</a></li>
+    <li><a href="https://open.spotify.com/episode/7wzYziqLHg52jpBVsybZOE" target="_blank" rel="noopener">POWERS podcast #430 — Inside the Department of Energy: Why the AI Race Has Become Physical with Adam Blake</a></li>
+    <li><a href="https://www.ans.org/news/article-8541/inuclear-newsi-40-under-40-2026-supporting-deployment/" target="_blank" rel="noopener">ANS — Nuclear News 40 under 40 2026（Seth Cohen）</a></li>
+    <li><a href="https://grist.org/accountability/doge-goes-nuclear-how-trump-invited-silicon-valley-into-americas-nuclear-power-regulator/" target="_blank" rel="noopener">Grist / ProPublica — DOGE goes nuclear</a></li>
+    <li><a href="https://www.eenews.net/articles/doge-told-regulator-to-rubber-stamp-nuclear/" target="_blank" rel="noopener">E&amp;E News — DOGE told regulator to 'rubber stamp' nuclear</a></li>
+    <li><a href="https://projects.propublica.org/trump-team-financial-disclosures/appointees/poradek-nicholas/" target="_blank" rel="noopener">ProPublica — Nicholas Poradek financial disclosure</a></li>
+    <li><a href="https://www.marketscreener.com/insider/ADAM-BLAKE-A105GU/" target="_blank" rel="noopener">MarketScreener — Adam Blake（Brightergy 等の経歴）</a></li>
+    <li><a href="https://techcrunch.com/2026/10/30/can-ai-data-centers-be-mass-produced-like-cars-and-online-in-48-hours-this-startup-aims-to-find-out/" target="_blank" rel="noopener">TechCrunch — Can AI data centers be mass-produced like cars?（Runware、2026-10-30）</a></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/modular-data-center-provider-epg-secures-100m-series-b-funding-1/" target="_blank" rel="noopener">DCD — Modular data center provider EPG secures $100m Series B+</a></li>
+    <li><a href="https://letsdatascience.com/news/paradigm-raises-15-billion-frontier-tech-fund-c790aa22" target="_blank" rel="noopener">Paradigm Raises $1.5 Billion Frontier Tech Fund</a></li>
+  </ul>
+  <p style="font-size:11px;color:var(--muted);margin-top:14px">Last updated: 2026-11-10</p>
+</div>
+
+</div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script src="../_shared/research_tabs.js" defer></script>
+<script src="../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>
