@@ -106,3 +106,4 @@
 | [261106_zero_industries_deep_research.html](261106_zero_industries_deep_research.html) | Zero Industries | 宇宙インフラ（衛星間レーザー送電・16歳CEO・Pre-seed） | 2026-11-06 |
 | [261106_star_catcher_deep_research.html](261106_star_catcher_deep_research.html) | Star Catcher | 宇宙インフラ（軌道上の光送電・電力網） | 2026-11-06 |
 | [261108_microagi_deep_research.html](261108_microagi_deep_research.html) | microagi | フィジカルAI（人の作業データ収集Shift＋工場ロボット導入Atlas） | 2026-11-08 |
+| [261110_nok_deep_research.html](261110_nok_deep_research.html) | NOK（NOK Group） | オイルシール世界首位／FPC（日本メクトロン）／2026-10 イーグル工業と統合 | 2026-11-10 |

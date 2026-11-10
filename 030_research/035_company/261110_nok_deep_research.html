@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOK Deep Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .person{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:14px}
+  .person .p-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:3px}
+  .person .p-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:800;color:var(--text)}
+  .person .p-role{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--accent);padding:2px 9px;border-radius:4px}
+  .person .p-line{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7}
+  .person ul{list-style:none;padding:0;margin:0}
+  .person li{font-size:13.5px;color:var(--mid);line-height:1.8;padding:6px 0 6px 16px;position:relative;border-bottom:1px solid var(--border)}
+  .person li:last-child{border-bottom:none}
+  .person li::before{content:'';position:absolute;left:0;top:15px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .person li b,.person li strong{color:var(--text);font-weight:700}
+  .person .p-quote{margin-top:12px;padding:11px 15px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13px;line-height:1.8;color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa details[open]{background:var(--bg);border-color:var(--accent)}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:flex-start;gap:10px;line-height:1.65}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{background:var(--card2)}
+  .qa details[open] summary:hover{background:var(--surface)}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .qa summary::after{content:'+';margin-left:auto;padding-left:10px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem;line-height:1;flex-shrink:0}
+  .qa details[open] summary::after{content:'\2212'}
+  /* 回答本文。qa-a を付け忘れた <p> でも崩れないよう summary 以外の直下要素すべてに効かせる */
+  .qa details>*:not(summary){margin:0 0 10px;padding:0 18px 0 48px;font-size:13.5px;color:var(--mid);line-height:1.85;overflow-wrap:anywhere}
+  .qa details>*:not(summary):last-child{margin-bottom:16px}
+  .qa details>*:not(summary) b,.qa details>*:not(summary) strong{color:var(--text);font-weight:700}
+  .qa details>*:not(summary) a{color:var(--text)}
+  .qa details>ul,.qa details>ol{padding-left:66px}
+  .col-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin:22px 0}
+  .col-box .col-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--accent);display:inline-block;padding:3px 10px;border-radius:4px;margin-bottom:14px}
+  .col-box h3{margin-top:0;margin-bottom:12px;font-size:1.05rem}
+  .col-box p{font-size:13.5px;line-height:1.9}
+  .col-box .col-sub{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:20px 0 8px;padding-top:16px;border-top:1px solid var(--border)}
+  .col-box blockquote{margin:14px 0;padding:12px 18px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.85;color:var(--text)}
+  .col-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+  .col-num .n{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+  .col-num .n .v{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;line-height:1.1;margin-bottom:3px}
+  .col-num .n .l{font-size:11px;color:var(--muted);line-height:1.5}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.qa details>*:not(summary){padding-left:18px}.qa details>ul,.qa details>ol{padding-left:36px}.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+/* 左サイド目次（scroll-spy）。本文900px中央寄せなので、左余白が目次幅を超える1400px以上でだけ出す */
+.side-nav{position:fixed;left:20px;top:84px;width:200px;max-height:calc(100vh - 162px);overflow-y:auto;padding:12px 0 32px;z-index:10;scrollbar-width:thin;display:none}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@media (min-width:1400px){.side-nav{display:block}}
+.side-nav-title{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-left:14px;margin-bottom:8px}
+.side-nav-list{list-style:none;padding:0;margin:0}
+.side-nav-link{display:block;color:#a8a8a8;text-decoration:none;padding:6px 8px 6px 14px;border-left:2px solid transparent;font-size:12px;line-height:1.45;transition:color .15s,border-color .15s,background .15s}
+.side-nav-link:hover{color:var(--text);border-left-color:var(--border)}
+.side-nav-link.active{color:var(--accent);font-weight:700;border-left-color:var(--accent);background:var(--surface)}
+.side-nav-num{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--muted);margin-right:6px}
+.sec{scroll-margin-top:76px}
+html{scroll-behavior:smooth}
+.raw{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--card)}
+.raw>summary{cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700}
+.raw>div{padding:0 14px 14px}
+.note{font-size:12px;color:var(--muted)}
+</style>
+<style>
+.chart{margin:14px 0 6px}
+.chart svg{max-width:100%}
+.hero-updated{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.6);margin:-14px 0 22px;letter-spacing:.04em}
+.unv{display:inline-block;font-family:'Poppins','Noto Sans JP',sans-serif;font-size:10px;font-weight:700;padding:0 6px;border:1px solid var(--mid);border-radius:3px;color:var(--mid);margin-left:4px;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+.t td.num,.t th.num{text-align:right;white-space:nowrap}
+</style>
+<link rel="stylesheet" href="../_shared/research_tabs.css">
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">research</a><span class="s">/</span><a href="index.html">company</a><span class="s">/</span><span class="c">NOK Deep Research</span></nav><script>if(location.protocol!=="file:"){var c=document.currentScript.previousElementSibling;if(c)c.remove()}</script><script>/* keep-pos: リロードしても見ていた位置（スクロール・タブ・開いた<details>・内側スクロール）を保つ */
+(function(){var ss;try{ss=window.sessionStorage;ss.getItem('x')}catch(e){return}
+try{history.scrollRestoration='manual'}catch(e){}
+var K='wl-pos:'+location.pathname,TAB='[data-view],[data-tab],[role="tab"],.tab,.tab-btn',st={y:0,s:{},t:[]},busy=true,tm;
+function P(el){var p=[];while(el&&el.nodeType===1&&el!==document.body){if(el.id){p.unshift('#'+CSS.escape(el.id));return p.join('>')}
+var i=1,x=el;while((x=x.previousElementSibling))i++;p.unshift(el.tagName.toLowerCase()+':nth-child('+i+')');el=el.parentElement}p.unshift('body');return p.join('>')}
+function Q(q){try{return document.querySelector(q)}catch(e){return null}}
+function save(){if(busy)return;st.y=window.scrollY;st.d=[].map.call(document.querySelectorAll('details'),function(d){return d.open?1:0}).join('');
+try{ss.setItem(K,JSON.stringify(st))}catch(e){}}
+function later(){if(busy)return;clearTimeout(tm);tm=setTimeout(save,150)}
+document.addEventListener('scroll',function(e){var t=e.target;if(t&&t.nodeType===1&&!busy)st.s[P(t)]=t.scrollTop;later()},true);
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest(TAB);if(!b||!e.isTrusted)return;
+var g=P(b.parentElement);st.t=st.t.filter(function(x){return x.g!==g});st.t.push({g:g,p:P(b)});st.t=st.t.slice(-6);later()},true);
+document.addEventListener('toggle',later,true);addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save()});
+function stop(){if(busy){busy=false;save()}}
+['wheel','touchstart','keydown','mousedown'].forEach(function(n){addEventListener(n,stop,{capture:true,passive:true})});
+addEventListener('load',function(){var d;try{d=JSON.parse(ss.getItem(K)||'null')}catch(e){}
+var nt;try{nt=performance.getEntriesByType('navigation')[0].type}catch(e){}
+/* リンクで来た時は復元しない（リロード・戻る/進むだけ） */
+if(!d||(nt&&nt!=='reload'&&nt!=='back_forward')){busy=false;return}st=d;st.s=st.s||{};st.t=st.t||[];
+st.t.forEach(function(x){var b=Q(x.p);if(b&&!b.classList.contains('on')&&!b.classList.contains('active')&&b.getAttribute('aria-selected')!=='true')b.click()});
+if(d.d)[].forEach.call(document.querySelectorAll('details'),function(el,i){if(d.d[i]==='1')el.open=true});
+function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var el=Q(q);if(el)el.scrollTop=st.s[q]}}
+[0,60,160,320,640,1100,1700].forEach(function(t){setTimeout(go,t)});setTimeout(stop,1800)})})();</script><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="page" data-terms-root>
+
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-solid">Company Deep Research</span>
+    <span class="badge badge-white">TSE Prime: 641A（旧 7240）</span>
+    <span class="badge badge-white">Seals / Flexible Printed Circuits</span>
+  </div>
+  <h1>NOK — 「油を漏らさない」部品で世界トップの、地味で強い製造業</h1>
+  <div class="hero-updated">Created: 2026-11-10 ／ Last updated: 2026-11-10</div>
+  <div class="hero-sub">エンジンやトランスミッションの回転軸から<b>油が漏れないように塞ぐゴム部品「オイルシール」</b>の世界トップメーカー。もう一つの柱は、子会社<b>日本メクトロン</b>の<b>フレキシブル基板（FPC：曲がる電子回路）</b>で、スマホや車載電池に使われる。2026年10月1日に兄弟会社の<b>イーグル工業</b>と統合し、持株会社<b>NOK Group（641A）</b>として再上場した。</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">7,384億円</div><div class="lbl">Revenue FY3/2026（旧NOK）</div></div>
+    <div class="kpi"><div class="val">330億円</div><div class="lbl">Operating profit FY3/2026</div></div>
+    <div class="kpi"><div class="val">約9,160億円</div><div class="lbl">Revenue 2社単純合算（筆者計算）</div></div>
+    <div class="kpi"><div class="val">¥2,663.5</div><div class="lbl">Price 641A（2026-11-09）</div></div>
+    <div class="kpi"><div class="val">約5,600億円</div><div class="lbl">Market cap（発行済ベース）</div></div>
+  </div>
+</div>
+
+<div class="ptabs" data-tabbar role="tablist">
+  <button type="button" class="on" data-tab="tldr">TL;DR</button>
+  <button type="button" data-tab="main">Main</button>
+</div>
+
+<div class="pane" data-pane="tldr">
+
+<div class="sec" id="t1">
+  <div class="sec-label"><span class="num">01</span>In One Line</div>
+  <div class="oneliner">クルマの中で<b>回る軸から油が漏れないように塞ぐゴムの輪（オイルシール）</b>を、日本の自動車メーカーのほぼ全社に納めている会社。1台に数十〜100個使われ、<b>新規参入がない</b>のが強み。一方で、もう半分の売上を占める<b>フレキシブル基板</b>はスマホ依存で利益がほとんど出ていない。<b>「強いシール＋弱い電子部品」</b>の会社が、シール同業のイーグル工業と一緒になったのが今のNOK Group。</div>
+</div>
+
+<div class="sec" id="t2">
+  <div class="sec-label"><span class="num">02</span>What Is a Seal</div>
+  <h2>そもそも「シール」とは</h2>
+  <p>機械の中で<b>回る軸</b>（エンジンのクランクシャフト、トランスミッション、モーター）と、<b>止まっている筐体</b>の間には必ずすき間がある。ここから油が漏れたり、外からほこりや水が入ったりすると機械は壊れる。このすき間を塞ぐのが<b>シール（密封部品）</b>。</p>
+  <div class="stat3">
+    <div class="st"><div class="v">世界No.1</div><div class="l">オイルシールのシェア（NOK自社表記。独フロイデンベルクとの連合で）</div></div>
+    <div class="st"><div class="v">数十〜100個</div><div class="l">1台のクルマに使われるシール類の目安（一般的な説明）</div></div>
+    <div class="st"><div class="v">新規参入なし</div><div class="l">会社自身の競合認識（2026年5月 決算説明会）</div></div>
+  </div>
+  <p>種類は大きく2つ。NOKが得意な<b>ゴム・樹脂の「オイルシール／Oリング」</b>と、統合相手のイーグル工業が得意な<b>金属・セラミックの「メカニカルシール」</b>（ポンプや半導体装置、船など高圧・高温の場所で使う）。部品単価は数十円〜数百円と安いが、<b>漏れたら機械全体が止まる</b>ので、顧客は実績のないメーカーに切り替えない。これが利益の源泉。<a class="more" href="#s2">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t3">
+  <div class="sec-label"><span class="num">03</span>How It Makes Money</div>
+  <h2>どうやって稼いでいるのか</h2>
+  <div class="flow">
+    <div class="fs"><div class="fs-n">1</div><div class="fs-t">ゴムを自分で配合</div><div class="fs-d">合成ゴム・樹脂の<b>材料配合から自社</b>。油・熱・薬品ごとに最適な材料を持つ</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">2</div><div class="fs-t">設計段階から採用される</div><div class="fs-d">新車・新型機械の<b>開発段階で図面に入る</b>。一度決まるとモデル末期まで続く</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">3</div><div class="fs-t">大量に、長く作る</div><div class="fs-d">自動車・建機・農機・一般産業機械に量産納入。補修用部品としても売れ続ける</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">4</div><div class="fs-t">FPCは別のゲーム</div><div class="fs-d">日本メクトロンが<b>スマホ・車載電池</b>向けにフレキシブル基板を製造。売上は大きいが利益率1%</div></div>
+  </div>
+  <p>利益のほぼ全部はシール事業（営業利益279億円・利益率7.5%）。電子部品事業は売上3,451億円に対し営業利益40億円（1.1%）。<b>売上の半分が利益の1割強</b>しか生んでいない、というのがNOKの株価が長く安かった理由。<a class="more" href="#s3">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t4">
+  <div class="sec-label"><span class="num">04</span>Key Numbers</div>
+  <h2>数字でつかむ</h2>
+  <div class="tl-kpis">
+    <div class="k"><div class="v">5,964 → 7,669 → 7,384億円</div><div class="l">売上 FY3/21 → FY3/25 → FY3/26（旧NOK）</div></div>
+    <div class="k"><div class="v">145 → 373 → 330億円</div><div class="l">営業利益 FY3/21 → FY3/25 → FY3/26</div></div>
+    <div class="k"><div class="v">7.5% vs 1.1%</div><div class="l">営業利益率 シール vs 電子部品（FY3/26）</div></div>
+    <div class="k"><div class="v">830億円</div><div class="l">3年間（2023〜25年度）の株主還元。目標675億円を超過</div></div>
+    <div class="k"><div class="v">年140円（予想）</div><div class="l">旧NOKの今期配当予想。株価2,663.5円なら利回り約5.3%（統合後の配当は未公表）</div></div>
+    <div class="k"><div class="v">約20%</div><div class="l">独フロイデンベルクの持株比率（統合後の推定。統合前は約25〜27%）</div></div>
+  </div>
+</div>
+
+<div class="sec" id="t5">
+  <div class="sec-label"><span class="num">05</span>Why It Matters</div>
+  <h2>何がすごいのか</h2>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">① 誰も入ってこない市場</div><div class="cd-d">会社自身が「シールに<b>新規参入企業はない</b>」と言い切る。小さくて安い部品だが、漏れたら終わりなので顧客は実績重視。<b>値上げ交渉が通る</b>（FY3/26も売価改善で増益）</div></div>
+    <div class="cd"><div class="cd-t">② 日系自動車への「圧倒的なプレゼンス」</div><div class="cd-d">国内の自動車メーカーほぼ全社と取引。EVになってもモーター・減速機・電池の冷却回りにシールは要る。<b>エンジンが消えても部品点数は大きく減らない</b></div></div>
+    <div class="cd"><div class="cd-t">③ 独フロイデンベルクとの66年の同盟</div><div class="cd-d">1960年から資本提携する世界シール大手。<b>NOKはアジア、フロイデンベルクは欧米</b>で役割分担し、技術を共有。米国の合弁（Freudenberg-NOK）は世界の自動車メーカーに供給</div></div>
+    <div class="cd"><div class="cd-t">④ 統合で「ゴムから金属・セラミックまで」</div><div class="cd-d">イーグル工業のメカニカルシールは<b>半導体製造装置・船・ロケット</b>にも入る。NOKが苦手だった一般産業・半導体向けが補強される。2029年3月期に<b>2社単純合算比で営業利益+10%超</b>が目標</div></div>
+  </div>
+  <p><a class="more" href="#s9">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t6">
+  <div class="sec-label"><span class="num">06</span>Risks</div>
+  <h2>リスクは何か</h2>
+  <div class="cards risk">
+    <div class="cd"><div class="cd-t">① 電子部品（メクトロン）が稼げない</div><div class="cd-d">FPCは中国・台湾勢との価格競争。スマホ向けは買い替え需要だけで成長が止まり、車載電池向けは<b>複数プロジェクトがキャンセル</b>。今期も1Qは赤字スタートの計画</div></div>
+    <div class="cd"><div class="cd-t">② 日系自動車の生産台数に連動</div><div class="cd-d">前中計（2023〜25）は売上・営業利益目標とも<b>大きく未達</b>（営業利益575億円目標→330億円）。日系OEMの生産計画とのズレとBEV減速が主因</div></div>
+    <div class="cd"><div class="cd-t">③ 統合の効果が数字で見えない</div><div class="cd-d">株式移転比率1:1の根拠となる<b>フェアネス・オピニオンを取得していない</b>。シナジーは当面コスト削減が中心で、統合会社の戦略・計画はまだ未公表</div></div>
+    <div class="cd"><div class="cd-t">④ 創業家と大株主</div><div class="cd-d">社長は創業家の<b>鶴正雄氏</b>、筆頭株主はフロイデンベルク。経営の安定と引き換えに、<b>少数株主の声が通りにくい</b>構造</div></div>
+  </div>
+  <p><a class="more" href="#s13">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t7">
+  <div class="sec-label"><span class="num">07</span>Stock</div>
+  <h2>株価 — 5年で約2.5倍。ただし統合後の新会社は上場初日から約14%安</h2>
+  <div class="chart pchart" id="c-price-tldr" data-price="PRICE_NOK" data-marks="2,3,7,8,9,11,12,13"><div class="chart-title">NOK（7240）→ NOK Group（641A）株価 ¥ — 2026-09-28までは7240の週足、10-01以降は641Aの日足の終値（対数目盛）</div><div class="chart-sub">丸数字は Main の「Major Moves」の番号。7240と641Aは1:1で交換されたので、そのまま繋げて読める</div></div>
+  <ul class="tl-list">
+    <li><b>上がった理由（2022年の底1,055円 → 2026年2月3,327円、約3倍）：</b><b>PBR1倍割れ是正</b>の流れで、2023年4月に「3年で675億円以上を株主還元」と発表して一気に見直された。その後も自社株買い・累進配当・持合株の売却を続け、<b>還元を約束した会社</b>として評価が上がった</li>
+    <li><b>下がった理由（2026年3月〜）：</b>中東情勢を受けた全体安、電子部品の赤字見通し。そしてNOK Group上場後は<b>2日で−8%</b>、11/6には年初来安値2,604円。統合会社の計画が出ていない中での<b>需給の売り</b>と推定</li>
+    <li><b>いま：</b>11/9終値 <b>2,663.5円</b>。<b>11/11にNOK Groupとして初の中間決算</b>。統合後の配当予想と戦略の出し方が次の焦点</li>
+  </ul>
+  <p><a class="more" href="#s12">13回の大きな値動きと理由を Main で見る →</a></p>
+</div>
+
+<div class="sec" id="t8">
+  <div class="sec-label"><span class="num">08</span>Bottom Line (NFA)</div>
+  <h2>結論（筆者の読み、投資助言ではない）</h2>
+  <div class="verdict">
+    <p><b>「いい製造業」なのはシール事業、株価を決めているのは電子部品と資本政策。</b>オイルシールは参入障壁・価格交渉力・顧客の粘着性がそろった、日本の製造業の典型的な強い事業。一方で売上の半分を占めるFPCが利益をほとんど生まず、全社の利益率は4〜5%にとどまる。株価の見直しは事業の伸びより<b>株主還元の約束</b>で起きた。</p>
+    <p>見るべきは3つ。①<b>電子部品の黒字が四半期ごとに定着するか</b>（売却・縮小の判断も含めて）、②<b>統合シナジー</b>（2029年3月期に合算比+10%超）が具体的な数字で出てくるか、③<b>統合後の配当</b>が旧NOKの年140円水準を引き継ぐか。</p>
+  </div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Date</th><th>次のイベント</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>2026-11-11</td><td>NOK Group 初の中間決算（統合後の配当予想・通期見通し）</td></tr>
+      <tr><td>統合後（時期未定）</td><td>統合会社としての戦略・中期計画の公表</td></tr>
+      <tr><td>随時</td><td>NOKが持つ自社株（旧イーグル株の転換分 約1,481万株）の処分方法</td></tr>
+      <tr><td>2027-05</td><td>FY3/2027本決算（2社合算での初の通期数字）</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+</div>
+
+
+<div class="pane" data-pane="main" hidden>
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#s1">Overview</a></li>
+    <li><a href="#s2">Seals 101</a></li>
+    <li><a href="#s3">Business Segments</a></li>
+    <li><a href="#s4">Customers</a></li>
+    <li><a href="#s5">Financials (PL / BS / CF)</a></li>
+    <li><a href="#s6">Founding Story &amp; Leadership</a></li>
+    <li><a href="#s7">Freudenberg Alliance</a></li>
+    <li><a href="#s8">Capital Policy &amp; Shareholder Returns</a></li>
+    <li><a href="#s9">Eagle Industry Integration (2026)</a></li>
+    <li><a href="#s10">Competitors — Earnings Side by Side</a></li>
+    <li><a href="#s11">Japan Connections</a></li>
+    <li><a href="#s12">Stock: Price History &amp; Major Moves (NFA)</a></li>
+    <li><a href="#s13">Valuation, Bull / Base / Bear (NFA)</a></li>
+    <li><a href="#s14">Q&amp;A</a></li>
+    <li><a href="#s-vocab">Vocabulary</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="s1">
+  <div class="sec-label"><span class="num">01</span>Overview</div>
+  <h2>シールの世界トップと、FPC世界3位の二本立て</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Company</div><div class="v">NOK Group株式会社（持株会社、2026-10-01設立）。傘下にNOK株式会社・イーグル工業株式会社</div></div>
+    <div class="kv-item"><div class="k">HQ</div><div class="v">東京都港区芝大門</div></div>
+    <div class="kv-item"><div class="k">Founded</div><div class="v">1939年（東京オイルシール／江戸川精機が源流）。1951年に日本オイルシール工業、1985年にNOKへ改称</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">鶴正雄（代表取締役 Group CEO、創業家）</div></div>
+    <div class="kv-item"><div class="k">Listing</div><div class="v">東証プライム 641A（2026-10-01上場）。旧NOK（7240）・イーグル工業（6486）は2026-09-29に上場廃止</div></div>
+    <div class="kv-item"><div class="k">Revenue</div><div class="v">7,384億円（旧NOK、FY3/2026）＋ イーグル工業 1,775億円</div></div>
+    <div class="kv-item"><div class="k">Operating profit</div><div class="v">330億円（旧NOK、利益率4.5%）＋ イーグル工業 135億円</div></div>
+    <div class="kv-item"><div class="k">Largest shareholder</div><div class="v">Freudenberg SE（独）。統合前のNOKに約25〜27%</div></div>
+  </div>
+  <p>事業は2つ。<b>シール事業</b>（オイルシール・Oリング・パッキン等、自動車と一般産業機械向け）と、<b>電子部品事業</b>（子会社 日本メクトロン＝MEKTEC のフレキシブル基板）。そのほかロール製品（OA機器用）を持っていたが、前中計期間に譲渡した。統合で、イーグル工業の<b>メカニカルシール・特殊バルブ・舶用・航空宇宙</b>が加わった。</p>
+  <p class="note">日本企業のため金額は億円表記。「旧NOK」は2026年9月まで上場していたNOK株式会社（7240）の連結。NOK Groupとしての通期数字はまだ出ていない。</p>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sec-label"><span class="num">02</span>Seals 101</div>
+  <h2>小さく、安く、でも絶対に替えられない部品</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Product</th><th>何をするか</th><th>主な使い道</th><th>主なメーカー</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>オイルシール</td><td>回る軸と筐体のすき間から油が漏れるのを防ぐ、金属環付きのゴムリング</td><td>エンジン、トランスミッション、デフ、モーター、建機の減速機</td><td>NOK、Freudenberg、SKF、Trelleborg</td></tr>
+      <tr><td>Oリング・パッキン</td><td>止まっている部品同士の継ぎ目を塞ぐ</td><td>油圧機器、燃料系、エアコン、半導体装置</td><td>NOK、Parker Hannifin、Trelleborg</td></tr>
+      <tr><td>メカニカルシール</td><td>回る軸を金属・セラミックの摺動面で密封。高圧・高温・薬液に強い</td><td>ポンプ、コンプレッサー、船の推進軸、半導体装置、ロケット</td><td>イーグル工業（EagleBurgmann）、John Crane、Flowserve</td></tr>
+      <tr><td>ガスケット</td><td>平らな面同士の間に挟んで塞ぐ</td><td>エンジンヘッド、配管フランジ</td><td>Freudenberg、Dana、ニチアス</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>なぜ儲かるのか。</b>①<b>材料が秘伝</b>：ゴムは原料ゴムに数十種類の薬品を混ぜて作る。どの油・何度・何年使うかで配合が違い、この配合データが各社の財産になる。②<b>設計段階で決まる</b>：新型車の開発初期に図面にNOKの品番が入れば、そのモデルの生産が終わるまで（5〜7年）ほぼ自動的に発注が続く。③<b>切り替えコストが高い</b>：シール1個は数十円でも、漏れでリコールが起きれば数百億円。購買担当は「安いから乗り換える」ことができない。</p>
+  <div class="col-box">
+    <span class="col-lbl">Column</span>
+    <h3>EVになってもシールは減らない？</h3>
+    <p>エンジン車はクランクシャフト・カムシャフトなどシールの塊。EVではエンジン回りは消えるが、<b>モーター・減速機（eアクスル）・電池の冷却回路・パワー半導体の冷却</b>に新しいシールが必要になる。モーターは回転数がエンジンより高く、電気を通さない・絶縁油に強いなど<b>要求が厳しくなる</b>。NOKは中国EVメーカーへの拡販を前中計の成果に挙げている。ただし「1台あたりの金額が増えるか減るか」は会社も明確な数字を出していない。</p>
+  </div>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sec-label"><span class="num">03</span>Business Segments</div>
+  <h2>売上は半々、利益は9対1</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Segment</th><th>主な製品</th><th class="num">Revenue FY3/25</th><th class="num">Revenue FY3/26</th><th class="num">OP FY3/25</th><th class="num">OP FY3/26</th><th class="num">Margin FY3/26</th><th class="num">FY3/27e OP</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>シール</td><td>オイルシール、Oリング、パッキン、防振ゴム等</td><td class="num">3,627</td><td class="num">3,674</td><td class="num">262</td><td class="num">279</td><td class="num">7.5%</td><td class="num">308</td></tr>
+      <tr><td>電子部品</td><td>FPC（日本メクトロン）、FPC実装品</td><td class="num">3,710</td><td class="num">3,451</td><td class="num">89</td><td class="num">40</td><td class="num">1.1%</td><td class="num">35</td></tr>
+      <tr><td><b>Total（旧NOK連結）</b></td><td>その他・調整含む</td><td class="num">7,669</td><td class="num">7,384</td><td class="num">373</td><td class="num">330</td><td class="num">4.5%</td><td class="num">350</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">単位：億円。出典：NOK 2025年度決算説明会資料（2026-05-13）。FY3/27eは統合前の旧NOKベースの期初予想。FY3/27からHDD向けゴム・樹脂製品（約130億円）とエストー等がシール事業へ移管。</p>
+  <h3>シール事業</h3>
+  <ul>
+    <li><b>FY3/26：</b>増収増益。価格交渉（不採算品の値上げ）と、建設機械など一般産業機械向けの増加。人件費・経費の増加（−42億円）を売価改善（+32億円）と原価低減（+26億円）で吸収</li>
+    <li><b>弱点：</b>前中計で狙った<b>半導体製造装置向けなど一般産業機械の売上が計画通りに伸びなかった</b>。ここをイーグル工業との統合で補う狙い</li>
+    <li><b>今期の方針：</b>「自動車生産台数増加の期待が限定的でも収益向上を追求」。顧客への提供価値ベースの<b>プライシング戦略</b>、不採算・非中核事業の見直し</li>
+  </ul>
+  <h3>電子部品事業（日本メクトロン）</h3>
+  <ul>
+    <li><b>何を作るか：</b>薄いフィルムに銅の回路を載せた<b>フレキシブル基板（FPC）</b>。曲げられるので、スマホの中で部品同士をつなぐ、車載電池のセル電圧を監視する配線などに使う。FPCの世界売上で<b>3位</b>（かつて首位、鴻海系のAvary＝鵬鼎に抜かれた）</li>
+    <li><b>顧客：</b>2022年度は<b>スマホ向けが51%</b>、車載向けが25%（日刊工業新聞）。スマホは特定の米国大手顧客向けが大きいと広く見られているが、会社は顧客名を開示していない</li>
+    <li><b>FY3/26：</b>売上−258億円、営業利益89→40億円。自動車・スマホ向けとも減少。<b>車載電池向けの複数プロジェクトのキャンセル</b>、生産効率の悪化、アジア拠点の通貨高</li>
+    <li><b>中計の方針：</b>「中計最終年度には今後の成長に向けた利益水準に復帰」。今期は<b>1Qが赤字スタート、2Q以降黒字</b>の計画</li>
+  </ul>
+  <details class="raw"><summary>Raw data: FY3/26 営業利益の増減要因（億円）</summary><div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Factor</th><th class="num">シール</th><th class="num">電子部品</th></tr></thead>
+    <tbody>
+      <tr><td>FY3/25 営業利益</td><td class="num">262</td><td class="num">89</td></tr>
+      <tr><td>売上高の影響</td><td class="num">+32</td><td class="num">−27</td></tr>
+      <tr><td>変動費ほか</td><td class="num">+26</td><td class="num">0</td></tr>
+      <tr><td>固定費</td><td class="num">−42</td><td class="num">−22</td></tr>
+      <tr><td>為替</td><td class="num">+1</td><td class="num">+1</td></tr>
+      <tr><td>FY3/26 営業利益</td><td class="num">279</td><td class="num">40</td></tr>
+    </tbody>
+  </table></div></div></details>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sec-label"><span class="num">04</span>Customers</div>
+  <h2>シールは「日系自動車ほぼ全部」、FPCは「スマホと電池」</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Customer group</th><th>Segment</th><th>何を買っているか</th><th>集中リスク</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>日系自動車メーカー（トヨタ、ホンダ、日産、スズキ等）とTier1</td><td>シール</td><td>エンジン・駆動系・EVユニットのシール、防振ゴム</td><td>中。日系OEMの生産台数がそのまま売上に</td></tr>
+      <tr><td>中国EVメーカー</td><td>シール</td><td>eアクスル・電池回りのシール（前中計で拡販）</td><td>小〜中</td></tr>
+      <tr><td>建機・農機メーカー（コマツ、クボタ等）</td><td>シール</td><td>油圧機器・減速機のシール</td><td>小。FY3/26の増収要因</td></tr>
+      <tr><td>スマホメーカー（米国大手とみられる）</td><td>電子部品</td><td>スマホ内部のFPC</td><td>高い。買い替えサイクル次第</td></tr>
+      <tr><td>車載電池・EVメーカー</td><td>電子部品</td><td>電池モジュールのFPC（電圧監視配線）</td><td>FY3/26に複数案件キャンセル</td></tr>
+      <tr><td>HDDメーカー</td><td>シール（FY3/27〜）</td><td>HDD向け合成ゴム・樹脂部品（データセンター需要）</td><td>小</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">顧客名は一般に報じられている取引関係からの例示。NOKは主要顧客の売上比率を開示していない。</p>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sec-label"><span class="num">05</span>Financials (PL / BS / CF)</div>
+  <h2>10年で売上はほぼ横ばい。利益率は5%を超えたことがない</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>FY (Mar)</th><th class="num">Revenue</th><th class="num">Operating profit</th><th class="num">OP margin</th><th class="num">Net income</th><th class="num">EPS (¥)</th><th class="num">ROE</th><th class="num">Operating CF</th><th class="num">DPS (¥)</th><th>Note</th></tr></thead>
+    <tbody>
+      <tr><td>FY3/2018</td><td class="num">7,293</td><td class="num">449</td><td class="num">6.2%</td><td class="num">353</td><td class="num">204.2</td><td class="num">7.7%</td><td class="num">695</td><td class="num">50</td><td>直近10年のピーク利益</td></tr>
+      <tr><td>FY3/2019</td><td class="num">6,695</td><td class="num">231</td><td class="num">3.5%</td><td class="num">34</td><td class="num">19.8</td><td class="num">0.8%</td><td class="num">639</td><td class="num">50</td><td>メクトロン減速</td></tr>
+      <tr><td>FY3/2020</td><td class="num">6,268</td><td class="num">120</td><td class="num">1.9%</td><td class="num">−22</td><td class="num">−12.8</td><td class="num">—</td><td class="num">714</td><td class="num">37.5</td><td>最終赤字</td></tr>
+      <tr class="hl"><td>FY3/2021</td><td class="num">5,964</td><td class="num">145</td><td class="num">2.4%</td><td class="num">−14</td><td class="num">−7.9</td><td class="num">—</td><td class="num">458</td><td class="num">25</td><td>コロナ。2期連続の最終赤字</td></tr>
+      <tr><td>FY3/2022</td><td class="num">6,825</td><td class="num">313</td><td class="num">4.6%</td><td class="num">258</td><td class="num">149.4</td><td class="num">5.1%</td><td class="num">550</td><td class="num">60</td><td></td></tr>
+      <tr><td>FY3/2023</td><td class="num">7,100</td><td class="num">154</td><td class="num">2.2%</td><td class="num">133</td><td class="num">77.6</td><td class="num">2.6%</td><td class="num">460</td><td class="num">75</td><td>半導体不足・メクトロン赤字</td></tr>
+      <tr><td>FY3/2024</td><td class="num">7,505</td><td class="num">229</td><td class="num">3.1%</td><td class="num">316</td><td class="num">188.3</td><td class="num">5.4%</td><td class="num">892</td><td class="num">87.5</td><td>政策保有株の売却益</td></tr>
+      <tr><td>FY3/2025</td><td class="num">7,669</td><td class="num">373</td><td class="num">4.9%</td><td class="num">303</td><td class="num">184.8</td><td class="num">5.2%</td><td class="num">916</td><td class="num">105</td><td>電子部品が黒字化</td></tr>
+      <tr><td>FY3/2026</td><td class="num">7,384</td><td class="num">330</td><td class="num">4.5%</td><td class="num">463</td><td class="num">284.8</td><td class="num">7.4%</td><td class="num">682</td><td class="num">130</td><td>投資有価証券売却益で純利益+53%</td></tr>
+      <tr class="hl"><td>FY3/2027e</td><td class="num">7,566</td><td class="num">350</td><td class="num">4.6%</td><td class="num">464</td><td class="num">285.2</td><td class="num">—</td><td class="num">—</td><td class="num">140</td><td>旧NOKベースの期初予想（統合前）</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">単位：億円（EPS・DPSは円）。出典：IRBank（決算短信の集計）、NOK 2025年度決算説明会資料。ROEはIRBank表示（会社資料ではFY3/26 ROE 7.7%）。</p>
+  <p><b>読み方：</b>①<b>売上は10年でほぼ横ばい</b>（7,131億円→7,384億円）。日系自動車の国内生産が伸びない中で、シールは値上げで利益を守り、FPCはスマホの波で上下した。②<b>純利益は営業利益より大きい</b>年が多い。持分法の利益（イーグル工業など）、配当収入、<b>政策保有株の売却益</b>が乗るため。FY3/26の純利益463億円は営業利益330億円を上回る。③前中計（23年5月公表）の目標は売上8,450億円・営業利益575億円で、<b>どちらも大きく未達</b>。達成したのはROA（5.0%）と純利益だけで、それも売却益頼み。</p>
+
+  <h3>BS / CF のポイント</h3>
+  <ul>
+    <li><b>Net cash：</b>現預金1,568億円に対し借入金は短期482億円＋長期144億円。<b>実質無借金</b>（ネットキャッシュ約940億円）</li>
+    <li><b>Equity：</b>純資産6,703億円（総資産9,517億円の約7割）。自己資本が厚すぎてROEが上がらない、が長年の指摘</li>
+    <li><b>政策保有株：</b>2023年3月末の82銘柄・1,066億円から、2026年3月末に51銘柄・827億円へ。前中計目標（25%売却）に対し<b>40%を売却</b>。2028年度末までに売却対象を売り切るか計画を確定する方針</li>
+    <li><b>Free CF：</b>FY3/26は579億円（営業CF682億円−投資CF103億円）。配当・自社株買いの原資は十分</li>
+  </ul>
+  <details class="raw"><summary>Raw data: 連結BS・CF サマリー（億円）</summary><div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Item</th><th class="num">FY3/2025</th><th class="num">FY3/2026</th></tr></thead>
+    <tbody>
+      <tr><td>Total assets</td><td class="num">8,987</td><td class="num">9,517</td></tr>
+      <tr><td>Cash</td><td class="num">1,368</td><td class="num">1,568</td></tr>
+      <tr><td>Receivables</td><td class="num">1,629</td><td class="num">1,636</td></tr>
+      <tr><td>Inventories</td><td class="num">1,061</td><td class="num">1,172</td></tr>
+      <tr><td>PP&amp;E</td><td class="num">2,453</td><td class="num">2,490</td></tr>
+      <tr><td>Investment securities</td><td class="num">1,621</td><td class="num">1,529</td></tr>
+      <tr><td>Short-term borrowings</td><td class="num">441</td><td class="num">482</td></tr>
+      <tr><td>Long-term borrowings</td><td class="num">176</td><td class="num">144</td></tr>
+      <tr><td>Net assets</td><td class="num">6,234</td><td class="num">6,703</td></tr>
+      <tr><td>Operating CF</td><td class="num">916</td><td class="num">682</td></tr>
+      <tr><td>Investing CF</td><td class="num">−432</td><td class="num">−103</td></tr>
+      <tr><td>Free CF</td><td class="num">484</td><td class="num">579</td></tr>
+      <tr><td>Financing CF</td><td class="num">−482</td><td class="num">−471</td></tr>
+    </tbody>
+  </table></div></div></details>
+</div>
+
+<div class="sec" id="s6">
+  <div class="sec-label"><span class="num">06</span>Founding Story &amp; Leadership</div>
+  <h2>戦時中に国産化したオイルシール。三代続く鶴家の会社</h2>
+  <p>源流は<b>1939年</b>。東京で<b>東京オイルシール</b>と、葛飾区の<b>江戸川精機</b>が設立された。当時、オイルシールは輸入品に頼っており、軍用車両・航空機の国産化の中で需要が急増していた。1941年に日本ベアリング製造（1942年に日本ユーシー工業へ改称）が<b>国内で初めてオイルシールの製造・販売</b>を始め、1951年に東京オイルシールと合併して<b>日本オイルシール工業</b>となった。「NOK」はこの頭文字（<b>N</b>ippon <b>O</b>il seal <b>K</b>ogyo）で、1985年に正式な社名になった。</p>
+  <p>創業者は<b>鶴正吾</b>。戦後、モータリゼーションとともに国内の自動車メーカーに広がり、<b>1960年</b>には世界のシール大手、独<b>フロイデンベルク</b>と資本提携した（後述）。1964年にメカニカルシール部門を分離して<b>日本シールオール（現イーグル工業）</b>を設立、<b>1969年</b>にフレキシブル基板の<b>日本メクトロン</b>を設立。こうしてシール・メカニカルシール・電子部品の3つの柱ができ、2026年の統合で再び一つの持株会社にまとまった。</p>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1939</span><span class="tl-title">東京オイルシール・江戸川精機の設立</span></div><div class="tl-body">NOKの起点（Wikipedia・沿革サイトの表記） <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1941〜42</span><span class="tl-title">国内初のオイルシール製造</span></div><div class="tl-body">日本ベアリング製造→日本ユーシー工業 <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1951</span><span class="tl-title">日本オイルシール工業に</span></div><div class="tl-body">東京オイルシールと合併 <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1960</span><span class="tl-title">独フロイデンベルクと資本提携</span></div><div class="tl-body">フロイデンベルクが約25%を取得 <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1964</span><span class="tl-title">日本シールオール（現イーグル工業）設立</span></div><div class="tl-body">メカニカルシール部門を分離 <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1969</span><span class="tl-title">日本メクトロン設立</span></div><div class="tl-body">フレキシブル基板事業へ <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1985</span><span class="tl-title">社名をNOKに</span></div><div class="tl-body"><span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">1989</span><span class="tl-title">米国合弁 Freudenberg-NOK 設立</span></div><div class="tl-body">北米の自動車メーカー向けシール <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2026-10-01</span><span class="tl-title">NOK Group 発足</span></div><div class="tl-body">イーグル工業と共同株式移転。親子上場（持分法）を解消 <span class="tag o">公式</span></div></div></div>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">鶴正雄（つる・まさお）</span><span class="p-role">代表取締役 Group CEO</span></div>
+    <div class="p-line">創業家出身／NOK社長を長く務め、2026年10月からNOK Group CEO</div>
+    <ul>
+      <li><b>立場：</b>創業者・鶴正吾の家系。NOK Groupの取締役会には<b>Tetsuji Tsuru</b>氏（取締役）も入っており、創業家が経営の中心にいる</li>
+      <li><b>在任中の出来事：</b>メクトロンの赤字と再建、2023年4月の「3年で675億円以上」の株主還元方針、政策保有株の売却、ロール製品事業の譲渡、エストーの買収、監査等委員会設置会社への移行、そしてイーグル工業との経営統合</li>
+      <li><b>統合の説明：</b>イーグル工業は「産機、建機、農機の販路を持つなど、得意領域や顧客基盤は異なる」とし、拡販と製品群の拡充を狙うと説明</li>
+    </ul>
+    <div class="p-quote">両社の技術・強みを融合し、素材横断で顧客ニーズに対応する複合的なシーリング・ソリューションを提供する（2026年5月 決算説明会資料）</div>
+  </div>
+  <p class="src note">鶴正雄氏の詳細な経歴（入社年・社長就任年）は一次資料で未確認。NOK Groupの取締役構成は統合時のプレスリリースによる。</p>
+</div>
+
+<div class="sec" id="s7">
+  <div class="sec-label"><span class="num">07</span>Freudenberg Alliance</div>
+  <h2>ドイツの同族企業と66年。「アジアはNOK、欧米はフロイデンベルク」</h2>
+  <p><b>Freudenberg</b>は1849年創業のドイツ・ヴァインハイムの同族企業（非上場）。シール（Freudenberg Sealing Technologies）、不織布、家庭用品（Vileda）など多角的で、シールの世界大手。1960年にNOKの株式約25%を取得して以来、<b>筆頭株主</b>であり続けている。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Item</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>持株比率</td><td>統合前のNOKに25.1〜27.0%（資料により異なる。約4,346万株）。統合後のNOK Group（発行済約2.12億株）では<b>約20%</b>（筆者計算）</td></tr>
+      <tr><td>地域分担</td><td>NOKが日本・アジア、フロイデンベルクが欧州・米州。互いの地域で相手の顧客を支える</td></tr>
+      <tr><td>合弁</td><td>米国 Freudenberg-NOK（1989〜、北米の自動車向け）、中国 無錫NOK-Freudenberg、インド等</td></tr>
+      <tr><td>イーグル工業との関係</td><td>メカニカルシールでは<b>EagleBurgmann</b>（イーグル工業と独Burgmann〔フロイデンベルク傘下〕の合弁）で世界展開。統合でこの関係もNOK Groupの傘下に入る</td></tr>
+      <tr><td>技術</td><td>シール製品・関連技術の共同開発を継続（MarkLines）</td></tr>
+    </tbody>
+  </table></div>
+  <p><b>意味：</b>世界の自動車メーカーに対し、日独の2社で<b>事実上の「世界一のシール連合」</b>を作っている。NOKが単独で欧米に出ていかない代わりに、フロイデンベルク経由で欧米の顧客にも供給できる。株主としては、敵対的買収をまず不可能にする安定株主でもある。</p>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sec-label"><span class="num">08</span>Capital Policy &amp; Shareholder Returns</div>
+  <h2>「PBR1倍割れ」から動いた会社。3年で830億円を還元</h2>
+  <p>2023年3月、東証がPBR1倍割れ企業に「資本コストと株価を意識した経営」を要請した。NOKは自己資本が厚く、持合株も多く、<b>PBRが0.4倍前後</b>（2022年頃の時価総額約1,900億円÷純資産約5,500億円、筆者概算）に沈んでいた典型的な会社だった。翌月、NOKは大きく舵を切った。</p>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2023-04-19</span><span class="tl-title">「3年で675億円以上」の還元方針</span></div><div class="tl-body">新中計（2023〜25年度）の期間に自社株買いと配当で<b>下限675億円</b>。FY3/24は100億円の自社株買い。同時にFY3/23の配当を50円→75円へ増額 <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2023-11-08</span><span class="tl-title">自社株買い 上限700万株・100億円</span></div><div class="tl-body">発行済の4.4%。同時に最終益予想を引き上げ <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025-05</span><span class="tl-title">キャピタルアロケーション方針</span></div><div class="tl-body">事業投資を最優先としつつ、<b>累進配当</b>（減配しない）＋資金状況を見た自社株買い <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2026-05</span><span class="tl-title">3年の実績：830億円</span></div><div class="tl-body">配当536億円＋自社株買い294億円。目標675億円を超過。政策保有株は40%を売却 <span class="tag o">公式</span></div></div></div>
+  </div>
+  <p>配当は<b>FY3/21の25円 → FY3/26の130円 → FY3/27予想140円</b>と5倍以上になった。株価が約2.5倍の間に配当が5倍になったので、利回りは今も5%前後と高い。<b>NOK Groupとしての配当予想は上場後に公表</b>とされ、11/11の中間決算が最初の機会。</p>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sec-label"><span class="num">09</span>Eagle Industry Integration (2026)</div>
+  <h2>62年前に切り出した子を、もう一度一緒にした</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Item</th><th>内容</th></tr></thead>
+    <tbody>
+      <tr><td>発表</td><td>2025-11-10。統合契約の締結と株式移転計画の作成</td></tr>
+      <tr><td>方式</td><td>共同株式移転で持株会社「NOK Group」を新設。NOK・イーグル工業とも完全子会社に</td></tr>
+      <tr class="hl"><td>比率</td><td><b>1:1</b>（NOK株1株・イーグル株1株とも、NOK Group株1株）。<b>フェアネス・オピニオンは取得せず</b></td></tr>
+      <tr><td>新株数</td><td>211,955,258株（予定）</td></tr>
+      <tr><td>持合いの扱い</td><td>NOKはイーグル工業株を14,812,559株（約30%）保有 → NOK Group株に変わり、<b>NOKが「適時に処分」予定</b>（子会社が持つ親会社株は早く処分する必要がある）</td></tr>
+      <tr><td>日程</td><td>2026-06 株主総会で承認 → 09-28 最終売買 → 09-29 上場廃止 → <b>10-01 NOK Group上場</b></td></tr>
+      <tr><td>取締役</td><td>鶴正雄（Group CEO）、Mutsushi Takeda（Group CFO）、Yuki Sato（Group CTO）、Tetsuji Tsuru（取締役）、Kazushige Hayashi（常勤監査等委員）、社外の監査等委員4名（Makoto Fujioka、Naoki Shimada、Motoko Imada、Atsushi Kajitani）。漢字表記はプレスリリース英訳からの未確認分をローマ字のまま記載</td></tr>
+      <tr><td>目標</td><td>2029年3月期に、両社の個別計画の単純合算より<b>営業利益を10%超上積み</b>。当面の効果はコスト面が中心</td></tr>
+    </tbody>
+  </table></div>
+  <h3>イーグル工業とは</h3>
+  <p>1964年にNOKのメカニカルシール部門から生まれた会社。<b>自動車・建機、一般産業機械、半導体、舶用、航空宇宙</b>の5分野で、金属・セラミックのシール、特殊バルブ、ベローズなどを作る。FY3/26は<b>売上1,775億円（+5.5%）・営業利益135億円（+58.6%）・純利益98億円（2倍）</b>と好調で、FY3/27は8月に経常利益予想を200億円へ上方修正している。舶用（船の推進軸のシール）は新造船・修繕とも堅調。</p>
+  <h3>なぜ統合したのか</h3>
+  <ul>
+    <li><b>親子上場の解消：</b>NOKはイーグル工業の約30%を持つ筆頭株主（持分法適用）。東証が問題視する「親子上場・持分法上場」の状態を解消し、少数株主との利益相反をなくす</li>
+    <li><b>素材の補完：</b>NOK＝ゴム・樹脂（有機材料）、イーグル＝金属・セラミック（無機材料）。<b>半導体製造装置</b>のように両方が要る用途で「複合的なシーリング・ソリューション」を出せる</li>
+    <li><b>販路の補完：</b>NOKは国内自動車OEMに圧倒的、イーグル工業はグローバルの産機・建機・農機・船に強い</li>
+    <li><b>コスト：</b>営業・物流拠点の統合、治具・金型の内製、購買力、ERP導入の経験共有（イーグルは導入済み）</li>
+  </ul>
+  <div class="col-box">
+    <span class="col-lbl">Column</span>
+    <h3>1:1は誰に有利だったのか</h3>
+    <p>統合発表直前（2025年11月上旬）のNOKの株価は2,700円台。比率は両社が算定機関の算定を踏まえて1:1で合意したが、<b>第三者のフェアネス・オピニオン（比率が公正だという意見書）なし</b>は大型統合では珍しく、少数株主にとっての妥当性は外から検証しにくい。NOKは自らが持つイーグル株30%分をNOK Group株として受け取り、それを処分する立場になる。<b>この約1,481万株（発行済の約7%）をどう処分するか</b>（市場売却・消却・自己株化）が、統合後の需給の論点になっている。</p>
+  </div>
+</div>
+
+<div class="sec" id="s10">
+  <div class="sec-label"><span class="num">10</span>Competitors — Earnings Side by Side</div>
+  <h2>シールの世界は「欧州の大手」と「日本の専業」</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th class="num">Revenue</th><th class="num">Operating margin</th><th>シールの位置づけ</th><th>決算の出方</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>NOK（旧7240）</td><td class="num">7,384億円</td><td class="num">4.5%</td><td>オイルシール世界首位（フロイデンベルク連合）</td><td>シール7%台、FPC1%台の合成で全社は低い</td></tr>
+      <tr><td>イーグル工業（旧6486）</td><td class="num">1,775億円</td><td class="num">7.6%</td><td>メカニカルシールの総合メーカー</td><td>半導体・舶用・航空宇宙で利益率が高め</td></tr>
+      <tr><td>Freudenberg（独、非上場）</td><td class="num">約€12B（グループ）</td><td class="num">—</td><td>シール世界大手、NOKの筆頭株主</td><td>シールは多角化グループの一部門</td></tr>
+      <tr><td>Trelleborg（スウェーデン）</td><td class="num">—</td><td class="num">—</td><td>高機能ポリマーシール（航空・産業）</td><td>事業売却でシール中心に集中、高収益</td></tr>
+      <tr><td>SKF（スウェーデン）</td><td class="num">—</td><td class="num">—</td><td>軸受のついでにシールも</td><td>軸受が主</td></tr>
+      <tr><td>Avary／鵬鼎（台湾・中国）</td><td class="num">—</td><td class="num">—</td><td>FPC世界首位（鴻海系）</td><td>メクトロンの最大の競合</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">NOK・イーグル工業はFY3/2026実績。Freudenbergは同社公表のグループ売上規模（概数）。Trelleborg・SKF・Avaryの数字は本ページでは未取得（今後追記）。</p>
+  <p><b>読み比べのポイント：</b>①<b>シール単体なら競争力は欧州大手と同格</b>。NOKのシール事業の利益率7.5%は、純粋なシール会社と比べるとまだ低く、値上げ余地があるというのが会社の見立て（プライシング戦略）。②<b>全社の利益率を下げているのはFPC</b>。FPCは台湾・中国勢の規模に押され、日系はメクトロン・住友電工・フジクラなどが縮小・撤退の判断を迫られてきた。</p>
+</div>
+
+<div class="sec" id="s11">
+  <div class="sec-label"><span class="num">11</span>Japan Connections</div>
+  <h2>日本の自動車・機械産業の「縁の下」</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th>関係</th></tr></thead>
+    <tbody>
+      <tr><td>イーグル工業</td><td>1964年にNOKから分離、2026年に再統合。NOK Group傘下</td></tr>
+      <tr><td>日本メクトロン（MEKTEC）</td><td>NOKの100%子会社。FPC</td></tr>
+      <tr><td>トヨタ・ホンダ・日産・スズキ等</td><td>シールの主要顧客</td></tr>
+      <tr><td>コマツ・クボタ等の建機・農機</td><td>油圧・減速機のシール。FY3/26の増収要因</td></tr>
+      <tr><td>シンジーテック・エストー等</td><td>グループ会社（エストーは前中計で買収）</td></tr>
+      <tr><td>NOKクリューバー</td><td>独Klüber Lubrication（フロイデンベルク傘下）との潤滑剤の合弁</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s12">
+  <div class="sec-label"><span class="num">12</span>Stock: Price History &amp; Major Moves (NFA)</div>
+  <h2>2022年の底1,055円から3,327円へ約3倍、統合後は約2割安。13回の大きな値動き</h2>
+  <p class="note">2026-09-28までは旧NOK（7240）の週足終値、2026-10-01以降はNOK Group（641A）の日足終値。7240は1株→641A 1株で交換されたので、比率調整なしで繋がる。NFA＝Not Financial Advice。</p>
+  <div class="chart pchart" id="c-price-main" data-price="PRICE_NOK" data-marks="all"><div class="chart-title">NOK（7240）→ NOK Group（641A）株価 ¥ — 2021-01〜2026-09は週足、2026-10-01〜11-09は日足の終値</div><div class="chart-sub">縦軸は対数。丸数字は下の「Major Moves」の番号。グラフに触れると日付と終値</div></div>
+  <p class="src note">出典：Yahoo!ファイナンス（7240.T 週足・641A.T 日足の時系列）。7240の日足は上場廃止で取得不可のため、週内の動きは週足から判定。理由は会社開示・報道。</p>
+  <details class="raw"><summary>Raw data: 年ごとの始値・高値・安値・終値（¥、週足終値ベース）</summary><div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Year</th><th class="num">First</th><th class="num">High</th><th class="num">Low</th><th class="num">Last</th><th>その年の主な材料</th></tr></thead>
+    <tbody>
+      <tr><td>2021</td><td class="num">1,178</td><td class="num">1,637</td><td class="num">1,178</td><td class="num">1,252</td><td>自動車生産の回復期待 → 半導体不足</td></tr>
+      <tr><td>2022</td><td class="num">1,297</td><td class="num">1,310</td><td class="num">1,055</td><td class="num">1,174</td><td>半導体不足・中国ロックダウン・メクトロン赤字</td></tr>
+      <tr class="hl"><td>2023</td><td class="num">1,169</td><td class="num">2,112.5</td><td class="num">1,155</td><td class="num">1,881.5</td><td>PBR改革、675億円の還元方針</td></tr>
+      <tr><td>2024</td><td class="num">1,966</td><td class="num">2,477.5</td><td class="num">1,920</td><td class="num">2,476</td><td>電子部品の黒字化、自社株買い</td></tr>
+      <tr><td>2025</td><td class="num">2,338</td><td class="num">2,808</td><td class="num">1,882.5</td><td class="num">2,808</td><td>関税ショック、累進配当、イーグル工業と統合発表</td></tr>
+      <tr class="hl"><td>2026（7240）</td><td class="num">2,901.5</td><td class="num">3,327</td><td class="num">2,747</td><td class="num">3,029</td><td>上場来高値圏 → 9/28最終売買</td></tr>
+      <tr class="hl"><td>2026（641A）</td><td class="num">3,100</td><td class="num">3,100</td><td class="num">2,604</td><td class="num">2,663.5</td><td>10/1上場、11/9まで</td></tr>
+    </tbody>
+  </table></div></div></details>
+
+  <h3 id="moves">Major Moves &amp; Why</h3>
+  <div class="timeline">
+    <div class="tl-item" id="mv1"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">1</span><span class="tl-date">2021-01〜03</span><span class="tl-title">コロナ後の自動車回復を先取り</span><span class="tl-move">1,178 → 1,637（+39%）</span></div><div class="tl-body">2期連続の最終赤字の底から、世界の自動車生産の回復を織り込んで上昇。1月第4週は+10% <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv2"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">2</span><span class="tl-date">2021-03〜2022-03</span><span class="tl-title">半導体不足で自動車減産</span><span class="tl-move">1,637 → 1,055（−36%）</span></div><div class="tl-body">半導体不足による日系自動車の減産、ウクライナ侵攻後の全面安、メクトロンの赤字。FY3/23の営業利益は154億円（前期比−51%）まで落ちた <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv3"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">3</span><span class="tl-date">2023-04-19</span><span class="tl-title">「3年で675億円以上」の還元方針</span><span class="tl-move">週 +18.5%（1,517 → 1,797）</span></div><div class="tl-body">東証のPBR改善要請の翌月。株主還元の下限675億円、100億円の自社株買い、配当50→75円への増額を同時発表。5年間で最大の週間上昇 <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item" id="mv4"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">4</span><span class="tl-date">2023-11-08</span><span class="tl-title">自社株買い100億円＋最終益の上方修正</span><span class="tl-move">週 +7.3%（→1,945.5）</span></div><div class="tl-body">上限700万株（発行済の4.4%）。還元方針が実行に移されたことを確認 <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item" id="mv5"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">5</span><span class="tl-date">2024-05-13の週</span><span class="tl-title">本決算後の売り</span><span class="tl-move">週 −7.1%（2,276 → 2,114.5）</span></div><div class="tl-body">FY3/24決算とFY3/25見通しの発表週。個別の悪材料は確認できず、期待の剥落とみられる <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv6"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">6</span><span class="tl-date">2024-12</span><span class="tl-title">年末に高値更新</span><span class="tl-move">2,477.5（2024年高値）</span></div><div class="tl-body">電子部品の黒字化が見え、FY3/25の営業利益が2倍近くになる見通し。個別の大型材料は見当たらない <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv7"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">7</span><span class="tl-date">2025-03-31〜04-07</span><span class="tl-title">トランプ関税ショック</span><span class="tl-move">週 −14.1%、翌週安値1,882.5</span></div><div class="tl-body">米国の自動車関税と相互関税の発表で、日系自動車部品株が全面安。NOK固有の材料ではない <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv8"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">8</span><span class="tl-date">2025-11-10</span><span class="tl-title">イーグル工業との経営統合を発表</span><span class="tl-move">週 −3.7% → 2週後 +7.8%</span></div><div class="tl-body">共同株式移転・1:1・2026年10月統合。発表直後はフェアネス・オピニオンなしの比率などで様子見、その後は親子上場の解消と統合後の還元期待で上昇 <span class="tag o">公式</span> <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv9"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">9</span><span class="tl-date">2026-02-24の週</span><span class="tl-title">上場来高値圏 3,327円</span><span class="tl-move">2025年末 2,808 → 3,327（+18%）</span></div><div class="tl-body">2/5の3Q決算（9か月で営業利益−13%）は弱かったが、日本株全体の上昇と高配当株人気で上値を追った <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv10"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">10</span><span class="tl-date">2026-03〜04</span><span class="tl-title">中東情勢と全面安</span><span class="tl-move">3,327 → 2,747（−17%）</span></div><div class="tl-body">中東情勢の悪化による全体安。会社は5月の決算説明会で「中東情勢の業績への影響」を独立のページで説明（影響度はシール＞電子部品） <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv11"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">11</span><span class="tl-date">2026-09-28</span><span class="tl-title">旧NOK（7240）最終売買</span><span class="tl-move">終値 3,029</span></div><div class="tl-body">9/29上場廃止。中間配当（9/30基準、上限70円）の権利は旧NOK株主に <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item" id="mv12"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">12</span><span class="tl-date">2026-10-01〜02</span><span class="tl-title">NOK Group上場、2日目に−8%</span><span class="tl-move">3,100 → 2,848</span></div><div class="tl-body">中間配当の権利が落ちた分（約70円＝約2%）に加え、旧イーグル株主・指数の入れ替えなどの<b>需給の売り</b>が出たとみられる <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv13"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">13</span><span class="tl-date">2026-11-06</span><span class="tl-title">中間決算前に年初来安値</span><span class="tl-move">1日 −5.5%（→2,604）、11/9 2,663.5</span></div><div class="tl-body">個別材料が見当たらない。11/11の初決算を前にした手控え <span class="tag e">推定</span></div></div></div>
+  </div>
+
+  <h3>局面のパターン</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Pattern</th><th>例</th><th>読み</th></tr></thead>
+    <tbody>
+      <tr><td>資本政策で上がる</td><td>#3, #4, #8</td><td>NOKの株価を一番動かしたのは<b>業績ではなく還元と統合</b>。事業の伸びは小さいので、資本効率の改善が評価の源泉</td></tr>
+      <tr><td>自動車の景気で下がる</td><td>#2, #7</td><td>日系自動車の生産・関税ニュースにそのまま反応する</td></tr>
+      <tr><td>決算で売られる</td><td>#5, #13</td><td>中計の数値目標を毎年下回ってきたので、決算の「サプライズ」は期待しにくい</td></tr>
+      <tr><td>統合後の需給</td><td>#12, #13</td><td>NOKの保有する自社株（約7%）と旧イーグル株主の売りが重し</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Upcoming catalysts</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Date</th><th>Event</th><th>何を見るか</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>2026-11-11</td><td>NOK Group 初の中間決算</td><td>統合後の配当予想（旧NOK年140円の水準を維持するか）、通期見通し、電子部品の2Q黒字化</td></tr>
+      <tr><td>統合後（時期未定）</td><td>統合会社の戦略・中期計画</td><td>2029年3月期の営業利益目標の具体額、FPC事業の扱い</td></tr>
+      <tr><td>随時</td><td>NOK保有のNOK Group株（約1,481万株）の処分</td><td>消却なら需給改善、市場売却なら重し</td></tr>
+      <tr><td>2027-05</td><td>FY3/2027 本決算</td><td>2社合算の初の通期数字、新中計の1年目</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s13">
+  <div class="sec-label"><span class="num">13</span>Valuation, Bull / Base / Bear (NFA)</div>
+  <h2>PER約11倍・配当利回り5%前後。「安いが伸びない」をどう見るか</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Metric</th><th class="num">Value</th><th>計算</th></tr></thead>
+    <tbody>
+      <tr><td>Market cap</td><td class="num">約5,650億円</td><td>¥2,663.5 × 発行済約2.12億株（NOK保有の約1,481万株を除くと約5,250億円）</td></tr>
+      <tr><td>2社合算 売上（FY3/26）</td><td class="num">約9,160億円</td><td>7,384＋1,775（単純合算）</td></tr>
+      <tr><td>2社合算 営業利益（FY3/26）</td><td class="num">約465億円</td><td>330＋135（単純合算、利益率約5%）</td></tr>
+      <tr><td>PER（概算）</td><td class="num">約10〜11倍</td><td>合算純利益 約530億円を仮定（NOKの463億円にはイーグルの持分法利益が約3割分含まれるため、残り約7割＝約70億円を加算）</td></tr>
+      <tr><td>Dividend yield</td><td class="num">約5.3%</td><td>旧NOKの今期予想 年140円が維持された場合（統合後は未公表）</td></tr>
+      <tr><td>PBR</td><td class="num">1倍割れ（推定）</td><td>旧NOKの純資産6,703億円だけで時価総額を上回る（イーグル工業の純資産を除いても）</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">すべて筆者計算（2026-11-09終値ベース）。統合後の連結数字が出るまでは概算。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Scenario</th><th>前提（FY3/2029頃）</th><th class="num">Operating profit</th><th class="num">PER</th><th class="num">株価の目安</th></tr></thead>
+    <tbody>
+      <tr><td>Bull</td><td>統合目標（合算+10%超）を達成、シールの値上げが続き、FPCが利益率3%台に回復。還元も継続</td><td class="num">約650億円</td><td class="num">14倍</td><td class="num">約3,600円</td></tr>
+      <tr class="hl"><td>Base</td><td>シールは堅調、FPCは低空飛行。統合効果はコスト削減分だけ</td><td class="num">約520億円</td><td class="num">11倍</td><td class="num">約2,700円</td></tr>
+      <tr><td>Bear</td><td>日系自動車の減産・関税、FPCが再び赤字、統合コストが先行</td><td class="num">約380億円</td><td class="num">10倍</td><td class="num">約2,000円</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">筆者の単純な仮定（純利益≒営業利益×1.1〜1.2、株数約2.0億株）。投資助言ではない（NFA）。下値は配当利回りと実質無借金・PBR1倍割れが支えになりやすい。</p>
+  <p><b>先行指標：</b>①日系自動車メーカーの世界生産台数、②中国EVメーカーへのシール採用件数、③メクトロンの四半期営業損益、④建機・半導体製造装置の受注（イーグル工業とシールの一般産業向け）、⑤政策保有株の売却ペースと自社株の処分方法。</p>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">Bull の論点</div><div class="cd-d">シールは新規参入のない寡占で、値上げが通る。実質無借金で配当利回り5%前後。統合でイーグル工業の半導体・舶用・航空宇宙が加わり、自動車依存が下がる。FPCを整理すれば利益率は一気に上がる余地</div></div>
+    <div class="cd"><div class="cd-t">Bear の論点</div><div class="cd-d">10年間売上が伸びていない。中計目標は毎回未達。FPCは中国・台湾勢に勝てず、売るにも買い手が限られる。創業家と筆頭株主（フロイデンベルク）が強く、少数株主の圧力が効きにくい</div></div>
+  </div>
+</div>
+
+<div class="sec qa" id="s14">
+  <div class="sec-label"><span class="num">14</span>Q&amp;A</div>
+  <h2>基礎から深掘りまで</h2>
+  <details><summary>オイルシールって、どこに付いているの？</summary><div class="qa-a">クルマなら、エンジンの前後でクランクシャフトが外に出てくる穴、トランスミッションの入口と出口、デフ（左右のタイヤに力を分ける装置）、ハブベアリングなど、<b>回る軸が箱を貫通している場所すべて</b>。見た目は直径数cm〜十数cmの黒いゴムの輪で、内側の細いリップ（唇）が軸に軽く触れて油を止めている。</div></details>
+  <details><summary>なぜ安い部品なのに儲かるの？</summary><div class="qa-a">①<b>壊れたときの損害が部品代の何万倍</b>にもなるので、顧客は価格より実績を重視する。②新型車の開発段階で採用が決まると<b>モデルの生産が終わるまで</b>発注が続く。③ゴムの<b>配合ノウハウ</b>は簡単にまねできない。この3つで、NOKは「新規参入企業はない」と言える立場にいる。</div></details>
+  <details><summary>EVが増えるとNOKは困らない？</summary><div class="qa-a">エンジン回りのシールは減るが、モーター・減速機・電池の冷却・パワー半導体の冷却に<b>新しいシールが要る</b>。EVのモーターは高回転で、シールへの要求はむしろ厳しい。NOKは中国EVメーカーへの拡販を進めており、メクトロンも車載電池用FPCで世界トップクラスとされる。ただし前中計では<b>BEV市場の減速で電子部品の自動車向けが下振れ</b>した。</div></details>
+  <details><summary>フレキシブル基板（FPC）って何？</summary><div class="qa-a">ポリイミドなどの薄いフィルムに銅の回路を作った、<b>曲げられる電子回路</b>。スマホの中で画面・カメラ・電池と基板をつなぐ配線や、EV電池の各セルの電圧を監視する配線に使う。日本メクトロンは長く世界首位だったが、鴻海系のAvary（鵬鼎）に抜かれ、いまは世界3位とされる。</div></details>
+  <details><summary>なぜイーグル工業と統合したの？</summary><div class="qa-a">①NOKがイーグル工業の約30%を持つ<b>「親子上場」に近い状態</b>を解消するため（東証が問題視している）、②ゴム・樹脂のNOKと金属・セラミックのイーグル工業で<b>素材の幅を広げ</b>、半導体装置など高度なシール需要に応えるため、③拠点・物流・購買の<b>コスト削減</b>のため。もともとイーグル工業は1964年にNOKから生まれた会社で、62年ぶりに一つの持株会社の下に戻った形。</div></details>
+  <details><summary>旧NOK株を持っていた人はどうなったの？</summary><div class="qa-a">何もしなくても、NOK株1株がNOK Group株1株に自動的に変わった。2026年9月28日が最終売買日、10月1日からNOK Group（641A）として取引できる。9月30日基準の中間配当（上限70円）は旧NOKから支払われる。</div></details>
+  <details><summary>フロイデンベルクはなぜNOKを買収しないの？</summary><div class="qa-a">66年間、約25%の株主のまま。フロイデンベルクは同族の非上場企業で、<b>地域分担による提携</b>（アジアはNOK、欧米はフロイデンベルク）でお互いが利益を得てきた。日本企業を完全に買収すると日系自動車メーカーとの関係やNOKの組織を壊すリスクがある。統合で持株比率は約20%に薄まったが、筆頭株主であることは変わらない。</div></details>
+  <details><summary>PBR1倍割れって、何が問題なの？</summary><div class="qa-a">株価×株数（時価総額）が、会社の帳簿上の純資産より小さい状態。「今すぐ会社を解散して資産を配ったほうが株主は得をする」と市場が見ているという意味になる。NOKは純資産が厚く（総資産の約7割）、使っていないお金や持合株が多かったため、利益に対して資本が大きすぎ、ROEが低かった。2023年からの還元強化はこれを直すための動き。</div></details>
+</div>
+
+<div class="sec" id="s-vocab">
+  <div class="sec-label"><span class="num">15</span>Vocabulary</div>
+  <h2>本件の英単語 — 語源・類義語・よく出る使い方</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Word</th><th>意味</th><th>語源</th><th>類義語・対比</th><th>よく出る使い方</th></tr></thead>
+    <tbody>
+      <tr><td>oil seal</td><td>オイルシール</td><td>seal＝ラテン語 <i>sigillum</i>（封印）</td><td>gasket／O-ring</td><td>"NOK is the world's largest <b>oil seal</b> maker"</td></tr>
+      <tr><td>mechanical seal</td><td>メカニカルシール</td><td>mechanical＝ギリシャ語 <i>mēchanē</i>（装置）</td><td>packing（パッキン）</td><td>"<b>mechanical seals</b> for semiconductor equipment"</td></tr>
+      <tr><td>flexible printed circuit (FPC)</td><td>フレキシブル基板</td><td>flex＝ラテン語 <i>flectere</i>（曲げる）</td><td>rigid PCB（硬い基板）</td><td>"Mektron supplies <b>FPCs</b> for smartphones and EV batteries"</td></tr>
+      <tr><td>leak</td><td>漏れる／漏れ</td><td>古ノルド語 <i>leka</i>（滴る）</td><td>seep／spill</td><td>"prevent oil from <b>leaking</b> along the shaft"</td></tr>
+      <tr><td>share transfer</td><td>株式移転</td><td>transfer＝trans（越えて）＋ferre（運ぶ）</td><td>share exchange（株式交換）／merger</td><td>"a joint <b>share transfer</b> to form NOK Group"</td></tr>
+      <tr><td>holding company</td><td>持株会社</td><td>hold＝保有する</td><td>operating company（事業会社）</td><td>"the new <b>holding company</b> listed on Oct 1"</td></tr>
+      <tr><td>parent-subsidiary listing</td><td>親子上場</td><td>parent＝親、subsidiary＝ラテン語 <i>subsidium</i>（援軍）</td><td>equity-method affiliate（持分法適用会社）</td><td>"unwinding a <b>parent-subsidiary listing</b>"</td></tr>
+      <tr><td>fairness opinion</td><td>フェアネス・オピニオン</td><td>fair＝公正な</td><td>valuation report（算定書）</td><td>"neither company obtained a <b>fairness opinion</b>"</td></tr>
+      <tr><td>progressive dividend</td><td>累進配当</td><td>progress＝前へ進む</td><td>payout ratio（配当性向）</td><td>"a <b>progressive dividend</b> policy with no cuts"</td></tr>
+      <tr><td>cross-shareholding</td><td>政策保有株・持合い</td><td>cross＝交差</td><td>strategic holding</td><td>"reduce <b>cross-shareholdings</b> by 40%"</td></tr>
+      <tr><td>pricing power</td><td>価格決定力</td><td>price＝ラテン語 <i>pretium</i>（価値）</td><td>price taker（価格を受け入れる側）</td><td>"seals give NOK real <b>pricing power</b>"</td></tr>
+      <tr><td>e-axle</td><td>eアクスル（モーター・減速機・インバーター一体）</td><td>axle＝古英語 <i>eax</i>（車軸）</td><td>drivetrain／powertrain</td><td>"seals for <b>e-axles</b> in Chinese EVs"</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://daiwair.webcdn.stream.ne.jp/www11/daiwair/qlviewer/pdf/2605137240sNv2akXLZN.pdf" target="_blank" rel="noopener">NOK — 2025年度（2026年3月期）決算説明会資料（2026-05-13）</a></li>
+    <li><a href="https://finance-frontend-pc-dist.west.edge.storage-yahoo.jp/disclosure/20260513/20260512525692.pdf" target="_blank" rel="noopener">NOK — 2026年3月期 決算短信</a></li>
+    <li><a href="https://kyodonewsprwire.jp/release/202511108803" target="_blank" rel="noopener">NOK・イーグル工業 — 共同持株会社設立による経営統合に関する契約書の締結（2025-11-10）</a></li>
+    <li><a href="https://www.nihon-ma.co.jp/news/20251110_7240-2/" target="_blank" rel="noopener">日本M&amp;Aセンター — NOKとイーグル工業、経営統合を発表</a></li>
+    <li><a href="https://www.aba-j.or.jp/info/industry/25175/" target="_blank" rel="noopener">ABA-J — NOKとイーグル工業が経営統合へ</a></li>
+    <li><a href="https://search.sbisec.co.jp/v2/popwin/attention/stock/information/pop4040_260911_08.html" target="_blank" rel="noopener">SBI証券 — 株式移転に伴うNOK（7240）株式の取扱い</a></li>
+    <li><a href="https://www2.jpx.co.jp/disc/64860/081220260513528524_tse-acedjpsm-64860-20260513364860-ixbrl.htm" target="_blank" rel="noopener">イーグル工業 — 2026年3月期 決算短信</a></li>
+    <li><a href="https://www.nokgrp.com/news/assets/230419_Notice-of-Capital-Policy-and-Shareholder-Returns-during-the-New-Medium-Term-Management-Plan_J.pdf" target="_blank" rel="noopener">NOK — 新中期経営計画期間の資本政策および株主還元について（2023-04-19）</a></li>
+    <li><a href="https://kabutan.jp/news/?b=k202304190015" target="_blank" rel="noopener">株探 — NOK、前期配当を25円増額修正（2023-04-19）</a></li>
+    <li><a href="https://minkabu.jp/news/3754859" target="_blank" rel="noopener">みんかぶ — 最終益予想を引き上げ、上限700万株の自社株買い（2023-11-08）</a></li>
+    <li><a href="https://irbank.net/7240/results" target="_blank" rel="noopener">IRBank — NOK 業績推移</a></li>
+    <li><a href="https://www.nok.co.jp/company/history.html" target="_blank" rel="noopener">NOK — 沿革</a></li>
+    <li><a href="https://en.wikipedia.org/wiki/NOK_Corporation" target="_blank" rel="noopener">Wikipedia — NOK Corporation</a></li>
+    <li><a href="https://www.marklines.com/ja/top500/nok" target="_blank" rel="noopener">MarkLines — NOK</a></li>
+    <li><a href="https://www.marketscreener.com/quote/stock/NOK-CORPORATION-54900590/company-shareholders/" target="_blank" rel="noopener">MarketScreener — NOK shareholders</a></li>
+    <li><a href="https://www.nikkan.co.jp/articles/view/701583" target="_blank" rel="noopener">日刊工業新聞 — 用途広がるFPC、車の電動化に商機</a></li>
+    <li><a href="https://www.zaikai.jp/articles/detail/3920" target="_blank" rel="noopener">財界 — オイルシール世界首位・NOKの技術掛け合わせ戦略</a></li>
+    <li><a href="https://finance.yahoo.co.jp/quote/7240.T/history" target="_blank" rel="noopener">Yahoo!ファイナンス — 7240 時系列</a></li>
+    <li><a href="https://finance.yahoo.co.jp/quote/641A.T/history" target="_blank" rel="noopener">Yahoo!ファイナンス — 641A 時系列</a></li>
+    <li><a href="261105_ihi_deep_research.html">Internal — IHI Deep Research</a></li>
+  </ul>
+  <p style="font-size:11px;color:var(--muted);margin-top:14px">Last updated: 2026-11-10</p>
+</div>
+
+</div>
+
+</div>
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>window.PRICE_NOK={"data":[["2021-01-04",1178],["2021-01-12",1190],["2021-01-18",1234],["2021-01-25",1361],["2021-02-01",1415],["2021-02-08",1417],["2021-02-15",1432],["2021-02-22",1455],["2021-03-01",1494],["2021-03-08",1578],["2021-03-15",1637],["2021-03-22",1554],["2021-03-29",1471],["2021-04-05",1447],["2021-04-12",1471],["2021-04-19",1419],["2021-04-26",1402],["2021-05-06",1430],["2021-05-10",1333],["2021-05-17",1377],["2021-05-24",1388],["2021-05-31",1441],["2021-06-07",1382],["2021-06-14",1306],["2021-06-21",1366],["2021-06-28",1382],["2021-07-05",1316],["2021-07-12",1420],["2021-07-19",1440],["2021-07-26",1440],["2021-08-02",1401],["2021-08-10",1409],["2021-08-16",1292],["2021-08-23",1313],["2021-08-30",1388],["2021-09-06",1386],["2021-09-13",1379],["2021-09-21",1372],["2021-09-27",1283],["2021-10-04",1296],["2021-10-11",1344],["2021-10-18",1322],["2021-10-25",1314],["2021-11-01",1357],["2021-11-08",1328],["2021-11-15",1329],["2021-11-22",1272],["2021-11-29",1249],["2021-12-06",1267],["2021-12-13",1223],["2021-12-20",1224],["2021-12-27",1252],["2022-01-04",1297],["2022-01-11",1310],["2022-01-17",1225],["2022-01-24",1206],["2022-01-31",1301],["2022-02-07",1302],["2022-02-14",1251],["2022-02-21",1190],["2022-02-28",1101],["2022-03-07",1055],["2022-03-14",1126],["2022-03-22",1194],["2022-03-28",1146],["2022-04-04",1061],["2022-04-11",1060],["2022-04-18",1112],["2022-04-25",1111],["2022-05-02",1145],["2022-05-09",1130],["2022-05-16",1122],["2022-05-23",1129],["2022-05-30",1212],["2022-06-06",1227],["2022-06-13",1153],["2022-06-20",1124],["2022-06-27",1075],["2022-07-04",1086],["2022-07-11",1186],["2022-07-19",1225],["2022-07-25",1188],["2022-08-01",1129],["2022-08-08",1214],["2022-08-15",1231],["2022-08-22",1234],["2022-08-29",1230],["2022-09-05",1274],["2022-09-12",1229],["2022-09-20",1238],["2022-09-26",1127],["2022-10-03",1130],["2022-10-11",1139],["2022-10-17",1114],["2022-10-24",1191],["2022-10-31",1233],["2022-11-07",1308],["2022-11-14",1305],["2022-11-21",1299],["2022-11-28",1232],["2022-12-05",1210],["2022-12-12",1215],["2022-12-19",1165],["2022-12-26",1174],["2023-01-04",1169],["2023-01-10",1155],["2023-01-16",1175],["2023-01-23",1207],["2023-01-30",1207],["2023-02-06",1218],["2023-02-13",1264],["2023-02-20",1326],["2023-02-27",1351],["2023-03-06",1400],["2023-03-13",1326],["2023-03-20",1359],["2023-03-27",1463],["2023-04-03",1504],["2023-04-10",1517],["2023-04-17",1797],["2023-04-24",1824],["2023-05-01",1846],["2023-05-08",1798],["2023-05-15",1884],["2023-05-22",1859],["2023-05-29",1887],["2023-06-05",1983.5],["2023-06-12",2064.5],["2023-06-19",2049],["2023-06-26",2099.5],["2023-07-03",2081],["2023-07-10",2000.5],["2023-07-18",2089.5],["2023-07-24",2096],["2023-07-31",1935.5],["2023-08-07",1948.5],["2023-08-14",1904.5],["2023-08-21",1980],["2023-08-28",2079],["2023-09-04",2061],["2023-09-11",2112.5],["2023-09-19",2072.5],["2023-09-25",1985.5],["2023-10-02",1914.5],["2023-10-10",1875],["2023-10-16",1887],["2023-10-23",1850.5],["2023-10-30",1813.5],["2023-11-06",1945.5],["2023-11-13",1923],["2023-11-20",1898.5],["2023-11-27",1897],["2023-12-04",1823.5],["2023-12-11",1873.5],["2023-12-18",1858.5],["2023-12-25",1881.5],["2024-01-04",1966],["2024-01-09",2006.5],["2024-01-15",1940],["2024-01-22",1920],["2024-01-29",1952.5],["2024-02-05",2079],["2024-02-13",2155],["2024-02-19",2109.5],["2024-02-26",2112.5],["2024-03-04",2000],["2024-03-11",2019.5],["2024-03-18",2132.5],["2024-03-25",2093],["2024-04-01",2058.5],["2024-04-08",2144],["2024-04-15",2090],["2024-04-22",2267],["2024-04-30",2268.5],["2024-05-07",2276],["2024-05-13",2114.5],["2024-05-20",2129],["2024-05-27",2175],["2024-06-03",2075],["2024-06-10",2139.5],["2024-06-17",2107],["2024-06-24",2139.5],["2024-07-01",2149],["2024-07-08",2198.5],["2024-07-16",2224],["2024-07-22",2119],["2024-07-29",1986.5],["2024-08-05",2057.5],["2024-08-13",2199],["2024-08-19",2281],["2024-08-26",2387],["2024-09-02",2369.5],["2024-09-09",2281.5],["2024-09-17",2324.5],["2024-09-24",2312.5],["2024-09-30",2305],["2024-10-07",2252.5],["2024-10-15",2199],["2024-10-21",2185],["2024-10-28",2157.5],["2024-11-05",2212.5],["2024-11-11",2240.5],["2024-11-18",2242],["2024-11-25",2247],["2024-12-02",2286],["2024-12-09",2391],["2024-12-16",2429],["2024-12-23",2477.5],["2024-12-30",2476],["2025-01-06",2338],["2025-01-14",2260.5],["2025-01-20",2300.5],["2025-01-27",2354],["2025-02-03",2460],["2025-02-10",2365],["2025-02-17",2304.5],["2025-02-25",2278],["2025-03-03",2347],["2025-03-10",2289.5],["2025-03-17",2369],["2025-03-24",2269],["2025-03-31",1949.5],["2025-04-07",1882.5],["2025-04-14",1895.5],["2025-04-21",1939],["2025-04-28",1976],["2025-05-07",1980],["2025-05-12",2091.5],["2025-05-19",2092.5],["2025-05-26",2120.5],["2025-06-02",2059.5],["2025-06-09",2029],["2025-06-16",2068.5],["2025-06-23",2131],["2025-06-30",2140.5],["2025-07-07",2144],["2025-07-14",2178.5],["2025-07-22",2224.5],["2025-07-28",2302.5],["2025-08-04",2420],["2025-08-12",2426],["2025-08-18",2517.5],["2025-08-25",2578],["2025-09-01",2689.5],["2025-09-08",2678.5],["2025-09-16",2608],["2025-09-22",2664.5],["2025-09-29",2606.5],["2025-10-06",2596],["2025-10-14",2581.5],["2025-10-20",2743],["2025-10-27",2745],["2025-11-04",2717.5],["2025-11-10",2616.5],["2025-11-17",2580],["2025-11-25",2782],["2025-12-01",2719.5],["2025-12-08",2750],["2025-12-15",2762],["2025-12-22",2780],["2025-12-29",2808],["2026-01-05",2901.5],["2026-01-13",3057],["2026-01-19",3173],["2026-01-26",3003],["2026-02-02",3124],["2026-02-09",3196],["2026-02-16",3237],["2026-02-24",3327],["2026-03-02",3115],["2026-03-09",3041],["2026-03-16",2925],["2026-03-23",2946],["2026-03-30",2872],["2026-04-06",2887.5],["2026-04-13",2871.5],["2026-04-20",2747],["2026-04-27",2850],["2026-05-07",2923.5],["2026-05-11",2924.5],["2026-05-18",2839],["2026-05-25",2885],["2026-06-01",2966.5],["2026-06-08",2876.5],["2026-06-15",2968],["2026-06-22",2919.5],["2026-06-29",2953],["2026-07-06",2910.5],["2026-07-13",2916.5],["2026-07-21",3005],["2026-07-27",3047],["2026-08-03",3026],["2026-08-10",3095],["2026-08-17",3011],["2026-08-24",3049],["2026-08-31",3003],["2026-09-07",3021],["2026-09-14",2991.5],["2026-09-24",3056],["2026-09-28",3029],["2026-10-01",3100],["2026-10-02",2848],["2026-10-05",2829],["2026-10-06",2856],["2026-10-07",2820.5],["2026-10-08",2775.5],["2026-10-09",2784],["2026-10-13",2816],["2026-10-14",2818.5],["2026-10-15",2781.5],["2026-10-16",2820.5],["2026-10-19",2803],["2026-10-20",2743],["2026-10-21",2735.5],["2026-10-22",2745.5],["2026-10-23",2763],["2026-10-26",2787.5],["2026-10-27",2793.5],["2026-10-28",2786],["2026-10-29",2784],["2026-10-30",2768.5],["2026-11-02",2774],["2026-11-04",2722.5],["2026-11-05",2756.5],["2026-11-06",2604],["2026-11-09",2663.5]],"marks":{"1":"2021-03-15","2":"2022-03-07","3":"2023-04-17","4":"2023-11-06","5":"2024-05-13","6":"2024-12-23","7":"2025-03-31","8":"2025-11-10","9":"2026-02-24","10":"2026-04-20","11":"2026-09-28","12":"2026-10-02","13":"2026-11-06"},"cur":"¥"};</script>
+<script src="../_shared/research_tabs.js" defer></script>
+<script src="../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>
