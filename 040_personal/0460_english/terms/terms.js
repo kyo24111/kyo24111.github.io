@@ -48,7 +48,7 @@
   /* ---------- css ---------- */
   var CSS = [
     '.tm{cursor:help}',
-    '.tm-k{font-family:Poppins,"Noto Sans JP",sans-serif;font-weight:600;border-bottom:1px dotted currentColor;margin:0 .12em}',
+    '.tm-k{font-family:Poppins,"Noto Sans JP",sans-serif;font-weight:600;margin:0 .12em}',
     '.tx-bar{display:flex;gap:4px;margin:0 0 28px;border-bottom:1px solid #d8d8d8;font-family:Poppins,"Noto Sans JP",sans-serif}',
     '.tx-bar button{appearance:none;background:none;border:none;border-bottom:2px solid transparent;margin-bottom:-1px;padding:9px 14px;font:inherit;font-size:12.5px;font-weight:600;color:#999;cursor:pointer;letter-spacing:.02em}',
     '.tx-bar button.on{color:#111;border-bottom-color:#111}',
