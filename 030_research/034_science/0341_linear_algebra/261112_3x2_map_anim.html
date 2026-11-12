@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>3×2 行列の写像</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --surface:#f5f5f5; --border:#e0e0e0;
+    --text:#111111; --soft:#3c424b; --muted:#888888; --faint:#b5b5b5;
+    --c1:#d62828; --c2:#1d4e89; --res:#7b3fa0; --hl:#fff3a0;
+    --grid:rgba(0,0,0,.13); --plane:rgba(123,63,160,.10); --axis:#555;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#121212; --surface:#1c1c1c; --border:#333;
+      --text:#eeeeee; --soft:#c4c8ce; --muted:#999; --faint:#666;
+      --c1:#ff6b6b; --c2:#6fa8ff; --res:#c99bff; --hl:#5a4d00;
+      --grid:rgba(255,255,255,.14); --plane:rgba(201,155,255,.13); --axis:#aaa;
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#121212; --surface:#1c1c1c; --border:#333;
+    --text:#eeeeee; --soft:#c4c8ce; --muted:#999; --faint:#666;
+    --c1:#ff6b6b; --c2:#6fa8ff; --res:#c99bff; --hl:#5a4d00;
+    --grid:rgba(255,255,255,.14); --plane:rgba(201,155,255,.13); --axis:#aaa;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);
+    line-height:1.8;font-size:15px;-webkit-font-smoothing:antialiased}
+  .page{max-width:880px;margin:0 auto;padding:40px 16px 80px}
+  .kick{font-family:'Poppins',sans-serif;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted)}
+  h1{font-size:24px;font-weight:700;margin:6px 0 8px}
+  .lede{color:var(--soft);font-size:14.5px}
+  .upd{font-size:12px;color:var(--faint);font-family:'Poppins',sans-serif;margin-top:8px}
+  .hl{background:var(--hl);padding:0 3px}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:14px;margin:20px 0}
+  canvas{display:block;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:10px;touch-action:none;cursor:grab}
+  .ctrl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px}
+  .btn{font-family:'Poppins',sans-serif;font-size:13px;font-weight:600;border:1px solid var(--border);
+    background:var(--bg);color:var(--soft);border-radius:8px;padding:6px 12px;cursor:pointer}
+  .btn:hover{color:var(--text);border-color:var(--muted)}
+  input[type=range]{flex:1;min-width:140px}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  .steps{display:grid;gap:8px;margin-top:14px}
+  .step{border:1px solid var(--border);border-radius:10px;padding:10px 12px;background:var(--bg);opacity:.45;transition:opacity .2s}
+  .step.on{opacity:1;border-color:var(--muted)}
+  .step b.n{font-family:'Poppins',sans-serif;color:var(--muted);margin-right:6px}
+  .c1{color:var(--c1);font-weight:700} .c2{color:var(--c2);font-weight:700} .res{color:var(--res);font-weight:700}
+  .eq{font-family:'Poppins',sans-serif;overflow-x:auto;white-space:nowrap;font-size:14px}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="kick">Linear Algebra · Animation</div>
+  <h1>3×2 行列で (1, 1) を写す — 2D → 3D</h1>
+  <p class="lede">A = [[1, 2], [3, 1], [0, 2]] に (x, y) = (1, 1) を入れると <span class="hl">(3, 4, 2)</span>。入力の平面（z = 0 に置いた ℝ²）が、A によって ℝ³ の中の斜めの平面（＝ Im A）へ移る様子を追う。</p>
+  <div class="upd">Last updated: 2026-11-12 ／ 戻る：<a href="260516_linear_algebra.html">メインページ</a></div>
+
+  <div class="card">
+    <canvas id="cv"></canvas>
+    <div class="ctrl">
+      <button class="btn" id="play">▶ 再生</button>
+      <button class="btn" id="reset">最初から</button>
+      <input type="range" id="t" min="0" max="3" step="0.001" value="0">
+    </div>
+    <div class="hint">ドラッグで視点を回転。スライダーで任意の段階に止められる。</div>
+
+    <div class="steps">
+      <div class="step" data-s="0"><b class="n">①</b>入力 (1, 1) ＝ <span class="c1">1·e₁</span> ＋ <span class="c2">1·e₂</span>（まだ平面 z = 0 の上）</div>
+      <div class="step" data-s="1"><b class="n">②</b>A を掛ける：基底の行き先は A の列。<span class="c1">e₁ → (1, 3, 0)</span>、<span class="c2">e₂ → (2, 1, 2)</span>。格子ごと斜めの平面へ。</div>
+      <div class="step" data-s="2"><b class="n">③</b>行き先も同じ組み合わせ：<span class="c1">1·(1, 3, 0)</span> ＋ <span class="c2">1·(2, 1, 2)</span> ＝ <span class="res">(3, 4, 2)</span>
+        <div class="eq" style="margin-top:6px">a = 1·1 + 2·1 = <span class="res">3</span>　b = 3·1 + 1·1 = <span class="res">4</span>　c = 0·1 + 2·1 = <span class="res">2</span></div>
+      </div>
+    </div>
+  </div>
+
+  <p class="lede">ポイント：出力は必ず2本の列ベクトルが張る平面（紫の面）の上に乗る。3D に出ても<span class="hl">像は2次元のまま</span>（rank 2）で、ℝ³ 全体には届かない。</p>
+</div>
+
+<script>
+(() => {
+  const A = [[1,2],[3,1],[0,2]];
+  const inp = [1,1];
+  const cv = document.getElementById('cv'), ctx = cv.getContext('2d');
+  const slider = document.getElementById('t'), playBtn = document.getElementById('play');
+  let yaw = -0.75, pitch = 0.42, t = 0, playing = false, last = null;
+
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const ease = x => x<0?0:x>1?1:x*x*(3-2*x);
+
+  // M(s): blend of embedding (x,y)->(x,y,0) and A
+  function M(s){ const E=[[1,0],[0,1],[0,0]]; return E.map((r,i)=>r.map((v,j)=>v*(1-s)+A[i][j]*s)); }
+  const apply = (m,v) => m.map(r => r[0]*v[0] + r[1]*v[1]);
+
+  let W=0,H=0,scale=1;
+  function resize(){
+    const w = cv.clientWidth, h = Math.round(Math.min(560, Math.max(320, w*0.72)));
+    const d = window.devicePixelRatio||1;
+    cv.style.height = h+'px'; cv.width = w*d; cv.height = h*d; ctx.setTransform(d,0,0,d,0,0);
+    W=w; H=h; scale = Math.min(w*0.9,h)/10;
+  }
+  // math coords: x right, y depth, z up
+  function proj(p){
+    const [x,y,z]=p;
+    const cy=Math.cos(yaw), sy=Math.sin(yaw), cp=Math.cos(pitch), sp=Math.sin(pitch);
+    const X = x*cy - y*sy, Y0 = x*sy + y*cy;
+    const Zs = z*cp - Y0*sp, D = Y0*cp + z*sp;
+    const f = 1/(1 + D*0.04);
+    return [W/2 + X*scale*f, H*0.66 - Zs*scale*f];
+  }
+  function line(a,b,col,w=1,dash=null){
+    const p=proj(a), q=proj(b); ctx.beginPath(); ctx.setLineDash(dash||[]);
+    ctx.strokeStyle=col; ctx.lineWidth=w; ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]); ctx.stroke(); ctx.setLineDash([]);
+  }
+  function arrow(a,b,col,w=3){
+    const p=proj(a), q=proj(b), dx=q[0]-p[0], dy=q[1]-p[1], L=Math.hypot(dx,dy);
+    if(L<2) return;
+    ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=w;
+    ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0]-dx/L*8,q[1]-dy/L*8); ctx.stroke();
+    const ux=dx/L, uy=dy/L;
+    ctx.beginPath(); ctx.moveTo(q[0],q[1]);
+    ctx.lineTo(q[0]-ux*12-uy*5, q[1]-uy*12+ux*5); ctx.lineTo(q[0]-ux*12+uy*5, q[1]-uy*12-ux*5); ctx.fill();
+  }
+  function label(p,txt,col,dx=6,dy=-6,font='600 13px Poppins, sans-serif'){
+    const q=proj(p); ctx.fillStyle=col; ctx.font=font; ctx.fillText(txt,q[0]+dx,q[1]+dy);
+  }
+  const add=(a,b)=>a.map((v,i)=>v+b[i]), mul=(a,k)=>a.map(v=>v*k);
+
+  function draw(){
+    const c1=css('--c1'), c2=css('--c2'), res=css('--res'), grid=css('--grid'), axis=css('--axis'), muted=css('--muted'), plane=css('--plane');
+    ctx.clearRect(0,0,W,H);
+    const s = ease(t-1);          // morph progress
+    const m = M(s);
+    const O=[0,0,0];
+
+    // axes
+    const L=5.2;
+    [[[L,0,0],'x'],[[0,L,0],'y'],[[0,0,L],'z']].forEach(([e,n])=>{ line(O,e,axis,1.2); label(e,n,muted,4,4,'600 12px Poppins, sans-serif'); });
+    [[-1.5,0,0],[0,-1.5,0],[0,0,-1.5]].forEach(e=>line(O,e,axis,1,[3,4]));
+
+    // image plane patch (span of mapped basis), range -1..2.5
+    const R0=-0.5, R1=1.5;
+    const corners=[[R0,R0],[R1,R0],[R1,R1],[R0,R1]].map(v=>proj(apply(m,v)));
+    ctx.beginPath(); corners.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath();
+    ctx.fillStyle=plane; ctx.fill();
+
+    // grid
+    for(let k=R0;k<=R1+1e-9;k+=0.5){
+      line(apply(m,[k,R0]),apply(m,[k,R1]),grid,1);
+      line(apply(m,[R0,k]),apply(m,[R1,k]),grid,1);
+    }
+
+    // basis vectors (always visible, faint before step 2)
+    const e1=apply(m,[1,0]), e2=apply(m,[0,1]);
+    ctx.globalAlpha = t<1 ? 0.35 : 1;
+    arrow(O,e1,c1,2.2); arrow(O,e2,c2,2.2);
+    label(e1, s<0.5?'e₁':'A e₁ = ('+e1.map(v=>+v.toFixed(1)).join(', ')+')', c1);
+    label(e2, s<0.5?'e₂':'A e₂ = ('+e2.map(v=>+v.toFixed(1)).join(', ')+')', c2, 6, -8);
+    ctx.globalAlpha = 1;
+
+    // input vector as x*e1 + y*e2 tip-to-tail (grows during phase 0..1)
+    const g1=ease(t*2), g2=ease(t*2-1);
+    const p1=mul(e1,inp[0]*g1), p2=add(mul(e1,inp[0]), mul(e2,inp[1]*g2));
+    arrow(O,p1,c1,4);
+    if(g2>0) arrow(mul(e1,inp[0]),p2,c2,4);
+
+    // result
+    if(t>=1){
+      const r=apply(m,inp);
+      arrow(O,r,res,3.5);
+      // dropped coordinate lines in final phase
+      const f=ease(t-2);
+      if(f>0){
+        ctx.globalAlpha=f;
+        line(r,[r[0],r[1],0],muted,1,[4,4]); line([r[0],r[1],0],[r[0],0,0],muted,1,[4,4]); line([r[0],r[1],0],[0,r[1],0],muted,1,[4,4]);
+        ctx.globalAlpha=1;
+      }
+      label(r, '('+r.map(v=>+v.toFixed(2)).join(', ')+')', res, 8, -10, '700 15px Poppins, sans-serif');
+    } else {
+      const r=apply(m,inp);
+      if(t>0.9) label(r,'(1, 1)',res,8,-10,'700 15px Poppins, sans-serif');
+    }
+
+    // step highlight
+    const st = t<1?0:t<2?1:2;
+    document.querySelectorAll('.step').forEach(el=>el.classList.toggle('on', +el.dataset.s===st));
+  }
+
+  function tick(ts){
+    if(!playing){ last=null; return; }
+    if(last!==null){ t=Math.min(3,t+(ts-last)/1000*0.5); slider.value=t; }
+    last=ts; draw();
+    if(t>=3){ playing=false; playBtn.textContent='▶ 再生'; return; }
+    requestAnimationFrame(tick);
+  }
+  playBtn.onclick=()=>{ if(t>=3) t=0; playing=!playing; playBtn.textContent=playing?'❚❚ 停止':'▶ 再生'; if(playing) requestAnimationFrame(tick); };
+  document.getElementById('reset').onclick=()=>{ playing=false; playBtn.textContent='▶ 再生'; t=0; slider.value=0; draw(); };
+  slider.oninput=()=>{ t=+slider.value; draw(); };
+
+  let drag=null;
+  cv.addEventListener('pointerdown',e=>{ drag=[e.clientX,e.clientY,yaw,pitch]; cv.setPointerCapture(e.pointerId); cv.style.cursor='grabbing'; });
+  cv.addEventListener('pointermove',e=>{ if(!drag) return; yaw=drag[2]-(e.clientX-drag[0])*0.008; pitch=Math.max(-0.2,Math.min(1.4,drag[3]+(e.clientY-drag[1])*0.008)); draw(); });
+  const end=()=>{ drag=null; cv.style.cursor='grab'; };
+  cv.addEventListener('pointerup',end); cv.addEventListener('pointercancel',end);
+  window.addEventListener('resize',()=>{ resize(); draw(); });
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+
+  const qt=new URLSearchParams(location.search).get('t');
+  resize(); if(qt!==null){ t=+qt; slider.value=t; draw(); return; } draw();
+  setTimeout(()=>{ playing=true; playBtn.textContent='❚❚ 停止'; requestAnimationFrame(tick); }, 600);
+})();
+</script>
+</body>
+</html>
