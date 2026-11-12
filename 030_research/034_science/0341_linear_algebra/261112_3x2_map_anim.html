@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3×2 行列の写像</title>
+<title>行列の写像アニメ</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --bg:#ffffff; --surface:#f5f5f5; --border:#e0e0e0;
     --text:#111111; --soft:#3c424b; --muted:#888888; --faint:#b5b5b5;
-    --c1:#d62828; --c2:#1d4e89; --res:#7b3fa0; --hl:#fff3a0;
+    --c1:#d62828; --c2:#1d4e89; --c3:#1d7a4d; --res:#7b3fa0; --hl:#fff3a0;
     --grid:rgba(0,0,0,.13); --plane:rgba(123,63,160,.10); --axis:#555;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
       --bg:#121212; --surface:#1c1c1c; --border:#333;
       --text:#eeeeee; --soft:#c4c8ce; --muted:#999; --faint:#666;
-      --c1:#ff6b6b; --c2:#6fa8ff; --res:#c99bff; --hl:#5a4d00;
+      --c1:#ff6b6b; --c2:#6fa8ff; --c3:#5fd39a; --res:#c99bff; --hl:#5a4d00;
       --grid:rgba(255,255,255,.14); --plane:rgba(201,155,255,.13); --axis:#aaa;
     }
   }
   :root[data-theme="dark"]{
     --bg:#121212; --surface:#1c1c1c; --border:#333;
     --text:#eeeeee; --soft:#c4c8ce; --muted:#999; --faint:#666;
-    --c1:#ff6b6b; --c2:#6fa8ff; --res:#c99bff; --hl:#5a4d00;
+    --c1:#ff6b6b; --c2:#6fa8ff; --c3:#5fd39a; --res:#c99bff; --hl:#5a4d00;
     --grid:rgba(255,255,255,.14); --plane:rgba(201,155,255,.13); --axis:#aaa;
   }
   *{box-sizing:border-box;margin:0;padding:0}
@@ -48,16 +48,20 @@
   .step.on{opacity:1;border-color:var(--muted)}
   .step b.n{font-family:'Poppins',sans-serif;color:var(--muted);margin-right:6px}
   .c1{color:var(--c1);font-weight:700} .c2{color:var(--c2);font-weight:700} .res{color:var(--res);font-weight:700}
+  .c3{color:var(--c3);font-weight:700}
+  h2{font-size:19px;font-weight:700;margin:44px 0 6px}
+  .note{border-left:3px solid var(--muted);background:var(--surface);padding:10px 14px;border-radius:0 8px 8px 0;font-size:14px;margin:14px 0}
   .eq{font-family:'Poppins',sans-serif;overflow-x:auto;white-space:nowrap;font-size:14px}
 </style>
 </head>
 <body>
 <div class="page">
   <div class="kick">Linear Algebra · Animation</div>
-  <h1>3×2 行列で (1, 1) を写す — 2D → 3D</h1>
+  <h1>行列の写像アニメ — 2D → 3D と 3D → 2D（Kernel）</h1>
   <p class="lede">A = [[1, 2], [3, 1], [0, 2]] に (x, y) = (1, 1) を入れると <span class="hl">(3, 4, 2)</span>。入力の平面（z = 0 に置いた ℝ²）が、A によって ℝ³ の中の斜めの平面（＝ Im A）へ移る様子を追う。</p>
-  <div class="upd">Last updated: 2026-11-12 ／ 戻る：<a href="260516_linear_algebra.html">メインページ</a></div>
+  <div class="upd">Last updated: 2026-11-12 ／ <a href="#cv2">② Kernel の例へ</a> ／ 戻る：<a href="260516_linear_algebra.html">メインページ</a></div>
 
+  <h2>① 3×2 行列 A で (1, 1) を写す — 2D → 3D</h2>
   <div class="card">
     <canvas id="cv"></canvas>
     <div class="ctrl">
@@ -67,7 +71,7 @@
     </div>
     <div class="hint">ドラッグで視点を回転。スライダーで任意の段階に止められる。</div>
 
-    <div class="steps">
+    <div class="steps" id="steps1">
       <div class="step" data-s="0"><b class="n">①</b>入力 (1, 1) ＝ <span class="c1">1·e₁</span> ＋ <span class="c2">1·e₂</span>（まだ平面 z = 0 の上）</div>
       <div class="step" data-s="1"><b class="n">②</b>A を掛ける：基底の行き先は A の列。<span class="c1">e₁ → (1, 3, 0)</span>、<span class="c2">e₂ → (2, 1, 2)</span>。格子ごと斜めの平面へ。</div>
       <div class="step" data-s="2"><b class="n">③</b>行き先も同じ組み合わせ：<span class="c1">1·(1, 3, 0)</span> ＋ <span class="c2">1·(2, 1, 2)</span> ＝ <span class="res">(3, 4, 2)</span>
@@ -77,6 +81,37 @@
   </div>
 
   <p class="lede">ポイント：出力は必ず2本の列ベクトルが張る平面（紫の面）の上に乗る。3D に出ても<span class="hl">像は2次元のまま</span>（rank 2）で、ℝ³ 全体には届かない。</p>
+
+  <h2>② 2×3 行列 B で (6, −2, −5) を写す — 3D → 2D、Kernel に落ちる</h2>
+  <p class="lede">B = [[1, 3, 0], [2, 1, 2]]（①の A を転置したもの）。入力は ℝ³、出力は ℝ²（床の平面 z = 0 として描く）。(6, −2, −5) を入れると <span class="hl">(0, 0)</span> に消える ＝ このベクトルは <b>Ker B</b> に入っている。</p>
+
+  <div class="card">
+    <canvas id="cv2"></canvas>
+    <div class="ctrl">
+      <button class="btn" id="play2">▶ 再生</button>
+      <button class="btn" id="reset2">最初から</button>
+      <input type="range" id="t2" min="0" max="3" step="0.001" value="0">
+    </div>
+    <div class="hint">ドラッグで視点を回転。紫の点線＝ Ker B（(6, −2, −5) の定数倍の直線）。</div>
+
+    <div class="steps" id="steps2">
+      <div class="step" data-s="0"><b class="n">①</b>入力 (6, −2, −5) ＝ <span class="c1">6·e₁</span> <span class="c2">− 2·e₂</span> <span class="c3">− 5·e₃</span>（ℝ³ の中のベクトル）</div>
+      <div class="step" data-s="1"><b class="n">②</b>B を掛ける：基底の行き先は B の列。<span class="c1">e₁ → (1, 2)</span>、<span class="c2">e₂ → (3, 1)</span>、<span class="c3">e₃ → (0, 2)</span>。3D 空間が床（ℝ²）へ押しつぶされる。</div>
+      <div class="step" data-s="2"><b class="n">③</b>行き先も同じ組み合わせ：<span class="c1">6·(1, 2)</span> <span class="c2">− 2·(3, 1)</span> <span class="c3">− 5·(0, 2)</span> ＝ (6, 12) + (−6, −2) + (0, −10) ＝ <span class="res">(0, 0)</span>。矢印が一周して原点に戻る。
+        <div class="eq" style="margin-top:6px">1行目：1·6 + 3·(−2) + 0·(−5) = 6 − 6 + 0 = <span class="res">0</span>　2行目：2·6 + 1·(−2) + 2·(−5) = 12 − 2 − 10 = <span class="res">0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <h3 style="font-size:16px;margin-top:22px">Kernel として読む</h3>
+  <div class="note">
+    ・<b>Ker B を求める</b>：x + 3y = 0、2x + y + 2z = 0 → x = −3y、z = 5y/2 → y = −2 と置くと <b>(6, −2, −5)</b>。Ker B ＝ この方向の<span class="hl">直線（1次元）</span>。<br>
+    ・<b>次元定理</b>：rank B = 2（出力は ℝ² 全体に届く）＋ nullity B = 1 ＝ 3（入力の次元）。3 次元のうち 1 次元ぶんが消える。<br>
+    ・<b>なぜこの方向？</b>：Bv = 0 は「v が B の各行 (1, 3, 0) と (2, 1, 2) の両方と内積 0」という意味。つまり Ker は<span class="hl">行ベクトルの両方に直交する方向</span>。実際 (1, 3, 0) × (2, 1, 2) ＝ (6, −2, −5)（外積）。<br>
+    ・<b>Kernel 方向にずらしても出力は変わらない</b>：B(1, 0, 0) = (1, 2)、B(7, −2, −5) = (1, 2)。違う入力が同じ出力に重なる ＝ B には逆行列がない（情報が消える）。
+  </div>
+  <p class="lede">①と並べると：A（2D → 3D）は<b>Kernel が {0}</b> で何も消えないが、像は平面止まり（ℝ³ 全体に届かない）。B（3D → 2D）は<b>像が ℝ² 全体</b>に届くが、Kernel の直線 1 本ぶんが消える。</p>
+
 </div>
 
 <script>
@@ -185,7 +220,7 @@
 
     // step highlight
     const st = t<1?0:t<2?1:2;
-    document.querySelectorAll('.step').forEach(el=>el.classList.toggle('on', +el.dataset.s===st));
+    document.querySelectorAll('#steps1 .step').forEach(el=>el.classList.toggle('on', +el.dataset.s===st));
   }
 
   function tick(ts){
@@ -210,6 +245,95 @@
   const qt=new URLSearchParams(location.search).get('t');
   resize(); if(qt!==null){ t=+qt; slider.value=t; draw(); return; } draw();
   setTimeout(()=>{ playing=true; playBtn.textContent='❚❚ 停止'; requestAnimationFrame(tick); }, 600);
+})();
+</script>
+
+<script>
+(() => {
+  const B = [[1,3,0],[2,1,2],[0,0,0]];   // 3rd row 0 = output lives on floor z=0
+  const v = [6,-2,-5];
+  const cv = document.getElementById('cv2'), ctx = cv.getContext('2d');
+  const slider = document.getElementById('t2'), playBtn = document.getElementById('play2');
+  let yaw = -0.55, pitch = 0.5, t = 0, playing = false, last = null;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const ease = x => x<0?0:x>1?1:x*x*(3-2*x);
+  const M = s => [0,1,2].map(i=>[0,1,2].map(j=>(i===j?1:0)*(1-s)+B[i][j]*s));
+  const apply = (m,p) => m.map(r=>r[0]*p[0]+r[1]*p[1]+r[2]*p[2]);
+  const add=(a,b)=>a.map((x,i)=>x+b[i]), mul=(a,k)=>a.map(x=>x*k);
+  let W=0,H=0,scale=1;
+  function resize(){
+    const w=cv.clientWidth, h=Math.round(Math.min(600,Math.max(340,w*0.78))), d=window.devicePixelRatio||1;
+    cv.style.height=h+'px'; cv.width=w*d; cv.height=h*d; ctx.setTransform(d,0,0,d,0,0);
+    W=w; H=h; scale=Math.min(w*0.9,h)/22;
+  }
+  function proj(p){
+    const [x,y,z]=p, cy=Math.cos(yaw), sy=Math.sin(yaw), cp=Math.cos(pitch), sp=Math.sin(pitch);
+    const X=x*cy-y*sy, Y0=x*sy+y*cy, Zs=z*cp-Y0*sp, D=Y0*cp+z*sp, f=1/(1+D*0.02);
+    return [W/2 + X*scale*f - scale*0.5, H*0.5 - Zs*scale*f];
+  }
+  function line(a,b,col,w=1,dash=null){ const p=proj(a),q=proj(b); ctx.beginPath(); ctx.setLineDash(dash||[]); ctx.strokeStyle=col; ctx.lineWidth=w; ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0],q[1]); ctx.stroke(); ctx.setLineDash([]); }
+  function arrow(a,b,col,w=3){
+    const p=proj(a),q=proj(b),dx=q[0]-p[0],dy=q[1]-p[1],L=Math.hypot(dx,dy); if(L<2) return;
+    const ux=dx/L,uy=dy/L; ctx.strokeStyle=col; ctx.fillStyle=col; ctx.lineWidth=w;
+    ctx.beginPath(); ctx.moveTo(p[0],p[1]); ctx.lineTo(q[0]-ux*8,q[1]-uy*8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(q[0],q[1]); ctx.lineTo(q[0]-ux*12-uy*5,q[1]-uy*12+ux*5); ctx.lineTo(q[0]-ux*12+uy*5,q[1]-uy*12-ux*5); ctx.fill();
+  }
+  function label(p,txt,col,dx=6,dy=-6,font='600 13px Poppins, sans-serif'){ const q=proj(p); ctx.fillStyle=col; ctx.font=font; ctx.fillText(txt,q[0]+dx,q[1]+dy); }
+  function draw(){
+    const c1=css('--c1'),c2=css('--c2'),c3=css('--c3'),res=css('--res'),grid=css('--grid'),axis=css('--axis'),muted=css('--muted'),plane=css('--plane');
+    ctx.clearRect(0,0,W,H);
+    const s=ease(t-1), m=M(s), O=[0,0,0];
+    // output floor (R^2 = plane z=0)
+    const F=[[-8,-6,0],[10,-6,0],[10,14,0],[-8,14,0]].map(proj);
+    ctx.beginPath(); F.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath(); ctx.fillStyle=plane; ctx.globalAlpha=0.5+0.5*s; ctx.fill(); ctx.globalAlpha=1;
+    for(let k=-8;k<=10;k+=2) line([k,-6,0],[k,14,0],grid,1);
+    for(let k=-6;k<=14;k+=2) line([-8,k,0],[10,k,0],grid,1);
+    label([-8,-6,0],'出力 ℝ²（床）',muted,-10,18,'500 12px "Noto Sans JP", sans-serif');
+    // axes
+    [[[9,0,0],'x'],[[0,13,0],'y'],[[0,0,7],'z']].forEach(([e,n])=>{ line(O,e,axis,1.2); label(e,n,muted,4,4,'600 12px Poppins, sans-serif'); });
+    line(O,[0,0,-7],axis,1,[3,4]);
+    // kernel line (multiples of v), mapped -> collapses to origin
+    const kl=apply(m,mul(v,1.35)), kr=apply(m,mul(v,-0.9));
+    line(kr,kl,res,2,[6,5]);
+    if(s<0.6) label(kl,'Ker B',res,6,12,'700 13px Poppins, sans-serif');
+    // basis images (faint)
+    const E=[[1,0,0],[0,1,0],[0,0,1]].map(e=>apply(m,e)), cols=[c1,c2,c3];
+    ctx.globalAlpha=0.55; E.forEach((e,i)=>arrow(O,e,cols[i],2)); ctx.globalAlpha=1;
+    if(s>0.9 && t<2){ label(E[0],'Be₁=(1,2)',c1,6,14); label(E[1],'Be₂=(3,1)',c2,6,-4); label(E[2],'Be₃=(0,2)',c3,-70,-6); }
+    // tip-to-tail 6e1 -2e2 -5e3
+    const g=[ease(t*3),ease(t*3-1),ease(t*3-2)];
+    let p0=O; const pts=[O];
+    for(let i=0;i<3;i++){ const seg=mul(E[i],v[i]); const full=add(p0,seg); if(g[i]>0) arrow(p0,add(p0,mul(seg,g[i])),cols[i],4); p0=full; pts.push(full); }
+    if(s<0.5) label(pts[1],'6e₁',c1,6,16);
+    if(t>=1){
+      const r=apply(m,v);
+      if(s<0.98) arrow(O,r,res,3);
+      if(s<0.4) label(r,'(6, −2, −5)',res,8,10,'700 14px Poppins, sans-serif');
+      if(s>0.4){ label(pts[1],'(6, 12)',c1,6,-8); label(pts[2],'(0, 10)',c2,8,-6); }
+      if(t>=2){ const f=ease((t-2)*2); const q=proj(O); ctx.globalAlpha=f; ctx.fillStyle=res; ctx.beginPath(); ctx.arc(q[0],q[1],7,0,7); ctx.fill();
+        ctx.font='700 15px Poppins, sans-serif'; ctx.fillText('(0, 0) — 消えた',q[0]-60,q[1]-16); ctx.globalAlpha=1; }
+    } else if(t>0.95) label(v,'(6, −2, −5)',res,8,10,'700 14px Poppins, sans-serif');
+    const st=t<1?0:t<2?1:2;
+    document.querySelectorAll('#steps2 .step').forEach(el=>el.classList.toggle('on',+el.dataset.s===st));
+  }
+  function tick(ts){ if(!playing){last=null;return;} if(last!==null){ t=Math.min(3,t+(ts-last)/1000*0.45); slider.value=t; } last=ts; draw();
+    if(t>=3){ playing=false; playBtn.textContent='▶ 再生'; return; } requestAnimationFrame(tick); }
+  playBtn.onclick=()=>{ if(t>=3) t=0; playing=!playing; playBtn.textContent=playing?'❚❚ 停止':'▶ 再生'; if(playing) requestAnimationFrame(tick); };
+  document.getElementById('reset2').onclick=()=>{ playing=false; playBtn.textContent='▶ 再生'; t=0; slider.value=0; draw(); };
+  slider.oninput=()=>{ t=+slider.value; draw(); };
+  let drag=null;
+  cv.addEventListener('pointerdown',e=>{ drag=[e.clientX,e.clientY,yaw,pitch]; cv.setPointerCapture(e.pointerId); });
+  cv.addEventListener('pointermove',e=>{ if(!drag) return; yaw=drag[2]-(e.clientX-drag[0])*0.008; pitch=Math.max(-0.2,Math.min(1.4,drag[3]+(e.clientY-drag[1])*0.008)); draw(); });
+  const end=()=>{ drag=null; }; cv.addEventListener('pointerup',end); cv.addEventListener('pointercancel',end);
+  window.addEventListener('resize',()=>{ resize(); draw(); });
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+  const qt=new URLSearchParams(location.search).get('t2');
+  resize(); if(qt!==null){ t=+qt; slider.value=t; } draw();
+  // auto-play when scrolled into view
+  if(qt===null && 'IntersectionObserver' in window){
+    const io=new IntersectionObserver(es=>{ if(es[0].isIntersecting && t===0 && !playing){ playing=true; playBtn.textContent='❚❚ 停止'; requestAnimationFrame(tick); io.disconnect(); } },{threshold:0.5});
+    io.observe(cv);
+  }
 })();
 </script>
 </body>
