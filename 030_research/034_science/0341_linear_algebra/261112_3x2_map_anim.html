@@ -82,23 +82,33 @@
 
   <p class="lede">ポイント：出力は必ず2本の列ベクトルが張る平面（紫の面）の上に乗る。3D に出ても<span class="hl">像は2次元のまま</span>（rank 2）で、ℝ³ 全体には届かない。</p>
 
-  <h2>② 2×3 行列 B で (6, −2, −5) を写す — 3D → 2D、Kernel に落ちる</h2>
-  <p class="lede">B = [[1, 3, 0], [2, 1, 2]]（①の A を転置したもの）。入力は ℝ³、出力は ℝ²（床の平面 z = 0 として描く）。(6, −2, −5) を入れると <span class="hl">(0, 0)</span> に消える ＝ このベクトルは <b>Ker B</b> に入っている。</p>
+  <h2>② 2×3 行列 B で ℝ³ を ℝ² に押し込む — (6, −2, −5) は消え、(1, 1, 1) は残る</h2>
+  <p class="lede">B = [[1, 3, 0], [2, 1, 2]]（①の A を転置したもの）。入力は ℝ³、出力は ℝ²（床の平面 z = 0 として描く）。(6, −2, −5) を入れると <span class="hl">(0, 0)</span> に消える ＝ このベクトルは <b>Ker B</b> に入っている。一方 (1, 1, 1) は <span class="hl">(4, 5)</span> に着地して残る。下のボタンで入力を切り替えられる。</p>
 
   <div class="card">
     <canvas id="cv2"></canvas>
     <div class="ctrl">
+      <button class="btn vsel" data-v="6,-2,-5" style="border-color:var(--muted);color:var(--text)">(6, −2, −5)</button>
+      <button class="btn vsel" data-v="1,1,1">(1, 1, 1)</button>
       <button class="btn" id="play2">▶ 再生</button>
       <button class="btn" id="reset2">最初から</button>
       <input type="range" id="t2" min="0" max="3" step="0.001" value="0">
     </div>
     <div class="hint">ドラッグで視点を回転。紫の点線＝ Ker B（(6, −2, −5) の定数倍の直線）。</div>
 
-    <div class="steps" id="steps2">
+    <div class="steps" id="steps2" data-v="6,-2,-5">
       <div class="step" data-s="0"><b class="n">①</b>入力 (6, −2, −5) ＝ <span class="c1">6·e₁</span> <span class="c2">− 2·e₂</span> <span class="c3">− 5·e₃</span>（ℝ³ の中のベクトル）</div>
       <div class="step" data-s="1"><b class="n">②</b>B を掛ける：基底の行き先は B の列。<span class="c1">e₁ → (1, 2)</span>、<span class="c2">e₂ → (3, 1)</span>、<span class="c3">e₃ → (0, 2)</span>。3D 空間が床（ℝ²）へ押しつぶされる。</div>
       <div class="step" data-s="2"><b class="n">③</b>行き先も同じ組み合わせ：<span class="c1">6·(1, 2)</span> <span class="c2">− 2·(3, 1)</span> <span class="c3">− 5·(0, 2)</span> ＝ (6, 12) + (−6, −2) + (0, −10) ＝ <span class="res">(0, 0)</span>。矢印が一周して原点に戻る。
         <div class="eq" style="margin-top:6px">1行目：1·6 + 3·(−2) + 0·(−5) = 6 − 6 + 0 = <span class="res">0</span>　2行目：2·6 + 1·(−2) + 2·(−5) = 12 − 2 − 10 = <span class="res">0</span></div>
+      </div>
+    </div>
+    <div class="steps" id="steps2b" data-v="1,1,1" style="display:none">
+      <div class="step" data-s="0"><b class="n">①</b>入力 (1, 1, 1) ＝ <span class="c1">1·e₁</span> ＋ <span class="c2">1·e₂</span> ＋ <span class="c3">1·e₃</span>（ℝ³ の中のベクトル。Ker B の直線には乗っていない）</div>
+      <div class="step" data-s="1"><b class="n">②</b>B を掛ける：<span class="c1">e₁ → (1, 2)</span>、<span class="c2">e₂ → (3, 1)</span>、<span class="c3">e₃ → (0, 2)</span>。3D 空間が床（ℝ²）へ押しつぶされる。</div>
+      <div class="step" data-s="2"><b class="n">③</b>行き先も同じ組み合わせ：<span class="c1">(1, 2)</span> ＋ <span class="c2">(3, 1)</span> ＋ <span class="c3">(0, 2)</span> ＝ <span class="res">(4, 5)</span>。原点には戻らない ＝ 消えずに残る。
+        <div class="eq" style="margin-top:6px">1行目：1·1 + 3·1 + 0·1 = <span class="res">4</span>　2行目：2·1 + 1·1 + 2·1 = <span class="res">5</span></div>
+        <div style="margin-top:6px;font-size:13.5px">ただし高さの情報（3D の 1 次元ぶん）は失われる：(1, 1, 1) を Ker 方向にずらした (7, −1, −4) も (−5, 3, 6) も、同じ <span class="res">(4, 5)</span> に着地する。</div>
       </div>
     </div>
   </div>
@@ -251,7 +261,8 @@
 <script>
 (() => {
   const B = [[1,3,0],[2,1,2],[0,0,0]];   // 3rd row 0 = output lives on floor z=0
-  const v = [6,-2,-5];
+  let v = [6,-2,-5], zoom = 1;
+  const K = [6,-2,-5];
   const cv = document.getElementById('cv2'), ctx = cv.getContext('2d');
   const slider = document.getElementById('t2'), playBtn = document.getElementById('play2');
   let yaw = -0.55, pitch = 0.5, t = 0, playing = false, last = null;
@@ -264,7 +275,7 @@
   function resize(){
     const w=cv.clientWidth, h=Math.round(Math.min(600,Math.max(340,w*0.78))), d=window.devicePixelRatio||1;
     cv.style.height=h+'px'; cv.width=w*d; cv.height=h*d; ctx.setTransform(d,0,0,d,0,0);
-    W=w; H=h; scale=Math.min(w*0.9,h)/22;
+    W=w; H=h; scale=Math.min(w*0.9,h)/22*zoom;
   }
   function proj(p){
     const [x,y,z]=p, cy=Math.cos(yaw), sy=Math.sin(yaw), cp=Math.cos(pitch), sp=Math.sin(pitch);
@@ -284,16 +295,17 @@
     ctx.clearRect(0,0,W,H);
     const s=ease(t-1), m=M(s), O=[0,0,0];
     // output floor (R^2 = plane z=0)
-    const F=[[-8,-6,0],[10,-6,0],[10,14,0],[-8,14,0]].map(proj);
+    const Z=1/zoom, F=[[-8*Z,-6*Z,0],[10*Z,-6*Z,0],[10*Z,14*Z,0],[-8*Z,14*Z,0]].map(proj);
     ctx.beginPath(); F.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath(); ctx.fillStyle=plane; ctx.globalAlpha=0.5+0.5*s; ctx.fill(); ctx.globalAlpha=1;
-    for(let k=-8;k<=10;k+=2) line([k,-6,0],[k,14,0],grid,1);
-    for(let k=-6;k<=14;k+=2) line([-8,k,0],[10,k,0],grid,1);
-    label([-8,-6,0],'出力 ℝ²（床）',muted,-10,18,'500 12px "Noto Sans JP", sans-serif');
+    const gs=zoom>1?1:2;
+    for(let k=-8*Z;k<=10*Z+1e-9;k+=gs) line([k,-6*Z,0],[k,14*Z,0],grid,1);
+    for(let k=-6*Z;k<=14*Z+1e-9;k+=gs) line([-8*Z,k,0],[10*Z,k,0],grid,1);
+    label([-8*Z,-6*Z,0],'出力 ℝ²（床）',muted,-10,18,'500 12px "Noto Sans JP", sans-serif');
     // axes
-    [[[9,0,0],'x'],[[0,13,0],'y'],[[0,0,7],'z']].forEach(([e,n])=>{ line(O,e,axis,1.2); label(e,n,muted,4,4,'600 12px Poppins, sans-serif'); });
-    line(O,[0,0,-7],axis,1,[3,4]);
+    [[[9*Z,0,0],'x'],[[0,13*Z,0],'y'],[[0,0,7*Z],'z']].forEach(([e,n])=>{ line(O,e,axis,1.2); label(e,n,muted,4,4,'600 12px Poppins, sans-serif'); });
+    line(O,[0,0,-7*Z],axis,1,[3,4]);
     // kernel line (multiples of v), mapped -> collapses to origin
-    const kl=apply(m,mul(v,1.35)), kr=apply(m,mul(v,-0.9));
+    const kl=apply(m,mul(K,1.35/zoom)), kr=apply(m,mul(K,-0.9/zoom));
     line(kr,kl,res,2,[6,5]);
     if(s<0.6) label(kl,'Ker B',res,6,12,'700 13px Poppins, sans-serif');
     // basis images (faint)
@@ -304,17 +316,22 @@
     const g=[ease(t*3),ease(t*3-1),ease(t*3-2)];
     let p0=O; const pts=[O];
     for(let i=0;i<3;i++){ const seg=mul(E[i],v[i]); const full=add(p0,seg); if(g[i]>0) arrow(p0,add(p0,mul(seg,g[i])),cols[i],4); p0=full; pts.push(full); }
-    if(s<0.5) label(pts[1],'6e₁',c1,6,16);
+    const isK = Math.hypot(...apply(B,v))<1e-9;
+    const fmt = a=>'('+a.slice(0,2).map(x=>+x.toFixed(2)).join(', ')+')';
+    const vs = '('+v.map(x=>String(x).replace('-','−')).join(', ')+')';
+    if(s<0.5) label(pts[1],(v[0]===1?'':v[0])+'e₁',c1,6,16);
     if(t>=1){
       const r=apply(m,v);
-      if(s<0.98) arrow(O,r,res,3);
-      if(s<0.4) label(r,'(6, −2, −5)',res,8,10,'700 14px Poppins, sans-serif');
-      if(s>0.4){ label(pts[1],'(6, 12)',c1,6,-8); label(pts[2],'(0, 10)',c2,8,-6); }
-      if(t>=2){ const f=ease((t-2)*2); const q=proj(O); ctx.globalAlpha=f; ctx.fillStyle=res; ctx.beginPath(); ctx.arc(q[0],q[1],7,0,7); ctx.fill();
+      if(!isK || s<0.98) arrow(O,r,res,3);
+      if(s<0.4) label(r,vs,res,8,10,'700 14px Poppins, sans-serif');
+      if(s>0.4){ label(pts[1],fmt(pts[1]),c1,6,-8); label(pts[2],fmt(pts[2]),c2,8,-6); }
+      if(!isK && s>0.4) label(r,fmt(r),res,8,-10,'700 15px Poppins, sans-serif');
+      if(!isK && t>=2){ const f=ease((t-2)*2); ctx.globalAlpha=f; line(r,[r[0],0,0],muted,1,[4,4]); line(r,[0,r[1],0],muted,1,[4,4]); ctx.globalAlpha=1; }
+      if(isK && t>=2){ const f=ease((t-2)*2); const q=proj(O); ctx.globalAlpha=f; ctx.fillStyle=res; ctx.beginPath(); ctx.arc(q[0],q[1],7,0,7); ctx.fill();
         ctx.font='700 15px Poppins, sans-serif'; ctx.fillText('(0, 0) — 消えた',q[0]-60,q[1]-16); ctx.globalAlpha=1; }
-    } else if(t>0.95) label(v,'(6, −2, −5)',res,8,10,'700 14px Poppins, sans-serif');
+    } else if(t>0.95) label(v,vs,res,8,10,'700 14px Poppins, sans-serif');
     const st=t<1?0:t<2?1:2;
-    document.querySelectorAll('#steps2 .step').forEach(el=>el.classList.toggle('on',+el.dataset.s===st));
+    document.querySelectorAll('#steps2 .step, #steps2b .step').forEach(el=>el.classList.toggle('on',+el.dataset.s===st));
   }
   function tick(ts){ if(!playing){last=null;return;} if(last!==null){ t=Math.min(3,t+(ts-last)/1000*0.45); slider.value=t; } last=ts; draw();
     if(t>=3){ playing=false; playBtn.textContent='▶ 再生'; return; } requestAnimationFrame(tick); }
@@ -327,6 +344,15 @@
   const end=()=>{ drag=null; }; cv.addEventListener('pointerup',end); cv.addEventListener('pointercancel',end);
   window.addEventListener('resize',()=>{ resize(); draw(); });
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+  document.querySelectorAll('.vsel').forEach(b=>b.onclick=()=>{
+    v=b.dataset.v.split(',').map(Number); zoom = b.dataset.v==='1,1,1'?2.2:1; resize();
+    document.querySelectorAll('.vsel').forEach(x=>{ const on=x===b; x.style.borderColor=on?'var(--muted)':''; x.style.color=on?'var(--text)':''; });
+    document.getElementById('steps2').style.display = b.dataset.v==='6,-2,-5'?'':'none';
+    document.getElementById('steps2b').style.display = b.dataset.v==='1,1,1'?'':'none';
+    t=0; slider.value=0; playing=true; playBtn.textContent='❚❚ 停止'; last=null; requestAnimationFrame(tick);
+  });
+  const qv=new URLSearchParams(location.search).get('v2');
+  if(qv){ const b=[...document.querySelectorAll('.vsel')].find(x=>x.dataset.v===qv); if(b){ v=qv.split(',').map(Number); zoom=qv==='1,1,1'?2.2:1; document.querySelectorAll('.vsel').forEach(x=>{ const on=x===b; x.style.borderColor=on?'var(--muted)':''; x.style.color=on?'var(--text)':''; }); document.getElementById('steps2').style.display='none'; document.getElementById('steps2b').style.display=''; } }
   const qt=new URLSearchParams(location.search).get('t2');
   resize(); if(qt!==null){ t=+qt; slider.value=t; } draw();
   // auto-play when scrolled into view
