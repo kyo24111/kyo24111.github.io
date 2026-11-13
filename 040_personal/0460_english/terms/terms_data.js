@@ -1596,4 +1596,8 @@ window.TERMS = [
   { id:"heat-reuse", en:"heat reuse", ja:"排熱", field:"industry", sub:"data-center", def:"Using waste heat from a data center for something useful, such as district heating.", src:"030_research/036_industry/0362_dc_cooling/260714_cooling_market.html", known:false, added:"2026-11-14" },
   { id:"microfluidic-cooling", en:"microfluidic cooling", ja:"マイクロ流体", field:"industry", sub:"data-center", def:"Cooling by pumping liquid through tiny channels etched into the chip itself.", src:"030_research/036_industry/0362_dc_cooling/260714_cooling_market.html", known:false, added:"2026-11-14" },
   { id:"busbar", en:"busbar", ja:"バスバー", field:"industry", sub:"data-center", def:"A thick metal bar that distributes large electric currents inside a rack or switchboard.", src:"030_research/036_industry/0362_dc_cooling/260714_cooling_market.html", known:false, added:"2026-11-14" },
+  // ---------- chat（Kyoがチャットで英語のまま入力した語＝known扱い。src空） ----------
+  { id:"gift-tax", en:"gift tax", ja:"贈与税", field:"finance", sub:"tax", def:"A tax on money or property given to another person without payment.", note:"チャットで英語入力（2026-11-14）。本人口座間の移動は非課税", src:"", known:true, added:"2026-11-14" },
+  { id:"term", en:"term", ja:"用語", field:"general", sub:"language", def:"A word or phrase with a specific meaning in a particular field.", note:"チャットで英語入力", src:"", known:true, added:"2026-11-14" },
+  { id:"metadata", en:"metadata", ja:"メタデータ", field:"general", sub:"it", def:"Data that describes other data, such as its category, author or date.", note:"チャットで英語入力（meta data）", src:"", known:true, added:"2026-11-14" },
 ];
