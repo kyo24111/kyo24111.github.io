@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasumigaseki Capital Deep Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#fff;--surface:#f5f5f5;--card:#f0f0f0;--card2:#e8e8e8;--border:#d8d8d8;--accent:#111;--mid:#444;--muted:#888;--dim:#bbb;--text:#111;--white:#fff}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Noto Sans JP',sans-serif;font-size:15px;line-height:1.8}
+  .page{max-width:900px;margin:0 auto;padding:48px 24px 100px}
+  strong{font-weight:700} em{font-style:italic;color:var(--mid)} a{color:var(--accent);text-decoration:underline}
+  h3{font-family:'Poppins',sans-serif;font-size:1rem;font-weight:700;margin:22px 0 10px}
+  .hero{background:var(--accent);color:var(--white);border-radius:16px;padding:40px 40px 36px;margin-bottom:24px;position:relative;overflow:hidden}
+  .hero::after{content:'';position:absolute;bottom:-40px;right:-40px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.04);pointer-events:none}
+  .hero-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+  .badge{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:3px 10px;border-radius:4px;display:inline-block}
+  .badge-white{background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.25)}
+  .badge-solid{background:#fff;color:var(--accent)}
+  .hero h1{font-family:'Poppins',sans-serif;font-size:2.4rem;font-weight:800;line-height:1.2;letter-spacing:-.02em;margin-bottom:12px}
+  .hero-sub{font-size:.95rem;color:rgba(255,255,255,.75);max-width:660px;line-height:1.7;margin-bottom:28px}
+  .kpi-row{display:flex;gap:32px;flex-wrap:wrap;padding-top:20px;border-top:1px solid rgba(255,255,255,.2)}
+  .kpi .val{font-family:'Poppins',sans-serif;font-size:1.6rem;font-weight:800;color:#fff;line-height:1;margin-bottom:3px}
+  .kpi .lbl{font-size:10px;color:rgba(255,255,255,.55);letter-spacing:.07em;text-transform:uppercase;font-family:'Poppins',sans-serif}
+  .toc{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:10px;padding:22px 28px;margin-bottom:32px}
+  .toc-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .toc ol{list-style:none;column-count:2;column-gap:32px;counter-reset:toc}
+  .toc ol li{counter-increment:toc;padding:4px 0;font-size:13px;color:var(--mid);break-inside:avoid}
+  .toc ol li::before{content:counter(toc,decimal-leading-zero) ". ";color:var(--accent);font-weight:700;font-family:'Poppins',sans-serif;font-size:10px}
+  .toc ol li a{color:var(--text);text-decoration:none}
+  .toc ol li a:hover{text-decoration:underline}
+  .sec{margin-bottom:48px}
+  .sec-label{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.12em;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+  .sec-label .num{background:var(--accent);color:#fff;font-size:10px;font-weight:700;width:22px;height:22px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-family:'Poppins',sans-serif;flex-shrink:0}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2{font-family:'Poppins',sans-serif;font-size:1.15rem;font-weight:800;color:var(--text);margin-bottom:16px}
+  p{margin-bottom:14px;font-size:14px;color:var(--text);line-height:1.85}
+  p:last-child{margin-bottom:0}
+  .kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:16px}
+  .kv-item{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 16px}
+  .kv-item .k{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .kv-item .v{font-size:13.5px;color:var(--text);font-weight:500;line-height:1.5}
+  .t{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  .t th{background:var(--card2);color:var(--mid);font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:9px 14px;text-align:left;border-bottom:2px solid var(--accent)}
+  .t td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.6;color:var(--text)}
+  .t tr:last-child td{border-bottom:none}
+  .t tr:hover td{background:var(--surface)}
+  .t td:first-child{font-weight:600;color:var(--text);white-space:nowrap}
+  .timeline{position:relative;padding-left:26px}
+  .timeline::before{content:'';position:absolute;left:7px;top:6px;bottom:6px;width:2px;background:var(--border);border-radius:2px}
+  .tl-item{position:relative;margin-bottom:8px}
+  .tl-item:last-child{margin-bottom:0}
+  .tl-dot{position:absolute;left:-22px;top:14px;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);z-index:1}
+  .tl-dot.filled{background:var(--accent)}
+  .tl-content{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:13px 16px}
+  .tl-header{display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap}
+  .tl-date{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;color:var(--accent);background:#11111110;border:1px solid #11111125;padding:1px 8px;border-radius:4px;white-space:nowrap}
+  .tl-title{font-size:13.5px;font-weight:700;color:var(--text)}
+  .tl-body{font-size:13px;color:var(--muted);line-height:1.65;margin-top:4px}
+  .tl-body b{color:var(--text);font-weight:600}
+  .callout{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:14px 18px;margin:16px 0;font-size:13.5px;color:var(--mid);line-height:1.75}
+  .callout strong{color:var(--text)}
+  .ind-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .ind-item{display:flex;gap:14px;align-items:flex-start;background:var(--card);border:1px solid var(--border);border-radius:9px;padding:16px 18px}
+  .ind-num{font-family:'Poppins',sans-serif;font-size:.85rem;font-weight:800;color:#fff;background:var(--accent);width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .ind-title{font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:4px}
+  .ind-desc{font-size:13px;color:var(--mid);line-height:1.7}
+  .warn-box{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:0 10px 10px 0;padding:18px 22px;margin:16px 0}
+  .warn-box .w-title{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:10px}
+  .warn-box ul{padding-left:18px}
+  .warn-box li{font-size:13.5px;color:var(--mid);line-height:1.8;margin-bottom:4px}
+  .warn-box li b{color:var(--text)}
+  .person{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:14px}
+  .person .p-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:3px}
+  .person .p-name{font-family:'Poppins',sans-serif;font-size:1.05rem;font-weight:800;color:var(--text)}
+  .person .p-role{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fff;background:var(--accent);padding:2px 9px;border-radius:4px}
+  .person .p-line{font-size:12px;color:var(--muted);margin-bottom:12px;line-height:1.7}
+  .person ul{list-style:none;padding:0;margin:0}
+  .person li{font-size:13.5px;color:var(--mid);line-height:1.8;padding:6px 0 6px 16px;position:relative;border-bottom:1px solid var(--border)}
+  .person li:last-child{border-bottom:none}
+  .person li::before{content:'';position:absolute;left:0;top:15px;width:5px;height:5px;border-radius:50%;background:var(--accent)}
+  .person li b,.person li strong{color:var(--text);font-weight:700}
+  .person .p-quote{margin-top:12px;padding:11px 15px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13px;line-height:1.8;color:var(--text)}
+  .qa details{background:var(--card);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;overflow:hidden}
+  .qa details[open]{background:var(--bg);border-color:var(--accent)}
+  .qa summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700;color:var(--text);display:flex;align-items:flex-start;gap:10px;line-height:1.65}
+  .qa summary::-webkit-details-marker{display:none}
+  .qa summary:hover{background:var(--card2)}
+  .qa details[open] summary:hover{background:var(--surface)}
+  .qa summary::before{content:'Q';font-family:'Poppins',sans-serif;font-size:11px;font-weight:800;color:#fff;background:var(--accent);width:20px;height:20px;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .qa summary::after{content:'+';margin-left:auto;padding-left:10px;font-family:'Poppins',sans-serif;font-weight:700;color:var(--muted);font-size:1.1rem;line-height:1;flex-shrink:0}
+  .qa details[open] summary::after{content:'\2212'}
+  /* 回答本文。qa-a を付け忘れた <p> でも崩れないよう summary 以外の直下要素すべてに効かせる */
+  .qa details>*:not(summary){margin:0 0 10px;padding:0 18px 0 48px;font-size:13.5px;color:var(--mid);line-height:1.85;overflow-wrap:anywhere}
+  .qa details>*:not(summary):last-child{margin-bottom:16px}
+  .qa details>*:not(summary) b,.qa details>*:not(summary) strong{color:var(--text);font-weight:700}
+  .qa details>*:not(summary) a{color:var(--text)}
+  .qa details>ul,.qa details>ol{padding-left:66px}
+  .col-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 28px;margin:22px 0}
+  .col-box .col-lbl{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#fff;background:var(--accent);display:inline-block;padding:3px 10px;border-radius:4px;margin-bottom:14px}
+  .col-box h3{margin-top:0;margin-bottom:12px;font-size:1.05rem}
+  .col-box p{font-size:13.5px;line-height:1.9}
+  .col-box .col-sub{font-family:'Poppins',sans-serif;font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;margin:20px 0 8px;padding-top:16px;border-top:1px solid var(--border)}
+  .col-box blockquote{margin:14px 0;padding:12px 18px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 8px 8px 0;font-size:13.5px;line-height:1.85;color:var(--text)}
+  .col-num{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:14px 0}
+  .col-num .n{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px}
+  .col-num .n .v{font-family:'Poppins',sans-serif;font-size:1.25rem;font-weight:800;line-height:1.1;margin-bottom:3px}
+  .col-num .n .l{font-size:11px;color:var(--muted);line-height:1.5}
+  .qa .qa-a{padding:0 18px 16px 48px;font-size:13.5px;color:var(--mid);line-height:1.8}
+  .qa .qa-a b{color:var(--text)}
+  .sources{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:22px 28px;margin-top:40px}
+  .sources h2{font-family:'Poppins',sans-serif;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .sources ul{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:6px 20px}
+  .sources li{font-size:12px;color:var(--mid);padding:4px 0;border-bottom:1px solid var(--border)}
+  .f-stack{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+  .f-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:16px}
+  .f-card.gov{border-left:3px solid var(--mid)}
+  .f-card.corp{border-left:3px solid var(--accent)}
+  .r-badge{font-family:'Poppins',sans-serif;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;white-space:nowrap;flex-shrink:0;background:var(--card2);color:var(--mid);border:1px solid var(--border)}
+  .f-card.corp .r-badge{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .f-amount{font-family:'Poppins',sans-serif;font-size:1.4rem;font-weight:800;color:var(--text);flex-shrink:0;min-width:84px}
+  .f-detail{flex:1}
+  .f-date{font-size:10.5px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.05em;margin-bottom:3px}
+  .f-desc{font-size:13px;color:var(--mid);line-height:1.6}
+  .vc-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+  .vc-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;position:relative}
+  .vc-card.lead{border-top:3px solid var(--accent)}
+  .vc-name{font-family:'Poppins',sans-serif;font-size:.95rem;font-weight:700;color:var(--text);margin-bottom:2px}
+  .vc-role{font-size:10px;color:var(--muted);font-family:'Poppins',sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+  .vc-desc{font-size:12.5px;color:var(--mid);line-height:1.65}
+  .lead-tag{position:absolute;top:14px;right:14px;background:var(--accent);color:#fff;font-family:'Poppins',sans-serif;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:3px}
+  .t-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:12px 0}
+  .t-wrap .t{min-width:560px;margin:0}
+  @media (max-width:640px){.qa details>*:not(summary){padding-left:18px}.qa details>ul,.qa details>ol{padding-left:36px}.vc-grid{grid-template-columns:1fr}.f-card{flex-wrap:wrap}.toc ol{column-count:1}.kv{grid-template-columns:1fr 1fr}.sources ul{grid-template-columns:1fr}.kpi-row{gap:18px}.hero{padding:28px 24px}.hero h1{font-size:1.7rem}}
+</style>
+<style>
+body{padding-top:56px!important;padding-bottom:68px!important}
+.snav{position:fixed;top:0;left:0;right:0;height:56px;background:#111;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:9999;font-family:'Poppins',sans-serif}
+.snav-logo{color:#fff;text-decoration:none;font-size:13px;font-weight:700;letter-spacing:.02em}
+.snav-btn{background:none;border:none;cursor:pointer;padding:6px;display:flex;flex-direction:column;gap:5px}
+.snav-btn span{display:block;width:20px;height:1.5px;background:#fff;transition:all .2s ease}
+.snav-btn.open span:nth-child(1){transform:translateY(6.5px) rotate(45deg)}
+.snav-btn.open span:nth-child(2){opacity:0}
+.snav-btn.open span:nth-child(3){transform:translateY(-6.5px) rotate(-45deg)}
+.snav-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;cursor:pointer}
+.snav-overlay.open{display:block}
+.snav-panel{position:fixed;top:0;right:0;bottom:0;width:min(260px,80vw);background:#111;z-index:9999;transform:translateX(100%);transition:transform .25s ease;padding:68px 32px 72px;font-family:'Poppins',sans-serif;overflow-y:auto}
+.snav-panel.open{transform:translateX(0)}
+.snav-sec{margin-bottom:28px}
+.snav-sec-label{color:rgba(255,255,255,.35);font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px}
+.snav-a{display:block;color:rgba(255,255,255,.8);text-decoration:none;font-size:13px;font-weight:600;padding:5px 0}
+.snav-a:hover{color:#fff}
+.snav-footer{position:fixed;bottom:0;left:0;right:0;height:62px;background:#111;border-top:1px solid #222;display:flex;align-items:center;justify-content:center;padding:0 28px;font-family:'Poppins',sans-serif;z-index:9997}
+.snav-footer-sns{display:flex;gap:20px}
+.snav-footer-sns a{color:rgba(255,255,255,.4);text-decoration:none;font-size:11px}
+.snav-footer-sns a:hover{color:rgba(255,255,255,.9)}
+/* 左サイド目次（scroll-spy）。本文900px中央寄せなので、左余白が目次幅を超える1400px以上でだけ出す */
+.side-nav{position:fixed;left:20px;top:84px;width:200px;max-height:calc(100vh - 162px);overflow-y:auto;padding:12px 0 32px;z-index:10;scrollbar-width:thin;display:none}
+.side-nav::-webkit-scrollbar{width:4px}
+.side-nav::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+@media (min-width:1400px){.side-nav{display:block}}
+.side-nav-title{font-family:'Poppins',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);padding-left:14px;margin-bottom:8px}
+.side-nav-list{list-style:none;padding:0;margin:0}
+.side-nav-link{display:block;color:#a8a8a8;text-decoration:none;padding:6px 8px 6px 14px;border-left:2px solid transparent;font-size:12px;line-height:1.45;transition:color .15s,border-color .15s,background .15s}
+.side-nav-link:hover{color:var(--text);border-left-color:var(--border)}
+.side-nav-link.active{color:var(--accent);font-weight:700;border-left-color:var(--accent);background:var(--surface)}
+.side-nav-num{font-family:'Poppins',sans-serif;font-size:10.5px;color:var(--muted);margin-right:6px}
+.sec{scroll-margin-top:76px}
+html{scroll-behavior:smooth}
+.raw{border:1px solid var(--border);border-radius:10px;margin:12px 0;background:var(--card)}
+.raw>summary{cursor:pointer;padding:14px 18px;font-size:13.5px;font-weight:700}
+.raw>div{padding:0 14px 14px}
+.note{font-size:12px;color:var(--muted)}
+</style>
+<style>
+.chart{margin:14px 0 6px}
+.chart svg{max-width:100%}
+.hero-updated{font-family:'Poppins',sans-serif;font-size:11px;color:rgba(255,255,255,.6);margin:-14px 0 22px;letter-spacing:.04em}
+.unv{display:inline-block;font-family:'Poppins','Noto Sans JP',sans-serif;font-size:10px;font-weight:700;padding:0 6px;border:1px solid var(--mid);border-radius:3px;color:var(--mid);margin-left:4px;white-space:nowrap}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:640px){.two{grid-template-columns:1fr}}
+.t td.num,.t th.num{text-align:right;white-space:nowrap}
+</style>
+<link rel="stylesheet" href="../_shared/research_tabs.css">
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../index.html">24111</a><span class="s">/</span><a href="../index.html">research</a><span class="s">/</span><a href="index.html">company</a><span class="s">/</span><span class="c">Kasumigaseki Capital Deep Research</span></nav><script>if(location.protocol!=="file:"){var c=document.currentScript.previousElementSibling;if(c)c.remove()}</script><script>/* keep-pos: リロードしても見ていた位置（スクロール・タブ・開いた<details>・内側スクロール）を保つ */
+(function(){var ss;try{ss=window.sessionStorage;ss.getItem('x')}catch(e){return}
+try{history.scrollRestoration='manual'}catch(e){}
+var K='wl-pos:'+location.pathname,TAB='[data-view],[data-tab],[role="tab"],.tab,.tab-btn',st={y:0,s:{},t:[]},busy=true,tm;
+function P(el){var p=[];while(el&&el.nodeType===1&&el!==document.body){if(el.id){p.unshift('#'+CSS.escape(el.id));return p.join('>')}
+var i=1,x=el;while((x=x.previousElementSibling))i++;p.unshift(el.tagName.toLowerCase()+':nth-child('+i+')');el=el.parentElement}p.unshift('body');return p.join('>')}
+function Q(q){try{return document.querySelector(q)}catch(e){return null}}
+function save(){if(busy)return;st.y=window.scrollY;st.d=[].map.call(document.querySelectorAll('details'),function(d){return d.open?1:0}).join('');
+try{ss.setItem(K,JSON.stringify(st))}catch(e){}}
+function later(){if(busy)return;clearTimeout(tm);tm=setTimeout(save,150)}
+document.addEventListener('scroll',function(e){var t=e.target;if(t&&t.nodeType===1&&!busy)st.s[P(t)]=t.scrollTop;later()},true);
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest(TAB);if(!b||!e.isTrusted)return;
+var g=P(b.parentElement);st.t=st.t.filter(function(x){return x.g!==g});st.t.push({g:g,p:P(b)});st.t=st.t.slice(-6);later()},true);
+document.addEventListener('toggle',later,true);addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save()});
+function stop(){if(busy){busy=false;save()}}
+['wheel','touchstart','keydown','mousedown'].forEach(function(n){addEventListener(n,stop,{capture:true,passive:true})});
+addEventListener('load',function(){var d;try{d=JSON.parse(ss.getItem(K)||'null')}catch(e){}
+var nt;try{nt=performance.getEntriesByType('navigation')[0].type}catch(e){}
+/* リンクで来た時は復元しない（リロード・戻る/進むだけ） */
+if(!d||(nt&&nt!=='reload'&&nt!=='back_forward')){busy=false;return}st=d;st.s=st.s||{};st.t=st.t||[];
+st.t.forEach(function(x){var b=Q(x.p);if(b&&!b.classList.contains('on')&&!b.classList.contains('active')&&b.getAttribute('aria-selected')!=='true')b.click()});
+if(d.d)[].forEach.call(document.querySelectorAll('details'),function(el,i){if(d.d[i]==='1')el.open=true});
+function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var el=Q(q);if(el)el.scrollTop=st.s[q]}}
+[0,60,160,320,640,1100,1700].forEach(function(t){setTimeout(go,t)});setTimeout(stop,1800)})})();</script><!-- crumbs:end -->
+<div class="snav">
+  <a class="snav-logo" href="/index.html">24111</a>
+  <button class="snav-btn" id="snavBtn" onclick="snavToggle()" aria-label="menu"><span></span><span></span><span></span></button>
+</div>
+<div class="snav-overlay" id="snavOverlay" onclick="snavToggle()"></div>
+<nav class="snav-panel" id="snavPanel">
+  <a class="snav-a" href="/index.html" style="opacity:.5;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.1)">home</a>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Ideas</div>
+    <a class="snav-a" href="/01_business_ideas/index.html">business ideas</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Research</div>
+    <a class="snav-a" href="/030_research/032_geo-history/index.html">geo-history</a>
+    <a class="snav-a" href="/030_research/033_legend/index.html">legend</a>
+    <a class="snav-a" href="/030_research/035_company/index.html">company</a>
+    <a class="snav-a" href="/030_research/036_industry/index.html">industry</a>
+    <a class="snav-a" href="/030_research/037_net_search/index.html">net search</a>
+    <a class="snav-a" href="/030_research/039_startup_news/index.html">startup news</a>
+  </div>
+  <div class="snav-sec">
+    <div class="snav-sec-label">Personal</div>
+    <a class="snav-a" href="/040_personal/profile/profile.html">profile</a>
+    <a class="snav-a" href="/040_personal/0411_books/books.html">books</a>
+    <a class="snav-a" href="/040_personal/0420_health/260419_health.html">health</a>
+    <a class="snav-a" href="/040_personal/0451_travel/flight_record/flight_record.html">flights</a>
+  </div>
+</nav>
+<script>function snavToggle(){document.getElementById('snavBtn').classList.toggle('open');document.getElementById('snavPanel').classList.toggle('open');document.getElementById('snavOverlay').classList.toggle('open')}</script>
+<aside class="side-nav" id="sideNav" aria-label="目次"></aside>
+<div class="page" data-terms-root>
+<div class="hero">
+  <div class="hero-badges">
+    <span class="badge badge-solid">Company Deep Research</span>
+    <span class="badge badge-white">TSE Prime: 3498</span>
+    <span class="badge badge-white">Real Estate Development × Funds</span>
+  </div>
+  <h1>Kasumigaseki Capital — 土地を買って「計画」を付けて半年で売る、ファンド型デベロッパー</h1>
+  <div class="hero-updated">Created: 2026-11-14 ／ Last updated: 2026-11-14</div>
+  <div class="hero-sub">霞ヶ関キャピタル。<b>大人数で泊まれるホテル（fav）・冷凍冷蔵倉庫（LOGI FLAG）・ホスピス住宅（CLASWELL）</b>という「足りていない建物」を企画し、土地を<b>開発ファンドに売って</b>利益を出す会社。建物は自分で持たず、完成後は自社のREIT・ファンドで運用してフィーを取る。2011年に震災で被災したショッピングセンターの再生から始まり、7年で売上は約30倍になった。</div>
+  <div class="kpi-row">
+    <div class="kpi"><div class="val">1,638億円</div><div class="lbl">Revenue FY8/2026</div></div>
+    <div class="kpi"><div class="val">279億円</div><div class="lbl">Operating profit FY8/2026</div></div>
+    <div class="kpi"><div class="val">240億円</div><div class="lbl">Net income FY8/2027E（会社予想）</div></div>
+    <div class="kpi"><div class="val">¥7,150</div><div class="lbl">Price（2026-11-13）</div></div>
+    <div class="kpi"><div class="val">約1,760億円</div><div class="lbl">Market cap（筆者概算）</div></div>
+  </div>
+</div>
+<div class="ptabs" data-tabbar role="tablist">
+  <button type="button" class="on" data-tab="tldr">TL;DR</button>
+  <button type="button" data-tab="main">Main</button>
+</div>
+
+<div class="pane" data-pane="tldr">
+<div class="sec" id="t1">
+  <div class="sec-label"><span class="num">01</span>In One Line</div>
+  <div class="oneliner"><b>「社会で足りていない建物」の土地を買い、建てる計画を作って、半年ほどで投資家のファンドに売る</b>会社。建てる・持つのは投資家のお金で、霞ヶ関キャピタルは<b>企画料・成功報酬・運用フィー</b>を取る。不動産会社なのに<b>自社で建物をほとんど持たない</b>ので、少ない自己資本で速く回せるのが強み。代わりに、利益の半分以上が「土地を売った益」なので<b>四半期ごとの業績がガタガタ</b>になる。</div>
+</div>
+
+<div class="sec" id="t2">
+  <div class="sec-label"><span class="num">02</span>What Is a Development Fund</div>
+  <h2>そもそも「開発ファンドに売る」とは</h2>
+  <p>普通のデベロッパー（三井不動産など）は、土地を買い、<b>自分のお金で建物を建て</b>、完成後に貸すか売る。完成まで2〜3年、そのあいだ巨額のお金が寝る。</p>
+  <p>霞ヶ関キャピタルは、土地を買って<b>「ここに4人部屋のホテルを建てる」という計画と許認可</b>を整えた段階で、土地をSPC（その事業のためだけの会社）に売る。SPCには事業会社や金融機関が出資し、銀行のノンリコースローンも入る。これが<b>開発ファンド</b>。建設費は開発ファンドが出し、霞ヶ関キャピタルは工事の管理を請け負う。</p>
+  <div class="stat3">
+    <div class="st"><div class="v">約6か月</div><div class="l">土地を買ってから開発ファンドに売るまでの平均期間（アナリスト推計）</div></div>
+    <div class="st"><div class="v">約30%</div><div class="l">土地売却の粗利率の目安（同）</div></div>
+    <div class="st"><div class="v">8,062億円</div><div class="l">運用資産（AUM）＋仕入済パイプラインの合計（2026年2月末）</div></div>
+  </div>
+  <p>1件あたりの利益は普通のデベロッパーより薄いが、<b>お金が半年で戻ってくる</b>ので、同じ自己資本で何倍もの案件を回せる。<a class="more" href="#s3">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t3">
+  <div class="sec-label"><span class="num">03</span>How It Makes Money</div>
+  <h2>どうやって稼いでいるのか — 1つの建物で4回もうける</h2>
+  <div class="flow">
+    <div class="fs"><div class="fs-n">1</div><div class="fs-t">土地を売る</div><div class="fs-d">計画を付けた土地を開発ファンドへ売却。<b>粗利の約6割</b>がここ</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">2</div><div class="fs-t">工事を管理する</div><div class="fs-d">建設中のプロジェクトマネジメント（PM）フィー。事業費の2〜3%程度</div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">3</div><div class="fs-t">完成品を売る</div><div class="fs-d">完成した建物をREIT・長期ファンドへ。想定より高く売れれば<b>成功報酬</b></div></div>
+    <div class="fa" aria-hidden="true">→</div>
+    <div class="fs"><div class="fs-n">4</div><div class="fs-t">運用し続ける</div><div class="fs-d">自社のホテルREIT（401A）や冷凍倉庫ファンドの<b>運用フィー</b>。毎年入るストック収入</div></div>
+  </div>
+  <p>2025年8月期の粗利364億円の内訳は、<b>土地売却益213億円（59%）・成功報酬104億円（29%）・ストック収入47億円（13%）</b>。理想は②④のストック収入を増やして業績を安定させることだが、まだ「土地を売る」が主役。<a class="more" href="#s3">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t4">
+  <div class="sec-label"><span class="num">04</span>Key Numbers</div>
+  <h2>数字でつかむ</h2>
+  <div class="tl-kpis">
+    <div class="k"><div class="v">54 → 373 → 965 → 1,638億円</div><div class="l">売上 FY8/19 → FY8/23 → FY8/25 → FY8/26</div></div>
+    <div class="k"><div class="v">7 → 44 → 189 → 279億円</div><div class="l">営業利益 同</div></div>
+    <div class="k"><div class="v">2,200億円 / 410億円</div><div class="l">FY8/27 会社予想の売上 / 営業利益（+34% / +47%）</div></div>
+    <div class="k"><div class="v">約8割</div><div class="l">FY8/26の営業利益279億円のうち、4Q（6〜8月）だけで稼いだ割合（197億円）</div></div>
+    <div class="k"><div class="v">29.7% → 39.1%</div><div class="l">自己資本比率 FY8/25 → FY8/26（2025年11月の公募増資345億円で改善）</div></div>
+    <div class="k"><div class="v">1.5兆円 / 500億円</div><div class="l">中計（2025〜29）の最終年FY8/29の目標：AUM / 純利益</div></div>
+  </div>
+</div>
+
+<div class="sec" id="t5">
+  <div class="sec-label"><span class="num">05</span>Why It Matters</div>
+  <h2>何がすごいのか</h2>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">① 「足りない建物」だけを狙う</div><div class="cd-d">日本の旅行者の<b>55%は3人以上</b>なのに、4人で泊まれる部屋が少ない。冷凍倉庫は<b>フロン規制（2029年に7割削減）</b>と老朽化で建て替えが必須。ホスピス住宅は年間死亡者が2040年に169万人へ。<b>需要が先にあって供給が追いつかない</b>分野だけを選ぶ</div></div>
+    <div class="cd"><div class="cd-t">② 他人のお金で回る</div><div class="cd-d">建物は開発ファンドやREITが持つ。自社の在庫は約533億円（FY8/25）しかないのに、AUM＋パイプラインは<b>その10倍以上</b>。ROEは<b>32.5%</b>（FY8/25）と、不動産大手の4倍</div></div>
+    <div class="cd"><div class="cd-t">③ 運営まで自分でやる</div><div class="cd-d">favホテルは<b>フロント無人・QRでチェックイン</b>。損益分岐の稼働率が<b>20%未満</b>で、コロナ中も全館黒字。自動冷凍倉庫はソニー系SREとシステムを内製。<b>運営ノウハウが土地の値段を上げる</b></div></div>
+    <div class="cd"><div class="cd-t">④ 出口を自前で持った</div><div class="cd-d">2025年8月に<b>日本初のデベロッパー系ホテル特化REIT</b>（霞ヶ関ホテルリート、401A）を上場。同5月には国内最大級の<b>冷凍冷蔵倉庫ファンド（820億円）</b>。売り先を自分で作れるようになった</div></div>
+  </div>
+  <p><a class="more" href="#s4">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t6">
+  <div class="sec-label"><span class="num">06</span>Risks</div>
+  <h2>リスクは何か</h2>
+  <div class="cards risk">
+    <div class="cd"><div class="cd-t">① 業績が期末に集中する</div><div class="cd-d">FY8/26は3Q（3〜5月）の営業利益が<b>前年比−97%（1.4億円）</b>、4Qだけで197億円。土地の売却がいつ決まるかで四半期の数字が大きく振れ、<b>途中の決算で株価が売られやすい</b></div></div>
+    <div class="cd"><div class="cd-t">② 増資を繰り返す</div><div class="cd-d">2021年12月（約35億円）、2023年12月（108億円・約19%希薄化）、2025年11月（345億円・約24%希薄化）。<b>成長のためにお金が要る</b>ビジネスなので、今後も増資の可能性がある。2025年は創業者2人も持株を売り出した</div></div>
+    <div class="cd"><div class="cd-t">③ 金利と不動産の買い手</div><div class="cd-d">売り先の開発ファンド・REITは借入で動く。<b>日銀の利上げ</b>で投資家の期待利回りが上がると、土地の売値が下がる。2024年8月5日には1日で<b>−27%</b></div></div>
+    <div class="cd"><div class="cd-t">④ インバウンドと為替</div><div class="cd-d">ホテルは訪日客頼み。円高や訪日客の減速でホテル用地の買い手がつきにくくなる。ドバイ・米国など海外案件は<b>為替差損益</b>も出る</div></div>
+    <div class="cd"><div class="cd-t">⑤ ホスピス運営子会社</div><div class="cd-d">株主総会資料に、運営子会社<b>KC-Welfareへの貸付金に26.5億円の貸倒引当金</b>（個別決算）との記載があると投資家掲示板で話題 <span class="unv">未確認</span>。運営側の赤字が続いているなら、ヘルスケアの採算に注意</div></div>
+  </div>
+  <p><a class="more" href="#s13">Mainで詳しく →</a></p>
+</div>
+
+<div class="sec" id="t7">
+  <div class="sec-label"><span class="num">07</span>Stock</div>
+  <h2>株価 — 上場時の約10倍。ただし2025年10月の上場来高値10,060円からは約3割安</h2>
+  <div class="chart pchart" id="c-price-tldr" data-price="PRICE_KC" data-marks="2,6,8,9,12,13,14,15,17"><div class="chart-title">霞ヶ関キャピタル（3498）株価 ¥ — 2026-08までは週足、2026-09以降は日足の終値（対数目盛、株式分割調整後）</div><div class="chart-sub">丸数字は Main の「Major Moves」の番号。2019・2021・2025年に1→2の株式分割（計8倍）を実施しており、過去の株価はすべて分割後ベース</div></div>
+  <ul class="tl-list">
+    <li><b>上がった理由（2020年3月689円 → 2025年10月10,060円、約15倍）：</b>コロナでホテルが止まった2020年に<b>冷凍倉庫へ素早く転換</b>し、毎年ほぼ倍々で増益。2023年10月にプライム市場へ、2024年10月に「FY8/29に純利益500億円」の中計を出して評価が上がった</li>
+    <li><b>下がった理由：</b>①<b>公募増資のたびに−15〜17%</b>（2021・2023・2025年）、②<b>金利ショック</b>（2024年8月5日 −27%）、③<b>途中の決算が弱く見える</b>（2025年4月、2026年7月の「営業益97%減」）。2026年6月には5,550円まで下落</li>
+    <li><b>いま：</b>11/13終値 <b>7,150円</b>。予想PER<b>約7.3倍</b>・配当利回り<b>約2.8%</b>。FY8/26は上方修正して着地し、FY8/27も営業利益+47%の計画だが、株価は決算後も7,000円台で横ばい</li>
+  </ul>
+  <p><a class="more" href="#s12">17回の大きな値動きと理由を Main で見る →</a></p>
+</div>
+
+<div class="sec" id="t8">
+  <div class="sec-label"><span class="num">08</span>Bottom Line (NFA)</div>
+  <h2>結論（筆者の読み、投資助言ではない）</h2>
+  <div class="verdict">
+    <p><b>「建物を持たない不動産会社」というモデルは強いが、市場はまだ「土地転がし」と区別しきれていない。</b>需要が先にある分野を選び、運営まで自前でやって土地の価値を上げ、他人のお金で建てる。ROE30%超・7期連続最高益という結果はそのモデルの強さを示す。一方、利益の6割が土地売却益で期末に偏り、成長のたびに増資する。だから<b>PERは7倍台</b>と、成長率のわりに低い。</p>
+    <p>見るべきは3つ。①<b>ストック収入（運用フィー・PMフィー）の比率</b>が上がって、四半期のブレが小さくなるか、②<b>次の増資なしで</b>FY8/27の純利益240億円を出せるか（営業キャッシュフローはFY8/26に−168億円）、③<b>金利</b>：日銀の利上げペースと、ホテルREIT・物流ファンドの買い意欲。</p>
+  </div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Date</th><th>次のイベント</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>2026-11-26</td><td>第15期 定時株主総会（ISSが反対推奨した第5号議案＝取締役への譲渡制限付株式の報酬枠）</td></tr>
+      <tr><td>毎月上旬</td><td>前月の仕入状況の開示（用地取得のペース＝将来の売上の先行指標）</td></tr>
+      <tr><td>2027-01中旬</td><td>FY8/27 1Q決算（9〜11月）</td></tr>
+      <tr><td>2027-04上旬</td><td>FY8/27 中間決算。AUM＋パイプラインの最新値</td></tr>
+    </tbody>
+  </table></div>
+</div>
+</div>
+
+<div class="pane" data-pane="main" hidden>
+<div class="toc">
+  <div class="toc-lbl">Contents</div>
+  <ol>
+    <li><a href="#s1">Overview</a></li>
+    <li><a href="#s2">Industry Context — Why These Three Assets</a></li>
+    <li><a href="#s3">Business Model &amp; Revenue Mix</a></li>
+    <li><a href="#s4">Business Lines (Hotel / Logistics / Healthcare / Overseas)</a></li>
+    <li><a href="#s5">Customers &amp; Partners</a></li>
+    <li><a href="#s6">Financials (PL / BS / CF)</a></li>
+    <li><a href="#s7">Founding Story &amp; Leadership</a></li>
+    <li><a href="#s8">Funding &amp; Capital Policy</a></li>
+    <li><a href="#s9">Medium-Term Plan &amp; AUM</a></li>
+    <li><a href="#s10">Competitors — Earnings Side by Side</a></li>
+    <li><a href="#s11">Japan Connections</a></li>
+    <li><a href="#s12">Stock: Price History &amp; Major Moves (NFA)</a></li>
+    <li><a href="#s13">Valuation, Bull / Base / Bear (NFA)</a></li>
+    <li><a href="#s14">Q&amp;A</a></li>
+    <li><a href="#s-vocab">Vocabulary</a></li>
+  </ol>
+</div>
+
+<div class="sec" id="s1">
+  <div class="sec-label"><span class="num">01</span>Overview</div>
+  <h2>「社会課題 × 不動産ファンド」のコンサルティング会社</h2>
+  <div class="kv">
+    <div class="kv-item"><div class="k">Company</div><div class="v">霞ヶ関キャピタル株式会社（Kasumigaseki Capital Co., Ltd.）</div></div>
+    <div class="kv-item"><div class="k">HQ</div><div class="v">東京都千代田区（霞が関）</div></div>
+    <div class="kv-item"><div class="k">Founded</div><div class="v">2011年9月（合同会社フォルテとして）。2015年8月に現商号</div></div>
+    <div class="kv-item"><div class="k">CEO</div><div class="v">河本幸士郎（代表取締役社長、1974年生まれ）</div></div>
+    <div class="kv-item"><div class="k">Chairman</div><div class="v">小川潤之（代表取締役会長、共同創業者・筆頭株主）</div></div>
+    <div class="kv-item"><div class="k">Listing</div><div class="v">2018年11月 東証マザーズ → 2022年4月 グロース → 2023年10月 プライム</div></div>
+    <div class="kv-item"><div class="k">Fiscal year</div><div class="v">8月決算</div></div>
+    <div class="kv-item"><div class="k">Employees</div><div class="v">連結727名・単体349名（2025年8月末）。単体の平均年収1,683万円</div></div>
+  </div>
+  <p>会社は自らを<b>「不動産コンサルティング会社」</b>と呼ぶ。経営理念は「その課題を、価値へ。」（Turning Challenge into Value）。行動指針は「大胆に、誠実に、スピーディーに」。いまの主力は<b>ホテル・物流（冷凍冷蔵倉庫）・ヘルスケア（ホスピス住宅）・海外（ドバイ・米国・マレーシア）</b>の4つ。事業別の売上・利益は開示しておらず、セグメントは「不動産コンサルティング事業」の1つだけ。</p>
+  <p class="note">日本企業のため金額は億円表記。株価・1株あたりの数字は2025年9月の株式分割（1→2）後のベース。</p>
+</div>
+
+<div class="sec" id="s2">
+  <div class="sec-label"><span class="num">02</span>Industry Context — Why These Three Assets</div>
+  <h2>3つとも「需要はあるのに、作る人がいない」</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Asset</th><th>足りない理由</th><th>数字</th></tr></thead>
+    <tbody>
+      <tr><td>4人以上で泊まれるホテル</td><td>日本のホテルはビジネスホテル（1〜2人用）が中心。家族・友人グループ向けの部屋が少ない</td><td>旅行者の55%が3人以上。訪日客は2025年1〜10月で3,554万人（+17.7%）</td></tr>
+      <tr><td>冷凍冷蔵倉庫</td><td>冷凍食品の需要増。加えて冷媒のフロン（HFC）がキガリ改正で<b>2029年までに7割削減</b>。既存倉庫は自然冷媒に改修しにくく、建て替えが必要</td><td>冷蔵倉庫の59%が築30年超、19%が築50年超。6大都市の庫腹占有率は100%超</td></tr>
+      <tr><td>ホスピス住宅</td><td>高齢化で死亡者が増えるが、緩和ケア病棟は長期入院できず、有料老人ホームは医療体制が弱い</td><td>年間死亡者は2040年に169万人（社人研推計）</td></tr>
+    </tbody>
+  </table></div>
+  <p>共通点は、<b>社会課題として説明しやすく、ESG投資のお金が集まりやすい</b>こと。開発ファンドに出資する事業会社・金融機関にとって「冷凍倉庫の脱フロン」「地方の観光振興」「看取りの場所」は投資理由になる。これが土地を<b>早く・高く</b>売れる理由の一つ。</p>
+</div>
+
+<div class="sec" id="s3">
+  <div class="sec-label"><span class="num">03</span>Business Model &amp; Revenue Mix</div>
+  <h2>土地は半年でファンドへ。建物は持たず、フィーを積む</h2>
+  <div class="ind-list">
+    <div class="ind-item"><div class="ind-num">1</div><div><div class="ind-title">用地取得</div><div class="ind-desc">自社のバランスシートで土地を買う。再エネ事業で全国の地方を回って作った<b>地場の不動産業者ネットワーク</b>から情報が入り、意思決定が速いので業者も持ち込みやすい</div></div></div>
+    <div class="ind-item"><div class="ind-num">2</div><div><div class="ind-title">開発ファンドへ売却（売上計上）</div><div class="ind-desc">計画・許認可を整え、SPC（合同会社）へ土地を売る。出資者は不動産・建設・鉄道会社や金融機関。粗利率は約30%（推計）</div></div></div>
+    <div class="ind-item"><div class="ind-num">3</div><div><div class="ind-title">開発中のPM</div><div class="ind-desc">設計・施工・リーシングを管理し、PMフィー（事業費の2〜3%）を受け取る</div></div></div>
+    <div class="ind-item"><div class="ind-num">4</div><div><div class="ind-title">コアファンドへ売却</div><div class="ind-desc">完成物件をREIT・長期の私募ファンドへ。開発投資家の期待利回りを超えた分の一部を<b>成功報酬</b>として得る</div></div></div>
+    <div class="ind-item"><div class="ind-num">5</div><div><div class="ind-title">AM（運用）</div><div class="ind-desc">子会社の霞ヶ関リートアドバイザーズ等が運用を受託。<b>毎年の運用フィー</b>。ホテルは運営（オペレーション）も受託</div></div></div>
+  </div>
+  <h3>派生モデル：物流は三菱HCキャピタルとの合弁</h3>
+  <p>物流は2021年10月に<b>三菱HCキャピタルと合弁でLOGI FLAG DEVELOPMENT（霞ヶ関キャピタル66%）</b>を設立。SPCがノンリコースローンと三菱HCキャピタルのメザニン資金で開発し、完成後にコアファンドへ売る。霞ヶ関キャピタルは土地をSPCへ売る段階で売却益を、その後はPMフィーと売却益の66%を得る。</p>
+  <h3>粗利の内訳（FY8/25）</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Source</th><th class="num">Gross profit</th><th class="num">Share</th><th class="num">YoY</th><th>性質</th></tr></thead>
+    <tbody>
+      <tr><td>土地売却益</td><td class="num">約213億円</td><td class="num">58.5%</td><td class="num">+86.8%</td><td>フロー。四半期で大きく振れる</td></tr>
+      <tr class="hl"><td>成功報酬</td><td class="num">約104億円</td><td class="num">28.6%</td><td class="num">3.0倍</td><td>ファンド組成の年に集中（FY8/25は冷凍倉庫ファンドとホテルREITが重なった）</td></tr>
+      <tr><td>ストック収入（PM・AM）</td><td class="num">約47億円</td><td class="num">12.9%</td><td class="num">+30.5%</td><td>毎年入る。ここが増えるほど評価が上がりやすい</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">出典：Strategy Advisors（2025-12-08）が会社資料から作成。FY8/26の内訳は未確認。</p>
+  <div class="callout"><strong>なぜ4Qに利益が集中するのか：</strong>開発ファンドの組成やREITへの売却は、買い手側の期末や会社の通期計画に合わせて<b>8月（期末）前に固まりやすい</b>。FY8/25は4Qが営業利益の51%、FY8/26は約71%（197億円 / 279億円）。四半期の減益は「計画どおり」でも株価は反応する。</div>
+</div>
+
+<div class="sec" id="s4">
+  <div class="sec-label"><span class="num">04</span>Business Lines</div>
+  <h2>ホテル・物流・ヘルスケア・海外</h2>
+  <h3>Hotel — fav / FAV LUX / seven x seven / BASE LAYER / edit x seven</h3>
+  <p>始まりは取締役のHidekazu Ogata氏が<b>荒川区町屋の中古賃貸マンションで始めた民泊</b>。4〜5人が泊まれる部屋に需要があると分かり、多人数向けホテルに広げた。主力ブランド<b>fav</b>の特徴は、①標準35㎡以上・4人以上、②キッチン・洗濯機付きで連泊向き、③1人あたり単価はビジネスホテル以下、④<b>フロント無人</b>（QRで事前チェックイン、清掃はリクエスト制・有料、チェックアウト不要）。近くのカフェにフロント横のスペースを無償で貸し、代わりに困った客を助けてもらう仕組みもある。GOP（営業総利益）ベースの損益分岐稼働率は<b>20%未満</b>（一般のホテルは50〜60%）。</p>
+  <p>高価格帯の<b>FAV LUX</b>、リゾート向け<b>seven x seven</b>（糸島・石垣。Graphis Design 2026でホテル初の金賞）、カルチャー型ビジネスホテル<b>BASE LAYER HOTEL</b>、<b>edit x seven</b>の5ブランド。2025年11月時点で開業18施設・開発中23件・計画中10件。開業済みのうち15施設は<b>霞ヶ関ホテルリート（401A、2025年8月上場、資産規模492億円）</b>に組み入れ済み。FY8/26はedit x seven 富士御殿場など5施設が開業し、開発用地16件と既存ホテル・旅館3件を取得した。</p>
+  <h3>Logistics — LOGI FLAG（冷凍冷蔵・自動冷凍倉庫）</h3>
+  <p>コロナでホテルが止まった<b>2020年6月に物流部を新設</b>し、冷凍冷蔵倉庫に特化して参入。いまは最大の事業。既存の冷凍倉庫は荷主や物流会社の自社用が多く、<b>複数テナント向けの賃貸冷凍倉庫が少ない</b>ことに目を付けた。全物件が自然冷媒。</p>
+  <ul class="tl-list">
+    <li><b>自動冷凍倉庫：</b>ソニー系のSREホールディングスと合弁で<b>X NETWORK</b>（2023年11月）を作り、システムを内製。第1号はLOGI FLAG TECH 所沢Ⅰ（2024年8月竣工）。−25℃の現場作業をなくせる。パレット単位で短期から預けられる「COLD X NETWORK」も運営</li>
+    <li><b>パイプライン：</b>完成予定9件のうち8件が自動倉庫（冷凍7・危険物1）。最大は袋井プロジェクト（静岡、延床7.4万㎡、2028年冬）</li>
+    <li><b>Cold Storage Fund No.1：</b>2025年5月に運用開始。8物件・<b>820億円</b>、国内最大級の冷凍冷蔵倉庫特化ファンド。全物件稼働率100%（2025年5月時点）</li>
+    <li><b>新領域：</b>FY8/26に<b>ドライ自動倉庫とデータセンターの開発</b>に初着手。マレーシア（クアラルンプール）で自動冷凍倉庫の第1号、函館市と「工場×倉庫一体型パーク」の連携協定</li>
+  </ul>
+  <h3>Healthcare — CLASWELL（ホスピス住宅）</h3>
+  <p>2021年12月にヘルスケア推進部を立ち上げ、2022年5月に運営子会社<b>KC-Welfare</b>を設立。札幌の介護会社<b>きずな</b>に20%出資し、第1号（すみかわホスピス、2022年7月）を運営。都内は自社ブランド<b>CLASWELL</b>（仙川・小竹向原・信濃町・下石神井・白金台）。<b>駅近・ホテル品質のデザイン</b>で家族が通いやすい施設が売り。FY8/26は7施設が開業。2025年に6施設を<b>森トラスト</b>へ売却（150億円）。ただしホスピス大手3社（アンビス・日本ホスピス・CUC）の240施設に対し、霞ヶ関は開発中を含め17件と小さい。</p>
+  <h3>Overseas — Dubai / US / Malaysia</h3>
+  <p>ドバイでは高級レジデンスの売買（The Royal Atlantis、Majestic Vistas など1戸ずつ）で知見を積み、<b>大東建託</b>と組んで開発ファンド型に移行中。FY8/26は<b>米マイアミの用地を取得して国内投資家のファンドへ売却</b>、ラスベガスのホテル、ダラスのコンドミニアムの開発に着手した。海外は会長の小川氏が主導。</p>
+</div>
+
+<div class="sec" id="s5">
+  <div class="sec-label"><span class="num">05</span>Customers &amp; Partners</div>
+  <h2>買い手は「事業会社と金融機関が出資するSPC」</h2>
+  <p>顧客＝<b>土地や完成物件を買う開発ファンド・コアファンド</b>。有価証券報告書で売上の10%以上を占めた相手は以下。初期は不動産会社や鉄道系への直接売却、2023年以降は自社が組成したSPC（LOGI FLAG No.x、FAV PRF No.x）が中心に変わった。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>FY</th><th class="num">Revenue</th><th>売上10%超の相手（比率）</th></tr></thead>
+    <tbody>
+      <tr><td>8/19</td><td class="num">53.5億円</td><td>平和不動産（15.5%）、合同会社NLI No.2（14.6%）、クロス（13.3%）、フジケンホーム（10.3%）</td></tr>
+      <tr><td>8/21</td><td class="num">143億円</td><td>LOGI FLAG No.3（25.4%）、<b>JR西日本プロパティーズ</b>（23.1%）、リベレステ（現SYLA HD、17.2%）、LOGI FLAG No.2（14.3%）</td></tr>
+      <tr><td>8/22</td><td class="num">208億円</td><td>K.K Residence（15.1%）、Alterna 13（11.0%）、LOGI FLAG No.4（11.0%）、<b>大和ハウス工業</b>（10.7%）</td></tr>
+      <tr><td>8/23</td><td class="num">373億円</td><td>LOGI FLAG No.8（16.5%）、FAV PRF No.1（14.8%）、<b>ヒューリック</b>（14.3%）</td></tr>
+      <tr><td>8/24</td><td class="num">657億円</td><td>FAV PRF No.2（15.1%）、LOGI FLAG No.9（10.5%）</td></tr>
+      <tr class="hl"><td>8/25</td><td class="num">965億円</td><td>銀座8ホテルプロジェクト合同会社（10.5%）のみ。<b>集中度は年々下がっている</b></td></tr>
+    </tbody>
+  </table></div>
+  <p><b>テナント（物流）：</b>SBSゼンツウ、佐川グローバルロジスティクス、SBSフレック、三友通商、ランテック、アサヒ食品ほか。<b>エンドユーザー（ホテル・ホスピス）：</b>個人の旅行者と、終末期の患者とその家族。toBに見えて、最終的には個人向けの「場」を作っているので、広告宣伝費（ホテルのCM等）が販管費を押し上げている。</p>
+</div>
+
+<div class="sec" id="s6">
+  <div class="sec-label"><span class="num">06</span>Financials (PL / BS / CF)</div>
+  <h2>7年で売上30倍。ただし営業キャッシュフローはマイナスが基本</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>FY (Aug)</th><th class="num">Revenue</th><th class="num">Operating profit</th><th class="num">OP margin</th><th class="num">Net income</th><th class="num">EPS (¥)</th><th class="num">DPS (¥)</th></tr></thead>
+    <tbody>
+      <tr><td>8/19</td><td class="num">53.5億</td><td class="num">7.0億</td><td class="num">13.1%</td><td class="num">—</td><td class="num">—</td><td class="num">—</td></tr>
+      <tr><td>8/20</td><td class="num">80.1億</td><td class="num">—</td><td class="num">—</td><td class="num">1.3億</td><td class="num">—</td><td class="num">—</td></tr>
+      <tr><td>8/21</td><td class="num">143.0億</td><td class="num">—</td><td class="num">—</td><td class="num">7.9億</td><td class="num">—</td><td class="num">—</td></tr>
+      <tr><td>8/22</td><td class="num">207.8億</td><td class="num">21.4億</td><td class="num">10.3%</td><td class="num">10.2億</td><td class="num">66.4</td><td class="num">15</td></tr>
+      <tr><td>8/23</td><td class="num">372.8億</td><td class="num">44.4億</td><td class="num">11.9%</td><td class="num">20.5億</td><td class="num">126.6</td><td class="num">30</td></tr>
+      <tr><td>8/24</td><td class="num">656.9億</td><td class="num">85.4億</td><td class="num">13.0%</td><td class="num">50.2億</td><td class="num">270.8</td><td class="num">85</td></tr>
+      <tr><td>8/25</td><td class="num">965.0億</td><td class="num">189.3億</td><td class="num">19.6%</td><td class="num">102.5億</td><td class="num">520.4</td><td class="num">120</td></tr>
+      <tr class="hl"><td>8/26</td><td class="num">1,637.6億</td><td class="num">278.7億</td><td class="num">17.0%</td><td class="num">166.9億</td><td class="num">約676</td><td class="num">165</td></tr>
+      <tr><td>8/27E</td><td class="num">2,200億</td><td class="num">410億</td><td class="num">18.6%</td><td class="num">240億</td><td class="num">976.85</td><td class="num">200</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">出典：Strategy Advisors（会社資料）、決算短信報道（media-ir、日経）。EPS・DPSは2025年分割後。FY8/26のEPSは9月の修正予想値（676.50円）。</p>
+  <h3>FY8/26 の中身 — 期初計画を超えたが、利益率は下がった</h3>
+  <ul class="tl-list">
+    <li><b>計画との比較：</b>期初（2025年10月）の売上1,500億円・営業利益265億円 → 2026年9月17日に1,637億円・276億円へ上方修正 → 実績1,638億円・279億円。理由は<b>ホテル案件の収益拡大と売却の前倒し</b></li>
+    <li><b>利益率：</b>営業利益率は19.6% → 17.0%。前期のような大型ファンド組成（成功報酬）がなく、土地売却益の比率が上がった。人件費・広告費も増加</li>
+    <li><b>四半期：</b>1Q 売上285億円（+86.5%）、中間 売上611億円・営業益80億円、3Q累計 売上885億円・営業益82億円（−12.5%）、<b>4Q単独 売上753億円・営業益197億円</b></li>
+    <li><b>BS：</b>自己資本比率 29.7% → <b>39.1%</b>（増資効果）。有利子負債はFY8/25末で689億円・D/Eレシオ1.0倍。平均借入金利は約2.4%（1%上がると年約7億円の負担増と試算）</li>
+    <li><b>CF：</b>営業キャッシュフローは<b>−168億円</b>。土地（棚卸資産）を積み増したため。「利益は出ているが現金は出ていく」のが成長期のこのモデルの特徴で、だから増資と借入が要る</li>
+  </ul>
+  <details class="raw"><summary>Raw data: FY8/24〜25 の四半期損益（百万円）</summary><div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Quarter</th><th class="num">Revenue</th><th class="num">Gross profit</th><th class="num">GP margin</th><th class="num">SG&amp;A</th><th class="num">Operating profit</th></tr></thead>
+    <tbody>
+      <tr><td>FY8/24 Q1</td><td class="num">12,094</td><td class="num">2,611</td><td class="num">21.6%</td><td class="num">1,958</td><td class="num">652</td></tr>
+      <tr><td>FY8/24 Q2</td><td class="num">8,723</td><td class="num">3,685</td><td class="num">42.2%</td><td class="num">2,346</td><td class="num">1,339</td></tr>
+      <tr><td>FY8/24 Q3</td><td class="num">12,778</td><td class="num">4,066</td><td class="num">31.8%</td><td class="num">2,415</td><td class="num">1,652</td></tr>
+      <tr><td>FY8/24 Q4</td><td class="num">32,090</td><td class="num">8,197</td><td class="num">25.5%</td><td class="num">3,303</td><td class="num">4,894</td></tr>
+      <tr><td>FY8/25 Q1</td><td class="num">15,264</td><td class="num">6,460</td><td class="num">42.3%</td><td class="num">3,490</td><td class="num">2,970</td></tr>
+      <tr><td>FY8/25 Q2</td><td class="num">18,486</td><td class="num">6,033</td><td class="num">32.6%</td><td class="num">4,197</td><td class="num">1,835</td></tr>
+      <tr><td>FY8/25 Q3</td><td class="num">16,799</td><td class="num">8,706</td><td class="num">51.8%</td><td class="num">4,141</td><td class="num">4,565</td></tr>
+      <tr><td>FY8/25 Q4</td><td class="num">45,952</td><td class="num">15,237</td><td class="num">33.2%</td><td class="num">5,674</td><td class="num">9,563</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">出典：Strategy Advisors Figure 6（会社資料）。</p></div></details>
+  <details class="raw"><summary>Raw data: キャッシュの出入り（百万円、有価証券報告書）</summary><div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Item</th><th class="num">8/21</th><th class="num">8/22</th><th class="num">8/23</th><th class="num">8/24</th><th class="num">8/25</th></tr></thead>
+    <tbody>
+      <tr><td>棚卸資産の増加</td><td class="num">-1,221</td><td class="num">-13,563</td><td class="num">-10,706</td><td class="num">-19,260</td><td class="num">-4,651</td></tr>
+      <tr><td>純利益</td><td class="num">793</td><td class="num">1,018</td><td class="num">2,050</td><td class="num">5,020</td><td class="num">10,250</td></tr>
+      <tr><td>借入（純増）</td><td class="num">3,128</td><td class="num">10,940</td><td class="num">9,730</td><td class="num">13,841</td><td class="num">1,904</td></tr>
+      <tr><td>株式発行</td><td class="num">0</td><td class="num">3,568</td><td class="num">0</td><td class="num">10,894</td><td class="num">0</td></tr>
+      <tr><td>配当</td><td class="num">-63</td><td class="num">-132</td><td class="num">-240</td><td class="num">-489</td><td class="num">-1,671</td></tr>
+    </tbody>
+  </table></div></div></details>
+</div>
+
+<div class="sec" id="s7">
+  <div class="sec-label"><span class="num">07</span>Founding Story &amp; Leadership</div>
+  <h2>震災で被災したショッピングセンターから始まった</h2>
+  <div class="timeline">
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2011-09</span><span class="tl-title">合同会社フォルテ設立</span></div><div class="tl-body">東日本大震災で被災した宮城県大河原町のショッピングセンター<b>「フォルテ」</b>を取得・再生するために設立</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2013-06</span><span class="tl-title">屋根で太陽光発電</span></div><div class="tl-body">2012年のFIT開始を受け、SCの屋根に572kWの太陽光パネル。その後、太陽光・風力の発電所を<b>土地取得→設計→許認可→資金調達→完成後にインフラファンドへ売却</b>する事業に広げる。これが今の「ファンドに売る」モデルの原型</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2014-09</span><span class="tl-title">不動産コンサルティング開始</span></div><div class="tl-body">FIT価格の引き下げで再エネの旨味が減り、ノウハウを不動産へ転用。河本氏が入社</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2015-06〜08</span><span class="tl-title">株式会社化、霞ヶ関キャピタルへ改称</span></div><div class="tl-body">河本氏が社長に就任。当時の社員は5名</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2018-11</span><span class="tl-title">東証マザーズ上場</span></div><div class="tl-body">上場後はマンション開発なども手掛けたが、次第に多人数向けホテルに集中</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2020-06</span><span class="tl-title">コロナ下で物流（冷凍倉庫）へ</span></div><div class="tl-body">ホテルが止まった数か月後に物流部を新設。意思決定の速さが今の最大事業を生んだ</div></div></div>
+    <div class="tl-item"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2021-10〜12</span><span class="tl-title">三菱HCキャピタルと合弁、ヘルスケア参入</span></div><div class="tl-body">LOGI FLAG DEVELOPMENT設立（66%）。12月にヘルスケア推進部</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2023-10</span><span class="tl-title">東証プライムへ</span></div><div class="tl-body">マザーズ→グロース（2022年4月）を経てプライム市場へ</div></div></div>
+    <div class="tl-item"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="tl-date">2025-05〜08</span><span class="tl-title">「出口」を自前化</span></div><div class="tl-body">冷凍冷蔵倉庫ファンド（820億円）、霞ヶ関ホテルリート上場（401A）、ホスピス6施設を森トラストへ。3事業すべてが運用フェーズへ</div></div></div>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">河本幸士郎（こうもと・こうしろう）</span><span class="p-role">President / CEO</span></div>
+    <div class="p-line">1974年生まれ／大阪大学卒／明豊ファシリティワークス → GLOVANCE → Grosvenor Fund Management → 2014年フォルテ入社 → 2015年8月社長</div>
+    <ul>
+      <li><b>大学卒業後2年間はフリーター：</b>本人いわく「世の中を斜めに見て、正面から向き合うのを避けていた」。人材紹介経由で1999年、建設マネジメントの<b>明豊ファシリティワークス</b>（現 東証スタンダード）に入社し、営業で鍛えられる</li>
+      <li><b>ファンドとの出会い：</b>顧客から不動産ファンドを知り、不動産ファンドの<b>GLOVANCE</b>へ。ここで小川氏と同僚（2005〜06年）に。その後、英国の不動産会社<b>Grosvenor</b>のファンド運用会社</li>
+      <li><b>リーマンショック：</b>2008年、それまでの価値観が崩れ「無力感」と同時に社会に向き合うきっかけに。<b>財務の弱い会社は危機で簡単に潰れる</b>のを見て、「危機でも倒れない事業の形」を重視するようになった。半年で土地を売る回転型モデルはこのリスク観とつながる</li>
+      <li><b>採用観：</b>重視するのは「人柄（チームワーク）」と「成長意欲」の2つ。縦割りを避けるため人事異動を多めにする。主力3事業はいずれも<b>社員の提案から</b>始まった</li>
+      <li><b>持株：</b>8.26%（2025年8月末、第3位）。2025年11月の公募時に26万株を売り出し</li>
+    </ul>
+    <div class="p-quote">「祖父母の世代は戦後復興を、親の世代は高度成長を成し遂げた。失われた30年を生きた僕らの世代には、その責任がある」（Strategy Advisorsによる取材要旨）</div>
+  </div>
+  <div class="person">
+    <div class="p-head"><span class="p-name">小川潤之（おがわ・ひろゆき）</span><span class="p-role">Co-founder / Chairman</span></div>
+    <div class="p-line">共同創業者／筆頭株主（23.28%、2025年8月末）／海外事業を主導</div>
+    <ul>
+      <li><b>河本氏とはGLOVANCEの元同僚：</b>独立後もそれぞれ会社を経営しながら情報交換を続け、「小さな会社を複数やるより、一緒に大きな組織を」と2011年にフォルテを設立</li>
+      <li><b>創業時の動機：</b>不動産ファンドビジネスは行き詰まっていると感じ、<b>ファンドを「社会に役立つ付加価値を作る道具」</b>として使うことを考えた。資金がなく「土地を安く買って計画を作り、開発ファンドに売る」しかなかったのが、結果的にビジネスモデルになった</li>
+      <li><b>持株：</b>2025年11月の公募時に35万株を売り出し</li>
+    </ul>
+  </div>
+</div>
+
+<div class="sec" id="s8">
+  <div class="sec-label"><span class="num">08</span>Funding &amp; Capital Policy</div>
+  <h2>3回の公募増資と1回のCB。毎回株価は下がり、そして戻った</h2>
+  <div class="f-stack">
+    <div class="f-card corp"><span class="r-badge">Public offering</span><div class="f-amount">約35億円</div><div class="f-detail"><div class="f-date">2021-12（12/10決議・発行価格2,818円＝分割前）</div><div class="f-desc">用地取得の加速。発表翌営業日 −16.6%</div></div></div>
+    <div class="f-card corp"><span class="r-badge">Public offering</span><div class="f-amount">108億円</div><div class="f-detail"><div class="f-date">2023-12</div><div class="f-desc">発行済株数 約19%増。ホテル・物流・ヘルスケアの用地取得と開発。発表翌営業日 −17.4%、その後短期間で回復</div></div></div>
+    <div class="f-card gov"><span class="r-badge">Euroyen CB</span><div class="f-amount">—</div><div class="f-detail"><div class="f-date">2024-10</div><div class="f-desc">ユーロ円建て転換社債。金額は未確認。PERを計算するときは潜在株を含めて見る必要がある</div></div></div>
+    <div class="f-card corp"><span class="r-badge">Public offering</span><div class="f-amount">345億円</div><div class="f-detail"><div class="f-date">2025-10-24発表・11月払込（発行価格7,718円）</div><div class="f-desc">新株400万株＋OA69.15万株、約24%希薄化。会長35万株・社長26万株の売出しも。使途はFY8/26の物件取得（ホテル159億・物流99億・ヘルスケア16億・残り海外）。発表翌営業日 −15.2%</div></div></div>
+  </div>
+  <p><b>株主還元：</b>配当は15円（FY8/22）→ 165円（FY8/26）→ 200円予想（FY8/27）と毎年増配。配当性向は20%台前半。株式分割は2019年・2021年・2025年に各1→2。2025年7月には分割と同時に株主優待を見直した。</p>
+  <p><b>株主の動き（2026年秋）：</b>米キャピタル・リサーチが保有割合を減らす変更報告書（10/22・11/9）、野村證券は5%未満に（11/6）。11/12、ISSが株主総会の<b>第5号議案（取締役への譲渡制限付株式の報酬枠）に反対推奨</b>。理由は付与に業績条件がないこと。会社は同日に反論の見解を開示。</p>
+</div>
+
+<div class="sec" id="s9">
+  <div class="sec-label"><span class="num">09</span>Medium-Term Plan &amp; AUM</div>
+  <h2>目標は「FY8/29に純利益500億円・AUM1.5兆円」</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Metric</th><th class="num">FY8/24</th><th class="num">FY8/25</th><th class="num">2026-02末</th><th class="num">FY8/26 目標</th><th class="num">FY8/29 目標</th></tr></thead>
+    <tbody>
+      <tr><td>AUM（建設中＋完成）</td><td class="num">3,061億円</td><td class="num">3,941億円</td><td class="num">—</td><td class="num">7,000億円</td><td class="num">1.5兆円</td></tr>
+      <tr><td>AUM＋パイプライン</td><td class="num">4,916億円</td><td class="num">6,636億円</td><td class="num">8,062億円</td><td class="num">—</td><td class="num">—</td></tr>
+      <tr class="hl"><td>Net income</td><td class="num">50億円</td><td class="num">103億円</td><td class="num">—</td><td class="num">165億円（実績167億円）</td><td class="num">500億円</td></tr>
+    </tbody>
+  </table></div>
+  <h3>AUM＋パイプラインの内訳</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Asset</th><th class="num">2024-08末</th><th class="num">2025-08末</th><th class="num">2026-02末</th><th>コメント</th></tr></thead>
+    <tbody>
+      <tr><td>Logistics</td><td class="num">19件 2,475億</td><td class="num">24件 3,411億</td><td class="num">29件 3,650億</td><td>1件あたりが大きい（約140億円）</td></tr>
+      <tr class="hl"><td>Hotel</td><td class="num">44件 1,580億</td><td class="num">56件 2,465億</td><td class="num">68件 3,602億</td><td>半年で+46%。いま一番伸びている</td></tr>
+      <tr><td>Healthcare</td><td class="num">15件 370億</td><td class="num">17件 451億</td><td class="num">—</td><td>1件あたり約27億円と小さい</td></tr>
+      <tr><td>Overseas</td><td class="num">8件 156億</td><td class="num">9件 257億</td><td class="num">—</td><td>ドバイ・米国</td></tr>
+      <tr><td>Residential funds</td><td class="num">13件 334億</td><td class="num">6件 51億</td><td class="num">—</td><td>縮小中</td></tr>
+      <tr><td><b>Total</b></td><td class="num"><b>4,916億</b></td><td class="num"><b>6,636億</b></td><td class="num"><b>8,062億</b></td><td></td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">出典：会社資料（Strategy Advisors経由）、2026年8月期中間決算説明資料。FY8/26末のAUM実績は未確認。AUMの定義は「アセット・プロジェクトマネジメント中の事業の総事業費」で、パイプライン（仕入済の土地）を含む表と含まない表がある点に注意。</p>
+  <p>FY8/29の純利益500億円は、FY8/26実績167億円の<b>3倍</b>。FY8/27予想240億円から年率約44%の成長が要る。2025〜26年の実績はほぼ計画を上回ってきた。</p>
+</div>
+
+<div class="sec" id="s10">
+  <div class="sec-label"><span class="num">10</span>Competitors — Earnings Side by Side</div>
+  <h2>「不動産投資会社」の中で、回転の速さが桁違い</h2>
+  <p>競合は2種類。①土地を仕入れて売る<b>不動産投資・再生系</b>（いちご、ロードスターキャピタル、トーセイ、サンフロンティア不動産）、②<b>自分で建てて持つ大手デベロッパー</b>（ヒューリック、三井不動産、三菱地所）。冷凍倉庫ではプロロジス、日本GLP、三井不動産も参入している。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th>FY</th><th class="num">Revenue</th><th class="num">GP margin</th><th class="num">OP margin</th><th class="num">ROE</th><th class="num">Leverage</th><th class="num">Asset turnover</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>霞ヶ関キャピタル (3498)</td><td>8/25</td><td class="num">965億</td><td class="num">37.8%</td><td class="num">19.6%</td><td class="num">32.5%</td><td class="num">3.3x</td><td class="num">0.97x</td></tr>
+      <tr><td>いちご (2337)</td><td>2/25</td><td class="num">836億</td><td class="num">30.5%</td><td class="num">19.5%</td><td class="num">14.0%</td><td class="num">3.6x</td><td class="num">0.22x</td></tr>
+      <tr><td>ロードスターキャピタル (3482)</td><td>12/24</td><td class="num">344億</td><td class="num">38.8%</td><td class="num">33.3%</td><td class="num">30.6%</td><td class="num">4.2x</td><td class="num">0.38x</td></tr>
+      <tr><td>トーセイ (8923)</td><td>11/24</td><td class="num">822億</td><td class="num">42.8%</td><td class="num">22.5%</td><td class="num">13.9%</td><td class="num">3.1x</td><td class="num">0.31x</td></tr>
+      <tr><td>サンフロンティア不動産 (8934)</td><td>3/25</td><td class="num">1,032億</td><td class="num">31.2%</td><td class="num">20.6%</td><td class="num">14.7%</td><td class="num">2.1x</td><td class="num">0.51x</td></tr>
+      <tr><td>ヒューリック (3003)</td><td>12/24</td><td class="num">5,916億</td><td class="num">39.0%</td><td class="num">27.6%</td><td class="num">12.8%</td><td class="num">3.7x</td><td class="num">0.21x</td></tr>
+      <tr><td>三井不動産 (8801)</td><td>3/25</td><td class="num">2兆6,254億</td><td class="num">24.2%</td><td class="num">14.2%</td><td class="num">8.0%</td><td class="num">3.1x</td><td class="num">0.27x</td></tr>
+      <tr><td>三菱地所 (8802)</td><td>3/25</td><td class="num">1兆5,798億</td><td class="num">26.5%</td><td class="num">19.6%</td><td class="num">7.6%</td><td class="num">3.1x</td><td class="num">0.20x</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">出典：Strategy Advisors Figure 10（各社決算）。</p>
+  <div class="callout"><strong>読み比べのポイント：</strong>利益率やレバレッジは同業とほぼ同じ。違うのは<b>総資産回転率（売上÷総資産）が約1倍</b>と、同業の0.2〜0.5倍の2〜5倍あること。ROE＝利益率×回転率×レバレッジなので、ROEの差はほぼ回転率から来ている。つまり霞ヶ関の強みは「1件で儲ける」より<b>「速く回す」</b>。逆に、回転が止まる（土地が売れない）と、在庫を抱えた普通の不動産会社と同じになる。</div>
+  <p><b>ホスピス同業：</b>アンビスHD（7071）、日本ホスピスHD（7061）、CUC（9158）は<b>自分で運営して稼ぐ</b>モデル。霞ヶ関は建物を作って売るのが本業で、運営は子会社KC-Welfareが担う。運営の利益率は同業でも1割前後。</p>
+</div>
+
+<div class="sec" id="s11">
+  <div class="sec-label"><span class="num">11</span>Japan Connections</div>
+  <h2>大手と組んで、大手に売る</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Company</th><th>関係</th></tr></thead>
+    <tbody>
+      <tr><td>三菱HCキャピタル (8593)</td><td>物流の合弁LOGI FLAG DEVELOPMENT（霞ヶ関66%）。開発資金（メザニン）の出し手</td></tr>
+      <tr><td>SREホールディングス (2980、ソニー系)</td><td>自動冷凍倉庫のシステム合弁X NETWORK</td></tr>
+      <tr><td>大東建託 (1878)</td><td>ドバイ開発の共同パートナー（MOU、第1号用地を合弁へ売却）</td></tr>
+      <tr><td>森トラスト</td><td>ホスピス住宅6施設（150億円）の買い手</td></tr>
+      <tr><td>ヒューリック (3003)</td><td>FY8/23の売上14.3%の買い手</td></tr>
+      <tr><td>大和ハウス工業 (1925)</td><td>FY8/22の売上10.7%の買い手</td></tr>
+      <tr><td>JR西日本プロパティーズ</td><td>FY8/21の売上23.1%の買い手</td></tr>
+      <tr><td>平和不動産 (8803)</td><td>上場年FY8/19の最大顧客</td></tr>
+      <tr><td>明豊ファシリティワークス (1717)</td><td>河本社長の出身企業</td></tr>
+      <tr><td>きずな（札幌）</td><td>20%出資。ホスピス第1号・第3号を運営</td></tr>
+      <tr><td>SBS HD、佐川急便グループ</td><td>冷凍倉庫のテナント</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s12">
+  <div class="sec-label"><span class="num">12</span>Stock: Price History &amp; Major Moves (NFA)</div>
+  <h2>上場来高値10,060円から約3割安。17回の大きな値動き</h2>
+  <p class="note">2026-08までは週足終値、2026-09以降は日足終値。2019年8月・2021年8月・2025年8月の各1→2分割を調整済み（上場時からの累計で8倍）。NFA＝Not Financial Advice。</p>
+  <div class="chart pchart" id="c-price-main" data-price="PRICE_KC" data-marks="all"><div class="chart-title">霞ヶ関キャピタル（3498）株価 ¥ — 2018-11〜2026-08は週足、2026-09-01〜11-13は日足の終値</div><div class="chart-sub">縦軸は対数。丸数字は下の「Major Moves」の番号。グラフに触れると日付と終値</div></div>
+  <p class="src note">出典：Yahoo Finance chart API（3498.T）。週の中の値動きは日足（直近5年）で確認。理由は会社開示・報道・アナリストレポート。</p>
+  <details class="raw"><summary>Raw data: 年ごとの始値・高値・安値・終値（¥、週足終値ベース、分割調整後）</summary><div>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Year</th><th class="num">First</th><th class="num">High</th><th class="num">Low</th><th class="num">Last</th><th>その年の主な材料</th></tr></thead>
+    <tbody>
+      <tr><td>2018</td><td class="num">675</td><td class="num">675</td><td class="num">331</td><td class="num">385</td><td>11月マザーズ上場、上場後に急落</td></tr>
+      <tr><td>2019</td><td class="num">411</td><td class="num">1,593</td><td class="num">319</td><td class="num">1,290</td><td>ホテル・再エネで業績拡大</td></tr>
+      <tr><td>2020</td><td class="num">1,373</td><td class="num">1,373</td><td class="num">689</td><td class="num">888</td><td>コロナでホテル直撃、物流へ転換</td></tr>
+      <tr><td>2021</td><td class="num">998</td><td class="num">2,995</td><td class="num">853</td><td class="num">1,324</td><td>物流の売却が本格化、12月に公募増資</td></tr>
+      <tr><td>2022</td><td class="num">1,275</td><td class="num">2,595</td><td class="num">976</td><td class="num">2,240</td><td>グロース株安 → 10月決算で急伸</td></tr>
+      <tr class="hl"><td>2023</td><td class="num">2,160</td><td class="num">5,410</td><td class="num">1,795</td><td class="num">4,480</td><td>プライム移行、12月公募増資</td></tr>
+      <tr><td>2024</td><td class="num">4,255</td><td class="num">9,325</td><td class="num">4,255</td><td class="num">6,720</td><td>8/5の金利ショック、10月に新中計</td></tr>
+      <tr class="hl"><td>2025</td><td class="num">7,405</td><td class="num">10,010</td><td class="num">5,480</td><td class="num">7,350</td><td>関税ショック、ファンド・REIT組成、10月公募増資</td></tr>
+      <tr><td>2026</td><td class="num">7,450</td><td class="num">8,590</td><td class="num">5,710</td><td class="num">7,150</td><td>3Q「営業益97%減」、上方修正、FY8/27も高成長予想（11/13まで）</td></tr>
+    </tbody>
+  </table></div>
+  <p class="note">日足ベースの上場来高値は10,060円（2025-10-22）、2026年の日足安値は5,550円（6/4・6/9）。</p></div></details>
+
+  <h3 id="moves">Major Moves &amp; Why</h3>
+  <div class="timeline">
+    <div class="tl-item" id="mv1"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">1</span><span class="tl-date">2018-11〜2019-02</span><span class="tl-title">マザーズ上場、その後半値以下</span><span class="tl-move">675 → 319（−53%）</span></div><div class="tl-body">2018年11月上場。年末の世界的な株安（米利上げ懸念）と小型IPO株の需給悪化が重なった <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv2"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">2</span><span class="tl-date">2020-02〜03</span><span class="tl-title">コロナでホテル事業が直撃</span><span class="tl-move">2019年高値1,593 → 689（−57%）</span></div><div class="tl-body">当時の主力の多人数向けホテルが止まる。会社は6月に物流部を新設して冷凍倉庫へ転換 <span class="tag o">公式</span> <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv3"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">3</span><span class="tl-date">2021-12-13</span><span class="tl-title">公募増資（約35億円）</span><span class="tl-move">1日 −16.6%（2,110 → 1,760）</span></div><div class="tl-body">12/10に新株発行と売出しを決議。11月の高値2,995から1か月で半値近くに <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item" id="mv4"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">4</span><span class="tl-date">2022-10-05</span><span class="tl-title">FY8/22決算で急伸</span><span class="tl-move">1日 +19.8%、翌日 +8.9%</span></div><div class="tl-body">5月にグロース株安で939円まで下げた後、本決算と新年度計画で見直し。決算内容の詳細は未確認 <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv5"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">5</span><span class="tl-date">2023-10-04〜05</span><span class="tl-title">本決算＋プライム市場へ</span><span class="tl-move">2日で +39%（3,195 → 4,445）</span></div><div class="tl-body">FY8/23は営業利益2倍超（44億円）。同月にプライム市場へ変更。その後10/23に −18.1%（急騰の反動） <span class="tag o">公式</span> <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv6"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">6</span><span class="tl-date">2023-12-11</span><span class="tl-title">公募増資（108億円・約19%希薄化）</span><span class="tl-move">1日 −17.4%（4,315 → 3,565）</span></div><div class="tl-body">使途を3事業の用地取得と明示し、短期間で下落分を回復。2024年3月には9,170円まで上昇 <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item" id="mv7"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">7</span><span class="tl-date">2024-07-03</span><span class="tl-title">3Q決算で急騰</span><span class="tl-move">1日 +22.7%（6,605 → 8,105）</span></div><div class="tl-body">6月に6,670円まで調整した後、3Q決算で通期達成の確度が上がった <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv8"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">8</span><span class="tl-date">2024-08-05</span><span class="tl-title">令和のブラックマンデー</span><span class="tl-move">1日 −27.4%（5,475 → 3,975）、翌日 +18.9%</span></div><div class="tl-body">日銀の利上げと急速な円高で日本株が歴史的な下げ。<b>借入で回る不動産株</b>は金利上昇に特に弱い。7月高値8,105からは半値 <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv9"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">9</span><span class="tl-date">2024-10-03</span><span class="tl-title">本決算＋第2次中計「FY8/29純利益500億円」</span><span class="tl-move">1日 +20.9%（7,755 → 9,375）</span></div><div class="tl-body">FY8/24は純利益2.4倍。中計でAUM1.5兆円を掲げた。その後、同月のユーロ円CB発行もあり12月に5,585円まで下落 <span class="tag o">公式</span> <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv10"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">10</span><span class="tl-date">2025-04-04〜07</span><span class="tl-title">中間決算の失望＋トランプ関税</span><span class="tl-move">2日で −24%（6,290 → 4,795）、翌日 +15.6%</span></div><div class="tl-body">2Q単独の粗利・営業利益が1Qより減り、在庫の増え方が鈍く「仕入れが減速か」と見られた。そこへ相互関税ショック（TOPIX −7.9%） <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv11"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">11</span><span class="tl-date">2025-07-04</span><span class="tl-title">3Q決算＋株式分割＋優待見直し</span><span class="tl-move">1日 +12.6%（7,170 → 8,070）</span></div><div class="tl-body">冷凍倉庫ファンド組成の成功報酬で3Qの粗利率51.8%。業績懸念が消え、10月に上場来高値10,060円 <span class="tag r">報道</span></div></div></div>
+    <div class="tl-item" id="mv12"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">12</span><span class="tl-date">2025-10-27</span><span class="tl-title">公募増資345億円（約24%希薄化）</span><span class="tl-move">1日 −15.2%（9,890 → 8,390）</span></div><div class="tl-body">10/24発表。創業者2人の売出しも。発行価格7,718円。12月には7,350円まで下げた <span class="tag o">公式</span></div></div></div>
+    <div class="tl-item" id="mv13"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">13</span><span class="tl-date">2026-01-14〜16</span><span class="tl-title">1Q決算（売上+86.5%）</span><span class="tl-move">3日で +17%（7,350 → 8,590）</span></div><div class="tl-body">1/13発表の1Qで売上285億円。2026年の高値 <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv14"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">14</span><span class="tl-date">2026-02〜06</span><span class="tl-title">じり安で年初来安値</span><span class="tl-move">8,590 → 5,550（−35%）</span></div><div class="tl-body">4/3の中間決算（売上・純利益は過去最高）後も4/6に −6.2%。個別の大きな悪材料は見当たらない。国内金利の上昇観測と、増資後の株数増による需給の重しとみられる <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv15"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">15</span><span class="tl-date">2026-07-06</span><span class="tl-title">3Q単独「営業益97%減」</span><span class="tl-move">1日 −6.0%（7,050 → 6,630）</span></div><div class="tl-body">3〜5月の営業利益は1.37億円（前年同期比 −97%）。ただし売上は+62.9%で、土地売却が4Qに偏っただけと見直され、8月に8,130円まで戻した <span class="tag r">報道</span> <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv16"><div class="tl-dot filled"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">16</span><span class="tl-date">2026-09-17〜10-07</span><span class="tl-title">上方修正 → 本決算・FY8/27計画</span><span class="tl-move">9/18 +3.1%、10/6 −4.5%、10/7 +9.9%</span></div><div class="tl-body">9/17に通期を上方修正。10/5の本決算は7期連続最高益の計画（営業益+47%、配当200円）。初日は利益率低下（19.6%→17.0%）と営業CFのマイナスが嫌われ、翌日に見直し買い <span class="tag o">公式</span> <span class="tag e">推定</span></div></div></div>
+    <div class="tl-item" id="mv17"><div class="tl-dot"></div><div class="tl-content"><div class="tl-header"><span class="mv-n">17</span><span class="tl-date">2026-10-15〜11-13</span><span class="tl-title">7,000円前後でもみ合い</span><span class="tl-move">10/15 −8.0%、11/13 7,150</span></div><div class="tl-body">10/15の下げは個別材料が見当たらない。大株主（キャピタル・リサーチ、野村）の保有減の報告が続き、11/12にISSが報酬議案に反対推奨 <span class="tag o">公式</span> <span class="tag e">推定</span></div></div></div>
+  </div>
+
+  <h3>局面のパターン</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Pattern</th><th>例</th><th>読み</th></tr></thead>
+    <tbody>
+      <tr><td>増資で −15〜17%、その後回復</td><td>#3, #6, #12</td><td>3回とも1日で15%超下落。過去2回は数か月で回復したが、3回目（2025年）は1年たっても発行価格7,718円を下回ったまま</td></tr>
+      <tr><td>本決算で上がる</td><td>#4, #5, #9, #16</td><td>通期では毎年計画を超えるので、10月の本決算と翌期計画は買われやすい</td></tr>
+      <tr><td>途中の決算で売られる</td><td>#10, #14, #15</td><td>利益が4Qに偏るので、2Q・3Qは「減速」に見える。ここが買い場になってきた歴史</td></tr>
+      <tr><td>金利・マクロで大きく下げる</td><td>#2, #8, #10</td><td>借入で回る不動産株。日銀の利上げ・円高に敏感</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Upcoming catalysts</h3>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Date</th><th>Event</th><th>何を見るか</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td>2026-11-26</td><td>定時株主総会</td><td>第5号議案（RS報酬）の賛成率。機関投資家の評価の温度感</td></tr>
+      <tr><td>毎月上旬</td><td>仕入状況の開示</td><td>用地取得のペース。FY8/28以降の売上の先行指標</td></tr>
+      <tr><td>日銀会合</td><td>政策金利</td><td>開発ファンド・REITの買い意欲、借入コスト</td></tr>
+      <tr><td>2027-01</td><td>FY8/27 1Q決算</td><td>売上の進捗、ストック収入の比率、海外（米国）案件の売却</td></tr>
+      <tr><td>随時</td><td>新ファンド・REITの組成</td><td>成功報酬が出る年かどうか（FY8/25型の高い利益率に戻るか）</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sec" id="s13">
+  <div class="sec-label"><span class="num">13</span>Valuation, Bull / Base / Bear (NFA)</div>
+  <h2>PER約7倍・PBR約2倍。「成長率のわりに安い」か「土地転がしの適正値」か</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Metric</th><th class="num">Value</th><th>計算</th></tr></thead>
+    <tbody>
+      <tr><td>Market cap</td><td class="num">約1,760億円</td><td>¥7,150 × 約2,460万株（FY8/27予想EPSから逆算した株数）</td></tr>
+      <tr><td>PER（FY8/27予想）</td><td class="num">約7.3倍</td><td>7,150 ÷ 976.85円</td></tr>
+      <tr><td>PER（FY8/26実績）</td><td class="num">約10.6倍</td><td>7,150 ÷ 約676円</td></tr>
+      <tr><td>PBR</td><td class="num">約2.0倍</td><td>10/5時点の報道（7,410円で約2.1倍）から換算</td></tr>
+      <tr><td>Dividend yield</td><td class="num">約2.8%</td><td>FY8/27予想 200円 ÷ 7,150円</td></tr>
+      <tr><td>参考：2025年12月の同業PER（予想）</td><td class="num">8.6倍</td><td>不動産投資系4社平均（大手デベロッパー17.4倍）</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">筆者計算（2026-11-13終値）。CBの潜在株を含むと株数はさらに増える可能性がある。</p>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Scenario</th><th>前提（FY8/29頃）</th><th class="num">Net income</th><th class="num">PER</th><th class="num">株価の目安</th></tr></thead>
+    <tbody>
+      <tr><td>Bull</td><td>中計どおり純利益500億円。ストック収入が増えてPERが同業より上に</td><td class="num">500億円</td><td class="num">10倍</td><td class="num">約17,000〜19,000円</td></tr>
+      <tr class="hl"><td>Base</td><td>増資を1回挟んで株数+15%、純利益は中計の7割</td><td class="num">350億円</td><td class="num">8倍</td><td class="num">約10,000円</td></tr>
+      <tr><td>Bear</td><td>金利上昇・インバウンド減速でファンドの買いが細り、在庫が積み上がる。利益横ばい</td><td class="num">200億円</td><td class="num">6倍</td><td class="num">約4,500〜5,000円</td></tr>
+    </tbody>
+  </table></div>
+  <p class="src note">筆者の単純な仮定（株数2,460万〜2,830万株）。投資助言ではない（NFA）。</p>
+  <p><b>先行指標：</b>①月次の仕入開示（用地取得の件数・規模）、②棚卸資産と前渡金（中身のある仕入れの増加）、③ストック収入の粗利比率（FY8/25は13%）、④霞ヶ関ホテルリート（401A）の投資口価格と増資の可否、⑤訪日客数と日銀の政策金利。</p>
+  <div class="cards">
+    <div class="cd"><div class="cd-t">Bull の論点</div><div class="cd-d">需要が先にある分野だけを選ぶ「型」が、再エネ→ホテル→物流→ホスピス→海外・DCと何度も再現できている。ROE30%超・7期連続最高益でPER7倍は安い。REIT・ファンドという出口を自前で持ち、ストック収入が積み上がれば評価の倍率そのものが上がる</div></div>
+    <div class="cd"><div class="cd-t">Bear の論点</div><div class="cd-d">利益の6割は土地売却益で、本質はフロー型。営業CFは恒常的にマイナスで、成長のたびに増資（3回で希薄化は累計5割近く）。買い手のファンドは自社組成のSPCが多く、<b>金利が上がって外部の投資家が細ると、出口が自社グループ内に閉じる</b>リスク。ガバナンス面でもISSの反対推奨</div></div>
+  </div>
+</div>
+
+<div class="sec qa" id="s14">
+  <div class="sec-label"><span class="num">14</span>Q&amp;A</div>
+  <h2>基礎から深掘りまで</h2>
+  <details><summary>結局、この会社は「不動産屋」なの？「ファンド運用会社」なの？</summary><div class="qa-a">今は<b>7割が不動産屋、3割がファンド運用会社</b>くらい。売上の大半は土地の売却で、これは不動産屋の稼ぎ方。ただ自社でREITや私募ファンドを作って運用フィーを取っていて、会社が目指しているのは後者の比率を上げること。運用会社（例：資産運用会社や投資銀行）は業績が安定しているぶん株価の倍率（PER）が高くなりやすい。</div></details>
+  <details><summary>「土地を半年で売る」なら、土地転がしと何が違うの？</summary><div class="qa-a">土地転がしは<b>何もせずに値上がりを待って売る</b>。霞ヶ関は買った土地に「冷凍倉庫を建てる」「4人部屋ホテルを建てる」という<b>計画・許認可・テナント候補・運営体制</b>を付けて売る。投資家は「完成したら確実に稼ぐ建物」の権利を買っている。付加価値の中身は企画と運営ノウハウ。ただし、外から見ると区別しにくいのは事実で、それが株価の倍率が低い理由の一つ。</div></details>
+  <details><summary>開発ファンドの出資者は誰？自社で作ったSPCに売るのは「身内に売っている」のでは？</summary><div class="qa-a">SPC（合同会社）は器で、お金を出すのは<b>事業会社（不動産・建設・鉄道など）や金融機関</b>。霞ヶ関は匿名組合出資者を集めてSPCを作り、そこへ土地を売る。会計上は外部への売却だが、霞ヶ関自身が一部出資する案件もある（投資有価証券の取得はFY8/25に55億円）。<b>自社の出資比率が上がりすぎると「実質的に身内売り」</b>と見られるので、投資有価証券の増え方は注意して見たい指標。</div></details>
+  <details><summary>なぜ利益が8月（4Q）に集中するの？</summary><div class="qa-a">土地の売却・ファンド組成は1件が数十億円と大きく、<b>決まった四半期に一気に計上</b>される。会社は通期の計画を守るために期末までに売り切る動きになりやすい。FY8/26は営業利益279億円のうち197億円が4Q。だから2Q・3Qの決算で「大幅減益」と見出しが出ても、通期の進捗で判断する必要がある。</div></details>
+  <details><summary>favホテルは本当に儲かるの？フロント無人で大丈夫？</summary><div class="qa-a">家族・グループ旅行で<b>1部屋に4〜6人</b>泊まるので、1人あたりの値段はビジネスホテルより安くても、1部屋あたりの売上は高い。人件費が少ないため損益分岐の稼働率は20%未満で、コロナ中も全館黒字だった。無人の不安は、近くのカフェにフロント横を無償で貸して困った客を助けてもらう仕組みや、スマホでのサポートで補っている。</div></details>
+  <details><summary>冷凍倉庫はなぜ「建て替えるしかない」の？</summary><div class="qa-a">冷凍機の冷媒（熱を運ぶガス）として使われてきた代替フロン（HFC）は、温暖化効果がCO2の数百〜1万倍。キガリ改正で日本は<b>2029年までに消費量を7割削減</b>する。既存倉庫の冷凍機をアンモニアやCO2などの自然冷媒に替えるのは配管・構造上難しいことが多く、しかも冷蔵倉庫の約6割が築30年超。だから「建て替え需要」が確実に出る。</div></details>
+  <details><summary>霞ヶ関ホテルリート（401A）と霞ヶ関キャピタル（3498）の関係は？</summary><div class="qa-a">霞ヶ関キャピタルが<b>スポンサー</b>（物件を供給する親）で、子会社の霞ヶ関リートアドバイザーズが<b>運用会社</b>。霞ヶ関が開発したホテルをREITが買い、霞ヶ関は運用フィーを受け取る。2025年8月の上場時は15施設・492億円、パイプラインは41件・1,973億円。REITの投資口価格が上がるとREITが増資して物件を買えるので、<b>REITの人気は霞ヶ関の出口の太さ</b>に直結する。</div></details>
+  <details><summary>増資のたびに株価が下がるのに、なぜ増資するの？</summary><div class="qa-a">土地を先に自社のお金で買うモデルなので、成長が速いほど<b>在庫（土地）に現金が寝る</b>。営業CFはFY8/26で−168億円。借入だけで回すと自己資本比率が下がり（FY8/25は29.7%）、銀行も貸しにくくなる。そこで株で資本を厚くする。投資家から見ると「1株あたり利益（EPS）がそれ以上に伸びるなら許容」という判断になる。FY8/24→FY8/27予想でEPSは270円→977円と約3.6倍なので、これまでは希薄化を上回る成長を出してきた。</div></details>
+  <details><summary>金利が上がると、どこに効くの？</summary><div class="qa-a">3つの経路がある。①<b>自社の借入コスト</b>：有利子負債約700億円で金利+1%なら年約7億円。利益規模からすると小さい。②<b>買い手の期待利回り</b>：ファンド・REITは借入で物件を買うので、金利が上がると同じ賃料でも払える価格が下がる→土地の売値が下がる。これが一番大きい。③<b>株価の評価</b>：不動産株全体のPERが下がる。2024年8月5日の−27%は②③を一気に織り込んだ例。</div></details>
+  <details><summary>ISSの反対推奨は大きな問題？</summary><div class="qa-a">対象は第5号議案の<b>取締役への譲渡制限付株式（RS）の報酬枠</b>で、ISSは「付与に業績条件が付いていない」ことを理由に反対を推奨した。会社の存続に関わる話ではないが、外国人機関投資家の議決権行使の目安になるので<b>賛成率が低いと経営への注文</b>として受け止められる。キャピタル・リサーチなど大株主の保有減と重なっている点は気にしておきたい。</div></details>
+</div>
+
+<div class="sec" id="s-vocab">
+  <div class="sec-label"><span class="num">15</span>Vocabulary</div>
+  <h2>本件の英単語 — 語源・類義語・よく出る使い方</h2>
+  <div class="t-wrap"><table class="t">
+    <thead><tr><th>Word</th><th>意味</th><th>語源</th><th>類義語・対比</th><th>よく出る使い方</th></tr></thead>
+    <tbody>
+      <tr><td>development fund</td><td>開発ファンド</td><td>develop＝古仏語 <i>desveloper</i>（包みを解く）</td><td>core fund（完成物件を長期保有）</td><td>"land is sold to a <b>development fund</b> within six months"</td></tr>
+      <tr><td>core fund</td><td>コアファンド（安定運用型）</td><td>core＝ラテン語 <i>cor</i>（心臓）</td><td>opportunistic fund（高リスク型）</td><td>"completed assets are sold to a <b>core fund</b>"</td></tr>
+      <tr><td>REIT</td><td>不動産投資信託</td><td>Real Estate Investment Trust の頭字語</td><td>J-REIT／private fund</td><td>"a hotel <b>REIT</b> sponsored by the developer"</td></tr>
+      <tr><td>sponsor</td><td>スポンサー（物件を供給する親会社）</td><td>ラテン語 <i>spondere</i>（保証する）</td><td>asset manager（運用会社）</td><td>"Kasumigaseki acts as the <b>sponsor</b> of the REIT"</td></tr>
+      <tr><td>success fee</td><td>成功報酬</td><td>success＝ラテン語 <i>succedere</i>（うまく続く）</td><td>retainer（固定報酬）</td><td>"<b>success fees</b> jumped 3x on fund formation"</td></tr>
+      <tr><td>asset management fee</td><td>運用フィー</td><td>asset＝古仏語 <i>asez</i>（十分に）</td><td>recurring revenue（ストック収入）</td><td>"stable <b>asset management fees</b> over the long term"</td></tr>
+      <tr><td>non-recourse loan</td><td>ノンリコースローン（責任財産限定型融資）</td><td>recourse＝ラテン語 <i>recursus</i>（立ち戻る）</td><td>recourse loan／mezzanine</td><td>"the SPC raises a <b>non-recourse loan</b>"</td></tr>
+      <tr><td>mezzanine finance</td><td>メザニン（中二階の）資金</td><td>伊語 <i>mezzanino</i>（中二階）</td><td>senior debt／equity</td><td>"<b>mezzanine finance</b> from Mitsubishi HC Capital"</td></tr>
+      <tr><td>public offering</td><td>公募増資</td><td>public＝ラテン語 <i>publicus</i>（民衆の）</td><td>third-party allotment（第三者割当）</td><td>"the stock fell 15% after the <b>public offering</b>"</td></tr>
+      <tr><td>dilution</td><td>希薄化</td><td>ラテン語 <i>diluere</i>（洗い流す）</td><td>accretion（増加）</td><td>"about 24% <b>dilution</b> from the new shares"</td></tr>
+      <tr><td>natural refrigerant</td><td>自然冷媒</td><td>refrigerate＝ラテン語 <i>frigus</i>（寒さ）</td><td>HFC（代替フロン）</td><td>"all warehouses use <b>natural refrigerants</b>"</td></tr>
+      <tr><td>hospice</td><td>ホスピス（終末期ケア施設）</td><td>ラテン語 <i>hospes</i>（客・もてなす人）＝hospital・hotelと同根</td><td>palliative care（緩和ケア）</td><td>"demand for <b>hospice</b> housing is rising"</td></tr>
+      <tr><td>proxy advisor</td><td>議決権行使助言会社</td><td>proxy＝procuracy（代理）の短縮</td><td>ISS／Glass Lewis</td><td>"the <b>proxy advisor</b> recommended voting against"</td></tr>
+      <tr><td>asset turnover</td><td>総資産回転率</td><td>turn over＝ひっくり返す・回す</td><td>leverage／margin（ROEの3要素）</td><td>"<b>asset turnover</b> of ~1x vs 0.2–0.5x for peers"</td></tr>
+    </tbody>
+  </table></div>
+</div>
+
+<div class="sources">
+  <h2>Sources</h2>
+  <ul>
+    <li><a href="https://www.strategy-advisors.co.jp/sa-adv_2025/wp-content/uploads/2026/01/3498_Kasumigaseki-Capital_2508Q4_initiation-update_ENG.pdf" target="_blank" rel="noopener">Strategy Advisors — Kasumigaseki Capital Initiation Update（2025-12-08）</a></li>
+    <li><a href="https://www.strategy-advisors.co.jp/sa-adv_2025/wp-content/uploads/2026/04/3498_Kasumigaseki-Capital_FY2608Q2_follow-up_JP.pdf" target="_blank" rel="noopener">Strategy Advisors — FY8/26 2Q フォローアップ</a></li>
+    <li><a href="https://finance-frontend-pc-dist.west.edge.storage-yahoo.jp/disclosure/20260403/20260403598403.pdf" target="_blank" rel="noopener">霞ヶ関キャピタル — FY8/26 中間決算説明資料</a></li>
+    <li><a href="https://www.media-ir.com/news/?p=183900" target="_blank" rel="noopener">media-ir — 純利益63%増、27年8月期も営業益47%増・200円へ増配予想</a></li>
+    <li><a href="https://www.nikkei.com/article/DGXZRST0567451S5A001C2000000/" target="_blank" rel="noopener">日本経済新聞 — 霞ヶ関Cの2026年8月期、純利益61%増</a></li>
+    <li><a href="https://japanir.jp/company/company-3498/ir/3498-20260917-01_wp_financial_summary/" target="_blank" rel="noopener">Japan IR — 2026年8月期 業績予想の修正（2026-09-17）</a></li>
+    <li><a href="https://japanir.jp/company/company-3498/ir/3498-20260403-01_wp_financial_summary/" target="_blank" rel="noopener">Japan IR — FY8/26 中間決算サマリー</a></li>
+    <li><a href="https://finance.matsui.co.jp/news/593364/index" target="_blank" rel="noopener">松井証券 — 霞ヶ関C、3〜5月営業益が97%減</a></li>
+    <li><a href="https://media.paypay-sec.co.jp/cat2/mj250704_1" target="_blank" rel="noopener">PayPay証券 — 株価が動いた理由 霞ヶ関キャピタル +12.55%（2025-07-04）</a></li>
+    <li><a href="https://www2.jpx.co.jp/disc/34980/140120211210450357.pdf" target="_blank" rel="noopener">JPX — 新株式発行及び株式の売出し（2021-12-10）</a></li>
+    <li><a href="https://www2.jpx.co.jp/disc/34980/140120211220556680.pdf" target="_blank" rel="noopener">JPX — 発行価格等の決定（2021-12-20）</a></li>
+    <li><a href="https://s.kabutan.jp/stocks/3498/news/" target="_blank" rel="noopener">株探 — 霞ヶ関キャピタル ニュース・開示一覧</a></li>
+    <li><a href="https://shachomeikan.jp/presidents/detail/10062989" target="_blank" rel="noopener">社長名鑑 — 河本幸士郎インタビュー（2023年3月）</a></li>
+    <li><a href="https://the-shashi.com/tse/3498/executives/ceo/komoto-koshiro/" target="_blank" rel="noopener">the-shashi — 河本幸士郎 経歴</a></li>
+    <li><a href="https://finance.yahoo.com/quote/3498.T/" target="_blank" rel="noopener">Yahoo Finance — 3498.T（株価時系列）</a></li>
+    <li><a href="https://finance.yahoo.co.jp/quote/3498.T/forum" target="_blank" rel="noopener">Yahoo!ファイナンス掲示板（ISS・KC-Welfare関連の投稿、未確認情報）</a></li>
+  </ul>
+</div>
+</div>
+</div>
+
+<footer class="snav-footer">
+  <div class="snav-footer-sns">
+    <a href="https://x.com/kyo24111_ja" target="_blank" rel="noopener" aria-label="X"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/></svg></a>
+    <a href="https://www.facebook.com/kyo24111" target="_blank" rel="noopener" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+    <a href="https://www.linkedin.com/in/kyo24111/" target="_blank" rel="noopener" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+  </div>
+</footer>
+<script>window.PRICE_KC={"data":[["2018-11-26",675],["2018-12-03",586.2],["2018-12-10",480.6],["2018-12-17",356.9],["2018-12-24",330.6],["2018-12-31",385],["2019-01-07",411.2],["2019-01-14",362.4],["2019-01-21",363.9],["2019-01-28",343.8],["2019-02-04",332],["2019-02-11",319.2],["2019-02-18",415.6],["2019-02-25",527.5],["2019-03-04",687.5],["2019-03-11",640],["2019-03-18",677.5],["2019-03-25",596.2],["2019-04-01",556.2],["2019-04-08",657.5],["2019-04-15",698.8],["2019-04-22",662.5],["2019-04-29",662.5],["2019-05-06",610.6],["2019-05-13",597.5],["2019-05-20",560.6],["2019-05-27",508.1],["2019-06-03",532.5],["2019-06-10",583.1],["2019-06-17",551.2],["2019-06-24",536.2],["2019-07-01",601.2],["2019-07-08",537.5],["2019-07-15",525],["2019-07-22",520.6],["2019-07-29",528.8],["2019-08-05",527.5],["2019-08-12",665],["2019-08-19",752.5],["2019-08-26",707.8],["2019-09-02",666.8],["2019-09-09",629.8],["2019-09-16",624.5],["2019-09-23",635.2],["2019-09-30",820],["2019-10-07",816.2],["2019-10-14",1592.5],["2019-10-21",1482.5],["2019-10-28",1480],["2019-11-04",1592.5],["2019-11-11",1510],["2019-11-18",1492.5],["2019-11-25",1437.5],["2019-12-02",1350],["2019-12-09",1265],["2019-12-16",1300],["2019-12-23",1405],["2019-12-30",1290],["2020-01-06",1372.5],["2020-01-13",1290],["2020-01-20",1280],["2020-01-27",1191.2],["2020-02-03",1146.2],["2020-02-10",1063.8],["2020-02-17",1021.2],["2020-02-24",750],["2020-03-02",865],["2020-03-09",700.2],["2020-03-16",695],["2020-03-23",717.5],["2020-03-30",688.8],["2020-04-06",755],["2020-04-13",752.5],["2020-04-20",736.8],["2020-04-27",750],["2020-05-04",768.8],["2020-05-11",838.8],["2020-05-18",855],["2020-05-25",885],["2020-06-01",907.5],["2020-06-08",950],["2020-06-15",942.5],["2020-06-22",1017.5],["2020-06-29",1073.8],["2020-07-06",901.2],["2020-07-13",898.8],["2020-07-20",908.8],["2020-07-27",953.8],["2020-08-03",947.5],["2020-08-10",1016.2],["2020-08-17",1127.5],["2020-08-24",945],["2020-08-31",923.8],["2020-09-07",875],["2020-09-14",955],["2020-09-21",1026.2],["2020-09-28",1002.5],["2020-10-05",1145],["2020-10-12",922.5],["2020-10-19",898.8],["2020-10-26",810],["2020-11-02",868.8],["2020-11-09",836.2],["2020-11-16",911.2],["2020-11-23",901.2],["2020-11-30",908.8],["2020-12-07",872.5],["2020-12-14",888.8],["2020-12-21",870],["2020-12-28",887.5],["2021-01-04",997.5],["2021-01-11",852.5],["2021-01-18",996.2],["2021-01-25",992.5],["2021-02-01",1105],["2021-02-08",1031.2],["2021-02-15",956.2],["2021-02-22",978.8],["2021-03-01",951.2],["2021-03-08",1030],["2021-03-15",1052.5],["2021-03-22",1060],["2021-03-29",1112.5],["2021-04-05",1260],["2021-04-12",1372.5],["2021-04-19",1265],["2021-04-26",1200],["2021-05-03",1232.5],["2021-05-10",1176.2],["2021-05-17",1171.2],["2021-05-24",1097.5],["2021-05-31",1052.5],["2021-06-07",1100],["2021-06-14",1068.8],["2021-06-21",1040],["2021-06-28",1085],["2021-07-05",912.5],["2021-07-12",951.2],["2021-07-19",952.5],["2021-07-26",1002.5],["2021-08-02",947.5],["2021-08-09",982.5],["2021-08-16",990],["2021-08-23",1046.2],["2021-08-30",1009.5],["2021-09-06",1061],["2021-09-13",1019],["2021-09-20",1050],["2021-09-27",1176.5],["2021-10-04",1590],["2021-10-11",1565],["2021-10-18",1645],["2021-10-25",1960],["2021-11-01",2150],["2021-11-08",2127.5],["2021-11-15",2685],["2021-11-22",2995],["2021-11-29",2200],["2021-12-06",2110],["2021-12-13",1567.5],["2021-12-20",1488.5],["2021-12-27",1323.5],["2022-01-03",1275],["2022-01-10",1196],["2022-01-17",1271.5],["2022-01-24",1209.5],["2022-01-31",1203.5],["2022-02-07",1174.5],["2022-02-14",1082.5],["2022-02-21",1102],["2022-02-28",1096.5],["2022-03-07",1126],["2022-03-14",1287.5],["2022-03-21",1241],["2022-03-28",1340],["2022-04-04",1230.5],["2022-04-11",1175],["2022-04-18",1066],["2022-04-25",1018.5],["2022-05-02",976],["2022-05-09",983.5],["2022-05-16",995],["2022-05-23",1010],["2022-05-30",1075],["2022-06-06",1134.5],["2022-06-13",999],["2022-06-20",1070],["2022-06-27",1027.5],["2022-07-04",1168.5],["2022-07-11",1269],["2022-07-18",1235],["2022-07-25",1275.5],["2022-08-01",1348],["2022-08-08",1321],["2022-08-15",1469],["2022-08-22",1432.5],["2022-08-29",1445],["2022-09-05",1690],["2022-09-12",1755],["2022-09-19",1657.5],["2022-09-26",1660],["2022-10-03",2195],["2022-10-10",2215],["2022-10-17",2155],["2022-10-24",2222.5],["2022-10-31",2212.5],["2022-11-07",2297.5],["2022-11-14",2505],["2022-11-21",2595],["2022-11-28",2555],["2022-12-05",2420],["2022-12-12",2555],["2022-12-19",2017.5],["2022-12-26",2240],["2023-01-02",2160],["2023-01-09",2320],["2023-01-16",2105],["2023-01-23",2032.5],["2023-01-30",2075],["2023-02-06",2087.5],["2023-02-13",2030],["2023-02-20",2097.5],["2023-02-27",2050],["2023-03-06",1957.5],["2023-03-13",1955],["2023-03-20",1925],["2023-03-27",1940],["2023-04-03",1970],["2023-04-10",2000],["2023-04-17",1905],["2023-04-24",1840],["2023-05-01",1812.5],["2023-05-08",1795],["2023-05-15",1830],["2023-05-22",1927.5],["2023-05-29",1942.5],["2023-06-05",2045],["2023-06-12",2290],["2023-06-19",2172.5],["2023-06-26",2162.5],["2023-07-03",2575],["2023-07-10",2370],["2023-07-17",2482.5],["2023-07-24",2625],["2023-07-31",2595],["2023-08-07",2610],["2023-08-14",2450],["2023-08-21",2630],["2023-08-28",2650],["2023-09-04",2920],["2023-09-11",3010],["2023-09-18",3305],["2023-09-25",3140],["2023-10-02",4390],["2023-10-09",5225],["2023-10-16",5410],["2023-10-23",4310],["2023-10-30",4025],["2023-11-06",3830],["2023-11-13",3660],["2023-11-20",3965],["2023-11-27",4495],["2023-12-04",4315],["2023-12-11",4045],["2023-12-18",4285],["2023-12-25",4480],["2024-01-01",4255],["2024-01-08",4640],["2024-01-15",5370],["2024-01-22",5825],["2024-01-29",5620],["2024-02-05",5535],["2024-02-12",6655],["2024-02-19",6635],["2024-02-26",7250],["2024-03-04",6835],["2024-03-11",6130],["2024-03-18",8600],["2024-03-25",9170],["2024-04-01",7710],["2024-04-08",8745],["2024-04-15",7565],["2024-04-22",7285],["2024-04-29",8125],["2024-05-06",9140],["2024-05-13",8630],["2024-05-20",8560],["2024-05-27",8650],["2024-06-03",7530],["2024-06-10",7075],["2024-06-17",6710],["2024-06-24",6920],["2024-07-01",7425],["2024-07-08",7425],["2024-07-15",6685],["2024-07-22",5970],["2024-07-29",5475],["2024-08-05",5950],["2024-08-12",6795],["2024-08-19",7675],["2024-08-26",7475],["2024-09-02",6465],["2024-09-09",6840],["2024-09-16",7340],["2024-09-23",7985],["2024-09-30",9325],["2024-10-07",8375],["2024-10-14",7470],["2024-10-21",7245],["2024-10-28",7325],["2024-11-04",7125],["2024-11-11",6570],["2024-11-18",6305],["2024-11-25",6250],["2024-12-02",6080],["2024-12-09",5585],["2024-12-16",5990],["2024-12-23",6735],["2024-12-30",6720],["2025-01-06",7405],["2025-01-13",7150],["2025-01-20",6990],["2025-01-27",7495],["2025-02-03",7510],["2025-02-10",7935],["2025-02-17",7115],["2025-02-24",7005],["2025-03-03",6475],["2025-03-10",6375],["2025-03-17",6615],["2025-03-24",6505],["2025-03-31",5480],["2025-04-07",6080],["2025-04-14",6260],["2025-04-21",6325],["2025-04-28",5975],["2025-05-05",6285],["2025-05-12",6025],["2025-05-19",6000],["2025-05-26",6785],["2025-06-02",6515],["2025-06-09",6930],["2025-06-16",6885],["2025-06-23",7080],["2025-06-30",8070],["2025-07-07",8635],["2025-07-14",8330],["2025-07-21",8835],["2025-07-28",9545],["2025-08-04",9380],["2025-08-11",9660],["2025-08-18",9220],["2025-08-25",9260],["2025-09-01",8620],["2025-09-08",9000],["2025-09-15",9220],["2025-09-22",9390],["2025-09-29",10010],["2025-10-06",9450],["2025-10-13",9090],["2025-10-20",9890],["2025-10-27",8410],["2025-11-03",8000],["2025-11-10",8560],["2025-11-17",8020],["2025-11-24",8120],["2025-12-01",7940],["2025-12-08",8070],["2025-12-15",7550],["2025-12-22",7370],["2025-12-29",7350],["2026-01-05",7450],["2026-01-12",8590],["2026-01-19",7450],["2026-01-26",7470],["2026-02-02",7200],["2026-02-09",7150],["2026-02-16",7350],["2026-02-23",7810],["2026-03-02",7250],["2026-03-09",6680],["2026-03-16",6430],["2026-03-23",6450],["2026-03-30",6740],["2026-04-06",6280],["2026-04-13",6400],["2026-04-20",6490],["2026-04-27",6460],["2026-05-04",6400],["2026-05-11",6020],["2026-05-18",5740],["2026-05-25",6080],["2026-06-01",5710],["2026-06-08",5780],["2026-06-15",6250],["2026-06-22",6630],["2026-06-29",7050],["2026-07-06",6890],["2026-07-13",6810],["2026-07-20",6940],["2026-07-27",7430],["2026-08-03",7760],["2026-08-10",8130],["2026-08-17",7860],["2026-08-24",7900],["2026-08-31",7480],["2026-09-01",7460],["2026-09-02",7310],["2026-09-03",7120],["2026-09-04",7480],["2026-09-07",7380],["2026-09-08",7380],["2026-09-09",7470],["2026-09-10",7370],["2026-09-11",7130],["2026-09-14",7200],["2026-09-15",7120],["2026-09-16",7130],["2026-09-17",7200],["2026-09-18",7420],["2026-09-24",7480],["2026-09-25",7550],["2026-09-28",7690],["2026-09-29",7500],["2026-09-30",7760],["2026-10-01",7550],["2026-10-02",7480],["2026-10-05",7410],["2026-10-06",7080],["2026-10-07",7780],["2026-10-08",7620],["2026-10-09",7960],["2026-10-13",7550],["2026-10-14",7580],["2026-10-15",6970],["2026-10-16",6960],["2026-10-19",6790],["2026-10-20",6740],["2026-10-21",6900],["2026-10-22",6700],["2026-10-23",7090],["2026-10-26",7370],["2026-10-27",7180],["2026-10-28",7180],["2026-10-29",7310],["2026-10-30",7330],["2026-11-02",7330],["2026-11-04",7620],["2026-11-05",7920],["2026-11-06",7430],["2026-11-09",7290],["2026-11-10",7520],["2026-11-11",7490],["2026-11-12",7300],["2026-11-13",7150]],"marks":{"1":"2018-11-26","2":"2020-03-30","3":"2021-12-13","4":"2022-10-03","5":"2023-10-02","6":"2023-12-11","7":"2024-07-01","8":"2024-08-05","9":"2024-09-30","10":"2025-04-07","11":"2025-06-30","12":"2025-10-27","13":"2026-01-12","14":"2026-06-01","15":"2026-07-06","16":"2026-10-07","17":"2026-11-13"},"cur":"¥"};</script>
+<script src="../_shared/research_tabs.js" defer></script>
+<script src="../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>

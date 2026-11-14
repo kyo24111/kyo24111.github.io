@@ -108,3 +108,4 @@
 | [261108_microagi_deep_research.html](261108_microagi_deep_research.html) | microagi | フィジカルAI（人の作業データ収集Shift＋工場ロボット導入Atlas） | 2026-11-08 |
 | [261110_nok_deep_research.html](261110_nok_deep_research.html) | NOK（NOK Group） | オイルシール世界首位／FPC（日本メクトロン）／2026-10 イーグル工業と統合 | 2026-11-10 |
 | [261110_mavria_deep_research.html](261110_mavria_deep_research.html) | Mavria | AIインフラ（工場製モジュール型DC「Terrain」5MW・元DOE DOGE創業・Seed $1B） | 2026-11-10 |
+| [261114_kasumigaseki_capital_deep_research.html](261114_kasumigaseki_capital_deep_research.html) | Kasumigaseki Capital（霞ヶ関キャピタル） | 不動産開発×ファンド（多人数ホテル・冷凍冷蔵倉庫・ホスピス／土地を開発ファンドへ売るモデル） | 2026-11-14 |
