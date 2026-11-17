@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kernel と Image を目で見る</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root { --text:#111; --muted:#888; --border:#e6e6e6; --surface:#f6f6f6; --e1:#1d4e89; --e2:#b5462f; --ker:#d62828; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; }
+  body { background:#fff; color:var(--text); font-family:'Noto Sans JP',sans-serif; font-size:15px; line-height:1.85; }
+  .wrap { max-width:760px; margin:0 auto; padding:28px 16px 100px; }
+  h1 { font-family:'Poppins','Noto Sans JP',sans-serif; font-size:1.45rem; font-weight:700; line-height:1.4; margin-bottom:6px; }
+  .lead { color:var(--muted); font-size:13px; margin-bottom:22px; }
+  .lead a { color:var(--text); }
+  h2 { font-family:'Poppins','Noto Sans JP',sans-serif; font-size:1.12rem; font-weight:700; margin:52px 0 12px; padding-top:14px; border-top:1px solid var(--border); scroll-margin-top:20px; }
+  h2 .no { font-size:11px; color:var(--muted); letter-spacing:.12em; display:block; margin-bottom:2px; }
+  p { margin:10px 0; }
+  .key { font-weight:700; }
+  .hl { background:#fff3a0; padding:0 4px; }
+  .mono { font-family:'Poppins',monospace; }
+  .e1 { color:var(--e1); font-weight:700; }
+  .e2 { color:var(--e2); font-weight:700; }
+  .box { background:var(--surface); border-left:3px solid var(--text); padding:12px 16px; margin:16px 0; font-size:14px; }
+  .q { border:1px solid var(--border); border-radius:10px; padding:14px 16px; margin:14px 0 6px; }
+  .mtx { display:inline-block; vertical-align:middle; border-left:1.5px solid var(--text); border-right:1.5px solid var(--text); border-radius:4px; padding:0 4px; margin:0 3px; }
+  .mtx table { border-collapse:collapse; }
+  .mtx td { padding:1px 7px; text-align:center; font-family:'Poppins',sans-serif; font-size:14px; min-width:26px; }
+  .cv-wrap { border:1px solid var(--border); border-radius:12px; padding:10px; margin:16px 0 8px; }
+  canvas { width:100%; display:block; aspect-ratio:1/1; max-height:440px; touch-action:manipulation; }
+  .ctrl { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .ctrl button { appearance:none; border:1px solid var(--text); background:#fff; color:var(--text); border-radius:999px; padding:6px 14px; font-family:'Poppins','Noto Sans JP',sans-serif; font-size:12.5px; font-weight:600; cursor:pointer; }
+  .ctrl button.on, .ctrl button:active { background:var(--text); color:#fff; }
+  .cap { font-size:13px; color:#444; margin-top:8px; min-height:1.6em; }
+  .tbl-scroll { overflow-x:auto; -webkit-overflow-scrolling:touch; margin:12px 0; }
+  table.t { border-collapse:collapse; width:100%; min-width:460px; font-size:13.5px; }
+  table.t th { text-align:left; background:var(--surface); color:#666; font-weight:600; font-size:12px; padding:8px 10px; border-bottom:1px solid #d8d8d8; white-space:nowrap; }
+  table.t td { padding:8px 10px; border-bottom:1px solid #f0f0f0; vertical-align:top; }
+  ol.steps { margin:8px 0 8px 22px; }
+  ol.steps li { margin:4px 0; }
+  .toc { border-top:1px solid var(--border); margin:0 0 10px; }
+  .toc a { display:flex; gap:10px; padding:7px 2px; border-bottom:1px solid var(--border); color:var(--text); text-decoration:none; font-size:13.5px; }
+  .toc a span { font-family:'Poppins',sans-serif; color:var(--muted); font-size:11px; min-width:22px; padding-top:2px; }
+  .side { position:fixed; top:90px; left:calc(50% + 400px); width:200px; font-size:12px; }
+  .side a { display:block; color:var(--muted); text-decoration:none; padding:3px 0 3px 10px; border-left:2px solid transparent; line-height:1.5; }
+  .side a.on { color:var(--text); border-left-color:var(--text); font-weight:600; }
+  @media (max-width:1240px) { .side { display:none; } }
+  .back { display:inline-block; margin-top:40px; font-size:13px; color:var(--text); }
+</style>
+</head>
+<body>
+<!-- crumbs:start --><style>.wl-crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:6px;max-width:100%;padding:10px 16px;font-family:Poppins,"Noto Sans JP",sans-serif;font-size:11px;font-weight:500;letter-spacing:.04em;line-height:1.4;color:#888;background:#fff;border-bottom:1px solid #eee;position:relative;z-index:5}.wl-crumbs a{color:#888;text-decoration:none}.wl-crumbs a:hover{color:#111;text-decoration:underline}.wl-crumbs .s{color:#ccc}.wl-crumbs .c{color:#111;font-weight:700}@media print{.wl-crumbs{display:none}}</style><nav class="wl-crumbs" aria-label="breadcrumb"><a href="../../../index.html">24111</a><span class="s">/</span><a href="../../index.html">research</a><span class="s">/</span><a href="../index.html">science</a><span class="s">/</span><a href="index.html">linear_algebra</a><span class="s">/</span><span class="c">Kernel と Image を目で見る</span></nav><script>if(location.protocol!=="file:"){var c=document.currentScript.previousElementSibling;if(c)c.remove()}</script><script>/* keep-pos: リロードしても見ていた位置（スクロール・タブ・開いた<details>・内側スクロール）を保つ */
+(function(){var ss;try{ss=window.sessionStorage;ss.getItem('x')}catch(e){return}
+try{history.scrollRestoration='manual'}catch(e){}
+var K='wl-pos:'+location.pathname,TAB='[data-view],[data-tab],[role="tab"],.tab,.tab-btn',st={y:0,s:{},t:[]},busy=true,tm;
+function P(el){var p=[];while(el&&el.nodeType===1&&el!==document.body){if(el.id){p.unshift('#'+CSS.escape(el.id));return p.join('>')}
+var i=1,x=el;while((x=x.previousElementSibling))i++;p.unshift(el.tagName.toLowerCase()+':nth-child('+i+')');el=el.parentElement}p.unshift('body');return p.join('>')}
+function Q(q){try{return document.querySelector(q)}catch(e){return null}}
+function save(){if(busy)return;st.y=window.scrollY;st.d=[].map.call(document.querySelectorAll('details'),function(d){return d.open?1:0}).join('');
+try{ss.setItem(K,JSON.stringify(st))}catch(e){}}
+function later(){if(busy)return;clearTimeout(tm);tm=setTimeout(save,150)}
+document.addEventListener('scroll',function(e){var t=e.target;if(t&&t.nodeType===1&&!busy)st.s[P(t)]=t.scrollTop;later()},true);
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest(TAB);if(!b||!e.isTrusted)return;
+var g=P(b.parentElement);st.t=st.t.filter(function(x){return x.g!==g});st.t.push({g:g,p:P(b)});st.t=st.t.slice(-6);later()},true);
+document.addEventListener('toggle',later,true);addEventListener('pagehide',save);
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='hidden')save()});
+function stop(){if(busy){busy=false;save()}}
+['wheel','touchstart','keydown','mousedown'].forEach(function(n){addEventListener(n,stop,{capture:true,passive:true})});
+addEventListener('load',function(){var d;try{d=JSON.parse(ss.getItem(K)||'null')}catch(e){}
+var nt;try{nt=performance.getEntriesByType('navigation')[0].type}catch(e){}
+/* リンクで来た時は復元しない（リロード・戻る/進むだけ） */
+if(!d||(nt&&nt!=='reload'&&nt!=='back_forward')){busy=false;return}st=d;st.s=st.s||{};st.t=st.t||[];
+st.t.forEach(function(x){var b=Q(x.p);if(b&&!b.classList.contains('on')&&!b.classList.contains('active')&&b.getAttribute('aria-selected')!=='true')b.click()});
+if(d.d)[].forEach.call(document.querySelectorAll('details'),function(el,i){if(d.d[i]==='1')el.open=true});
+function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var el=Q(q);if(el)el.scrollTop=st.s[q]}}
+[0,60,160,320,640,1100,1700].forEach(function(t){setTimeout(go,t)});setTimeout(stop,1800)})})();</script><!-- crumbs:end -->
+<nav class="side" id="sideNav"></nav>
+<div class="wrap">
+  <h1>Kernel と Image を目で見る — 演習06 Q1</h1>
+  <p class="lead"><a href="260516_linear_algebra.html">Linear Algebra</a> の演習「06 Rank」Q1 の詳細解説。rank ＝ 1 という答えの裏で、<b>平面のどこが消えて（Kernel）、どこに集まるのか（Image）</b>をアニメで追う。章本文は <a href="260516_linear_algebra.html#image-kernel">像（Image）と核（Kernel）</a>。<br>Last updated: 2026-11-17</p>
+
+  <div class="q">
+    <b>Q1.</b> rank を求めよ。M = <span class="mtx"><table><tr><td>1</td><td>2</td></tr><tr><td>2</td><td>4</td></tr></table></span><br>
+    <b>答え.</b> 2行目 ＝ 2 ×（1行目）→ 独立な行は1本 → <span class="hl">rank ＝ 1</span>。<br>
+    <b>このページで分かること.</b> Kernel ＝ 直線 x＋2y＝0（(−2, 1) の方向）、Image ＝ 直線 y＝2x（(1, 2) の方向）、1 ＋ 1 ＝ 2。
+  </div>
+
+  <div class="toc" id="toc"></div>
+
+  <!-- 01 -->
+  <h2 id="s1"><span class="no">01</span>M は平面をどう動かすか — 平面が1本の直線につぶれる</h2>
+  <p>行列の動きは、<b>基底ベクトルの行き先＝列</b>で決まる。</p>
+  <ul style="margin:6px 0 6px 22px">
+    <li><span class="e1">e₁ = (1, 0)</span> の行き先 ＝ 1列目 <b>(1, 2)</b></li>
+    <li><span class="e2">e₂ = (0, 1)</span> の行き先 ＝ 2列目 <b>(2, 4)</b> ＝ 2 ×(1, 2)</li>
+  </ul>
+  <p>2本の行き先が<span class="hl">同じ向き（平行）</span>になってしまう。だから方眼紙のマス目は平行四辺形にすらなれず、<b>1本の直線の上にぺしゃんこ</b>になる。</p>
+  <div class="cv-wrap">
+    <canvas id="cv1"></canvas>
+    <div class="ctrl"><button data-go="M">M をかける</button><button data-go="I">元に戻す</button></div>
+    <div class="cap" id="cap1"></div>
+  </div>
+  <div class="box"><span class="key">見るポイント：</span>灰色のマス（面積 1）が線分になり、<b>面積 ＝ det ＝ 1·4 − 2·2 ＝ 0</b>。平面（2次元）だったものが直線（1次元）になった ＝ <b>rank ＝ 1</b>。「1次元分つぶれた」と言える。</div>
+
+  <!-- 02 -->
+  <h2 id="s2"><span class="no">02</span>Image（像）— 行き先は全部、直線 y＝2x の上</h2>
+  <p>Image は「M をかけて出てくるもの全部」。どの点 (x, y) を入れても、</p>
+  <p class="mono" style="text-align:center">M (x, y) ＝ (x＋2y, 2x＋4y) ＝ <b>(x＋2y) · (1, 2)</b></p>
+  <p>つまり出てくるのは<b>いつも (1, 2) の何倍か</b>だけ。下の成分は必ず上の成分の2倍 → <span class="hl">Image ＝ 直線 y＝2x（1次元）</span>。</p>
+  <p>下のアニメでは、平面上の点を <b>x＋2y の値ごとに色分け</b>している。M をかけると、点が直線 y＝2x に集まる。</p>
+  <div class="cv-wrap">
+    <canvas id="cv2"></canvas>
+    <div class="ctrl"><button data-go="M">M をかける</button><button data-go="I">元に戻す</button></div>
+    <div class="cap" id="cap2"></div>
+  </div>
+  <div class="box"><span class="key">列で読むと：</span>Image ＝ 列ベクトル (1, 2) と (2, 4) の Span。2本が平行なので、張るのは直線1本だけ。<b>dim Image ＝ 独立な列の本数 ＝ rank ＝ 1</b>。</div>
+  <p>よく見ると、<b>同じ色の点が同じ場所に重なっている</b>。違う点が同じ行き先に重なる ＝ 何かが消えている。それが次の Kernel。</p>
+
+  <!-- 03 -->
+  <h2 id="s3"><span class="no">03</span>Kernel（核）— 原点に消える直線 x＋2y＝0</h2>
+  <p>Kernel は「M をかけると 0 になる入力全部」。M(x, y) ＝ (x＋2y)·(1, 2) なので、<b>x＋2y ＝ 0 なら 0</b> になる。</p>
+  <div class="box">
+    <span class="key">連立方程式で解く：</span><br>
+    x ＋ 2y ＝ 0、 2x ＋ 4y ＝ 0（2本目は1本目の2倍 → 実質1本）<br>
+    → y ＝ −x/2 → x ＝ −2 と置くと <b>(−2, 1)</b>。<br>
+    確認：M(−2, 1) ＝ (−2＋2, −4＋4) ＝ <b>(0, 0)</b> ✓<br>
+    → Kernel ＝ (−2, 1) の定数倍全体 ＝ <span class="hl">直線 x＋2y＝0（1次元）</span>
+  </div>
+  <p>赤い直線が Kernel。M をかけると、<b>赤い直線の上の点は全部原点に吸い込まれる</b>。黒い点 (1, 0) は Kernel の外なので (1, 2) に残る。</p>
+  <div class="cv-wrap">
+    <canvas id="cv3"></canvas>
+    <div class="ctrl"><button data-go="M">M をかける</button><button data-go="I">元に戻す</button></div>
+    <div class="cap" id="cap3"></div>
+  </div>
+  <div class="box"><span class="key">直線ごと消える理由：</span>M(−2, 1) ＝ 0 なら、何倍しても M(c·(−2, 1)) ＝ c·0 ＝ 0。だから Kernel は「矢印1本」ではなく、<b>その矢印が乗っている直線全体</b>。</div>
+
+  <!-- 04 -->
+  <h2 id="s4"><span class="no">04</span>平面は「Kernel に平行な直線」の束 — 1本が1点につぶれる</h2>
+  <p>ここが一番深いところ。Kernel 以外の点はどうなるか？</p>
+  <p>平面を、<b>Kernel に平行な直線 x＋2y ＝ c</b>（c ＝ …, −2, −1, 0, 1, 2, …）で切り分けてみる。c ＝ 0 の線が Kernel そのもの。</p>
+  <p class="mono" style="text-align:center">x＋2y ＝ c の上の点 → M をかけると → <b>c · (1, 2)</b>（1点）</p>
+  <p>1本の直線が丸ごと Image 上の1点につぶれる。<span class="hl">Kernel の方向（直線に沿った向き）の情報が消えて、c（どの直線にいたか）だけが残る</span>。</p>
+  <div class="cv-wrap">
+    <canvas id="cv4"></canvas>
+    <div class="ctrl"><button data-go="M">M をかける</button><button data-go="I">元に戻す</button></div>
+    <div class="cap" id="cap4"></div>
+  </div>
+  <div class="tbl-scroll"><table class="t">
+    <tr><th>入力の直線</th><th>例の点</th><th>行き先</th></tr>
+    <tr><td>x＋2y ＝ 0（Kernel）</td><td>(0, 0)、(−2, 1)、(2, −1)</td><td><b>(0, 0)</b></td></tr>
+    <tr><td>x＋2y ＝ 1</td><td>(1, 0)、(−1, 1)、(3, −1)</td><td><b>(1, 2)</b></td></tr>
+    <tr><td>x＋2y ＝ 2</td><td>(2, 0)、(0, 1)、(4, −1)</td><td><b>(2, 4)</b></td></tr>
+    <tr><td>x＋2y ＝ −1</td><td>(−1, 0)、(1, −1)</td><td><b>(−1, −2)</b></td></tr>
+  </table></div>
+  <div class="box"><span class="key">まとめると：</span>平面（2次元）＝「どの直線か（c, 1次元）」×「直線の中のどこか（Kernel 方向, 1次元）」。M は後ろの1次元（Kernel）を捨てて、前の1次元（c）を Image に送る。<br>→ <b>2 ＝ 1（Kernel, 潰れる）＋ 1（Image, 出てくる）</b>。これが次元公式の中身。</div>
+
+  <!-- 05 -->
+  <h2 id="s5"><span class="no">05</span>次元公式で確かめる</h2>
+  <div class="tbl-scroll"><table class="t">
+    <tr><th>量</th><th>値</th><th>どこから</th></tr>
+    <tr><td>入力の次元 n</td><td>2</td><td>列が2本（2×2 行列）</td></tr>
+    <tr><td>dim Image（rank）</td><td>1</td><td>独立な列（行）が1本</td></tr>
+    <tr><td>dim Kernel（nullity）</td><td>1</td><td>式が実質1本 → 自由な変数が 2−1＝1 個</td></tr>
+    <tr><td>確認</td><td>1 ＋ 1 ＝ 2</td><td>rank ＋ nullity ＝ n</td></tr>
+  </table></div>
+  <p>授業（261112, 26:18〜）の言い方：「2次元を送るのに、Kernel 1次元分が潰れたことで、Image が 2−1＝1次元になる」。<b>潰れた分だけ、出てくるものが減る</b>。</p>
+
+  <!-- 06 -->
+  <h2 id="s6"><span class="no">06</span>Kernel と Image が直交しているのは「たまたま」？</h2>
+  <p>Kernel (−2, 1) と Image (1, 2) の内積は −2＋2 ＝ 0 で、<b>直交</b>している。授業（26:04）での質問。</p>
+  <div class="box">
+    <span class="key">理由：</span><br>
+    ① Mv ＝ 0 は「v と<b>各行</b>の内積が 0」という意味 → Kernel はいつでも<b>行ベクトルに直交</b>する。<br>
+    ② Image は<b>列ベクトル</b>の Span。<br>
+    ③ M は<b>対称行列</b>（行 ＝ 列）なので、行に直交 ＝ 列に直交 ＝ Image に直交。
+  </div>
+  <p>対称でない行列と比べると違いが見える。M' ＝ [[1, 2], [0, 0]] は Kernel は同じ x＋2y＝0 だが、列が (1, 0) と (2, 0) なので Image は x 軸 → <b>直交しない</b>。</p>
+  <div class="cv-wrap">
+    <canvas id="cv6"></canvas>
+    <div class="ctrl"><button data-go="sym" class="on">M ＝ [[1,2],[2,4]]（対称）</button><button data-go="non">M' ＝ [[1,2],[0,0]]（非対称）</button></div>
+    <div class="cap" id="cap6"></div>
+  </div>
+
+  <!-- 07 -->
+  <h2 id="s7"><span class="no">07</span>連立方程式 Mv ＝ b で読む</h2>
+  <div class="tbl-scroll"><table class="t">
+    <tr><th>右辺 b</th><th>b は Image 上？</th><th>解</th></tr>
+    <tr><td>(3, 6)</td><td>○（y＝2x の上）</td><td><b>無数</b>：直線 x＋2y＝3 の全部。(3, 0)＋t(−2, 1)</td></tr>
+    <tr><td>(0, 0)</td><td>○</td><td><b>無数</b>：Kernel そのもの。t(−2, 1)</td></tr>
+    <tr><td>(1, 0)</td><td>×（y＝2x の外）</td><td><b>解なし</b>：x＋2y＝1 と 2x＋4y＝0 が矛盾</td></tr>
+  </table></div>
+  <p><b>Image が「解があるか」、Kernel が「解がいくつあるか」</b>を決める。Image が平面全体でない（どこにも届くわけではない）ので解なしの b があり、Kernel が {0} でない（ずらせる）ので解があっても1つに決まらない。</p>
+
+  <!-- 08 -->
+  <h2 id="s8"><span class="no">08</span>まとめ — 同じことの言い換え</h2>
+  <div class="tbl-scroll"><table class="t">
+    <tr><th>見方</th><th>M ＝ [[1,2],[2,4]]</th></tr>
+    <tr><td>行（列）の独立性</td><td>2行目 ＝ 2×1行目 → 独立なのは1本</td></tr>
+    <tr><td>rank</td><td>1（フルランクでない）</td></tr>
+    <tr><td>det</td><td>1·4 − 2·2 ＝ 0（面積が 0 につぶれる）</td></tr>
+    <tr><td>Image</td><td>直線 y＝2x（1次元）</td></tr>
+    <tr><td>Kernel</td><td>直線 x＋2y＝0（1次元）、(−2, 1) の方向</td></tr>
+    <tr><td>逆行列</td><td>なし（違う点が同じ場所に重なるので戻せない）</td></tr>
+  </table></div>
+  <p>正方行列では「rank 落ち ⇔ det＝0 ⇔ Kernel が {0} でない ⇔ Image が全体でない ⇔ 逆行列なし」が全部同じこと。逆行列が作れる側の例は <a href="261017_inverse_q1_visual.html">演習07 Q1 の詳細解説</a>。</p>
+
+  <a class="back" href="260516_linear_algebra.html">← Linear Algebra に戻る</a>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  const M = [[1, 2], [2, 4]], M2 = [[1, 2], [0, 0]], I = [[1, 0], [0, 1]];
+  const KER = '#d62828', IMC = '#7b3fa0';
+  const C1 = '#1d4e89', C2 = '#b5462f';
+  const mul = (M, v) => [M[0][0] * v[0] + M[0][1] * v[1], M[1][0] * v[0] + M[1][1] * v[1]];
+  const mm = (P, Q) => [[P[0][0]*Q[0][0]+P[0][1]*Q[1][0], P[0][0]*Q[0][1]+P[0][1]*Q[1][1]], [P[1][0]*Q[0][0]+P[1][1]*Q[1][0], P[1][0]*Q[0][1]+P[1][1]*Q[1][1]]];
+  const lerp = (P, Q, t) => P.map((r, i) => r.map((x, j) => x + (Q[i][j] - x) * t));
+  const det = M => M[0][0] * M[1][1] - M[0][1] * M[1][0];
+  const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  const f = x => (Math.abs(x) < 0.005 ? 0 : x).toFixed(Math.abs(x - Math.round(x)) < 0.005 ? 0 : 2).replace('-', '−');
+
+  function Plane(id, o) {
+    const cv = document.getElementById(id), ctx = cv.getContext('2d');
+    const R = o.range || [-4, 6, -4, 6];   // xmin xmax ymin ymax
+    let M = I, W = 0, H = 0, raf = 0;
+    function size() {
+      const r = cv.getBoundingClientRect(), dpr = window.devicePixelRatio || 1;
+      W = r.width; H = r.height; cv.width = W * dpr; cv.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); draw();
+    }
+    const X = x => (x - R[0]) / (R[1] - R[0]) * W, Y = y => H - (y - R[2]) / (R[3] - R[2]) * H;
+    const P = v => [X(v[0]), Y(v[1])];
+    function line(a, b, col, w, dash) {
+      ctx.beginPath(); ctx.setLineDash(dash || []); ctx.strokeStyle = col; ctx.lineWidth = w;
+      const p = P(a), q = P(b); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke(); ctx.setLineDash([]);
+    }
+    function arrow(v, col, label, w) {
+      const o0 = P([0, 0]), p = P(v);
+      const dx = p[0] - o0[0], dy = p[1] - o0[1], L = Math.hypot(dx, dy);
+      ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = w || 2.4;
+      ctx.beginPath(); ctx.moveTo(o0[0], o0[1]); ctx.lineTo(p[0], p[1]); ctx.stroke();
+      if (L > 6) {
+        const ux = dx / L, uy = dy / L, h = 9;
+        ctx.beginPath(); ctx.moveTo(p[0], p[1]);
+        ctx.lineTo(p[0] - ux * h - uy * h * .5, p[1] - uy * h + ux * h * .5);
+        ctx.lineTo(p[0] - ux * h + uy * h * .5, p[1] - uy * h - ux * h * .5); ctx.closePath(); ctx.fill();
+      }
+      if (label) text(label, p[0] + 6, p[1] - 6, col, 600);
+    }
+    function dot(v, fill, label, ring) {
+      const p = P(v); ctx.beginPath(); ctx.arc(p[0], p[1], 5, 0, Math.PI * 2);
+      ctx.fillStyle = ring ? '#fff' : fill; ctx.fill(); ctx.lineWidth = 2; ctx.strokeStyle = fill; ctx.stroke();
+      if (label) text(label, p[0] + 8, p[1] + 14, fill, 500);
+    }
+    function text(s, x, y, col, wt) {
+      ctx.font = (wt || 500) + ' 12px Poppins, "Noto Sans JP", sans-serif'; ctx.fillStyle = col;
+      ctx.fillText(s, Math.min(x, W - ctx.measureText(s).width - 4), Math.max(y, 14));
+    }
+    function draw() {
+      if (!W) return;
+      ctx.clearRect(0, 0, W, H);
+      // 元の方眼（薄く）
+      for (let i = Math.ceil(R[0]); i <= R[1]; i++) line([i, R[2]], [i, R[3]], '#f2f2f2', 1);
+      for (let j = Math.ceil(R[2]); j <= R[3]; j++) line([R[0], j], [R[1], j], '#f2f2f2', 1);
+      line([R[0], 0], [R[1], 0], '#cfcfcf', 1); line([0, R[2]], [0, R[3]], '#cfcfcf', 1);
+      // 変換後の方眼
+      if (o.grid !== false) {
+        const N = 14;
+        for (let i = -N; i <= N; i++) {
+          line(mul(M, [i, -N]), mul(M, [i, N]), i === 0 ? '#777' : '#d6d6d6', i === 0 ? 1.3 : 1);
+          line(mul(M, [-N, i]), mul(M, [N, i]), i === 0 ? '#777' : '#d6d6d6', i === 0 ? 1.3 : 1);
+        }
+        // 単位正方形の行き先
+        const q = [[0, 0], [1, 0], [1, 1], [0, 1]].map(v => P(mul(M, v)));
+        ctx.beginPath(); q.forEach((p, k) => k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.closePath();
+        ctx.fillStyle = 'rgba(17,17,17,.10)'; ctx.fill(); ctx.strokeStyle = '#111'; ctx.lineWidth = 1.2; ctx.stroke();
+        arrow(mul(M, [1, 0]), C1, o.noBasisLabel ? '' : 'e₁→(' + f(M[0][0]) + ', ' + f(M[1][0]) + ')');
+        arrow(mul(M, [0, 1]), C2, o.noBasisLabel ? '' : 'e₂→(' + f(M[0][1]) + ', ' + f(M[1][1]) + ')');
+      }
+      if (o.extra) o.extra({ M, arrow, dot, line, text, P, W, H });
+      if (o.showDet) {
+        const d = det(M); ctx.font = '700 13px Poppins, sans-serif';
+        const s = '面積 = det = ' + f(d); ctx.fillStyle = '#111';
+        ctx.fillText(s, W - ctx.measureText(s).width - 10, 22);
+      }
+    }
+    function go(T, ms, done) {
+      cancelAnimationFrame(raf); const S = M, t0 = performance.now(); ms = ms || 1100;
+      (function step(now) {
+        const t = Math.min(1, (now - t0) / ms); M = lerp(S, T, ease(t)); draw();
+        if (t < 1) raf = requestAnimationFrame(step); else { M = T; draw(); done && done(); }
+      })(t0);
+    }
+    new ResizeObserver(size).observe(cv);
+    return { go, get M() { return M; }, set(Mx) { M = Mx; draw(); }, draw };
+  }
+
+  function bind(id, map) {
+    const box = document.getElementById(id).closest('.cv-wrap');
+    box.querySelectorAll('[data-go]').forEach(b => b.addEventListener('click', () => {
+      box.querySelectorAll('[data-go]').forEach(x => x.classList.toggle('on', x === b));
+      map[b.dataset.go]();
+    }));
+  }
+  const cap = (id, s) => { document.getElementById(id).innerHTML = s; };
+
+
+  const R7 = [-7, 7, -7, 7];
+  const hue = c => 'hsl(' + ((c + 4) * 38 % 360) + ',70%,45%)';
+  const near = (P, Q) => Math.abs(P[0][1] - Q[0][1]) + Math.abs(P[1][0] - Q[1][0]) + Math.abs(P[1][1] - Q[1][1]) + Math.abs(P[0][0] - Q[0][0]) < 1e-6;
+  function imLine(g, show) {
+    if (!show) return;
+    g.line([-3.5, -7], [3.5, 7], IMC, 2.2, [7, 5]);
+    g.text('Image：y＝2x', g.P([3.1, 6.2])[0] - 90, g.P([3.1, 6.2])[1], IMC, 700);
+  }
+
+  /* 01 */
+  const p1 = Plane('cv1', { range: R7, showDet: true, extra: g => {
+    const v = mul(g.M, [1, 1]); g.dot(v, '#111', 'p＝(1,1) → (' + f(v[0]) + ', ' + f(v[1]) + ')');
+  } });
+  cap('cap1', 'いまは元の方眼紙。<b>M をかける</b>を押すと、e₁ が (1, 2)、e₂ が (2, 4) へ。2本が同じ向きになるので、マス目が1本の線に重なっていく。');
+  bind('cv1', {
+    M: () => p1.go(M, 1600, () => cap('cap1', 'マス目が全部、直線 y＝2x の上に重なった。面積（det）＝ 0。p＝(1, 1) は (3, 6) へ。')),
+    I: () => p1.go(I, 1000, () => cap('cap1', '元の方眼紙。'))
+  });
+
+  /* 02 */
+  const pts = [];
+  for (let i = -3; i <= 3; i++) for (let j = -2; j <= 2; j++) if (Math.abs(i + 2 * j) <= 3) pts.push([i, j]);
+  const p2 = Plane('cv2', { range: R7, grid: false, extra: g => {
+    imLine(g, near(g.M, M));
+    pts.forEach(v => { const w = mul(g.M, v); g.dot(w, hue(v[0] + 2 * v[1]), ''); });
+    if (near(g.M, M)) for (let c = -3; c <= 3; c++) g.text('x+2y=' + c, g.P([c, 2 * c])[0] + 10, g.P([c, 2 * c])[1] + 4, hue(c), 600);
+  } });
+  cap('cap2', '色は x＋2y の値。同じ色の点は、同じ斜めの列に並んでいる。');
+  bind('cv2', {
+    M: () => p2.go(M, 1800, () => cap('cap2', '全部の点が直線 y＝2x（Image）に集まった。<b>同じ色の点は同じ場所に重なる</b>：x＋2y ＝ c の点は全部 c·(1, 2) へ。')),
+    I: () => p2.go(I, 1000, () => cap('cap2', '元の位置。'))
+  });
+
+  /* 03 */
+  const p3 = Plane('cv3', { range: R7, extra: g => {
+    const a = mul(g.M, [-6, 3]), b = mul(g.M, [6, -3]);
+    g.line(a, b, KER, 4);
+    for (let t = -3; t <= 3; t++) { const w = mul(g.M, [-2 * t, t]); g.dot(w, KER, ''); }
+    const k = mul(g.M, [-2, 1]);
+    if (!near(g.M, M)) g.text('Kernel：x＋2y＝0', g.P([-6, 3])[0] + 4, g.P([-6, 3])[1] - 10, KER, 700);
+    g.text('(−2, 1) → (' + f(k[0]) + ', ' + f(k[1]) + ')', g.P(k)[0] + 8, g.P(k)[1] + 18, KER, 600);
+    const q = mul(g.M, [1, 0]); g.dot(q, '#111', '(1, 0) → (' + f(q[0]) + ', ' + f(q[1]) + ')');
+    imLine(g, near(g.M, M));
+  } });
+  cap('cap3', '赤い直線が Kernel（x＋2y＝0）。赤い点は (−2, 1) の −3〜3 倍。');
+  bind('cv3', {
+    M: () => p3.go(M, 1800, () => cap('cap3', '赤い直線は丸ごと<b>原点 1 点</b>に吸い込まれた ＝ Kernel。黒い点 (1, 0) は Kernel の外なので (1, 2) に残る。')),
+    I: () => p3.go(I, 1000, () => cap('cap3', '元の位置。'))
+  });
+
+  /* 04 */
+  const p4 = Plane('cv4', { range: R7, grid: false, extra: g => {
+    for (let c = -3; c <= 3; c++) {
+      const a = mul(g.M, [c + 8, -4]), b = mul(g.M, [c - 8, 4]);   // (c,0)+t(-2,1), t=-4..4
+      g.line(a, b, hue(c), c === 0 ? 4 : 2.2);
+      const d = mul(g.M, [c, 0]); g.dot(d, hue(c), '');
+    }
+    imLine(g, near(g.M, M));
+    if (near(g.M, M)) for (let c = -3; c <= 3; c++) g.text('c=' + c, g.P([c, 2 * c])[0] + 10, g.P([c, 2 * c])[1] + 4, hue(c), 700);
+    else g.text('太い線（c=0）＝ Kernel', 10, 22, hue(0), 700);
+  } });
+  cap('cap4', '平面を Kernel に平行な直線 x＋2y＝c で切り分けた。色が c の値。');
+  bind('cv4', {
+    M: () => p4.go(M, 2000, () => cap('cap4', '各直線が<b>丸ごと1点</b>につぶれた。x＋2y＝c の直線 → c·(1, 2)。c＝0（Kernel）だけが原点へ。')),
+    I: () => p4.go(I, 1000, () => cap('cap4', '元の位置。'))
+  });
+
+  /* 06：変換はせず、Kernel と Image を並べて描く */
+  let which = 'sym';
+  const p6 = Plane('cv6', { range: [-5, 5, -5, 5], grid: false, extra: g => {
+    g.line([-4, 2], [4, -2], KER, 3); g.text('Kernel（x＋2y＝0）', g.P([-4.6, 2.3])[0], g.P([-4.6, 2.3])[1] - 8, KER, 700);
+    g.arrow([-2, 1], KER, '(−2, 1)', 2.4);
+    if (which === 'sym') {
+      g.line([-2.5, -5], [2.5, 5], IMC, 3); g.text('Image（y＝2x）', g.P([2.2, 4.4])[0] - 110, g.P([2.2, 4.4])[1], IMC, 700);
+      g.arrow([1, 2], IMC, '(1, 2)', 2.4);
+      // right angle mark
+      const u = [-2 / Math.sqrt(5) * .45, 1 / Math.sqrt(5) * .45], w = [1 / Math.sqrt(5) * .45, 2 / Math.sqrt(5) * .45];
+      const a = g.P(u), b = g.P([u[0] + w[0], u[1] + w[1]]), c = g.P(w);
+      const ctx = document.getElementById('cv6').getContext('2d');
+      ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(c[0], c[1]); ctx.strokeStyle = '#111'; ctx.lineWidth = 1.4; ctx.stroke();
+    } else {
+      g.line([-5, 0], [5, 0], IMC, 3); g.text('Image（x 軸）', g.P([2.6, 0])[0], g.P([2.6, 0])[1] - 10, IMC, 700);
+      g.arrow([1, 0], IMC, '(1, 0)', 2.4);
+    }
+  } });
+  const say6 = () => cap('cap6', which === 'sym'
+    ? '対称行列 M：Kernel (−2, 1) と Image (1, 2) の内積 ＝ −2＋2 ＝ 0 → <b>直交</b>。行 ＝ 列 なので「行に直交」＝「Image に直交」。'
+    : '非対称 M′：Kernel は同じ (−2, 1) だが、Image は列 (1, 0), (2, 0) の Span ＝ x 軸。内積 ＝ −2 ≠ 0 → <b>直交しない</b>。');
+  say6();
+  bind('cv6', { sym: () => { which = 'sym'; p6.draw(); say6(); }, non: () => { which = 'non'; p6.draw(); say6(); } });
+
+  /* 目次 + scroll-spy */
+  const hs = [...document.querySelectorAll('h2[id]')];
+  const items = hs.map(h => { const n = h.querySelector('.no').textContent, t = h.textContent.replace(n, '').trim(); return [h.id, n, t]; });
+  document.getElementById('toc').innerHTML = items.map(([id, n, t]) => '<a href="#' + id + '"><span>' + n + '</span>' + t + '</a>').join('');
+  const side = document.getElementById('sideNav');
+  side.innerHTML = items.map(([id, n, t]) => '<a href="#' + id + '" data-id="' + id + '">' + n + ' ' + t + '</a>').join('');
+  const io = new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) side.querySelectorAll('a').forEach(a => a.classList.toggle('on', a.dataset.id === e.target.id));
+  }), { rootMargin: '0px 0px -70% 0px' });
+  hs.forEach(h => io.observe(h));
+})();
+</script>
+<script src="../../../040_personal/0460_english/terms/terms.js" defer></script>
+</body>
+</html>
