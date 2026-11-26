@@ -206,7 +206,7 @@ footer{max-width:1340px;margin:0 auto;padding:22px 48px 60px;border-top:1px soli
   .c-plan{order:2;grid-column:1/-1}
   .c-plan .mini{width:100%;height:auto;max-height:190px}
   .c-score{order:3}.c-doc{order:3}.c-chome{order:4}.c-walk{order:5}.c-rent{order:6}.c-init{order:7}.c-area{order:8}
-  .c-layout{order:9}.c-muki{order:10}.c-genkan{order:11}.c-asahi{order:11}.c-houi{order:12}.c-age{order:13}.c-unit{order:14}.c-kanri{order:15}.c-floor{order:16}.c-station{order:17}
+  .c-layout{order:9}.c-muki{order:10}.c-genkan{order:11}.c-asahi{order:11}.c-houi{order:12}.c-age{order:13}.c-unit{order:14}.c-tsubo{order:14}.c-kanri{order:15}.c-floor{order:16}.c-station{order:17}
   .c-score b{font-size:17px}
   .c-rent{font-weight:700}
   .c-status{order:18;grid-column:1/-1}
@@ -546,7 +546,8 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
           <th data-s="init">初期費用目安</th>
           <th data-s="layout">間取り</th>
           <th data-s="areaMin">専有面積</th>
-          <th data-s="unit">円/㎡</th>
+          <th data-s="unit" title="賃料（管理費別）÷専有面積">円/㎡</th>
+          <th data-s="tsubo" title="賃料（管理費別）÷坪数（1坪＝3.3058㎡）">円/坪</th>
           <th data-s="muki">向き</th>
           <th data-s="genkan">玄関 方位</th>
           <th data-s="asahi">寝室の朝日</th>
@@ -629,7 +630,8 @@ function go(){if(!busy)return;window.scrollTo(0,d.y||0);for(var q in st.s){var e
     <div class="sec-head"><span>animo kudan 1001 / 概要</span><span class="sub">内見 2026-11-07 ／ Last updated 2026-11-08</span></div>
     <div class="cond">
       <div><div class="k">Rent</div><div class="v">21.8万＋共益費1.2万<small>月 23.0万</small></div></div>
-      <div><div class="k">Layout</div><div class="v">1LDK 40.57㎡<small>LDK10帖＋洋室5.2帖・10F</small></div></div>
+      <div><div class="k">Layout</div><div class="v">1LDK 40.57㎡<small>約12.27坪・LDK10帖＋洋室5.2帖・10F</small></div></div>
+      <div><div class="k">Unit price</div><div class="v">5,373円/㎡・17,763円/坪<small>賃料21.8万で計算。共益費込み（23.0万）なら 5,669円/㎡・18,741円/坪</small></div></div>
       <div><div class="k">Building</div><div class="v">2022年12月築・RC15階<small>九段北1丁目・九段下駅1分・職場まで徒歩約3分</small></div></div>
       <div><div class="k">Terms</div><div class="v">敷1／礼1・2年更新<small>保証ジェイリース 初回50%／年1万・火災保険2.8万・退去クリーニング6万（税別）・即入居</small></div></div>
       <div><div class="k">Direction</div><div class="v">気学 西（吉）・寝室に朝日<small>玄関は北（凶・北西との境目）</small></div></div>
@@ -1008,6 +1010,7 @@ DATA.forEach(function(d){
      OSRM foot で職場から実際に歩いた距離を出したもの。丁目の代表点ではない。 */
   d.target = CHOME[d.chome].target;
   d.unit = Math.round(d.rentMin*10000/d.areaMin);
+  d.tsubo = Math.round(d.rentMin*10000/(d.areaMin/3.305785));
   d.is1 = d.layout.indexOf('1LDK') >= 0;
   d.is2 = d.layout.indexOf('2LDK') >= 0;
 
@@ -1149,7 +1152,7 @@ function renderTop(){
       + '<div class="pr">'+fmtRent(d)+'<span> 万円</span></div>'
       + '<div class="mt">職場まで徒歩'+d.walk+'分（'+d.dist+'m）<br>'
         + d.layout+' ／ '+fmtArea(d)+'㎡ ／ 築'+(d.age===0?'新':d.age)+'年<br>'
-        + '向き '+d.muki+' ／ '+d.unit.toLocaleString()+' 円/㎡<br>'
+        + '向き '+d.muki+' ／ '+d.unit.toLocaleString()+' 円/㎡ ／ '+d.tsubo.toLocaleString()+' 円/坪<br>'
         + (initCost(d)===null ? '初期費用 未取得' : '初期費用 目安 '+initCost(d).toFixed(0)+' 万円')+'</div>'
       + '<div class="kgline">気学 '+d.houi+(d.kichi ? ' <b class="ok">吉方位</b>' : '')
         + ' ／ 玄関 '+(d.genkan ? d.genkan+(d.genkanNG ? ' <b class="ng">凶</b>' : '') : '不明')
@@ -1228,6 +1231,7 @@ function renderTable(){
       + '<td class="c-layout" data-l="間取り">'+d.layout+'</td>'
       + '<td class="num c-area" data-l="専有面積">'+fmtArea(d)+' ㎡</td>'
       + '<td class="num c-unit" data-l="円/㎡">'+d.unit.toLocaleString()+'</td>'
+      + '<td class="num c-tsubo" data-l="円/坪">'+d.tsubo.toLocaleString()+'</td>'
       + '<td class="c-muki" data-l="向き">'+(d.muki !== '-' ? d.muki : '—')+'</td>'
       + '<td class="c-genkan" data-l="玄関 方位">'+(d.genkan ? d.genkan + (d.genkanNG ? ' <span class="kg ng">凶</span>' : '') + (d.genkanEdge ? '<span class="edge" title="方位の境目に近い">*</span>' : '') : '<span style="color:#ccc">不明</span>')+'</td>'
       + '<td class="c-asahi" data-l="寝室の朝日">'+(d.asahi ? '<b>'+d.asahi+'</b> '+d.asahiDir : '<span style="color:#ccc">未判定</span>')+'</td>'
